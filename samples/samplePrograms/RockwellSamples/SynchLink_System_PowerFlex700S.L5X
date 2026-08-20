@@ -1,0 +1,348 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="SynchLink_PF700S_Follower" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:50:24 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="SynchLink_PF700S_Follower" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:50:13 2018" LastModifiedDate="Fri Jan 19 07:50:13 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes/>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+<Module Name="Enet" CatalogNumber="1756-ENET/B" Vendor="1" ProductType="12" ProductCode="20" Major="2" Minor="6" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="1" Type="ICP" Upstream="true"/>
+<Port Id="2" Address="10.91.52.55" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="Synch" CatalogNumber="1756-SYNCH/A" Vendor="1" ProductType="12" ProductCode="101" Major="1" Minor="17" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="2" Type="ICP" Upstream="true"/>
+</Ports>
+<Communications CommMethod="537169920">
+<ConfigData ConfigSize="90">
+<Data>5E 00 00 00 A5 00 00 00 01 03 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 01 09 11 19 
+00 00</Data>
+</ConfigData>
+<Connections>
+<Connection Name="T2D18BNONE" RPI="2000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_SYNCH_NORX:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="ChassisMultiMaster" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ChassisCSTFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SynchLinkRxFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SynchLinkDataFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SynchLinkFormatFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SynchLinkMultiMaster" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SynchLinkCSTFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SynchLinkCSTUnsynch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SynchLinkMultiplierOverflow" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RxAxis0Fault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RxAxis1Fault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Axis0NoConsumer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Axis1NoConsumer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TxAxis0Fault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TxAxis1Fault" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag>
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00</Data>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_SYNCH_2D18B:O:0">
+<ArrayMember Name="DirectData" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+</ArrayMember>
+<ArrayMember Name="BufferedData" DataType="DINT" Dimensions="18" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+<Element Index="[8]" Value="0"/>
+<Element Index="[9]" Value="0"/>
+<Element Index="[10]" Value="0"/>
+<Element Index="[11]" Value="0"/>
+<Element Index="[12]" Value="0"/>
+<Element Index="[13]" Value="0"/>
+<Element Index="[14]" Value="0"/>
+<Element Index="[15]" Value="0"/>
+<Element Index="[16]" Value="0"/>
+<Element Index="[17]" Value="0"/>
+</ArrayMember>
+<DataValueMember Name="Multiplier" DataType="REAL" Radix="Float" Value="0.0"/>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="AccelData" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 F0 41</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="30.0"/>
+</Data>
+</Tag>
+<Tag Name="Conversion_Constant" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 80 45</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="4096.0"/>
+</Data>
+</Tag>
+<Tag Name="DaGroup" TagType="Base" DataType="MOTION_GROUP">
+<Data Format="MotionGroup">
+<MotionGroupParameters GroupType="Warning Enabled" CoarseUpdatePeriod="2000" PhaseShift="0" GeneralFaultType="Non Major Fault" AutoTagUpdate="Enabled"/>
+</Data>
+</Tag>
+<Tag Name="DecelData" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 40</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="2.0"/>
+</Data>
+</Tag>
+<Tag Name="JogMaster" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="MAJ00" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 22 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="570425344"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="MAM00" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 2A 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="704643072"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="1"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="MAS00" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 2A 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="704643072"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="1"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Master" TagType="Base" DataType="AXIS_VIRTUAL">
+<Data Format="Axis">
+<AxisParameters MotionGroup="DaGroup" ConversionConstant="1024.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Position Units" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate"
+ HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="29.0" MaximumAcceleration="100.0" MaximumDeceleration="100.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="344.82758" MaximumDecelerationJerk="344.82758"
+ DynamicsConfigurationBits="7"/>
+</Data>
+</Tag>
+<Tag Name="MasterAVel" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="MasterComVel" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="MasterPos" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="MoveMaster" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="MoveSpeed" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 80 3F</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="1.0"/>
+</Data>
+</Tag>
+<Tag Name="Position" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="PositionCommand" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="PositionData" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 80 3F</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="1.0"/>
+</Data>
+</Tag>
+<Tag Name="SpeedData" TagType="Base" DataType="REAL" Radix="Float">
+<Data>CD CC CC 3D</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.1"/>
+</Data>
+</Tag>
+<Tag Name="StopMaster" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags/>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  -- No warranty or implied merchantability.
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.
+
+----------------------------------------------------
+
+The Following logic moves a virtual axis to control a PowerFlex 700S via the 1756-Sync module. The modue is setup for 2 direct 18 buffered words. The SynchLink module receives data every 2ms to send to the drive. ]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[XIC(MoveMaster)MAM(Master,MAM00,1,PositionData,MoveSpeed,Units per sec,AccelData,% of Maximum,DecelData,% of Maximum,Trapezoidal,100.0,100.0,% of Time,Disabled,Current,0,None,0,0);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[XIC(JogMaster)MAJ(Master,MAJ00,0,SpeedData,Units per sec,AccelData,% of Maximum,DecelData,% of Maximum,Trapezoidal,100.0,100.0,% of Time,Disabled,Current,0,None);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[XIC(StopMaster)MAS(Master,MAS00,All,No,90,% of Maximum,Yes,100.0,% of Time);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[GSV(AXIS,Master,ActualPosition,MasterPos)GSV(AXIS,Master,CommandVelocity,MasterAVel);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[Convert Virtual axis velocity from units per second into a per unit RPM value to send across on SynchLink
+
+Convert Virtual Axis position to a Counts value by multiplying by the conversion constant for the feedback on the drive.
+
+!!!!!!!!!!!!!!!!!!!!!!!! Do not redefine the position of the virtual axis when the SynchLinked drive is enabled !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!]]>
+</Comment>
+<Text>
+<![CDATA[[CPT(MasterComVel,(MasterAVel*60)/1750) ,EQU(MasterComVel,MasterComVel) COP(MasterComVel,Local:2:O.DirectData[1],1) ,MUL(MasterPos,Conversion_Constant,PositionCommand) ,MOV(PositionCommand,Local:2:O.DirectData[0]) ];]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

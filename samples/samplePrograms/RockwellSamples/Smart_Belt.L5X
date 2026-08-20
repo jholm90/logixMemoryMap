@@ -1,0 +1,1153 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="SmartBelt" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:47:13 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="SmartBelt" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:47:00 2018" LastModifiedDate="Fri Jan 19 07:47:01 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="0"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes>
+<DataType Name="Core_Motion" Family="NoFamily" Class="User">
+<Members>
+<Member Name="Axis_MSO" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Axis_MSF" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Axis_MRP" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Axis_MAJ" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Axis_MAS" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Axis_MAG" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Axis_GearRatio" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="StopGearing" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Product_Gap_Value" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Product_Gap_MAM" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="CorrectTags" Family="NoFamily" Class="User">
+<Members>
+<Member Name="State_Machine" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Correction_MAR" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="RegistrationCounter" DataType="COUNTER" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="FlightDistance" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Exit_Belt_RegPos" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Exit_Belt_Desired_Reg_Pos" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Exit_Belt_RegErrRaw" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Half_FlightDistanceMax" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Half_FlightDistanceMin" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Correction_MAM" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="CorrMoveSpeed" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Correction_MDR" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Exit_Belt_Reg_Error" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+</Members>
+</DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+<Module Name="Demo_Box_Inputs" CatalogNumber="1756-IB16D" Vendor="1" ProductType="7" ProductCode="2" Major="2" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="2" Type="ICP" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="40">
+<Data>2C 00 00 00 11 00 00 00 01 00 00 00 00 00 00 00 
+01 01 01 01 00 00 00 00 FF FF 00 00 FF FF 00 00 
+FF FF 00 00 00 00 00 00 FF FF 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI_DC_Diag:C:0">
+<DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+<DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+<DataValueMember Name="FaultLatchEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+<DataValueMember Name="OpenWireEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI_DC_Diag:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0001_0000_0000_0000"/>
+<ArrayMember Name="CSTTimestamp" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="916193749"/>
+<Element Index="[1]" Value="34"/>
+</ArrayMember>
+<DataValueMember Name="OpenWire" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="Demo_Box_Outputs" CatalogNumber="1756-OB16D" Vendor="1" ProductType="7" ProductCode="4" Major="2" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="4" Type="ICP" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870914">
+<ConfigTag ConfigSize="40">
+<Data>2C 00 00 00 13 00 00 00 01 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+FF FF 00 00 FF FF 00 00 FF FF 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DO_DC_Diag:C:0">
+<DataValueMember Name="ProgToFaultEn" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FaultMode" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="FaultValue" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="ProgMode" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="ProgValue" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="FaultLatchEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+<DataValueMember Name="NoLoadEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+<DataValueMember Name="OutputVerifyEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="Diagnostic" RPI="10000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_DO_DC_Diag:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0010_0001"/>
+<ArrayMember Name="CSTTimestamp" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="34993178"/>
+<Element Index="[1]" Value="-2147483648"/>
+</ArrayMember>
+<DataValueMember Name="FuseBlown" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="NoLoad" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+<DataValueMember Name="OutputVerifyFault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag>
+<Data>21 00 00 00</Data>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_DO:O:0">
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0010_0001"/>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="Analog_In" CatalogNumber="1756-IF6I" Vendor="1" ProductType="10" ProductCode="1" Major="1" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="8" Type="ICP" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="304">
+<Data>34 01 00 00 10 00 00 00 01 00 64 00 00 00 00 00 
+41 41 41 41 41 41 00 00 02 02 00 00 00 00 00 00 
+00 00 00 00 00 00 20 41 00 00 00 00 00 00 20 41 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00 02 42 00 00 00 00 00 00 
+00 00 80 3F 00 00 00 41 00 00 80 3F 00 00 A0 40 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_AI6_Float:C:0">
+<DataValueMember Name="RemoteTermination" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CJDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TempMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RealTimeSample" DataType="INT" Radix="Decimal" Value="100"/>
+<DataValueMember Name="CJOffset" DataType="REAL" Radix="Float" Value="0.0"/>
+<StructureMember Name="Ch0Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#0202"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch1Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#4202"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="1.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="8.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="1.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="5.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch2Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#0002"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch3Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#0002"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch4Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#0002"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch5Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#0002"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="Float" RPI="100000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_AI6_Float:I:0">
+<DataValueMember Name="ChannelFaults" DataType="INT" Radix="Binary" Value="2#0000_0000_0011_1100"/>
+<DataValueMember Name="Ch0Fault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Fault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Fault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch3Fault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch4Fault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch5Fault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ModuleFaults" DataType="INT" Radix="Binary" Value="2#1100_1000_0000_0000"/>
+<DataValueMember Name="AnalogGroupFault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="InGroupFault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Calibrating" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CalFault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch0Status" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Ch0CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Overrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0HAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0HHAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Status" DataType="SINT" Radix="Binary" Value="2#1000_0000"/>
+<DataValueMember Name="Ch1CalFault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch1Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Overrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1HAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1HHAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Status" DataType="SINT" Radix="Binary" Value="2#0010_0101"/>
+<DataValueMember Name="Ch2CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Overrange" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch2RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2HAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch2LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2HHAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch3Status" DataType="SINT" Radix="Binary" Value="2#0010_0101"/>
+<DataValueMember Name="Ch3CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3Overrange" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch3RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3HAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch3LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3HHAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch4Status" DataType="SINT" Radix="Binary" Value="2#0010_0101"/>
+<DataValueMember Name="Ch4CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4Overrange" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch4RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4HAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch4LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4HHAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch5Status" DataType="SINT" Radix="Binary" Value="2#0010_0101"/>
+<DataValueMember Name="Ch5CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5Overrange" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch5RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5HAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch5LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5HHAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch0Data" DataType="REAL" Radix="Float" Value="1.0016437"/>
+<DataValueMember Name="Ch1Data" DataType="REAL" Radix="Float" Value="0.5119314"/>
+<DataValueMember Name="Ch2Data" DataType="REAL" Radix="Float" Value="10.546881"/>
+<DataValueMember Name="Ch3Data" DataType="REAL" Radix="Float" Value="10.546881"/>
+<DataValueMember Name="Ch4Data" DataType="REAL" Radix="Float" Value="10.546881"/>
+<DataValueMember Name="Ch5Data" DataType="REAL" Radix="Float" Value="10.546881"/>
+<DataValueMember Name="RollingTimestamp" DataType="INT" Radix="Decimal" Value="19128"/>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="Auto_Correction_Enable_DI13" TagType="Alias" Radix="Decimal" AliasFor="Local:2:I.Data.13"/>
+<Tag Name="dummy" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="dummy2" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="EnableServo_DI12" TagType="Alias" Radix="Decimal" AliasFor="Local:2:I.Data.12"/>
+<Tag Name="Establish_Zero_Reference" TagType="Alias" Radix="Decimal" AliasFor="Local:2:I.Data.3"/>
+<Tag Name="Exit_Belt" TagType="Base" DataType="Core_Motion">
+<Data>00 00 00 A0 00 00 00 01 00 00 00 00 00 00 00 00 
+00 00 00 20 00 00 02 01 00 00 00 00 00 00 00 00 
+00 00 00 20 00 00 02 03 00 00 00 00 00 00 00 00 
+00 00 00 22 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="Core_Motion">
+<StructureMember Name="Axis_MSO" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="-1610612736"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Axis_MSF" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="536870912"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Axis_MRP" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="536870912"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="3"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Axis_MAJ" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="570425344"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Axis_MAS" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Axis_MAG" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<DataValueMember Name="Axis_GearRatio" DataType="REAL" Radix="Float" Value="0.0"/>
+<StructureMember Name="StopGearing" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<DataValueMember Name="Product_Gap_Value" DataType="REAL" Radix="Float" Value="0.0"/>
+<StructureMember Name="Product_Gap_MAM" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Exit_Belt_Axis" TagType="Base" DataType="AXIS_SERVO_DRIVE">
+<Data Format="Axis">
+<AxisParameters MotionGroup="Motion_Group" MotionModule="&lt;NA&gt;" RotationalPosResolution="1000000" ConversionConstant="100000.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Inches" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="1000000" HomeMode="Active"
+ HomeDirection="Bi-directional Forward" HomeSequence="Switch-Marker" HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" HomeSpeed="0.25" HomeReturnSpeed="0.1" MaximumSpeed="708.3334" MaximumAcceleration="52828.44" MaximumDeceleration="56816.88" ProgrammedStopMode="Fast Stop"
+ MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" AxisType="Servo" ServoLoopConfiguration="Position Servo" FaultConfigurationBits="32" AxisInfoSelect1="Position Feedback" AxisInfoSelect2="Position Command" VelocityFeedforwardGain="100.0" AccelerationFeedforwardGain="0.0" PositionProportionalGain="528.15704" PositionIntegralGain="0.0"
+ VelocityProportionalGain="1352.0822" VelocityIntegralGain="0.0" TorqueScaling="0.004475071" OutputLPFilterBandwidth="0.0" IntegratorHoldEnable="Enabled" MaximumPositiveTravel="0.0" MaximumNegativeTravel="0.0" PositionErrorTolerance="2.6822832" PositionLockTolerance="0.099999994" VelocityOffset="0.0" TorqueOffset="0.0"
+ FrictionCompensation="0.0" FrictionCompensationWindow="0.0" BacklashStabilizationWindow="0" BacklashReversalOffset="0.0" HardOvertravelFaultAction="Disable Drive" SoftOvertravelFaultAction="Disable Drive" PositionErrorFaultAction="Disable Drive" FeedbackFaultAction="Disable Drive" FeedbackNoiseFaultAction="Disable Drive" TestIncrement="5.0" TuningTravelLimit="100.0"
+ TuningSpeed="100.0" TuningTorque="100.0" DampingFactor="0.8" DriveModelTimeConstant="2.88906245e-004" PositionServoBandwidth="84.10144" VelocityServoBandwidth="215.2997" TuningConfigurationBits="16#0000_0008" TorqueLimitSource="Not Limited" DriveUnit="Motor Rev" PositionDataScaling="138" PositionDataScalingFactor="1"
+ PositionDataScalingExp="0" VelocityDataScaling="2" VelocityDataScalingFactor="1" VelocityDataScalingExp="0" AccelerationDataScaling="2" AccelerationDataScalingFactor="1" AccelerationDataScalingExp="0" TorqueDataScaling="0" TorqueDataScalingFactor="1" TorqueDataScalingExp="0" DrivePolarity="Positive"
+ MotorFeedbackResolution="1024" AuxFeedbackResolution="4000" MotorFeedbackUnit="Rev" AuxFeedbackUnit="Rev" OutputNotchFilterFrequency="0.0" VelocityDroop="0.0" VelocityLimitBipolar="833.3334" AccelerationLimitBipolar="128524.016" TorqueLimitBipolar="288.62973" VelocityLimitPositive="833.3334" VelocityLimitNegative="-833.3334"
+ VelocityThreshold="0.0" VelocityWindow="1.0" VelocityStandstillWindow="1.0" AccelerationLimitPositive="128524.016" AccelerationLimitNegative="-128524.016" TorqueLimitPositive="288.62973" TorqueLimitNegative="-288.62973" TorqueThreshold="0.0" DriveThermalFaultAction="Disable Drive" MotorThermalFaultAction="Disable Drive" DriveEnableInputFaultAction="Disable Drive"
+ StoppingTorque="288.62973" StoppingTimeLimit="10.0" BrakeEngageDelayTime="0.0" BrakeReleaseDelayTime="0.0" PWMFrequencySelect="High Frequency" LoadInertiaRatio="1.5582697" AmplifierCatalogNumber="&lt;none&gt;" MotorCatalogNumber="&lt;none&gt;" AuxFeedbackRatio="1.0" ContinuousTorqueLimit="100.0" ResistiveBrakeContactDelay="0.0"
+ MaximumAccelerationJerk="3940015.3" MaximumDecelerationJerk="4557399.0" DynamicsConfigurationBits="7" PhaseLossFaultAction="Shutdown" HomeTorqueLevel="0.0" InputPowerPhase="Three-Phase"/>
+</Data>
+</Tag>
+<Tag Name="Exit_Belt_Position_Display" TagType="Base" DataType="REAL" Radix="Float">
+<Data>40 6A 1F 41</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="9.96344"/>
+</Data>
+</Tag>
+<Tag Name="Exit_Belt_Speed" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 A0 40</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="5.0"/>
+</Data>
+</Tag>
+<Tag Name="Initiate_Product_Gap_DI4" TagType="Alias" Radix="Decimal" AliasFor="Local:2:I.Data.4"/>
+<Tag Name="Motion_Group" TagType="Base" DataType="MOTION_GROUP">
+<Data Format="MotionGroup">
+<MotionGroupParameters GroupType="Warning Enabled" CoarseUpdatePeriod="6000" PhaseShift="0" GeneralFaultType="Non Major Fault" AutoTagUpdate="Enabled"/>
+</Data>
+</Tag>
+<Tag Name="Smart_Belt" TagType="Base" DataType="Core_Motion">
+<Data>00 00 00 A0 00 00 00 01 00 00 00 00 00 00 00 00 
+00 00 00 20 00 00 02 01 00 00 00 00 00 00 00 00 
+00 00 00 20 00 00 02 03 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 22 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 80 3F 00 00 00 2A 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 C0 00 00 00 2A 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="Core_Motion">
+<StructureMember Name="Axis_MSO" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="-1610612736"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Axis_MSF" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="536870912"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Axis_MRP" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="536870912"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="3"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Axis_MAJ" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Axis_MAS" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Axis_MAG" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="570425344"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<DataValueMember Name="Axis_GearRatio" DataType="REAL" Radix="Float" Value="1.0"/>
+<StructureMember Name="StopGearing" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="704643072"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="1"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<DataValueMember Name="Product_Gap_Value" DataType="REAL" Radix="Float" Value="-2.0"/>
+<StructureMember Name="Product_Gap_MAM" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="704643072"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="1"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Smart_Belt_Axis" TagType="Base" DataType="AXIS_SERVO_DRIVE">
+<Data Format="Axis">
+<AxisParameters MotionGroup="Motion_Group" MotionModule="&lt;NA&gt;" RotationalPosResolution="1000000" ConversionConstant="100000.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Inches" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="1000000" HomeMode="Active"
+ HomeDirection="Bi-directional Forward" HomeSequence="Marker" HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" HomeSpeed="0.25" HomeReturnSpeed="0.1" MaximumSpeed="708.3334" MaximumAcceleration="51422.195" MaximumDeceleration="60816.88" ProgrammedStopMode="Fast Stop"
+ MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" AxisType="Servo" ServoLoopConfiguration="Position Servo" FaultConfigurationBits="32" AxisInfoSelect1="Position Feedback" AxisInfoSelect2="Velocity Feedback" VelocityFeedforwardGain="100.0" AccelerationFeedforwardGain="0.0" PositionProportionalGain="151.99413" PositionIntegralGain="0.0"
+ VelocityProportionalGain="389.105" VelocityIntegralGain="0.0" TorqueScaling="0.004371655" OutputLPFilterBandwidth="0.0" IntegratorHoldEnable="Enabled" MaximumPositiveTravel="100.0" MaximumNegativeTravel="-100.0" PositionErrorTolerance="9.320537" PositionLockTolerance="0.099999994" VelocityOffset="0.0" TorqueOffset="0.0"
+ FrictionCompensation="0.0" FrictionCompensationWindow="0.0" BacklashStabilizationWindow="0" BacklashReversalOffset="0.0" HardOvertravelFaultAction="Disable Drive" SoftOvertravelFaultAction="Status Only" PositionErrorFaultAction="Disable Drive" FeedbackFaultAction="Disable Drive" FeedbackNoiseFaultAction="Disable Drive" TestIncrement="5.0" TuningTravelLimit="10.0"
+ TuningSpeed="100.0" TuningTorque="100.0" DampingFactor="0.8" DriveModelTimeConstant="1.00390625e-003" PositionServoBandwidth="24.202887" VelocityServoBandwidth="61.959396" TuningConfigurationBits="16#0000_0008" TorqueLimitSource="Not Limited" DriveUnit="Motor Rev" PositionDataScaling="138" PositionDataScalingFactor="1"
+ PositionDataScalingExp="0" VelocityDataScaling="2" VelocityDataScalingFactor="1" VelocityDataScalingExp="0" AccelerationDataScaling="2" AccelerationDataScalingFactor="1" AccelerationDataScalingExp="0" TorqueDataScaling="0" TorqueDataScalingFactor="1" TorqueDataScalingExp="0" DrivePolarity="Positive"
+ MotorFeedbackResolution="1024" AuxFeedbackResolution="4000" MotorFeedbackUnit="Rev" AuxFeedbackUnit="Rev" OutputNotchFilterFrequency="0.0" VelocityDroop="0.0" VelocityLimitBipolar="833.3334" AccelerationLimitBipolar="130309.02" TorqueLimitBipolar="288.62973" VelocityLimitPositive="833.3334" VelocityLimitNegative="-833.3334"
+ VelocityThreshold="0.0" VelocityWindow="1.0" VelocityStandstillWindow="1.0" AccelerationLimitPositive="130309.02" AccelerationLimitNegative="-130309.02" TorqueLimitPositive="288.62973" TorqueLimitNegative="-288.62973" TorqueThreshold="0.0" DriveThermalFaultAction="Disable Drive" MotorThermalFaultAction="Disable Drive" DriveEnableInputFaultAction="Disable Drive"
+ StoppingTorque="288.62973" StoppingTimeLimit="10.0" BrakeEngageDelayTime="0.0" BrakeReleaseDelayTime="0.0" PWMFrequencySelect="Low Frequency" LoadInertiaRatio="1.4991498" AmplifierCatalogNumber="&lt;none&gt;" MotorCatalogNumber="&lt;none&gt;" AuxFeedbackRatio="1.0" ContinuousTorqueLimit="100.0" ResistiveBrakeContactDelay="0.0"
+ MaximumAccelerationJerk="3733047.5" MaximumDecelerationJerk="5221683.5" DynamicsConfigurationBits="7" PhaseLossFaultAction="Shutdown" HomeTorqueLevel="0.0" InputPowerPhase="Three-Phase"/>
+</Data>
+</Tag>
+<Tag Name="Smart_Belt_Position_Display" TagType="Base" DataType="REAL" Radix="Float">
+<Data>14 AE 47 3D</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.04875"/>
+</Data>
+</Tag>
+<Tag Name="Start_System_DI0" TagType="Alias" Radix="Decimal" AliasFor="Local:2:I.Data.0"/>
+<Tag Name="Stop_System_DI1" TagType="Alias" Radix="Decimal" AliasFor="Local:2:I.Data.1"/>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags>
+<Tag Name="Smart" TagType="Base" DataType="CorrectTags">
+<Data>00 00 00 00 00 00 00 28 00 00 00 01 00 00 00 00 
+00 00 00 00 00 00 00 20 00 00 00 00 00 00 00 00 
+00 00 20 41 39 D6 1C 41 00 00 00 00 39 D6 1C 41 
+00 00 A0 40 00 00 A0 C0 00 00 00 2A 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 A0 
+00 00 00 00 00 00 00 00 00 00 00 00 C0 71 4A BE</Data>
+<Data Format="Decorated"><Structure DataType="CorrectTags">
+<DataValueMember Name="State_Machine" DataType="DINT" Radix="Decimal" Value="0"/>
+<StructureMember Name="Correction_MAR" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="671088640"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="1"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="RegistrationCounter" DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</StructureMember>
+<DataValueMember Name="FlightDistance" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="Exit_Belt_RegPos" DataType="REAL" Radix="Float" Value="9.8023"/>
+<DataValueMember Name="Exit_Belt_Desired_Reg_Pos" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Exit_Belt_RegErrRaw" DataType="REAL" Radix="Float" Value="9.8023"/>
+<DataValueMember Name="Half_FlightDistanceMax" DataType="REAL" Radix="Float" Value="5.0"/>
+<DataValueMember Name="Half_FlightDistanceMin" DataType="REAL" Radix="Float" Value="-5.0"/>
+<StructureMember Name="Correction_MAM" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="704643072"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="1"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<DataValueMember Name="CorrMoveSpeed" DataType="REAL" Radix="Float" Value="0.0"/>
+<StructureMember Name="Correction_MDR" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="-1610612736"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<DataValueMember Name="Exit_Belt_Reg_Error" DataType="REAL" Radix="Float" Value="-0.19769955"/>
+</Structure>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="Exit_Belt_Speed_Control" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[XIC(Start_System_DI0)XIC(Smart_Belt.Axis_MAG.IP)MAJ(Exit_Belt_Axis,Exit_Belt.Axis_MAJ,0,Exit_Belt_Speed,Units per sec,100,Units per sec2,100,Units per sec2,Trapezoidal,100.0,100.0,% of Time,Disabled,Programmed,0,None);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[XIC(Stop_System_DI1)MAS(Exit_Belt_Axis,Exit_Belt.Axis_MAS,Jog,Yes,100,% of Maximum,Yes,100.0,% of Time);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[MOV(Exit_Belt_Axis.ActualPosition,Exit_Belt_Position_Display)MOV(Smart_Belt_Axis.ActualPosition,Smart_Belt_Position_Display);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Gearing" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[ENABLE GEARING
+This rung gears the Smart Belt to the Exis Belt in a 1:1 ratio. The correction move calculated in the Smart_Belt Correction rourtine is used to assure a uniform product gap between packages. ]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Start_System_DI0)XIC(Exit_Belt_Axis.ServoActionStatus)MAG(Smart_Belt_Axis,Exit_Belt_Axis,Smart_Belt.Axis_MAG,0,Smart_Belt.Axis_GearRatio,1,1,Actual,Real,Disabled,100,Units per sec2);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[XIC(Establish_Zero_Reference)MAS(Smart_Belt_Axis,Smart_Belt.StopGearing,Gear,No,100,% of Maximum,Yes,100.0,% of Time);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Initialization_Routine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[XIC(Exit_Belt_Axis.EnableInputStatus)XIC(Motion_Group.GroupSynced)XIC(EnableServo_DI12)MSO(Exit_Belt_Axis,Exit_Belt.Axis_MSO);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[XIO(EnableServo_DI12)MSF(Exit_Belt_Axis,Exit_Belt.Axis_MSF);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[XIC(Smart_Belt_Axis.EnableInputStatus)XIC(Motion_Group.GroupSynced)XIC(EnableServo_DI12)MSO(Smart_Belt_Axis,Smart_Belt.Axis_MSO);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[XIO(EnableServo_DI12)MSF(Smart_Belt_Axis,Smart_Belt.Axis_MSF);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[XIC(Establish_Zero_Reference)MRP(Exit_Belt_Axis,Exit_Belt.Axis_MRP,Absolute,Actual,0);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[XIC(Establish_Zero_Reference)MRP(Smart_Belt_Axis,Smart_Belt.Axis_MRP,Absolute,Actual,0);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  -- No warranty or implied merchantability.
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.
+
+
+Inaccuracies - Modifications
+
+The Sample Project Files and related documentation provided herein could include technical inaccuracies or typographical errors. Changes may be periodically added by RSI to the information herein. RSI and/or its respective licensors and affiliates may make improvements, changes in the materials and/or programs, or remove at will and without prior notice any content described herein at any time. No level of responsibility for accuracy or usability of any content in the Sample Project Files is claimed or accepted.
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[JSR(Initialization_Routine,0);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[JSR(Exit_Belt_Speed_Control,0);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[JSR(Gearing,0);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[JSR(Product_Gap_Generator,0);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[JSR(Smart_Belt_Correction,0);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Product_Gap_Generator" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[SIMULATE A PRODUCT GAP ON THE SMART BELT]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Initiate_Product_Gap_DI4)MAM(Smart_Belt_Axis,Smart_Belt.Product_Gap_MAM,1,Smart_Belt.Product_Gap_Value,50,Units per sec,100,% of Maximum,100,% of Maximum,Trapezoidal,100.0,100.0,% of Time,Disabled,0,0,None,0,0);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Smart_Belt_Correction" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[This Program Demonstrates a Smart Belt on a (2) Axis K6K (1796-K6K21) demo box.
+
+ENABLE/DISABLE SMART BELT CORRECTION
+This rung is used to enable/disable the smart Belt State demo application. It does (2) operations. First, it resets the State Machine Step counter. It also Disarms registration. ]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(S:FS) ,XIO(Auto_Correction_Enable_DI13) ][MOV(0,Smart.State_Machine) ,[MDW(Smart_Belt_Axis,Smart.Correction_MDR) ,RES(Smart.RegistrationCounter) ] ];]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[ENABLE/DISABLE SMART BELT CORRECTION]]>
+</Comment>
+<Text>
+<![CDATA[EQU(0,Smart.State_Machine)XIC(Auto_Correction_Enable_DI13)MOV(1,Smart.State_Machine);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[ARM REGISTRATION INPUT
+This rung arms registration for the Smart Belt Axis. On an actual machine, the Exit Belt Axis position is captured instead of the Smart Belt as shown below. ]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Smart.State_Machine,1)[MAR(Smart_Belt_Axis,Smart.Correction_MAR,Positive_Edge,Disabled,0,0,1) ,XIC(Smart.Correction_MAR.IP) MOV(2,Smart.State_Machine) ];]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[The Motion Arm Registration.PC bit becomes true when a package is detected on the Smart Belt. On the K6K demo box, this occurs when the white mark on the motor disk is detected by the registration photoeye. ]]>
+</Comment>
+<Text>
+<![CDATA[EQU(2,Smart.State_Machine)XIC(Smart.Correction_MAR.PC)CTU(Smart.RegistrationCounter,?,?)MOV(3,Smart.State_Machine);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[The SSV and GSV instructions below are used to obtain the position of the Exit Belt. On an actual machine, this step isn't required since the registration photoeye is wired directly to the Exit Belt Registration Input. ]]>
+</Comment>
+<Text>
+<![CDATA[EQU(3,Smart.State_Machine)SSV(AXIS,Exit_Belt_Axis,InterpolationTime,Smart_Belt_Axis.Registration1Time)GSV(AXIS,Exit_Belt_Axis,InterpolatedActualPosition,Smart.Exit_Belt_RegPos)MOV(4,Smart.State_Machine);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[CALCULATE SMART BELT REGISTRATION DISTANCE
+This rung is used to calculate the Smart Belt correction distance.]]>
+</Comment>
+<Text>
+<![CDATA[EQU(4,Smart.State_Machine)[SUB(Smart.Exit_Belt_RegPos,Smart.Exit_Belt_Desired_Reg_Pos,Smart.Exit_Belt_RegErrRaw) ,[LES(Smart.Exit_Belt_RegErrRaw,Smart.Half_FlightDistanceMin) ADD(Smart.Exit_Belt_RegErrRaw,Smart.FlightDistance,Smart.Exit_Belt_Reg_Error) ,[GRT(Smart.Exit_Belt_RegErrRaw,Smart.Half_FlightDistanceMax) SUB(Smart.Exit_Belt_RegErrRaw,10,Smart.Exit_Belt_Reg_Error) ,[LIM(Smart.Half_FlightDistanceMin,Smart.Exit_Belt_RegErrRaw,Smart.Half_FlightDistanceMax) MOV(Smart.Exit_Belt_RegErrRaw,Smart.Exit_Belt_Reg_Error) ,MOV(5,Smart.State_Machine) ] ] ] ];]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[SMART BELT CORRECTION MOVE
+This rung is used to move the Smart Belt the correction distance calculated above to correrct the product gap.]]>
+</Comment>
+<Text>
+<![CDATA[EQU(5,Smart.State_Machine)[MAM(Smart_Belt_Axis,Smart.Correction_MAM,1,Smart.Exit_Belt_Reg_Error,2.0,Units per sec,100,% of Maximum,100,% of Maximum,Trapezoidal,100.0,100.0,% of Time,Disabled,Current,0,None,0,0) ,XIC(Smart.Correction_MAM.PC) MOV(1,Smart.State_Machine) ];]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="2"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends>
+<Trend Name="Smart_Belt" SamplePeriod="10" NumberOfCaptures="1" CaptureSizeType="Samples" CaptureSize="60000" StartTriggerType="No Trigger" StopTriggerType="No Trigger" TrendxVersion="5.2">
+<Template>208 207 17 224 161 177 26 225 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 62 0 3 0 254 255 9 0 6 0 0 0 0 0 0 0
+ 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 16 0 0 2 0 0 0 1 0 0 0 254 255 255 255 0 0 0 0 0 0 0 0
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 253 255 255 255 254 255 255 255
+ 254 255 255 255 4 0 0 0 5 0 0 0 254 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 82 0 111 0 111 0 116 0 32 0 69 0 110 0 116 0
+ 114 0 121 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 22 0 5 0 255 255 255 255 255 255 255 255 1 0 0 0 14 52 81 191 9 48 205 65 159 190 222 136 174 167 50 40
+ 0 0 0 0 0 0 0 0 0 0 0 0 176 200 96 181 237 83 196 1 3 0 0 0 0 5 0 0 0 0 0 0 67 0 111 0 110 0 116 0
+ 101 0 110 0 116 0 115 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 18 0 2 1 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 221 4 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255
+ 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 2 0 0 0 3 0 0 0 4 0 0 0 5 0 0 0 6 0 0 0
+ 7 0 0 0 8 0 0 0 9 0 0 0 10 0 0 0 11 0 0 0 12 0 0 0 13 0 0 0 14 0 0 0 15 0 0 0 16 0 0 0
+ 17 0 0 0 18 0 0 0 19 0 0 0 254 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 4 0 0 0 238 74 0 0 255 39 0 0 0 0 0 0 13 0 0 0 255 254 255 10 83 0 109 0 97 0 114 0
+ 116 0 95 0 66 0 101 0 108 0 116 0 0 0 0 0 0 0 0 0 255 255 255 255 200 0 0 0 255 157 3 0 255 1 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 1 96 234 0 0 0 0 0 0 255 255 255 0 0 0 0 0 0 0 0 0 0 102
+ 4 0 0 2 0 255 255 1 0 13 0 67 86 105 101 119 76 105 110 101 73 110 102 111 3 0 0 0 1 0 0 0 0 0 112 193 0 0 112 65
+ 255 254 255 1 32 0 255 254 255 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254
+ 255 29 69 0 120 0 105 0 116 0 95 0 66 0 101 0 108 0 116 0 95 0 65 0 120 0 105 0 115 0 46 0 65 0 99 0 116 0 117 0
+ 97 0 108 0 80 0 111 0 115 0 105 0 116 0 105 0 111 0 110 0 32 1 0 0 0 255 254 255 0 255 254 255 0 1 128 3 0 0 0 1
+ 0 0 0 0 0 112 193 0 0 112 65 255 254 255 1 32 0 255 254 255 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255
+ 0 255 254 255 0 255 254 255 0 255 254 255 30 83 0 109 0 97 0 114 0 116 0 95 0 66 0 101 0 108 0 116 0 95 0 65 0 120 0 105
+ 0 115 0 46 0 65 0 99 0 116 0 117 0 97 0 108 0 80 0 111 0 115 0 105 0 116 0 105 0 111 0 110 0 32 1 0 0 0 255 254
+ 255 0 255 254 255 0 9 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0
+ 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 2 0 0 0 255 0 0 255 0 0
+ 0 0 0 0 0 0 0 0 4 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 200 66 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 1 0 0 0 0 0 0 0 2 0 1 0 0 0 1 0 0 0 2 0 0 0 0 0 0 0 0 0 2 0 1 0 0 0 1 0
+ 0 0 2 0 0 0 0 0 0 0 0 0 255 255 255 255 0 0 0 0 44 0 0 0 0 0 0 0 54 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 128 128 128 0 128 128 128 0 255 239 255 254 255 191 255 247
+ 146 195 208 64 1 0 0 0 60 0 0 0 156 195 208 64 1 0 0 0 60 0 0 0 255 254 255 0 1 0 0 0 1 0 0 0 2 0 0 0
+ 0 0 0 0 0 0 2 0 0 0 40 0 0 0 50 0 0 0 0 0 0 0 0 0 0 0 92 0 0 0 245 255 255 255 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 254 255 5 65 0 114 0 105 0 97 0 108 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0
+ 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255 0 32 1 0 0 0 255 254 255 0 255 254 255 0 3 0 0 0 0 0 0 0 255 254 255
+ 0 255 254 255 0 255 254 255 0 255 254 255 0 32 1 0 0 0 255 254 255 0 255 254 255 0 0 0 0 0 0 0 0 0 255 255 255 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8 0 0 0 2 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 2 0 255 255 1 0 9 0 67 76 105 110 101 73 110 102 111 3 0 0 0 1 0 0 0 0 0 112 193 0 0 112 65 255 254 255 1 32
+ 0 255 254 255 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255 29 69 0 120
+ 0 105 0 116 0 95 0 66 0 101 0 108 0 116 0 95 0 65 0 120 0 105 0 115 0 46 0 65 0 99 0 116 0 117 0 97 0 108 0 80
+ 0 111 0 115 0 105 0 116 0 105 0 111 0 110 0 32 1 0 0 0 255 254 255 0 255 254 255 0 4 128 3 0 0 0 1 0 0 0 0 0
+ 112 193 0 0 112 65 255 254 255 1 32 0 255 254 255 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0
+ 255 254 255 0 255 254 255 30 83 0 109 0 97 0 114 0 116 0 95 0 66 0 101 0 108 0 116 0 95 0 65 0 120 0 105 0 115 0 46 0
+ 65 0 99 0 116 0 117 0 97 0 108 0 80 0 111 0 115 0 105 0 116 0 105 0 111 0 110 0 32 1 0 0 0 255 254 255 0 255 254 255
+ 0 0 0 0 0 53 0 48 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 142 6 3 0</Template>
+<Pens>
+<Pen Name="Exit_Belt_Axis.ActualPosition" Color="16#00ff_0000" Visible="true" Width="1" Type="Analog" Style="0" Marker="0" Min="-15.0" Max="15.0"/>
+<Pen Name="Smart_Belt_Axis.ActualPosition" Color="16#0000_ff00" Visible="true" Width="1" Type="Analog" Style="0" Marker="0" Min="-15.0" Max="15.0"/>
+</Pens>
+</Trend>
+</Trends>
+</Controller>
+</RSLogix5000Content>

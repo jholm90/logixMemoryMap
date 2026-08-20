@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="Indirect_Addressing" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:28:03 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="Indirect_Addressing" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:27:47 2018" LastModifiedDate="Fri Jan 19 07:27:47 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0032_4115" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<Description>
+<![CDATA[This sample program shows how to use indirect addressing.]]>
+</Description>
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes/>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="BIT_Number" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Bit number to be accessed indirectly]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="BIT_Qty" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Number of Bits in the Table]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="BIT_State" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Reference bit used to set or clear all of the bits]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="BIT_Table" TagType="Base" DataType="DINT" Dimensions="10" Radix="Decimal">
+<Description>
+<![CDATA[Table of Bits]]>
+</Description>
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="10" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+<Element Index="[8]" Value="0"/>
+<Element Index="[9]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="BIT_Table_Size" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="DataValue" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="IndirectValue" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>00 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="TagArray" TagType="Base" DataType="DINT" Dimensions="10" Radix="Decimal">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="10" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+<Element Index="[8]" Value="0"/>
+<Element Index="[9]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="TagArray_Size" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Number of Elements in TagArray]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags/>
+<Routines>
+<Routine Name="BIT_Number_Indirection" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[This routineincements BIT_Number from zero to the last bit in a table of DINT and performs an indirect addressing method to update the bits in the table.  This code executes once per second based on the periodic task execution.]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[When the controller goes into run mode the file and indexes are initialized to zero.  Then the logic determines the array size and sets up a tag with a number representing the number of bits it contains.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(s:fs)[CLR(BIT_Number) ,OTU(BIT_State) ,SIZE(BIT_Table[0],0,BIT_Table_Size) MUL(BIT_Table_Size,32,BIT_Qty) SUB(BIT_Qty,1,BIT_Qty) ];]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[This rung sets each of the bits in the table as the code cycles through the bits once per scan.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(BIT_State)OTE(BIT_Table[BIT_Number / 32].[BIT_Number AND 31]);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[Increment the index to point at the next bit.]]>
+</Comment>
+<Text>
+<![CDATA[ADD(BIT_Number,1,BIT_Number);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[XIO(BIT_State)GEQ(BIT_Number,BIT_Qty)CLR(BIT_Number)OTL(BIT_State);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Text>
+<![CDATA[XIC(BIT_State)GEQ(BIT_Number,BIT_Qty)CLR(BIT_Number)OTU(BIT_State);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="DINT_Element_Indirection" Type="RLL">
+<Description>
+<![CDATA[Fills an DINT array of 10 elements with a number]]>
+</Description>
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[XIC(s:fs)[CLR(IndirectValue) ,CLR(DataValue) ,SIZE(TagArray[0],0,TagArray_Size) ];]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[PURPOSE - This routine will demonstrate indirect (AKA:indexed) addressing.  In ControlLogix, indirect addressing is really just a matter of indexing through a 1, 2, or 3 dimensional array tag.  This routine will continually fill a one dimensional array with an incrementing data value.
+
+CONFIGURATION - The ControlLogix Chassis consist of a 1756-L55 Controller in slot 3.
+
+MAINTASK - This periodic task executes once a second.  When you switch the controller from program to run, you will see the IndirectTag incrementing from zero to 9.  This tag is used to indirectly address the index into the TagArray.  An incrementing data value is moved into the TagArray each second.
+
+This rung is used to move the current DataValue into the TagArray at the index location referenced by the IndirectValue.]]>
+</Comment>
+<Text>
+<![CDATA[MOV(DataValue,TagArray[IndirectValue]);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[This rung will increment the IndirectValue tag and the DataValue tag.]]>
+</Comment>
+<Text>
+<![CDATA[ADD(IndirectValue,1,IndirectValue)ADD(DataValue,1,DataValue);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[This rung will check the IndirectValue to see if the end of the TagArray has been reached.  If the end has been reached, the IndirectValue is reset to zero.]]>
+</Comment>
+<Text>
+<![CDATA[GEQ(IndirectValue,TagArray_Size)MOV(0,IndirectValue);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[JSR(DINT_Element_Indirection,0);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[JSR(BIT_Number_Indirection,0);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="PERIODIC" Rate="5000" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

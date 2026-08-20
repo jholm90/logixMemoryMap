@@ -1,0 +1,811 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="TimestampInterpreted" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:51:54 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="TimestampInterpreted" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:51:44 2018" LastModifiedDate="Fri Jan 19 07:51:44 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#002d_93a0" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<Description>
+<![CDATA[Creates a usable version of Wall Clock Time from 64-bit value.
+Fixed 23:59:28 - 23:59:59 bug, Leap year bug,
+hours > 23 bug
+]]>
+</Description>
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes>
+<DataType Name="datetime" Family="NoFamily" Class="User">
+<Members>
+<Member Name="year" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="month" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="day" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="hour" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Minute" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="second" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="usec" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Input_64Bit_Time" DataType="DINT" Dimension="2" Radix="Decimal" Hidden="false"/>
+<Member Name="days" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+</Members>
+</DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="bit_1" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="CST_time_Source" TagType="Base" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Data>00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="Time_Interpreted" TagType="Base" DataType="datetime">
+<Data>D7 07 00 00 01 00 00 00 04 00 00 00 08 00 00 00 
+2B 00 00 00 36 00 00 00 A0 A2 0C 00 E0 3E A2 F6 
+32 26 04 00 CD 34 00 00</Data>
+<Data Format="Decorated"><Structure DataType="datetime">
+<DataValueMember Name="year" DataType="DINT" Radix="Decimal" Value="2007"/>
+<DataValueMember Name="month" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="day" DataType="DINT" Radix="Decimal" Value="4"/>
+<DataValueMember Name="hour" DataType="DINT" Radix="Decimal" Value="8"/>
+<DataValueMember Name="Minute" DataType="DINT" Radix="Decimal" Value="43"/>
+<DataValueMember Name="second" DataType="DINT" Radix="Decimal" Value="54"/>
+<DataValueMember Name="usec" DataType="DINT" Radix="Decimal" Value="828064"/>
+<ArrayMember Name="Input_64Bit_Time" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="-157139232"/>
+<Element Index="[1]" Value="271922"/>
+</ArrayMember>
+<DataValueMember Name="days" DataType="DINT" Radix="Decimal" Value="13517"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Time_RAW" TagType="Base" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Data>C7 EE A1 F6 32 26 04 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="-157159737"/>
+<Element Index="[1]" Value="271922"/>
+</Array>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags>
+<Tag Name="Day" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>04 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="4"/>
+</Data>
+</Tag>
+<Tag Name="Hour" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>08 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="8"/>
+</Data>
+</Tag>
+<Tag Name="MicroSecond" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>D1 F3 0C 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="848849"/>
+</Data>
+</Tag>
+<Tag Name="Minute" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>2B 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="43"/>
+</Data>
+</Tag>
+<Tag Name="Month" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="Second" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>36 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="54"/>
+</Data>
+</Tag>
+<Tag Name="Time_InRaw" TagType="Base" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Data>34 93 A2 F6 32 26 04 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="-157117644"/>
+<Element Index="[1]" Value="271922"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="WCT" TagType="Base" DataType="datetime">
+<Description>
+<![CDATA[Wall Clock Time and Date structure]]>
+</Description>
+<Data>D7 07 00 00 01 00 00 00 04 00 00 00 08 00 00 00 
+2B 00 00 00 36 00 00 00 96 C4 0D 00 D6 60 A3 F6 
+32 26 04 00 CD 34 00 00</Data>
+<Data Format="Decorated"><Structure DataType="datetime">
+<DataValueMember Name="year" DataType="DINT" Radix="Decimal" Value="2007"/>
+<DataValueMember Name="month" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="day" DataType="DINT" Radix="Decimal" Value="4"/>
+<DataValueMember Name="hour" DataType="DINT" Radix="Decimal" Value="8"/>
+<DataValueMember Name="Minute" DataType="DINT" Radix="Decimal" Value="43"/>
+<DataValueMember Name="second" DataType="DINT" Radix="Decimal" Value="54"/>
+<DataValueMember Name="usec" DataType="DINT" Radix="Decimal" Value="902294"/>
+<ArrayMember Name="Input_64Bit_Time" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="-157065002"/>
+<Element Index="[1]" Value="271922"/>
+</ArrayMember>
+<DataValueMember Name="days" DataType="DINT" Radix="Decimal" Value="13517"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="WCT_1YearPeriods" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>05 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="5"/>
+</Data>
+</Tag>
+<Tag Name="WCT_1YearPeriodsDINT" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>05 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="5"/>
+</Data>
+</Tag>
+<Tag Name="WCT_1YearPeriodsREAL" TagType="Base" DataType="REAL" Radix="Float">
+<Data>55 43 A0 40</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="5.0082192"/>
+</Data>
+</Tag>
+<Tag Name="WCT_4YearPeriods" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>08 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="8"/>
+</Data>
+</Tag>
+<Tag Name="WCT_4YearPeriodsDINT" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>09 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="9"/>
+</Data>
+</Tag>
+<Tag Name="WCT_4YearPeriodsREAL" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 0C 41</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="8.75"/>
+</Data>
+</Tag>
+<Tag Name="WCT_Control_usBSR" TagType="Base" DataType="CONTROL">
+<Data>00 00 00 A0 20 00 00 00 20 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="32"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="32"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="WCT_Convert_BitIn" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="WCT_Convert_MicrosecondTemp" TagType="Base" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Data>9A 49 51 7B 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="2068924826"/>
+<Element Index="[1]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="WCT_Convert_TempUSMod" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>7A 7B 06 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="424826"/>
+</Data>
+</Tag>
+<Tag Name="WCT_DAYS_DINT" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Calculated days from elapsed seconds.  Rounded to nearest DINT value.]]>
+</Description>
+<Data>CD 34 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="13517"/>
+</Data>
+</Tag>
+<Tag Name="WCT_DAYS_REAL" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Calculated days from elapsed seconds.  Floating-point value contains fractional days.]]>
+</Description>
+<Data>75 35 53 46</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="13517.364"/>
+</Data>
+</Tag>
+<Tag Name="WCT_ElapsedDays" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Number of days elapsed in current year]]>
+</Description>
+<Data>03 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="3"/>
+</Data>
+</Tag>
+<Tag Name="WCT_Error" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="WCT_eSeconds" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Total elapsed seconds since 1/1/72 from Wall Clock Time in the controller.]]>
+</Description>
+<Data>4A BE 9C 45</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1167900234"/>
+</Data>
+</Tag>
+<Tag Name="WCT_eSecondsTest" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Value to compare to original WCT_eSeconds value to check for rounding error of floating point tag.]]>
+</Description>
+<Data>80 BE 9C 45</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1167900288"/>
+</Data>
+</Tag>
+<Tag Name="WCT_Hours_DINT" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[DINT value of hours
+]]>
+</Description>
+<Data>08 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="8"/>
+</Data>
+</Tag>
+<Tag Name="WCT_Hours_REAL" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Floating point value of hours]]>
+</Description>
+<Data>E8 B4 0B 41</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="8.731667"/>
+</Data>
+</Tag>
+<Tag Name="WCT_LeapYear" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Wall clock time - Year is a leap year.]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="WCT_LY100" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Leap Year Test - Year is divisible by 100]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="WCT_LY100I" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Leap year calculation:  DINT value of current year divided by 100.]]>
+</Description>
+<Data>14 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="20"/>
+</Data>
+</Tag>
+<Tag Name="WCT_LY100R" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Leap year calculation:  REAL value of current year divided by 100.]]>
+</Description>
+<Data>5C 8F A0 41</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="20.07"/>
+</Data>
+</Tag>
+<Tag Name="WCT_LY4" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Leap Year Test - Year is divisible by 4]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="WCT_LY400" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Leap Year Test - Year is divisible by 400]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="WCT_LY400I" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Leap year calculation:  DINT value of current year divided by 400.]]>
+</Description>
+<Data>05 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="5"/>
+</Data>
+</Tag>
+<Tag Name="WCT_LY400R" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Leap year calculation:  REAL value of current year divided by 400.]]>
+</Description>
+<Data>5C 8F A0 40</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="5.0175"/>
+</Data>
+</Tag>
+<Tag Name="WCT_LY4I" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Leap year calculation:  DINT value of current year divided by 4.]]>
+</Description>
+<Data>F5 01 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="501"/>
+</Data>
+</Tag>
+<Tag Name="WCT_LY4R" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Leap year calculation:  REAL value of current year divided by 4.]]>
+</Description>
+<Data>00 E0 FA 43</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="501.75"/>
+</Data>
+</Tag>
+<Tag Name="WCT_LYOffset" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="WCT_Minutes_DINT" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[DINT value of minutes]]>
+</Description>
+<Data>2B 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="43"/>
+</Data>
+</Tag>
+<Tag Name="WCT_Minutes_REAL" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Floating point value of minutes]]>
+</Description>
+<Data>9A 99 2F 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="43.9"/>
+</Data>
+</Tag>
+<Tag Name="WCT_MoveBackOneDay" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="WCT_RAW" TagType="Base" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Description>
+<![CDATA[Raw wall clock time data from  Input Parameter]]>
+</Description>
+<Data>34 93 A2 F6 32 26 04 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="-157117644"/>
+<Element Index="[1]" Value="271922"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="WCT_RemainingSeconds" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Seconds remaining that represent fractional days.]]>
+</Description>
+<Data>CA 7A 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="31434"/>
+</Data>
+</Tag>
+<Tag Name="WCT_SCALED" TagType="Base" DataType="DINT" Dimensions="4" Radix="Decimal">
+<Description>
+<![CDATA[Array to temporarily store calculated seconds values from WCT_RAW variable.]]>
+</Description>
+<Data>C6 07 00 00 63 08 00 00 AC AA 98 45 75 03 04 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="4" Radix="Decimal">
+<Element Index="[0]" Value="1990"/>
+<Element Index="[1]" Value="2147"/>
+<Element Index="[2]" Value="1167633068"/>
+<Element Index="[3]" Value="263029"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="WCT_Seconds_DINT" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[DINT value of seconds
+]]>
+</Description>
+<Data>36 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="54"/>
+</Data>
+</Tag>
+<Tag Name="WCT_Year_DINT" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[DINT value of year]]>
+</Description>
+<Data>D7 07 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="2007"/>
+</Data>
+</Tag>
+<Tag Name="WCT_Year_Offset" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Offset in years from 1/1/1972]]>
+</Description>
+<Data>7D 08 14 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="37.00829"/>
+</Data>
+</Tag>
+<Tag Name="WCT_Year_Real" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Floating point value for year]]>
+</Description>
+<Data>44 E0 FA 44</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="2007.0083"/>
+</Data>
+</Tag>
+<Tag Name="Year" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>D7 07 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="2007"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="Convert_WCT" Type="RLL">
+<Description>
+<![CDATA[Converts 64 Bit Time Stamp to Gregorian.]]>
+</Description>
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[SBR(Time_InRaw)NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[============================================================================================
+
+CALCULATION TO CREATE A USABLE FORM OF WALL CLOCK TIME
+These rungs fill a user defined structure with the current year, month, day, hour, minute, second, and microseconds
+
+Note: Rungs 30,31,36,and 37 have been modified for the V16 year reference change from 1972 to 1970
+============================================================================================
+
+Move current wall clock time to WCT_RAW DINT array.  Wall clock time is a 64-bit value that represents the number of microseconds that have elapsed since 1/1/1970.
+
+]]>
+</Comment>
+<Text>
+<![CDATA[[COP(Time_InRaw[0],WCT_RAW[0],2) ,COP(WCT_RAW[0],WCT.Input_64Bit_Time[0],2) ];]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[Remove the AFI instruction to execute the rung logic]]>
+</Comment>
+<Text>
+<![CDATA[[MOV(WCT_RAW[0],WCT_Convert_MicrosecondTemp[0]) ,AFI() BSR(WCT_Convert_MicrosecondTemp[0],WCT_Control_usBSR,WCT_Convert_BitIn,?) ,BSR(WCT_Convert_MicrosecondTemp[0],WCT_Control_usBSR,WCT_Convert_BitIn,?) ,MOD(WCT_Convert_MicrosecondTemp[0],500000,WCT_Convert_TempUSMod) ,MUL(WCT_Convert_TempUSMod,2,WCT.usec) ,XIC(WCT_RAW[0].0) ADD(WCT.usec,1,WCT.usec) ];]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[Calculate the number of seconds that have elapsed since 1/1/1970.
+
+Note 31st bit is interpreted seperatly as Logix interprets this bit as a sign bit and time is an unsigned value
+
+]]>
+</Comment>
+<Text>
+<![CDATA[[CPT(WCT_SCALED[0],(WCT_RAW[0] AND 16#7FFF_FFFF) / 1000000) ,XIC(WCT_RAW[0].31) MOV(2147.483648,WCT_SCALED[1]) ,XIO(WCT_RAW[0].31) MOV(0,WCT_SCALED[1]) ,CPT(WCT_SCALED[2],(WCT_RAW[1] * 4294)) CPT(WCT_SCALED[3],(WCT_RAW[1] * 0.967296)) ,CPT(WCT_eSeconds,WCT_SCALED[0] + WCT_SCALED[1] + WCT_SCALED[2] + WCT_SCALED[3]) ];]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[CPT(WCT_DAYS_DINT,WCT_eSeconds / 86400);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[DIV(WCT_eSeconds,86400,WCT_DAYS_REAL);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Text>
+<![CDATA[MUL(WCT_DAYS_REAL,86400,WCT_eSecondsTest);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Comment>
+<![CDATA[The following two rungs are used to calculate the fractional portion of the day present in the elapsed seconds value read from the controller WCT.  If the rounded DINT value is greater than the Floating point value calculated, then subtract one day from the DINT portion and then subtract that from the Floating point value.  If the Floating point value for the day is greater than the DINT value, use the DINT value to represent the elapsed days.
+]]>
+</Comment>
+<Text>
+<![CDATA[[GRT(WCT_DAYS_DINT,WCT_DAYS_REAL) ,EQU(WCT_DAYS_DINT,WCT_DAYS_REAL) GRT(WCT_eSecondsTest,WCT_eSeconds) ][SUB(WCT_DAYS_DINT,1,WCT.days) ,OTE(WCT_MoveBackOneDay) ];]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Text>
+<![CDATA[XIO(WCT_MoveBackOneDay)MOV(WCT_DAYS_DINT,WCT.days);]]>
+</Text>
+</Rung>
+<Rung Number="9" Type="N">
+<Text>
+<![CDATA[CPT(WCT_RemainingSeconds,WCT_eSeconds - (WCT.days * 86400));]]>
+</Text>
+</Rung>
+<Rung Number="10" Type="N">
+<Text>
+<![CDATA[[DIV(WCT_RemainingSeconds,3600,WCT_Hours_REAL) ,DIV(WCT_RemainingSeconds,3600,WCT_Hours_DINT) ];]]>
+</Text>
+</Rung>
+<Rung Number="11" Type="N">
+<Text>
+<![CDATA[GRT(WCT_Hours_DINT,WCT_Hours_REAL)SUB(WCT_Hours_DINT,1,WCT.hour);]]>
+</Text>
+</Rung>
+<Rung Number="12" Type="N">
+<Text>
+<![CDATA[LEQ(WCT_Hours_DINT,WCT_Hours_REAL)MOV(WCT_Hours_DINT,WCT.hour);]]>
+</Text>
+</Rung>
+<Rung Number="13" Type="N">
+<Text>
+<![CDATA[CPT(WCT_Minutes_REAL,(WCT_RemainingSeconds - (WCT.hour * 3600)) / 60);]]>
+</Text>
+</Rung>
+<Rung Number="14" Type="N">
+<Text>
+<![CDATA[CPT(WCT_Minutes_DINT,((WCT_RemainingSeconds - (WCT.hour * 3600)) / 60));]]>
+</Text>
+</Rung>
+<Rung Number="15" Type="N">
+<Text>
+<![CDATA[GRT(WCT_Minutes_DINT,WCT_Minutes_REAL)SUB(WCT_Minutes_DINT,1,WCT.Minute);]]>
+</Text>
+</Rung>
+<Rung Number="16" Type="N">
+<Text>
+<![CDATA[LEQ(WCT_Minutes_DINT,WCT_Minutes_REAL)MOV(WCT_Minutes_DINT,WCT.Minute);]]>
+</Text>
+</Rung>
+<Rung Number="17" Type="N">
+<Text>
+<![CDATA[CPT(WCT_Seconds_DINT,WCT_RemainingSeconds - (WCT.hour * 3600) - (WCT.Minute * 60));]]>
+</Text>
+</Rung>
+<Rung Number="18" Type="N">
+<Comment>
+<![CDATA[Store DINT value of seconds in WCT structure.  (This value is rounded to nearest second.)
+]]>
+</Comment>
+<Text>
+<![CDATA[MOV(WCT_Seconds_DINT,WCT.second);]]>
+</Text>
+</Rung>
+<Rung Number="19" Type="N">
+<Comment>
+<![CDATA[Calculate offset from base date of 1/1/1970.
+]]>
+</Comment>
+<Text>
+<![CDATA[DIV(WCT.days,365.2425,WCT_Year_Offset);]]>
+</Text>
+</Rung>
+<Rung Number="20" Type="N">
+<Text>
+<![CDATA[ADD(WCT_Year_Offset,1970,WCT_Year_Real);]]>
+</Text>
+</Rung>
+<Rung Number="21" Type="N">
+<Text>
+<![CDATA[ADD(WCT_Year_Offset,1970,WCT_Year_DINT);]]>
+</Text>
+</Rung>
+<Rung Number="22" Type="N">
+<Text>
+<![CDATA[GRT(WCT_Year_DINT,WCT_Year_Real)SUB(WCT_Year_DINT,1,WCT.year);]]>
+</Text>
+</Rung>
+<Rung Number="23" Type="N">
+<Text>
+<![CDATA[LEQ(WCT_Year_DINT,WCT_Year_Real)MOV(WCT_Year_DINT,WCT.year);]]>
+</Text>
+</Rung>
+<Rung Number="24" Type="N">
+<Comment>
+<![CDATA[=================================
+Determine if current year is a leap year.
+=================================
+]]>
+</Comment>
+<Text>
+<![CDATA[[DIV(WCT.year,4,WCT_LY4I) ,DIV(WCT.year,4,WCT_LY4R) ]EQU(WCT_LY4I,WCT_LY4R)OTE(WCT_LY4);]]>
+</Text>
+</Rung>
+<Rung Number="25" Type="N">
+<Text>
+<![CDATA[[DIV(WCT.year,100,WCT_LY100I) ,DIV(WCT.year,100,WCT_LY100R) ]EQU(WCT_LY100I,WCT_LY100R)OTE(WCT_LY100);]]>
+</Text>
+</Rung>
+<Rung Number="26" Type="N">
+<Text>
+<![CDATA[[DIV(WCT.year,400,WCT_LY400I) ,DIV(WCT.year,400,WCT_LY400R) ]EQU(WCT_LY400I,WCT_LY400R)OTE(WCT_LY400);]]>
+</Text>
+</Rung>
+<Rung Number="27" Type="N">
+<Text>
+<![CDATA[XIC(WCT_LY4)[XIC(WCT_LY100) XIC(WCT_LY400) ,XIO(WCT_LY100) ]OTE(WCT_LeapYear);]]>
+</Text>
+</Rung>
+<Rung Number="28" Type="N">
+<Text>
+<![CDATA[XIC(WCT_LeapYear)MOV(1,WCT_LYOffset);]]>
+</Text>
+</Rung>
+<Rung Number="29" Type="N">
+<Text>
+<![CDATA[XIO(WCT_LeapYear)MOV(0,WCT_LYOffset);]]>
+</Text>
+</Rung>
+<Rung Number="30" Type="N">
+<Comment>
+<![CDATA[If used in v8 - v15 change CPT Expression to (WCT.year - 1972) / 4
+If used in v16 or greater change CPT Expression to ((WCT.year - 1970) / 4) -.5]]>
+</Comment>
+<Text>
+<![CDATA[CPT(WCT_4YearPeriodsDINT,((WCT.year - 1970) / 4)-.5);]]>
+</Text>
+</Rung>
+<Rung Number="31" Type="N">
+<Comment>
+<![CDATA[If used in v8 - v15 change CPT Expression to (WCT.year - 1972) / 4
+If used in v16 or greater change CPT Expression to ((WCT.year - 1970) / 4) -.5]]>
+</Comment>
+<Text>
+<![CDATA[CPT(WCT_4YearPeriodsREAL,((WCT.year - 1970) / 4)-.5);]]>
+</Text>
+</Rung>
+<Rung Number="32" Type="N">
+<Text>
+<![CDATA[GRT(WCT_4YearPeriodsDINT,WCT_4YearPeriodsREAL)SUB(WCT_4YearPeriodsDINT,1,WCT_4YearPeriods);]]>
+</Text>
+</Rung>
+<Rung Number="33" Type="N">
+<Text>
+<![CDATA[LEQ(WCT_4YearPeriodsDINT,WCT_4YearPeriodsREAL)MOV(WCT_4YearPeriodsDINT,WCT_4YearPeriods);]]>
+</Text>
+</Rung>
+<Rung Number="34" Type="N">
+<Text>
+<![CDATA[XIO(WCT_LeapYear)[CPT(WCT_1YearPeriodsDINT,(WCT.days - (WCT_4YearPeriods * 1461) - (1 - WCT_LYOffset)) / 365) ,CPT(WCT_1YearPeriodsREAL,(WCT.days - (WCT_4YearPeriods * 1461)-(1 - WCT_LYOffset)) / 365) ,GRT(WCT_1YearPeriodsDINT,WCT_1YearPeriodsREAL) SUB(WCT_1YearPeriodsDINT,1,WCT_1YearPeriods) ,LEQ(WCT_1YearPeriodsDINT,WCT_1YearPeriodsREAL) MOV(WCT_1YearPeriodsDINT,WCT_1YearPeriods) ];]]>
+</Text>
+</Rung>
+<Rung Number="35" Type="N">
+<Text>
+<![CDATA[XIC(WCT_LeapYear)MOV(0,WCT_1YearPeriods);]]>
+</Text>
+</Rung>
+<Rung Number="36" Type="N">
+<Comment>
+<![CDATA[If used in v8 - v15 change GRT Source B to 1972
+If used in v16 or greater change GRT Source B to 1970]]>
+</Comment>
+<Text>
+<![CDATA[GRT(WCT.year,1970)CPT(WCT_ElapsedDays,WCT.days - (WCT_4YearPeriods * 1461) - (WCT_1YearPeriods * 365) - (1 - WCT_LYOffset));]]>
+</Text>
+</Rung>
+<Rung Number="37" Type="N">
+<Comment>
+<![CDATA[If used in v8 - v15 change EQU Source B to 1972
+If used in v16 or greater change EQU Source B to 1970]]>
+</Comment>
+<Text>
+<![CDATA[EQU(WCT.year,1970)MOV(WCT.days,WCT_ElapsedDays);]]>
+</Text>
+</Rung>
+<Rung Number="38" Type="N">
+<Comment>
+<![CDATA[==============================================
+Determine month and day from elapsed days variable.
+==============================================
+]]>
+</Comment>
+<Text>
+<![CDATA[LIM(0,WCT_ElapsedDays,30)[MOV(1,WCT.month) ,ADD(WCT_ElapsedDays,1,WCT.day) ];]]>
+</Text>
+</Rung>
+<Rung Number="39" Type="N">
+<Text>
+<![CDATA[XIO(WCT_LeapYear)[LIM(31,WCT_ElapsedDays,58) [MOV(2,WCT.month) ,SUB(WCT_ElapsedDays,30,WCT.day) ] ,LIM(59,WCT_ElapsedDays,89) [MOV(3,WCT.month) ,SUB(WCT_ElapsedDays,58,WCT.day) ] ,LIM(90,WCT_ElapsedDays,119) [MOV(4,WCT.month) ,SUB(WCT_ElapsedDays,89,WCT.day) ] ,LIM(120,WCT_ElapsedDays,150) [MOV(5,WCT.month) ,SUB(WCT_ElapsedDays,119,WCT.day) ] ,LIM(151,WCT_ElapsedDays,180) [MOV(6,WCT.month) ,SUB(WCT_ElapsedDays,150,WCT.day) ] ,LIM(181,WCT_ElapsedDays,211) [MOV(7,WCT.month) ,SUB(WCT_ElapsedDays,180,WCT.day) ] ,LIM(212,WCT_ElapsedDays,242) [MOV(8,WCT.month) ,SUB(WCT_ElapsedDays,211,WCT.day) ] ,LIM(243,WCT_ElapsedDays,272) [MOV(9,WCT.month) ,SUB(WCT_ElapsedDays,242,WCT.day) ] ,LIM(273,WCT_ElapsedDays,303) [MOV(10,WCT.month) ,SUB(WCT_ElapsedDays,272,WCT.day) ] ,LIM(304,WCT_ElapsedDays,333) [MOV(11,WCT.month) ,SUB(WCT_ElapsedDays,303,WCT.day) ] ,LIM(334,WCT_ElapsedDays,366) [MOV(12,WCT.month) ,SUB(WCT_ElapsedDays,333,WCT.day) ] ];]]>
+</Text>
+</Rung>
+<Rung Number="40" Type="N">
+<Text>
+<![CDATA[XIC(WCT_LeapYear)[LIM(31,WCT_ElapsedDays,59) [MOV(2,WCT.month) ,SUB(WCT_ElapsedDays,30,WCT.day) ] ,LIM(60,WCT_ElapsedDays,90) [MOV(3,WCT.month) ,SUB(WCT_ElapsedDays,59,WCT.day) ] ,LIM(91,WCT_ElapsedDays,120) [MOV(4,WCT.month) ,SUB(WCT_ElapsedDays,90,WCT.day) ] ,LIM(121,WCT_ElapsedDays,151) [MOV(5,WCT.month) ,SUB(WCT_ElapsedDays,120,WCT.day) ] ,LIM(152,WCT_ElapsedDays,181) [MOV(6,WCT.month) ,SUB(WCT_ElapsedDays,151,WCT.day) ] ,LIM(182,WCT_ElapsedDays,212) [MOV(7,WCT.month) ,SUB(WCT_ElapsedDays,181,WCT.day) ] ,LIM(213,WCT_ElapsedDays,243) [MOV(8,WCT.month) ,SUB(WCT_ElapsedDays,212,WCT.day) ] ,LIM(244,WCT_ElapsedDays,273) [MOV(9,WCT.month) ,SUB(WCT_ElapsedDays,243,WCT.day) ] ,LIM(274,WCT_ElapsedDays,304) [MOV(10,WCT.month) ,SUB(WCT_ElapsedDays,273,WCT.day) ] ,LIM(305,WCT_ElapsedDays,334) [MOV(11,WCT.month) ,SUB(WCT_ElapsedDays,304,WCT.day) ] ,LIM(335,WCT_ElapsedDays,366) [MOV(12,WCT.month) ,SUB(WCT_ElapsedDays,334,WCT.day) ] ];]]>
+</Text>
+</Rung>
+<Rung Number="41" Type="N">
+<Text>
+<![CDATA[RET(WCT);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  -- No warranty or implied merchantability.
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[GSV(WALLCLOCKTIME,,CurrentValue,Time_RAW[0]);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[===============================================================================
+CALCULATE A USABLE FORM OF WALL CLOCK TIME
+This routine fills a user defined structure with the current year, month, day, hour, minute, second, and microsecond
+===============================================================================
+
+Input 64 bit time stamp into Time_Raw
+Output is Time_Interpreted which is a UDT of type datetime
+]]>
+</Comment>
+<Text>
+<![CDATA[JSR(Convert_WCT,1,Time_RAW,Time_Interpreted);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[MOV(Time_Interpreted.month,Month)MOV(Time_Interpreted.day,Day)MOV(Time_Interpreted.year,Year);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[MOV(Time_Interpreted.hour,Hour)MOV(Time_Interpreted.Minute,Minute)MOV(Time_Interpreted.second,Second)MOV(Time_Interpreted.usec,MicroSecond);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[
+These next rungs are for testing purposes only and can be removed if desired.
+
+]]>
+</Comment>
+<Text>
+<![CDATA[[,LES(Second,0) ,GRT(Minute,59) ,LES(Minute,0) ,GRT(Hour,23) ,LES(Hour,0) ,GRT(Year,2038) ,LES(Year,1972) ,GRT(Month,12) ,LES(Month,1) ,[EQU(Month,1) ,EQU(Month,3) ,EQU(Month,5) ,EQU(Month,7) ,EQU(Month,8) ,EQU(Month,10) ,EQU(Month,12) ] GRT(Day,31) ,[EQU(Month,4) ,EQU(Month,6) ,EQU(Month,9) ,EQU(Month,11) ] GRT(Day,30) ,EQU(Month,2) [XIC(WCT_LeapYear) GRT(Day,29) ,XIO(WCT_LeapYear) GRT(Day,28) ] ,LES(Day,1) ]GRT(Second,59)OTL(WCT_Error);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

@@ -1,0 +1,616 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="LD_Scale_Value" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:34:32 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="LD_Scale_Value" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:34:18 2018" LastModifiedDate="Fri Jan 19 07:34:18 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<Description>
+<![CDATA[This sample rpoject provides routine examples performing the operation of the SLC-500 Scale With Parameters instruction (SCL).]]>
+</Description>
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes>
+<DataType Name="SCL_DINT_DT" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[Destination = (Source x Rate) + Offset]]>
+</Description>
+<Members>
+<Member Name="Source" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[Input Value to be scaled]]>
+</Description>
+</Member>
+<Member Name="Rate" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[(or slope) is the positive or negative value you enter divided by 10,000.]]>
+</Description>
+</Member>
+<Member Name="Offset" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Destination" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[Resulting Scaled Value]]>
+</Description>
+</Member>
+<Member Name="Local_Temp1" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="SCL_REAL_DT" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[Destination = (Source x Rate) + Offset]]>
+</Description>
+<Members>
+<Member Name="Source" DataType="REAL" Dimension="0" Radix="Float" Hidden="false">
+<Description>
+<![CDATA[Input Value to be scaled]]>
+</Description>
+</Member>
+<Member Name="Rate" DataType="REAL" Dimension="0" Radix="Float" Hidden="false">
+<Description>
+<![CDATA[(or slope) is the positive or negative value you enter divided by 10,000.]]>
+</Description>
+</Member>
+<Member Name="Offset" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Destination" DataType="REAL" Dimension="0" Radix="Float" Hidden="false">
+<Description>
+<![CDATA[Resulting Scaled Value]]>
+</Description>
+</Member>
+</Members>
+</DataType>
+<DataType Name="SCP_DINT_DT" Family="NoFamily" Class="User">
+<Members>
+<Member Name="Input" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="InputMin" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="InpuMax" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="ScaledMin" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="ScaledMax" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Output" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Local_Out" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Local_Rate" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Local_Offset" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Local_Temp1" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Local_Temp2" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Local_Temp3" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Local_Temp4" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="SCP_REAL_DT" Family="NoFamily" Class="User">
+<Members>
+<Member Name="Input" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="InputMin" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="InpuMax" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="ScaledMin" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="ScaledMax" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Output" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Local_Rate" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Local_Offset" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Local_Temp1" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Local_Temp2" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Local_Temp3" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Local_Temp4" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+</Members>
+</DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags/>
+<Programs>
+<Program Name="Compute_Examples" TestEdits="false" Disabled="false">
+<Tags>
+<Tag Name="SCL_CPT_Input" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="SCL_CPT_Offset" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="SCL_CPT_Output" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="SCL_CPT_Rate" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="SCP_CPT_InMax" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SCP_CPT_InMin" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SCP_CPT_Input" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SCP_CPT_Output" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SCP_CPT_SclMax" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SCP_CPT_SclMin" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="SCL_CPT_Example" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+Scaled value = (input value x rate) + offset
+Rate = (scaled max. - scaled min.) / (input max. - input min.)
+Offset = scaled minimum - (input minimum x rate)]]>
+</Comment>
+<Text>
+<![CDATA[CPT(SCL_CPT_Output,(SCL_CPT_Input * SCL_CPT_Rate) + SCL_CPT_Offset);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="SCP_CPT_Example" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+
+Scaled value = (input value x rate) + offset
+Rate = (scaled max. - scaled min.) / (input max. - input min.)
+Offset = scaled minimum - (input minimum x rate)]]>
+</Comment>
+<Text>
+<![CDATA[CPT(SCP_CPT_Output,(SCP_CPT_Input * ((SCP_CPT_SclMax-SCP_CPT_SclMin)/(SCP_CPT_InMax-SCP_CPT_InMin))) + (SCP_CPT_SclMin - ((SCP_CPT_SclMax-SCP_CPT_SclMin)/(SCP_CPT_InMax-SCP_CPT_InMin))));]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+<Program Name="Subroutine_Examples" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags>
+<Tag Name="SCL_DINT" TagType="Base" DataType="SCL_DINT_DT">
+<Data>00 00 00 00 32 00 00 00 64 00 00 00 00 00 00 00 
+00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SCL_DINT_DT">
+<DataValueMember Name="Source" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Rate" DataType="DINT" Radix="Decimal" Value="50"/>
+<DataValueMember Name="Offset" DataType="DINT" Radix="Decimal" Value="100"/>
+<DataValueMember Name="Destination" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Local_Temp1" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="SCL_DINT_Input" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SCL_DINT_Output" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>64 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="100"/>
+</Data>
+</Tag>
+<Tag Name="SCL_REAL" TagType="Base" DataType="SCL_REAL_DT">
+<Data>00 00 00 00 32 00 00 00 64 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SCL_REAL_DT">
+<DataValueMember Name="Source" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Rate" DataType="REAL" Radix="Float" Value="7.00649232e-044"/>
+<DataValueMember Name="Offset" DataType="REAL" Radix="Float" Value="1.40129846e-043"/>
+<DataValueMember Name="Destination" DataType="REAL" Radix="Float" Value="0.0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="SCL_REAL_Input" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="SCL_REAL_Output" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="SCP_DINT" TagType="Base" DataType="SCP_DINT_DT">
+<Data>00 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00 
+64 00 00 00 00 00 00 00 00 00 00 00 00 00 C8 3D 
+00 00 00 00 00 00 C8 42 00 00 80 44 00 00 00 00 
+00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SCP_DINT_DT">
+<DataValueMember Name="Input" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="InputMin" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="InpuMax" DataType="DINT" Radix="Decimal" Value="1024"/>
+<DataValueMember Name="ScaledMin" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ScaledMax" DataType="DINT" Radix="Decimal" Value="100"/>
+<DataValueMember Name="Output" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Local_Out" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Local_Rate" DataType="REAL" Radix="Float" Value="0.09765625"/>
+<DataValueMember Name="Local_Offset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Local_Temp1" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="Local_Temp2" DataType="REAL" Radix="Float" Value="1024.0"/>
+<DataValueMember Name="Local_Temp3" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Local_Temp4" DataType="REAL" Radix="Float" Value="0.0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="SCP_DINT_Input" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SCP_DINT_Output" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SCP_REAL" TagType="Base" DataType="SCP_REAL_DT">
+<Data>00 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00 
+64 00 00 00 01 00 80 7F 00 00 80 7F 00 00 C0 FF 
+00 00 00 00 00 00 00 00 01 00 80 7F 01 00 80 7F</Data>
+<Data Format="Decorated"><Structure DataType="SCP_REAL_DT">
+<DataValueMember Name="Input" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="InputMin" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="InpuMax" DataType="REAL" Radix="Float" Value="1.43492963e-042"/>
+<DataValueMember Name="ScaledMin" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="ScaledMax" DataType="REAL" Radix="Float" Value="1.40129846e-043"/>
+<DataValueMember Name="Output" DataType="REAL" Radix="Float" Value="1.#QNAN"/>
+<DataValueMember Name="Local_Rate" DataType="REAL" Radix="Float" Value="1.$"/>
+<DataValueMember Name="Local_Offset" DataType="REAL" Radix="Float" Value="-1.#IND"/>
+<DataValueMember Name="Local_Temp1" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Local_Temp2" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Local_Temp3" DataType="REAL" Radix="Float" Value="1.#QNAN"/>
+<DataValueMember Name="Local_Temp4" DataType="REAL" Radix="Float" Value="1.#QNAN"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="SCP_REAL_Input" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="SCP_REAL_Output" TagType="Base" DataType="REAL" Radix="Float">
+<Data>01 00 80 7F</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="1.#QNAN"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+-----------------------------------------------------------
+This sample rpoject provides routine examples performing the operation of the SLC-500 Scale With Parameters instruction (SCL).
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[JSR(SCL_DINT,3,SCL_DINT_Input,50,100,SCL_DINT_Output)AFI()MOV(SCL_DINT_Input,SCL_DINT_Output);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[JSR(SCL_REAL,3,SCL_REAL_Input,50,100,SCL_REAL_Output)AFI()MOV(SCL_REAL_Input,SCL_REAL_Output);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[JSR(SCP_DINT,5,SCP_DINT_Input,0,1024,0,100,SCP_DINT_Output)AFI()MOV(SCP_DINT_Input,SCP_DINT_Output);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[JSR(SCP_REAL,5,SCP_REAL_Input,0,1024,0,100,SCP_REAL_Output)AFI()MOV(SCP_REAL_Input,SCP_REAL_Output);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="SCL_DINT" Type="RLL">
+<Description>
+<![CDATA[Scale Value
+(all DINT)
+In1=Source
+In2=Rate
+In3=Offset
+Out1=Destination]]>
+</Description>
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[SBR(SCL_DINT.Source,SCL_DINT.Rate,SCL_DINT.Offset)NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[This routine performs the operation of the SLC-500 Scale With Parameters instruction (SCL).
+
+Use this routine to scale data from your analog module and bring it into the limits prescribed by the process variable or another analog module.  For example, use SCL to convert a 4-20 mA input signal to a PID process variable.  Or use SCL to scale an analog input to control an analog output.
+
+When rung conditions are true, this instruction multiplies the source by a specified rate.  The rounded result is added to an offset value and placed in the destination.
+
+Scaled value = (input value x rate) + offset
+Rate = (scaled max. - scaled min.) / (input max. - input min.)
+Offset = scaled minimum - (input minimum x rate)]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[Scaled value = (input value x rate) + offset]]>
+</Comment>
+<Text>
+<![CDATA[MUL(SCL_DINT.Source,SCL_DINT.Rate,SCL_DINT.Local_Temp1)ADD(SCL_DINT.Local_Temp1,SCL_DINT.Offset,SCL_DINT.Destination);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[RET(SCL_DINT.Destination);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="SCL_REAL" Type="RLL">
+<Description>
+<![CDATA[Scale Value 
+(all REAL)
+In1=Source
+In2=Rate
+In3=Offset
+Out1=Destination]]>
+</Description>
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[SBR(SCL_REAL.Source,SCL_REAL.Rate,SCL_REAL.Offset)NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[This routine performs the operation of the SLC-500 Scale With Parameters instruction (SCL).
+
+Use this routine to scale data from your analog module and bring it into the limits prescribed by the process variable or another analog module.  For example, use SCL to convert a 4-20 mA input signal to a PID process variable.  Or use SCL to scale an analog input to control an analog output.
+
+When rung conditions are true, this instruction multiplies the source by a specified rate.  The rounded result is added to an offset value and placed in the destination.
+
+Scaled value = (input value x rate) + offset
+Rate = (scaled max. - scaled min.) / (input max. - input min.)
+Offset = scaled minimum - (input minimum x rate)]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[Scaled value = (input value x rate) + offset]]>
+</Comment>
+<Text>
+<![CDATA[MUL(SCL_REAL.Source,SCL_REAL.Rate,SCL_REAL.Destination)ADD(SCL_REAL.Destination,SCL_REAL.Offset,SCL_DINT.Destination);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[RET(SCL_REAL.Destination);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="SCP_DINT" Type="RLL">
+<Description>
+<![CDATA[Scale with Prarams (all Real)
+In1=Source
+In2=InMin
+In3=InMax
+In4=ScaleMin
+In5=ScaleMax
+Out1=Destination]]>
+</Description>
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[SBR(SCP_DINT.Input,SCP_DINT.InputMin,SCP_DINT.InpuMax,SCP_DINT.ScaledMin,SCP_DINT.ScaledMax)NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[This routine performs the operation of the SLC-500 Scale With Parameters instruction (SCP).
+
+This output instruction consists of six parameters.  Parameters may be integer immediate data values or tags containing values.  The Input value is scaled to a range determined by creating a linear relationship between input min and max values and scaled min and max values.  The scaled result is returned to the tag indicated by the output parameter.
+
+The formula is as follows:
+Scaled value = (input value x rate) + offset
+Rate = (scaled max. - scaled min.) / (input max. - input min.)
+Offset = scaled minimum - (input minimum x rate)
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[Rate = (scaled max. - scaled min.) / (input max. - input min.)]]>
+</Comment>
+<Text>
+<![CDATA[SUB(SCP_DINT.ScaledMax,SCP_DINT.ScaledMin,SCP_DINT.Local_Temp1)SUB(SCP_DINT.InpuMax,SCP_DINT.InputMin,SCP_DINT.Local_Temp2)DIV(SCP_DINT.Local_Temp1,SCP_DINT.Local_Temp2,SCP_DINT.Local_Rate);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[Offset = scaled minimum - (input minimum x rate)]]>
+</Comment>
+<Text>
+<![CDATA[MUL(SCP_DINT.InputMin,SCP_DINT.Local_Rate,SCP_DINT.Local_Temp3)SUB(SCP_DINT.ScaledMin,SCP_DINT.Local_Temp3,SCP_DINT.Local_Offset);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[Scaled value = (input value x rate) + offset]]>
+</Comment>
+<Text>
+<![CDATA[MUL(SCP_DINT.Input,SCP_DINT.Local_Rate,SCP_DINT.Local_Temp4)ADD(SCP_DINT.Local_Temp4,SCP_DINT.Local_Offset,SCP_DINT.Local_Out);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[MOV(SCP_DINT.Local_Out,SCP_DINT.Output)RET(SCP_DINT.Output);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="SCP_REAL" Type="RLL">
+<Description>
+<![CDATA[Scale with Params (all REAL)
+In1=Source
+In2=InMin
+In3=InMax
+In4=ScaleMin
+In5=ScaleMax
+Out1=Destination]]>
+</Description>
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[SBR(SCP_REAL.Input,SCP_REAL.InputMin,SCP_REAL.InpuMax,SCP_REAL.ScaledMin,SCP_REAL.ScaledMax)NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[This routine performs the operation of the SLC-500 Scale With Parameters instruction (SCP).
+
+This output instruction consists of six parameters.  Parameters may be integer immediate data values or tags containing values.  The Input value is scaled to a range determined by creating a linear relationship between input min and max values and scaled min and max values.  The scaled result is returned to the tag indicated by the output parameter.
+
+The formula is as follows:
+Scaled value = (input value x rate) + offset
+Rate = (scaled max. - scaled min.) / (input max. - input min.)
+Offset = scaled minimum - (input minimum x rate)
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[Rate = (scaled max. - scaled min.) / (input max. - input min.)]]>
+</Comment>
+<Text>
+<![CDATA[SUB(SCP_REAL.ScaledMax,SCP_REAL.ScaledMin,SCP_REAL.Local_Temp1)SUB(SCP_REAL.InpuMax,SCP_REAL.InputMin,SCP_REAL.Local_Temp2)DIV(SCP_REAL.Local_Temp1,SCP_REAL.Local_Temp2,SCP_REAL.Local_Rate);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[Offset = scaled minimum - (input minimum x rate)]]>
+</Comment>
+<Text>
+<![CDATA[MUL(SCP_REAL.InputMin,SCP_REAL.Local_Rate,SCP_REAL.Local_Temp3)SUB(SCP_REAL.ScaledMin,SCP_REAL.Local_Temp3,SCP_REAL.Local_Offset);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[Scaled value = (input value x rate) + offset]]>
+</Comment>
+<Text>
+<![CDATA[MUL(SCP_REAL.Input,SCP_REAL.Local_Rate,SCP_REAL.Local_Temp4)ADD(SCP_REAL.Local_Temp4,SCP_REAL.Local_Offset,SCP_REAL.Output);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[RET(SCP_REAL.Output);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="PERIODIC" Rate="5000" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="Subroutine_Examples"/>
+<ScheduledProgram Name="Compute_Examples"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

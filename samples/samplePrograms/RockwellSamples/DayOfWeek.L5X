@@ -1,0 +1,532 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="DayOfWeek" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:20:55 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="DayOfWeek" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:20:41 2018" LastModifiedDate="Fri Jan 19 07:20:41 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes>
+<DataType Name="DateTime_Type" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[Structure for the DateTime from the Controller wallclock accessed by the GSV/SSV instruction]]>
+</Description>
+<Members>
+<Member Name="Year" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Month" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[The month (1 - 12)]]>
+</Description>
+</Member>
+<Member Name="Day" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[The day (1 - 31)]]>
+</Description>
+</Member>
+<Member Name="Hour" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[hour (0 - 23)]]>
+</Description>
+</Member>
+<Member Name="Minute" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[minute (0 - 59)]]>
+</Description>
+</Member>
+<Member Name="Second" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[second (0 - 59)]]>
+</Description>
+</Member>
+<Member Name="Microseconds" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[(0 - 999,999)]]>
+</Description>
+</Member>
+</Members>
+</DataType>
+<DataType Name="DOW_Test" Family="NoFamily" Class="User">
+<Members>
+<Member Name="Year" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Month" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Day" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="DOW" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+</Members>
+</DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="TestDateTime" TagType="Base" DataType="DateTime_Type">
+<Data>D4 07 00 00 02 00 00 00 01 00 00 00 0D 00 00 00 
+2F 00 00 00 23 00 00 00 4C 10 05 00</Data>
+<Data Format="Decorated"><Structure DataType="DateTime_Type">
+<DataValueMember Name="Year" DataType="DINT" Radix="Decimal" Value="2004"/>
+<DataValueMember Name="Month" DataType="DINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="Day" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="Hour" DataType="DINT" Radix="Decimal" Value="13"/>
+<DataValueMember Name="Minute" DataType="DINT" Radix="Decimal" Value="47"/>
+<DataValueMember Name="Second" DataType="DINT" Radix="Decimal" Value="35"/>
+<DataValueMember Name="Microseconds" DataType="DINT" Radix="Decimal" Value="331852"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Test_CurrentDate" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Test_Result" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Day of Week
+ 0 = Sun, 1=Mon, 2=Tues, 3=Wed, 4=Thur, 5=Fri, 6=Sat]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="Test_DOW" Disabled="false">
+<Tags>
+<Tag Name="DOW_Century" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Century or upper two digits from the year]]>
+</Description>
+<Data>14 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="20"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Day" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Day of the Month 1-31]]>
+</Description>
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="DOW_InputDate" TagType="Base" DataType="DateTime_Type">
+<Data>D4 07 00 00 02 00 00 00 01 00 00 00 0D 00 00 00 
+2F 00 00 00 23 00 00 00 4C 10 05 00</Data>
+<Data Format="Decorated"><Structure DataType="DateTime_Type">
+<DataValueMember Name="Year" DataType="DINT" Radix="Decimal" Value="2004"/>
+<DataValueMember Name="Month" DataType="DINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="Day" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="Hour" DataType="DINT" Radix="Decimal" Value="13"/>
+<DataValueMember Name="Minute" DataType="DINT" Radix="Decimal" Value="47"/>
+<DataValueMember Name="Second" DataType="DINT" Radix="Decimal" Value="35"/>
+<DataValueMember Name="Microseconds" DataType="DINT" Radix="Decimal" Value="331852"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="DOW_Month" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Month 1 = March, 10=december, 11=Jan and 12=Feb]]>
+</Description>
+<Data>0C 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="12"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Output" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Day of Week
+ 0 = Sun, 1=Mon, 2=Tues, 3=Wed, 4=Thur, 5=Fri, 6=Sat]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Temp00" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Intermediate Math Value]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Temp01" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Intermediate Math Value]]>
+</Description>
+<Data>99 99 F9 41</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="31.199999"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Temp02" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Intermediate Math Value]]>
+</Description>
+<Data>00 00 F8 41</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="31.0"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Temp03" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Intermediate Math Value]]>
+</Description>
+<Data>1F 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="31"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Temp04" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Intermediate Math Value]]>
+</Description>
+<Data>28 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="40"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Temp05" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Intermediate Math Value]]>
+</Description>
+<Data>00 00 40 3F</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.75"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Temp06" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Intermediate Math Value]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Temp07" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Intermediate Math Value]]>
+</Description>
+<Data>00 00 A0 40</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="5.0"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Temp08" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Intermediate Math Value]]>
+</Description>
+<Data>05 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="5"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Temp09" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Intermediate Math Value]]>
+</Description>
+<Data>00 00 00 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="32.0"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Temp10" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Intermediate Math Value]]>
+</Description>
+<Data>00 00 00 C1</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-8.0"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Temp11" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Intermediate Math Value]]>
+</Description>
+<Data>00 00 A0 C0</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-5.0"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Temp12" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Intermediate Math Value]]>
+</Description>
+<Data>00 00 A0 C0</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-5.0"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Temp13" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Intermediate Math Value]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Temp14" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Intermediate Math Value]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Temp15" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Intermediate Math Value]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="DOW_Year" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Year within the century or last two digits in year]]>
+</Description>
+<Data>03 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="3"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="DayOfWeek" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+Input: Structure based on Controller Wallclock output from GSV instuction
+Output: DINT number representing the day of the week for the date provided, in the range of 0=Sun...6=Sat.]]>
+</Comment>
+<Text>
+<![CDATA[SBR(DOW_InputDate)NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[How to determine The day of The week, given The month, day and year?
+
+The information below was lifted from the from the following web site: http://www.cs.uu.nl/wais/html/na-dir/sci-math-faq/dayofweek.html
+
+   First a brief explanation: in The Gregorian Calendar, over a period of four hundred years, there are 97 leap years and 303 normal years. Each
+ normal year, The day of January 1 advances by one; for Each leap year  it advances by two.
+   
+   303 + 97 + 97 = 497 = 7 * 71 
+   
+   as a result, January 1 year N occurs on The same day of The week as January 1 year N + 400. Because The leap year pattern also recurs with a four hundred year cycle, a simple table of four hundred elements, and single modulus, suffices to determine The day of The week (in The
+   Gregorian Calendar), and does it much faster than all The other algorithms proposed. also, Each element takes (in principle) only three bits; The entire table thus takes only 1200 bits; on many computers this will be less than The instructions to do all The complicated calculations proposed or The other algorithms.
+  
+   Incidental Note: Because 7 does not Divide 400, January 1 occurs more frequently on some days than others! Trick your friends! in a cycle of 400 years, January 1 and March 1 occur on The following days with The following frequencies:   
+           Sun      Mon     Tue     Wed     Thu     Fri     Sat
+    Jan 1: 58       56      58      57      57      58      56
+    Mar 1: 58       56      58      56      58      57      57
+
+   Of interest is that (contrary to most initial guesses) The occurrence is not maximally flat.
+   
+In The Mathematical Gazette, vol. 53,, pp.127-129, it is shown that The 13th of The month is more likely to be a Friday than any other day.The author is a 13 year old S.R.Baxter.
+   
+   The Gregorian Calendar was introduced in 1582 in parts of Europe; it was adopted in 1752 in Great Britain and its colonies, and on various dates in other countries. it replaced The Julian Calendar which has a four-year cycle of leap years; after four years January 1 has advanced by five days. Since 5 is relatively prime to 7, a table of 4 * 7 = 28 elements is necessary for The Julian Calendar.
+   
+   there is still a 3 day over 10,000 years error which The Gregorian Calendar does not take into account. At some Time such a correction will have to be done but your software will probably not last that long!
+   
+   Here is a standard method suitable for mental computation:
+   
+    1. take The last two digits of The year.
+    2. Divide by 4, discarding any fraction.
+    3. Add The day of The month.
+    4. Add The month'S key value: JFM AMJ JAS OND 144 025 036 146
+    5. Subtract 1 for January or February of a leap year.
+    6. For a Gregorian Date, Add 0 for 1900'S, 6 for 2000'S, 4 for 1700'S, 2 for 1800'S; for other years, Add or Subtract multiples of 400.
+    7. For a Julian Date, Add 1 for 1700'S, and 1 for every additional century you go back.
+    8. Add The last two digits of The year.
+    9. Divide by 7 and take The remainder.
+       
+   Now 1 is Sunday, The First day of The week, 2 is Monday, and so on.
+   
+   The following formula, which is for The Gregorian Calendar only, may be more convenient for computer programming. Note that in some programming languages The remainder operation can yield a negative result if given a negative operand, so mod 7 may not translate to a simple remainder.
+   
+   W = (k + floor(2.6m - 0.2) - 2C + Y + floor(Y/4) + floor(C/4)) mod 7 
+   
+   where floor() denotes The integer floor function [This is TRN() in Logix],
+k is day (1 to 31)
+ m is month (1 = March, ..., 10 = December, 11 = Jan, 12 = Feb) Treat Jan & Feb as months of The preceding year
+   C is century (1987 has C = 19)
+   Y is year (1987 has Y = 87 except Y = 86 for Jan & Feb)
+   W is week day (0 = Sunday, ..., 6 = Saturday)
+   
+   Here The century and 400 year corrections are built into The formula. The floor(2.6m - 0.2) term relates to The repetitive pattern that The 30-day months show when March is taken as The First month.
+   
+   The following short C program works for a restricted range, it returns 0 for Monday, 1 for Tuesday, etc.
+   
+dow(m,d,Y){Y-=m<3;return(Y+Y/4-Y/100+Y/400+[m]+d)%7;}
+
+   The program appeared was posted by sakamoto@sm.sony.co.jp (Tomohiko sakamoto) on comp.lang.c on March 10th, 1993.
+   
+   a good mnemonic rule to help on The computation of The day of The week is as follows. in any given year The following days come on The same day of The week: 4/4, 6/6, 8/8, 10/10, 12/12  to remember The next four, remember that I work from 9-5 At a 7-11 so 9/5, 5/9, 7/11, 11/7 and The last day of Feb.
+   
+   
+   
+   Even ignoring The pattern over for a period of years this is still useful Since you can generally figure out what day of The week a given Date is  on faster than someone else can look it up with a calender if The calender is not right there. (a useful skill that.)
+   
+ References:      
+   Winning Ways for your Mathematical plays. Elwyn R. Berlekamp, John H.  Conway, and Richard k. Guy London ; Toronto : Academic Press, 1982.
+  
+   Mathematical Carnival. Martin Gardner. New York : Knopf, c1975.   
+   Elementary Number Theory and its applications. Kenneth Rosen. Reading,  Mass. ; Don Mills, Ont. : Addison-Wesley Pub. Co., c1993. p. 156.
+   
+   Michael Keith and Tom Craver. The Ultimate Perpetual Calendar? Journal of Recreational Mathematics, 22:4, pp. 280-282, 19]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[Extract the two digit year within the century from the 4 digit year value. (Lower two digits)]]>
+</Comment>
+<Text>
+<![CDATA[MOV(DOW_InputDate.Day,DOW_Day)MOD(DOW_InputDate.Year,100,DOW_Year);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[Extract the two digit centurr from the 4 digit year value.  (Upper two digits)
+]]>
+</Comment>
+<Text>
+<![CDATA[DIV(DOW_InputDate.Year,100,DOW_Temp00)TRN(DOW_Temp00,DOW_Century);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[For this calculation, the month of March = 1, Dec=10, and Jan/Feb are represented as months 11/12 from the previous year.]]>
+</Comment>
+<Text>
+<![CDATA[[GRT(DOW_InputDate.Month,2) SUB(DOW_InputDate.Month,2,DOW_Month) ,LEQ(DOW_InputDate.Month,2) ADD(DOW_InputDate.Month,10,DOW_Month) SUB(DOW_Year,1,DOW_Year) ];]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[Here The century and 400 year corrections are built into The formula. 
+The TRN((2.6 *m) - 0.2) equation relates to the repetitive pattern that the 30-day months show when March is taken as The First month.
+
+Note that the Logix CPU's floating point math returns some values slightly different than expected which can change the final results.
+Ex: 12 * 2.6 returns 31.199999 rather than 31.2.  To overcome this issue a value of 0.199999 is used in place of the 0.2 in the original equation.]]>
+</Comment>
+<Text>
+<![CDATA[MUL(2.6,DOW_Month,DOW_Temp01)SUB(DOW_Temp01,0.199999,DOW_Temp02)TRN(DOW_Temp02,DOW_Temp03);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Text>
+<![CDATA[MUL(DOW_Century,2,DOW_Temp04);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Comment>
+<![CDATA[Leap Year Adjustment.]]>
+</Comment>
+<Text>
+<![CDATA[DIV(DOW_Year,4,DOW_Temp05)TRN(DOW_Temp05,DOW_Temp06);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Comment>
+<![CDATA[400 Year Adjustment.]]>
+</Comment>
+<Text>
+<![CDATA[DIV(DOW_Century,4,DOW_Temp07)TRN(DOW_Temp07,DOW_Temp08);]]>
+</Text>
+</Rung>
+<Rung Number="9" Type="N">
+<Comment>
+<![CDATA[Main part of equation... W = (k + floor(2.6m - 0.2) - 2C + Y + floor(Y/4) + floor(C/4)) mod 7
+
+DOW = DOW_Day + TRN((2.6 * DOW_Month) - 0.2) - (2 * DOW_Century) + DOW_Year + TRN(DOW_Year/4) + TRN(DOW_Century/4) MOD 7
+
+DOW_Temp03 =  TRN((2.6 * DOW_Month) - 0.2)
+DOW_Temp04 = (2 * DOW_Century)
+DOW_Temp06 = TRN(DOW_Year/4)
+DOW_Temp08 = TRN(DOW_Century/4)
+
+DOW_Temp14 = (DOW_Day + DOW_Temp03 - DOW_Temp04 + DOW_Year + DOW_Temp06 +  DOW_Temp08) MOD 7
+
+]]>
+</Comment>
+<Text>
+<![CDATA[ADD(DOW_Day,DOW_Temp03,DOW_Temp09)SUB(DOW_Temp09,DOW_Temp04,DOW_Temp10)ADD(DOW_Temp10,DOW_Year,DOW_Temp11)ADD(DOW_Temp11,DOW_Temp06,DOW_Temp12)ADD(DOW_Temp12,DOW_Temp08,DOW_Temp13)MOD(DOW_Temp13,7,DOW_Temp14);]]>
+</Text>
+</Rung>
+<Rung Number="10" Type="N">
+<Comment>
+<![CDATA[MOD operation in some computers differ.  The equation provided in documentation above expects results from the MOD that are different than the actual results that the Logix5000's MOD instruction provide for values below the Divisor.  Because of this the logic below makes an adjustment to the the output from the MOD.]]>
+</Comment>
+<Text>
+<![CDATA[MOV(DOW_Temp14,DOW_Temp15)LES(DOW_Temp14,0)ADD(DOW_Temp14,7,DOW_Temp15);]]>
+</Text>
+</Rung>
+<Rung Number="11" Type="N">
+<Comment>
+<![CDATA[Trim off any fractional value to return the day of the week...]]>
+</Comment>
+<Text>
+<![CDATA[TRN(DOW_Temp15,DOW_Output)RET(DOW_Output);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Test_DOW" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+This is a test call to the sample Day of Week subroutine.
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[Get the Controllers real time clock broken down by Year, month, day...microseconds and store in a tag so that the values can be used.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Test_CurrentDate)GSV(WALLCLOCKTIME,,DateTime,TestDateTime.Year);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[MOV(TestDateTime.Year,TestDateTime.Year)MOV(TestDateTime.Month,TestDateTime.Month)MOV(TestDateTime.Day,TestDateTime.Day);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[JSR(DayOfWeek,1,TestDateTime,Test_Result)MOV(Test_Result,Test_Result);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="2" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

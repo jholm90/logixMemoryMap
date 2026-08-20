@@ -1,0 +1,1568 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="Equipment_Phase_Sequencer" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:23:26 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="Equipment_Phase_Sequencer" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:23:15 2018" LastModifiedDate="Fri Jan 19 07:23:16 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#001b_5bce" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes/>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="Add_Cream_M2" TagType="Base" DataType="PHASE">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="PHASE">
+<DataValueMember Name="State" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Running" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Holding" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Restarting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Stopping" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Aborting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Resetting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Idle" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Held" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Complete" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Stopped" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Aborted" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Substate" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Pausing" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Paused" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AutoPause" DataType="BOOL" Value="0"/>
+<DataValueMember Name="StepIndex" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Failure" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="UnitID" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Owner" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="PendingRequest" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="DownloadInputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadInputParametersSubset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadOutputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadOutputParametersSubset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadOutputParameterLimits" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AcquireResources" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ReleaseResources" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToLinkedPhaseAndWait" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ReceiveMessageFromLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CancelMessageToLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToOperator" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ClearMessageToOperator" DataType="BOOL" Value="0"/>
+<DataValueMember Name="GenerateESignature" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadBatchData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadMaterialTrackDataContainerInUse" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadContainerBindingPriority" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadSufficientMaterial" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadMaterialTrackDatabaseData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadMaterialTrackDataContainerInUse" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadContainerBindingPriority" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadMaterialTrackDatabaseData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AbortingRequest" DataType="BOOL" Value="0"/>
+<DataValueMember Name="NewInputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Producing" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Standby" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Add_Egg_M2" TagType="Base" DataType="PHASE">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="PHASE">
+<DataValueMember Name="State" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Running" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Holding" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Restarting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Stopping" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Aborting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Resetting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Idle" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Held" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Complete" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Stopped" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Aborted" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Substate" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Pausing" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Paused" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AutoPause" DataType="BOOL" Value="0"/>
+<DataValueMember Name="StepIndex" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Failure" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="UnitID" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Owner" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="PendingRequest" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="DownloadInputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadInputParametersSubset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadOutputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadOutputParametersSubset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadOutputParameterLimits" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AcquireResources" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ReleaseResources" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToLinkedPhaseAndWait" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ReceiveMessageFromLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CancelMessageToLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToOperator" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ClearMessageToOperator" DataType="BOOL" Value="0"/>
+<DataValueMember Name="GenerateESignature" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadBatchData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadMaterialTrackDataContainerInUse" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadContainerBindingPriority" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadSufficientMaterial" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadMaterialTrackDatabaseData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadMaterialTrackDataContainerInUse" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadContainerBindingPriority" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadMaterialTrackDatabaseData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AbortingRequest" DataType="BOOL" Value="0"/>
+<DataValueMember Name="NewInputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Producing" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Standby" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Add_Milk_M2" TagType="Base" DataType="PHASE">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="PHASE">
+<DataValueMember Name="State" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Running" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Holding" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Restarting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Stopping" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Aborting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Resetting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Idle" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Held" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Complete" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Stopped" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Aborted" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Substate" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Pausing" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Paused" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AutoPause" DataType="BOOL" Value="0"/>
+<DataValueMember Name="StepIndex" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Failure" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="UnitID" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Owner" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="PendingRequest" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="DownloadInputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadInputParametersSubset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadOutputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadOutputParametersSubset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadOutputParameterLimits" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AcquireResources" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ReleaseResources" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToLinkedPhaseAndWait" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ReceiveMessageFromLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CancelMessageToLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToOperator" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ClearMessageToOperator" DataType="BOOL" Value="0"/>
+<DataValueMember Name="GenerateESignature" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadBatchData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadMaterialTrackDataContainerInUse" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadContainerBindingPriority" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadSufficientMaterial" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadMaterialTrackDatabaseData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadMaterialTrackDataContainerInUse" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadContainerBindingPriority" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadMaterialTrackDatabaseData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AbortingRequest" DataType="BOOL" Value="0"/>
+<DataValueMember Name="NewInputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Producing" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Standby" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Add_Sugar_M2" TagType="Base" DataType="PHASE">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="PHASE">
+<DataValueMember Name="State" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Running" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Holding" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Restarting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Stopping" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Aborting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Resetting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Idle" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Held" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Complete" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Stopped" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Aborted" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Substate" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Pausing" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Paused" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AutoPause" DataType="BOOL" Value="0"/>
+<DataValueMember Name="StepIndex" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Failure" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="UnitID" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Owner" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="PendingRequest" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="DownloadInputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadInputParametersSubset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadOutputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadOutputParametersSubset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadOutputParameterLimits" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AcquireResources" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ReleaseResources" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToLinkedPhaseAndWait" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ReceiveMessageFromLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CancelMessageToLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToOperator" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ClearMessageToOperator" DataType="BOOL" Value="0"/>
+<DataValueMember Name="GenerateESignature" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadBatchData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadMaterialTrackDataContainerInUse" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadContainerBindingPriority" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadSufficientMaterial" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadMaterialTrackDatabaseData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadMaterialTrackDataContainerInUse" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadContainerBindingPriority" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadMaterialTrackDatabaseData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AbortingRequest" DataType="BOOL" Value="0"/>
+<DataValueMember Name="NewInputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Producing" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Standby" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Agitate_M2" TagType="Base" DataType="PHASE">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="PHASE">
+<DataValueMember Name="State" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Running" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Holding" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Restarting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Stopping" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Aborting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Resetting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Idle" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Held" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Complete" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Stopped" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Aborted" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Substate" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Pausing" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Paused" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AutoPause" DataType="BOOL" Value="0"/>
+<DataValueMember Name="StepIndex" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Failure" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="UnitID" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Owner" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="PendingRequest" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="DownloadInputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadInputParametersSubset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadOutputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadOutputParametersSubset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadOutputParameterLimits" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AcquireResources" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ReleaseResources" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToLinkedPhaseAndWait" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ReceiveMessageFromLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CancelMessageToLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToOperator" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ClearMessageToOperator" DataType="BOOL" Value="0"/>
+<DataValueMember Name="GenerateESignature" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadBatchData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadMaterialTrackDataContainerInUse" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadContainerBindingPriority" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadSufficientMaterial" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadMaterialTrackDatabaseData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadMaterialTrackDataContainerInUse" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadContainerBindingPriority" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadMaterialTrackDatabaseData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AbortingRequest" DataType="BOOL" Value="0"/>
+<DataValueMember Name="NewInputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Producing" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Standby" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Heat_M2" TagType="Base" DataType="PHASE">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="PHASE">
+<DataValueMember Name="State" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Running" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Holding" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Restarting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Stopping" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Aborting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Resetting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Idle" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Held" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Complete" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Stopped" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Aborted" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Substate" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Pausing" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Paused" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AutoPause" DataType="BOOL" Value="0"/>
+<DataValueMember Name="StepIndex" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Failure" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="UnitID" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Owner" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="PendingRequest" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="DownloadInputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadInputParametersSubset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadOutputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadOutputParametersSubset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadOutputParameterLimits" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AcquireResources" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ReleaseResources" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToLinkedPhaseAndWait" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ReceiveMessageFromLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CancelMessageToLinkedPhase" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SendMessageToOperator" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ClearMessageToOperator" DataType="BOOL" Value="0"/>
+<DataValueMember Name="GenerateESignature" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadBatchData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadMaterialTrackDataContainerInUse" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadContainerBindingPriority" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadSufficientMaterial" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DownloadMaterialTrackDatabaseData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadMaterialTrackDataContainerInUse" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadContainerBindingPriority" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UploadMaterialTrackDatabaseData" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AbortingRequest" DataType="BOOL" Value="0"/>
+<DataValueMember Name="NewInputParameters" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Producing" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Standby" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="LoopCount" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="MAX_COUNT" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>64 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="100"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="Add_Cream_M2" Type="EquipmentPhase" TestEdits="false" Disabled="false" InitialStepIndex="0" InitialState="Idle" CompleteStateIfNotImpl="StateComplete" LossOfCommCmd="None" ExternalRequestAction="None">
+<Tags>
+<Tag Name="MyCounter" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="Running" Type="ST">
+<STContent>
+<Line Number="0">
+<![CDATA[//]]>
+</Line>
+<Line Number="1">
+<![CDATA[// All information provided "AS IS" -- No warranty or implied merchantability.]]>
+</Line>
+<Line Number="2">
+<![CDATA[// Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.]]>
+</Line>
+<Line Number="3">
+<![CDATA[//]]>
+</Line>
+<Line Number="4">
+<![CDATA[// Inaccuracies - Modifications]]>
+</Line>
+<Line Number="5">
+<![CDATA[//]]>
+</Line>
+<Line Number="6">
+<![CDATA[// The Sample Project Files and related documentation provided herein could include technical ]]>
+</Line>
+<Line Number="7">
+<![CDATA[// inaccuracies or typographical errors. Changes may be periodically added by RSI to the information]]>
+</Line>
+<Line Number="8">
+<![CDATA[// herein. RSI and/or its respective licensors and affiliates may make improvements, changes in the]]>
+</Line>
+<Line Number="9">
+<![CDATA[// materials and/or programs, or remove at will and without prior notice any content described herein]]>
+</Line>
+<Line Number="10">
+<![CDATA[// at any time. No level of responsibility for accuracy or usability of any content in the Sample ]]>
+</Line>
+<Line Number="11">
+<![CDATA[// Project Files is claimed or accepted.]]>
+</Line>
+<Line Number="12">
+<![CDATA[//]]>
+</Line>
+<Line Number="13">
+<![CDATA[]]>
+</Line>
+<Line Number="14">
+<![CDATA[MyCounter := MyCounter + 1;]]>
+</Line>
+<Line Number="15">
+<![CDATA[if (MyCounter > MAX_COUNT) then]]>
+</Line>
+<Line Number="16">
+<![CDATA[	PSC();]]>
+</Line>
+<Line Number="17">
+<![CDATA[	MyCounter := 0;]]>
+</Line>
+<Line Number="18">
+<![CDATA[end_if;]]>
+</Line>
+<Line Number="19">
+<![CDATA[]]>
+</Line>
+</STContent>
+</Routine>
+</Routines>
+</Program>
+<Program Name="Add_Egg_M2" Type="EquipmentPhase" TestEdits="false" Disabled="false" InitialStepIndex="0" InitialState="Idle" CompleteStateIfNotImpl="StateComplete" LossOfCommCmd="None" ExternalRequestAction="None">
+<Tags>
+<Tag Name="MyCounter" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="Running" Type="ST">
+<STContent>
+<Line Number="0">
+<![CDATA[//]]>
+</Line>
+<Line Number="1">
+<![CDATA[// All information provided "AS IS" -- No warranty or implied merchantability.]]>
+</Line>
+<Line Number="2">
+<![CDATA[// Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.]]>
+</Line>
+<Line Number="3">
+<![CDATA[//]]>
+</Line>
+<Line Number="4">
+<![CDATA[// Inaccuracies - Modifications]]>
+</Line>
+<Line Number="5">
+<![CDATA[//]]>
+</Line>
+<Line Number="6">
+<![CDATA[// The Sample Project Files and related documentation provided herein could include technical ]]>
+</Line>
+<Line Number="7">
+<![CDATA[// inaccuracies or typographical errors. Changes may be periodically added by RSI to the information]]>
+</Line>
+<Line Number="8">
+<![CDATA[// herein. RSI and/or its respective licensors and affiliates may make improvements, changes in the]]>
+</Line>
+<Line Number="9">
+<![CDATA[// materials and/or programs, or remove at will and without prior notice any content described herein]]>
+</Line>
+<Line Number="10">
+<![CDATA[// at any time. No level of responsibility for accuracy or usability of any content in the Sample ]]>
+</Line>
+<Line Number="11">
+<![CDATA[// Project Files is claimed or accepted.]]>
+</Line>
+<Line Number="12">
+<![CDATA[//]]>
+</Line>
+<Line Number="13">
+<![CDATA[]]>
+</Line>
+<Line Number="14">
+<![CDATA[MyCounter := MyCounter + 1;]]>
+</Line>
+<Line Number="15">
+<![CDATA[if (MyCounter > MAX_COUNT) then]]>
+</Line>
+<Line Number="16">
+<![CDATA[	PSC();]]>
+</Line>
+<Line Number="17">
+<![CDATA[	MyCounter := 0;]]>
+</Line>
+<Line Number="18">
+<![CDATA[end_if;]]>
+</Line>
+<Line Number="19">
+<![CDATA[]]>
+</Line>
+</STContent>
+</Routine>
+</Routines>
+</Program>
+<Program Name="Add_Milk_M2" Type="EquipmentPhase" TestEdits="false" Disabled="false" InitialStepIndex="0" InitialState="Idle" CompleteStateIfNotImpl="StateComplete" LossOfCommCmd="None" ExternalRequestAction="None">
+<Tags>
+<Tag Name="MyCounter" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="Running" Type="ST">
+<STContent>
+<Line Number="0">
+<![CDATA[//]]>
+</Line>
+<Line Number="1">
+<![CDATA[// All information provided "AS IS" -- No warranty or implied merchantability.]]>
+</Line>
+<Line Number="2">
+<![CDATA[// Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.]]>
+</Line>
+<Line Number="3">
+<![CDATA[//]]>
+</Line>
+<Line Number="4">
+<![CDATA[// Inaccuracies - Modifications]]>
+</Line>
+<Line Number="5">
+<![CDATA[//]]>
+</Line>
+<Line Number="6">
+<![CDATA[// The Sample Project Files and related documentation provided herein could include technical ]]>
+</Line>
+<Line Number="7">
+<![CDATA[// inaccuracies or typographical errors. Changes may be periodically added by RSI to the information]]>
+</Line>
+<Line Number="8">
+<![CDATA[// herein. RSI and/or its respective licensors and affiliates may make improvements, changes in the]]>
+</Line>
+<Line Number="9">
+<![CDATA[// materials and/or programs, or remove at will and without prior notice any content described herein]]>
+</Line>
+<Line Number="10">
+<![CDATA[// at any time. No level of responsibility for accuracy or usability of any content in the Sample ]]>
+</Line>
+<Line Number="11">
+<![CDATA[// Project Files is claimed or accepted.]]>
+</Line>
+<Line Number="12">
+<![CDATA[//]]>
+</Line>
+<Line Number="13">
+<![CDATA[]]>
+</Line>
+<Line Number="14">
+<![CDATA[MyCounter := MyCounter + 1;]]>
+</Line>
+<Line Number="15">
+<![CDATA[if (MyCounter > MAX_COUNT) then]]>
+</Line>
+<Line Number="16">
+<![CDATA[	PSC();]]>
+</Line>
+<Line Number="17">
+<![CDATA[	MyCounter := 0;]]>
+</Line>
+<Line Number="18">
+<![CDATA[end_if;]]>
+</Line>
+<Line Number="19">
+<![CDATA[]]>
+</Line>
+</STContent>
+</Routine>
+</Routines>
+</Program>
+<Program Name="Add_Sugar_M2" Type="EquipmentPhase" TestEdits="false" Disabled="false" InitialStepIndex="0" InitialState="Idle" CompleteStateIfNotImpl="StateComplete" LossOfCommCmd="None" ExternalRequestAction="None">
+<Tags>
+<Tag Name="MyCounter" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="Running" Type="ST">
+<STContent>
+<Line Number="0">
+<![CDATA[//]]>
+</Line>
+<Line Number="1">
+<![CDATA[// All information provided "AS IS" -- No warranty or implied merchantability.]]>
+</Line>
+<Line Number="2">
+<![CDATA[// Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.]]>
+</Line>
+<Line Number="3">
+<![CDATA[//]]>
+</Line>
+<Line Number="4">
+<![CDATA[// Inaccuracies - Modifications]]>
+</Line>
+<Line Number="5">
+<![CDATA[//]]>
+</Line>
+<Line Number="6">
+<![CDATA[// The Sample Project Files and related documentation provided herein could include technical ]]>
+</Line>
+<Line Number="7">
+<![CDATA[// inaccuracies or typographical errors. Changes may be periodically added by RSI to the information]]>
+</Line>
+<Line Number="8">
+<![CDATA[// herein. RSI and/or its respective licensors and affiliates may make improvements, changes in the]]>
+</Line>
+<Line Number="9">
+<![CDATA[// materials and/or programs, or remove at will and without prior notice any content described herein]]>
+</Line>
+<Line Number="10">
+<![CDATA[// at any time. No level of responsibility for accuracy or usability of any content in the Sample ]]>
+</Line>
+<Line Number="11">
+<![CDATA[// Project Files is claimed or accepted.]]>
+</Line>
+<Line Number="12">
+<![CDATA[//]]>
+</Line>
+<Line Number="13">
+<![CDATA[]]>
+</Line>
+<Line Number="14">
+<![CDATA[MyCounter := MyCounter + 1;]]>
+</Line>
+<Line Number="15">
+<![CDATA[if (MyCounter > MAX_COUNT) then]]>
+</Line>
+<Line Number="16">
+<![CDATA[	PSC();]]>
+</Line>
+<Line Number="17">
+<![CDATA[	MyCounter := 0;]]>
+</Line>
+<Line Number="18">
+<![CDATA[end_if;]]>
+</Line>
+<Line Number="19">
+<![CDATA[]]>
+</Line>
+</STContent>
+</Routine>
+</Routines>
+</Program>
+<Program Name="Agitate_M2" Type="EquipmentPhase" TestEdits="false" Disabled="false" InitialStepIndex="0" InitialState="Idle" CompleteStateIfNotImpl="StateComplete" LossOfCommCmd="None" ExternalRequestAction="None">
+<Tags>
+<Tag Name="MyCounter" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="ResettingCounter" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="Resetting" Type="ST">
+<STContent>
+<Line Number="0">
+<![CDATA[//]]>
+</Line>
+<Line Number="1">
+<![CDATA[// All information provided "AS IS" -- No warranty or implied merchantability.]]>
+</Line>
+<Line Number="2">
+<![CDATA[// Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.]]>
+</Line>
+<Line Number="3">
+<![CDATA[//]]>
+</Line>
+<Line Number="4">
+<![CDATA[// Inaccuracies - Modifications]]>
+</Line>
+<Line Number="5">
+<![CDATA[//]]>
+</Line>
+<Line Number="6">
+<![CDATA[// The Sample Project Files and related documentation provided herein could include technical ]]>
+</Line>
+<Line Number="7">
+<![CDATA[// inaccuracies or typographical errors. Changes may be periodically added by RSI to the information]]>
+</Line>
+<Line Number="8">
+<![CDATA[// herein. RSI and/or its respective licensors and affiliates may make improvements, changes in the]]>
+</Line>
+<Line Number="9">
+<![CDATA[// materials and/or programs, or remove at will and without prior notice any content described herein]]>
+</Line>
+<Line Number="10">
+<![CDATA[// at any time. No level of responsibility for accuracy or usability of any content in the Sample ]]>
+</Line>
+<Line Number="11">
+<![CDATA[// Project Files is claimed or accepted.]]>
+</Line>
+<Line Number="12">
+<![CDATA[//]]>
+</Line>
+<Line Number="13">
+<![CDATA[]]>
+</Line>
+<Line Number="14">
+<![CDATA[ResettingCounter := ResettingCounter + 1;]]>
+</Line>
+<Line Number="15">
+<![CDATA[if (ResettingCounter > MAX_COUNT) then]]>
+</Line>
+<Line Number="16">
+<![CDATA[	PSC();]]>
+</Line>
+<Line Number="17">
+<![CDATA[	ResettingCounter := 0;]]>
+</Line>
+<Line Number="18">
+<![CDATA[end_if;]]>
+</Line>
+<Line Number="19">
+<![CDATA[]]>
+</Line>
+</STContent>
+</Routine>
+<Routine Name="Running" Type="ST">
+<STContent>
+<Line Number="0">
+<![CDATA[//]]>
+</Line>
+<Line Number="1">
+<![CDATA[// All information provided "AS IS" -- No warranty or implied merchantability.]]>
+</Line>
+<Line Number="2">
+<![CDATA[// Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.]]>
+</Line>
+<Line Number="3">
+<![CDATA[//]]>
+</Line>
+<Line Number="4">
+<![CDATA[// Inaccuracies - Modifications]]>
+</Line>
+<Line Number="5">
+<![CDATA[//]]>
+</Line>
+<Line Number="6">
+<![CDATA[// The Sample Project Files and related documentation provided herein could include technical ]]>
+</Line>
+<Line Number="7">
+<![CDATA[// inaccuracies or typographical errors. Changes may be periodically added by RSI to the information]]>
+</Line>
+<Line Number="8">
+<![CDATA[// herein. RSI and/or its respective licensors and affiliates may make improvements, changes in the]]>
+</Line>
+<Line Number="9">
+<![CDATA[// materials and/or programs, or remove at will and without prior notice any content described herein]]>
+</Line>
+<Line Number="10">
+<![CDATA[// at any time. No level of responsibility for accuracy or usability of any content in the Sample ]]>
+</Line>
+<Line Number="11">
+<![CDATA[// Project Files is claimed or accepted.]]>
+</Line>
+<Line Number="12">
+<![CDATA[//]]>
+</Line>
+<Line Number="13">
+<![CDATA[]]>
+</Line>
+<Line Number="14">
+<![CDATA[MyCounter := MyCounter + 1;]]>
+</Line>
+<Line Number="15">
+<![CDATA[if (MyCounter > (4*MAX_COUNT)) then]]>
+</Line>
+<Line Number="16">
+<![CDATA[	PSC();]]>
+</Line>
+<Line Number="17">
+<![CDATA[	MyCounter := 0;]]>
+</Line>
+<Line Number="18">
+<![CDATA[end_if;]]>
+</Line>
+<Line Number="19">
+<![CDATA[]]>
+</Line>
+</STContent>
+</Routine>
+</Routines>
+</Program>
+<Program Name="Heat_M2" Type="EquipmentPhase" TestEdits="false" Disabled="false" InitialStepIndex="0" InitialState="Idle" CompleteStateIfNotImpl="StateComplete" LossOfCommCmd="None" ExternalRequestAction="None">
+<Tags>
+<Tag Name="MyCounter" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="Running" Type="ST">
+<STContent>
+<Line Number="0">
+<![CDATA[//]]>
+</Line>
+<Line Number="1">
+<![CDATA[// All information provided "AS IS" -- No warranty or implied merchantability.]]>
+</Line>
+<Line Number="2">
+<![CDATA[// Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.]]>
+</Line>
+<Line Number="3">
+<![CDATA[//]]>
+</Line>
+<Line Number="4">
+<![CDATA[// Inaccuracies - Modifications]]>
+</Line>
+<Line Number="5">
+<![CDATA[//]]>
+</Line>
+<Line Number="6">
+<![CDATA[// The Sample Project Files and related documentation provided herein could include technical ]]>
+</Line>
+<Line Number="7">
+<![CDATA[// inaccuracies or typographical errors. Changes may be periodically added by RSI to the information]]>
+</Line>
+<Line Number="8">
+<![CDATA[// herein. RSI and/or its respective licensors and affiliates may make improvements, changes in the]]>
+</Line>
+<Line Number="9">
+<![CDATA[// materials and/or programs, or remove at will and without prior notice any content described herein]]>
+</Line>
+<Line Number="10">
+<![CDATA[// at any time. No level of responsibility for accuracy or usability of any content in the Sample ]]>
+</Line>
+<Line Number="11">
+<![CDATA[// Project Files is claimed or accepted.]]>
+</Line>
+<Line Number="12">
+<![CDATA[//]]>
+</Line>
+<Line Number="13">
+<![CDATA[]]>
+</Line>
+<Line Number="14">
+<![CDATA[MyCounter := MyCounter + 1;]]>
+</Line>
+<Line Number="15">
+<![CDATA[if (MyCounter > MAX_COUNT) then]]>
+</Line>
+<Line Number="16">
+<![CDATA[	PSC();]]>
+</Line>
+<Line Number="17">
+<![CDATA[	MyCounter := 0;]]>
+</Line>
+<Line Number="18">
+<![CDATA[end_if;]]>
+</Line>
+<Line Number="19">
+<![CDATA[]]>
+</Line>
+</STContent>
+</Routine>
+</Routines>
+</Program>
+<Program Name="Recipe_Ops" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags>
+<Tag Name="Action_000" TagType="Base" DataType="SFC_ACTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_ACTION">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="A" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Q" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PauseTimer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="T" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Action_001" TagType="Base" DataType="SFC_ACTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_ACTION">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="A" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Q" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PauseTimer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="T" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Action_002" TagType="Base" DataType="SFC_ACTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_ACTION">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="A" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Q" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PauseTimer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="T" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Action_003" TagType="Base" DataType="SFC_ACTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_ACTION">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="A" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Q" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PauseTimer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="T" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Action_004" TagType="Base" DataType="SFC_ACTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_ACTION">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="A" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Q" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PauseTimer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="T" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Action_005" TagType="Base" DataType="SFC_ACTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_ACTION">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="A" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Q" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PauseTimer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="T" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Action_006" TagType="Base" DataType="SFC_ACTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_ACTION">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="A" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Q" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PauseTimer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="T" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Action_007" TagType="Base" DataType="SFC_ACTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_ACTION">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="A" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Q" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PauseTimer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="T" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Add_Cream" TagType="Alias" AliasFor="Add_Cream_M2"/>
+<Tag Name="Add_Egg" TagType="Alias" AliasFor="Add_Egg_M2"/>
+<Tag Name="Add_Milk" TagType="Alias" AliasFor="Add_Milk_M2"/>
+<Tag Name="Add_Sugar" TagType="Alias" AliasFor="Add_Sugar_M2"/>
+<Tag Name="Agitate" TagType="Alias" AliasFor="Agitate_M2"/>
+<Tag Name="Heat" TagType="Alias" AliasFor="Heat_M2"/>
+<Tag Name="Reset_All" TagType="Base" DataType="SFC_STEP">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_STEP">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="X" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SA" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmEn" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmLow" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmHigh" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Reset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PauseTimer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="T" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TMax" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitLow" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitHigh" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Result" TagType="Base" DataType="DINT" Dimensions="6" Radix="Decimal">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="6" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="Start" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Step_Add_Cream" TagType="Base" DataType="SFC_STEP">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_STEP">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="X" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SA" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmEn" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmLow" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmHigh" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Reset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PauseTimer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="T" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TMax" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitLow" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitHigh" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Step_Add_Egg" TagType="Base" DataType="SFC_STEP">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_STEP">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="X" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SA" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmEn" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmLow" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmHigh" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Reset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PauseTimer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="T" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TMax" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitLow" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitHigh" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Step_Add_Milk" TagType="Base" DataType="SFC_STEP">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_STEP">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="X" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SA" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmEn" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmLow" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmHigh" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Reset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PauseTimer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="T" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TMax" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitLow" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitHigh" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Step_Add_Sugar" TagType="Base" DataType="SFC_STEP">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_STEP">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="X" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SA" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmEn" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmLow" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmHigh" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Reset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PauseTimer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="T" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TMax" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitLow" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitHigh" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Step_Agitate" TagType="Base" DataType="SFC_STEP">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_STEP">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="X" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SA" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmEn" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmLow" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmHigh" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Reset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PauseTimer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="T" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TMax" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitLow" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitHigh" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Step_Heat" TagType="Base" DataType="SFC_STEP">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_STEP">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="X" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SA" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmEn" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmLow" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmHigh" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Reset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PauseTimer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="T" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TMax" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitLow" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitHigh" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Tran_000" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Tran_001" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Tran_002" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Tran_003" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Tran_004" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Wait_For_Start" TagType="Base" DataType="SFC_STEP">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_STEP">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="X" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SA" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmEn" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmLow" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmHigh" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Reset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PauseTimer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="T" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TMax" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitLow" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitHigh" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  -- No warranty or implied merchantability.
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.
+
+
+Inaccuracies - Modifications
+
+The Sample Project Files and related documentation provided herein could include technical inaccuracies or typographical errors. Changes may be periodically added by RSI to the information herein. RSI and/or its respective licensors and affiliates may make improvements, changes in the materials and/or programs, or remove at will and without prior notice any content described herein at any time. No level of responsibility for accuracy or usability of any content in the Sample Project Files is claimed or accepted.
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[
+The Recipe_Sweet_Cream_Op routine is an SFC that commands Equipment Phases in a sequence.
+It utilizes the PCMD instruction to command the Equipment Phases, and waits for them to complete by looking at the data in the PHASE tag for each one.
+
+]]>
+</Comment>
+<Text>
+<![CDATA[JSR(Recipe_Sweet_Cream_Op,0);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Recipe_Sweet_Cream_Op" Type="SFC">
+<SFCContent SheetSize="Letter - 8.5 x 11 in" SheetOrientation="Portrait" StepName="Step" TransitionName="Tran" ActionName="Action" StopName="Stop">
+<Step ID="0" X="480" Y="1000" Operand="Reset_All" HideDesc="false" DescX="520" DescY="980" DescWidth="0" InitialStep="false" PresetUsesExpr="false" LimitHighUsesExpr="false"
+ LimitLowUsesExpr="false" ShowActions="true">
+<Action ID="1" Operand="Action_000" Qualifier="PulseRisingEdge" IsBoolean="false" PresetUsesExpr="false">
+<Body>
+<STContent>
+<Line Number="0">
+<![CDATA[JSR(ResetAll);]]>
+</Line>
+<Line Number="1">
+<![CDATA[Start := 0;]]>
+</Line>
+</STContent>
+</Body>
+</Action>
+</Step>
+<Step ID="2" X="300" Y="540" Operand="Step_Add_Cream" HideDesc="false" DescX="340" DescY="520" DescWidth="0" InitialStep="false" PresetUsesExpr="false" LimitHighUsesExpr="false"
+ LimitLowUsesExpr="false" ShowActions="true">
+<Action ID="3" Operand="Action_005" Qualifier="PulseRisingEdge" IsBoolean="false" PresetUsesExpr="false">
+<Body>
+<STContent>
+<Line Number="0">
+<![CDATA[PCMD(Add_Cream_M2, Start, Result[3]);]]>
+</Line>
+</STContent>
+</Body>
+</Action>
+</Step>
+<Step ID="4" X="700" Y="280" Operand="Step_Add_Egg" HideDesc="false" DescX="740" DescY="260" DescWidth="0" InitialStep="false" PresetUsesExpr="false" LimitHighUsesExpr="false"
+ LimitLowUsesExpr="false" ShowActions="true">
+<Action ID="5" Operand="Action_002" Qualifier="PulseRisingEdge" IsBoolean="false" PresetUsesExpr="false">
+<Body>
+<STContent>
+<Line Number="0">
+<![CDATA[PCMD(Add_Egg_M2, Start, Result[1]);]]>
+</Line>
+</STContent>
+</Body>
+</Action>
+</Step>
+<Step ID="6" X="480" Y="780" Operand="Step_Add_Milk" HideDesc="false" DescX="520" DescY="760" DescWidth="0" InitialStep="false" PresetUsesExpr="false" LimitHighUsesExpr="false"
+ LimitLowUsesExpr="false" ShowActions="true">
+<Action ID="7" Operand="Action_006" Qualifier="PulseRisingEdge" IsBoolean="false" PresetUsesExpr="false">
+<Body>
+<STContent>
+<Line Number="0">
+<![CDATA[PCMD(Add_Milk_M2, Start, Result[5]);]]>
+</Line>
+</STContent>
+</Body>
+</Action>
+</Step>
+<Step ID="8" X="300" Y="280" Operand="Step_Add_Sugar" HideDesc="false" DescX="340" DescY="260" DescWidth="0" InitialStep="false" PresetUsesExpr="false" LimitHighUsesExpr="false"
+ LimitLowUsesExpr="false" ShowActions="true">
+<Action ID="9" Operand="Action_001" Qualifier="PulseRisingEdge" IsBoolean="false" PresetUsesExpr="false">
+<Body>
+<STContent>
+<Line Number="0">
+<![CDATA[PCMD(Add_Sugar_M2, Start, Result[0]);]]>
+</Line>
+</STContent>
+</Body>
+</Action>
+</Step>
+<Step ID="10" X="1080" Y="560" Operand="Step_Agitate" HideDesc="false" DescX="1120" DescY="540" DescWidth="0" InitialStep="false" PresetUsesExpr="false" LimitHighUsesExpr="false"
+ LimitLowUsesExpr="false" ShowActions="true">
+<Action ID="11" Operand="Action_003" Qualifier="PulseRisingEdge" IsBoolean="false" PresetUsesExpr="false">
+<Body>
+<STContent>
+<Line Number="0">
+<![CDATA[PCMD(Agitate_M2, Start, Result[2]);]]>
+</Line>
+</STContent>
+</Body>
+</Action>
+</Step>
+<Step ID="12" X="720" Y="540" Operand="Step_Heat" HideDesc="false" DescX="760" DescY="520" DescWidth="0" InitialStep="false" PresetUsesExpr="false" LimitHighUsesExpr="false"
+ LimitLowUsesExpr="false" ShowActions="true">
+<Action ID="13" Operand="Action_004" Qualifier="PulseRisingEdge" IsBoolean="false" PresetUsesExpr="false">
+<Body>
+<STContent>
+<Line Number="0">
+<![CDATA[PCMD(Heat_M2, Start, Result[4]);]]>
+</Line>
+</STContent>
+</Body>
+</Action>
+</Step>
+<Step ID="14" X="400" Y="60" Operand="Wait_For_Start" HideDesc="false" DescX="440" DescY="40" DescWidth="0" InitialStep="true" PresetUsesExpr="false" LimitHighUsesExpr="false"
+ LimitLowUsesExpr="false" ShowActions="true">
+<Action ID="15" Operand="Action_007" Qualifier="PulseFallingEdge" IsBoolean="false" PresetUsesExpr="false">
+<Body>
+<STContent>
+<Line Number="0">
+<![CDATA[LoopCount := LoopCount + 1;]]>
+</Line>
+</STContent>
+</Body>
+</Action>
+</Step>
+<Transition ID="16" X="400" Y="160" Operand="Tran_000" HideDesc="false" DescX="480" DescY="140" DescWidth="0">
+<Condition>
+<STContent>
+<Line Number="0">
+<![CDATA[Start]]>
+</Line>
+</STContent>
+</Condition>
+</Transition>
+<Transition ID="17" X="480" Y="400" Operand="Tran_001" HideDesc="false" DescX="560" DescY="380" DescWidth="0">
+<Condition>
+<STContent>
+<Line Number="0">
+<![CDATA[Add_Sugar.Complete AND]]>
+</Line>
+<Line Number="1">
+<![CDATA[Add_Egg.Complete]]>
+</Line>
+</STContent>
+</Condition>
+</Transition>
+<Transition ID="18" X="480" Y="680" Operand="Tran_002" HideDesc="false" DescX="560" DescY="660" DescWidth="0">
+<Condition>
+<STContent>
+<Line Number="0">
+<![CDATA[Add_Cream.Complete AND]]>
+</Line>
+<Line Number="1">
+<![CDATA[Heat.Complete]]>
+</Line>
+</STContent>
+</Condition>
+</Transition>
+<Transition ID="19" X="480" Y="900" Operand="Tran_003" HideDesc="false" DescX="560" DescY="880" DescWidth="0">
+<Condition>
+<STContent>
+<Line Number="0">
+<![CDATA[Add_Milk.Complete AND]]>
+</Line>
+<Line Number="1">
+<![CDATA[Agitate.Complete]]>
+</Line>
+</STContent>
+</Condition>
+</Transition>
+<Transition ID="20" X="480" Y="1120" Operand="Tran_004" HideDesc="false" DescX="560" DescY="1100" DescWidth="0">
+<Condition>
+<STContent>
+<Line Number="0">
+<![CDATA[Add_Cream.Idle AND]]>
+</Line>
+<Line Number="1">
+<![CDATA[Add_Egg.Idle AND]]>
+</Line>
+<Line Number="2">
+<![CDATA[Add_Milk.Idle AND]]>
+</Line>
+<Line Number="3">
+<![CDATA[Add_Sugar.Idle AND]]>
+</Line>
+<Line Number="4">
+<![CDATA[Agitate.Idle AND]]>
+</Line>
+<Line Number="5">
+<![CDATA[Heat.Idle]]>
+</Line>
+<Line Number="6">
+<![CDATA[]]>
+</Line>
+</STContent>
+</Condition>
+</Transition>
+<Branch ID="21" Y="240" BranchType="Simultaneous" BranchFlow="Diverge">
+<Leg ID="22"/>
+<Leg ID="23"/>
+<Leg ID="24"/>
+</Branch>
+<Branch ID="25" Y="360" BranchType="Simultaneous" BranchFlow="Converge">
+<Leg ID="26"/>
+<Leg ID="27"/>
+</Branch>
+<Branch ID="28" Y="500" BranchType="Simultaneous" BranchFlow="Diverge">
+<Leg ID="29"/>
+<Leg ID="30"/>
+</Branch>
+<Branch ID="31" Y="620" BranchType="Simultaneous" BranchFlow="Converge">
+<Leg ID="32"/>
+<Leg ID="33"/>
+</Branch>
+<Branch ID="34" Y="860" BranchType="Simultaneous" BranchFlow="Converge">
+<Leg ID="35"/>
+<Leg ID="36"/>
+</Branch>
+<DirectedLink FromID="0" ToID="20" Show="true"/>
+<DirectedLink FromID="2" ToID="32" Show="true"/>
+<DirectedLink FromID="4" ToID="27" Show="true"/>
+<DirectedLink FromID="6" ToID="35" Show="true"/>
+<DirectedLink FromID="8" ToID="26" Show="true"/>
+<DirectedLink FromID="10" ToID="36" Show="true"/>
+<DirectedLink FromID="12" ToID="33" Show="true"/>
+<DirectedLink FromID="14" ToID="16" Show="true"/>
+<DirectedLink FromID="16" ToID="21" Show="true"/>
+<DirectedLink FromID="17" ToID="28" Show="true"/>
+<DirectedLink FromID="18" ToID="6" Show="true"/>
+<DirectedLink FromID="19" ToID="0" Show="true"/>
+<DirectedLink FromID="20" ToID="14" Show="false"/>
+<DirectedLink FromID="22" ToID="10" Show="true"/>
+<DirectedLink FromID="23" ToID="4" Show="true"/>
+<DirectedLink FromID="24" ToID="8" Show="true"/>
+<DirectedLink FromID="25" ToID="17" Show="true"/>
+<DirectedLink FromID="29" ToID="12" Show="true"/>
+<DirectedLink FromID="30" ToID="2" Show="true"/>
+<DirectedLink FromID="31" ToID="18" Show="true"/>
+<DirectedLink FromID="34" ToID="19" Show="true"/>
+<TextBox ID="37" X="500" Y="160" Width="0">
+<Text>
+<![CDATA[Manually set the Start tag to 1 to kick off the recipe]]>
+</Text>
+</TextBox>
+<Attachment FromID="37" ToID="16"/>
+</SFCContent>
+</Routine>
+<Routine Name="ResetAll" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  -- No warranty or implied merchantability.
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.
+
+
+Inaccuracies - Modifications
+
+The Sample Project Files and related documentation provided herein could include technical inaccuracies or typographical errors. Changes may be periodically added by RSI to the information herein. RSI and/or its respective licensors and affiliates may make improvements, changes in the materials and/or programs, or remove at will and without prior notice any content described herein at any time. No level of responsibility for accuracy or usability of any content in the Sample Project Files is claimed or accepted.
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[PCMD(Add_Cream_M2,Reset,Result[0]);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[PCMD(Add_Egg_M2,Reset,Result[1]);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[PCMD(Add_Milk_M2,Reset,Result[2]);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[PCMD(Add_Sugar_M2,Reset,Result[3]);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[PCMD(Agitate_M2,Reset,Result[4]);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Text>
+<![CDATA[PCMD(Heat_M2,Reset,Result[5]);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="PERIODIC" Rate="100" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="Recipe_Ops"/>
+<ScheduledProgram Name="Add_Egg_M2"/>
+<ScheduledProgram Name="Add_Sugar_M2"/>
+<ScheduledProgram Name="Add_Cream_M2"/>
+<ScheduledProgram Name="Add_Milk_M2"/>
+<ScheduledProgram Name="Agitate_M2"/>
+<ScheduledProgram Name="Heat_M2"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

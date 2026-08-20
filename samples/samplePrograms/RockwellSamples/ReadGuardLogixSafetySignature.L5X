@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="ReadGuardLogixSafetySignature" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:44:37 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="ReadGuardLogixSafetySignature" ProcessorType="1756-L63S" MajorRev="17" MinorRev="6" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:44:21 2018" LastModifiedDate="Fri Jan 19 07:44:21 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#001d_6ced" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo SafetyLocked="false" ConfigureSafetyIOAlways="false"/>
+<DataTypes/>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63S" Vendor="1" ProductType="14" ProductCode="86" Major="17" Minor="6" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+ SafetyNetwork="16#0000_41b4_02bb_cb7e">
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false" Width="2">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+<Module Name="ReadGuardLogixSafetySignature:Partner" CatalogNumber="1756-LSP" Vendor="1" ProductType="14" ProductCode="69" Major="17" Minor="6" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+ SafetyNetwork="16#0000_0000_0000_0000">
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="1" Type="ICP" Upstream="true" Width="0"/>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="SafetySignature" TagType="Base" DataType="STRING" Class="Standard">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+</Tag>
+<Tag Name="SafetySignatureCMD" TagType="Base" DataType="INT" Dimensions="2" Radix="Decimal" Class="Standard">
+<Comments>
+<Comment Operand="[0]">
+<![CDATA[No. of attributes for  service]]>
+</Comment>
+<Comment Operand="[1]">
+<![CDATA[Attribute 14 - Safety Signature]]>
+</Comment>
+</Comments>
+<Data>01 00 0E 00</Data>
+<Data Format="Decorated"><Array DataType="INT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="1"/>
+<Element Index="[1]" Value="14"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="SafetySignatureExists" TagType="Base" DataType="DINT" Radix="Decimal" Class="Safety">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SafetySignatureMSG" TagType="Base" DataType="MESSAGE" Class="Standard">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="4" ConnectedFlag="2" ConnectionPath="1, 0" CommTypeCode="0" ServiceCode="16#0003" ObjectType="16#0072" TargetObject="1" AttributeNumber="16#0000" LocalIndex="0" LocalElement="SafetySignatureCMD"
+ DestinationTag="SafetySignature"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainStdRoutine" Disabled="false" Class="Standard">
+<Tags>
+<Tag Name="MessageEnableBit" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="MainStdRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  -- No warranty or implied merchantability.
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[XIC(MessageEnableBit)[MSG(SafetySignatureMSG) ,OTU(MessageEnableBit) ];]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+<Program Name="SafetyProgram" TestEdits="false" MainRoutineName="MainSafetyRoutine" Disabled="false" Class="Safety">
+<Tags/>
+<Routines>
+<Routine Name="MainSafetyRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+This program shows how to read SafetySignature from the GuardLogix controller using a GSV instruction.
+]]>
+</Comment>
+<Text>
+<![CDATA[GSV(SAFETY,,SafetySignatureExists,SafetySignatureExists);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false" Class="Standard">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+<Task Name="SafetyTask" Type="PERIODIC" Rate="30" Priority="10" Watchdog="30" DisableUpdateOutputs="false" InhibitTask="false" Class="Safety">
+<ScheduledPrograms>
+<ScheduledProgram Name="SafetyProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="1"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>
