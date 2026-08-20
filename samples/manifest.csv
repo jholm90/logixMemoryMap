@@ -9,3 +9,10 @@ oddudt5_array_1000,"UDT OddUdt5: DINT, BOOL, BOOL",udt,samples/generated/udt/odd
 dint_10k_array,1x DINT[10000] tag(s),tag,samples/generated/tags/dint_10k_array.L5X,40000,,,,,,,
 motorstatus_test,"UDT MotorStatus: BOOL, DINT, BOOL",udt,samples/generated/udt/motorstatus_test.L5X,6,,,,,,,
 oddudt5_array_1000,"UDT OddUdt5: DINT, BOOL, BOOL",udt,samples/generated/udt/oddudt5_array_1000.L5X,5000,,,,,,,
+sample_0001,boolpack baseline 0bool,boolpack,C:\Users\JamesH\source\repos\jholm90\logixMemoryMap\samples\generated\boolpack\sample_0001_boolpack_baseline_0bool.L5X,,18128,,,1756-L81E,35.05,2026-08-20,3127600 available
+sample_0002,boolpack 1000bool,boolpack,C:\Users\JamesH\source\repos\jholm90\logixMemoryMap\samples\generated\boolpack\sample_0002_boolpack_1000bool.L5X,,114128,,,1756-L81E,35.05,2026-08-20,
+xic_ote_1000_comment100,,logic,C:\Users\JamesH\source\repos\jholm90\logixMemoryMap\samples\generated\logic\xic_ote_1000_comment100.L5X,,18112,,,1756-L81E,35.05,2026-08-20,
+xic_ote_1000_nocomment,,logic,C:\Users\JamesH\source\repos\jholm90\logixMemoryMap\samples\generated\logic\xic_ote_1000_nocomment.L5X,,18112,,,1756-L81E,35.05,2026-08-20,
+dint_10k_array,,tags,C:\Users\JamesH\source\repos\jholm90\logixMemoryMap\samples\generated\tags\dint_10k_array.L5X,,58224,,,1756-L81E,35.05,2026-08-20,
+motorstatus_test,,udt,C:\Users\JamesH\source\repos\jholm90\logixMemoryMap\samples\generated\udt\motorstatus_test.L5X,,18536,,,1756-L81E,35.05,2026-08-20,
+oddudt5_array_1000,,udt,C:\Users\JamesH\source\repos\jholm90\logixMemoryMap\samples\generated\udt\oddudt5_array_1000.L5X,,26488,,,1756-L81E,35.05,2026-08-20,
