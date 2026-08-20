@@ -25,6 +25,32 @@ Every entry is tagged with a confidence level:
 | STRING (built-in) | 4 + 82 = 86 | 4-byte LEN (DINT) + 82-byte DATA (SINT[82]) default |
 | Custom string type | 4 + N | 4-byte LEN + N-byte DATA, N = user-defined max length |
 
+## Predefined structure types (KNOWN)
+
+Firmware-native structures referenced by name in L5X Tag/Member DataType
+attributes but never given a member list in `Controller/DataTypes` --
+Logix Designer resolves them internally, so there's nothing to recurse.
+Only types with a well-documented, version-stable layout are modeled here;
+everything else found in real samples (MESSAGE, PID, AXIS_CIP_DRIVE and
+other motion/safety structures) is deliberately left unsized rather than
+guessed -- see OQ-PREDEFINED.
+
+| Type | Bytes | Notes |
+|---|---|---|
+| TIMER | 12 | 1 status DINT (EN/TT/DN bits) + PRE (DINT) + ACC (DINT) |
+| COUNTER | 12 | 1 status DINT (CU/CD/DN/OV/UN bits) + PRE (DINT) + ACC (DINT) |
+| CONTROL | 12 | 1 status DINT (EN/EU/DN/EM/ER/UL/IN/FD bits) + LEN/PRE-equivalent (DINT) + POS (DINT) |
+
+## Alias tags (KNOWN)
+
+A Tag with `TagType="Alias"` carries no `DataType` of its own in the L5X
+(only an `AliasFor` pointing at another tag or a module I/O point) and
+consumes no memory beyond what that target already accounts for. Sized as
+0 bytes, tagged `data_type=ALIAS`, confidence KNOWN -- not an error, not a
+guess, just genuinely zero-cost. Confirmed against real production L5X data
+(2026-08-20): 294 of 3394 tags across 4 real files were Alias tags with no
+DataType, ~21% of everything that failed to size before this was handled.
+
 ## UDT packing (ASSUMED, pending OQ-ALIGN / OQ-BOOLPACK confirmation)
 
 - Recurse members in declared order.

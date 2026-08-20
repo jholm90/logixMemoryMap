@@ -6,6 +6,8 @@ end to end before the sizing engine existed.
 
 `size`: run the Phase 1 tag/UDT sizing engine and print a flat byte
 breakdown -- see docs/TASKS.md Phase 1 output-contract item.
+
+`ui`: serve the Phase 2 treemap UI for an L5X file over a local web server.
 """
 
 from __future__ import annotations
@@ -59,6 +61,14 @@ def _cmd_size(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_ui(args: argparse.Namespace) -> int:
+    from l5x_memory_analyzer.ui.server import run
+
+    print(f"Serving http://{args.host}:{args.port} (Ctrl+C to stop)", file=sys.stderr)
+    run(args.l5x_path, host=args.host, port=args.port)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="l5x-memory-analyzer")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -70,6 +80,12 @@ def main(argv: list[str] | None = None) -> int:
     size_parser = subparsers.add_parser("size", help="Print a tag/UDT byte-size breakdown")
     size_parser.add_argument("l5x_path", help="Path to an L5X export file")
     size_parser.set_defaults(func=_cmd_size)
+
+    ui_parser = subparsers.add_parser("ui", help="Serve the treemap UI for an L5X file")
+    ui_parser.add_argument("l5x_path", help="Path to an L5X export file")
+    ui_parser.add_argument("--host", default="127.0.0.1")
+    ui_parser.add_argument("--port", type=int, default=8765)
+    ui_parser.set_defaults(func=_cmd_ui)
 
     args = parser.parse_args(argv)
     return args.func(args)

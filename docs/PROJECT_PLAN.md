@@ -1,11 +1,22 @@
 # Project Plan
 
-**Current phase: 1 — Tag / UDT / AOI sizing engine (in progress)**
+**Current phase: 2 — UI v1 (in progress)**
 
-Phase 0 exit criterion met (skeleton loads and prints raw XML of a sample
-L5X). Phase 1 tag/UDT/array/string sizing is implemented and unit-tested;
-AOI definitions, AOI instance multiplication, and Module/IO parsing are
-still open before this phase's own exit criterion is met.
+Phase 0 exit criterion met. Phase 1 tag/UDT/array/string sizing is
+implemented and unit-tested; Module/IO parsing is still open (needs real
+sample L5X files to verify module-tag XML shape against — none in
+`samples/local/` yet). AOI sizing was pulled out of Phase 1 into Phase 2b —
+an AOI is part local-tag data, part compiled logic (call-site
+multiplication), so sizing it correctly means touching the same unresolved
+logic-size problem Phase 4 exists to solve.
+
+Phase 2 UI v1 is underway: local Flask server + hand-rolled vanilla JS/SVG
+squarified treemap (`l5x-memory-analyzer ui <path>`), verified rendering
+against both the Phase-0 fixture and a richer synthetic multi-program/UDT
+fixture via headless-Chromium screenshots. Treemap, breadcrumb drill,
+sortable list, and type-utilization pane are working; UDT-defs-pool /
+module-overhead root groups and UDT-member drill-down are not yet built
+(see docs/TASKS.md for the precise cut line).
 
 Update the line above as phases close. Each phase has an exit criterion; don't
 start the next phase until it's met, even if it's tempting to jump ahead on UI
@@ -21,29 +32,27 @@ because it's more fun than writing another sizing table.
 **Exit criterion:** empty project skeleton runs, can load and print raw XML of a
 sample L5X file.
 
-## Phase 1 — Tag / UDT / AOI sizing engine
+## Phase 1 — Tag / UDT sizing engine
 Build the calculable-with-confidence half of the tool first, since it doesn't
-depend on empirical logic-compilation data.
+depend on empirical logic-compilation data. AOI sizing is intentionally not
+part of this phase — see Phase 2b.
 
 - Parse `Controller/DataTypes` (UDTs) → recursive size calculator
 - Parse `Controller/Modules` → I/O tag + connection size
 - Parse `Controller/Tags` (controller-scope) and `Programs/Program/Tags`
   (program-scope) → resolve each tag's type to a byte size
-- Parse `Controller/AddOnInstructionDefinitions` → AOI definition size +
-  per-instance-call local tag multiplication
 - Atomic type table, BOOL packing rule, STRING/custom string overhead, array
   overhead — all sourced from `MEMORY_MODEL.md`, not hardcoded
 - Output: flat list of `{path, category, bytes, %of_total}` — this is the data
   contract the UI consumes later, so nail the shape here
 
 **Exit criterion:** given any L5X, engine emits a full byte breakdown for every
-tag/UDT/AOI with no logic involved yet. Numbers are provisional (pending Phase 3
-validation) but the code path is complete end to end.
+tag/UDT with no AOI or logic involved yet. Numbers are provisional (pending
+Phase 3 validation) but the code path is complete end to end.
 
 ## Phase 2 — UI v1 (blank project, tags only)
 - Treemap component, root = controller tag space + per-program tag space
-  (no tasks/routines drilling yet, since there's no logic sizing to show)
-- Click-to-drill into a UDT or AOI to see member-level breakdown
+  (no tasks/routines/AOI drilling yet, since neither is sized)
 - List view sorted by % usage (the WinDirStat "file list" pane), sortable by
   name/type/bytes/%
 - Type-utilization summary (the WinDirStat "file type" pane) — e.g. % of budget
@@ -51,6 +60,21 @@ validation) but the code path is complete end to end.
 
 **Exit criterion:** load a blank/near-blank L5X (tags only, no meaningful logic),
 UI renders treemap + list + type summary correctly against Phase 1 output.
+
+## Phase 2b — AOI sizing (deferred from Phase 1)
+Picked up once the UI shell exists, so AOI's local-tag-plus-logic-call-site
+nature doesn't stall UI progress. Definition-level sizing (locals + params)
+is tag-like and tractable now; instance multiplication needs call-site counts
+and is likely blocked on Phase 4 logic parsing (OQ-AOIINSTANCE) — expect this
+phase to close partially and finish once Phase 4 lands.
+
+- Parse `Controller/AddOnInstructionDefinitions` → AOI definition size
+- Click-to-drill into an AOI to see local/param-level breakdown (UI addition)
+- AOI instance multiplication per call site (may stub pending Phase 4)
+
+**Exit criterion:** AOI definitions sized and drillable in the UI at the
+per-instance-definition level; instance multiplication either implemented or
+explicitly stubbed with the blocking dependency documented.
 
 ## Phase 3 — Sample validation round 1 (tags/UDTs only)
 - Generate controlled L5X samples (10k BOOL array, 10k DINT array, 10k-element

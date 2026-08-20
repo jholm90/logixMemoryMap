@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>L5X Memory Analyzer</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header id="app-header">
+    <div id="app-title">L5X Memory Analyzer</div>
+    <div id="file-info">Loading&hellip;</div>
+    <div id="budget-bar-wrap">
+      <div id="budget-bar"><div id="budget-bar-fill"></div></div>
+      <div id="budget-label"></div>
+    </div>
+  </header>
+
+  <nav id="tabs">
+    <button class="tab-btn active" data-tab="treemap">Treemap</button>
+    <button class="tab-btn" data-tab="list">List</button>
+    <button class="tab-btn" data-tab="types">Type Summary</button>
+  </nav>
+
+  <div id="breadcrumb"></div>
+
+  <main>
+    <section id="panel-treemap" class="panel active">
+      <svg id="treemap-svg"></svg>
+      <div id="tooltip" class="hidden"></div>
+    </section>
+
+    <section id="panel-list" class="panel">
+      <table id="list-table">
+        <thead>
+          <tr>
+            <th data-sort="name">Name</th>
+            <th data-sort="data_type">Type</th>
+            <th data-sort="category">Category</th>
+            <th data-sort="bytes">Bytes</th>
+            <th data-sort="pct_of_total">%</th>
+            <th data-sort="basis">Confidence</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section id="panel-types" class="panel">
+      <div id="type-summary"></div>
+    </section>
+  </main>
+
+  <footer id="errors-footer" class="hidden"></footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

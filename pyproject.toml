@@ -9,7 +9,7 @@ description = "WinDirStat for CompactLogix controller memory -- parses an L5X ex
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
-dependencies = ["pyyaml>=6.0"]
+dependencies = ["pyyaml>=6.0", "flask>=3.0"]
 
 [project.optional-dependencies]
 dev = ["pytest>=7.0"]
@@ -21,7 +21,7 @@ l5x-memory-analyzer = "l5x_memory_analyzer.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-l5x_memory_analyzer = ["sizing/memory_model.yaml"]
+l5x_memory_analyzer = ["sizing/memory_model.yaml", "ui/static/*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

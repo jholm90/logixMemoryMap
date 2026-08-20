@@ -12,6 +12,20 @@ atomic_types:
   LINT: { bytes: 8, confidence: KNOWN }
   REAL: { bytes: 4, confidence: KNOWN }
 
+# Firmware-native structure types referenced by name in L5X (never appear in
+# Controller/DataTypes -- there's no member list to recurse, Logix Designer
+# just resolves them internally). Only the ones with a well-documented fixed
+# layout go here; see docs/MEMORY_MODEL.md and docs/OPEN_QUESTIONS.md
+# OQ-PREDEFINED for everything else found in real samples (MESSAGE, PID,
+# AXIS_CIP_DRIVE, motion/safety structures) that's NOT safe to guess at.
+predefined_structures:
+  # TIMER/COUNTER/CONTROL share the same documented 3-DINT layout: one DINT
+  # of packed status bits (EN/TT/DN for TIMER; CU/CD/DN/OV/UN for COUNTER;
+  # EN/EU/DN/EM/ER/UL/IN/FD for CONTROL) + PRE (DINT) + ACC/POS (DINT).
+  TIMER: { bytes: 12, confidence: KNOWN }
+  COUNTER: { bytes: 12, confidence: KNOWN }
+  CONTROL: { bytes: 12, confidence: KNOWN }
+
 bool:
   # Standalone BOOL controller/program tags: allocated as a full DINT, not
   # bit-packed. See OQ-BOOLPACK -- ASSUMED, pending Phase 3 confirmation.

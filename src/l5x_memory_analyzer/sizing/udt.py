@@ -33,6 +33,9 @@ def compute_element_size(
     if data_type in model.atomic_types:
         atomic = model.atomic_types[data_type]
         return atomic.bytes, atomic.confidence
+    if data_type in model.predefined_structures:
+        struct = model.predefined_structures[data_type]
+        return struct.bytes, struct.confidence
     if data_type == "BOOL":
         return model.bool.standalone_tag_bytes, model.bool.standalone_confidence
     if data_type == "STRING":

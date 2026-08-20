@@ -6,8 +6,10 @@ a single commit-sized unit of work.
 ## Phase 0 — Setup
 - [x] Decide stack (OQ-STACK) — parser language, UI framework
 - [x] Repo skeleton: `src/parser`, `src/sizing`, `src/ui`
-- [ ] Get one real (sanitized) production L5X into `samples/` as dev fixture
-      (needs James to drop a sanitized export into `samples/local/`, gitignored)
+- [x] Get real production L5X files into `samples/local/` (gitignored) as dev
+      fixtures — 2026-08-20, 4 real files (unsanitized, local-only). See
+      docs/OPEN_QUESTIONS.md OQ-PREDEFINED for what running the sizing engine
+      against them turned up.
 - [x] `samples/manifest.csv` created with columns (see SAMPLE_GENERATION.md)
 - [x] XML load + basic namespace/schema sanity check for whatever L5X version(s)
       in use (OQ-L5XVERSION) — `parser/load.py` validates root tag, records
@@ -33,10 +35,6 @@ a single commit-sized unit of work.
 - [x] Custom STRING type sizing (user-defined max length UDTs) — separate path
       from generic UDT recursion — `Family="StringFamily"` special-cased so it
       doesn't inherit the UDT-alignment UNKNOWN taint
-- [ ] AOI definition parser: `AddOnInstructionDefinitions` local tags + params
-- [ ] AOI instance multiplication: each call site in logic adds one instance's
-      worth of local tag memory (needs call-site count from logic parse —
-      coordinate with Phase 4 work, may need to stub this until then)
 - [ ] Module/IO parser: `Controller/Modules` → connection tag sizing (Local I/O
       first, produced/consumed second — OQ-PRODCONS)
 - [x] Controller-scope vs program-scope tag separation in output
@@ -47,19 +45,63 @@ a single commit-sized unit of work.
       MEMORY_MODEL.md confidence)
 - [x] Unit tests against hand-calculated small UDT (nested, 2 levels, mixed
       BOOL/DINT/STRING members) — `tests/test_sizing.py`, `tests/test_parser.py`
+- [x] Validated against 4 real production L5X files (2026-08-20, 3394 tags
+      total). Found and fixed two real gaps this way, not from theory:
+      Alias tags (`TagType="Alias"`, no DataType, 294 occurrences / ~21% of
+      all sizing errors) now correctly size as 0 bytes/KNOWN instead of
+      erroring — they're a pointer onto another tag's memory, not unsized
+      data. TIMER/COUNTER/CONTROL (well-documented 12-byte AB structures)
+      now modeled as `predefined_structures` in memory_model.yaml. Error
+      rate on the real corpus dropped 41.6% → 29.5%. Remaining errors are
+      AOI-instance tags (46.8% of what's left, confirms Phase 2b priority)
+      and a long tail of other firmware-native structures (motion/axis/
+      safety) deliberately left unsized rather than guessed — cataloged in
+      OQ-PREDEFINED for real research, not silently zeroed or estimated.
 
 ## Phase 2 — UI v1
-- [ ] Treemap component (squarified or similar algorithm)
-- [ ] Root view: controller tags / program tags (per program) / UDT defs pool /
-      AOI defs pool / module overhead, sized by bytes
-- [ ] Click-to-drill: UDT → members, AOI → locals+params, program → its tags
-- [ ] Breadcrumb / back navigation
-- [ ] Sortable list view (name / type / bytes / %)
-- [ ] Type-utilization summary pane (% of budget per data type across whole
+Stack decided 2026-08-20 (OQ-STACK closed): local Flask server, vanilla JS/SVG
+squarified treemap in the browser, zero CDN/external-JS dependency (engineering
+workstations on OT networks are frequently airgapped — a public tool can't
+assume runtime internet access). `l5x-memory-analyzer ui <path>` serves it.
+Verified 2026-08-20 against both the Phase-0 fixture and a richer synthetic
+multi-program/multi-UDT fixture, screenshotted via headless Chromium — not
+just "code compiles," actually rendered and clicked through.
+
+- [x] Treemap component (squarified algorithm, hand-rolled in
+      `ui/static/app.js` — no D3/external lib)
+- [x] Root view: controller tags / program tags (per program), sized by bytes
+- [ ] UDT defs pool / module overhead as their own root-level groups — not
+      built. Right now a UDT only appears sized-in-place at each tag that
+      uses it; there's no separate "all UDT definitions" browsable pool.
+      Module overhead has nothing to show yet regardless (Module/IO parser
+      still unimplemented, see Phase 1).
+- [x] Click-to-drill: program → its tags (drilling into a "Program: X" group
+      node shows that program's tags)
+- [ ] Click-to-drill: UDT → members — NOT built. `sizing/report.py`'s flat
+      SizeEntry only carries a UDT tag's *total* size, not a member-level
+      breakdown, so there's nothing for the UI to drill into yet. Needs a
+      report-contract change (nested entries or a members sub-list per UDT
+      tag), not just a frontend change.
+- [x] Breadcrumb / back navigation
+- [x] Sortable list view (name / type / bytes / %) — click column header to sort
+- [x] Type-utilization summary pane (% of budget per data type across whole
       project, not just top-level categories)
-- [ ] Color coding: exact (tags/UDT) vs estimated (logic, once Phase 5 lands) —
-      build the visual language now even if unused until later
-- [ ] Load Phase-0 dev fixture, sanity-check against manual spot-checks
+- [x] Color coding — reinterpreted: coded by `basis` (KNOWN/ASSUMED/FITTED/
+      UNKNOWN) rather than `tier` (exact/estimated), since every entry is
+      tier=exact until Phase 4/5 adds logic sizing and a tier-based scheme
+      would have nothing to distinguish yet. Basis-coding is live now and
+      immediately useful (e.g. a UDT-containing tag renders red/UNKNOWN
+      because of the still-open OQ-ALIGN taint). Revisit/extend to tier once
+      Phase 5 gives it something to encode.
+- [x] Load Phase-0 dev fixture, sanity-check against manual spot-checks
+
+## Phase 2b — AOI sizing (deferred from Phase 1)
+- [ ] AOI definition parser: `AddOnInstructionDefinitions` local tags + params
+- [ ] UI: click-to-drill into an AOI defs pool node → locals+params breakdown
+- [ ] AOI instance multiplication: each call site in logic adds one instance's
+      worth of local tag memory (needs call-site count from logic parse —
+      coordinate with Phase 4 work, may need to stub this until then,
+      OQ-AOIINSTANCE)
 
 ## Phase 3 — Sample validation round 1
 - [ ] Generate: 10k-element BOOL array (controller tag)

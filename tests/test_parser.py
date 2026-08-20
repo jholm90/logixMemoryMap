@@ -28,6 +28,7 @@ _UDT_XML = """
       <Tag Name="ScalarDint" TagType="Base" DataType="DINT"/>
       <Tag Name="ArrayDint" TagType="Base" DataType="DINT" Dimensions="10"/>
       <Tag Name="UdtTag" TagType="Base" DataType="MyUdt"/>
+      <Tag Name="AliasedIO" TagType="Alias" AliasFor="Local:2:I.Ch0Data"/>
     </Tags>
     <Programs>
       <Program Name="MainProgram">
@@ -76,3 +77,15 @@ def test_parse_tags_controller_and_program_scope():
     assert by_name["ScalarDint"].dimensions == ()
     assert by_name["ArrayDint"].dimensions == (10,)
     assert by_name["LocalBool"].scope == "program:MainProgram"
+
+
+def test_parse_alias_tag():
+    root = ET.fromstring(_UDT_XML)
+    tags = parse_tags(root)
+    by_name = {t.name: t for t in tags}
+
+    alias = by_name["AliasedIO"]
+    assert alias.is_alias is True
+    assert alias.data_type is None
+    assert alias.alias_for == "Local:2:I.Ch0Data"
+    assert by_name["ScalarDint"].is_alias is False

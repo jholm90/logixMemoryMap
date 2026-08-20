@@ -33,6 +33,7 @@ ESTIMATED = "estimated"
 class SizeEntry:
     path: str
     category: str  # "controller_tag" | "program_tag"
+    data_type: str
     bytes: int
     pct_of_total: float
     tier: str  # EXACT | ESTIMATED
@@ -49,27 +50,34 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     data_types = parse_data_types(root)
     tags = parse_tags(root)
 
-    sized: list[tuple[str, str, int, str]] = []
+    sized: list[tuple[str, str, str, int, str]] = []
     errors: list[SizeError] = []
     for tag in tags:
         category = "controller_tag" if tag.scope == CONTROLLER_SCOPE else "program_tag"
+        if tag.is_alias:
+            # An Alias tag is a pointer/rename onto another tag or module I/O
+            # point -- it has no DataType of its own in the L5X and consumes
+            # no memory beyond what its target already accounts for.
+            sized.append((tag.path, category, "ALIAS", 0, "KNOWN"))
+            continue
         try:
             size, basis = compute_array_size(tag.data_type, tag.dimensions, data_types, model)
         except (UnknownDataTypeError, RecursiveUdtError) as exc:
             errors.append(SizeError(path=tag.path, message=str(exc)))
             continue
-        sized.append((tag.path, category, size, basis))
+        sized.append((tag.path, category, tag.data_type, size, basis))
 
-    total_bytes = sum(size for _, _, size, _ in sized)
+    total_bytes = sum(size for _, _, _, size, _ in sized)
     entries = [
         SizeEntry(
             path=path,
             category=category,
+            data_type=data_type,
             bytes=size,
             pct_of_total=(size / total_bytes * 100) if total_bytes else 0.0,
             tier=EXACT,
             basis=basis,
         )
-        for path, category, size, basis in sized
+        for path, category, data_type, size, basis in sized
     ]
     return entries, errors

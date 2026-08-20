@@ -54,6 +54,7 @@ class ArrayModel:
 @dataclass(frozen=True)
 class MemoryModel:
     atomic_types: dict[str, AtomicType]
+    predefined_structures: dict[str, AtomicType]
     bool: BoolModel
     string: StringModel
     udt: UdtModel
@@ -69,10 +70,15 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
         name: AtomicType(bytes=v["bytes"], confidence=v["confidence"])
         for name, v in raw["atomic_types"].items()
     }
+    predefined_structures = {
+        name: AtomicType(bytes=v["bytes"], confidence=v["confidence"])
+        for name, v in raw.get("predefined_structures", {}).items()
+    }
     b = raw["bool"]
     s = raw["string"]
     return MemoryModel(
         atomic_types=atomic_types,
+        predefined_structures=predefined_structures,
         bool=BoolModel(
             standalone_tag_bytes=b["standalone_tag_bytes"],
             standalone_confidence=b["standalone_confidence"],
