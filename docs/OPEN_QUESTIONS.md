@@ -77,10 +77,22 @@ don't conflate with OQ-BOOLPACK, which covers scalar standalone BOOL tags.
 (so each element wastes the same padding) or is the array treated as one
 contiguous block? Affects array-of-UDT formula.
 
-**OQ-PRODCONS** — Produced/consumed tag connection overhead formula unknown.
-Need to isolate: base connection overhead (fixed per connection) vs. per-byte
-payload cost vs. number of consumers of a single produced tag (does producing
-to 3 consumers cost 3x, or is overhead shared?).
+**OQ-PRODCONS — RESOLVED (2026-08-20), deprioritized rather than modeled.**
+Checked real data first: 0 produced/consumed tags across all 4 real sample
+files, so no example to derive a formula from even if it mattered. James:
+no special connection-overhead formula needed at all, *if* done correctly —
+a correctly-built produced/consumed tag's DataType is a UDT that includes a
+`CONNECTION_STATUS`-typed member itself, so the connection's status data is
+already counted by ordinary UDT-member recursion, not something hidden
+outside the tag's own size. There's probably some true fixed overhead beyond
+that (connection table entry, max-consumers config, etc. — not visible in
+the L5X at all) but James: "a couple bytes here/there has no meaningful
+impact on the 1%" tolerance (OQ-TOLERANCE). No dedicated connection-overhead
+work planned. One loose end: `CONNECTION_STATUS` would need its own
+`predefined_structures` entry (MEMORY_MODEL.md) if/when it shows up in real
+data, same as TIMER/COUNTER/CONTROL — not urgent since nothing in the
+current corpus uses it, but don't assume it's already modeled if a future
+sample turns out to need it.
 
 **OQ-PREDEFINED — NEW (2026-08-20), found by running the sizing engine
 against James's own real production L5X files.** Beyond TIMER/COUNTER/
