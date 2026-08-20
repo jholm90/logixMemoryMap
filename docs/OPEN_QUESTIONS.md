@@ -463,6 +463,20 @@ it only sizes raw data bytes.
   specifically (a *type descriptor* cost that doesn't depend on the name
   at all is folded into that ~80 intercept right now) before this becomes
   an actual model constant rather than a fitted-line observation.
+- **Real char limit confirmed (2026-08-20):** scanned every real production
+  L5X in `samples/local/` (20 files, James's own real corpus) — max tag
+  name length found is exactly **40 characters**, with real tags densely
+  populating the top of that range (33 tags at 40 chars, 54 at 39, 57 at
+  38, 90 at 37, 120 at 36...). Confirms 40 is the genuine hard limit, not
+  a guess, and that James's real tags cluster right at it -- so the
+  linear fit needs to hold specifically near that edge, not just anywhere
+  in the 4-40 range. James: "spot check every 16 chars to ensure that it
+  lines up" rather than exhaustively re-testing every few characters going
+  forward. Added a small independent spot-check batch (deliberately a
+  *different* type/count than the DINT-50 sweep, so it's cross-validation
+  rather than interpolating the same setup): `tagname_spotlen08_40real.L5X`,
+  `tagname_spotlen24_40real.L5X`, `tagname_spotlen40_40real.L5X` (40 REAL
+  tags each, names at 8/24/40 chars).
 - **DataType-definition-vs-instance — CONFIRMED (2026-08-20), real data,
   exact linear fit.** `motorstatus_def_only.L5X` (0 instances):
   baseline-corrected 304 blocks — this is the pure DataType-definition
