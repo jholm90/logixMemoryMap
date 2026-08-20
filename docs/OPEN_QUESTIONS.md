@@ -101,36 +101,37 @@ tail of other firmware-native/library structure types that also never get a
 member list in `Controller/DataTypes`, so they currently surface as explicit
 sizing errors (correct/honest behavior per the ground-truth constraint --
 better an explicit error than a silently wrong guessed number) rather than
-counting toward any total. **Updated 2026-08-20 after Phase 2b (AOI-instance
-sizing) landed** — that fix also resolved every AOI-nested reference to these
-same types (e.g. an AOI LocalTag typed `TIMER` inside another AOI), so the
-counts below are what's left of the 300 remaining errors (down from 1411 at
-session start) across 4 real files, 3394 tags total:
+counting toward any total.
+
+**Updated again 2026-08-20 after 12 more real files arrived** (whole real
+corpus now 16 files, 39,655 tags, 277MB): overall error rate 5.6%, and the
+picture is unambiguous —
 
 | Type | Count | Notes |
 |---|---|---|
-| MOTION_INSTRUCTION | 86 | |
-| AXIS_CIP_DRIVE | 64 | |
-| FBD_TIMER | 47 | FBD (function block diagram) variant of TIMER, different layout, don't assume it's also 12 bytes |
+| MOTION_INSTRUCTION | 1305 | by far the largest single gap in the whole model |
+| AXIS_CIP_DRIVE | 382 | |
+| CAM_PROFILE | 89 | |
+| AXIS_VIRTUAL | 76 | |
+| MESSAGE | 50 | real MSG structure is large/version-dependent, do not guess |
+| CAM | 50 | |
+| FBD_TIMER | 47 | FBD variant of TIMER, different layout, don't assume 12 bytes |
+| Timestamp | 34 | |
 | AxisSTO | 29 | likely Safety/Guard I/O device-profile-generated |
+| ts_SpdAdjOutput | 27 | |
 | DCI_STOP | 26 | likely Safety/Guard I/O device-profile-generated |
-| RATE_LIMITER | 10 | |
-| CONFIGURABLE_ROUT | 7 | |
-| AXIS_VIRTUAL | 5 | |
-| GateBox | 5 | |
-| MESSAGE | 4 | real MSG structure is large/version-dependent, do not guess |
-| MOTION_GROUP | 3 | |
-| CAM_PROFILE | 4 | |
-| a handful of others (≤3 each) | ~14 | `Ud_Sensor`, `JulianDay`, `IO_Block`, module-connection-style names like `AB:ENC1_DIAG:I:0`, all in the one `TargetType="Program"` partial export -- likely types only fully defined in the parent project this snippet was cut from, not a parser gap |
+| ALARM_DIGITAL | 16 | worth double-checking against James's OQ-ALARM answer (ALMD/ALMA tags "never used") -- this may be a different mechanism (e.g. a UDT member referencing the type) rather than a contradiction, not yet investigated |
+| MOTION_GROUP | 15 | |
+| RATE_LIMITER, SCALE | 10 each | |
+| everything else (≤9 each) | ~40 | long tail, not worth itemizing individually |
 
-None of these get a guessed size -- they need either real Rockwell
-documentation confirming a stable byte layout (like TIMER/COUNTER/CONTROL
-already have) or empirical Phase 3 measurement before going in
-MEMORY_MODEL.md. Motion/axis structures (MOTION_INSTRUCTION, AXIS_CIP_DRIVE,
-AXIS_VIRTUAL, MOTION_GROUP = 158 occurrences) are the highest-frequency and
-most worth chasing next, and motion axis structures are known to be large,
-so likely a meaningful chunk of unaccounted memory in motion-heavy programs
-specifically.
+**Motion/cam structures alone (MOTION_INSTRUCTION + AXIS_CIP_DRIVE +
+CAM_PROFILE + AXIS_VIRTUAL + CAM + MOTION_GROUP) = 1917 of 2234 total
+errors, ~86%.** This is now unambiguously the single highest-value gap to
+close next, confirmed by real data at 16-file scale, not a guess — matches
+James's own framing ("lots of motion instructions, camming") exactly. None
+of these get a guessed size still -- needs real Rockwell documentation or
+empirical Phase 3 measurement before anything goes in MEMORY_MODEL.md.
 
 **OQ-AOIINSTANCE — NARROWED (2026-08-20).** Named AOI-instance tags (a real
 Tag with `DataType=<AOIName>`) are now sized (Phase 2b, see MEMORY_MODEL.md)
