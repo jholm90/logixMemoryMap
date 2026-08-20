@@ -38,10 +38,26 @@ def write_sample(l5x_text: str, out_path: Path) -> int:
 
 
 def append_manifest_row(sample_id: str, description: str, category: str, l5x_path: Path, bytes_predicted: int) -> None:
-    is_new = not MANIFEST_PATH.exists()
-    with open(MANIFEST_PATH, "a", newline="", encoding="utf-8") as f:
+    """Upsert keyed on sample_id: regenerating a sample updates its existing
+    row (description/category/predicted_bytes) in place rather than piling up
+    a duplicate, so any actual_bytes already logged against that sample_id
+    survives a regeneration untouched."""
+    rel_path = str(l5x_path.relative_to(REPO_ROOT))
+    rows = []
+    if MANIFEST_PATH.exists():
+        with open(MANIFEST_PATH, newline="", encoding="utf-8") as f:
+            rows = list(csv.reader(f))[1:]  # drop header, rewritten below
+
+    updated = False
+    for row in rows:
+        if row and row[0] == sample_id:
+            row[1:5] = [description, category, rel_path, str(bytes_predicted)]
+            updated = True
+            break
+    if not updated:
+        rows.append([sample_id, description, category, rel_path, str(bytes_predicted), "", "", "", "", "", "", ""])
+
+    with open(MANIFEST_PATH, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        if is_new:
-            writer.writerow(MANIFEST_COLUMNS)
-        rel_path = l5x_path.relative_to(REPO_ROOT)
-        writer.writerow([sample_id, description, category, str(rel_path), bytes_predicted, "", "", "", "", "", "", ""])
+        writer.writerow(MANIFEST_COLUMNS)
+        writer.writerows(rows)
