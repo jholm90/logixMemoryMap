@@ -16,10 +16,24 @@ no D3 or any CDN-loaded JS, since engineering workstations running Studio
 the browser has internet access at runtime. Keeps the whole project
 pip-installable in one language plus a dependency-free frontend.
 
-**OQ-L5XVERSION** — Which Logix Designer / L5X schema version(s) must this
-support? Studio 5000 versions have changed L5X schema details over the years
-(attribute additions, AOI signature format, etc). Need to pin a minimum
-supported version or handle multiple.
+**OQ-L5XVERSION — RESOLVED (2026-08-20).** Primary target: **v35** (L8x /
+CompactLogix 5380-class processors) — this is where Phase 3 validation
+testing will primarily happen. Spot-check cross-version compatibility later
+against an **L6 v20** processor and an **L7 v30** processor. Build/test
+against v35 schema first, but don't hardcode assumptions that only hold for
+v35 — the L6/L7 spot checks exist specifically to catch schema drift.
+
+Checked this project's own real sample files against that plan: 3 of 4
+(`BAI10048...`, `BaillieLeitchField_Edger...`, `SJ_Gormley...`) are v35
+projects at the top level, matching. `311DGeneratedProgram.L5X` is a v32
+`TargetType="Program"` snippet export (an older/different project this was
+cut from) — not v35, and not a Controller-level export either, so it's an
+outlier in the current corpus, not representative of the v35/v20/v30 plan.
+(Nested per-element `SoftwareRevision` values inside the v35 files, ranging
+v16–v32, are individual module/AOI authored-at versions embedded in the
+export, not the project's own schema version — don't confuse the two.)
+v20/v30 schema differences remain completely unvalidated — no sample data
+for either yet.
 
 **OQ-TOLERANCE** — What delta between predicted and actual bytes counts as
 "good enough" for Phase 3 exit? 1%? 0.1%? Exact match? Exact match may be
