@@ -136,3 +136,34 @@ foreach ($row in $remaining) {
 
 Write-Host ""
 Write-Host "Done for now."
+
+# Auto-push (James, 2026-08-20: "so i dont have to ask"). Straight to main,
+# no branches/merges -- ff-only pull first so a push never turns into a
+# merge; if that fails (diverged history) it stops and says so rather than
+# doing anything automatic about it.
+$repoRoot = Split-Path $PSScriptRoot -Parent
+$manifestFull = (Resolve-Path $ManifestPath).Path
+Push-Location $repoRoot
+try {
+    $dirty = git status --porcelain -- $manifestFull
+    if (-not $dirty) {
+        Write-Host "No manifest changes to push."
+    } else {
+        git fetch origin main *>$null
+        git merge --ff-only origin/main *>$null
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "Local main has diverged from origin/main -- not auto-pushing. Resolve manually, then commit/push samples/manifest.csv yourself."
+        } else {
+            git add $manifestFull
+            git commit -m "Log real memory capture results" *>$null
+            git push origin main
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "Pushed."
+            } else {
+                Write-Host "Push failed -- run 'git push origin main' manually."
+            }
+        }
+    }
+} finally {
+    Pop-Location
+}
