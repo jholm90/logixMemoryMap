@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+node_modules/
+
+# real/proprietary program exports - never commit these
+samples/local/
+*.L5X
+!samples/generated/**/*.L5X
