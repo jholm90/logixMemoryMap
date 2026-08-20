@@ -5,7 +5,7 @@ to compare against this tool's prediction. This is the whole feedback loop that
 Phases 3/4/4b run on — get the procedure locked before generating 30-40 files
 against it, or the whole batch has to be redone.
 
-## Procedure per sample (semi-automated — see OQ-MEMREADMETHOD for the still-open piece)
+## Procedure per sample (batch-convert automated, memory read manual — settled, see OQ-MEMREADMETHOD)
 
 Researched 2026-08-20 (see OQ-GENMETHOD/OQ-MEMREADMETHOD for sourcing): Rockwell
 publishes an official **Logix Designer SDK** (.NET, `RockwellAutomation.LogixDesigner`)
@@ -26,13 +26,16 @@ straight from an ACD file (`CreateChassisFromACD`) and hand back a
 communications path — so "download to a target" doesn't require a real
 controller or manual Emulate setup either.
 
-What's still NOT confirmed: whether any GSV/system-value attribute actually
-exposes controller memory usage as a readable value. If it does, the full loop
-(convert → spin up Echo chassis → download → GSV-into-tag → read tag via SDK →
-log) closes with zero manual steps per sample. If it doesn't, memory has to be
-read from Controller Properties → Memory tab by eye — this is the fallback
-below, and the one still confirmed manual step regardless of how far the SDK
-work goes.
+**RESOLVED 2026-08-20 (OQ-MEMREADMETHOD): there is no programmatic memory read
+on target hardware.** GSV has no memory attribute on any Logix 5000 platform.
+Rockwell does document an MSG/CIP path ("Determine Controller Memory
+Information"), but its own docs state it's explicitly unsupported on
+CompactLogix 5380/5480, ControlLogix 5580, and GuardLogix 5380/5580 — i.e.
+the entire current lineup. So there's no automated download+read loop worth
+building: Controller Properties → Memory tab, read by eye, is not a fallback,
+it's the only method. Emulator automation (Logix Echo) isn't worth pursuing
+for this purpose either, since it would only pay off if the memory read on
+the other end were also automatable, and it isn't.
 
 1. Start from a fixed empty baseline project (same controller model/firmware
    rev for every sample — do not mix CompactLogix models mid-test, memory
@@ -40,11 +43,14 @@ work goes.
 2. Convert the sample L5X to ACD (`scripts/batch_l5x_to_acd.ps1`, batchable —
    no per-sample manual import).
 3. Verify/compile (no errors — a sample that doesn't compile is not valid data).
-4. Download to controller (real hardware or Emulate — decision per OQ-EMULATE).
+4. Download to controller (real hardware or Emulate — decision per OQ-EMULATE;
+   note Logix Echo automation buys nothing here beyond convenience, since the
+   memory read on the other end is manual regardless).
 5. Read memory used: Controller Properties → Memory tab (bytes used / bytes
-   free) — manual for now. `scripts/batch_memory_capture.ps1` opens each
-   converted ACD in turn and prompts for this number so the file-hunting and
-   manifest-row formatting isn't manual too, even though the read itself is.
+   free) — this is the only method, confirmed, not a placeholder pending
+   automation. `scripts/batch_memory_capture.ps1` opens each converted ACD
+   in turn and prompts for this number so the file-hunting and manifest-row
+   formatting isn't manual too, even though the read itself always will be.
 6. Record: baseline-before bytes, after bytes, delta = sample's actual footprint.
 7. Log to `samples/manifest.csv` (batch_memory_capture.ps1 does this per-row;
    resumable across a multi-session batch of hundreds of samples).

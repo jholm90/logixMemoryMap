@@ -126,25 +126,43 @@ whole folder. Still open: whether SDK-driven download+online actually behaves
 identically to a GUI-driven one for compile-error detection, and the
 GSV/memory-read piece, which stays with OQ-MEMREADMETHOD below.
 
-**OQ-MEMREADMETHOD** — Best method to read actual controller memory usage
-after download: Studio 5000 Controller Properties → Memory tab (manual read),
-or a GSV (Get System Value) instruction reading a memory-related system
-attribute for a fully scripted read-back? GSV approach would let sample
-generation AND memory read-back both be automated — worth confirming which
-GSV attributes actually expose this (e.g. WHO/CPU memory attributes) before
-committing to the manual-read workflow in TESTING_PLAN.md. See LDSDK note
-under OQ-GENMETHOD — if GSV exposes it and the SDK can read the tag, this
-closes without ever touching the Controller Properties dialog. STILL UNRESOLVED
-as of 2026-08-20 — the SDK research confirmed the *plumbing* to read an
-arbitrary tag value back programmatically (`GetTagValue*Async`), but did not
-turn up confirmation that any GSV attribute actually surfaces memory-used/free.
-Interim fallback in place: `scripts/batch_memory_capture.ps1` opens each
-converted ACD in Studio 5000 and prompts for a manually-read number — not
-automated, but removes the per-sample file-hunting/manifest-formatting toil
-so a batch of hundreds of samples doesn't have to be pointed-and-clicked by
-hand. Whoever spikes the GSV question next should check the Get System Value
-instruction's `WHO`/controller-memory-attribute class list in the current
-Logix Designer instruction help.
+**OQ-MEMREADMETHOD — RESOLVED 2026-08-20, and the answer is bad news for full
+automation.** Deep-dive against Rockwell's own docs (converging, independently
+repeated results across multiple searches, all pointing at the same official
+page — not a single unverifiable snippet):
+
+- **GSV cannot read memory usage at all, on any controller.** There is no
+  memory-used/free attribute exposed through the GSV instruction on any
+  Logix 5000 platform. Confirmed dead end — stop looking here.
+- Rockwell **does** document a programmatic path, but it's MSG-based, not
+  GSV: an explicit CIP message (Get Attribute) that returns available/total/
+  largest-contiguous **I/O and expansion memory**, as 32-bit values split
+  across two INTs. Official page: "Determine Controller Memory Information"
+  (`rockwellautomation.com/.../instruction-set/input-output-instructions/
+  determine-controller-memory-information.html`, part of the Studio 5000
+  Logix Designer 37.00 instruction set docs).
+- **That MSG path is explicitly unsupported on the entire current controller
+  lineup.** Rockwell's own page states: *"This information is not applicable
+  to CompactLogix 5380, CompactLogix 5480, ControlLogix 5580, Compact
+  GuardLogix 5380, and GuardLogix 5580 controllers, as the memory used
+  attributes are not supported or accessible in these controllers."* It only
+  works on legacy families (e.g. 1756-L55-class ControlLogix / older
+  CompactLogix 5370-generation hardware).
+
+**Conclusion for this project:** since CompactLogix 5380 is the current
+product line and the presumed target (confirm against James's actual
+controller model), **there is no programmatic path to memory usage** —
+not GSV, not MSG/CIP, nothing documented. Controller Properties → Memory tab
+is not a stopgap, it's the only method available on target hardware. This
+also means Logix Echo emulator automation (see OQ-GENMETHOD) buys nothing
+for memory reading specifically — it would only be worth building if some
+other part of the loop needed online access (it doesn't, currently).
+`scripts/batch_memory_capture.ps1` is scoped correctly for this reality
+already: it never assumed a scripted read, only streamlined the
+file-hunting/manifest-formatting around a manual one. If a legacy
+1756-L55-class or CompactLogix 5370-gen controller ever enters the sample
+set, the MSG path becomes viable for those specific samples and could be
+worth automating then — not before.
 
 **OQ-EMULATE** — Is validation done against a real CompactLogix, or Logix
 Emulate? If emulate, confirm memory reporting matches real hardware behavior
