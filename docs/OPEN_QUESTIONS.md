@@ -131,10 +131,11 @@ instances add memory beyond raw tag data size. In scope for v1, or deferred to
 Phase 6 / cut entirely? Affects whether Phase 1 needs an extended-properties
 parser now.
 
-**OQ-SAFETY** — Safety task tags/logic live in a separate protected memory
-region on GuardLogix-class controllers. Since target is CompactLogix, is this
-relevant at all, or should the tool explicitly refuse/warn on safety-enabled
-projects rather than produce a wrong combined number?
+**OQ-SAFETY — RESOLVED (2026-08-20).** Out of scope for launch entirely —
+backlog/feature-request item only ("Phase 99"), not a near-term phase. Tool
+should explicitly warn/refuse on safety-enabled projects for now rather than
+attempt a wrong combined number; building real GuardLogix safety-pool support
+is deferred indefinitely, not scheduled.
 
 ## Logic sizing
 
