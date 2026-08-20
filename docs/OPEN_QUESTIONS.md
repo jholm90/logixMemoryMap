@@ -51,13 +51,25 @@ error to shrug off.
 
 ## Tag / UDT / AOI sizing
 
-**OQ-BOOLPACK** — Confirmed that standalone BOOL controller/program tags each
-consume a full 4-byte DINT-equivalent allocation (not bit-packed) in Logix —
-**needs empirical confirmation in Phase 3**, this is memory from general Rockwell
-knowledge, not yet validated against this tool's actual test data. BOOL members
-*inside a UDT* pack 8-per-byte (SINT-backed), which is why the L5X BIT-member
-generation rule in memory already exists for UDT authoring — need to confirm
-sizing matches that packing exactly including partial-byte members.
+**OQ-BOOLPACK — still open, priority raised (2026-08-20).** James doesn't
+know for certain either, and his own hunch actually **cuts against** the
+current model: "i assume CTRL+W make a new tag as BOOL will pack it and not
+take up a whole 32 bits... you will have to test." So the current
+`standalone_tag_bytes: 4` / ASSUMED constant in memory_model.yaml isn't just
+unconfirmed, it might be flat wrong — this raises OQ-BOOLPACK's priority for
+Phase 3, it shouldn't sit at the bottom of the list. This needs an actual
+Studio 5000 compile-and-read-Memory-tab test on James's end (per
+TESTING_PLAN.md's corrected offline-compile procedure) — not something
+resolvable from this remote session, which has no Studio 5000 to test
+against. A clean isolating sample (N standalone BOOL tags, delta against a
+baseline with them removed, divide by N) would answer it directly and could
+be generated now if useful — ask if that's wanted next.
+
+BOOL members *inside a UDT* pack 8-per-byte (SINT-backed), which is why the
+L5X BIT-member generation rule in memory already exists for UDT authoring —
+need to confirm sizing matches that packing exactly including partial-byte
+members. That's a separate, still-open sub-question from the standalone-tag
+case above.
 
 **OQ-ALIGN** — Does Logix pad UDT members to 4-byte alignment boundaries (like
 C struct padding), or is it byte-packed with no alignment? This changes total
