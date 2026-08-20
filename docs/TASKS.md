@@ -127,13 +127,20 @@ just "code compiles," actually rendered and clicked through.
       per-instance cost)
 - [ ] Generate: program-scope vs controller-scope identical tag (confirm no
       difference, or document the difference)
-- [ ] For each: import → download → record actual bytes (TESTING_PLAN.md
-      procedure) → log in manifest.csv
+- [ ] For each: import → verify/compile (no download needed, see
+      TESTING_PLAN.md) → record actual bytes → log in manifest.csv
 - [ ] Reconcile predicted vs actual, update MEMORY_MODEL.md constants
 - [ ] Re-run full sample set after each constant change until stable
 - [ ] Document final confidence/tolerance achieved
 
 ## Phase 4 — Logic sizing round 1 (bit logic)
+Real data note (2026-08-20): 126 of 560 real routines (~22%) are Structured
+Text, not RLL — significant enough that Phase 4/5 logic parsing can't be
+RLL-only. ST uses different syntax (no rung/Text-per-rung shape) and its
+compiled-size characteristics vs. equivalent RLL are completely unknown —
+worth its own explicit sample set once RLL bit logic is fitted, don't just
+assume ST scales the same way rung-based logic does.
+
 - [ ] Generate: N rungs (10/100/1000) of single XIC + single OTE, empty branches
 - [ ] Generate: same counts for XIO, OTL, OTU
 - [ ] Generate: branch depth variations (1, 3, 5 parallel branches) at fixed
@@ -144,16 +151,35 @@ just "code compiles," actually rendered and clicked through.
 - [ ] Fit initial per-instruction weight, log residuals
 
 ## Phase 4b — Logic sizing round 2 (other instructions)
-- [ ] Timer instructions (TON/TOF/RTO) at scale
-- [ ] Counter instructions (CTU/CTD) at scale
-- [ ] Math instructions (ADD/SUB/MUL/DIV/CPT with expression length variation)
-- [ ] MOV / logical (AND/OR/XOR/NOT) at scale
-- [ ] Compare instructions (EQU/NEQ/LES/GRT/LIM/MEQ)
-- [ ] Array/file instructions (COP/FLL) at varying array size
+Scope set from real instruction-frequency data (OQ-INSTRUCTIONSCOPE,
+2026-08-20), not a guessed list — 24,941 real instruction instances counted
+across James's 4 production files. Ordered by real-world priority below;
+PID and ASCII-module instructions dropped entirely (zero occurrences found).
+
+- [ ] Timer instructions (TON/TOF/RTO) at scale — no CTU/CTD-heavy usage seen
+      but include CTU (25 real uses; CTD had zero, low priority)
+- [ ] Math/compare instructions (MOV/EQU/ADD/NEQ/GRT/MUL/GEQ/LES/SUB/LIM/LEQ/
+      DIV/CPT with expression length variation) — by far the highest-volume
+      category after bit logic (5,000+ real uses combined)
+- [ ] **Motion instructions (MAM/MAS/MAJ/MAH/MSO/MSF/MDW/MAW/MASR/MAFR) and
+      cam/route (DCS/CROUT)** — NOT in original scope, added after real data
+      showed ~90 real uses across 12 distinct instructions; James: "we use
+      lots of motion instructions, camming." Also motion/axis structures
+      (AXIS_CIP_DRIVE etc, OQ-PREDEFINED) are the single highest-frequency
+      unsized structure category in real tag data, so this pairs with that.
+- [ ] **GSV/SSV instruction overhead** — NOT in original scope, added after
+      real data showed 101/47 real uses; James called these out explicitly.
+      Different sizing question than tag-level GSV memory reads (that's a
+      dead end, see OQ-MEMREADMETHOD) — this is about the *instruction's own*
+      compiled logic footprint in a rung, unrelated.
+- [ ] Array/file instructions (COP/CLR/FLL/BTD/MVM) at varying array size
+- [ ] String instructions (CONCAT/DTOS/SIZE/MID/TRUNC) — some real usage,
+      not ASCII-module instructions specifically (zero of those seen)
 - [ ] Indirect addressing overhead (compare direct vs indirect same logic)
 - [ ] JSR/subroutine call overhead (call site cost vs routine body cost,
-      separate these two numbers)
-- [ ] MSG instruction overhead
+      separate these two numbers) — 238 real JSR uses, matters
+- [ ] MSG instruction overhead — only 4 real uses total, low priority, don't
+      over-invest here relative to everything else on this list
 - [ ] Consolidate full instruction-weight table into MEMORY_MODEL.md
 - [ ] Hold out 3-5 samples, validate fitted model against them, log residual
 

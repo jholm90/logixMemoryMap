@@ -172,11 +172,33 @@ assumption is "compiled once, called many times" (call site only costs the
 JSR overhead, not the routine body again) — needs confirmation, and materially
 changes the call-tree rollup logic in Phase 5.
 
-**OQ-INSTRUCTIONSCOPE** — TASKS.md Phase 4b lists a specific instruction set
-based on what's actually common in production programs. Confirm this list
-covers James's actual usage before investing sample-generation effort — no
-point fitting weights for instructions never used (e.g. is PID in scope? ASCII
-string instructions? SFC?).
+**OQ-INSTRUCTIONSCOPE — RESOLVED (2026-08-20), real data not guessed.** Ran a
+frequency count across all 4 real production L5X files instead of asking
+James to recall from memory: 24,941 instruction instances across 434 RLL
+routines + 126 ST routines (0 SFC, 0 FBD routines found — drop those from
+scope entirely, not worth building a parser for logic formats that don't
+appear in real usage).
+
+| Category | Instructions (uses) |
+|---|---|
+| Bit logic | XIC 8406, OTE 3424, XIO 2940, OTL 572, OTU 725, ONS 676 — dominates by far |
+| Compare/move/math | MOV 1941, EQU 951, ADD 280, NEQ 242, GRT 231, MUL 213, GEQ 173, LES 164, SUB 109, LIM 98, LEQ 96, DIV 85, CPT 66, MOD 15, CMP 15, MEQ 3 |
+| Timers/counters | TON 445, RTO 39, TOF 28, CTU 25 (no CTD seen) |
+| Motion | MAM 10, MAS 9, MAJ 7, MAH 5, MSO 5, MSF 5, MDW 4, MAW 4, MASR 3, MAFR 3 — confirmed real and varied, James: "lots of motion instructions, camming" |
+| Cam/route | DCS 37, CROUT 16 — matches CONFIGURABLE_ROUT/cam-related structure types already found unresolved in OQ-PREDEFINED |
+| GSV/SSV | GSV 101, SSV 47 — confirmed real, James called these out explicitly |
+| Program flow | JSR 238, JMP 31, LBL 27, SBR 6, RET 4 |
+| Array/file | COP 292, CLR 457, FLL 42, BTD 71, MVM 20, BSL 2, BSR 2 |
+| String | CONCAT 312, DTOS 22, SIZE 20, MID 1, TRUNC 4, FIND 1 — some string handling, just not ASCII-module instructions specifically |
+| MSG | 4 — barely used, don't over-invest in getting its structure size right |
+| Not seen at all | PID, ASCII-module instructions (AHL/ARD/AWT/etc), SFC, FBD |
+
+Phase 4/4b instruction scope in TASKS.md updated to match: bit logic first
+(by far the highest-frequency, as already planned), then compare/move/math,
+then motion+cam+GSV/SSV (previously not planned for at all, now confirmed
+must-have given real frequency), then array/string/program-flow. PID and
+ASCII-module instructions dropped from scope entirely — zero real usage
+found, not worth fitting weights nobody needs.
 
 ## Sample generation / testing
 
