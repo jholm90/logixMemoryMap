@@ -1,27 +1,24 @@
 <#
 .SYNOPSIS
-  Walks a batch of converted .ACD files one at a time with an
-  auto-open / enter-blocks / close / continue loop (James, 2026-08-20,
-  updated 2026-08-20 to auto-open + show progress):
+  Walks a batch of converted .ACD files one at a time (James, 2026-08-20,
+  simplified 2026-08-20 to a single prompt per file):
 
     1. Shows "[N/Total] sample_id : description" and auto-opens the ACD --
-       no press-Enter-to-open gate, since Logix Designer's load time meant
-       waiting around and missing that prompt.
-    2. Press Enter once it's loaded and compiled (or 'q' to stop right
-       there -- the earliest bail-out point, before waiting through
-       verify/compile).
-    3. Verify/compile the project (no download needed -- Logix Designer
-       shows memory usage in Controller Properties as soon as it compiles
-       offline, see docs/TESTING_PLAN.md), read the Capacity tab's "Used"
-       figure (reported in "blocks" -- confirmed 1 block == 1 byte), type
-       the number in.
-    4. Close the project in Studio 5000, then press Enter to continue --
-       this gate exists so the next file's Studio 5000 instance doesn't
-       stack up on top of one still open.
-    5. Row is updated in place (matched by l5x_path against the row the
+       no gate before opening.
+    2. One prompt: "Blocks used, from Capacity tab ('q' to stop here or
+       's' to skip this file)". Verify/compile the project in Studio 5000
+       (no download needed -- Logix Designer shows memory usage in
+       Controller Properties as soon as it compiles offline, see
+       docs/TESTING_PLAN.md), read the Capacity tab's "Used" figure
+       (reported in "blocks" -- confirmed 1 block == 1 byte), type the
+       number and press Enter -- that logs the row AND opens the next
+       file in one step. 'q' stops here; 's' skips this file unlogged.
+    3. Row is updated in place (matched by l5x_path against the row the
        sample generator already wrote, so predicted_bytes/delta/delta_pct
-       stay on the same row) and written immediately, then loops to the
-       next file.
+       stay on the same row) and written immediately.
+
+  Nothing in the script waits on you to close the previous Studio 5000
+  instance -- that's on you to manage, not a gate it enforces.
 
   Resumable: you can close this window at any point without losing place.
   Already-logged l5x_path rows are skipped on the next run, and nothing is
@@ -92,31 +89,23 @@ foreach ($row in $remaining) {
     Write-Host "Opening: $($row.acd_path)"
     Start-Process $row.acd_path
 
-    # Fires the open immediately (no press-Enter-to-open gate) since Logix
-    # Designer's load time meant James was repeatedly walking away and
-    # missing that prompt. This is now the earliest point he can bail --
-    # 'q' here stops before waiting through verify/compile at all.
-    $key = Read-Host "Opened. Press Enter once it's loaded and compiled (or 'q' to stop here)"
-    if ($key -eq 'q') {
-        Write-Host "Stopping. Resume later by re-running this script -- completed rows are skipped."
-        break
-    }
-    Write-Host "Read Controller Properties -> Capacity tab."
-
     # James (2026-08-20): Studio 5000's Capacity tab reports "blocks", not
     # bytes -- confirmed 1 block == 1 byte (Total shown there matched this
     # project's controller_budgets.yaml byte figure exactly), so the raw
-    # number goes straight into actual_bytes with no conversion.
-    $blocksUsed = Read-Host "Blocks used, from Capacity tab (or 's' to skip this file)"
+    # number goes straight into actual_bytes with no conversion. Single
+    # prompt per file: enter the number and Enter logs it and opens the
+    # next file; 'q' quits; 's' skips this file without logging it.
+    $blocksUsed = Read-Host "Blocks used, from Capacity tab ('q' to stop here or 's' to skip this file)"
+    if ($blocksUsed -eq 'q') {
+        Write-Host "Stopping. Resume later by re-running this script -- completed rows are skipped."
+        break
+    }
     if ($blocksUsed -eq 's' -or [string]::IsNullOrWhiteSpace($blocksUsed)) {
         Write-Host "Skipped -- close the project manually if you opened it."
         continue
     }
 
-    $notes = Read-Host "Notes (optional)"
-
-    Read-Host "Close the project in Studio 5000, then press Enter to continue"
-
+    $notes = ""
     $date = Get-Date -Format "yyyy-MM-dd"
     $predicted = if ($existing -and $existing.predicted_bytes) { $existing.predicted_bytes } else { "" }
     $delta = ""
@@ -147,3 +136,34 @@ foreach ($row in $remaining) {
 
 Write-Host ""
 Write-Host "Done for now."
+
+# Auto-push (James, 2026-08-20: "so i dont have to ask"). Straight to main,
+# no branches/merges -- ff-only pull first so a push never turns into a
+# merge; if that fails (diverged history) it stops and says so rather than
+# doing anything automatic about it.
+$repoRoot = Split-Path $PSScriptRoot -Parent
+$manifestFull = (Resolve-Path $ManifestPath).Path
+Push-Location $repoRoot
+try {
+    $dirty = git status --porcelain -- $manifestFull
+    if (-not $dirty) {
+        Write-Host "No manifest changes to push."
+    } else {
+        git fetch origin main *>$null
+        git merge --ff-only origin/main *>$null
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "Local main has diverged from origin/main -- not auto-pushing. Resolve manually, then commit/push samples/manifest.csv yourself."
+        } else {
+            git add $manifestFull
+            git commit -m "Log real memory capture results" *>$null
+            git push origin main
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "Pushed."
+            } else {
+                Write-Host "Push failed -- run 'git push origin main' manually."
+            }
+        }
+    }
+} finally {
+    Pop-Location
+}
