@@ -101,8 +101,13 @@ a single per-instruction weight from just two data points.
 
 ## Exit criteria
 
-Phase 3 and Phase 4/4b each close per PROJECT_PLAN.md's stated exit criteria —
-tolerance TBD in OQ-TOLERANCE. Don't move to UI work (Phase 5) with an open,
-unresolved tag/UDT discrepancy just because logic sizing is more interesting —
-an error in the "exact" tier undermines the tool's whole value proposition more
-than an acknowledged estimate in the logic tier does.
+Phase 3 and Phase 4/4b each close per PROJECT_PLAN.md's stated exit criteria.
+Tolerance resolved (OQ-TOLERANCE, 2026-08-20): **tag/UDT (exact tier) within
+1% = good, 3% = acceptable, >5% = a real gap worth chasing, not a rounding
+error.** Logic/program-structure memory (estimated tier) isn't held to the
+same bar — James: "a guess at best," so that's expected to carry more slop
+by nature of the problem, not a target to force down to 1%. Don't move to UI
+work (Phase 5) with an open, unresolved tag/UDT discrepancy just because
+logic sizing is more interesting — an error in the "exact" tier undermines
+the tool's whole value proposition more than an acknowledged estimate in the
+logic tier does.

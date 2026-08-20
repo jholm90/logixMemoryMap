@@ -35,10 +35,19 @@ export, not the project's own schema version — don't confuse the two.)
 v20/v30 schema differences remain completely unvalidated — no sample data
 for either yet.
 
-**OQ-TOLERANCE** — What delta between predicted and actual bytes counts as
-"good enough" for Phase 3 exit? 1%? 0.1%? Exact match? Exact match may be
-unrealistic given unknowns like alignment padding; need an agreed threshold
-before Phase 3 can formally close.
+**OQ-TOLERANCE — RESOLVED (2026-08-20).** James: 1% delta = good, 3% =
+acceptable, 5% = very poor. Explicitly tiered by James along the same
+exact/estimated split already built into the tool (`sizing/report.py`'s
+`tier` field): **tag/UDT/data-space memory should be within 1%** — that's
+the "exact" tier, it's calculable, it should actually be accurate. Program/
+logic-structure memory "is a guess at best so that's where the slop will
+be" — the "estimated" tier from Phase 4+ doesn't get held to the 1%/3%/5%
+bar the same way; no specific number given for it, and given James's own
+framing ("a guess at best"), pushing for a tight tolerance there would be
+fighting the nature of the problem rather than solving it. Phase 3 exit
+criterion (tag/UDT only): 1% good, 3% acceptable, >5% means the model has a
+real gap worth chasing before calling that phase done — not a rounding
+error to shrug off.
 
 ## Tag / UDT / AOI sizing
 
