@@ -516,3 +516,33 @@ this would be a separate *array-element* alignment rule. Needs an isolating
 sample: an array of a UDT that's already exactly 4 (or 8) bytes tight-packed
 — if the overshoot-per-element disappears, that confirms element rounding
 to a 4-byte boundary rather than some other cause.
+
+**OQ-TAGSCOPE — NEW (2026-08-20), James's thought, backlog/not scheduled.**
+Does a Program-scoped tag's *Usage* (Local vs. the newer Program Parameter
+Input/Output/InOut visibility, i.e. "public" scope reachable from other
+programs) change its own memory cost, independent of DataType/dimensions?
+Untested — every sample so far uses plain controller-scope tags or default
+Local program tags. Needs an isolating sample: the same tag shape (e.g. one
+DINT) generated once per Usage value, program-scoped, to isolate any
+scope-driven overhead from the already-modeled type/dimension cost.
+
+**OQ-ALIASSIZE — NEW (2026-08-20), James's thought, backlog/not scheduled.**
+Current model (`report.py`) sizes every Alias tag at a flat 0 bytes,
+tagged KNOWN, on the reasoning that an Alias has no DataType of its own in
+the L5X and just points at its target's existing storage — but that's an
+inference from the L5X schema, not yet verified against real Capacity-tab
+data at any scale. Does that hold at 1, 10, and 1000 aliases, or does each
+alias carry its own small reference/pointer-table cost (plausibly similar
+in shape to the flat per-tag overhead found in OQ-TAGOVERHEAD, since an
+Alias is still its own named Tag entry)? Needs an isolating batch: N alias
+tags all pointing at one real backing tag, at N = 1/10/1000, baseline-
+corrected the same way as the other tag-count sweeps.
+
+**OQ-XPROGREF — NEW (2026-08-20), James's thought, backlog/not scheduled,
+Phase 4 (logic size) scope.** Cross-program references to a public/output
+Program Parameter tag, written as `\ProgramName.PublicTagName` in another
+program's logic — does referencing a tag this way (vs. a same-program
+local reference) cost anything extra in compiled logic size? Explicitly
+logic-size territory (estimated/heuristic model, not the exact tag-data
+sizing this project can nail down precisely per CLAUDE.md's ground-truth
+constraint) — parked here until Phase 4 starts, not actionable yet.
