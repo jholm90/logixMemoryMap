@@ -9,8 +9,21 @@ TESTING_PLAN.md loop before this gets used to generate the other 30+.
 from __future__ import annotations
 
 # v35 / CompactLogix 5380-class, matching OQ-L5XVERSION's resolved primary
-# target and the 5069-L306ERS James has available for real hardware checks.
-DEFAULT_PROCESSOR_TYPE = "5069-L306ERS"
+# target and the 5069-L306ER James has available for real hardware checks.
+#
+# CORRECTED 2026-08-20: was "5069-L306ERS" (matching what James said his
+# physical unit was), but the real Logix Designer SDK rejected that exact
+# string outright: "Not supported processor type: 5069-L306ERS". This is
+# first-party evidence from the actual product, stronger than the earlier
+# web-search research that (correctly) only ever confirmed "5069-L306ER"
+# (no trailing S) as a real catalog number. Switched to the confirmed
+# string. Still worth James double-checking the exact ProcessorType against
+# his physical unit's nameplate or Studio 5000's own "New Project"
+# processor dropdown -- "ERS" might be a real suffix Studio 5000 just
+# doesn't expose via this SDK call, or James's own recollection of the
+# exact suffix may not be quite right; either way this is the value that
+# actually works, so it's authoritative for sample generation regardless.
+DEFAULT_PROCESSOR_TYPE = "5069-L306ER"
 DEFAULT_MAJOR_REV = "35"
 DEFAULT_MINOR_REV = "11"
 DEFAULT_SOFTWARE_REVISION = "35.11"
