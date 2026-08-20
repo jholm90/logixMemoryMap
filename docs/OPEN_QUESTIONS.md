@@ -231,12 +231,31 @@ is deferred indefinitely, not scheduled.
 
 ## Logic sizing
 
-**OQ-JSRSHARED** — When a subroutine is called from multiple places (shared
-JSR target), does its compiled size get counted once (memory) or does each
-call site duplicate the routine body? Standard structured-programming
-assumption is "compiled once, called many times" (call site only costs the
-JSR overhead, not the routine body again) — needs confirmation, and materially
-changes the call-tree rollup logic in Phase 5.
+**OQ-JSRSHARED — confirmed genuinely open (2026-08-20), no shortcut.** James:
+"ive never tested memory for logic/programming so its an open item" — no
+hunch either way, straight to Phase 4/5 empirical testing, same as
+OQ-COMMENTS. Standard structured-programming assumption ("compiled once,
+called many times") stays the working assumption in the model until tested,
+but carries no more weight than that.
+
+**OQ-EVENTTASK — NEW (2026-08-20).** Same conversation, James: "same with
+calling tasks via events/MAW" — flagging an analogous but distinct open
+question about **Event Tasks** (a Task `Type` alongside Continuous/
+Periodic, triggerable by things like a Motion Axis Watch/MAW instruction).
+Does an event-triggered task's logic get counted once in the static memory
+model regardless of trigger source/count (should be yes, since it's just
+another Task/Program/Routine in the project structure, not duplicated per
+trigger event — but unconfirmed), and is there any event-task-specific
+overhead (trigger configuration, watchdog, etc.) beyond the routine logic
+itself? Checked the real corpus immediately: **52 of 86 real Tasks (60%) are Type
+"EVENT"** — more common than PERIODIC (19) and CONTINUOUS (14) combined.
+This is not an edge case, it's the dominant task type in James's real
+programs (mostly "DataMove"/tracking-style routines, consistent with the
+camming/motion-heavy usage already established). Raises this OQ's priority
+significantly — needs a decision on whether Phase 4/5's Task→Program→
+Routine drill-down treats Event Tasks any differently from Continuous/
+Periodic before that phase starts, not an afterthought. Not yet scoped into
+any phase's task list.
 
 **OQ-INSTRUCTIONSCOPE — RESOLVED (2026-08-20), real data not guessed.** Ran a
 frequency count across all 4 real production L5X files instead of asking
