@@ -463,14 +463,24 @@ it only sizes raw data bytes.
   specifically (a *type descriptor* cost that doesn't depend on the name
   at all is folded into that ~80 intercept right now) before this becomes
   an actual model constant rather than a fitted-line observation.
-- **DataType-definition-vs-instance follow-up (2026-08-20):** generated
-  `motorstatus_def_only.L5X` (MotorStatus UDT defined, 0 tag instances —
-  isolates the pure DataType-definition cost) and
-  `motorstatus_10_instances.L5X` (same UDT, 10 separate scalar instances
-  `TestInstance0`..`TestInstance9`) alongside the existing 1-instance
-  `motorstatus_test.L5X`, giving 3 points (0/1/10 instances) to separate
-  flat DataType-definition cost from per-instance cost once tested.
-  `sample_gen.cli udt` now supports `--instances N` (0 = definition only).
+- **DataType-definition-vs-instance — CONFIRMED (2026-08-20), real data,
+  exact linear fit.** `motorstatus_def_only.L5X` (0 instances):
+  baseline-corrected 304 blocks — this is the pure DataType-definition
+  cost for a 3-member UDT (BOOL/DINT/BOOL, no descriptions), independent
+  of any instance. `motorstatus_test.L5X` (1 instance, `TestInstance`):
+  baseline-corrected 408 blocks → 408-304 = **104 blocks for that one
+  instance**. `motorstatus_10_instances.L5X` (10 instances,
+  `TestInstance0`..`TestInstance9`): baseline-corrected 1344 blocks →
+  (1344-304)/10 = **104 blocks/instance**, exactly matching the 1-instance
+  case. Both the 0→1 and 0→10 measurements agree to the block — genuinely
+  linear: `total ≈ 304 + 104 × instance_count` for this UDT. Slightly
+  higher than the atomic-tag-name model above would predict for a
+  ~12-13 char name (≈93-94 blocks), suggesting a small structure/UDT-typed-
+  tag increment (~10 blocks) on top of the atomic-tag model, or just noise
+  at 3 data points — not worth chasing further until more UDT shapes
+  (different member counts/types) are tested. Still open before this goes
+  in MEMORY_MODEL.md: whether the 304 definition cost scales with member
+  *count*, member *type*, or both (only one 3-member UDT tested so far).
 
 **OQ-LOGICVISIBILITY — NEW (2026-08-20), high impact, blocks Phase 4.**
 1000 rungs of `XIC(In{i})OTE(Out{i});`, both with and without a 100-char

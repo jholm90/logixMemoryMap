@@ -11,6 +11,10 @@
   currently converting finishes; nothing is lost, just re-run the same
   command later to continue.
 
+  Auto-pushes a copy of the log to samples/convert_log.csv in the repo on
+  every run (success or early-stop) so conversion failures are visible
+  without pasting terminal output.
+
 .PREREQS
   - Studio 5000 Logix Designer + Logix Designer SDK 2.2+ installed
   - l5xgit.exe built from https://github.com/RockwellAutomation/ra-logix-designer-vcs-custom-tools
@@ -81,3 +85,13 @@ if (-not $stopRequested) {
 } else {
     Write-Host "Stopped early. Log: $logPath"
 }
+
+# Copy the log into the repo and push it (James, 2026-08-20: "i dont want to
+# copy/paste from powershell everytime") -- $OutputDir/convert_log.csv lives
+# outside the repo (it's next to the .ACD binaries), so without this Claude
+# never sees conversion failures unless they're pasted in by hand.
+$repoRoot = Split-Path $PSScriptRoot -Parent
+$repoLogPath = Join-Path $repoRoot "samples\convert_log.csv"
+Copy-Item -Path $logPath -Destination $repoLogPath -Force
+. (Join-Path $PSScriptRoot "_autopush.ps1")
+Push-RepoFile -RepoRoot $repoRoot -FilePath $repoLogPath -CommitMessage "Log L5X->ACD conversion results"
