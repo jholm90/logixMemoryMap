@@ -128,6 +128,32 @@ def test_custom_string_type_uses_len_plus_data_not_generic_udt_path():
     assert size("STRING40", data_types=data_types) == (44, "KNOWN")
 
 
+def test_bool_packing_run_broken_by_non_bool_member():
+    # James (2026-08-20): "BOOL/DINT/BOOL will take up 8+32+8 space where
+    # DINT/BOOL/BOOL will take up 32+8 space" -- a run of consecutive BOOLs
+    # shares one backing SINT, but a non-BOOL member breaks the run and the
+    # next BOOL(s) get a fresh backing SINT. Mirrors Logix Designer's own
+    # hidden-SINT-per-run XML shape (see parser/datatypes.py), not something
+    # this code re-derives independently.
+    bool_dint_bool = DataTypeDef(name="BoolDintBool", members=[
+        Member(name="_hidden01", data_type="SINT", dimension=0),
+        Member(name="FlagA", data_type="BIT", dimension=0),
+        Member(name="Count", data_type="DINT", dimension=0),
+        Member(name="_hidden02", data_type="SINT", dimension=0),
+        Member(name="FlagB", data_type="BIT", dimension=0),
+    ])
+    dint_bool_bool = DataTypeDef(name="DintBoolBool", members=[
+        Member(name="Count", data_type="DINT", dimension=0),
+        Member(name="_hidden01", data_type="SINT", dimension=0),
+        Member(name="FlagA", data_type="BIT", dimension=0),
+        Member(name="FlagB", data_type="BIT", dimension=0),
+    ])
+    data_types = {"BoolDintBool": bool_dint_bool, "DintBoolBool": dint_bool_bool}
+
+    assert size("BoolDintBool", data_types=data_types) == (6, "UNKNOWN")  # 8+32+8 bits
+    assert size("DintBoolBool", data_types=data_types) == (5, "UNKNOWN")  # 32+8 bits
+
+
 def test_self_referential_udt_raises():
     bad = DataTypeDef(
         name="Bad", members=[Member(name="Self", data_type="Bad", dimension=0)]

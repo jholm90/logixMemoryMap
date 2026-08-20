@@ -58,13 +58,28 @@ DataType, ~21% of everything that failed to size before this was handled.
   generation convention (one hidden SINT per byte of BOOL members, incrementing
   BitNumber 0–7, new SINT for bits 8–15, etc).
 - Non-BOOL members: size = atomic/nested-UDT size, per table above.
-- Alignment/padding between members: **UNKNOWN — OQ-ALIGN**. Current formula
-  assumes tight packing with no padding. This is the single highest-risk
-  assumption in the whole model and should be the first thing Phase 3
-  invalidates or confirms.
-- Nested UDT: recursive — a UDT member's size is that UDT's total computed size
-  (itself subject to the same alignment question, compounding uncertainty at
-  depth — watch this closely in the 3-level-nesting Phase 3 sample).
+- Alignment/padding between members: **ASSUMED tight/no padding, confidence
+  raised 2026-08-20 but still not KNOWN.** James (100% confident from field
+  experience, not yet Phase-3-measured): `BOOL, DINT, BOOL` = 8+32+8 = 6
+  bytes; `DINT, BOOL, BOOL` = 32+8 = 5 bytes — i.e. no 4-byte alignment
+  padding at all, and a run of consecutive BOOLs shares one backing byte
+  but a non-BOOL member breaks the run, forcing the next BOOL(s) onto a
+  fresh backing byte. Verified this is exactly what `compute_udt_size`
+  already produces, unchanged (`tests/test_sizing.py::
+  test_bool_packing_run_broken_by_non_bool_member`) — the code was already
+  correct because it trusts Logix Designer's own hidden-SINT-per-run XML
+  shape rather than re-deriving the rule, and that shape already encodes
+  this behavior. Confidence raised from "pure guess" to "confident field
+  opinion, matches implementation exactly" but this is still not the same
+  evidentiary bar as a real controller memory measurement — stays ASSUMED,
+  not KNOWN, until Phase 3 actually confirms it.
+- Nested UDT: recursive — a UDT member's size is that UDT's total computed
+  size. James also believes (stated with less certainty, "I also assume")
+  that a nested UDT-typed member always starts fresh rather than packing
+  into a partial leftover byte from an adjacent BOOL run — "only BOOLS
+  pack." Already true of the implementation: there is no code path that
+  merges a nested UDT's bytes into a preceding member's partial byte, so
+  this holds by construction, not by an explicit rule that could drift.
 
 ## Array sizing
 

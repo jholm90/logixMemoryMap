@@ -71,13 +71,21 @@ need to confirm sizing matches that packing exactly including partial-byte
 members. That's a separate, still-open sub-question from the standalone-tag
 case above.
 
-**OQ-ALIGN** — Does Logix pad UDT members to 4-byte alignment boundaries (like
-C struct padding), or is it byte-packed with no alignment? This changes total
-UDT size whenever member order mixes types (e.g. BOOL, DINT, BOOL — does the
-second BOOL start a new byte, pad to next DINT boundary, or pack tight?).
-Directly affects whether member *order* in a UDT affects its memory footprint —
-if alignment is real, reordering members for tight packing is itself a finding
-worth surfacing in the UI ("reorder these members to save N bytes").
+**OQ-ALIGN — confidence raised, still not KNOWN (2026-08-20).** James, 100%
+confident from field experience: no 4-byte alignment padding at all — `BOOL,
+DINT, BOOL` = 6 bytes, `DINT, BOOL, BOOL` = 5 bytes, tight-packed except for
+the BOOL-run mechanic itself (consecutive BOOLs share a backing byte, a
+non-BOOL member breaks the run and forces a fresh backing byte for the next
+BOOL(s)). Verified the current implementation already produces exactly these
+numbers, unchanged — see MEMORY_MODEL.md's UDT packing section and
+`tests/test_sizing.py::test_bool_packing_run_broken_by_non_bool_member`.
+Also confirmed: reordering members *does* affect footprint (this OQ's UI
+implication holds) — a UDT authored as `BOOL, DINT, BOOL` wastes a byte
+relative to `DINT, BOOL, BOOL`, so "reorder members to save N bytes" is a
+real, worthwhile UI finding once the UI supports member-level drill-down.
+Confidence still ASSUMED, not KNOWN — a confident field opinion isn't the
+same evidentiary bar as a real Phase 3 controller measurement, which hasn't
+happened yet.
 
 **OQ-BOOLARRAY** — BOOL *array* tags (as opposed to standalone BOOL tags,
 OQ-BOOLPACK) are assumed to bit-pack 32-per-DINT-sized-word (`ceil(n/32) × 4`
