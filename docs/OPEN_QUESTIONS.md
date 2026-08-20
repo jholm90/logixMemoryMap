@@ -495,6 +495,79 @@ it only sizes raw data bytes.
   (different member counts/types) are tested. Still open before this goes
   in MEMORY_MODEL.md: whether the 304 definition cost scales with member
   *count*, member *type*, or both (only one 3-member UDT tested so far).
+- **53-sample sweep batch — CONFIRMED (2026-08-20), real data, answers the
+  member-count/type question above and several others.** James: "you need
+  to get a large sample size of data to ensure that tag structures are
+  100% confirmed." All baseline-corrected against the 18128-block
+  sample_0001 baseline, all on 1756-L81E/v35.
+
+  - **Tag-name length is a STEP FUNCTION, not linear** — corrects the
+    earlier 2-point linear fit above. 50 DINT tags/file, name lengths
+    4/7/10/.../40: overhead/tag = 84,84,92,92,100,100,100,108,108,108,
+    116,116,124. Jumps by exactly 8 blocks at each step, but step widths
+    aren't even (some buckets span 2 of the 3-char-spaced samples, one
+    spans 3) — name storage is allocated in fixed-size chunks (rounding to
+    some alignment), not billed per-character. The endpoints (4→40: 84→124)
+    still average to ≈1.11 blocks/char, which is why the earlier 2-point
+    fit looked clean — it just couldn't see the staircase in between. Real
+    bucket boundary not yet pinned down; the pending
+    `tagname_spotlen08/24/40_40real` samples (different type/count, so a
+    genuine cross-check) should help once tested.
+  - **Atomic type barely affects flat per-tag overhead**: 50 tags each,
+    name_len=8 — SINT 95, INT 94, DINT 92, LINT 88, REAL 92, BOOL 92. All
+    within a 7-block band; treat the flat component as effectively
+    type-independent.
+  - **Tag count is exactly linear from 5 tags up — genuinely 100%
+    confirmed.** DINT, name_len=8, counts 5/10/25/50/100/250/500/1000 all
+    give **exactly 92.000 blocks/tag**, zero rounding error at any scale
+    (460/5, 920/10, 2300/25, 4600/50, 9200/100, 23000/250, 46000/500,
+    92000/1000 — every one an exact multiple of 92). Only counts 1 (92/tag)
+    and 2 (47/tag, i.e. only +2 total blocks over the 1-tag case) break the
+    pattern — looks like a one-time minimum-allocation-granularity effect
+    that's irrelevant for any real program (nobody has exactly 1-2 tags of
+    a kind). This is the strongest, cleanest confirmation in the whole
+    batch: **flat per-tag overhead = 92 blocks, exact, count-independent
+    above ~5 tags**, for an 8-char-named DINT tag.
+  - **Array size doesn't affect the flat per-tag cost at all.** 1-tag DINT
+    arrays, sizes 1 through 5000: total overhead stays at 104 or 108
+    blocks regardless of size (104 for even/most sizes, 108 for sizes
+    1/5/25 — a trivial 4-block wobble, not a trend). Confirms arrays cost
+    the flat per-tag overhead plus exactly 4 bytes/element and nothing
+    more, at any array size. Note this flat cost (104-108) is a bit higher
+    than an equivalent-length *scalar* tag's overhead would predict (name
+    length 16 → 100 per the step table above) — a small (~4-8 block) extra
+    "array tag" surcharge, plausibly for storing dimension metadata.
+  - **UDT DataType-definition cost, exact linear fit vs. member count:**
+    all-DINT members, 0 instances — 1/2/4/8/16/32 members give def_cost =
+    192/208/232/296/424/680. For 4/8/16/32 members this is an *exact* fit
+    to `def_cost = 168 + 16 × member_count` (168+64=232, 168+128=296,
+    168+256=424, 168+512=680 — all exact). 1 and 2 members are +8 over
+    that formula (184→192, 200→208) — the same small small-N anomaly seen
+    in the tag-count sweep above, plausibly the same underlying cause.
+    **This is a real, usable constant**: 16 blocks/member + a ~168-block
+    UDT-definition base cost, confirmed across a 32x range of member
+    counts.
+  - **Member type doesn't affect definition cost — except BOOL, and that's
+    mechanistically explained, not a mystery.** 4 members, 0 instances:
+    SINT/INT/DINT/LINT/REAL all give **exactly 240** regardless of the
+    atomic type's byte width (1-8 bytes) — definition cost is per-member-
+    slot, not per-byte. **BOOL gives 272**, exactly 32 more. This lines up
+    with the known BOOL-packing rule (`docs/MEMORY_MODEL.md`, OQ-ALIGN): 4
+    BOOL members still need one hidden backing-SINT member declared in the
+    `<DataType><Members>` list, so a "4-BOOL" UDT is really a *5-member*
+    definition under the hood — not a new mystery, just the packing rule
+    already known showing up in the definition-cost side too.
+  - **New follow-up spotted, not yet tested:** the same logical "4 DINT
+    members, 0 instances" UDT gave **232** in the member-count sweep
+    (`udtmembers_n04_dint`, UDT name `SweepN04`, 8 chars) but **240** in
+    the member-type sweep (`udttype_dint_n4`, UDT name `SweepTypeDINT`, 13
+    chars) — same shape, different result, and the 8-block gap lines up
+    suspiciously well with the tag-name step size found above. Likely
+    explanation: **the DataType/UDT's own name incurs the same kind of
+    name-length storage cost that tag names do**, which wasn't held
+    constant as a controlled variable across these two sweeps. Real,
+    testable follow-up: fix the UDT name length and count separately, the
+    same way the tag-name-length sweep did for tags.
 
 **OQ-LOGICVISIBILITY — NEW (2026-08-20), high impact, blocks Phase 4.**
 1000 rungs of `XIC(In{i})OTE(Out{i});`, both with and without a 100-char
