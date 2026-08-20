@@ -71,29 +71,57 @@ just "code compiles," actually rendered and clicked through.
       `ui/static/app.js` — no D3/external lib)
 - [x] Root view: controller tags / program tags (per program), sized by bytes
 - [ ] UDT defs pool / module overhead as their own root-level groups — not
-      built. Right now a UDT only appears sized-in-place at each tag that
-      uses it; there's no separate "all UDT definitions" browsable pool.
-      Module overhead has nothing to show yet regardless (Module/IO parser
-      still unimplemented, see Phase 1).
+      built. A UDT still only appears sized-in-place at each tag that uses
+      it, no separate "all UDT definitions" browsable pool. Module overhead
+      has nothing to show yet regardless (Module/IO parser still
+      unimplemented, see Phase 1).
 - [x] Click-to-drill: program → its tags (drilling into a "Program: X" group
       node shows that program's tags)
-- [ ] Click-to-drill: UDT → members — NOT built. `sizing/report.py`'s flat
-      SizeEntry only carries a UDT tag's *total* size, not a member-level
-      breakdown, so there's nothing for the UI to drill into yet. Needs a
-      report-contract change (nested entries or a members sub-list per UDT
-      tag), not just a frontend change.
+- [x] **Click-to-drill: infinite depth, down to individual BOOL bits and
+      individual array elements — 2026-08-20, James: "masking a 1000
+      element array because its inside something else is bad practice."**
+      `sizing/tree.py` computes exactly one level of children at a time, on
+      demand, via a new `/api/node` endpoint — never materializes the whole
+      tree eagerly (would be enormous for a 40k-tag/multi-MB real project
+      with 10k-element arrays), but drilling itself has no depth limit.
+      Verified live to 4 levels deep on a real file (array tag → element →
+      UDT member → STRING LEN/DATA breakdown) via headless-Chromium
+      click-through, not just code review.
 - [x] Breadcrumb / back navigation
-- [x] Sortable list view (name / type / bytes / %) — click column header to sort
+- [x] Sortable list view (name / type / bytes / %) — click column header to
+      sort. Still a top-level rollup only (not the deep tree) — see
+      `app.js` comment on why: expanding every array/UDT eagerly for the
+      list view would defeat the whole point of the lazy /api/node design.
 - [x] Type-utilization summary pane (% of budget per data type across whole
-      project, not just top-level categories)
-- [x] Color coding — reinterpreted: coded by `basis` (KNOWN/ASSUMED/FITTED/
-      UNKNOWN) rather than `tier` (exact/estimated), since every entry is
-      tier=exact until Phase 4/5 adds logic sizing and a tier-based scheme
-      would have nothing to distinguish yet. Basis-coding is live now and
-      immediately useful (e.g. a UDT-containing tag renders red/UNKNOWN
-      because of the still-open OQ-ALIGN taint). Revisit/extend to tier once
-      Phase 5 gives it something to encode.
+      project, not just top-level categories) — now with a color swatch
+      per type matching the treemap.
+- [x] **Color/confidence redesign — 2026-08-20, James: "colors reserved for
+      data types only," confidence shown as solid (100%) vs. hatched
+      (unsure) instead.** Replaces the earlier basis-coded-by-color scheme.
+      Curated colors for common atomic/predefined types, deterministic
+      hash-to-HSL for arbitrary UDT/AOI type names so every distinct type
+      gets a stable, distinct color across a session. Non-KNOWN basis nodes
+      get a diagonal-hatch SVG pattern overlaid on their solid type color
+      rather than being recolored.
 - [x] Load Phase-0 dev fixture, sanity-check against manual spot-checks
+- [x] **File → Open in the browser, no command prompt needed — 2026-08-20.**
+      `l5x-memory-analyzer ui` (no path arg) starts with an empty state and
+      a File Open… button; upload posts to a new `/api/load` endpoint that
+      parses the bytes server-side (no filesystem path needed from the
+      browser). `scripts/LaunchUI.pyw` + a desktop shortcut to it gives a
+      genuine double-click launch (`.pyw` runs via pythonw.exe, no console
+      window) straight to the browser.
+- [x] **Processor part number in the header — 2026-08-20.** `load.py` now
+      parses `Controller/@ProcessorType`; shown alongside Schema/Software
+      revision.
+- [x] **Export-type detection/warning — 2026-08-20.** `L5XDocument` now
+      exposes `target_type`/`is_controller_export`; the UI shows an amber
+      warning banner for any non-`Controller` export (Program/DataType/
+      AOI-only) rather than silently presenting a partial file's totals as
+      if complete. Full first-class support for those export types is a
+      **backlog feature request** (see OPEN_QUESTIONS.md OQ-EXPORTSCOPE),
+      not built now — today's focus stays full Controller exports per
+      James's explicit scoping.
 
 ## Phase 2b — AOI sizing (deferred from Phase 1)
 - [x] AOI definition parser: `AddOnInstructionDefinitions` local tags + params

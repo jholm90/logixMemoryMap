@@ -7,7 +7,9 @@ end to end before the sizing engine existed.
 `size`: run the Phase 1 tag/UDT sizing engine and print a flat byte
 breakdown -- see docs/TASKS.md Phase 1 output-contract item.
 
-`ui`: serve the Phase 2 treemap UI for an L5X file over a local web server.
+`ui`: serve the Phase 2 treemap UI over a local web server. l5x_path is
+optional -- omit it to start with the File->Open picker instead (James
+2026-08-20: desktop-shortcut launch shouldn't require a command prompt).
 """
 
 from __future__ import annotations
@@ -65,7 +67,7 @@ def _cmd_ui(args: argparse.Namespace) -> int:
     from l5x_memory_analyzer.ui.server import run
 
     print(f"Serving http://{args.host}:{args.port} (Ctrl+C to stop)", file=sys.stderr)
-    run(args.l5x_path, host=args.host, port=args.port)
+    run(args.l5x_path, host=args.host, port=args.port, open_browser=not args.no_browser)
     return 0
 
 
@@ -81,10 +83,13 @@ def main(argv: list[str] | None = None) -> int:
     size_parser.add_argument("l5x_path", help="Path to an L5X export file")
     size_parser.set_defaults(func=_cmd_size)
 
-    ui_parser = subparsers.add_parser("ui", help="Serve the treemap UI for an L5X file")
-    ui_parser.add_argument("l5x_path", help="Path to an L5X export file")
+    ui_parser = subparsers.add_parser("ui", help="Serve the treemap UI, optionally for an L5X file")
+    ui_parser.add_argument("l5x_path", nargs="?", default=None,
+                            help="Path to an L5X export file (omit to start with File->Open)")
     ui_parser.add_argument("--host", default="127.0.0.1")
     ui_parser.add_argument("--port", type=int, default=8765)
+    ui_parser.add_argument("--no-browser", action="store_true",
+                            help="Don't auto-open the default browser on start")
     ui_parser.set_defaults(func=_cmd_ui)
 
     args = parser.parse_args(argv)

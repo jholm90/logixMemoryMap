@@ -8,12 +8,18 @@
 <body>
   <header id="app-header">
     <div id="app-title">L5X Memory Analyzer</div>
-    <div id="file-info">Loading&hellip;</div>
+    <label id="open-file-btn" class="toolbar-btn">
+      File&nbsp;Open&hellip;
+      <input type="file" id="file-input" accept=".L5X,.l5x" hidden>
+    </label>
+    <div id="file-info">No file loaded</div>
     <div id="budget-bar-wrap">
       <div id="budget-bar"><div id="budget-bar-fill"></div></div>
       <div id="budget-label"></div>
     </div>
   </header>
+
+  <div id="export-warning" class="hidden"></div>
 
   <nav id="tabs">
     <button class="tab-btn active" data-tab="treemap">Treemap</button>
@@ -22,6 +28,14 @@
   </nav>
 
   <div id="breadcrumb"></div>
+
+  <div id="empty-state" class="hidden">
+    <p>No file loaded.</p>
+    <label id="open-file-btn-2" class="toolbar-btn">
+      File&nbsp;Open&hellip;
+      <input type="file" id="file-input-2" accept=".L5X,.l5x" hidden>
+    </label>
+  </div>
 
   <main>
     <section id="panel-treemap" class="panel active">

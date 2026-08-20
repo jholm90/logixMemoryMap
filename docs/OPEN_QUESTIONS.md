@@ -16,6 +16,21 @@ no D3 or any CDN-loaded JS, since engineering workstations running Studio
 the browser has internet access at runtime. Keeps the whole project
 pip-installable in one language plus a dependency-free frontend.
 
+**OQ-EXPORTSCOPE — NEW (2026-08-20), backlog feature request, not scheduled.**
+James: the tool needs to eventually filter/handle Controller exports as well
+as Program/UDT/AOI-only exports (Logix Designer can export any of those
+individually, `TargetType` on the L5X root reflects which), but "we will
+focus on controller exports today." Implemented today: `L5XDocument` now
+exposes `target_type`/`is_controller_export` (`parser/load.py`), and the UI
+shows an explicit warning banner rather than silently treating a partial
+export's totals as complete (2026-08-20's `311DGeneratedProgram.L5X` is a
+real example — `TargetType="Program"`, only 105 tags, clearly not a full
+project). What's NOT built: any first-class handling of a Program/DataType/
+AOI-only export as its own intentional mode (e.g. sizing just one UDT
+definition standalone, or one AOI's locals+params without a surrounding
+controller). Logged here as a real backlog item, not lost — pick up when
+Controller-export support is solid.
+
 **OQ-L5XVERSION — RESOLVED (2026-08-20).** Primary target: **v35** (L8x /
 CompactLogix 5380-class processors) — this is where Phase 3 validation
 testing will primarily happen. Spot-check cross-version compatibility later

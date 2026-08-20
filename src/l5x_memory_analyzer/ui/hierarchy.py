@@ -6,8 +6,11 @@ here so they're unit-testable on their own.
 
 from __future__ import annotations
 
+from l5x_memory_analyzer.parser.datatypes import DataTypeDef
 from l5x_memory_analyzer.parser.tags import CONTROLLER_SCOPE
+from l5x_memory_analyzer.sizing.constants import MemoryModel
 from l5x_memory_analyzer.sizing.report import SizeEntry
+from l5x_memory_analyzer.sizing.tree import has_children as _has_children
 
 
 def _scope_and_name(path: str) -> tuple[str, str]:
@@ -15,12 +18,23 @@ def _scope_and_name(path: str) -> tuple[str, str]:
     return scope, name
 
 
-def build_hierarchy(entries: list[SizeEntry]) -> dict:
+def build_hierarchy(
+    entries: list[SizeEntry],
+    data_types: dict[str, DataTypeDef] | None = None,
+    model: MemoryModel | None = None,
+    tag_dimensions: dict[str, tuple[int, ...]] | None = None,
+) -> dict:
     """Root -> {"Controller Tags", "Program: <name>", ...} -> leaf tag nodes.
 
     Grouping is derived from SizeEntry.path (`<scope>/<tag name>`, see
     parser/tags.py Tag.path) rather than adding new fields, since the scope
-    is already fully recoverable from it.
+    is already fully recoverable from it. data_types/model/tag_dimensions are
+    optional so existing callers that only need the flat rollup (no
+    drill-down) don't have to supply them -- has_children just defaults
+    false without them. tag_dimensions matters because SizeEntry itself only
+    carries a tag's base data_type, not its array dimensions -- without the
+    real dimensions a 5000-element DINT array tag would wrongly look like a
+    plain scalar DINT (not drillable) rather than an array (drillable).
     """
     groups: dict[str, list[dict]] = {}
     group_order: list[str] = []
@@ -31,6 +45,12 @@ def build_hierarchy(entries: list[SizeEntry]) -> dict:
         if group_name not in groups:
             groups[group_name] = []
             group_order.append(group_name)
+        dims = (tag_dimensions or {}).get(e.path, ())
+        kids = (
+            _has_children(e.data_type, dims, data_types, model)
+            if data_types is not None and model is not None
+            else False
+        )
         groups[group_name].append(
             {
                 "name": name,
@@ -39,6 +59,7 @@ def build_hierarchy(entries: list[SizeEntry]) -> dict:
                 "data_type": e.data_type,
                 "tier": e.tier,
                 "basis": e.basis,
+                "has_children": kids,
             }
         )
 
