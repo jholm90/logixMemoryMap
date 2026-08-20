@@ -8,22 +8,17 @@ TESTING_PLAN.md loop before this gets used to generate the other 30+.
 
 from __future__ import annotations
 
-# v35 / CompactLogix 5380-class, matching OQ-L5XVERSION's resolved primary
-# target and the 5069-L306ER James has available for real hardware checks.
-#
-# CORRECTED 2026-08-20: was "5069-L306ERS" (matching what James said his
-# physical unit was), but the real Logix Designer SDK rejected that exact
-# string outright: "Not supported processor type: 5069-L306ERS". This is
-# first-party evidence from the actual product, stronger than the earlier
-# web-search research that (correctly) only ever confirmed "5069-L306ER"
-# (no trailing S) as a real catalog number. Switched to the confirmed
-# string. Still worth James double-checking the exact ProcessorType against
-# his physical unit's nameplate or Studio 5000's own "New Project"
-# processor dropdown -- "ERS" might be a real suffix Studio 5000 just
-# doesn't expose via this SDK call, or James's own recollection of the
-# exact suffix may not be quite right; either way this is the value that
-# actually works, so it's authoritative for sample generation regardless.
-DEFAULT_PROCESSOR_TYPE = "5069-L306ER"
+# v35 / ControlLogix 5580-class -- switched 2026-08-20 (James: "why didnt
+# you use 1756-L81? lets use that as default") from 5069-L306ER, which was
+# only ever chosen because it's the one physical unit James has for real
+# hardware spot-checks (OQ-EMULATE). 1756-L81E matches his actual primary
+# target per OQ-L5XVERSION (v35/L8-class) and is what his real production
+# files (BaillieLeitchField_Edger etc.) actually run on -- makes more sense
+# as the generator default. Using the exact string already confirmed twice
+# over: it's in controller_budgets.yaml (sourced, 3MB) and it's the literal
+# ProcessorType value seen in James's own real L5X files -- not a repeat of
+# the earlier 5069-L306ERS suffix-guessing mistake.
+DEFAULT_PROCESSOR_TYPE = "1756-L81E"
 DEFAULT_MAJOR_REV = "35"
 DEFAULT_MINOR_REV = "11"
 DEFAULT_SOFTWARE_REVISION = "35.11"

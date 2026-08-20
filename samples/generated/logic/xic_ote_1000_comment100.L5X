@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.11" TargetName="xic_ote_1000_comment100" TargetType="Controller" ContainsContext="false" ExportOptions="References NoRawData L5KData DecoratedData Context Dependencies ForceProtectedEncoding AllProjDocTrans">
-  <Controller Use="Target" Name="xic_ote_1000_comment100" ProcessorType="5069-L306ER" MajorRev="35" MinorRev="11" TimeSlice="20" ShareUnusedTimeSlice="1" InstructionSet="v35" RedundancyEnabled="false" Class="Standard">
+  <Controller Use="Target" Name="xic_ote_1000_comment100" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" TimeSlice="20" ShareUnusedTimeSlice="1" InstructionSet="v35" RedundancyEnabled="false" Class="Standard">
     <DataTypes>
 
     </DataTypes>
     <Modules>
-      <Module Name="Local" CatalogNumber="5069-L306ER" Vendor="1" ProductType="14" ProductCode="149" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+      <Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="149" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
         <EKey State="ExactMatch"/>
         <Ports>
           <Port Id="1" Address="0" Type="ICP" Upstream="false"/>
