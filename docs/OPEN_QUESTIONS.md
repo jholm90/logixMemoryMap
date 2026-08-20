@@ -99,9 +99,25 @@ promoted to KNOWN — Phase 3 should still confirm it, just doesn't need to
 prioritize it the way OQ-BOOLPACK now does (that one, unlike this, has a
 hunch pointing *against* the current model).
 
-**OQ-ARRAYPACK** — For an array of UDTs, is padding applied per-element
-(so each element wastes the same padding) or is the array treated as one
-contiguous block? Affects array-of-UDT formula.
+**OQ-ARRAYPACK — hunch logged (2026-08-20), stays genuinely open, possible
+tension with OQ-ALIGN worth watching.** James, much less confident than his
+OQ-ALIGN answer: "i dunno, i think the udt always rolls up to the next
+32bit boundary. this will need to be validated." That's a *different* claim
+than OQ-ALIGN's (which was about padding *between* members inside a UDT —
+confirmed none). This one is about the UDT's *overall total* rounding up to
+a 4-byte multiple, which would matter most for array-of-UDT element stride
+(and possibly scalar UDT tags too — unclear which from his answer).
+
+Worth being precise about the *possible* reconciliation rather than assuming
+a contradiction: his confident OQ-ALIGN numbers (`DINT,BOOL,BOOL` = 5 bytes,
+not a multiple of 4) could still both be right if scalar UDT tags aren't
+rounded but *array element stride* is — a struct's own size being unpadded
+while array indexing still rounds each element to a word boundary is a
+common pattern elsewhere, not inherently contradictory. But that's inference
+on my part, not something James said — do not code speculative rounding
+into `compute_array_size`'s UDT-array branch based on this. Current
+implementation (`element_bytes × count`, no rounding) stays as-is until
+Phase 3 actually measures an array-of-odd-sized-UDT sample and settles it.
 
 **OQ-PRODCONS — RESOLVED (2026-08-20), deprioritized rather than modeled.**
 Checked real data first: 0 produced/consumed tags across all 4 real sample

@@ -119,6 +119,11 @@ just "code compiles," actually rendered and clicked through.
 - [ ] Generate: 10k-element BOOL array (controller tag)
 - [ ] Generate: 10k-element DINT array
 - [ ] Generate: 10k-element UDT array (UDT = mix of BOOL/DINT/REAL, ~20 bytes/ea)
+- [ ] Generate: 10k-element array of a deliberately NOT-4-byte-aligned UDT
+      (e.g. `DINT, BOOL, BOOL` = 5 bytes tight-packed, per OQ-ALIGN) —
+      the ~20-byte UDT sample above is already a multiple of 4 and can't
+      distinguish "array stride rounds up to 4-byte boundary" (OQ-ARRAYPACK,
+      James's hunch) from "no rounding, tight stride" — this sample can
 - [ ] Generate: nested UDT (UDT containing UDT containing UDT, 3 levels)
 - [ ] Generate: STRING array (default 82-byte) ×1000
 - [ ] Generate: custom string type (250-char) ×1000
