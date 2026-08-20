@@ -6,18 +6,28 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
 CONTROLLER_SCOPE = "controller"
+ALIAS_TAG_TYPE = "Alias"
 
 
 @dataclass(frozen=True)
 class Tag:
     name: str
-    data_type: str
+    data_type: str | None  # None for Alias tags -- see is_alias
     dimensions: tuple[int, ...]
     scope: str  # CONTROLLER_SCOPE or "program:<ProgramName>"
+    tag_type: str = "Base"
+    alias_for: str | None = None
 
     @property
     def path(self) -> str:
         return f"{self.scope}/{self.name}"
+
+    @property
+    def is_alias(self) -> bool:
+        # Alias tags carry no DataType of their own in the L5X -- they're a
+        # pointer/rename onto another tag or module I/O point, and consume
+        # no memory beyond what the aliased target already accounts for.
+        return self.tag_type == ALIAS_TAG_TYPE
 
 
 def _parse_dimensions(raw: str | None) -> tuple[int, ...]:
@@ -37,6 +47,8 @@ def _parse_tag_elements(tags_el: ET.Element, scope: str) -> list[Tag]:
                 data_type=tag_el.get("DataType"),
                 dimensions=_parse_dimensions(tag_el.get("Dimensions")),
                 scope=scope,
+                tag_type=tag_el.get("TagType", "Base"),
+                alias_for=tag_el.get("AliasFor"),
             )
         )
     return tags

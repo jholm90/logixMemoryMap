@@ -6,8 +6,10 @@ a single commit-sized unit of work.
 ## Phase 0 — Setup
 - [x] Decide stack (OQ-STACK) — parser language, UI framework
 - [x] Repo skeleton: `src/parser`, `src/sizing`, `src/ui`
-- [ ] Get one real (sanitized) production L5X into `samples/` as dev fixture
-      (needs James to drop a sanitized export into `samples/local/`, gitignored)
+- [x] Get real production L5X files into `samples/local/` (gitignored) as dev
+      fixtures — 2026-08-20, 4 real files (unsanitized, local-only). See
+      docs/OPEN_QUESTIONS.md OQ-PREDEFINED for what running the sizing engine
+      against them turned up.
 - [x] `samples/manifest.csv` created with columns (see SAMPLE_GENERATION.md)
 - [x] XML load + basic namespace/schema sanity check for whatever L5X version(s)
       in use (OQ-L5XVERSION) — `parser/load.py` validates root tag, records
@@ -43,6 +45,18 @@ a single commit-sized unit of work.
       MEMORY_MODEL.md confidence)
 - [x] Unit tests against hand-calculated small UDT (nested, 2 levels, mixed
       BOOL/DINT/STRING members) — `tests/test_sizing.py`, `tests/test_parser.py`
+- [x] Validated against 4 real production L5X files (2026-08-20, 3394 tags
+      total). Found and fixed two real gaps this way, not from theory:
+      Alias tags (`TagType="Alias"`, no DataType, 294 occurrences / ~21% of
+      all sizing errors) now correctly size as 0 bytes/KNOWN instead of
+      erroring — they're a pointer onto another tag's memory, not unsized
+      data. TIMER/COUNTER/CONTROL (well-documented 12-byte AB structures)
+      now modeled as `predefined_structures` in memory_model.yaml. Error
+      rate on the real corpus dropped 41.6% → 29.5%. Remaining errors are
+      AOI-instance tags (46.8% of what's left, confirms Phase 2b priority)
+      and a long tail of other firmware-native structures (motion/axis/
+      safety) deliberately left unsized rather than guessed — cataloged in
+      OQ-PREDEFINED for real research, not silently zeroed or estimated.
 
 ## Phase 2 — UI v1
 Stack decided 2026-08-20 (OQ-STACK closed): local Flask server, vanilla JS/SVG

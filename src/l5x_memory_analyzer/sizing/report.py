@@ -54,6 +54,12 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     errors: list[SizeError] = []
     for tag in tags:
         category = "controller_tag" if tag.scope == CONTROLLER_SCOPE else "program_tag"
+        if tag.is_alias:
+            # An Alias tag is a pointer/rename onto another tag or module I/O
+            # point -- it has no DataType of its own in the L5X and consumes
+            # no memory beyond what its target already accounts for.
+            sized.append((tag.path, category, "ALIAS", 0, "KNOWN"))
+            continue
         try:
             size, basis = compute_array_size(tag.data_type, tag.dimensions, data_types, model)
         except (UnknownDataTypeError, RecursiveUdtError) as exc:

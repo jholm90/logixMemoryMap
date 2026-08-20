@@ -46,6 +46,24 @@ def test_unknown_type_raises():
         size("NotARealType")
 
 
+def test_predefined_structures_timer_counter_control():
+    assert size("TIMER") == (12, "KNOWN")
+    assert size("COUNTER") == (12, "KNOWN")
+    assert size("CONTROL") == (12, "KNOWN")
+
+
+def test_predefined_structure_as_udt_member():
+    udt = DataTypeDef(
+        name="MotorTimers",
+        members=[
+            Member(name="RunTmr", data_type="TIMER", dimension=0),
+            Member(name="FaultCtr", data_type="COUNTER", dimension=0),
+        ],
+    )
+    # 12 (TIMER) + 12 (COUNTER) = 24, still UNKNOWN-tainted by UDT alignment
+    assert size("MotorTimers", data_types={"MotorTimers": udt}) == (24, "UNKNOWN")
+
+
 def test_udt_mixed_bool_dint_string_with_bit_packing():
     # Mirrors what Logix Designer itself emits for a UDT with 2 BOOL members:
     # one hidden backing SINT + two visible BIT aliases into it.

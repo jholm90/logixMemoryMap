@@ -59,6 +59,35 @@ Need to isolate: base connection overhead (fixed per connection) vs. per-byte
 payload cost vs. number of consumers of a single produced tag (does producing
 to 3 consumers cost 3x, or is overhead shared?).
 
+**OQ-PREDEFINED — NEW (2026-08-20), found by running the sizing engine
+against James's own real production L5X files.** Beyond TIMER/COUNTER/
+CONTROL (now modeled, see MEMORY_MODEL.md), real programs reference a long
+tail of other firmware-native/library structure types that also never get a
+member list in `Controller/DataTypes`, so they currently surface as explicit
+sizing errors (correct/honest behavior per the ground-truth constraint --
+better an explicit error than a silently wrong guessed number) rather than
+counting toward any total. Frequency across 4 real files (3394 tags, 1411
+total sizing errors):
+
+| Type | Count | Notes |
+|---|---|---|
+| MOTION_INSTRUCTION | 20 | |
+| AXIS_CIP_DRIVE | 64 | |
+| AXIS_VIRTUAL | 5 | |
+| MOTION_GROUP | 3 | |
+| MESSAGE | 4 | real MSG structure is large/version-dependent, do not guess |
+| ts_CIPAxis, ts_MContactAxis, ts_VFDAxis | 63 combined | not in DataTypes or AOI defs in the source file -- likely from an external motion/axis library this project references but doesn't locally re-export |
+| DCI_STOP, CONFIGURABLE_ROUT, AxisSTO | 61 combined | likely Safety/Guard I/O device-profile-generated structures |
+| FBD_TIMER | 5 | FBD (function block diagram) variant of TIMER, different layout, don't assume it's also 12 bytes |
+
+None of these get a guessed size -- they need either real Rockwell
+documentation confirming a stable byte layout (like TIMER/COUNTER/CONTROL
+already have) or empirical Phase 3 measurement before going in
+MEMORY_MODEL.md. Motion/axis structures (AXIS_CIP_DRIVE etc.) are the
+highest-frequency and most worth chasing next: 64+63+5+3 = 135 occurrences,
+and motion axis structures are known to be large, so likely a meaningful
+chunk of unaccounted memory in motion-heavy programs specifically.
+
 **OQ-AOIINSTANCE** — Does each AOI *call site* in logic allocate a full new set
 of local tag memory, or can Logix share/optimize in any case? Assumption is
 full per-instance allocation (this is standard AOI behavior) but needs
