@@ -56,7 +56,15 @@ def _cmd_udt(args: argparse.Namespace) -> int:
 
     udt_frag = udt_xml(args.name, members)
     tag_dims = tuple(int(d) for d in args.tag_dims.split(",")) if args.tag_dims else ()
-    tag_frag = tag_xml("TestInstance", args.name, tag_dims, udt_members=members)
+    if args.instances == 0:
+        tag_frag = ""
+    elif args.instances == 1:
+        tag_frag = tag_xml("TestInstance", args.name, tag_dims, udt_members=members)
+    else:
+        tag_frag = "\n".join(
+            tag_xml(f"TestInstance{i}", args.name, tag_dims, udt_members=members)
+            for i in range(args.instances)
+        )
     l5x = build_l5x(
         target_name=args.name,
         tags_xml=tag_frag,
@@ -65,7 +73,8 @@ def _cmd_udt(args: argparse.Namespace) -> int:
 
     out_path = OUT_ROOT / "udt" / f"{args.out}.L5X"
     bytes_ = write_sample(l5x, out_path)
-    append_manifest_row(args.out, f"UDT {args.name}: {', '.join(m.data_type for m in members)}", "udt", out_path, bytes_)
+    desc = f"UDT {args.name}: {', '.join(m.data_type for m in members)}, {args.instances} instance(s)"
+    append_manifest_row(args.out, desc, "udt", out_path, bytes_)
     print(f"Wrote {out_path} (predicted {bytes_} bytes)")
     return 0
 
@@ -136,6 +145,10 @@ def main(argv: list[str] | None = None) -> int:
                              help="Give every member a filler Description of this length (0 = none)")
     udt_parser.add_argument("--tag-dims", default="",
                              help="Make TestInstance an array instead of scalar, e.g. '1000' -- for OQ-ARRAYPACK")
+    udt_parser.add_argument("--instances", type=int, default=1,
+                             help="How many separate scalar tag instances of this UDT to create "
+                                  "(0 = DataType definition only, no tags at all) -- for isolating "
+                                  "DataType-definition cost from per-instance cost, OQ-TAGOVERHEAD")
     udt_parser.add_argument("--out", required=True, help="Output file basename")
     udt_parser.set_defaults(func=_cmd_udt)
 

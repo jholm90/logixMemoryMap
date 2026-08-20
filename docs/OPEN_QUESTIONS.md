@@ -442,19 +442,35 @@ it only sizes raw data bytes.
   standalone tags of one type, DataType defined-but-uninstantiated vs
   instantiated) to fit an actual per-tag and per-DataType-member constant
   before this goes in MEMORY_MODEL.md.
-- **Added variable (2026-08-20), James's hunch:** "_TAG_ probably occupies
-  less space than _TAG_LONG_TAG_NAME_DONT_MISS" — the ~92-96/tag figure
-  above might be partly or wholly a tag-*name-string* cost (symbol table
-  entry), not a flat descriptor cost. Generated an isolating pair to test
-  it: `tagname_short_100dint.L5X` (100 DINT tags, 4-char names, `T_00`..
-  `T_99`) vs `tagname_long_100dint.L5X` (same 100 DINT tags, names padded
-  to 40 chars, `TAG_LONGTAGNAME_..._00` etc.) — both predicted 400 bytes
-  (name length isn't modeled at all yet, which is the point). If actual
-  blocks differ between the two, that isolates a per-character (or
-  per-name-length-bucket) component of the tag cost; if identical, the
-  ~92-96/tag cost is unrelated to name length and points more toward a
-  fixed descriptor/connection-reference cost instead. `sample_gen.cli tags`
-  now supports `--name-prefix`/`--name-len` for building more of these.
+- **Tag-name-length variable — CONFIRMED (2026-08-20), real data.**
+  James's hunch was right. `tagname_short_100dint.L5X` (100 DINT tags,
+  4-char names) baseline-corrected to **84 blocks/tag**; `tagname_long_100dint.L5X`
+  (same 100 tags, names padded to 40 chars) baseline-corrected to **124
+  blocks/tag**. That's +40 blocks over 100 tags for 36 extra
+  characters/tag → **≈1.11 blocks per additional tag-name character**, on
+  top of a ≈80-block flat per-tag cost at the short end (linear fit off
+  just these two points: `overhead ≈ 79.6 + 1.11 × name_length`).
+  Cross-validated against data already collected before this test existed:
+  `sample_0002`'s BOOL tags (`TestBool0000`, 12 chars) predict
+  79.6+1.11×12 ≈ **93** vs measured ~92; `dint_10k_array`'s tag
+  (`dint_10k_array`, 14 chars) predicts 79.6+1.11×14 ≈ **95** vs measured
+  ~96. Both land within ~1 block of this 2-point fit — strong signal this
+  is real and not coincidence, though still only 4 total data points (all
+  on 1756-L81E/v35) and no length values yet between 14 and 40 chars to
+  confirm it stays linear across the whole range rather than being a
+  bucketed/rounded cost. Not yet promoted to MEMORY_MODEL.md — the flat
+  component still needs to be separated from tag-name-string cost
+  specifically (a *type descriptor* cost that doesn't depend on the name
+  at all is folded into that ~80 intercept right now) before this becomes
+  an actual model constant rather than a fitted-line observation.
+- **DataType-definition-vs-instance follow-up (2026-08-20):** generated
+  `motorstatus_def_only.L5X` (MotorStatus UDT defined, 0 tag instances —
+  isolates the pure DataType-definition cost) and
+  `motorstatus_10_instances.L5X` (same UDT, 10 separate scalar instances
+  `TestInstance0`..`TestInstance9`) alongside the existing 1-instance
+  `motorstatus_test.L5X`, giving 3 points (0/1/10 instances) to separate
+  flat DataType-definition cost from per-instance cost once tested.
+  `sample_gen.cli udt` now supports `--instances N` (0 = definition only).
 
 **OQ-LOGICVISIBILITY — NEW (2026-08-20), high impact, blocks Phase 4.**
 1000 rungs of `XIC(In{i})OTE(Out{i});`, both with and without a 100-char
