@@ -140,10 +140,22 @@ consume controller memory at all, or are they development-environment-only
 different kind of "memory hog" to flag (verbose commenting habits) than data
 structure bloat.
 
-**OQ-ALARM** — Extended tag properties (min/max/units) and ALMD/ALMA alarm
-instances add memory beyond raw tag data size. In scope for v1, or deferred to
-Phase 6 / cut entirely? Affects whether Phase 1 needs an extended-properties
-parser now.
+**OQ-ALARM — PARTIALLY RESOLVED (2026-08-20), scope split in two.** James:
+alarms are part of standard code, worth adding to the necessary list — but
+specifically via **extended tag properties** (min/max/HH/H/L/LL-style alarm
+limits configured directly on a tag), which is what FactoryTalk View reads
+to display/trigger controller alarms in his shop's standard programs.
+**ALMD/ALMA alarm instruction tags are never used** — confirmed out of
+scope, don't bother modeling those.
+
+So: extended tag properties are IN SCOPE for the tool (needs an
+extended-properties parser eventually, Phase 1/1-adjacent work), ALMD/ALMA
+is OUT — cut entirely rather than deferred, no need to revisit later like
+OQ-SAFETY. Still open: whether extended tag properties cost any *memory* at
+all beyond the tag's own data size, and if so how much — that's a genuine
+new sizing question (call it OQ-ALARMPROPBYTES if it needs its own ID once
+someone picks this up) that wasn't resolved by this scoping answer, just
+confirmed as worth answering.
 
 **OQ-SAFETY — RESOLVED (2026-08-20).** Out of scope for launch entirely —
 backlog/feature-request item only ("Phase 99"), not a near-term phase. Tool
