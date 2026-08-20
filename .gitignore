@@ -8,6 +8,17 @@ build/
 node_modules/
 
 # real/proprietary program exports - never commit these
+# (both extension cases ignored -- *.L5X alone is case-sensitive on Linux
+# and silently misses a lowercase .l5x file, which is real: it's why one
+# Rockwell sample slipped past `git add`'s gitignore check while the other
+# 63 in the same batch were correctly skipped. .gitignore only guards local
+# `git add`/`git status` though -- it does nothing against a direct commit
+# via GitHub's web upload UI, which is how the 2026-08-20 proprietary-file
+# exposure actually happened; see git history)
 samples/local/
 *.L5X
+*.l5x
 !samples/generated/**/*.L5X
+!samples/generated/**/*.l5x
+!samples/samplePrograms/RockwellSamples/**/*.L5X
+!samples/samplePrograms/RockwellSamples/**/*.l5x

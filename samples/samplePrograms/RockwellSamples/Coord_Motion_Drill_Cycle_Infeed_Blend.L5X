@@ -1,0 +1,1496 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="Coord_Motion_Drill_Cycle_Infeed_Blend" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:19:53 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="Coord_Motion_Drill_Cycle_Infeed_Blend" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:19:39 2018" LastModifiedDate="Fri Jan 19 07:19:40 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<Description>
+<![CDATA[An 8-step Drill Cycle example application.
+Use Coordinated Motion MCLM to allow Z-axis Infeed Blending at Change speed.]]>
+</Description>
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="0"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes/>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+<Module Name="Test_Switches" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="4" Type="ICP" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24">
+<Data>1C 00 00 00 10 00 00 00 01 00 00 00 00 00 00 00 
+01 01 01 01 00 00 00 00 FF FF 00 00 FF FF 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0">
+<DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+<DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="StandardInput" RPI="5000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1000_1001_0000_0001"/>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="DrillCycMotDat" TagType="Base" DataType="REAL" Dimensions="3 6" Radix="Float">
+<Comments>
+<Comment Operand="[0,0]">
+<![CDATA[Hole Position Along X]]>
+</Comment>
+<Comment Operand="[0,1]">
+<![CDATA[Advance Position Along Z]]>
+</Comment>
+<Comment Operand="[0,2]">
+<![CDATA[Feed Position Along Z]]>
+</Comment>
+<Comment Operand="[0,3]">
+<![CDATA[Dwell]]>
+</Comment>
+<Comment Operand="[0,4]">
+<![CDATA[Retract Position Along Z]]>
+</Comment>
+<Comment Operand="[0,5]">
+<![CDATA[Feed]]>
+</Comment>
+<Comment Operand="[1,0]">
+<![CDATA[Hole Position Along X]]>
+</Comment>
+<Comment Operand="[1,1]">
+<![CDATA[Advance Position Along Z]]>
+</Comment>
+<Comment Operand="[1,2]">
+<![CDATA[Feed Position Along Z]]>
+</Comment>
+<Comment Operand="[1,3]">
+<![CDATA[Dwell]]>
+</Comment>
+<Comment Operand="[1,4]">
+<![CDATA[Retract Position Along Z]]>
+</Comment>
+<Comment Operand="[1,5]">
+<![CDATA[Feed]]>
+</Comment>
+<Comment Operand="[2,0]">
+<![CDATA[Hole Position Along X]]>
+</Comment>
+<Comment Operand="[2,1]">
+<![CDATA[Advance Position Along Z]]>
+</Comment>
+<Comment Operand="[2,2]">
+<![CDATA[Feed Position Along Z]]>
+</Comment>
+<Comment Operand="[2,3]">
+<![CDATA[Dwell]]>
+</Comment>
+<Comment Operand="[2,4]">
+<![CDATA[Retract Position Along Z]]>
+</Comment>
+<Comment Operand="[2,5]">
+<![CDATA[Feed]]>
+</Comment>
+</Comments>
+<Data>00 00 20 41 00 00 48 42 00 00 82 42 00 00 00 00 
+00 00 00 00 00 00 A0 40 00 00 A0 41 00 00 48 42 
+00 00 82 42 00 00 00 00 00 00 00 00 00 00 A0 40 
+00 00 F0 41 00 00 48 42 00 00 82 42 00 00 00 00 
+00 00 00 00 00 00 A0 40</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="3,6" Radix="Float">
+<Element Index="[0,0]" Value="10.0"/>
+<Element Index="[0,1]" Value="50.0"/>
+<Element Index="[0,2]" Value="65.0"/>
+<Element Index="[0,3]" Value="0.0"/>
+<Element Index="[0,4]" Value="0.0"/>
+<Element Index="[0,5]" Value="5.0"/>
+<Element Index="[1,0]" Value="20.0"/>
+<Element Index="[1,1]" Value="50.0"/>
+<Element Index="[1,2]" Value="65.0"/>
+<Element Index="[1,3]" Value="0.0"/>
+<Element Index="[1,4]" Value="0.0"/>
+<Element Index="[1,5]" Value="5.0"/>
+<Element Index="[2,0]" Value="30.0"/>
+<Element Index="[2,1]" Value="50.0"/>
+<Element Index="[2,2]" Value="65.0"/>
+<Element Index="[2,3]" Value="0.0"/>
+<Element Index="[2,4]" Value="0.0"/>
+<Element Index="[2,5]" Value="5.0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="drill_axis" TagType="Base" DataType="MOTION_GROUP">
+<Data Format="MotionGroup">
+<MotionGroupParameters GroupType="Warning Enabled" CoarseUpdatePeriod="4000" PhaseShift="0" GeneralFaultType="Major Fault" AutoTagUpdate="Enabled"/>
+</Data>
+</Tag>
+<Tag Name="Dwell" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="fwd" TagType="Alias" Radix="Decimal" AliasFor="Local:4:I.Data.11"/>
+<Tag Name="infeed_blend" TagType="Base" DataType="COORDINATE_SYSTEM">
+<Data Format="CoordinateSystem">
+<CoordinateSystemParameters MotionGroupInstance="drill_axis" SystemType="Cartesian" Dimension="1" Axes="z_axis" MaximumPendingMoves="1" CoordinationMode="Primary" CoordinationUnits="Coordination Units" ConversionRatioNumerator="1.0" ConversionRatioDenominator="1" CoordinateSystemAutoTagUpdate="Enabled" MaximumSpeed="333.3333"
+ MaximumAcceleration="4000.0" MaximumDeceleration="4000.0" ActualPositionTolerance="0.01" CommandPositionTolerance="0.01" TransformDimension="0" LinkLength1="0.0" LinkLength2="0.0" ZeroAngleOffset1="0.0" ZeroAngleOffset2="0.0" ZeroAngleOffset3="0.0" BaseOffset1="0.0"
+ BaseOffset2="0.0" BaseOffset3="0.0" EndEffectorOffset1="0.0" EndEffectorOffset2="0.0" EndEffectorOffset3="0.0" DynamicsConfigurationBits="7" MaximumAccelerationJerk="48000.004" MaximumDecelerationJerk="48000.004"/>
+</Data>
+</Tag>
+<Tag Name="Motion_Active_Flags" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>0A 04 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1034"/>
+</Data>
+</Tag>
+<Tag Name="read_me" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="rev" TagType="Alias" Radix="Decimal" AliasFor="Local:4:I.Data.10"/>
+<Tag Name="xz_coord" TagType="Base" DataType="COORDINATE_SYSTEM">
+<Data Format="CoordinateSystem">
+<CoordinateSystemParameters MotionGroupInstance="drill_axis" SystemType="Cartesian" Dimension="2" Axes="x_axis z_axis" MaximumPendingMoves="1" CoordinationMode="Primary Primary" CoordinationUnits="Coordination Units" ConversionRatioNumerator="1.0 1.0" ConversionRatioDenominator="1 1" CoordinateSystemAutoTagUpdate="Enabled" MaximumSpeed="333.3333"
+ MaximumAcceleration="1000.0" MaximumDeceleration="1000.0" ActualPositionTolerance="0.02" CommandPositionTolerance="0.01" TransformDimension="0" LinkLength1="0.0" LinkLength2="0.0" ZeroAngleOffset1="0.0" ZeroAngleOffset2="0.0" ZeroAngleOffset3="0.0" BaseOffset1="0.0"
+ BaseOffset2="0.0" BaseOffset3="0.0" EndEffectorOffset1="0.0" EndEffectorOffset2="0.0" EndEffectorOffset3="0.0" DynamicsConfigurationBits="7" MaximumAccelerationJerk="3000.0002" MaximumDecelerationJerk="3000.0002"/>
+</Data>
+</Tag>
+<Tag Name="x_axis" TagType="Base" DataType="AXIS_SERVO">
+<Data Format="Axis">
+<AxisParameters MotionGroup="drill_axis" MotionModule="&lt;NA&gt;" ConversionConstant="400.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="mm" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward"
+ HomeSequence="Marker" HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" HomeSpeed="20.0" HomeReturnSpeed="2.0" MaximumSpeed="333.3333" MaximumAcceleration="20202.02" MaximumDeceleration="20202.02" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1"
+ MasterPositionFilterBandwidth="0.1" AxisType="Servo" ServoLoopConfiguration="Position Servo" ExternalDriveType="Torque" FaultConfigurationBits="12" AxisInfoSelect1="Velocity Command" AxisInfoSelect2="Position Error" LDTType="PWM" LDTRecirculations="1" LDTCalibrationConstant="9.0" LDTCalibrationConstantUnits="us/in"
+ LDTScaling="1.0" LDTScalingUnits="Position Units/m" LDTLength="36.0" LDTLengthUnits="in" SSICodeType="Binary" SSIDataLength="13" SSIClockFrequency="208" AbsoluteFeedbackEnable="1" AbsoluteFeedbackOffset="0.0" ServoFeedbackType="AQB - A Quadrature B" ServoPolarityBits="0"
+ VelocityFeedforwardGain="100.0" AccelerationFeedforwardGain="100.0" PositionProportionalGain="101.72524" PositionIntegralGain="0.0" VelocityProportionalGain="260.41666" VelocityIntegralGain="16.95421" VelocityScaling="1.2" TorqueScaling="4.20750026e-003" OutputLPFilterBandwidth="207.33809" IntegratorHoldEnable="Enabled" PositionDifferentialGain="0.0"
+ DirectionalScalingRatio="1.0" MaximumPositiveTravel="0.0" MaximumNegativeTravel="0.0" PositionErrorTolerance="6.553601" PositionLockTolerance="0.001" OutputLimit="10.0" DirectDriveRampRate="0.0" OutputOffset="0.0" VelocityOffset="0.0" TorqueOffset="0.0" FrictionCompensation="0.0"
+ FrictionCompensationWindow="0.0" BacklashStabilizationWindow="0" BacklashReversalOffset="0.0" SoftOvertravelFaultAction="Disable Drive" PositionErrorFaultAction="Disable Drive" FeedbackFaultAction="Disable Drive" FeedbackNoiseFaultAction="Disable Drive" DriveFaultAction="Disable Drive" TestIncrement="1.0" TuningTravelLimit="100.0" TuningSpeed="333.3333"
+ TuningTorque="100.0" DampingFactor="0.8" DriveModelTimeConstant="0.0015" PositionServoBandwidth="16.198286" VelocityServoBandwidth="41.467617" TuningConfigurationBits="16#0000_003c" MaximumAccelerationJerk="1224364.9" MaximumDecelerationJerk="1224364.9" DynamicsConfigurationBits="7"/>
+</Data>
+</Tag>
+<Tag Name="x_axis_mc_home" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="x_axis_mc_rtn" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="x_mc_DS1" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 2A 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="704643072"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="1"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="x_mc_stop" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="x_pos_DC" TagType="Base" DataType="REAL" Dimensions="2" Radix="Float">
+<Data>00 00 00 00 00 00 F0 41</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="2" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="30.0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="Zone" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>00 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="ZoneCalc" TagType="Base" DataType="REAL" Dimensions="3 8" Radix="Float">
+<Data>19 04 20 41 E7 FB 1F 41 0C 02 A0 41 F4 FD 9F 41 
+0C 02 C8 41 F4 FD C7 41 0C 02 A0 41 F4 FD 9F 41 
+0C 02 A0 41 F4 FD 9F 41 0C 02 A0 41 F4 FD 9F 41 
+0C 02 C8 41 F4 FD C7 41 0C 02 A0 41 F4 FD 9F 41 
+0C 02 F0 41 F4 FD EF 41 0C 02 A0 41 F4 FD 9F 41 
+0C 02 C8 41 F4 FD C7 41 0C 02 A0 41 F4 FD 9F 41</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="3,8" Radix="Float">
+<Element Index="[0,0]" Value="10.001"/>
+<Element Index="[0,1]" Value="9.999"/>
+<Element Index="[0,2]" Value="20.001"/>
+<Element Index="[0,3]" Value="19.999"/>
+<Element Index="[0,4]" Value="25.001"/>
+<Element Index="[0,5]" Value="24.999"/>
+<Element Index="[0,6]" Value="20.001"/>
+<Element Index="[0,7]" Value="19.999"/>
+<Element Index="[1,0]" Value="20.001"/>
+<Element Index="[1,1]" Value="19.999"/>
+<Element Index="[1,2]" Value="20.001"/>
+<Element Index="[1,3]" Value="19.999"/>
+<Element Index="[1,4]" Value="25.001"/>
+<Element Index="[1,5]" Value="24.999"/>
+<Element Index="[1,6]" Value="20.001"/>
+<Element Index="[1,7]" Value="19.999"/>
+<Element Index="[2,0]" Value="30.001"/>
+<Element Index="[2,1]" Value="29.999"/>
+<Element Index="[2,2]" Value="20.001"/>
+<Element Index="[2,3]" Value="19.999"/>
+<Element Index="[2,4]" Value="25.001"/>
+<Element Index="[2,5]" Value="24.999"/>
+<Element Index="[2,6]" Value="20.001"/>
+<Element Index="[2,7]" Value="19.999"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="ZoneWindow" TagType="Base" DataType="REAL" Radix="Float">
+<Data>6F 12 83 3A</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.001"/>
+</Data>
+</Tag>
+<Tag Name="z_axis" TagType="Base" DataType="AXIS_SERVO">
+<Data Format="Axis">
+<AxisParameters MotionGroup="drill_axis" MotionModule="&lt;NA&gt;" ConversionConstant="400.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="mm" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward"
+ HomeSequence="Marker" HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" HomeSpeed="20.0" HomeReturnSpeed="2.0" MaximumSpeed="333.3333" MaximumAcceleration="20202.02" MaximumDeceleration="20606.06" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1"
+ MasterPositionFilterBandwidth="0.1" AxisType="Servo" ServoLoopConfiguration="Position Servo" ExternalDriveType="Torque" FaultConfigurationBits="12" AxisInfoSelect1="Velocity Command" AxisInfoSelect2="Position Command" LDTType="PWM" LDTRecirculations="1" LDTCalibrationConstant="9.0" LDTCalibrationConstantUnits="us/in"
+ LDTScaling="1.0" LDTScalingUnits="Position Units/m" LDTLength="36.0" LDTLengthUnits="in" SSICodeType="Binary" SSIDataLength="13" SSIClockFrequency="208" AbsoluteFeedbackEnable="1" AbsoluteFeedbackOffset="0.0" ServoFeedbackType="AQB - A Quadrature B" ServoPolarityBits="0"
+ VelocityFeedforwardGain="100.0" AccelerationFeedforwardGain="100.0" PositionProportionalGain="101.72524" PositionIntegralGain="0.0" VelocityProportionalGain="260.41666" VelocityIntegralGain="16.95421" VelocityScaling="0.0" TorqueScaling="4.16584173e-003" OutputLPFilterBandwidth="207.33809" IntegratorHoldEnable="Enabled" PositionDifferentialGain="0.0"
+ DirectionalScalingRatio="1.0" MaximumPositiveTravel="0.0" MaximumNegativeTravel="0.0" PositionErrorTolerance="6.553601" PositionLockTolerance="0.001" OutputLimit="10.0" DirectDriveRampRate="0.0" OutputOffset="0.0" VelocityOffset="0.0" TorqueOffset="0.0" FrictionCompensation="0.0"
+ FrictionCompensationWindow="0.0" BacklashStabilizationWindow="0" BacklashReversalOffset="0.0" SoftOvertravelFaultAction="Disable Drive" PositionErrorFaultAction="Disable Drive" FeedbackFaultAction="Disable Drive" FeedbackNoiseFaultAction="Disable Drive" DriveFaultAction="Disable Drive" TestIncrement="1.0" TuningTravelLimit="100.0" TuningSpeed="333.3333"
+ TuningTorque="100.0" DampingFactor="0.8" DriveModelTimeConstant="0.0015" PositionServoBandwidth="16.198286" VelocityServoBandwidth="41.467617" TuningConfigurationBits="16#0000_003c" MaximumAccelerationJerk="1224364.9" MaximumDecelerationJerk="1273829.3" DynamicsConfigurationBits="7"/>
+</Data>
+</Tag>
+<Tag Name="z_axis_mc_home" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="z_axis_mc_rtn" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="z_dwell_DC" TagType="Base" DataType="TIMER">
+<Data>B9 5B 0E 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="z_feed_DC" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 A0 40</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="5.0"/>
+</Data>
+</Tag>
+<Tag Name="z_mc_DS2" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 2A 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="704643072"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="1"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="z_mc_DS3" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 2A 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="704643072"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="1"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="z_mc_DS5" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 2A 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="704643072"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="1"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="z_mc_DS7" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 2A 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="704643072"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="1"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="z_mc_DS8" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 AA 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="-1442840576"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="1"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="z_mc_stop" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="z_pos_DC" TagType="Base" DataType="REAL" Dimensions="4" Radix="Float">
+<Data>00 00 00 00 00 00 48 42 00 00 82 42 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="4" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="50.0"/>
+<Element Index="[2]" Value="65.0"/>
+<Element Index="[3]" Value="0.0"/>
+</Array>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags/>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[See Routine Motion Task: Drill_Cycle_ReadME_Info  for Info on ==> Coord Motion Drill Cycle Example ]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+<Program Name="MotionProgram" TestEdits="false" MainRoutineName="MainMotionRoutine" Disabled="false">
+<Tags>
+<Tag Name="AUTO" TagType="Alias" Radix="Decimal" AliasFor="Local:4:I.Data.8"/>
+<Tag Name="B1" TagType="Alias" Radix="Decimal" AliasFor="Motion_Active_Flags"/>
+<Tag Name="ClearMotEnable" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="CycleStop" TagType="Alias" Radix="Decimal" AliasFor="Local:4:I.Data.1"/>
+<Tag Name="cycstp" TagType="Alias" Radix="Decimal" AliasFor="Motion_Active_Flags.16"/>
+<Tag Name="DrillCycComp" TagType="Alias" Radix="Binary" AliasFor="B1.1"/>
+<Tag Name="DrillCycOpCntr" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 03 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="3"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="DrillCycStp" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>01 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="Drill_Cycle_Active" TagType="Alias" Radix="Binary" AliasFor="B1.0"/>
+<Tag Name="FirstPass" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Home" TagType="Alias" Radix="Decimal" AliasFor="Local:4:I.Data.13"/>
+<Tag Name="Home_Active" TagType="Alias" Radix="Decimal" AliasFor="B1.6"/>
+<Tag Name="Home_OneShot" TagType="Alias" Radix="Decimal" AliasFor="B1.5"/>
+<Tag Name="Jog" TagType="Alias" Radix="Decimal" AliasFor="Local:4:I.Data.12"/>
+<Tag Name="Jog_Active" TagType="Alias" Radix="Decimal" AliasFor="B1.15"/>
+<Tag Name="Jog_DIR" TagType="Base" DataType="SINT" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="SINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="Jog_OneShot" TagType="Alias" Radix="Decimal" AliasFor="B1.14"/>
+<Tag Name="MotFaultReset" TagType="Alias" Radix="Decimal" AliasFor="Local:4:I.Data.2"/>
+<Tag Name="Return1" TagType="Alias" Radix="Decimal" AliasFor="Local:4:I.Data.14"/>
+<Tag Name="Return_Active" TagType="Alias" Radix="Decimal" AliasFor="B1.9"/>
+<Tag Name="Return_OneShot" TagType="Alias" Radix="Decimal" AliasFor="B1.8"/>
+<Tag Name="Run" TagType="Alias" Radix="Decimal" AliasFor="Local:4:I.Data.15"/>
+<Tag Name="Run_ONS" TagType="Alias" Radix="Decimal" AliasFor="B1.3"/>
+<Tag Name="ServoOn" TagType="Alias" Radix="Decimal" AliasFor="Local:4:I.Data.0"/>
+<Tag Name="STEP" TagType="Alias" Radix="Decimal" AliasFor="Local:4:I.Data.9"/>
+<Tag Name="StepFwd" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="StepRev" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="StpONS" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="term_type" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>00 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="xz_retract" TagType="Base" DataType="REAL" Dimensions="4" Radix="Float">
+<Data>00 00 F0 41 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="4" Radix="Float">
+<Element Index="[0]" Value="30.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+<Element Index="[3]" Value="0.0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="x_axis_home_complete" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="x_axis_returned" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="x_fault_reset" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="x_J_minus" TagType="Alias" Radix="Decimal" AliasFor="Local:4:I.Data.10"/>
+<Tag Name="x_J_plus" TagType="Alias" Radix="Decimal" AliasFor="Local:4:I.Data.11"/>
+<Tag Name="x_mc_Jog" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="x_mc_JStop" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="x_select" TagType="Alias" Radix="Decimal" AliasFor="Local:4:I.Data.3"/>
+<Tag Name="x_servo_off" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 20 00 00 02 01 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="536870912"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="x_servo_on" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 20 00 00 00 01 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="536870912"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="z_axis_home_complete" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="z_axis_returned" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="z_fault_reset" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="z_J_minus" TagType="Alias" Radix="Decimal" AliasFor="Local:4:I.Data.10"/>
+<Tag Name="z_J_plus" TagType="Alias" Radix="Decimal" AliasFor="Local:4:I.Data.11"/>
+<Tag Name="z_mc_Jog" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="z_mc_JStop" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="z_select" TagType="Alias" Radix="Decimal" AliasFor="Local:4:I.Data.4"/>
+<Tag Name="z_servo_off" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 20 00 00 02 01 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="536870912"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="z_servo_on" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 20 00 00 00 01 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="536870912"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="Drill_Cycle" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[===============================================================
+Motion Sample Project:  for Drill Cycle X & Z axis, using Coordiante Motion for:
+===============================================================
+                                    Blend of the -> Infeed axis Z( using MCLM Z) coordinated moves   [step.2 to step.3]
+                                    Blend of the -> Retract X&Z (using MCLM X&Z) coordinated move [step.7 to step.8]
+                                          Positioning to the -> Hole & Feed Along  moves (using MAM)          [step.1 and step.5]   
+                          this Drill Cycle example will Drill 3 repeat holes]]>
+</Comment>
+<Text>
+<![CDATA[OTU(DrillCycComp);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[[XIC(cycstp) ,XIC(Return_Active) ]OTE(ClearMotEnable);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[*  then chose STEP-by-STEP or  AUTO step
+                                                                    Switch.9 ==   Step-by-Step [must toggle to initiate each of the 8 steps]
+                                                       Switch.8 ==   Auto   [auto sequence thru each of the 8 steps]
+                                                                                ===============================================================]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(STEP) ONS(StpONS) ,XIC(AUTO) ][XIC(x_J_plus) OTE(StepFwd) ,XIC(x_J_minus) OTE(StepRev) ]OTL(FirstPass);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[XIO(FirstPass)JMP(Return1);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[XIC(DrillCycStp.0)MOV(DrillCycMotDat[DrillCycOpCntr.ACC,0],x_pos_DC[1])MOV(DrillCycMotDat[DrillCycOpCntr.ACC,0],xz_retract[0])MOV(DrillCycMotDat[DrillCycOpCntr.ACC,1],z_pos_DC[1])MOV(DrillCycMotDat[DrillCycOpCntr.ACC,2],z_pos_DC[2])MUL(DrillCycMotDat[DrillCycOpCntr.ACC,3],1000,z_dwell_DC.PRE)MOV(DrillCycMotDat[DrillCycOpCntr.ACC,4],z_pos_DC[3])CPT(xz_retract[1],DrillCycMotDat[DrillCycOpCntr.ACC,4]-DrillCycMotDat[DrillCycOpCntr.ACC,4]/2)MOV(DrillCycMotDat[DrillCycOpCntr.ACC,5],z_feed_DC)[XIC(x_J_plus) OTL(DrillCycStp.1) ,XIC(x_J_minus) OTL(DrillCycStp.5) ][OTU(Dwell) GRT(z_dwell_DC.PRE,0) OTL(Dwell) ,OTU(DrillCycStp.0) ];]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[XIC(DrillCycStp.1)XIO(ClearMotEnable)MAM(x_axis,x_mc_DS1,0,x_pos_DC[1],100,% of Maximum,100,% of Maximum,100,% of Maximum,Trapezoidal,100.0,100.0,% of Time,Disabled,Current,0,None,0,0)XIC(x_mc_DS1.EN)[XIC(x_mc_DS1.PC) [XIC(StepFwd) OTL(DrillCycStp.2) ,XIC(StepRev) OTL(DrillCycStp.2) ] OTU(DrillCycStp.1) ,XIC(x_mc_DS1.IP) OTU(x_axis_returned) ];]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Text>
+<![CDATA[XIC(DrillCycStp.2)XIO(ClearMotEnable)MCLM(infeed_blend,z_mc_DS2,0,z_pos_DC[1],100,% of Maximum,100,% of Maximum,100,% of Maximum,Trapezoidal,100.0,100.0,% of Time,3,Disabled,Programmed,0,0,None,0,0)XIC(z_mc_DS2.EN)XIC(z_mc_DS2.IP)OTU(z_axis_returned)[XIC(StepFwd) OTL(DrillCycStp.3) ,XIC(StepRev) OTL(DrillCycStp.3) ]OTU(DrillCycStp.2);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Comment>
+<![CDATA[Step.2 =  MCLM  Z_Axis [Infeed_blend]    Z_pos_DC[1]   @100.0
+                         Step.3 =  MCLM  Z_Axis [Infeed_blend]    Z_pos_DC[2]   @5.0
+                                                                                         Blending of Coordinate_Motion [a Queue of 1] allows
+                                                                       smooth Step.2 to Step.3 Speed transition.
+                                                  ===============================================================]]>
+</Comment>
+<Text>
+<![CDATA[XIC(DrillCycStp.3)XIO(ClearMotEnable)MCLM(infeed_blend,z_mc_DS3,0,z_pos_DC[2],z_feed_DC,% of Maximum,100,% of Maximum,100,% of Maximum,Trapezoidal,100.0,100.0,% of Time,0,Disabled,Programmed,0,0,None,0,0)XIC(z_mc_DS3.EN)XIC(z_mc_DS3.PC)[XIC(StepFwd) [XIC(Dwell) OTL(DrillCycStp.4) ,XIO(Dwell) OTL(DrillCycStp.5) ] ,XIC(StepRev) [XIC(Dwell) OTL(DrillCycStp.4) ,XIO(Dwell) OTL(DrillCycStp.6) ] ]OTU(DrillCycStp.3);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Text>
+<![CDATA[XIC(DrillCycStp.4)XIO(ClearMotEnable)TON(z_dwell_DC,?,?)XIC(z_dwell_DC.EN)XIC(z_dwell_DC.DN)[XIC(StepFwd) OTL(DrillCycStp.5) ,XIC(StepRev) OTL(DrillCycStp.6) ]OTU(DrillCycStp.4);]]>
+</Text>
+</Rung>
+<Rung Number="9" Type="N">
+<Text>
+<![CDATA[XIC(DrillCycStp.5)XIO(ClearMotEnable)MAM(z_axis,z_mc_DS5,0,z_pos_DC[3],100.0,% of Maximum,100,% of Maximum,100,% of Maximum,Trapezoidal,100.0,100.0,% of Time,Disabled,Current,0,None,0,0)XIC(z_mc_DS5.EN)XIC(z_mc_DS5.PC)[XIC(StepFwd) OTL(DrillCycStp.6) ,XIC(StepRev) OTL(DrillCycStp.1) ]OTU(DrillCycStp.5);]]>
+</Text>
+</Rung>
+<Rung Number="10" Type="N">
+<Text>
+<![CDATA[XIC(DrillCycStp.6)[XIC(x_J_plus) CTU(DrillCycOpCntr,?,?) [XIO(DrillCycOpCntr.DN) OTL(DrillCycStp.0) ,XIC(DrillCycOpCntr.DN) [OTL(DrillCycStp.7) ,RES(DrillCycOpCntr) ] ] ,XIC(x_J_minus) CTD(DrillCycOpCntr,?,?) [GEQ(DrillCycOpCntr.ACC,0) OTL(DrillCycStp.0) ,LES(DrillCycOpCntr.ACC,0) [OTL(DrillCycStp.7) ,RES(DrillCycOpCntr) ] ] ]OTU(DrillCycStp.6);]]>
+</Text>
+</Rung>
+<Rung Number="11" Type="N">
+<Text>
+<![CDATA[XIC(DrillCycStp.7)XIO(ClearMotEnable)MCLM(xz_coord,z_mc_DS7,0,xz_retract[0],100,% of Maximum,100,% of Maximum,100,% of Maximum,Trapezoidal,100.0,100.0,% of Time,3,Disabled,Programmed,0,0,None,0,0)XIC(z_mc_DS7.EN)XIC(z_mc_DS7.IP)[[XIC(StepFwd) ,XIC(StepRev) ] [OTU(DrillCycStp.7) ,OTL(DrillCycStp.8) ] ,OTL(z_axis_returned) ];]]>
+</Text>
+</Rung>
+<Rung Number="12" Type="N">
+<Text>
+<![CDATA[XIC(DrillCycStp.8)XIO(ClearMotEnable)MCLM(xz_coord,z_mc_DS8,0,xz_retract[2],100,% of Maximum,100,% of Maximum,100,% of Maximum,Trapezoidal,100.0,100.0,% of Time,0,Disabled,Programmed,0,0,None,0,0)XIC(z_mc_DS8.EN)XIC(z_mc_DS8.PC)[OTU(DrillCycStp.8) ,OTL(DrillCycStp.0) ,OTL(DrillCycComp) ,OTL(x_axis_returned) ,OTU(FirstPass) ];]]>
+</Text>
+</Rung>
+<Rung Number="13" Type="N">
+<Text>
+<![CDATA[XIC(ClearMotEnable)[OTU(Drill_Cycle_Active) ,OTU(FirstPass) ];]]>
+</Text>
+</Rung>
+<Rung Number="14" Type="N">
+<Text>
+<![CDATA[LBL(Return1)RET();]]>
+</Text>
+</Rung>
+<Rung Number="15" Type="N">
+<Text>
+<![CDATA[XIC(DrillCycStp.0)XIC(DrillCycStp.1)XIC(DrillCycStp.2)XIC(DrillCycStp.3)XIC(DrillCycStp.4)XIC(DrillCycStp.5)XIC(DrillCycStp.6)XIC(DrillCycStp.7)XIC(DrillCycStp.8)NOP();]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Drill_Cycle_ReadME_Info" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[===============================================================
+Motion Sample Project:  for Drill Cycle X & Z axis, using Coordiante Motion for:
+===============================================================
+                                    Blend of the -> Infeed axis Z( using MCLM Z) coordinated moves   [step.2 to step.3]
+                                    Blend of the -> Retract X&Z (using MCLM X&Z) coordinated move [step.7 to step.8]
+                                          Positioning to the -> Hole & Feed Along  moves (using MAM)          [step.1 and step.5]   
+]]>
+</Comment>
+<Text>
+<![CDATA[OTL(read_me);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[Step.1 =  MAM    X_axis                            X_pos_DC[1]   @100.0
+                             Step.2 =  MCLM  Z_Axis [Infeed_blend]    Z_pos_DC[1]   @100.0
+                         Step.3 =  MCLM  Z_Axis [Infeed_blend]    Z_pos_DC[2]   @5.0
+                                                                                         Blending of Coordinate_Motion [a Queue of 1] allows
+                                                                       smooth Step.2 to Step.3 Speed transition.
+                             Step.4 =  TON     Z dwell                           Z_dwell_DC    @dwell
+                               Step.5 =  MAM    Z_axis                            Z_pos_DC[3]   @100.0 
+   Step.6 =  CTU      if X_J_plus                              
+       Step.6 =  CTD      if X_J_minus                               
+                               Step.7 =  MCLM   XZ_coord [retract.0]       XZ_retract[0]  @100.0
+                               Step.8 =  MCLM   XZ_coord [retract.2]       XZ_retract[2]  @100.0
+  
+    Trend ==> the X and Z Command Position
+
+
+]]>
+</Comment>
+<Text>
+<![CDATA[OTL(read_me);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[==================================================                         
+                        Sequence of Operation to Do the 8_Steps of the Dwell Cycle.
+                         ==================================================
+     Switch.0 ==   MSO    Servo On
+                                                 Switch.11 =   x_J_plus    [X Hole postion direction]      OR,
+                                     Switch.10 =   x_J_minus  [X Hole postion direction]
+                         *  then chose STEP-by-STEP or  AUTO step
+                                                                    Switch.9 ==   Step-by-Step [must toggle to initiate each of the 8 steps]
+                                                       Switch.8 ==   Auto   [auto sequence thru each of the 8 steps]
+*  then                               
+  Switch.15 =  RUN activate ...
+
+           *   if need to Stop or Reset-Faults::
+                             Switch.1 ==   MAS     Axes Stop  [Cycle Stop]
+                    Switch.2 ==   MAFR   Motion Fault Reset
+                          ]]>
+</Comment>
+<Text>
+<![CDATA[OTL(read_me);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[LICENSE ADDENDUM TO RSLogix 5000 LICENSE FOR SAMPLE PROJECT FILES
+======================================================================================
+
+All information provided  -- No warranty or implied merchantability
+
+Rockwell Software, Inc. () and/or its affiliates and licensors and affiliates make no representations 
+as to the suitability of the information contained in the related sample logic project files and related 
+documentation () provided herein for any purpose. All such Sample Project Files 
+are provided  without warranty of any kind. RSI hereby disclaims all warranties and conditions with 
+regard to this information, including all implied warranties and conditions of merchantability, fitness for 
+a particular purpose, title and non-infringement.  In no event shall RSI and/or its respective affiliates be 
+liable for any damages whatsoever resulting from loss of use, data or profits, whether in an action of contract, 
+negligence or other action, arising out of or in connection with the use or performance of Sample Project 
+Files.  Your use of any said Sample Project Files automatically implies agreement to all terms set fourth herein.
+
+Inaccuracies - Modifications
+
+The Sample Project Files and related documentation provided herein could include technical inaccuracies or 
+typographical errors. Changes may be periodically added by RSI to the information herein. RSI and/or its 
+respective licensors and affiliates may make improvements, changes in the materials and/or programs, or 
+remove at will and without prior notice any content described herein at any time. No level of responsibility for 
+accuracy or usability of any content in the Sample Project Files is claimed or accepted.
+======================================================================================]]>
+</Comment>
+<Text>
+<![CDATA[OTL(read_me);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Home_Axis" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[[XIO(z_axis_home_complete) ,XIO(x_axis_home_complete) ]OTE(Home_Active);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[XIO(z_axis_home_complete)XIC(Home_Active)MAH(z_axis,z_axis_mc_home)XIC(z_axis_mc_home.EN)XIC(z_axis_mc_home.PC)OTL(z_axis_home_complete);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[XIC(z_axis_home_complete)XIC(Home_Active)MAH(x_axis,x_axis_mc_home)XIC(x_axis_mc_home.EN)XIC(x_axis_mc_home.PC)OTL(x_axis_home_complete);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[RET();]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="InitScan" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[[OTU(Drill_Cycle_Active) ,OTU(Home_Active) ,OTU(Return_Active) ];]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[RET();]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Jog_Axis" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[XIC(Jog)OTE(Jog_Active);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[[XIC(x_J_plus) ,XIC(x_J_plus) ]OTU(Jog_DIR.0);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[[XIC(x_J_minus) ,XIC(x_J_minus) ]OTL(Jog_DIR.0);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[XIC(x_select)[XIC(x_J_plus) ,XIC(x_J_minus) ]MAJ(x_axis,x_mc_Jog,Jog_DIR,10,% of Maximum,100,% of Maximum,100,% of Maximum,Trapezoidal,100.0,100.0,% of Time,Enabled,Programmed,0,None);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[XIC(z_select)[XIC(x_J_plus) ,XIC(x_J_minus) ]MAJ(z_axis,z_mc_Jog,Jog_DIR,10,% of Maximum,100,% of Maximum,100,% of Maximum,Trapezoidal,100.0,100.0,% of Time,Enabled,Programmed,0,None);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[[XIC(x_select) [XIO(x_J_plus) XIO(x_J_minus) ,XIC(x_J_plus) XIC(x_J_minus) ] ,XIO(Jog_Active) ]MAS(x_axis,x_mc_JStop,All,No,100,% of Maximum,Yes,100.0,% of Time);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Text>
+<![CDATA[[XIC(z_select) [XIO(x_J_plus) XIO(x_J_minus) ,XIC(x_J_plus) XIC(x_J_minus) ] ,XIO(Jog_Active) ]MAS(z_axis,z_mc_JStop,All,No,100,% of Maximum,Yes,100.0,% of Time);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Text>
+<![CDATA[RET();]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="MainMotionRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[XIC(S:FS)JSR(InitScan,0);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[===============================================================
+Motion Sample Project:  for Drill Cycle X & Z axis, using Coordiante Motion for:
+===============================================================
+                                    Blend of the -> Infeed axis Z( using MCLM Z) coordinated moves   [step.2 to step.3]
+                                    Blend of the -> Retract X&Z (using MCLM X&Z) coordinated move [step.7 to step.8]
+                                          Positioning to the -> Hole & Feed Along  moves (using MAM)          [step.1 and step.5]   
+                          this Drill Cycle example will Drill 3 repeat holes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[MOV(DrillCycStp,Local:0:O.Data);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[XIC(ServoOn)ONS(B1.10)[MSO(x_axis,x_servo_on) ,MSO(z_axis,z_servo_on) ];]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[XIO(ServoOn)ONS(B1.11)[MSF(x_axis,x_servo_off) ,MSF(z_axis,z_servo_off) ];]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[[XIC(CycleStop) ,XIC(Return1) ]ONS(B1.12)[MAS(x_axis,x_mc_stop,All,No,100,% of Maximum,Yes,100.0,% of Time) ,MAS(z_axis,z_mc_stop,All,No,100,% of Maximum,Yes,100.0,% of Time) ]OTE(cycstp);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[XIC(MotFaultReset)ONS(B1.13)[MAFR(x_axis,x_fault_reset) ,MAFR(z_axis,z_fault_reset) ];]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Text>
+<![CDATA[[XIC(Run) ONS(Run_ONS) XIO(Jog) XIO(Home) XIO(Return1) ,XIC(Drill_Cycle_Active) XIO(DrillCycComp) ][OTE(Drill_Cycle_Active) ,JSR(Drill_Cycle,0) ];]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Text>
+<![CDATA[[XIC(Home) ONS(Home_OneShot) XIO(Jog) XIO(Return1) XIO(Run) [OTU(x_axis_home_complete) ,OTU(z_axis_home_complete) ] ,XIC(Home_Active) XIO(x_mc_stop.EN) XIO(z_mc_stop.EN) ]JSR(Home_Axis,0);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Text>
+<![CDATA[[XIC(Return1) ONS(Return_OneShot) XIO(Jog) XIO(Home) XIO(Run) [OTU(x_axis_returned) ,OTU(z_axis_returned) ] ,XIC(Return_Active) ]JSR(Return_Axis,0);]]>
+</Text>
+</Rung>
+<Rung Number="9" Type="N">
+<Text>
+<![CDATA[[XIC(Jog) XIO(Home) XIO(Return1) XIO(Run) ,XIC(Jog_Active) ]JSR(Jog_Axis,0);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Return_Axis" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[[OTL(Return_Active) ,OTU(Drill_Cycle_Active) ,OTU(FirstPass) ];]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[XIO(z_axis_returned)MAM(z_axis,z_axis_mc_rtn,0,0.0,100.0,% of Maximum,100,% of Maximum,100,% of Maximum,Trapezoidal,100.0,100.0,% of Time,Disabled,Current,0,None,0,0)XIC(z_axis_mc_rtn.EN)XIC(z_axis_mc_rtn.PC)OTL(z_axis_returned);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[XIC(z_axis_returned)MAM(x_axis,x_axis_mc_rtn,0,0.0,100.0,% of Maximum,100,% of Maximum,100,% of Maximum,Trapezoidal,100.0,100.0,% of Time,Disabled,Current,0,None,0,0)XIC(x_axis_mc_rtn.EN)XIC(x_axis_mc_rtn.PC)OTL(x_axis_returned);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[XIC(x_axis_returned)XIC(z_axis_returned)OTU(Return_Active);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[RET();]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Zone" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[[ADD(DrillCycMotDat[0,0],ZoneWindow,ZoneCalc[0,0]) ADD(DrillCycMotDat[1,0],ZoneWindow,ZoneCalc[1,0]) ADD(DrillCycMotDat[2,0],ZoneWindow,ZoneCalc[2,0]) ,SUB(DrillCycMotDat[0,0],ZoneWindow,ZoneCalc[0,1]) SUB(DrillCycMotDat[1,0],ZoneWindow,ZoneCalc[1,1]) SUB(DrillCycMotDat[2,0],ZoneWindow,ZoneCalc[2,1]) ];]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[[ADD(DrillCycMotDat[0,1],ZoneWindow,ZoneCalc[0,2]) ADD(DrillCycMotDat[1,1],ZoneWindow,ZoneCalc[1,2]) ADD(DrillCycMotDat[2,1],ZoneWindow,ZoneCalc[2,2]) ,SUB(DrillCycMotDat[0,1],ZoneWindow,ZoneCalc[0,3]) SUB(DrillCycMotDat[1,1],ZoneWindow,ZoneCalc[1,3]) SUB(DrillCycMotDat[2,1],ZoneWindow,ZoneCalc[2,3]) ];]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[[ADD(DrillCycMotDat[0,2],ZoneWindow,ZoneCalc[0,4]) ADD(DrillCycMotDat[1,2],ZoneWindow,ZoneCalc[1,4]) ADD(DrillCycMotDat[2,2],ZoneWindow,ZoneCalc[2,4]) ,SUB(DrillCycMotDat[0,2],ZoneWindow,ZoneCalc[0,5]) SUB(DrillCycMotDat[1,2],ZoneWindow,ZoneCalc[1,5]) SUB(DrillCycMotDat[2,2],ZoneWindow,ZoneCalc[2,5]) ];]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[[ADD(DrillCycMotDat[0,4],ZoneWindow,ZoneCalc[0,6]) ADD(DrillCycMotDat[1,4],ZoneWindow,ZoneCalc[1,6]) ADD(DrillCycMotDat[2,4],ZoneWindow,ZoneCalc[2,6]) ,SUB(DrillCycMotDat[0,4],ZoneWindow,ZoneCalc[0,7]) SUB(DrillCycMotDat[1,4],ZoneWindow,ZoneCalc[1,7]) SUB(DrillCycMotDat[2,4],ZoneWindow,ZoneCalc[2,7]) ];]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[GEQ(x_axis.ActualPosition,-0.001)LEQ(x_axis.ActualPosition,0.001)OTE(Zone.0);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[GEQ(x_axis.ActualPosition,ZoneCalc[0,1])LEQ(x_axis.ActualPosition,ZoneCalc[0,0])OTE(Zone.1);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Text>
+<![CDATA[GEQ(x_axis.ActualPosition,ZoneCalc[1,1])LEQ(x_axis.ActualPosition,ZoneCalc[1,0])OTE(Zone.2);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Text>
+<![CDATA[GEQ(x_axis.ActualPosition,ZoneCalc[2,1])LEQ(x_axis.ActualPosition,ZoneCalc[2,0])OTE(Zone.3);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Text>
+<![CDATA[GEQ(z_axis.ActualPosition,-0.001)LEQ(z_axis.ActualPosition,0.001)OTE(Zone.4);]]>
+</Text>
+</Rung>
+<Rung Number="9" Type="N">
+<Text>
+<![CDATA[GEQ(z_axis.ActualPosition,ZoneCalc[0,3])LEQ(z_axis.ActualPosition,ZoneCalc[0,2])OTE(Zone.5);]]>
+</Text>
+</Rung>
+<Rung Number="10" Type="N">
+<Text>
+<![CDATA[GEQ(z_axis.ActualPosition,ZoneCalc[0,5])LEQ(z_axis.ActualPosition,ZoneCalc[0,4])OTE(Zone.6);]]>
+</Text>
+</Rung>
+<Rung Number="11" Type="N">
+<Text>
+<![CDATA[GEQ(z_axis.ActualPosition,ZoneCalc[0,7])LEQ(z_axis.ActualPosition,ZoneCalc[0,6])OTE(Zone.7);]]>
+</Text>
+</Rung>
+<Rung Number="12" Type="N">
+<Text>
+<![CDATA[GEQ(z_axis.ActualPosition,ZoneCalc[1,3])LEQ(z_axis.ActualPosition,ZoneCalc[1,2])OTE(Zone.8);]]>
+</Text>
+</Rung>
+<Rung Number="13" Type="N">
+<Text>
+<![CDATA[GEQ(z_axis.ActualPosition,ZoneCalc[1,5])LEQ(z_axis.ActualPosition,ZoneCalc[1,4])OTE(Zone.9);]]>
+</Text>
+</Rung>
+<Rung Number="14" Type="N">
+<Text>
+<![CDATA[GEQ(z_axis.ActualPosition,ZoneCalc[1,7])LEQ(z_axis.ActualPosition,ZoneCalc[1,6])OTE(Zone.10);]]>
+</Text>
+</Rung>
+<Rung Number="15" Type="N">
+<Text>
+<![CDATA[GEQ(z_axis.ActualPosition,ZoneCalc[2,3])LEQ(z_axis.ActualPosition,ZoneCalc[2,2])OTE(Zone.11);]]>
+</Text>
+</Rung>
+<Rung Number="16" Type="N">
+<Text>
+<![CDATA[GEQ(z_axis.ActualPosition,ZoneCalc[2,5])LEQ(z_axis.ActualPosition,ZoneCalc[2,4])OTE(Zone.12);]]>
+</Text>
+</Rung>
+<Rung Number="17" Type="N">
+<Text>
+<![CDATA[GEQ(z_axis.ActualPosition,ZoneCalc[2,7])LEQ(z_axis.ActualPosition,ZoneCalc[2,6])OTE(Zone.13);]]>
+</Text>
+</Rung>
+<Rung Number="18" Type="N">
+<Text>
+<![CDATA[XIC(Zone.14)OTE(Zone.14);]]>
+</Text>
+</Rung>
+<Rung Number="19" Type="N">
+<Text>
+<![CDATA[XIC(Zone.15)OTE(Zone.15);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+<Program Name="VectorCalcProgram" TestEdits="false" MainRoutineName="calcRoutine" Disabled="false">
+<Tags>
+<Tag Name="CommandVectorVelocity" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="calcRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[CPT(CommandVectorVelocity,SQR((x_axis.CommandVelocity**2)+(z_axis.CommandVelocity**2)));]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="CalcTask" Type="EVENT" Rate="10" Priority="10" Watchdog="500" DisableUpdateOutputs="true" InhibitTask="false">
+<EventInfo EventTrigger="Motion Group Execution" EventTag="drill_axis" EnableTimeout="false"/>
+<ScheduledPrograms>
+<ScheduledProgram Name="VectorCalcProgram"/>
+</ScheduledPrograms>
+</Task>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+<Task Name="MotionTask" Type="PERIODIC" Rate="20" Priority="12" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MotionProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="2"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends>
+<Trend Name="Zaxis_Velocity_vs_Position" SamplePeriod="4" NumberOfCaptures="1" CaptureSizeType="Time Period" CaptureSize="60000" StartTriggerType="No Trigger" StopTriggerType="No Trigger" TrendxVersion="5.2">
+<Description>
+<![CDATA[Z-axis (Infeed-axis)  Velocity vs. Position.
+Plot shows Coord_Motion allows Z-infeed change of speed, at Z-specified-Position]]>
+</Description>
+<Template>208 207 17 224 161 177 26 225 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 62 0 3 0 254 255 9 0 6 0 0 0 0 0 0 0
+ 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 16 0 0 2 0 0 0 1 0 0 0 254 255 255 255 0 0 0 0 0 0 0 0
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 253 255 255 255 254 255 255 255
+ 254 255 255 255 4 0 0 0 254 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 82 0 111 0 111 0 116 0 32 0 69 0 110 0 116 0
+ 114 0 121 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 22 0 5 0 255 255 255 255 255 255 255 255 1 0 0 0 229 171 207 9 232 9 209 17 168 176 8 0 9 230 211 15
+ 0 0 0 0 0 0 0 0 0 0 0 0 240 231 48 199 78 12 196 1 3 0 0 0 64 3 0 0 0 0 0 0 67 0 111 0 110 0 116 0
+ 101 0 110 0 116 0 115 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 18 0 2 1 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 32 3 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255
+ 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 2 0 0 0 3 0 0 0 4 0 0 0 5 0 0 0 6 0 0 0
+ 7 0 0 0 8 0 0 0 9 0 0 0 10 0 0 0 11 0 0 0 12 0 0 0 254 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 2 0 3 0 168 72 0 0 77 46 0 0 0 0 0 0 10 0 0 0 8 86 101 108 111 99 105 116 121 0 0 0
+ 0 0 0 0 0 255 255 255 255 200 0 0 0 255 157 1 0 255 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 96 234 0
+ 0 0 0 0 0 255 255 255 0 0 0 0 0 0 0 0 0 195 2 0 0 3 0 255 255 1 0 13 0 67 86 105 101 119 76 105 110 101 73 110
+ 102 111 2 0 0 0 1 0 0 0 0 0 0 0 0 0 200 66 1 32 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 22 120 95 97
+ 120 105 115 46 67 111 109 109 97 110 100 86 101 108 111 99 105 116 121 32 1 0 0 0 0 0 1 128 2 0 0 0 1 0 0 0 0 0 0 0
+ 0 0 200 66 1 32 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 22 122 95 97 120 105 115 46 67 111 109 109 97 110 100 86 101 108
+ 111 99 105 116 121 32 1 0 0 0 0 0 1 128 2 0 0 0 1 0 0 0 0 0 0 0 0 0 200 66 1 32 0 0 0 0 0 3 0 0
+ 0 0 0 0 0 0 0 0 22 122 95 97 120 105 115 46 67 111 109 109 97 110 100 80 111 115 105 116 105 111 110 32 1 0 0 0 0 0 5 0
+ 0 0 0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0
+ 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 3 0 255 255 0 0 255 0 128 0 0 255 255 0 0 0 0 0
+ 0 0 0 0 4 0 0 0 4 0 0 0 1 0 0 0 0 0 0 0 0 0 200 66 0 0 0 0 0 0 0 0 0 0 131 0 2 0 0 0
+ 1 0 0 0 0 0 0 0 3 0 1 0 0 0 1 0 0 0 1 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 3 0 0 0
+ 0 0 1 0 0 0 1 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 0 0 0 0 44 0 0 0 0 0 131 0
+ 0 0 1 0 2 0 0 0 1 0 131 0 0 0 3 0 11 0 0 0 0 0 0 0 124 0 0 0 0 0 0 0 130 0 0 0 128 128 128 0
+ 128 128 128 0 255 239 255 254 255 191 255 255 104 154 88 64 1 0 0 0 25 0 0 0 112 154 88 64 1 0 0 0 25 0 0 0 0 1 0 0
+ 0 1 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 0 0 0 50 0 0 0 0 0 0 0 0 0 0 0 60
+ 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0
+ 0 0 0 0 32 1 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 32 1 0 0 0 0 0 0 0 0 0 0 0 0 0 255 255
+ 255 0 0 0 0 2 0 0 250 190 219 92 67 107 111 66 2 0 0 0 0 0 2 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 250 62
+ 220 92 67 107 111 66 2 0 0 0 0 0 2 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 250 190 220 92 67 107 111 66 2 0 0 0
+ 0 0 2 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 250 62 221 92 67 107 111 66 2 0 0 0 0 0 2 0 0 0 0 0 2 0
+ 0 0 0 0 0 0 0 0 250 190 221 92 67 107 111 66 2 0 0 0 0 0 2 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 250 62
+ 222 92 67 107 111 66 2 0 0 0 0 0 2 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 250 190 222 92 67 107 111 66 2 0 0 0
+ 0 0 2 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 250 62 223 92 67 107 111 66 2 0 0 0 0 0 0 0 0 0 23 54 3 0
+</Template>
+<Pens>
+<Pen Name="x_axis.CommandVelocity" Color="16#0000_ffff" Visible="false" Width="1" Type="Analog" Style="0" Marker="0" Min="0.0" Max="100.0"/>
+<Pen Name="z_axis.CommandVelocity" Color="16#0080_00ff" Visible="true" Width="1" Type="Analog" Style="0" Marker="0" Min="0.0" Max="100.0"/>
+<Pen Name="z_axis.CommandPosition" Color="16#00ff_ff00" Visible="true" Width="1" Type="Analog" Style="0" Marker="0" Min="0.0" Max="100.0"/>
+</Pens>
+</Trend>
+</Trends>
+</Controller>
+</RSLogix5000Content>

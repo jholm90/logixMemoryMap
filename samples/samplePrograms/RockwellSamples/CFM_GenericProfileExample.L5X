@@ -1,0 +1,1073 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="CFM_GenericProfileExample" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:17:21 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="CFM_GenericProfileExample" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:17:05 2018" LastModifiedDate="Fri Jan 19 07:17:06 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0032_2f5a" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes>
+<DataType Name="CFM_Dyn_O" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[User defined version of AB:1756_CFM_Dyn:O:0]]>
+</Description>
+<Members>
+<Member Name="AlarmEnables" DataType="SINT" Dimension="0" Radix="Binary" Hidden="false"/>
+<Member Name="ZZZZZZZZZZCFM_Dyn_O1" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="Overrange" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_Dyn_O1" BitNumber="0"/>
+<Member Name="Overflow" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_Dyn_O1" BitNumber="1"/>
+<Member Name="Overspeed" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_Dyn_O1" BitNumber="2"/>
+<Member Name="Acceleration" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_Dyn_O1" BitNumber="3"/>
+<Member Name="Control" DataType="SINT" Dimension="0" Radix="Binary" Hidden="false"/>
+<Member Name="ZZZZZZZZZZCFM_Dyn_O7" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="Reset" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_Dyn_O7" BitNumber="0"/>
+<Member Name="Load" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_Dyn_O7" BitNumber="1"/>
+<Member Name="ProverEnable" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_Dyn_O7" BitNumber="2"/>
+<Member Name="FillEnable" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_Dyn_O7" BitNumber="3"/>
+<Member Name="FillStart" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_Dyn_O7" BitNumber="4"/>
+<Member Name="FillHold" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_Dyn_O7" BitNumber="5"/>
+<Member Name="RollOverValue" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="CombinedCorrectionFactor" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="BaseTemperature" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="FlowingTemperature" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="AtmosphericPressure" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="StaticGaugePressure" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="BasePressure" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="BaseCompressibility" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="FlowingCompressibility" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="FillTotalTarget" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="FillTransition" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="FillTransitionTimer" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="CFM_GET_CONFIG" Family="NoFamily" Class="User">
+<Members>
+<Member Name="ZZZZZZZZZZCFM_GET_CO0" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="ProgToFaultEn" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_GET_CO0" BitNumber="0"/>
+<Member Name="ChannelCfgBits" DataType="SINT" Dimension="0" Radix="Binary" Hidden="false"/>
+<Member Name="ZZZZZZZZZZCFM_GET_CO3" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="Ch0ProverDirection" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_GET_CO3" BitNumber="0"/>
+<Member Name="Ch1ProverDirection" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_GET_CO3" BitNumber="1"/>
+<Member Name="Ch0LowFreqClear" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_GET_CO3" BitNumber="2"/>
+<Member Name="Ch1LowFreqClear" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_GET_CO3" BitNumber="3"/>
+<Member Name="Ch0PreTrigger" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_GET_CO3" BitNumber="4"/>
+<Member Name="Ch1PreTrigger" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_GET_CO3" BitNumber="5"/>
+<Member Name="Operations" DataType="CFM_Setup_C" Dimension="2" Radix="NullType" Hidden="false"/>
+<Member Name="OutputSetup" DataType="CFM_OutCfg_C" Dimension="2" Radix="NullType" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="CFM_I" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[User defined copy of AB:1756_CFM:I:0]]>
+</Description>
+<Members>
+<Member Name="Fault" DataType="DINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="ChannelStatus" DataType="DINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="ZZZZZZZZZZCFM_I2" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="Output0State" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_I2" BitNumber="0"/>
+<Member Name="Output1State" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_I2" BitNumber="1"/>
+<Member Name="Output0IsOverridden" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_I2" BitNumber="2"/>
+<Member Name="Output1IsOverridden" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_I2" BitNumber="3"/>
+<Member Name="Ch0WasReset" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_I2" BitNumber="4"/>
+<Member Name="Ch1WasReset" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_I2" BitNumber="5"/>
+<Member Name="Ch0AccelerationAlarm" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_I2" BitNumber="6"/>
+<Member Name="Ch0OverspeedAlarm" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_I2" BitNumber="7"/>
+<Member Name="ZZZZZZZZZZCFM_I11" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="Ch0OverrangeAlarm" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_I11" BitNumber="0"/>
+<Member Name="Ch0OverflowAlarm" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_I11" BitNumber="1"/>
+<Member Name="Ch1AccelerationAlarm" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_I11" BitNumber="2"/>
+<Member Name="Ch1OverspeedAlarm" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_I11" BitNumber="3"/>
+<Member Name="Ch1OverrangeAlarm" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_I11" BitNumber="4"/>
+<Member Name="Ch1OverflowAlarm" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_I11" BitNumber="5"/>
+<Member Name="Ch0ConsumerErrorAlarm" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_I11" BitNumber="6"/>
+<Member Name="Ch1ConsumerErrorAlarm" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_I11" BitNumber="7"/>
+<Member Name="Status" DataType="CFM_Stat_I" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="CSTTimestamp" DataType="DINT" Dimension="2" Radix="Decimal" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="CFM_kFact" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[User defined copy of AB:1756_CFM_kFact:C:0]]>
+</Description>
+<Members>
+<Member Name="kFactorForChan" DataType="REAL" Dimension="13" Radix="Float" Hidden="false"/>
+<Member Name="FreqAtKFactor" DataType="REAL" Dimension="13" Radix="Float" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="CFM_O" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[User defined copy of AB:1756_CFM:O:0]]>
+</Description>
+<Members>
+<Member Name="Total" DataType="CFM_Dyn_O" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="OutputControl" DataType="DINT" Dimension="2" Radix="Decimal" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="CFM_OutCfg_C" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[User defined copy of AB:1756_CFM_OutCfg:C:0]]>
+</Description>
+<Members>
+<Member Name="FaultMode" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="ProgMode" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="DynamicError" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="TriggerOn" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="TieToCounter" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="CFM_Rev_B" Family="NoFamily" Class="User">
+<Members>
+<Member Name="ZZZZZZZZZZCFM_Rev_B0" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="ProgToFaultEn" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_Rev_B0" BitNumber="0"/>
+<Member Name="ChannelCfgBits" DataType="SINT" Dimension="0" Radix="Binary" Hidden="false"/>
+<Member Name="ZZZZZZZZZZCFM_Rev_B3" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="Ch0ProverDirection" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_Rev_B3" BitNumber="0"/>
+<Member Name="Ch1ProverDirection" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_Rev_B3" BitNumber="1"/>
+<Member Name="Ch0LowFreqClear" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_Rev_B3" BitNumber="2"/>
+<Member Name="Ch1LowFreqClear" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_Rev_B3" BitNumber="3"/>
+<Member Name="Ch0PreTrigger" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_Rev_B3" BitNumber="4"/>
+<Member Name="Ch1PreTrigger" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZCFM_Rev_B3" BitNumber="5"/>
+<Member Name="Operations" DataType="CFM_Setup_C" Dimension="2" Radix="NullType" Hidden="false"/>
+<Member Name="OutputSetup" DataType="CFM_OutCfg_C" Dimension="2" Radix="NullType" Hidden="false"/>
+<Member Name="OutputWindow" DataType="OUT_WIN" Dimension="2" Radix="NullType" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="CFM_Setup_C" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[User defined copy of AB:1756_CFM_Setup:C:0]]>
+</Description>
+<Members>
+<Member Name="OperationalMode" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="FilterControl" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="MeterSamples" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="ThresholdControl" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="CalculationType" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="AccelCalculation" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="FillMode" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="MinDetectableFreq" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="HighestAllowedFreq" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="AccelAlarmValue" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="MeterFactor" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="FilterResolution" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="SampleTime" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="kFactStruct" DataType="CFM_kFact" Dimension="0" Radix="NullType" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="CFM_Stat_I" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[User defined copy of AB:1756_CFM_Stat:I:0]]>
+</Description>
+<Members>
+<Member Name="ProverState" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="FillState" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="ConsumerErrorCode" DataType="INT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="TotalCounts" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="FreqAverage" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="FreqPeriod" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Speed" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Acceleration" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="FillTotal" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="GrossVolume" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="NetVolume" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="GrossRate" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="NetRate" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="ProverTotal" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="OUT_WIN" Family="NoFamily" Class="User">
+<Members>
+<Member Name="FreqOn" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="FreqOff" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+</Members>
+</DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+<Module Name="CFM_NEW" CatalogNumber="1756-MODULE" Vendor="1" ProductType="0" ProductCode="15" Major="1" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="5" Type="ICP" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870914" PrimCxnInputSize="112" PrimCxnOutputSize="120">
+<ConfigTag ConfigSize="308">
+<Data>38 01 00 00 03 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 80 BB 45 
+00 00 7A 45 00 80 BB 45 00 00 7A 45 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_MODULE:C:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="400" Radix="Hex">
+<Element Index="[0]" Value="16#00"/>
+<Element Index="[1]" Value="16#00"/>
+<Element Index="[2]" Value="16#00"/>
+<Element Index="[3]" Value="16#00"/>
+<Element Index="[4]" Value="16#00"/>
+<Element Index="[5]" Value="16#00"/>
+<Element Index="[6]" Value="16#00"/>
+<Element Index="[7]" Value="16#00"/>
+<Element Index="[8]" Value="16#00"/>
+<Element Index="[9]" Value="16#00"/>
+<Element Index="[10]" Value="16#00"/>
+<Element Index="[11]" Value="16#00"/>
+<Element Index="[12]" Value="16#00"/>
+<Element Index="[13]" Value="16#00"/>
+<Element Index="[14]" Value="16#00"/>
+<Element Index="[15]" Value="16#00"/>
+<Element Index="[16]" Value="16#00"/>
+<Element Index="[17]" Value="16#00"/>
+<Element Index="[18]" Value="16#00"/>
+<Element Index="[19]" Value="16#00"/>
+<Element Index="[20]" Value="16#00"/>
+<Element Index="[21]" Value="16#00"/>
+<Element Index="[22]" Value="16#00"/>
+<Element Index="[23]" Value="16#00"/>
+<Element Index="[24]" Value="16#00"/>
+<Element Index="[25]" Value="16#00"/>
+<Element Index="[26]" Value="16#00"/>
+<Element Index="[27]" Value="16#00"/>
+<Element Index="[28]" Value="16#00"/>
+<Element Index="[29]" Value="16#00"/>
+<Element Index="[30]" Value="16#00"/>
+<Element Index="[31]" Value="16#00"/>
+<Element Index="[32]" Value="16#00"/>
+<Element Index="[33]" Value="16#00"/>
+<Element Index="[34]" Value="16#00"/>
+<Element Index="[35]" Value="16#00"/>
+<Element Index="[36]" Value="16#00"/>
+<Element Index="[37]" Value="16#00"/>
+<Element Index="[38]" Value="16#00"/>
+<Element Index="[39]" Value="16#00"/>
+<Element Index="[40]" Value="16#00"/>
+<Element Index="[41]" Value="16#00"/>
+<Element Index="[42]" Value="16#00"/>
+<Element Index="[43]" Value="16#00"/>
+<Element Index="[44]" Value="16#00"/>
+<Element Index="[45]" Value="16#00"/>
+<Element Index="[46]" Value="16#00"/>
+<Element Index="[47]" Value="16#00"/>
+<Element Index="[48]" Value="16#00"/>
+<Element Index="[49]" Value="16#00"/>
+<Element Index="[50]" Value="16#00"/>
+<Element Index="[51]" Value="16#00"/>
+<Element Index="[52]" Value="16#00"/>
+<Element Index="[53]" Value="16#00"/>
+<Element Index="[54]" Value="16#00"/>
+<Element Index="[55]" Value="16#00"/>
+<Element Index="[56]" Value="16#00"/>
+<Element Index="[57]" Value="16#00"/>
+<Element Index="[58]" Value="16#00"/>
+<Element Index="[59]" Value="16#00"/>
+<Element Index="[60]" Value="16#00"/>
+<Element Index="[61]" Value="16#00"/>
+<Element Index="[62]" Value="16#00"/>
+<Element Index="[63]" Value="16#00"/>
+<Element Index="[64]" Value="16#00"/>
+<Element Index="[65]" Value="16#00"/>
+<Element Index="[66]" Value="16#00"/>
+<Element Index="[67]" Value="16#00"/>
+<Element Index="[68]" Value="16#00"/>
+<Element Index="[69]" Value="16#00"/>
+<Element Index="[70]" Value="16#00"/>
+<Element Index="[71]" Value="16#00"/>
+<Element Index="[72]" Value="16#00"/>
+<Element Index="[73]" Value="16#00"/>
+<Element Index="[74]" Value="16#00"/>
+<Element Index="[75]" Value="16#00"/>
+<Element Index="[76]" Value="16#00"/>
+<Element Index="[77]" Value="16#00"/>
+<Element Index="[78]" Value="16#00"/>
+<Element Index="[79]" Value="16#00"/>
+<Element Index="[80]" Value="16#00"/>
+<Element Index="[81]" Value="16#00"/>
+<Element Index="[82]" Value="16#00"/>
+<Element Index="[83]" Value="16#00"/>
+<Element Index="[84]" Value="16#00"/>
+<Element Index="[85]" Value="16#00"/>
+<Element Index="[86]" Value="16#00"/>
+<Element Index="[87]" Value="16#00"/>
+<Element Index="[88]" Value="16#00"/>
+<Element Index="[89]" Value="16#00"/>
+<Element Index="[90]" Value="16#00"/>
+<Element Index="[91]" Value="16#00"/>
+<Element Index="[92]" Value="16#00"/>
+<Element Index="[93]" Value="16#00"/>
+<Element Index="[94]" Value="16#00"/>
+<Element Index="[95]" Value="16#00"/>
+<Element Index="[96]" Value="16#00"/>
+<Element Index="[97]" Value="16#00"/>
+<Element Index="[98]" Value="16#00"/>
+<Element Index="[99]" Value="16#00"/>
+<Element Index="[100]" Value="16#00"/>
+<Element Index="[101]" Value="16#00"/>
+<Element Index="[102]" Value="16#00"/>
+<Element Index="[103]" Value="16#00"/>
+<Element Index="[104]" Value="16#00"/>
+<Element Index="[105]" Value="16#00"/>
+<Element Index="[106]" Value="16#00"/>
+<Element Index="[107]" Value="16#00"/>
+<Element Index="[108]" Value="16#00"/>
+<Element Index="[109]" Value="16#00"/>
+<Element Index="[110]" Value="16#00"/>
+<Element Index="[111]" Value="16#00"/>
+<Element Index="[112]" Value="16#00"/>
+<Element Index="[113]" Value="16#00"/>
+<Element Index="[114]" Value="16#00"/>
+<Element Index="[115]" Value="16#00"/>
+<Element Index="[116]" Value="16#00"/>
+<Element Index="[117]" Value="16#00"/>
+<Element Index="[118]" Value="16#00"/>
+<Element Index="[119]" Value="16#00"/>
+<Element Index="[120]" Value="16#00"/>
+<Element Index="[121]" Value="16#00"/>
+<Element Index="[122]" Value="16#00"/>
+<Element Index="[123]" Value="16#00"/>
+<Element Index="[124]" Value="16#00"/>
+<Element Index="[125]" Value="16#00"/>
+<Element Index="[126]" Value="16#00"/>
+<Element Index="[127]" Value="16#00"/>
+<Element Index="[128]" Value="16#00"/>
+<Element Index="[129]" Value="16#00"/>
+<Element Index="[130]" Value="16#00"/>
+<Element Index="[131]" Value="16#00"/>
+<Element Index="[132]" Value="16#00"/>
+<Element Index="[133]" Value="16#00"/>
+<Element Index="[134]" Value="16#00"/>
+<Element Index="[135]" Value="16#00"/>
+<Element Index="[136]" Value="16#00"/>
+<Element Index="[137]" Value="16#00"/>
+<Element Index="[138]" Value="16#00"/>
+<Element Index="[139]" Value="16#00"/>
+<Element Index="[140]" Value="16#00"/>
+<Element Index="[141]" Value="16#00"/>
+<Element Index="[142]" Value="16#00"/>
+<Element Index="[143]" Value="16#00"/>
+<Element Index="[144]" Value="16#00"/>
+<Element Index="[145]" Value="16#00"/>
+<Element Index="[146]" Value="16#00"/>
+<Element Index="[147]" Value="16#00"/>
+<Element Index="[148]" Value="16#00"/>
+<Element Index="[149]" Value="16#00"/>
+<Element Index="[150]" Value="16#00"/>
+<Element Index="[151]" Value="16#00"/>
+<Element Index="[152]" Value="16#00"/>
+<Element Index="[153]" Value="16#00"/>
+<Element Index="[154]" Value="16#00"/>
+<Element Index="[155]" Value="16#00"/>
+<Element Index="[156]" Value="16#00"/>
+<Element Index="[157]" Value="16#00"/>
+<Element Index="[158]" Value="16#00"/>
+<Element Index="[159]" Value="16#00"/>
+<Element Index="[160]" Value="16#00"/>
+<Element Index="[161]" Value="16#00"/>
+<Element Index="[162]" Value="16#00"/>
+<Element Index="[163]" Value="16#00"/>
+<Element Index="[164]" Value="16#00"/>
+<Element Index="[165]" Value="16#00"/>
+<Element Index="[166]" Value="16#00"/>
+<Element Index="[167]" Value="16#00"/>
+<Element Index="[168]" Value="16#00"/>
+<Element Index="[169]" Value="16#00"/>
+<Element Index="[170]" Value="16#00"/>
+<Element Index="[171]" Value="16#00"/>
+<Element Index="[172]" Value="16#00"/>
+<Element Index="[173]" Value="16#00"/>
+<Element Index="[174]" Value="16#00"/>
+<Element Index="[175]" Value="16#00"/>
+<Element Index="[176]" Value="16#00"/>
+<Element Index="[177]" Value="16#00"/>
+<Element Index="[178]" Value="16#00"/>
+<Element Index="[179]" Value="16#00"/>
+<Element Index="[180]" Value="16#00"/>
+<Element Index="[181]" Value="16#00"/>
+<Element Index="[182]" Value="16#00"/>
+<Element Index="[183]" Value="16#00"/>
+<Element Index="[184]" Value="16#00"/>
+<Element Index="[185]" Value="16#00"/>
+<Element Index="[186]" Value="16#00"/>
+<Element Index="[187]" Value="16#00"/>
+<Element Index="[188]" Value="16#00"/>
+<Element Index="[189]" Value="16#00"/>
+<Element Index="[190]" Value="16#00"/>
+<Element Index="[191]" Value="16#00"/>
+<Element Index="[192]" Value="16#00"/>
+<Element Index="[193]" Value="16#00"/>
+<Element Index="[194]" Value="16#00"/>
+<Element Index="[195]" Value="16#00"/>
+<Element Index="[196]" Value="16#00"/>
+<Element Index="[197]" Value="16#00"/>
+<Element Index="[198]" Value="16#00"/>
+<Element Index="[199]" Value="16#00"/>
+<Element Index="[200]" Value="16#00"/>
+<Element Index="[201]" Value="16#00"/>
+<Element Index="[202]" Value="16#00"/>
+<Element Index="[203]" Value="16#00"/>
+<Element Index="[204]" Value="16#00"/>
+<Element Index="[205]" Value="16#00"/>
+<Element Index="[206]" Value="16#00"/>
+<Element Index="[207]" Value="16#00"/>
+<Element Index="[208]" Value="16#00"/>
+<Element Index="[209]" Value="16#00"/>
+<Element Index="[210]" Value="16#00"/>
+<Element Index="[211]" Value="16#00"/>
+<Element Index="[212]" Value="16#00"/>
+<Element Index="[213]" Value="16#00"/>
+<Element Index="[214]" Value="16#00"/>
+<Element Index="[215]" Value="16#00"/>
+<Element Index="[216]" Value="16#00"/>
+<Element Index="[217]" Value="16#00"/>
+<Element Index="[218]" Value="16#00"/>
+<Element Index="[219]" Value="16#00"/>
+<Element Index="[220]" Value="16#00"/>
+<Element Index="[221]" Value="16#00"/>
+<Element Index="[222]" Value="16#00"/>
+<Element Index="[223]" Value="16#00"/>
+<Element Index="[224]" Value="16#00"/>
+<Element Index="[225]" Value="16#00"/>
+<Element Index="[226]" Value="16#00"/>
+<Element Index="[227]" Value="16#00"/>
+<Element Index="[228]" Value="16#00"/>
+<Element Index="[229]" Value="16#00"/>
+<Element Index="[230]" Value="16#00"/>
+<Element Index="[231]" Value="16#00"/>
+<Element Index="[232]" Value="16#00"/>
+<Element Index="[233]" Value="16#00"/>
+<Element Index="[234]" Value="16#00"/>
+<Element Index="[235]" Value="16#00"/>
+<Element Index="[236]" Value="16#00"/>
+<Element Index="[237]" Value="16#00"/>
+<Element Index="[238]" Value="16#00"/>
+<Element Index="[239]" Value="16#00"/>
+<Element Index="[240]" Value="16#00"/>
+<Element Index="[241]" Value="16#00"/>
+<Element Index="[242]" Value="16#00"/>
+<Element Index="[243]" Value="16#00"/>
+<Element Index="[244]" Value="16#00"/>
+<Element Index="[245]" Value="16#00"/>
+<Element Index="[246]" Value="16#00"/>
+<Element Index="[247]" Value="16#00"/>
+<Element Index="[248]" Value="16#00"/>
+<Element Index="[249]" Value="16#00"/>
+<Element Index="[250]" Value="16#00"/>
+<Element Index="[251]" Value="16#00"/>
+<Element Index="[252]" Value="16#00"/>
+<Element Index="[253]" Value="16#00"/>
+<Element Index="[254]" Value="16#00"/>
+<Element Index="[255]" Value="16#00"/>
+<Element Index="[256]" Value="16#00"/>
+<Element Index="[257]" Value="16#00"/>
+<Element Index="[258]" Value="16#00"/>
+<Element Index="[259]" Value="16#00"/>
+<Element Index="[260]" Value="16#00"/>
+<Element Index="[261]" Value="16#00"/>
+<Element Index="[262]" Value="16#00"/>
+<Element Index="[263]" Value="16#00"/>
+<Element Index="[264]" Value="16#00"/>
+<Element Index="[265]" Value="16#00"/>
+<Element Index="[266]" Value="16#00"/>
+<Element Index="[267]" Value="16#00"/>
+<Element Index="[268]" Value="16#00"/>
+<Element Index="[269]" Value="16#00"/>
+<Element Index="[270]" Value="16#00"/>
+<Element Index="[271]" Value="16#00"/>
+<Element Index="[272]" Value="16#00"/>
+<Element Index="[273]" Value="16#00"/>
+<Element Index="[274]" Value="16#00"/>
+<Element Index="[275]" Value="16#00"/>
+<Element Index="[276]" Value="16#00"/>
+<Element Index="[277]" Value="16#00"/>
+<Element Index="[278]" Value="16#00"/>
+<Element Index="[279]" Value="16#00"/>
+<Element Index="[280]" Value="16#00"/>
+<Element Index="[281]" Value="16#00"/>
+<Element Index="[282]" Value="16#00"/>
+<Element Index="[283]" Value="16#00"/>
+<Element Index="[284]" Value="16#00"/>
+<Element Index="[285]" Value="16#00"/>
+<Element Index="[286]" Value="16#00"/>
+<Element Index="[287]" Value="16#00"/>
+<Element Index="[288]" Value="16#00"/>
+<Element Index="[289]" Value="16#00"/>
+<Element Index="[290]" Value="16#00"/>
+<Element Index="[291]" Value="16#00"/>
+<Element Index="[292]" Value="16#00"/>
+<Element Index="[293]" Value="16#80"/>
+<Element Index="[294]" Value="16#bb"/>
+<Element Index="[295]" Value="16#45"/>
+<Element Index="[296]" Value="16#00"/>
+<Element Index="[297]" Value="16#00"/>
+<Element Index="[298]" Value="16#7a"/>
+<Element Index="[299]" Value="16#45"/>
+<Element Index="[300]" Value="16#00"/>
+<Element Index="[301]" Value="16#80"/>
+<Element Index="[302]" Value="16#bb"/>
+<Element Index="[303]" Value="16#45"/>
+<Element Index="[304]" Value="16#00"/>
+<Element Index="[305]" Value="16#00"/>
+<Element Index="[306]" Value="16#7a"/>
+<Element Index="[307]" Value="16#45"/>
+<Element Index="[308]" Value="16#00"/>
+<Element Index="[309]" Value="16#00"/>
+<Element Index="[310]" Value="16#00"/>
+<Element Index="[311]" Value="16#00"/>
+<Element Index="[312]" Value="16#00"/>
+<Element Index="[313]" Value="16#00"/>
+<Element Index="[314]" Value="16#00"/>
+<Element Index="[315]" Value="16#00"/>
+<Element Index="[316]" Value="16#00"/>
+<Element Index="[317]" Value="16#00"/>
+<Element Index="[318]" Value="16#00"/>
+<Element Index="[319]" Value="16#00"/>
+<Element Index="[320]" Value="16#00"/>
+<Element Index="[321]" Value="16#00"/>
+<Element Index="[322]" Value="16#00"/>
+<Element Index="[323]" Value="16#00"/>
+<Element Index="[324]" Value="16#00"/>
+<Element Index="[325]" Value="16#00"/>
+<Element Index="[326]" Value="16#00"/>
+<Element Index="[327]" Value="16#00"/>
+<Element Index="[328]" Value="16#00"/>
+<Element Index="[329]" Value="16#00"/>
+<Element Index="[330]" Value="16#00"/>
+<Element Index="[331]" Value="16#00"/>
+<Element Index="[332]" Value="16#00"/>
+<Element Index="[333]" Value="16#00"/>
+<Element Index="[334]" Value="16#00"/>
+<Element Index="[335]" Value="16#00"/>
+<Element Index="[336]" Value="16#00"/>
+<Element Index="[337]" Value="16#00"/>
+<Element Index="[338]" Value="16#00"/>
+<Element Index="[339]" Value="16#00"/>
+<Element Index="[340]" Value="16#00"/>
+<Element Index="[341]" Value="16#00"/>
+<Element Index="[342]" Value="16#00"/>
+<Element Index="[343]" Value="16#00"/>
+<Element Index="[344]" Value="16#00"/>
+<Element Index="[345]" Value="16#00"/>
+<Element Index="[346]" Value="16#00"/>
+<Element Index="[347]" Value="16#00"/>
+<Element Index="[348]" Value="16#00"/>
+<Element Index="[349]" Value="16#00"/>
+<Element Index="[350]" Value="16#00"/>
+<Element Index="[351]" Value="16#00"/>
+<Element Index="[352]" Value="16#00"/>
+<Element Index="[353]" Value="16#00"/>
+<Element Index="[354]" Value="16#00"/>
+<Element Index="[355]" Value="16#00"/>
+<Element Index="[356]" Value="16#00"/>
+<Element Index="[357]" Value="16#00"/>
+<Element Index="[358]" Value="16#00"/>
+<Element Index="[359]" Value="16#00"/>
+<Element Index="[360]" Value="16#00"/>
+<Element Index="[361]" Value="16#00"/>
+<Element Index="[362]" Value="16#00"/>
+<Element Index="[363]" Value="16#00"/>
+<Element Index="[364]" Value="16#00"/>
+<Element Index="[365]" Value="16#00"/>
+<Element Index="[366]" Value="16#00"/>
+<Element Index="[367]" Value="16#00"/>
+<Element Index="[368]" Value="16#00"/>
+<Element Index="[369]" Value="16#00"/>
+<Element Index="[370]" Value="16#00"/>
+<Element Index="[371]" Value="16#00"/>
+<Element Index="[372]" Value="16#00"/>
+<Element Index="[373]" Value="16#00"/>
+<Element Index="[374]" Value="16#00"/>
+<Element Index="[375]" Value="16#00"/>
+<Element Index="[376]" Value="16#00"/>
+<Element Index="[377]" Value="16#00"/>
+<Element Index="[378]" Value="16#00"/>
+<Element Index="[379]" Value="16#00"/>
+<Element Index="[380]" Value="16#00"/>
+<Element Index="[381]" Value="16#00"/>
+<Element Index="[382]" Value="16#00"/>
+<Element Index="[383]" Value="16#00"/>
+<Element Index="[384]" Value="16#00"/>
+<Element Index="[385]" Value="16#00"/>
+<Element Index="[386]" Value="16#00"/>
+<Element Index="[387]" Value="16#00"/>
+<Element Index="[388]" Value="16#00"/>
+<Element Index="[389]" Value="16#00"/>
+<Element Index="[390]" Value="16#00"/>
+<Element Index="[391]" Value="16#00"/>
+<Element Index="[392]" Value="16#00"/>
+<Element Index="[393]" Value="16#00"/>
+<Element Index="[394]" Value="16#00"/>
+<Element Index="[395]" Value="16#00"/>
+<Element Index="[396]" Value="16#00"/>
+<Element Index="[397]" Value="16#00"/>
+<Element Index="[398]" Value="16#00"/>
+<Element Index="[399]" Value="16#00"/>
+</ArrayMember>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="Standard" RPI="5000" Type="Output" InputCxnPoint="160" OutputCxnPoint="130" OutputSize="120" InputSize="112" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_MODULE_REAL_112Bytes:I:0">
+<ArrayMember Name="Data" DataType="REAL" Dimensions="28" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+<Element Index="[3]" Value="0.0"/>
+<Element Index="[4]" Value="0.0"/>
+<Element Index="[5]" Value="0.0"/>
+<Element Index="[6]" Value="0.0"/>
+<Element Index="[7]" Value="0.0"/>
+<Element Index="[8]" Value="0.0"/>
+<Element Index="[9]" Value="0.0"/>
+<Element Index="[10]" Value="0.0"/>
+<Element Index="[11]" Value="0.0"/>
+<Element Index="[12]" Value="0.0"/>
+<Element Index="[13]" Value="0.0"/>
+<Element Index="[14]" Value="0.0"/>
+<Element Index="[15]" Value="0.0"/>
+<Element Index="[16]" Value="0.0"/>
+<Element Index="[17]" Value="0.0"/>
+<Element Index="[18]" Value="0.0"/>
+<Element Index="[19]" Value="0.0"/>
+<Element Index="[20]" Value="0.0"/>
+<Element Index="[21]" Value="0.0"/>
+<Element Index="[22]" Value="0.0"/>
+<Element Index="[23]" Value="0.0"/>
+<Element Index="[24]" Value="0.0"/>
+<Element Index="[25]" Value="0.0"/>
+<Element Index="[26]" Value="56364.22"/>
+<Element Index="[27]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag>
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 15 00 00 80 
+6C 00 00 80 08 0C F2 00 D0 03 04 00 82 8A E9 2B 
+98 01 00 00 38 01 00 00 03 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_MODULE_REAL_120Bytes:O:0">
+<ArrayMember Name="Data" DataType="REAL" Dimensions="30" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+<Element Index="[3]" Value="0.0"/>
+<Element Index="[4]" Value="0.0"/>
+<Element Index="[5]" Value="0.0"/>
+<Element Index="[6]" Value="0.0"/>
+<Element Index="[7]" Value="0.0"/>
+<Element Index="[8]" Value="0.0"/>
+<Element Index="[9]" Value="0.0"/>
+<Element Index="[10]" Value="0.0"/>
+<Element Index="[11]" Value="0.0"/>
+<Element Index="[12]" Value="0.0"/>
+<Element Index="[13]" Value="0.0"/>
+<Element Index="[14]" Value="0.0"/>
+<Element Index="[15]" Value="-2.94272678e-044"/>
+<Element Index="[16]" Value="-1.51340234e-043"/>
+<Element Index="[17]" Value="2.22285061e-038"/>
+<Element Index="[18]" Value="3.68709652e-040"/>
+<Element Index="[19]" Value="1.65940894e-012"/>
+<Element Index="[20]" Value="5.71729773e-043"/>
+<Element Index="[21]" Value="4.37205121e-043"/>
+<Element Index="[22]" Value="4.20389539e-045"/>
+<Element Index="[23]" Value="0.0"/>
+<Element Index="[24]" Value="0.0"/>
+<Element Index="[25]" Value="0.0"/>
+<Element Index="[26]" Value="0.0"/>
+<Element Index="[27]" Value="0.0"/>
+<Element Index="[28]" Value="0.0"/>
+<Element Index="[29]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="CFM_B_C" TagType="Base" DataType="CFM_Rev_B">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 80 BB 45 00 00 7A 45 00 80 BB 45 
+00 00 7A 45</Data>
+<Data Format="Decorated"><Structure DataType="CFM_Rev_B">
+<DataValueMember Name="ProgToFaultEn" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ChannelCfgBits" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Ch0ProverDirection" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1ProverDirection" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0LowFreqClear" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1LowFreqClear" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0PreTrigger" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1PreTrigger" DataType="BOOL" Value="0"/>
+<ArrayMember Name="Operations" DataType="CFM_Setup_C" Dimensions="2">
+<Element Index="[0]">
+<Structure DataType="CFM_Setup_C">
+<DataValueMember Name="OperationalMode" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FilterControl" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MeterSamples" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ThresholdControl" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CalculationType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="AccelCalculation" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FillMode" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MinDetectableFreq" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighestAllowedFreq" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="AccelAlarmValue" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MeterFactor" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="FilterResolution" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="SampleTime" DataType="REAL" Radix="Float" Value="0.0"/>
+<StructureMember Name="kFactStruct" DataType="CFM_kFact">
+<ArrayMember Name="kFactorForChan" DataType="REAL" Dimensions="13" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+<Element Index="[3]" Value="0.0"/>
+<Element Index="[4]" Value="0.0"/>
+<Element Index="[5]" Value="0.0"/>
+<Element Index="[6]" Value="0.0"/>
+<Element Index="[7]" Value="0.0"/>
+<Element Index="[8]" Value="0.0"/>
+<Element Index="[9]" Value="0.0"/>
+<Element Index="[10]" Value="0.0"/>
+<Element Index="[11]" Value="0.0"/>
+<Element Index="[12]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="FreqAtKFactor" DataType="REAL" Dimensions="13" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+<Element Index="[3]" Value="0.0"/>
+<Element Index="[4]" Value="0.0"/>
+<Element Index="[5]" Value="0.0"/>
+<Element Index="[6]" Value="0.0"/>
+<Element Index="[7]" Value="0.0"/>
+<Element Index="[8]" Value="0.0"/>
+<Element Index="[9]" Value="0.0"/>
+<Element Index="[10]" Value="0.0"/>
+<Element Index="[11]" Value="0.0"/>
+<Element Index="[12]" Value="0.0"/>
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="CFM_Setup_C">
+<DataValueMember Name="OperationalMode" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FilterControl" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MeterSamples" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ThresholdControl" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CalculationType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="AccelCalculation" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FillMode" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MinDetectableFreq" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighestAllowedFreq" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="AccelAlarmValue" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MeterFactor" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="FilterResolution" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="SampleTime" DataType="REAL" Radix="Float" Value="0.0"/>
+<StructureMember Name="kFactStruct" DataType="CFM_kFact">
+<ArrayMember Name="kFactorForChan" DataType="REAL" Dimensions="13" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+<Element Index="[3]" Value="0.0"/>
+<Element Index="[4]" Value="0.0"/>
+<Element Index="[5]" Value="0.0"/>
+<Element Index="[6]" Value="0.0"/>
+<Element Index="[7]" Value="0.0"/>
+<Element Index="[8]" Value="0.0"/>
+<Element Index="[9]" Value="0.0"/>
+<Element Index="[10]" Value="0.0"/>
+<Element Index="[11]" Value="0.0"/>
+<Element Index="[12]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="FreqAtKFactor" DataType="REAL" Dimensions="13" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+<Element Index="[3]" Value="0.0"/>
+<Element Index="[4]" Value="0.0"/>
+<Element Index="[5]" Value="0.0"/>
+<Element Index="[6]" Value="0.0"/>
+<Element Index="[7]" Value="0.0"/>
+<Element Index="[8]" Value="0.0"/>
+<Element Index="[9]" Value="0.0"/>
+<Element Index="[10]" Value="0.0"/>
+<Element Index="[11]" Value="0.0"/>
+<Element Index="[12]" Value="0.0"/>
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+</ArrayMember>
+<ArrayMember Name="OutputSetup" DataType="CFM_OutCfg_C" Dimensions="2">
+<Element Index="[0]">
+<Structure DataType="CFM_OutCfg_C">
+<DataValueMember Name="FaultMode" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ProgMode" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="DynamicError" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TriggerOn" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TieToCounter" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="CFM_OutCfg_C">
+<DataValueMember Name="FaultMode" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ProgMode" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="DynamicError" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TriggerOn" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TieToCounter" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+</ArrayMember>
+<ArrayMember Name="OutputWindow" DataType="OUT_WIN" Dimensions="2">
+<Element Index="[0]">
+<Structure DataType="OUT_WIN">
+<DataValueMember Name="FreqOn" DataType="REAL" Radix="Float" Value="6000.0"/>
+<DataValueMember Name="FreqOff" DataType="REAL" Radix="Float" Value="4000.0"/>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="OUT_WIN">
+<DataValueMember Name="FreqOn" DataType="REAL" Radix="Float" Value="6000.0"/>
+<DataValueMember Name="FreqOff" DataType="REAL" Radix="Float" Value="4000.0"/>
+</Structure>
+</Element>
+</ArrayMember>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="CFM_Config" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="CFM_IN" TagType="Base" DataType="CFM_I">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="CFM_I">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="ChannelStatus" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="Output0State" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Output1State" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Output0IsOverridden" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Output1IsOverridden" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0WasReset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1WasReset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0AccelerationAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0OverspeedAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0OverrangeAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0OverflowAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1AccelerationAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1OverspeedAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1OverrangeAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1OverflowAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0ConsumerErrorAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1ConsumerErrorAlarm" DataType="BOOL" Value="0"/>
+<StructureMember Name="Status" DataType="CFM_Stat_I">
+<DataValueMember Name="ProverState" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FillState" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ConsumerErrorCode" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TotalCounts" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FreqAverage" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="FreqPeriod" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Speed" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Acceleration" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="FillTotal" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="GrossVolume" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="NetVolume" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="GrossRate" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="NetRate" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="ProverTotal" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<ArrayMember Name="CSTTimestamp" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+</ArrayMember>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="CFM_OUT" TagType="Base" DataType="CFM_O">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="CFM_O">
+<StructureMember Name="Total" DataType="CFM_Dyn_O">
+<DataValueMember Name="AlarmEnables" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Overrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Overflow" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Overspeed" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Acceleration" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Control" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Reset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Load" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProverEnable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FillEnable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FillStart" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FillHold" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RollOverValue" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CombinedCorrectionFactor" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="BaseTemperature" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="FlowingTemperature" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="AtmosphericPressure" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="StaticGaugePressure" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="BasePressure" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="BaseCompressibility" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="FlowingCompressibility" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="FillTotalTarget" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="FillTransition" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="FillTransitionTimer" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<ArrayMember Name="OutputControl" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+</ArrayMember>
+</Structure>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags/>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  -- No warranty or implied merchantability.
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[COP(CFM_B_C,Local:5:C.Data[0],308)COP(Local:5:I,CFM_IN,1)COP(CFM_OUT,Local:5:O,1);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

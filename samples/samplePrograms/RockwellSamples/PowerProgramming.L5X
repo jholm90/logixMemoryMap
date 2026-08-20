@@ -1,0 +1,3959 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="Chassis" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:42:22 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="Chassis" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:42:09 2018" LastModifiedDate="Fri Jan 19 07:42:11 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="0"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes>
+<DataType Name="UDT_Efficiency_Data" Family="NoFamily" Class="User">
+<Members>
+<Member Name="MachEfficiency" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="AvgCycTime" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="ZZZZZZZZZZUDT_Effici2" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="PartNumber" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Effici2" BitNumber="0"/>
+<Member Name="TotalParts" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Effici2" BitNumber="1"/>
+<Member Name="Rejects" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Effici2" BitNumber="2"/>
+<Member Name="YTD_Rejects" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Effici2" BitNumber="3"/>
+<Member Name="TotalDowntime" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Effici2" BitNumber="4"/>
+<Member Name="Downtime" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Effici2" BitNumber="5"/>
+<Member Name="TimeInState" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Effici2" BitNumber="6"/>
+</Members>
+</DataType>
+<DataType Name="UDT_HMI_Data" Family="NoFamily" Class="User">
+<Members>
+<Member Name="Stopped_Time" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Stopping_Time" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Aborted_Time" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Aborting_Time" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Starting_Time" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Ready_Time" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Standby_Time" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Producing_Time" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Holding_Time" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Held_Time" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="UDT_LineCommands" Family="NoFamily" Class="User">
+<Members>
+<Member Name="State" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="PercentSpeed" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="ZZZZZZZZZZUDT_LineCo2" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="ProduceConditions" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_LineCo2" BitNumber="0"/>
+<Member Name="ResetFaults" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_LineCo2" BitNumber="1"/>
+<Member Name="Hearbeat" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_LineCo2" BitNumber="2"/>
+</Members>
+</DataType>
+<DataType Name="UDT_Machine_Conditions" Family="NoFamily" Class="User">
+<Members>
+<Member Name="ZZZZZZZZZZUDT_Machin0" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="Networks_Ok" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Machin0" BitNumber="0"/>
+<Member Name="ESTOP_OK" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Machin0" BitNumber="1"/>
+<Member Name="GUARDS_OK" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Machin0" BitNumber="2"/>
+<Member Name="LIGHT_CURTAIN_OK" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Machin0" BitNumber="3"/>
+<Member Name="ALL_SAFETYs_OK" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Machin0" BitNumber="4"/>
+<Member Name="All_Axes_Ok" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Machin0" BitNumber="5"/>
+<Member Name="All_Axes_On" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Machin0" BitNumber="6"/>
+<Member Name="All_Axes_Off" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Machin0" BitNumber="7"/>
+<Member Name="ZZZZZZZZZZUDT_Machin9" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="All_Axes_Homed" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Machin9" BitNumber="0"/>
+<Member Name="Home_Permissive" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Machin9" BitNumber="1"/>
+<Member Name="Any_Line_Start_Pressed" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Machin9" BitNumber="2"/>
+<Member Name="Any_Line_Stop_Pressed" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Machin9" BitNumber="3"/>
+<Member Name="Any_Home_Request" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Machin9" BitNumber="4"/>
+<Member Name="Any_Hold_Pressed" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Machin9" BitNumber="5"/>
+<Member Name="Auto_Run_State_Active" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Machin9" BitNumber="6"/>
+<Member Name="All_Axes_Running" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Machin9" BitNumber="7"/>
+</Members>
+</DataType>
+<DataType Name="UDT_ModeTime" Family="NoFamily" Class="User">
+<Members>
+<Member Name="Undefined" DataType="UDT_Time" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Auto" DataType="UDT_Time" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="SemiAuto" DataType="UDT_Time" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Man" DataType="UDT_Time" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Idle" DataType="UDT_Time" Dimension="0" Radix="NullType" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="UDT_Motion_Instructions" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[Container for all Motion Instruction tag types for this axis]]>
+</Description>
+<Members>
+<Member Name="ShutdownReset" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Home" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Manual_Jog" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Stop_Manual" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Run_Jog" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Change_Jog" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Move2_Stop_Location" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Stop_Auto" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="RunMCCP" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="RunCam" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Enable" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Disable" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Disarm_Reg" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Arm_Reg" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Gear1" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Reg_Correction_Move" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Stop_Run_Jog" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="UDT_PackTags" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[This aligns with the Pack Tags V1.0.
+]]>
+</Description>
+<Members>
+<Member Name="Mode_Time" DataType="UDT_Time" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="State_Time" DataType="UDT_Time" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Cum_Time_Mode" DataType="UDT_ModeTime" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Cum_Time_States" DataType="UDT_State_Time" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Cur_Mach_Spd" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Mach_Design_Spd" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Cur_Mode" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Cur_State" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Seq_Number" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Reason_Code" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Reason_Index" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Reason_Code_Supp" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="External_Trigger" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[Place holder, Datetime, and produce conditions]]>
+</Description>
+</Member>
+<Member Name="Cur_Spd_Sel" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Prod_Processed" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Defect_Prod" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Prod_Ratio" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Mach_Cycle" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Mat_Ready" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Mat_Low" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Cntrl_Cmd" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[See section 4]]>
+</Description>
+</Member>
+<Member Name="State_Transition" DataType="UDT_State_Transitions" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="ZZZZZZZZZZUDT_PackTa22" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="Reset" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_PackTa22" BitNumber="0"/>
+</Members>
+</DataType>
+<DataType Name="UDT_PLC_Stats" Family="NoFamily" Class="User">
+<Members>
+<Member Name="Main_Task" DataType="UDT_Scan" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="MainProgram" DataType="UDT_Scan" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Axis00Program" DataType="UDT_Scan" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Axis01Program" DataType="UDT_Scan" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Axis02Program" DataType="UDT_Scan" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Axis03Program" DataType="UDT_Scan" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Axis04Program" DataType="UDT_Scan" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Axis05Program" DataType="UDT_Scan" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Axis06Program" DataType="UDT_Scan" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Axis07Program" DataType="UDT_Scan" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Axis08Program" DataType="UDT_Scan" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Axis09Program" DataType="UDT_Scan" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="PLC_Status" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="UDT_Scan" Family="NoFamily" Class="User">
+<Members>
+<Member Name="MaxScan" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="LastScan" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="UDT_Servo_Commands_sc" Family="NoFamily" Class="User">
+<Members>
+<Member Name="ZZZZZZZZZZUDT_Servo_0" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="Enable" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_0" BitNumber="0">
+<Description>
+<![CDATA[1=Servo Loop Commanded On]]>
+</Description>
+</Member>
+<Member Name="Disable" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_0" BitNumber="1">
+<Description>
+<![CDATA[1=Turn Off Axis Servo Loop]]>
+</Description>
+</Member>
+<Member Name="Home" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_0" BitNumber="2">
+<Description>
+<![CDATA[1=Run Home Routine]]>
+</Description>
+</Member>
+<Member Name="AutoRun" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_0" BitNumber="3">
+<Description>
+<![CDATA[1=Run cam/gear]]>
+</Description>
+</Member>
+<Member Name="Jog_Fwd" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_0" BitNumber="4">
+<Description>
+<![CDATA[1=Manual Foward Jog of Axis]]>
+</Description>
+</Member>
+<Member Name="Jog_Rev" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_0" BitNumber="5">
+<Description>
+<![CDATA[1=Manual Reverse Jog of Axis]]>
+</Description>
+</Member>
+<Member Name="Engage" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_0" BitNumber="6">
+<Description>
+<![CDATA[0=Pause Motion]]>
+</Description>
+</Member>
+<Member Name="Reset_Faults" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_0" BitNumber="7">
+<Description>
+<![CDATA[1=Clear Axis Faults]]>
+</Description>
+</Member>
+</Members>
+</DataType>
+<DataType Name="UDT_Servo_HMI_sh" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[Servo HMI Data TO HMI]]>
+</Description>
+<Members>
+<Member Name="HmiPhaseOffset" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Motor_RPM" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Product_Speed" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Units_Speed" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="FilteredTorque" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="ActiveTqLimit" DataType="REAL" Dimension="0" Radix="Float" Hidden="false">
+<Description>
+<![CDATA[Displays the Active Torque Limit of this Axis]]>
+</Description>
+</Member>
+<Member Name="Fault_Scroll" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="UDT_Servo_Setup_sd" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[SetupData Contains parameters for this axis to use.]]>
+</Description>
+<Members>
+<Member Name="HomeCalibrate" DataType="REAL" Dimension="0" Radix="Float" Hidden="false">
+<Description>
+<![CDATA[Distance from switch that is the actual start/home point]]>
+</Description>
+</Member>
+<Member Name="StartLocation" DataType="REAL" Dimension="0" Radix="Float" Hidden="false">
+<Description>
+<![CDATA[position at which the axis goes to before running]]>
+</Description>
+</Member>
+<Member Name="OffsetMoveSpeed" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Manual_Jog_Speed" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Manual_Jog_Accel" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Manual_Jog_Decel" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Zero_Speed_Tolerance" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Degrees_Of_Engagement" DataType="REAL" Dimension="0" Radix="Float" Hidden="false">
+<Description>
+<![CDATA[Defines the total amount of travel that this axis is engaged to material or product]]>
+</Description>
+</Member>
+<Member Name="Center_of_Engagement" DataType="REAL" Dimension="0" Radix="Float" Hidden="false">
+<Description>
+<![CDATA[Defines the absolute degree that the axis is centered in it's engagement to the product]]>
+</Description>
+</Member>
+<Member Name="FilterTC" DataType="REAL" Dimension="0" Radix="Float" Hidden="false">
+<Description>
+<![CDATA[Controls the Torque Displays' Filter Response]]>
+</Description>
+</Member>
+<Member Name="TorqueWarningLimit" DataType="REAL" Dimension="0" Radix="Float" Hidden="false">
+<Description>
+<![CDATA[Limit in Percentage of motor Continuous torque]]>
+</Description>
+</Member>
+<Member Name="PhaseOffset" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="PhaseSpeed" DataType="REAL" Dimension="0" Radix="Float" Hidden="false">
+<Description>
+<![CDATA[Calculated During Runtime]]>
+</Description>
+</Member>
+<Member Name="PhaseMoveAccel" DataType="REAL" Dimension="0" Radix="Float" Hidden="false">
+<Description>
+<![CDATA[Preset/initialized]]>
+</Description>
+</Member>
+<Member Name="PhaseMoveDecel" DataType="REAL" Dimension="0" Radix="Float" Hidden="false">
+<Description>
+<![CDATA[Preset/initialized]]>
+</Description>
+</Member>
+<Member Name="PhaseMoveStart" DataType="REAL" Dimension="0" Radix="Float" Hidden="false">
+<Description>
+<![CDATA[Phase Move Window Start Point]]>
+</Description>
+</Member>
+<Member Name="PhaseMoveStop" DataType="REAL" Dimension="0" Radix="Float" Hidden="false">
+<Description>
+<![CDATA[Phase Move Window End Point]]>
+</Description>
+</Member>
+<Member Name="HomingTorqueLimit" DataType="REAL" Dimension="0" Radix="Float" Hidden="false">
+<Description>
+<![CDATA[Torque that will not be exceeded During Home Cycle]]>
+</Description>
+</Member>
+<Member Name="RunTorqueLimit" DataType="REAL" Dimension="0" Radix="Float" Hidden="false">
+<Description>
+<![CDATA[Run Torque Limit (Machine will not exceed during run)]]>
+</Description>
+</Member>
+<Member Name="Auto_Accel" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Auto_Decel" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="DriveResolution" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="AxisNumber" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[Numerical Axis Designation]]>
+</Description>
+</Member>
+<Member Name="SequenceCmd" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[What sequence this axis should run]]>
+</Description>
+</Member>
+</Members>
+</DataType>
+<DataType Name="UDT_Servo_Status_ss" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[ServoStatus Contains All Axis Status Bits]]>
+</Description>
+<Members>
+<Member Name="State" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[Axis State (value)]]>
+</Description>
+</Member>
+<Member Name="ZZZZZZZZZZUDT_Servo_1" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="On" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_1" BitNumber="0">
+<Description>
+<![CDATA[Axis Servo Loop is Active]]>
+</Description>
+</Member>
+<Member Name="Ok" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_1" BitNumber="1">
+<Description>
+<![CDATA[Axis is NOT faulted]]>
+</Description>
+</Member>
+<Member Name="Auto" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_1" BitNumber="2">
+<Description>
+<![CDATA[Axis has attained the Auto Status Means (gearing/camming)]]>
+</Description>
+</Member>
+<Member Name="Jogging" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_1" BitNumber="3">
+<Description>
+<![CDATA[Axis is Jogging]]>
+</Description>
+</Member>
+<Member Name="No_Motion" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_1" BitNumber="4">
+<Description>
+<![CDATA[Axis is not performing any motion and is stationary]]>
+</Description>
+</Member>
+<Member Name="Homed" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_1" BitNumber="5">
+<Description>
+<![CDATA[Axis has been homed]]>
+</Description>
+</Member>
+<Member Name="Axis_Selected" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_1" BitNumber="6">
+<Description>
+<![CDATA[Axis is enabled by the user to be active when in run mode]]>
+</Description>
+</Member>
+<Member Name="Gear_Active" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_1" BitNumber="7">
+<Description>
+<![CDATA[Axis is actively geared to another axis]]>
+</Description>
+</Member>
+<Member Name="ZZZZZZZZZZUDT_Servo_10" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="Cam_Active" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_10" BitNumber="0">
+<Description>
+<![CDATA[Axis is actively Camming]]>
+</Description>
+</Member>
+<Member Name="Move_Active" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Servo_10" BitNumber="1">
+<Description>
+<![CDATA[Axis is actively performing a move]]>
+</Description>
+</Member>
+</Members>
+</DataType>
+<DataType Name="UDT_Servo_Vars" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[This structure can be changed to suit the needs of the application.]]>
+</Description>
+<Members>
+<Member Name="sd" DataType="UDT_Servo_Setup_sd" Dimension="0" Radix="NullType" Hidden="false">
+<Description>
+<![CDATA[SERVO SETUP DATA]]>
+</Description>
+</Member>
+<Member Name="ss" DataType="UDT_Servo_Status_ss" Dimension="0" Radix="NullType" Hidden="false">
+<Description>
+<![CDATA[SERVO STATUS DATA]]>
+</Description>
+</Member>
+<Member Name="sh" DataType="UDT_Servo_HMI_sh" Dimension="0" Radix="NullType" Hidden="false">
+<Description>
+<![CDATA[SERVO HMI DATA]]>
+</Description>
+</Member>
+<Member Name="sc" DataType="UDT_Servo_Commands_sc" Dimension="0" Radix="NullType" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="UDT_State_Time" Family="NoFamily" Class="User">
+<Members>
+<Member Name="Stopped" DataType="UDT_Time" Dimension="0" Radix="NullType" Hidden="false">
+<Description>
+<![CDATA[1]]>
+</Description>
+</Member>
+<Member Name="Starting" DataType="UDT_Time" Dimension="0" Radix="NullType" Hidden="false">
+<Description>
+<![CDATA[2]]>
+</Description>
+</Member>
+<Member Name="Ready" DataType="UDT_Time" Dimension="0" Radix="NullType" Hidden="false">
+<Description>
+<![CDATA[4]]>
+</Description>
+</Member>
+<Member Name="Standby" DataType="UDT_Time" Dimension="0" Radix="NullType" Hidden="false">
+<Description>
+<![CDATA[8]]>
+</Description>
+</Member>
+<Member Name="Producing" DataType="UDT_Time" Dimension="0" Radix="NullType" Hidden="false">
+<Description>
+<![CDATA[16]]>
+</Description>
+</Member>
+<Member Name="Stopping" DataType="UDT_Time" Dimension="0" Radix="NullType" Hidden="false">
+<Description>
+<![CDATA[32]]>
+</Description>
+</Member>
+<Member Name="Holding" DataType="UDT_Time" Dimension="0" Radix="NullType" Hidden="false">
+<Description>
+<![CDATA[64]]>
+</Description>
+</Member>
+<Member Name="Held" DataType="UDT_Time" Dimension="0" Radix="NullType" Hidden="false">
+<Description>
+<![CDATA[128]]>
+</Description>
+</Member>
+<Member Name="Aborting" DataType="UDT_Time" Dimension="0" Radix="NullType" Hidden="false">
+<Description>
+<![CDATA[256]]>
+</Description>
+</Member>
+<Member Name="Aborted" DataType="UDT_Time" Dimension="0" Radix="NullType" Hidden="false">
+<Description>
+<![CDATA[512]]>
+</Description>
+</Member>
+</Members>
+</DataType>
+<DataType Name="UDT_State_Transitions" Family="NoFamily" Class="User">
+<Members>
+<Member Name="ZZZZZZZZZZUDT_State_0" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="Initialize" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_State_0" BitNumber="0"/>
+<Member Name="Start" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_State_0" BitNumber="1"/>
+<Member Name="Stop" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_State_0" BitNumber="2"/>
+<Member Name="Hold" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_State_0" BitNumber="3"/>
+<Member Name="Init_PC" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_State_0" BitNumber="4"/>
+<Member Name="Start_PC" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_State_0" BitNumber="5"/>
+<Member Name="Stop_PC" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_State_0" BitNumber="6"/>
+<Member Name="Hold_PC" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_State_0" BitNumber="7"/>
+<Member Name="ZZZZZZZZZZUDT_State_9" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="Abort_PC" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_State_9" BitNumber="0"/>
+<Member Name="Fault" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_State_9" BitNumber="1"/>
+<Member Name="Produce_Conditions" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_State_9" BitNumber="2"/>
+</Members>
+</DataType>
+<DataType Name="UDT_StatusToLine" Family="NoFamily" Class="User">
+<Members>
+<Member Name="State" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="ZZZZZZZZZZUDT_Status1" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="Remote_Mode" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Status1" BitNumber="0"/>
+<Member Name="EchoHeartbeat" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZUDT_Status1" BitNumber="1"/>
+</Members>
+</DataType>
+<DataType Name="UDT_Time" Family="NoFamily" Class="User">
+<Members>
+<Member Name="Seconds" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Minutes" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Hours" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+</Members>
+</DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+<Module Name="Local_S02_DO" CatalogNumber="1756-IB16D" Vendor="1" ProductType="7" ProductCode="2" Major="2" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="2" Type="ICP" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="40">
+<Data>2C 00 00 00 11 00 00 00 01 00 00 00 00 00 00 00 
+01 01 01 01 00 00 00 00 FF FF 00 00 FF FF 00 00 
+FF FF 00 00 00 00 00 00 FF FF 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI_DC_Diag:C:0">
+<DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+<DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+<DataValueMember Name="FaultLatchEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+<DataValueMember Name="OpenWireEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="StandardInput" RPI="5000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI_DC_Diag:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0011_0000_0000_0000"/>
+<ArrayMember Name="CSTTimestamp" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="-2147483648"/>
+</ArrayMember>
+<DataValueMember Name="OpenWire" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="Local_S03_DO" CatalogNumber="1756-OB16D" Vendor="1" ProductType="7" ProductCode="4" Major="2" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="4" Type="ICP" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870914">
+<ConfigTag ConfigSize="40">
+<Data>2C 00 00 00 13 00 00 00 01 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+FF FF 00 00 FF FF 00 00 FF FF 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DO_DC_Diag:C:0">
+<DataValueMember Name="ProgToFaultEn" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FaultMode" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="FaultValue" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="ProgMode" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="ProgValue" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="FaultLatchEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+<DataValueMember Name="NoLoadEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+<DataValueMember Name="OutputVerifyEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="Diagnostic" RPI="5000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_DO_DC_Diag:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_0000_0011_1111"/>
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0100_0000"/>
+<ArrayMember Name="CSTTimestamp" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="173549345"/>
+<Element Index="[1]" Value="0"/>
+</ArrayMember>
+<DataValueMember Name="FuseBlown" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="NoLoad" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_0000_0011_1111"/>
+<DataValueMember Name="OutputVerifyFault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag>
+<Data>40 00 00 00</Data>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_DO:O:0">
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0100_0000"/>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="Analog_Inputs" CatalogNumber="1756-IF6I" Vendor="1" ProductType="10" ProductCode="1" Major="1" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="8" Type="ICP" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="304">
+<Data>34 01 00 00 10 00 00 00 01 00 64 00 00 00 00 00 
+41 41 41 41 41 41 00 00 02 00 00 00 00 00 00 00 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_AI6_Float:C:0">
+<DataValueMember Name="RemoteTermination" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CJDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TempMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RealTimeSample" DataType="INT" Radix="Decimal" Value="100"/>
+<DataValueMember Name="CJOffset" DataType="REAL" Radix="Float" Value="0.0"/>
+<StructureMember Name="Ch0Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#0002"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch1Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#0002"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch2Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#0002"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch3Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#0002"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch4Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#0002"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch5Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#0002"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="Float" RPI="100000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_AI6_Float:I:0">
+<DataValueMember Name="ChannelFaults" DataType="INT" Radix="Binary" Value="2#0000_0000_0011_1100"/>
+<DataValueMember Name="Ch0Fault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Fault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Fault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch3Fault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch4Fault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch5Fault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ModuleFaults" DataType="INT" Radix="Binary" Value="2#1100_1000_0000_0000"/>
+<DataValueMember Name="AnalogGroupFault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="InGroupFault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Calibrating" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CalFault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch0Status" DataType="SINT" Radix="Binary" Value="2#1000_0000"/>
+<DataValueMember Name="Ch0CalFault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch0Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Overrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0HAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0HHAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Status" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Ch1CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Overrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1HAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1HHAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Status" DataType="SINT" Radix="Binary" Value="2#0010_0101"/>
+<DataValueMember Name="Ch2CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Overrange" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch2RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2HAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch2LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2HHAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch3Status" DataType="SINT" Radix="Binary" Value="2#0010_0101"/>
+<DataValueMember Name="Ch3CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3Overrange" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch3RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3HAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch3LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3HHAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch4Status" DataType="SINT" Radix="Binary" Value="2#0010_0101"/>
+<DataValueMember Name="Ch4CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4Overrange" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch4RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4HAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch4LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4HHAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch5Status" DataType="SINT" Radix="Binary" Value="2#0010_0101"/>
+<DataValueMember Name="Ch5CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5Overrange" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch5RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5HAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch5LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5HHAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch0Data" DataType="REAL" Radix="Float" Value="0.005479077"/>
+<DataValueMember Name="Ch1Data" DataType="REAL" Radix="Float" Value="2.3549757"/>
+<DataValueMember Name="Ch2Data" DataType="REAL" Radix="Float" Value="10.546881"/>
+<DataValueMember Name="Ch3Data" DataType="REAL" Radix="Float" Value="10.546881"/>
+<DataValueMember Name="Ch4Data" DataType="REAL" Radix="Float" Value="10.546881"/>
+<DataValueMember Name="Ch5Data" DataType="REAL" Radix="Float" Value="10.546881"/>
+<DataValueMember Name="RollingTimestamp" DataType="INT" Radix="Decimal" Value="359"/>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="ABORTED" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 02 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="512"/>
+</Data>
+</Tag>
+<Tag Name="ABORTED_Hours" TagType="Base" DataType="COUNTER">
+<Description>
+<![CDATA[Hours that the machine has been aborted]]>
+</Description>
+<Data>00 00 00 00 18 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="24"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="ABORTED_Minutes" TagType="Base" DataType="COUNTER">
+<Description>
+<![CDATA[Minutes that the machine has been aborted]]>
+</Description>
+<Data>00 00 00 00 3C 00 00 00 02 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="ABORTED_Seconds" TagType="Base" DataType="TIMER">
+<Description>
+<![CDATA[Seconds
+ that the machine has been aborted]]>
+</Description>
+<Data>CD 74 10 00 60 EA 00 00 D0 6B 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="27600"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="ABORTING" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 01 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="256"/>
+</Data>
+</Tag>
+<Tag Name="ABORTING_Hours" TagType="Base" DataType="COUNTER">
+<Description>
+<![CDATA[Hours that the machine has been aborting]]>
+</Description>
+<Data>00 00 00 00 18 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="24"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="ABORTING_Minutes" TagType="Base" DataType="COUNTER">
+<Description>
+<![CDATA[Minutes that the machine has been aborting]]>
+</Description>
+<Data>00 00 00 00 3C 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="ABORTING_Seconds" TagType="Base" DataType="TIMER">
+<Description>
+<![CDATA[Seconds that the machine has been aborting]]>
+</Description>
+<Data>75 D2 0F 00 60 EA 00 00 54 01 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="340"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="absolute" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Indicates absolute move]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="absolutemasteroffset" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Absolute master offset type move]]>
+</Description>
+<Data>05 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="5"/>
+</Data>
+</Tag>
+<Tag Name="as_ABORTED" TagType="Alias" Radix="Decimal" AliasFor="Auto_State.9">
+<Description>
+<![CDATA[Machine is in Aborted State]]>
+</Description>
+</Tag>
+<Tag Name="as_ABORTING" TagType="Alias" Radix="Decimal" AliasFor="Auto_State.8">
+<Description>
+<![CDATA[Machine is in Aborting State]]>
+</Description>
+</Tag>
+<Tag Name="as_HELD" TagType="Alias" Radix="Decimal" AliasFor="Auto_State.7">
+<Description>
+<![CDATA[Machine is in the Held State]]>
+</Description>
+</Tag>
+<Tag Name="as_HOLDING" TagType="Alias" Radix="Decimal" AliasFor="Auto_State.6">
+<Description>
+<![CDATA[Machine is in the Holding State]]>
+</Description>
+</Tag>
+<Tag Name="as_PRODUCING" TagType="Alias" Radix="Decimal" AliasFor="Auto_State.4">
+<Description>
+<![CDATA[Machine is in the Producing State]]>
+</Description>
+</Tag>
+<Tag Name="as_READY" TagType="Alias" Radix="Decimal" AliasFor="Auto_State.2">
+<Description>
+<![CDATA[Machine is in the Ready State]]>
+</Description>
+</Tag>
+<Tag Name="as_STANDBY" TagType="Alias" Radix="Decimal" AliasFor="Auto_State.3">
+<Description>
+<![CDATA[Machine is in the Standby State]]>
+</Description>
+</Tag>
+<Tag Name="as_STARTING" TagType="Alias" Radix="Decimal" AliasFor="Auto_State.1">
+<Description>
+<![CDATA[Machine is in the Starting State]]>
+</Description>
+</Tag>
+<Tag Name="as_STOPPED" TagType="Alias" Radix="Decimal" AliasFor="Auto_State.0">
+<Description>
+<![CDATA[Machine is in the Stopped State]]>
+</Description>
+</Tag>
+<Tag Name="as_STOPPING" TagType="Alias" Radix="Decimal" AliasFor="Auto_State.5">
+<Description>
+<![CDATA[Machine is in the Stopping State]]>
+</Description>
+</Tag>
+<Tag Name="AUTOMATIC" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Automatic Mode]]>
+</Description>
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="Auto_CyclesPerSecond" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Virtual Master Revs/Second]]>
+</Description>
+<Data>00 00 A0 40</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="5.0"/>
+</Data>
+</Tag>
+<Tag Name="Auto_Enable_PB" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[HMI Auto Selection PB]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="AUTO_Hours" TagType="Base" DataType="COUNTER">
+<Description>
+<![CDATA[Hours that the machine has been in Auto]]>
+</Description>
+<Data>00 00 00 00 18 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="24"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="AUTO_Minutes" TagType="Base" DataType="COUNTER">
+<Description>
+<![CDATA[Minutes that the machine has been In auto]]>
+</Description>
+<Data>00 00 00 00 3C 00 00 00 1D 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="29"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Auto_Mode" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Machine in Auto Mode]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="Auto_one_shot" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Auto_oNS" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="AUTO_Seconds" TagType="Base" DataType="TIMER">
+<Description>
+<![CDATA[Seconds that the machine has been In auto]]>
+</Description>
+<Data>CF 79 38 C0 60 EA 00 00 24 45 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="17700"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="1"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Auto_State" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Machine's Auto State]]>
+</Description>
+<Comments>
+<Comment Operand=".0">
+<![CDATA[STOPPED
+1]]>
+</Comment>
+<Comment Operand=".1">
+<![CDATA[STARTING
+2]]>
+</Comment>
+<Comment Operand=".2">
+<![CDATA[READY
+4]]>
+</Comment>
+<Comment Operand=".3">
+<![CDATA[STANDBY
+8]]>
+</Comment>
+<Comment Operand=".4">
+<![CDATA[PRODUCING
+16]]>
+</Comment>
+<Comment Operand=".5">
+<![CDATA[STOPPING
+32]]>
+</Comment>
+<Comment Operand=".6">
+<![CDATA[HOLDING
+64]]>
+</Comment>
+<Comment Operand=".7">
+<![CDATA[HELD
+128]]>
+</Comment>
+<Comment Operand=".8">
+<![CDATA[ABORTING
+256]]>
+</Comment>
+<Comment Operand=".9">
+<![CDATA[ABORTED
+512]]>
+</Comment>
+</Comments>
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="Axes" TagType="Base" DataType="MOTION_GROUP">
+<Description>
+<![CDATA[Motion Group]]>
+</Description>
+<Data Format="MotionGroup">
+<MotionGroupParameters GroupType="Warning Enabled" CoarseUpdatePeriod="6000" PhaseShift="0" GeneralFaultType="Non Major Fault" AutoTagUpdate="Enabled"/>
+</Data>
+</Tag>
+<Tag Name="Axis1_MAOC" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Description>
+<![CDATA[MAOC Motion Instruction]]>
+</Description>
+<Data>00 00 00 A6 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="-1509949440"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="1"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="BitShift_DINTArray" TagType="Base" DataType="DINT" Dimensions="50" Radix="Decimal">
+<Description>
+<![CDATA[Holds Product Data]]>
+</Description>
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="50" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+<Element Index="[8]" Value="0"/>
+<Element Index="[9]" Value="0"/>
+<Element Index="[10]" Value="0"/>
+<Element Index="[11]" Value="0"/>
+<Element Index="[12]" Value="0"/>
+<Element Index="[13]" Value="0"/>
+<Element Index="[14]" Value="0"/>
+<Element Index="[15]" Value="0"/>
+<Element Index="[16]" Value="0"/>
+<Element Index="[17]" Value="0"/>
+<Element Index="[18]" Value="0"/>
+<Element Index="[19]" Value="0"/>
+<Element Index="[20]" Value="0"/>
+<Element Index="[21]" Value="0"/>
+<Element Index="[22]" Value="0"/>
+<Element Index="[23]" Value="0"/>
+<Element Index="[24]" Value="0"/>
+<Element Index="[25]" Value="0"/>
+<Element Index="[26]" Value="0"/>
+<Element Index="[27]" Value="0"/>
+<Element Index="[28]" Value="0"/>
+<Element Index="[29]" Value="0"/>
+<Element Index="[30]" Value="0"/>
+<Element Index="[31]" Value="0"/>
+<Element Index="[32]" Value="0"/>
+<Element Index="[33]" Value="0"/>
+<Element Index="[34]" Value="0"/>
+<Element Index="[35]" Value="0"/>
+<Element Index="[36]" Value="0"/>
+<Element Index="[37]" Value="0"/>
+<Element Index="[38]" Value="0"/>
+<Element Index="[39]" Value="0"/>
+<Element Index="[40]" Value="0"/>
+<Element Index="[41]" Value="0"/>
+<Element Index="[42]" Value="0"/>
+<Element Index="[43]" Value="0"/>
+<Element Index="[44]" Value="0"/>
+<Element Index="[45]" Value="0"/>
+<Element Index="[46]" Value="0"/>
+<Element Index="[47]" Value="0"/>
+<Element Index="[48]" Value="0"/>
+<Element Index="[49]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="Cases" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Cases Output of machine]]>
+</Description>
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="CommsFail" TagType="Base" DataType="TIMER">
+<Description>
+<![CDATA[Communcations failure timer]]>
+</Description>
+<Data>40 7D 38 00 B8 0B 00 00 B8 0B 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="3000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="3000"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="CommsFault" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Communication fault with remote control device]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="CurrentMode_Hours" TagType="Base" DataType="COUNTER">
+<Description>
+<![CDATA[Hours that the machine has been In teh current Mode]]>
+</Description>
+<Data>00 00 00 00 18 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="24"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="CurrentMode_Minutes" TagType="Base" DataType="COUNTER">
+<Description>
+<![CDATA[Minutes that the machine has been In the current Mode]]>
+</Description>
+<Data>00 00 00 00 3C 00 00 00 1F 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="31"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="CurrentMode_Seconds" TagType="Base" DataType="TIMER">
+<Description>
+<![CDATA[Seconds that the machine has been In the current Mode]]>
+</Description>
+<Data>2B 78 38 C0 60 EA 00 00 CC 5B 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="23500"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="1"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Cycle_Stop_Sequence" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Sequence to stop the machine]]>
+</Description>
+<Data>02 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="2"/>
+</Data>
+</Tag>
+<Tag Name="Do_Registration" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Enables the Registration Function]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="EnableMAOC" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Enable bit for MAOC]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="EnetCommandsFromLine" TagType="Base" DataType="UDT_LineCommands">
+<Description>
+<![CDATA[Structure of data from the remote controll device If Used]]>
+</Description>
+<Data>10 00 00 00 23 00 00 00 05 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="UDT_LineCommands">
+<DataValueMember Name="State" DataType="DINT" Radix="Decimal" Value="16"/>
+<DataValueMember Name="PercentSpeed" DataType="DINT" Radix="Decimal" Value="35"/>
+<DataValueMember Name="ProduceConditions" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ResetFaults" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Hearbeat" DataType="BOOL" Value="1"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="EnetStatusToLine" TagType="Base" DataType="UDT_StatusToLine">
+<Description>
+<![CDATA[Structure of data to the remote controll device If Used]]>
+</Description>
+<Data>01 00 00 00 02 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="UDT_StatusToLine">
+<DataValueMember Name="State" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="Remote_Mode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EchoHeartbeat" DataType="BOOL" Value="1"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="ESTOPButton1" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Alias me to Estop PB1]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="ESTOPButton2" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Alias me to Estop PB2]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="ESTOPButton3" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Alias me to Estop PB3]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="EstopPB" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Estop Button Enumeration]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="FaultedAxis" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Contains the number of the faulted axis]]>
+</Description>
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="FaultMsgTrigger" TagType="Base" DataType="DINT" Dimensions="10" Radix="Decimal">
+<Description>
+<![CDATA[Triggers the HMI to display the axis fault]]>
+</Description>
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="10" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+<Element Index="[8]" Value="0"/>
+<Element Index="[9]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="FHBoffONS" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="FHBonONS" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="FilmLevelOK" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Film Quantity OK]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="FilmPresent" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Film is present
+Film is example material]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="FltControl" TagType="Base" DataType="CONTROL">
+<Description>
+<![CDATA[Control Word]]>
+</Description>
+<Data>00 00 00 08 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="1"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="GuardDoor1" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Alias me to Guard door 1]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="GuardDoor2" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Alias me to Guard door 2]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="GuardDoor3" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Alias me to Guard door 3]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="GuardDoorOpen" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Indicates which guard door is open]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Hardwired_Hold" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Alias me to the hardwired hold PB]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Hardwired_Start_Pressed" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Alias me to the hardwired start PB]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Hardwired_Stop" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Alias me to the hardwired stop PB]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="HELD" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Held State Value]]>
+</Description>
+<Data>80 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="128"/>
+</Data>
+</Tag>
+<Tag Name="HELD_Hours" TagType="Base" DataType="COUNTER">
+<Description>
+<![CDATA[Hours in the Held State]]>
+</Description>
+<Data>00 00 00 00 18 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="24"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="HELD_Minutes" TagType="Base" DataType="COUNTER">
+<Description>
+<![CDATA[Minutes in the Held State]]>
+</Description>
+<Data>00 00 00 00 3C 00 00 00 02 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="HELD_Seconds" TagType="Base" DataType="TIMER">
+<Description>
+<![CDATA[Seconds
+ in the Held State]]>
+</Description>
+<Data>F7 27 07 00 60 EA 00 00 48 49 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="18760"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="HMI_Hold_PB" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="HMI_Home_PB" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="HMI_Start_PB" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="HMI_Stop_PB" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="HOLDING" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Holding State value]]>
+</Description>
+<Data>40 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="64"/>
+</Data>
+</Tag>
+<Tag Name="HOLDING_Hours" TagType="Base" DataType="COUNTER">
+<Description>
+<![CDATA[Hours in the Holding State]]>
+</Description>
+<Data>00 00 00 00 18 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="24"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="HOLDING_Minutes" TagType="Base" DataType="COUNTER">
+<Description>
+<![CDATA[Minutes in the Holding State]]>
+</Description>
+<Data>00 00 00 00 3C 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="HOLDING_Seconds" TagType="Base" DataType="TIMER">
+<Description>
+<![CDATA[Seconds in the Holding State]]>
+</Description>
+<Data>77 FD 06 00 60 EA 00 00 64 14 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="5220"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="HOLD_Fault_Timer" TagType="Base" DataType="TIMER">
+<Description>
+<![CDATA[If held is not reached in this time...fault]]>
+</Description>
+<Data>8B FD 06 00 70 17 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="6000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="hometest" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Home_Command" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Home_Done" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="Home_One_Shot" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="IDLE" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>04 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="4"/>
+</Data>
+</Tag>
+<Tag Name="incremental" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="incrementalmasteroffset" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>06 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="6"/>
+</Data>
+</Tag>
+<Tag Name="initiateStop_Ons" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="LightCurtain" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>02 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="2"/>
+</Data>
+</Tag>
+<Tag Name="LightCurtain1" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Alias me to Light Curtain One's input]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="LightCurtain2" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Alias me to Light Curtain 2's input]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="LightCurtain3" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Alias me to Light Curtain 3's input]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="Local_Percent_Cmd" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 34 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="45.0"/>
+</Data>
+</Tag>
+<Tag Name="MANUAL" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>03 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="3"/>
+</Data>
+</Tag>
+<Tag Name="Manual_Mode_Enable_PB" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="MAN_Hours" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 18 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="24"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="MAN_Minutes" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 3C 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="MAN_Seconds" TagType="Base" DataType="TIMER">
+<Data>43 4B 01 00 60 EA 00 00 34 03 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="820"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="MAsk_Move_LowByte" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>FF FF 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="65535"/>
+</Data>
+</Tag>
+<Tag Name="MasterAxis" TagType="Alias" AliasFor="S00_VirtualMaster"/>
+<Tag Name="MaxSpeed" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>05 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="5"/>
+</Data>
+</Tag>
+<Tag Name="mc" TagType="Base" DataType="UDT_Machine_Conditions">
+<Comments>
+<Comment Operand=".ALL_SAFETYS_OK">
+<![CDATA[All types of Safety device are ok to run if this bit is on]]>
+</Comment>
+<Comment Operand=".ALL_AXES_OK">
+<![CDATA[All axes have their feedback on, or are not selecetd for operation]]>
+</Comment>
+<Comment Operand=".AUTO_RUN_STATE_ACTIVE">
+<![CDATA[Indicates the the machine is in a state which is causing motion]]>
+</Comment>
+</Comments>
+<Data>BF 01 00 00</Data>
+<Data Format="Decorated"><Structure DataType="UDT_Machine_Conditions">
+<DataValueMember Name="Networks_Ok" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ESTOP_OK" DataType="BOOL" Value="1"/>
+<DataValueMember Name="GUARDS_OK" DataType="BOOL" Value="1"/>
+<DataValueMember Name="LIGHT_CURTAIN_OK" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ALL_SAFETYs_OK" DataType="BOOL" Value="1"/>
+<DataValueMember Name="All_Axes_Ok" DataType="BOOL" Value="1"/>
+<DataValueMember Name="All_Axes_On" DataType="BOOL" Value="0"/>
+<DataValueMember Name="All_Axes_Off" DataType="BOOL" Value="1"/>
+<DataValueMember Name="All_Axes_Homed" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Home_Permissive" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Any_Line_Start_Pressed" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Any_Line_Stop_Pressed" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Any_Home_Request" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Any_Hold_Pressed" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Auto_Run_State_Active" DataType="BOOL" Value="0"/>
+<DataValueMember Name="All_Axes_Running" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="MessageDisplayDuration" TagType="Base" DataType="TIMER">
+<Data>38 7B 38 C0 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="1"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="ModeMirror" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="My_MAOC" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="My_MAOCAxisArmPos" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="My_MAOC_CamArmPos" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="My_MAOC_EndPos" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 B4 43</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="360.0"/>
+</Data>
+</Tag>
+<Tag Name="My_MAOC_INPUT" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>C7 35 3A 42</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1111111111"/>
+</Data>
+</Tag>
+<Tag Name="My_MAOC_OutComp" TagType="Base" DataType="OUTPUT_COMPENSATION" Dimensions="10">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="OUTPUT_COMPENSATION" Dimensions="10">
+<Element Index="[0]">
+<Structure DataType="OUTPUT_COMPENSATION">
+<DataValueMember Name="Offset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="UnlatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Mode" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CycleTime" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DutyCycle" DataType="REAL" Radix="Float" Value="0.0"/>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="OUTPUT_COMPENSATION">
+<DataValueMember Name="Offset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="UnlatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Mode" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CycleTime" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DutyCycle" DataType="REAL" Radix="Float" Value="0.0"/>
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="OUTPUT_COMPENSATION">
+<DataValueMember Name="Offset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="UnlatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Mode" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CycleTime" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DutyCycle" DataType="REAL" Radix="Float" Value="0.0"/>
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="OUTPUT_COMPENSATION">
+<DataValueMember Name="Offset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="UnlatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Mode" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CycleTime" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DutyCycle" DataType="REAL" Radix="Float" Value="0.0"/>
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="OUTPUT_COMPENSATION">
+<DataValueMember Name="Offset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="UnlatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Mode" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CycleTime" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DutyCycle" DataType="REAL" Radix="Float" Value="0.0"/>
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="OUTPUT_COMPENSATION">
+<DataValueMember Name="Offset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="UnlatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Mode" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CycleTime" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DutyCycle" DataType="REAL" Radix="Float" Value="0.0"/>
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="OUTPUT_COMPENSATION">
+<DataValueMember Name="Offset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="UnlatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Mode" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CycleTime" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DutyCycle" DataType="REAL" Radix="Float" Value="0.0"/>
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="OUTPUT_COMPENSATION">
+<DataValueMember Name="Offset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="UnlatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Mode" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CycleTime" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DutyCycle" DataType="REAL" Radix="Float" Value="0.0"/>
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="OUTPUT_COMPENSATION">
+<DataValueMember Name="Offset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="UnlatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Mode" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CycleTime" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DutyCycle" DataType="REAL" Radix="Float" Value="0.0"/>
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="OUTPUT_COMPENSATION">
+<DataValueMember Name="Offset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="UnlatchDelay" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Mode" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CycleTime" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DutyCycle" DataType="REAL" Radix="Float" Value="0.0"/>
+</Structure>
+</Element>
+</Array>
+</Data>
+</Tag>
+<Tag Name="My_MAOC_OutputCam" TagType="Base" DataType="OUTPUT_CAM" Dimensions="10">
+<Data>00 00 00 00 01 00 00 00 01 00 00 00 00 00 80 3F 
+00 00 B4 42 00 00 00 00 00 00 00 00 00 00 00 00 
+01 00 00 00 01 00 00 00 01 00 00 00 00 00 B4 42 
+00 00 34 43 00 00 00 00 00 00 00 00 00 00 00 00 
+02 00 00 00 01 00 00 00 01 00 00 00 00 00 34 43 
+00 00 87 43 00 00 00 00 00 00 00 00 00 00 00 00 
+03 00 00 00 01 00 00 00 01 00 00 00 00 00 87 43 
+00 00 B4 43 00 00 00 00 00 00 00 00 00 00 00 00 
+11 00 00 00 01 00 00 00 01 00 00 00 00 00 80 3F 
+00 00 87 43 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="OUTPUT_CAM" Dimensions="10">
+<Element Index="[0]">
+<Structure DataType="OUTPUT_CAM">
+<DataValueMember Name="OutputBit" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LatchType" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="UnlatchType" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="Left" DataType="REAL" Radix="Float" Value="1.0"/>
+<DataValueMember Name="Right" DataType="REAL" Radix="Float" Value="90.0"/>
+<DataValueMember Name="Duration" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="EnableType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EnableBit" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="OUTPUT_CAM">
+<DataValueMember Name="OutputBit" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="LatchType" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="UnlatchType" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="Left" DataType="REAL" Radix="Float" Value="90.0"/>
+<DataValueMember Name="Right" DataType="REAL" Radix="Float" Value="180.0"/>
+<DataValueMember Name="Duration" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="EnableType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EnableBit" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="OUTPUT_CAM">
+<DataValueMember Name="OutputBit" DataType="DINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="LatchType" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="UnlatchType" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="Left" DataType="REAL" Radix="Float" Value="180.0"/>
+<DataValueMember Name="Right" DataType="REAL" Radix="Float" Value="270.0"/>
+<DataValueMember Name="Duration" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="EnableType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EnableBit" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="OUTPUT_CAM">
+<DataValueMember Name="OutputBit" DataType="DINT" Radix="Decimal" Value="3"/>
+<DataValueMember Name="LatchType" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="UnlatchType" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="Left" DataType="REAL" Radix="Float" Value="270.0"/>
+<DataValueMember Name="Right" DataType="REAL" Radix="Float" Value="360.0"/>
+<DataValueMember Name="Duration" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="EnableType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EnableBit" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="OUTPUT_CAM">
+<DataValueMember Name="OutputBit" DataType="DINT" Radix="Decimal" Value="17"/>
+<DataValueMember Name="LatchType" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="UnlatchType" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="Left" DataType="REAL" Radix="Float" Value="1.0"/>
+<DataValueMember Name="Right" DataType="REAL" Radix="Float" Value="270.0"/>
+<DataValueMember Name="Duration" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="EnableType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EnableBit" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="OUTPUT_CAM">
+<DataValueMember Name="OutputBit" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LatchType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="UnlatchType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Left" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Right" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Duration" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="EnableType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EnableBit" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="OUTPUT_CAM">
+<DataValueMember Name="OutputBit" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LatchType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="UnlatchType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Left" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Right" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Duration" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="EnableType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EnableBit" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="OUTPUT_CAM">
+<DataValueMember Name="OutputBit" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LatchType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="UnlatchType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Left" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Right" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Duration" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="EnableType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EnableBit" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="OUTPUT_CAM">
+<DataValueMember Name="OutputBit" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LatchType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="UnlatchType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Left" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Right" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Duration" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="EnableType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EnableBit" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="OUTPUT_CAM">
+<DataValueMember Name="OutputBit" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LatchType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="UnlatchType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Left" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Right" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Duration" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="EnableType" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EnableBit" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+</Array>
+</Data>
+</Tag>
+<Tag Name="My_MAOC_Outputs" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>01 00 02 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="131073"/>
+</Data>
+</Tag>
+<Tag Name="My_MAOC_StartPos" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="My_MDOC" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 22 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="570425344"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="NewCycle" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="OFF" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="ONeMOreTime" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="PI" TagType="Base" DataType="REAL" Radix="Float">
+<Data>DB 0F 49 40</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="3.1415927"/>
+</Data>
+</Tag>
+<Tag Name="PML" TagType="Base" DataType="UDT_PackTags">
+<Data>19 00 00 00 1F 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 12 00 00 00 1D 00 00 00 00 00 00 00 
+33 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 20 00 00 00 08 00 00 00 00 00 00 00 
+0D 00 00 00 00 00 00 00 00 00 00 00 17 00 00 00 
+00 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 
+00 00 00 00 0F 00 00 00 17 00 00 00 00 00 00 00 
+01 00 00 00 00 00 00 00 00 00 00 00 05 00 00 00 
+00 00 00 00 00 00 00 00 12 00 00 00 02 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+1B 00 00 00 02 00 00 00 00 00 00 00 00 00 96 43 
+00 00 C8 42 01 00 00 00 02 00 00 00 06 00 00 00 
+21 00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 
+63 00 00 00 00 00 00 00 00 00 00 00 0A 00 00 00 
+7E 18 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="UDT_PackTags">
+<StructureMember Name="Mode_Time" DataType="UDT_Time">
+<DataValueMember Name="Seconds" DataType="DINT" Radix="Decimal" Value="25"/>
+<DataValueMember Name="Minutes" DataType="DINT" Radix="Decimal" Value="31"/>
+<DataValueMember Name="Hours" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="State_Time" DataType="UDT_Time">
+<DataValueMember Name="Seconds" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Minutes" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Hours" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Cum_Time_Mode" DataType="UDT_ModeTime">
+<StructureMember Name="Undefined" DataType="UDT_Time">
+<DataValueMember Name="Seconds" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Minutes" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Hours" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Auto" DataType="UDT_Time">
+<DataValueMember Name="Seconds" DataType="DINT" Radix="Decimal" Value="18"/>
+<DataValueMember Name="Minutes" DataType="DINT" Radix="Decimal" Value="29"/>
+<DataValueMember Name="Hours" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="SemiAuto" DataType="UDT_Time">
+<DataValueMember Name="Seconds" DataType="DINT" Radix="Decimal" Value="51"/>
+<DataValueMember Name="Minutes" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Hours" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Man" DataType="UDT_Time">
+<DataValueMember Name="Seconds" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Minutes" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Hours" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Idle" DataType="UDT_Time">
+<DataValueMember Name="Seconds" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Minutes" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Hours" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+</StructureMember>
+<StructureMember Name="Cum_Time_States" DataType="UDT_State_Time">
+<StructureMember Name="Stopped" DataType="UDT_Time">
+<DataValueMember Name="Seconds" DataType="DINT" Radix="Decimal" Value="32"/>
+<DataValueMember Name="Minutes" DataType="DINT" Radix="Decimal" Value="8"/>
+<DataValueMember Name="Hours" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Starting" DataType="UDT_Time">
+<DataValueMember Name="Seconds" DataType="DINT" Radix="Decimal" Value="13"/>
+<DataValueMember Name="Minutes" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Hours" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Ready" DataType="UDT_Time">
+<DataValueMember Name="Seconds" DataType="DINT" Radix="Decimal" Value="23"/>
+<DataValueMember Name="Minutes" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Hours" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Standby" DataType="UDT_Time">
+<DataValueMember Name="Seconds" DataType="DINT" Radix="Decimal" Value="3"/>
+<DataValueMember Name="Minutes" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Hours" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Producing" DataType="UDT_Time">
+<DataValueMember Name="Seconds" DataType="DINT" Radix="Decimal" Value="15"/>
+<DataValueMember Name="Minutes" DataType="DINT" Radix="Decimal" Value="23"/>
+<DataValueMember Name="Hours" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Stopping" DataType="UDT_Time">
+<DataValueMember Name="Seconds" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="Minutes" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Hours" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Holding" DataType="UDT_Time">
+<DataValueMember Name="Seconds" DataType="DINT" Radix="Decimal" Value="5"/>
+<DataValueMember Name="Minutes" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Hours" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Held" DataType="UDT_Time">
+<DataValueMember Name="Seconds" DataType="DINT" Radix="Decimal" Value="18"/>
+<DataValueMember Name="Minutes" DataType="DINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="Hours" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Aborting" DataType="UDT_Time">
+<DataValueMember Name="Seconds" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Minutes" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Hours" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="Aborted" DataType="UDT_Time">
+<DataValueMember Name="Seconds" DataType="DINT" Radix="Decimal" Value="27"/>
+<DataValueMember Name="Minutes" DataType="DINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="Hours" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+</StructureMember>
+<DataValueMember Name="Cur_Mach_Spd" DataType="REAL" Radix="Float" Value="300.0"/>
+<DataValueMember Name="Mach_Design_Spd" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="Cur_Mode" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="Cur_State" DataType="DINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="Seq_Number" DataType="DINT" Radix="Decimal" Value="6"/>
+<DataValueMember Name="Reason_Code" DataType="DINT" Radix="Decimal" Value="33"/>
+<DataValueMember Name="Reason_Index" DataType="DINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="Reason_Code_Supp" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="External_Trigger" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Cur_Spd_Sel" DataType="DINT" Radix="Decimal" Value="99"/>
+<DataValueMember Name="Prod_Processed" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Defect_Prod" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Prod_Ratio" DataType="DINT" Radix="Decimal" Value="10"/>
+<DataValueMember Name="Mach_Cycle" DataType="DINT" Radix="Decimal" Value="6270"/>
+<DataValueMember Name="Mat_Ready" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Mat_Low" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Cntrl_Cmd" DataType="DINT" Radix="Decimal" Value="0"/>
+<StructureMember Name="State_Transition" DataType="UDT_State_Transitions">
+<DataValueMember Name="Initialize" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Start" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Stop" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Hold" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Init_PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Start_PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Stop_PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Hold_PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Abort_PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Fault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Produce_Conditions" DataType="BOOL" Value="0"/>
+</StructureMember>
+<DataValueMember Name="Reset" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="PRODUCING" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>10 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="16"/>
+</Data>
+</Tag>
+<Tag Name="PRODUCING_Hours" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 18 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="24"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="PRODUCING_Minutes" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 3C 00 00 00 17 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="23"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="PRODUCING_Seconds" TagType="Base" DataType="TIMER">
+<Data>EF 2C 38 00 60 EA 00 00 1C 3E 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="15900"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="ProductBadEye" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="ProductLevelOK" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="ProductOutEye" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="ProductPerCase" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>0A 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="10"/>
+</Data>
+</Tag>
+<Tag Name="ProductPresent" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="ProductSensor0" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="ProductSensors" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="READY" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>04 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="4"/>
+</Data>
+</Tag>
+<Tag Name="READY_Hours" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 18 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="24"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="READY_Minutes" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 3C 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="READY_Seconds" TagType="Base" DataType="TIMER">
+<Data>DF 4E 30 00 60 EA 00 00 D8 59 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="23000"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="RegEnableONS" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="RegError" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="RegState" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="RegTargetPos" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Remote_Mode" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Machine is in Remote Mode]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Reset_All_Faults" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Resets when going to Stopped from aborted state or can be manual function.]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Reset_Statistics" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="rotarynegative" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>04 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="4"/>
+</Data>
+</Tag>
+<Tag Name="rotarypositive" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>03 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="3"/>
+</Data>
+</Tag>
+<Tag Name="rotaryshortestpathmove" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>02 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="2"/>
+</Data>
+</Tag>
+<Tag Name="RsltControl" TagType="Base" DataType="CONTROL">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="S00_VirtualMaster" TagType="Base" DataType="AXIS_VIRTUAL">
+<Data Format="Axis">
+<AxisParameters MotionGroup="Axes" ConversionConstant="1000.0" OutputCamExecutionTargets="2" AxisState="Axis-Ready" PositionUnits="Position Units" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="360000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate"
+ HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="1000.0" MaximumAcceleration="1000.0" MaximumDeceleration="1000.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1000.0" MaximumDecelerationJerk="1000.0"
+ DynamicsConfigurationBits="7"/>
+</Data>
+</Tag>
+<Tag Name="S00_VirtualMaster_Vars" TagType="Base" DataType="UDT_Servo_Vars">
+<Description>
+<![CDATA[Imaginary Axis
+Varibles Tag]]>
+</Description>
+<Data>00 00 00 00 00 00 00 00 00 00 C8 42 00 00 C8 42 
+00 00 7A 44 00 00 7A 44 00 00 20 41 00 00 20 41 
+00 00 34 43 0A D7 A3 3D 00 00 C8 42 00 00 C8 42 
+00 00 C8 42 00 00 7A 44 00 00 7A 44 00 00 B4 42 
+00 00 87 43 00 00 C8 42 00 00 DC 42 00 00 7A 44 
+00 00 7A 44 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 73 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="UDT_Servo_Vars">
+<StructureMember Name="sd" DataType="UDT_Servo_Setup_sd">
+<DataValueMember Name="HomeCalibrate" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="StartLocation" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="OffsetMoveSpeed" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="Manual_Jog_Speed" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="Manual_Jog_Accel" DataType="REAL" Radix="Float" Value="1000.0"/>
+<DataValueMember Name="Manual_Jog_Decel" DataType="REAL" Radix="Float" Value="1000.0"/>
+<DataValueMember Name="Zero_Speed_Tolerance" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="Degrees_Of_Engagement" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="Center_of_Engagement" DataType="REAL" Radix="Float" Value="180.0"/>
+<DataValueMember Name="FilterTC" DataType="REAL" Radix="Float" Value="0.08"/>
+<DataValueMember Name="TorqueWarningLimit" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="PhaseOffset" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="PhaseSpeed" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="PhaseMoveAccel" DataType="REAL" Radix="Float" Value="1000.0"/>
+<DataValueMember Name="PhaseMoveDecel" DataType="REAL" Radix="Float" Value="1000.0"/>
+<DataValueMember Name="PhaseMoveStart" DataType="REAL" Radix="Float" Value="90.0"/>
+<DataValueMember Name="PhaseMoveStop" DataType="REAL" Radix="Float" Value="270.0"/>
+<DataValueMember Name="HomingTorqueLimit" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="RunTorqueLimit" DataType="REAL" Radix="Float" Value="110.0"/>
+<DataValueMember Name="Auto_Accel" DataType="REAL" Radix="Float" Value="1000.0"/>
+<DataValueMember Name="Auto_Decel" DataType="REAL" Radix="Float" Value="1000.0"/>
+<DataValueMember Name="DriveResolution" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="AxisNumber" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SequenceCmd" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="ss" DataType="UDT_Servo_Status_ss">
+<DataValueMember Name="State" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="On" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ok" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Auto" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Jogging" DataType="BOOL" Value="0"/>
+<DataValueMember Name="No_Motion" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Homed" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Axis_Selected" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Gear_Active" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Cam_Active" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Move_Active" DataType="BOOL" Value="0"/>
+</StructureMember>
+<StructureMember Name="sh" DataType="UDT_Servo_HMI_sh">
+<DataValueMember Name="HmiPhaseOffset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Motor_RPM" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Product_Speed" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Units_Speed" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="FilteredTorque" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="ActiveTqLimit" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Fault_Scroll" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="sc" DataType="UDT_Servo_Commands_sc">
+<DataValueMember Name="Enable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Disable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Home" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AutoRun" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Jog_Fwd" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Jog_Rev" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Engage" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Reset_Faults" DataType="BOOL" Value="0"/>
+</StructureMember>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="S05_N01_Conveyor" TagType="Base" DataType="AXIS_SERVO_DRIVE">
+<Description>
+<![CDATA[Slot05_Node01_Conveyor]]>
+</Description>
+<Data Format="Axis">
+<AxisParameters MotionGroup="Axes" MotionModule="&lt;NA&gt;" RotationalPosResolution="360000" ConversionConstant="1000.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Revs" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="360000" HomeMode="Active"
+ HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" HomeSpeed="2.0" HomeReturnSpeed="2.0" MaximumSpeed="22950.002" MaximumAcceleration="2101293.3" MaximumDeceleration="2626616.0" ProgrammedStopMode="Fast Stop"
+ MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" AxisType="Servo" ServoLoopConfiguration="Position Servo" FaultConfigurationBits="32" AxisInfoSelect1="DC Bus Voltage" AxisInfoSelect2="Torque Feedback" VelocityFeedforwardGain="100.0" AccelerationFeedforwardGain="0.0" PositionProportionalGain="88.50804" PositionIntegralGain="10.0"
+ VelocityProportionalGain="226.5806" VelocityIntegralGain="0.0" TorqueScaling="1.37481489e-004" OutputLPFilterBandwidth="0.0" IntegratorHoldEnable="Enabled" MaximumPositiveTravel="0.0" MaximumNegativeTravel="0.0" PositionErrorTolerance="518.597" PositionLockTolerance="3.6" VelocityOffset="0.0" TorqueOffset="0.0"
+ FrictionCompensation="0.0" FrictionCompensationWindow="0.0" BacklashStabilizationWindow="0" BacklashReversalOffset="0.0" HardOvertravelFaultAction="Disable Drive" SoftOvertravelFaultAction="Disable Drive" PositionErrorFaultAction="Disable Drive" FeedbackFaultAction="Disable Drive" FeedbackNoiseFaultAction="Disable Drive" TestIncrement="360.0" TuningTravelLimit="1080.0"
+ TuningSpeed="15000.0" TuningTorque="58.0" DampingFactor="0.8" DriveModelTimeConstant="0.001724" PositionServoBandwidth="14.0936365" VelocityServoBandwidth="36.079712" TuningConfigurationBits="16#0000_0008" TorqueLimitSource="Not Limited" DriveUnit="Motor Rev" PositionDataScaling="138" PositionDataScalingFactor="1"
+ PositionDataScalingExp="0" VelocityDataScaling="2" VelocityDataScalingFactor="1" VelocityDataScalingExp="0" AccelerationDataScaling="2" AccelerationDataScalingFactor="1" AccelerationDataScalingExp="0" TorqueDataScaling="0" TorqueDataScalingFactor="1" TorqueDataScalingExp="0" DrivePolarity="Positive"
+ MotorFeedbackResolution="4000" AuxFeedbackResolution="4000" MotorFeedbackUnit="Rev" AuxFeedbackUnit="Rev" OutputNotchFilterFrequency="0.0" VelocityDroop="0.0" VelocityLimitBipolar="27000.002" AccelerationLimitBipolar="24835346.0" TorqueLimitBipolar="382.35294" VelocityLimitPositive="27000.002" VelocityLimitNegative="-27000.002"
+ VelocityThreshold="0.0" VelocityWindow="1.0" VelocityStandstillWindow="1.0" AccelerationLimitPositive="24835346.0" AccelerationLimitNegative="-24835346.0" TorqueLimitPositive="382.35294" TorqueLimitNegative="-382.35294" TorqueThreshold="0.0" DriveThermalFaultAction="Disable Drive" MotorThermalFaultAction="Disable Drive" DriveEnableInputFaultAction="Disable Drive"
+ StoppingTorque="382.35294" StoppingTimeLimit="10.0" BrakeEngageDelayTime="0.0" BrakeReleaseDelayTime="0.0" PWMFrequencySelect="Low Frequency" LoadInertiaRatio="0.0" AmplifierCatalogNumber="&lt;none&gt;" MotorCatalogNumber="&lt;none&gt;" AuxFeedbackRatio="1.0" ContinuousTorqueLimit="100.0" ResistiveBrakeContactDelay="0.0"
+ MaximumAccelerationJerk="192393600.0" MaximumDecelerationJerk="300614848.0" DynamicsConfigurationBits="7" PhaseLossFaultAction="Shutdown" HomeTorqueLevel="0.0" InputPowerPhase="Three-Phase"/>
+</Data>
+</Tag>
+<Tag Name="S05_N01_Conveyor_Vars" TagType="Base" DataType="UDT_Servo_Vars">
+<Data>00 00 00 00 00 00 00 00 00 00 B4 42 00 00 C8 42 
+00 40 1C 46 00 40 1C 46 00 00 20 41 00 00 20 41 
+00 00 34 43 CD CC CC 3D 00 00 48 42 00 00 B4 42 
+FF 3F B6 44 00 00 7A 44 00 00 7A 44 00 00 20 43 
+00 00 B4 42 00 00 87 43 00 00 DC 42 00 00 7A 44 
+00 00 7A 44 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 72 00 00 00 00 00 B4 42 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+AC 0D 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="UDT_Servo_Vars">
+<StructureMember Name="sd" DataType="UDT_Servo_Setup_sd">
+<DataValueMember Name="HomeCalibrate" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="StartLocation" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="OffsetMoveSpeed" DataType="REAL" Radix="Float" Value="90.0"/>
+<DataValueMember Name="Manual_Jog_Speed" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="Manual_Jog_Accel" DataType="REAL" Radix="Float" Value="10000.0"/>
+<DataValueMember Name="Manual_Jog_Decel" DataType="REAL" Radix="Float" Value="10000.0"/>
+<DataValueMember Name="Zero_Speed_Tolerance" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="Degrees_Of_Engagement" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="Center_of_Engagement" DataType="REAL" Radix="Float" Value="180.0"/>
+<DataValueMember Name="FilterTC" DataType="REAL" Radix="Float" Value="0.1"/>
+<DataValueMember Name="TorqueWarningLimit" DataType="REAL" Radix="Float" Value="50.0"/>
+<DataValueMember Name="PhaseOffset" DataType="REAL" Radix="Float" Value="90.0"/>
+<DataValueMember Name="PhaseSpeed" DataType="REAL" Radix="Float" Value="1457.9999"/>
+<DataValueMember Name="PhaseMoveAccel" DataType="REAL" Radix="Float" Value="1000.0"/>
+<DataValueMember Name="PhaseMoveDecel" DataType="REAL" Radix="Float" Value="1000.0"/>
+<DataValueMember Name="PhaseMoveStart" DataType="REAL" Radix="Float" Value="160.0"/>
+<DataValueMember Name="PhaseMoveStop" DataType="REAL" Radix="Float" Value="90.0"/>
+<DataValueMember Name="HomingTorqueLimit" DataType="REAL" Radix="Float" Value="270.0"/>
+<DataValueMember Name="RunTorqueLimit" DataType="REAL" Radix="Float" Value="110.0"/>
+<DataValueMember Name="Auto_Accel" DataType="REAL" Radix="Float" Value="1000.0"/>
+<DataValueMember Name="Auto_Decel" DataType="REAL" Radix="Float" Value="1000.0"/>
+<DataValueMember Name="DriveResolution" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="AxisNumber" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SequenceCmd" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="ss" DataType="UDT_Servo_Status_ss">
+<DataValueMember Name="State" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="On" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ok" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Auto" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Jogging" DataType="BOOL" Value="0"/>
+<DataValueMember Name="No_Motion" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Homed" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Axis_Selected" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Gear_Active" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Cam_Active" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Move_Active" DataType="BOOL" Value="0"/>
+</StructureMember>
+<StructureMember Name="sh" DataType="UDT_Servo_HMI_sh">
+<DataValueMember Name="HmiPhaseOffset" DataType="REAL" Radix="Float" Value="90.0"/>
+<DataValueMember Name="Motor_RPM" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Product_Speed" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Units_Speed" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="FilteredTorque" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="ActiveTqLimit" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Fault_Scroll" DataType="DINT" Radix="Decimal" Value="3500"/>
+</StructureMember>
+<StructureMember Name="sc" DataType="UDT_Servo_Commands_sc">
+<DataValueMember Name="Enable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Disable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Home" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AutoRun" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Jog_Fwd" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Jog_Rev" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Engage" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Reset_Faults" DataType="BOOL" Value="0"/>
+</StructureMember>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="S05_N02_FlapTucker_Vars" TagType="Base" DataType="UDT_Servo_Vars">
+<Data>00 00 00 00 00 00 00 00 00 00 FA 43 00 00 C8 42 
+00 40 1C 46 00 40 1C 46 00 00 20 41 00 00 20 41 
+00 00 34 43 0A D7 A3 3D 00 00 C8 42 00 00 00 00 
+00 C0 8D 44 00 00 7A 44 00 00 7A 44 00 00 B4 42 
+00 00 87 43 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 27 01 00 00 00 00 00 00 EF BD 77 3E 
+B6 EA BB 39 08 21 04 3E 00 00 00 00 00 00 00 00 
+AC 0D 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="UDT_Servo_Vars">
+<StructureMember Name="sd" DataType="UDT_Servo_Setup_sd">
+<DataValueMember Name="HomeCalibrate" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="StartLocation" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="OffsetMoveSpeed" DataType="REAL" Radix="Float" Value="500.0"/>
+<DataValueMember Name="Manual_Jog_Speed" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="Manual_Jog_Accel" DataType="REAL" Radix="Float" Value="10000.0"/>
+<DataValueMember Name="Manual_Jog_Decel" DataType="REAL" Radix="Float" Value="10000.0"/>
+<DataValueMember Name="Zero_Speed_Tolerance" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="Degrees_Of_Engagement" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="Center_of_Engagement" DataType="REAL" Radix="Float" Value="180.0"/>
+<DataValueMember Name="FilterTC" DataType="REAL" Radix="Float" Value="0.08"/>
+<DataValueMember Name="TorqueWarningLimit" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="PhaseOffset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="PhaseSpeed" DataType="REAL" Radix="Float" Value="1134.0"/>
+<DataValueMember Name="PhaseMoveAccel" DataType="REAL" Radix="Float" Value="1000.0"/>
+<DataValueMember Name="PhaseMoveDecel" DataType="REAL" Radix="Float" Value="1000.0"/>
+<DataValueMember Name="PhaseMoveStart" DataType="REAL" Radix="Float" Value="90.0"/>
+<DataValueMember Name="PhaseMoveStop" DataType="REAL" Radix="Float" Value="270.0"/>
+<DataValueMember Name="HomingTorqueLimit" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="RunTorqueLimit" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Auto_Accel" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Auto_Decel" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DriveResolution" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="AxisNumber" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SequenceCmd" DataType="DINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+<StructureMember Name="ss" DataType="UDT_Servo_Status_ss">
+<DataValueMember Name="State" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="On" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ok" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Auto" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Jogging" DataType="BOOL" Value="0"/>
+<DataValueMember Name="No_Motion" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Homed" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Axis_Selected" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Gear_Active" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Cam_Active" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Move_Active" DataType="BOOL" Value="0"/>
+</StructureMember>
+<StructureMember Name="sh" DataType="UDT_Servo_HMI_sh">
+<DataValueMember Name="HmiPhaseOffset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Motor_RPM" DataType="REAL" Radix="Float" Value="0.24193548"/>
+<DataValueMember Name="Product_Speed" DataType="REAL" Radix="Float" Value="3.58422927e-004"/>
+<DataValueMember Name="Units_Speed" DataType="REAL" Radix="Float" Value="0.12903225"/>
+<DataValueMember Name="FilteredTorque" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="ActiveTqLimit" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Fault_Scroll" DataType="DINT" Radix="Decimal" Value="3500"/>
+</StructureMember>
+<StructureMember Name="sc" DataType="UDT_Servo_Commands_sc">
+<DataValueMember Name="Enable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Disable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Home" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AutoRun" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Jog_Fwd" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Jog_Rev" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Engage" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Reset_Faults" DataType="BOOL" Value="0"/>
+</StructureMember>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="SEMIAUTOMATIC" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>02 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="2"/>
+</Data>
+</Tag>
+<Tag Name="SEMI_Hours" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 18 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="24"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="SEMI_Minutes" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 3C 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="SEMI_Seconds" TagType="Base" DataType="TIMER">
+<Data>FB 47 01 00 60 EA 00 00 79 C8 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="51321"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="SendAbortReason" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SendHoldReason" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="sendstandbyReason" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SendStartReason" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SendStopReason" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Show_Position" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Slaves_Homed" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="SRVO_Zero_File_Ref" TagType="Base" DataType="DINT" Dimensions="5" Radix="Decimal">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="5" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="st" TagType="Base" DataType="UDT_State_Transitions">
+<Description>
+<![CDATA[State Transitions]]>
+</Description>
+<Data>00 04 00 00</Data>
+<Data Format="Decorated"><Structure DataType="UDT_State_Transitions">
+<DataValueMember Name="Initialize" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Start" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Stop" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Hold" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Init_PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Start_PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Stop_PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Hold_PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Abort_PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Fault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Produce_Conditions" DataType="BOOL" Value="1"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="STANDBY" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>08 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="8"/>
+</Data>
+</Tag>
+<Tag Name="STANDBY_Hours" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 18 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="24"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="STANDBY_Minutes" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 3C 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="STANDBY_Seconds" TagType="Base" DataType="TIMER">
+<Data>B7 8A 07 00 60 EA 00 00 14 0F 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="3860"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="STARTING" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>02 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="2"/>
+</Data>
+</Tag>
+<Tag Name="STARTING_Hours" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 18 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="24"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="STARTING_Minutes" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 3C 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="STARTING_Seconds" TagType="Base" DataType="TIMER">
+<Data>D7 10 30 00 60 EA 00 00 30 34 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="13360"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="startReason" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>22 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="34"/>
+</Data>
+</Tag>
+<Tag Name="Start_Command" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Start_Fault_Timer" TagType="Base" DataType="TIMER">
+<Data>EB 10 30 00 70 17 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="6000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Start_OneShot" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Start_Warning" TagType="Base" DataType="TIMER">
+<Data>F3 4E 30 00 E8 03 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Start_Window_Timer" TagType="Base" DataType="TIMER">
+<Data>F3 4E 30 00 E8 03 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="STOPPED" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="STOPPED_Hours" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 18 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="24"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="STOPPED_Minutes" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 3C 00 00 00 08 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="8"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="STOPPED_Seconds" TagType="Base" DataType="TIMER">
+<Data>A8 7E 38 C0 60 EA 00 00 51 7D 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="32081"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="1"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="STOPPING" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>20 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="32"/>
+</Data>
+</Tag>
+<Tag Name="STOPPING_Hours" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 18 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="24"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="STOPPING_Minutes" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 3C 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="STOPPING_Seconds" TagType="Base" DataType="TIMER">
+<Data>5C 34 38 00 60 EA 00 00 59 07 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="1881"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="stopReason" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>21 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="33"/>
+</Data>
+</Tag>
+<Tag Name="STOP_Fault_Timer" TagType="Base" DataType="TIMER">
+<Data>6F 34 38 00 70 17 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="6000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="STOP_Speed" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 3E 43</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="190.0"/>
+</Data>
+</Tag>
+<Tag Name="Transition_Logic" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[RungDescription]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="UNDEFINED" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Virtual_No_Motion" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="ZeroDint" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="P00_MainProgram" TestEdits="false" Disabled="false">
+<Tags>
+<Tag Name="A0LastScan" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>A2 01 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="418"/>
+</Data>
+</Tag>
+<Tag Name="A0MaxScan" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>32 03 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="818"/>
+</Data>
+</Tag>
+<Tag Name="A1LastScan" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>64 01 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="356"/>
+</Data>
+</Tag>
+<Tag Name="A1MaxScan" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>2C 03 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="812"/>
+</Data>
+</Tag>
+<Tag Name="Current_Hours" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 18 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="24"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Current_Minutes" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 3C 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Current_Seconds" TagType="Base" DataType="TIMER">
+<Data>6F 7F 38 C0 60 EA 00 00 00 4B 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="60000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="19200"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="1"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="ExternalProduceConditions" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="GreenPL" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="GroupNOTSynced_LED" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Machine_Aborted_Run" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="MinorBits" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Copy of Minor fault bits.]]>
+</Description>
+<Comments>
+<Comment Operand=".6">
+<![CDATA[Periodic Task Overlap Fault has Occured]]>
+</Comment>
+</Comments>
+<Data>00 04 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1024"/>
+</Data>
+</Tag>
+<Tag Name="Minor_Fault_Events" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Total Number of Minor faults that have occured]]>
+</Description>
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="Mode_Toggle_PB" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="MPLastScan" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>9C 02 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="668"/>
+</Data>
+</Tag>
+<Tag Name="MPMaxScan" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>3C 03 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="828"/>
+</Data>
+</Tag>
+<Tag Name="MTLastScan" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>A8 12 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="4776"/>
+</Data>
+</Tag>
+<Tag Name="MTMaxScan" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>A2 1D 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="7586"/>
+</Data>
+</Tag>
+<Tag Name="Off_Flasher" TagType="Base" DataType="TIMER">
+<Data>D4 7F 38 A0 00 00 00 00 15 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="21"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="On_Flasher" TagType="Base" DataType="TIMER">
+<Data>FB 7F 38 C0 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="1"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="PLC_Satus" TagType="Base" DataType="UDT_PLC_Stats">
+<Data>81 95 EB 40 3F 35 86 40 BC 74 53 3F 0A D7 23 3F 
+73 68 51 3F CB A1 C5 3E 91 ED 3C 3F 10 58 B9 3E 
+C7 4B 37 3F 7F 6A BC 3E F0 A7 46 3F 66 66 E6 3E 
+4A 0C 42 3F A0 1A AF 3E 35 5E 3A 3F 39 B4 C8 3E 
+27 31 48 3F C5 20 B0 3E 96 43 4B 3F A0 1A AF 3E 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+60 31 00 00</Data>
+<Data Format="Decorated"><Structure DataType="UDT_PLC_Stats">
+<StructureMember Name="Main_Task" DataType="UDT_Scan">
+<DataValueMember Name="MaxScan" DataType="REAL" Radix="Float" Value="7.362"/>
+<DataValueMember Name="LastScan" DataType="REAL" Radix="Float" Value="4.194"/>
+</StructureMember>
+<StructureMember Name="MainProgram" DataType="UDT_Scan">
+<DataValueMember Name="MaxScan" DataType="REAL" Radix="Float" Value="0.826"/>
+<DataValueMember Name="LastScan" DataType="REAL" Radix="Float" Value="0.64"/>
+</StructureMember>
+<StructureMember Name="Axis00Program" DataType="UDT_Scan">
+<DataValueMember Name="MaxScan" DataType="REAL" Radix="Float" Value="0.818"/>
+<DataValueMember Name="LastScan" DataType="REAL" Radix="Float" Value="0.386"/>
+</StructureMember>
+<StructureMember Name="Axis01Program" DataType="UDT_Scan">
+<DataValueMember Name="MaxScan" DataType="REAL" Radix="Float" Value="0.738"/>
+<DataValueMember Name="LastScan" DataType="REAL" Radix="Float" Value="0.362"/>
+</StructureMember>
+<StructureMember Name="Axis02Program" DataType="UDT_Scan">
+<DataValueMember Name="MaxScan" DataType="REAL" Radix="Float" Value="0.716"/>
+<DataValueMember Name="LastScan" DataType="REAL" Radix="Float" Value="0.368"/>
+</StructureMember>
+<StructureMember Name="Axis03Program" DataType="UDT_Scan">
+<DataValueMember Name="MaxScan" DataType="REAL" Radix="Float" Value="0.776"/>
+<DataValueMember Name="LastScan" DataType="REAL" Radix="Float" Value="0.45"/>
+</StructureMember>
+<StructureMember Name="Axis04Program" DataType="UDT_Scan">
+<DataValueMember Name="MaxScan" DataType="REAL" Radix="Float" Value="0.758"/>
+<DataValueMember Name="LastScan" DataType="REAL" Radix="Float" Value="0.342"/>
+</StructureMember>
+<StructureMember Name="Axis05Program" DataType="UDT_Scan">
+<DataValueMember Name="MaxScan" DataType="REAL" Radix="Float" Value="0.728"/>
+<DataValueMember Name="LastScan" DataType="REAL" Radix="Float" Value="0.392"/>
+</StructureMember>
+<StructureMember Name="Axis06Program" DataType="UDT_Scan">
+<DataValueMember Name="MaxScan" DataType="REAL" Radix="Float" Value="0.782"/>
+<DataValueMember Name="LastScan" DataType="REAL" Radix="Float" Value="0.344"/>
+</StructureMember>
+<StructureMember Name="Axis07Program" DataType="UDT_Scan">
+<DataValueMember Name="MaxScan" DataType="REAL" Radix="Float" Value="0.794"/>
+<DataValueMember Name="LastScan" DataType="REAL" Radix="Float" Value="0.342"/>
+</StructureMember>
+<StructureMember Name="Axis08Program" DataType="UDT_Scan">
+<DataValueMember Name="MaxScan" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LastScan" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Axis09Program" DataType="UDT_Scan">
+<DataValueMember Name="MaxScan" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LastScan" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<DataValueMember Name="PLC_Status" DataType="DINT" Radix="Decimal" Value="12640"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Reset_Faults_On_Delay" TagType="Base" DataType="TIMER">
+<Data>D4 7F 38 A0 E8 03 00 00 E8 03 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Reset_Faults_PB" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SafetyRelayPilot" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="StateMirror" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="ZeroDint" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="R00_MainRoutine" Type="RLL">
+<Description>
+<![CDATA[This routine, primarily calls the routines that actually DO something.]]>
+</Description>
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[Generic Flasher to be used for indicators such as flashing pilot lights indicating machine conditions.
+See the next rung for possible usage.]]>
+</Comment>
+<Text>
+<![CDATA[XIO(Off_Flasher.DN)[TON(On_Flasher,?,?) ,XIC(On_Flasher.DN) TON(Off_Flasher,?,?) ];]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[This rung flashes a pilot light whenever the axis group is NOT synced.  It could be used in testing to ensure group is synced wait before starting motion, like after a download because it takes SERCOS a while to complete phasing up.]]>
+</Comment>
+<Text>
+<![CDATA[XIO(Axes.GroupSynced)XIO(On_Flasher.DN)OTE(GroupNOTSynced_LED);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[The initialize routine is called here on power up to insure that data values in the program are set to the desierd  value.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(S:FS)JSR(R01_Initialize,0);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[This rung is where to put machine conditions (both external and internal) that drive the state model.
+This is where the major portion of logic editing takes place when creating a machine from this base code.]]>
+</Comment>
+<Text>
+<![CDATA[JSR(R02_MachineConditions,0);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[State transitions routine contains strictly, the state transition bits for the state model used. ( in this example, the state model is PackML)]]>
+</Comment>
+<Text>
+<![CDATA[JSR(R03_StateTranisitions,0);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[This routine contains ONLY the PackML State Logic.  The entire state model is here.  View these rungs as being within the State indicated by the first instruction and the braches are pathways to other states.]]>
+</Comment>
+<Text>
+<![CDATA[JSR(R04_AutoState,0);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Comment>
+<![CDATA[This routine contains the necessary logic to interface this machine to other entities that are enabled to xmit and receive Pack tags.
+Pack Tags are defined by OMAC and are used in conjunction with the auto state model.]]>
+</Comment>
+<Text>
+<![CDATA[JSR(R13_PackMLInterface,0);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Comment>
+<![CDATA[This rung monitors the minor fault bits for faults.  Depending on the applicaiton these may be important, such as Periodic task overlap faults which would affect the determinism of the task's interval.   
+You can enhance this logic if required (such as looking for a specific type of fault) or even remove this rung.
+When Reset is selected, the fault condition is reset and the minor fault counter is reset to zero.]]>
+</Comment>
+<Text>
+<![CDATA[[GSV(FAULTLOG,?,MinorEvents,Minor_Fault_Events) ,GSV(FAULTLOG,?,MinorFaultBits,MinorBits) ,XIC(Reset_All_Faults) [SSV(FAULTLOG,?,MinorEvents,ZeroDint) ,SSV(FAULTLOG,?,MinorFaultBits,ZeroDint) ] ];]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="R01_Initialize" Type="RLL">
+<Description>
+<![CDATA[This routine initialises data to desired power up values.
+This only runs on S:FS Bit.
+Place your stuff here too!]]>
+</Description>
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[Used for equations that need PI as opposed to typing the number.]]>
+</Comment>
+<Text>
+<![CDATA[MOV(3.1415927,PI);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[Mode Tags, USe the tags when loading a mode or checking mode in stead of using the numerical value.  This makes the program readable  whether or not comments are present.]]>
+</Comment>
+<Text>
+<![CDATA[[MOV(0,UNDEFINED) ,MOV(1,AUTOMATIC) ,MOV(2,SEMIAUTOMATIC) ,MOV(3,MANUAL) ,MOV(4,IDLE) ];]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[This rung sets up some constant values for the Auto State model.  This simply makes program reading easier.]]>
+</Comment>
+<Text>
+<![CDATA[[MOV(0,OFF) ,MOV(1,STOPPED) ,MOV(2,STARTING) ,MOV(4,READY) ,MOV(8,STANDBY) ,MOV(16,PRODUCING) ,MOV(32,STOPPING) ,MOV(64,HOLDING) ,MOV(128,HELD) ,MOV(256,ABORTING) ,MOV(512,ABORTED) ];]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[Use the tags initialized here, in the move type parameter of a MAM to be able to read the instruction better as opposed to placing a value which could be forget later.]]>
+</Comment>
+<Text>
+<![CDATA[[MOV(0,absolute) MOV(1,incremental) MOV(2,rotaryshortestpathmove) MOV(3,rotarypositive) ,MOV(4,rotarynegative) MOV(5,absolutemasteroffset) MOV(6,incrementalmasteroffset) ];]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="R02_MachineConditions" Type="RLL">
+<Description>
+<![CDATA[This routine contains machine status and other misc. machine control logic.]]>
+</Description>
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[Machine Mode selection Logic.
+Machine can only be put into manual mode if the machine is either in the stopped or aborted state.
+Auto one shot puts Auto State to 1(Stopped)]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(Auto_Enable_PB) OTL(Auto_Mode) ,XIC(Manual_Mode_Enable_PB) [XIC(as_ABORTED) ,XIC(as_STOPPED) ] OTU(Auto_Mode) ,XIC(Auto_Mode) ONS(Auto_oNS) OTE(Auto_one_shot) ];]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[This machine example allow remote control from another Logix Controller.
+This rung enable/disables Remote mode.  Local stops always take precedence.]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(Mode_Toggle_PB) OTL(Remote_Mode) ,[XIO(Mode_Toggle_PB) ,XIC(mc.Any_Line_Stop_Pressed) ,XIC(mc.Any_Hold_Pressed) ] OTU(Remote_Mode) OTU(Mode_Toggle_PB) ,XIC(Remote_Mode) OTE(EnetStatusToLine.Remote_Mode) ,MOV(Auto_State,EnetStatusToLine.State) ];]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[The remote machine (if present) should be generating a watchdog heartbeat.  If the heart beat stops, the timer times out and is used to detect program mode or comms loss of the remote line controller IF in remote mode.]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(EnetCommandsFromLine.Hearbeat) ONS(FHBonONS) ,XIO(EnetCommandsFromLine.Hearbeat) ONS(FHBoffONS) ]TOF(CommsFail,?,?);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[If comms fail timer times out then assert the comms fault bit.
+Echo the heartbeat back to the remote controller.]]>
+</Comment>
+<Text>
+<![CDATA[[XIO(CommsFail.DN) OTL(CommsFault) ,XIC(EnetCommandsFromLine.Hearbeat) OTE(EnetStatusToLine.EchoHeartbeat) ];]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[If remote control os not active hold the comms fault bit off.
+Also whenever reset is pressed the fault is cleared.]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(Reset_All_Faults) ,XIO(Remote_Mode) ]OTU(CommsFault);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[Add all required network not fault bits here.....]]>
+</Comment>
+<Text>
+<![CDATA[XIO(CommsFault)OTE(mc.Networks_Ok);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[Add estop conditions here...
+
+The safety inputs will dictate what the controller logic does but MUST NOT be relied upon to provide human safety.  There should always be hardwired circuitry at the required safety level to provide the actual safety for the machine. ]]>
+</Comment>
+<Text>
+<![CDATA[XIC(ESTOPButton1)XIC(ESTOPButton2)XIC(ESTOPButton3)OTE(mc.ESTOP_OK);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Comment>
+<![CDATA[Any machine gaurd inputs here...
+
+The safety inputs will dictate what the controller logic does but MUST NOT be relied upon to provide human safety.  There should always be hardwired circuitry at the required safety level to provide the actual safety for the machine. ]]>
+</Comment>
+<Text>
+<![CDATA[XIC(GuardDoor1)XIC(GuardDoor2)XIC(GuardDoor3)OTE(mc.GUARDS_OK);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Comment>
+<![CDATA[Any machine light curtain inputs here, (If required).
+
+The safety inputs will dictate what the controller logic does but MUST NOT be relied upon to provide human safety.  There should always be hardwired circuitry at the required safety level to provide the actual safety for the machine. ]]>
+</Comment>
+<Text>
+<![CDATA[XIC(LightCurtain1)XIC(LightCurtain2)XIC(LightCurtain3)OTE(mc.LIGHT_CURTAIN_OK);]]>
+</Text>
+</Rung>
+<Rung Number="9" Type="N">
+<Comment>
+<![CDATA[All safeties of machine accumulative.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(mc.ESTOP_OK)XIC(mc.GUARDS_OK)XIC(mc.LIGHT_CURTAIN_OK)OTE(mc.ALL_SAFETYs_OK);]]>
+</Text>
+</Rung>
+<Rung Number="10" Type="N">
+<Comment>
+<![CDATA[All axes fault status feed the all axes ok. If the axis is disabled for operation then the fault status is ignored]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(S05_N01_Conveyor_Vars.ss.Ok) ,XIO(S05_N01_Conveyor_Vars.ss.Axis_Selected) ][XIC(S05_N02_FlapTucker_Vars.ss.Ok) ,XIO(S05_N02_FlapTucker_Vars.ss.Axis_Selected) ]OTE(mc.All_Axes_Ok);]]>
+</Text>
+</Rung>
+<Rung Number="11" Type="N">
+<Comment>
+<![CDATA[All axes are either enabled or NOT selected for operation
+]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(S05_N01_Conveyor_Vars.ss.On) ,XIO(S05_N01_Conveyor_Vars.ss.Axis_Selected) ][XIC(S05_N02_FlapTucker_Vars.ss.On) ,XIO(S05_N02_FlapTucker_Vars.ss.Axis_Selected) ]OTE(mc.All_Axes_On);]]>
+</Text>
+</Rung>
+<Rung Number="12" Type="N">
+<Comment>
+<![CDATA[All axes have feedback off (servo Loop not on) or are not selected for operation ]]>
+</Comment>
+<Text>
+<![CDATA[[XIO(S05_N01_Conveyor_Vars.ss.On) ,XIO(S05_N01_Conveyor_Vars.ss.Axis_Selected) ][XIO(S05_N02_FlapTucker_Vars.ss.On) ,XIO(S05_N02_FlapTucker_Vars.ss.Axis_Selected) ]OTE(mc.All_Axes_Off);]]>
+</Text>
+</Rung>
+<Rung Number="13" Type="N">
+<Comment>
+<![CDATA[Indication that no motion is active on the Virtual axis and it is stopped]]>
+</Comment>
+<Text>
+<![CDATA[XIC(S00_VirtualMaster_Vars.ss.No_Motion)OTE(Virtual_No_Motion);]]>
+</Text>
+</Rung>
+<Rung Number="14" Type="N">
+<Comment>
+<![CDATA[All axes homed status. If an axis is disabled, it's homed status is bypassed to enable running of machine.]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(S05_N01_Conveyor_Vars.ss.Homed) ,XIO(S05_N01_Conveyor_Vars.ss.Axis_Selected) ][XIC(S05_N02_FlapTucker_Vars.ss.Homed) ,XIO(S05_N02_FlapTucker_Vars.ss.Axis_Selected) ]OTE(Slaves_Homed);]]>
+</Text>
+</Rung>
+<Rung Number="15" Type="N">
+<Comment>
+<![CDATA[Once all axes have been homed this bit is set, if a manual re-homing command is issued the machine will reset this bit and trigger homing routines to execute.]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(S00_VirtualMaster_Vars.ss.Homed) XIC(Slaves_Homed) XIO(Home_One_Shot) ONS(Home_Done) ,XIC(mc.All_Axes_Homed) XIO(Home_One_Shot) ]OTE(mc.All_Axes_Homed);]]>
+</Text>
+</Rung>
+<Rung Number="16" Type="N">
+<Comment>
+<![CDATA[All axes homed status. If an axis is disabled, it's homed status is bypassed to enable running of machine.]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(S05_N01_Conveyor_Vars.ss.Auto) ,XIO(S05_N01_Conveyor_Vars.ss.Axis_Selected) ][XIC(S05_N02_FlapTucker_Vars.ss.Auto) ,XIO(S05_N02_FlapTucker_Vars.ss.Axis_Selected) ]OTE(mc.All_Axes_Running);]]>
+</Text>
+</Rung>
+<Rung Number="17" Type="N">
+<Comment>
+<![CDATA[Rung to indicate that any product producting functions may be active. Until these states have been transitioned from.]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(as_PRODUCING) ,XIC(as_STOPPING) ,XIC(as_HOLDING) ]OTE(mc.Auto_Run_State_Active);]]>
+</Text>
+</Rung>
+<Rung Number="18" Type="N">
+<Comment>
+<![CDATA[Add all condition that permit homing to this rung........]]>
+</Comment>
+<Text>
+<![CDATA[XIO(mc.Any_Line_Stop_Pressed)XIC(mc.ESTOP_OK)XIC(mc.All_Axes_Ok)XIC(mc.All_Axes_On)XIC(mc.GUARDS_OK)XIC(mc.Networks_Ok)OTE(mc.Home_Permissive);]]>
+</Text>
+</Rung>
+<Rung Number="19" Type="N">
+<Comment>
+<![CDATA[Start command from HMI or other devices]]>
+</Comment>
+<Text>
+<![CDATA[[[XIC(HMI_Start_PB) ,XIC(Hardwired_Start_Pressed) ] XIO(Remote_Mode) ,[XIC(as_READY) ,XIC(as_STOPPED) ,XIC(as_HELD) ] [EQU(EnetCommandsFromLine.State,STARTING) ,EQU(EnetCommandsFromLine.State,PRODUCING) ,EQU(EnetCommandsFromLine.State,PRODUCING) ] XIC(Remote_Mode) ]OTE(mc.Any_Line_Start_Pressed);]]>
+</Text>
+</Rung>
+<Rung Number="20" Type="N">
+<Comment>
+<![CDATA[Stop Command from HMI]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(HMI_Stop_PB) ,XIC(Hardwired_Stop) ]OTE(mc.Any_Line_Stop_Pressed);]]>
+</Text>
+</Rung>
+<Rung Number="21" Type="N">
+<Comment>
+<![CDATA[Home Command from HMI,
+Separate home command can only be performed from the Manual mode.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(HMI_Home_PB)XIO(Auto_Mode)OTE(mc.Any_Home_Request);]]>
+</Text>
+</Rung>
+<Rung Number="22" Type="N">
+<Comment>
+<![CDATA[Hold commands from HMI or hardwired devices.]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(HMI_Hold_PB) ,XIC(Hardwired_Hold) ]OTE(mc.Any_Hold_Pressed);]]>
+</Text>
+</Rung>
+<Rung Number="23" Type="N">
+<Comment>
+<![CDATA[Machine start Logic]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(as_STOPPED) ,XIC(as_READY) ,XIC(as_HELD) ]XIC(mc.ALL_SAFETYs_OK)XIO(Start_Warning.DN)[XIC(mc.Any_Line_Start_Pressed) ,XIC(Start_Warning.EN) ]TON(Start_Warning,?,?);]]>
+</Text>
+</Rung>
+<Rung Number="24" Type="N">
+<Comment>
+<![CDATA[When the machine is started, a warning horn alerts people in the area.  After the warning horn is complete, the start or home command must be issued again in order for the machine to start.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Start_Warning.DN)TON(Start_Window_Timer,?,?);]]>
+</Text>
+</Rung>
+<Rung Number="25" Type="N">
+<Comment>
+<![CDATA[This rung is where the machine is started.
+The run command bit remains true for the entire time the machine is running.]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(mc.Any_Line_Start_Pressed) XIC(Start_Window_Timer.TT) ,XIC(Start_Command) XIC(as_STARTING) ][XIO(Start_Command) OTE(Start_OneShot) ,OTE(Start_Command) ];]]>
+</Text>
+</Rung>
+<Rung Number="26" Type="N">
+<Comment>
+<![CDATA[This rung is where the machine homing is initiated.]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(as_STARTING) ,XIC(mc.Any_Home_Request) ,XIC(Home_Command) XIO(mc.All_Axes_Homed) ,XIC(hometest) ]XIO(mc.Any_Line_Stop_Pressed)XIO(as_STOPPED)XIO(as_ABORTING)XIO(as_ABORTED)[XIO(Home_Command) OTE(Home_One_Shot) ,OTE(Home_Command) ];]]>
+</Text>
+</Rung>
+<Rung Number="27" Type="N">
+<Comment>
+<![CDATA[This rung captures the fact that a fault condition caused the machine to stop.  When the operator selects the stop PB, the timer determines how long the reset command is issued to clear any fault conditions.]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(as_ABORTED) OTL(Machine_Aborted_Run) ,XIC(as_STOPPED) TON(Reset_Faults_On_Delay,?,?) ];]]>
+</Text>
+</Rung>
+<Rung Number="28" Type="N">
+<Comment>
+<![CDATA[If the operator selects the reset PB OR the machine has transitioned to the stopped state, turn on the reset faults command. ]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(Reset_Faults_PB) ,XIC(Reset_Faults_On_Delay.TT) ,XIC(EnetCommandsFromLine.ResetFaults) XIC(Remote_Mode) ]OTE(Reset_All_Faults)OTE(SafetyRelayPilot)OTU(Machine_Aborted_Run);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="R03_StateTranisitions" Type="RLL">
+<Description>
+<![CDATA[Auto State Model Transition Logic]]>
+</Description>
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[******************************************************************************************************************************************************************                                                                      ALL TRANSITION LOGIC LOCATED BELOW THIS RUNG                                                
+******************************************************************************************************************************************************************
+]]>
+</Comment>
+<Text>
+<![CDATA[OTE(Transition_Logic);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[This rung is for machine initilize transition.
+This transition is used to cause state transition from STOPPED to STARTING]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Start_OneShot)OTE(st.Initialize);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[This rung is for machine initilize transition.
+This transition is used to cause state transition from STOPPED to STARTING]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Start_OneShot)OTE(st.Start);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[This rung is for Stop transition
+This causes transition from the STARTING, READY, STANDBY, PROCUCING, HOLDING, HELD, states to the STOPPING State.]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(mc.Any_Line_Stop_Pressed) ,[EQU(EnetCommandsFromLine.State,STOPPING) ,EQU(EnetCommandsFromLine.State,STOPPED) ] XIC(Remote_Mode) ,XIC(EnetCommandsFromLine.ResetFaults) EQU(Auto_State,ABORTED) ]OTE(st.Stop);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[This rung is for holding transition.
+This Causes transition from the PRODUCING, STANDBY states to the Holding State]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(mc.Any_Hold_Pressed) ,[EQU(EnetCommandsFromLine.State,HOLDING) ,EQU(EnetCommandsFromLine.State,HELD) ] XIC(Remote_Mode) ]OTE(st.Hold);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[This rung is initialization complete transition
+This causes transition from the STARTING to the READY state.]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Auto_State,STARTING)XIC(mc.All_Axes_Running)OTE(st.Init_PC);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[This rung is for Stopping Process Complete,
+This causes transition from the STOPPING to the STOPPED state.]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Auto_State,STOPPING)XIC(mc.All_Axes_Off)OTE(st.Stop_PC);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Comment>
+<![CDATA[This rung is for Aborting Process Complete,
+This causes transition from the ABORTING to the ABORTED state.]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Auto_State,ABORTING)XIC(mc.All_Axes_Off)OTE(st.Abort_PC);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Comment>
+<![CDATA[This rung is for the hold complete transition.
+This causes transition from the HOLDING to the HELD State]]>
+</Comment>
+<Text>
+<![CDATA[[EQU(Auto_State,HOLDING) ,EQU(Auto_State,HELD) ]XIC(Virtual_No_Motion)OTE(st.Hold_PC);]]>
+</Text>
+</Rung>
+<Rung Number="9" Type="N">
+<Comment>
+<![CDATA[Add all desired condition that will cause fast stop to this rung......]]>
+</Comment>
+<Text>
+<![CDATA[[XIO(mc.ALL_SAFETYs_OK) ,XIO(mc.Networks_Ok) ,XIC(Start_Fault_Timer.DN) ,XIO(mc.All_Axes_Ok) ,XIC(STOP_Fault_Timer.DN) ,XIC(HOLD_Fault_Timer.DN) ]OTE(st.Fault);]]>
+</Text>
+</Rung>
+<Rung Number="10" Type="N">
+<Comment>
+<![CDATA[Conditions in this rung are used to allow the machine to transfer from the standby state to the producing state.  If any of the condition in this rung become false the machine will transfer from the producing state to the standby state.]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(ExternalProduceConditions) XIO(Remote_Mode) ,XIC(EnetCommandsFromLine.ProduceConditions) XIC(Remote_Mode) ]OTE(st.Produce_Conditions);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="R04_AutoState" Type="RLL">
+<Description>
+<![CDATA[Auto State Machine Logic
+All State Paths and transition triggers are contained in this routine.]]>
+</Description>
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[Whenever the machine is powered or whenever the machine enters the auto mode from some other mode. Intialize the Auto State at ]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(S:FS) ,XIC(Auto_one_shot) ]MOV(OFF,Auto_State);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[EQU(Auto_State,OFF)XIC(Auto_Mode)MOV(STOPPED,Auto_State);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[From the stop state, as long as permissives are met (see machine logic) the start command will act like a prepare command if the machine is not ready (not ready means that axes may have to be homed or faults cleared).
+The prepare command does multiple functions dependign on the state of the machine.
+It will reset any fault first, then if homing is required it will initiate the homing routine.]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Auto_State,STOPPED)[XIO(Auto_Mode) MOV(OFF,Auto_State) ,XIC(st.Initialize) MOV(STARTING,Auto_State) ];]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[From the Starting State the machine will clear any faults and attemp to get all axes ready.  Once all faults have been cleared and the machine has all feedback on the machine will enter the READY state.  If during the starting process, a fast stop condition is detected, the machine will enter the ABORTING state.]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Auto_State,STARTING)[XIC(st.Fault) MOV(ABORTING,Auto_State) ,XIC(st.Init_PC) MOV(READY,Auto_State) ,XIC(st.Stop) MOV(STOPPING,Auto_State) ,TON(Start_Fault_Timer,?,?) ];]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[Once the READY state has been attained, the machine will typically  be commanded to transistion to the standby state by the operator selecting start from the HMI.  If a fault occurs or estop is opened, the machine will immediatly transition to the aborting state.  If the operator selects the stop PB, the machine will transition to the stopping state.
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Auto_State,READY)[XIC(st.Fault) MOV(ABORTING,Auto_State) ,XIC(st.Stop) MOV(STOPPING,Auto_State) ,XIC(st.Start) MOV(STANDBY,Auto_State) ,XIO(On_Flasher.DN) OTE(GreenPL) ];]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks/>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="Read_SLC_Status_File_Mode" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:43:21 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="Read_SLC_Status_File_Mode" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:43:06 2018" LastModifiedDate="Fri Jan 19 07:43:06 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<Description>
+<![CDATA[This program shows how to read the SLC Status table to get the controller mode.]]>
+</Description>
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes>
+<DataType Name="Desination_Data_Read" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[This is the data returned in the message]]>
+</Description>
+<Members>
+<Member Name="Length" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Vendor1" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Vendor2" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="SN1" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="SN2" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="SN3" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="SN4" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="CMD" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="STS" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="TNSW1" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="TNSW2" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Data1" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Data2" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="EXT_STS" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="Request_Data_Read" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[This is the format of the source data in the meassge instruction.]]>
+</Description>
+<Members>
+<Member Name="Length" DataType="SINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="Vendor1" DataType="SINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="Vendor2" DataType="SINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="SN1" DataType="SINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="SN2" DataType="SINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="SN3" DataType="SINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="SN4" DataType="SINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="CMD" DataType="SINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="STS" DataType="SINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="TNSW1" DataType="SINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="TNSW2" DataType="SINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="FNC" DataType="SINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="Bytes_to_Read" DataType="SINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="File_Number" DataType="SINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="File_Type" DataType="SINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="Element_number" DataType="SINT" Dimension="0" Radix="Hex" Hidden="false"/>
+<Member Name="Sub_Element_number" DataType="SINT" Dimension="0" Radix="Hex" Hidden="false"/>
+</Members>
+</DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+<Module Name="EtherNet" CatalogNumber="1756-ENBT/A" Vendor="1" ProductType="12" ProductCode="58" Major="3" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="1" Type="ICP" Upstream="true"/>
+<Port Id="2" Address="130.130.130.10" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+<Communications CommMethod="536870914">
+<Connections/>
+</Communications>
+<ExtendedProperties><public><ConfigID>4325481</ConfigID><Vendor>Allen-Bradley</Vendor><CatNum>1756-ENBT</CatNum></public></ExtendedProperties>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="CGR_Destination" TagType="Base" DataType="Desination_Data_Read">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="Desination_Data_Read">
+<DataValueMember Name="Length" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Vendor1" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Vendor2" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SN1" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SN2" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SN3" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SN4" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CMD" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TNSW1" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TNSW2" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Data1" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Data2" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXT_STS" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="CGR_Request" TagType="Base" DataType="Request_Data_Read">
+<Data>07 01 00 00 00 00 00 0F 00 00 00 A2 01 02 84 01 
+00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="Request_Data_Read">
+<DataValueMember Name="Length" DataType="SINT" Radix="Hex" Value="16#07"/>
+<DataValueMember Name="Vendor1" DataType="SINT" Radix="Hex" Value="16#01"/>
+<DataValueMember Name="Vendor2" DataType="SINT" Radix="Hex" Value="16#00"/>
+<DataValueMember Name="SN1" DataType="SINT" Radix="Hex" Value="16#00"/>
+<DataValueMember Name="SN2" DataType="SINT" Radix="Hex" Value="16#00"/>
+<DataValueMember Name="SN3" DataType="SINT" Radix="Hex" Value="16#00"/>
+<DataValueMember Name="SN4" DataType="SINT" Radix="Hex" Value="16#00"/>
+<DataValueMember Name="CMD" DataType="SINT" Radix="Hex" Value="16#0f"/>
+<DataValueMember Name="STS" DataType="SINT" Radix="Hex" Value="16#00"/>
+<DataValueMember Name="TNSW1" DataType="SINT" Radix="Hex" Value="16#00"/>
+<DataValueMember Name="TNSW2" DataType="SINT" Radix="Hex" Value="16#00"/>
+<DataValueMember Name="FNC" DataType="SINT" Radix="Hex" Value="16#a2"/>
+<DataValueMember Name="Bytes_to_Read" DataType="SINT" Radix="Hex" Value="16#01"/>
+<DataValueMember Name="File_Number" DataType="SINT" Radix="Hex" Value="16#02"/>
+<DataValueMember Name="File_Type" DataType="SINT" Radix="Hex" Value="16#84"/>
+<DataValueMember Name="Element_number" DataType="SINT" Radix="Hex" Value="16#01"/>
+<DataValueMember Name="Sub_Element_number" DataType="SINT" Radix="Hex" Value="16#00"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="CIP_Generic_Read" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="17" ConnectedFlag="2" ConnectionPath="EtherNet, 2, 130.130.130.11" CommTypeCode="0" ServiceCode="16#004b" ObjectType="16#0067" TargetObject="1" AttributeNumber="16#0000" LocalIndex="0" LocalElement="CGR_Request"
+ DestinationTag="CGR_Destination"/>
+</Data>
+</Tag>
+<Tag Name="Mode" TagType="Base" DataType="INT" Dimensions="2" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="INT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="TNWSR" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="CIP_Generic" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Description>
+<![CDATA[This program shows accessing the SLC status table by using a CIP generic message.]]>
+</Description>
+<Tags/>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  -- No warranty or implied merchantability.
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[
+----------------------------------------------------
+
+This program shows how to read from the SLC Status table to get the controller mode.
+
+Currently, RSLogix 5000 software allows message instructions to be configured to read from an SLC or MicroLogix status or S2 file.  This sample project gives you the basic application code to perform this operation by making use of the CIP Generic message.  Caution do not change any parameters on the Configuration tab of the message instruction or tags associated with the fields.
+
+You can change the path on the Communication tab of the message instruction.  Currently, this is set to read the mode of an SLC 5/05 controller.  To communicate to another type of SLC or MicroLogix controller all you will need to do is change the path.
+
+If you will be communicating through the serial port of a Logix5000 controller to an SLC or MicroLogix controller make sure that the serial port configurations match.  The Logix5000 controllers use BCC error checking and the SLC and MicroLogix use CRC error checking.
+
+The application will return the mode of the controller in the tag named Mode[1].  Only the 5 bits that are associated with the mode are put into tag Mode[1]. Refer to the SLC or MicroLogix user documentation to determine the meaning of these bits.
+
+
+]]>
+</Comment>
+<Text>
+<![CDATA[XIO(CIP_Generic_Read.EN)[ADD(1,TNWSR,TNWSR) ,EQU(TNWSR,99) MOV(0,TNWSR) ,MOV(TNWSR,CGR_Request.TNSW1) ,MSG(CIP_Generic_Read) ];]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[XIC(CIP_Generic_Read.DN)[COP(CGR_Destination.Data1,Mode[0],6) ,BTD(Mode[0],0,Mode[1],0,5) ];]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="CIP_Generic"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>
