@@ -1,0 +1,53 @@
+# Machine-readable mirror of docs/MEMORY_MODEL.md.
+#
+# docs/MEMORY_MODEL.md is the authored source of truth (formulas, rationale,
+# confidence discussion). This file holds the same numbers in a form the sizing
+# engine can load directly. When a constant changes during Phase 3/4 validation,
+# update BOTH files in the same commit -- do not let them drift.
+
+atomic_types:
+  SINT: { bytes: 1, confidence: KNOWN }
+  INT: { bytes: 2, confidence: KNOWN }
+  DINT: { bytes: 4, confidence: KNOWN }
+  LINT: { bytes: 8, confidence: KNOWN }
+  REAL: { bytes: 4, confidence: KNOWN }
+
+bool:
+  # Standalone BOOL controller/program tags: allocated as a full DINT, not
+  # bit-packed. See OQ-BOOLPACK -- ASSUMED, pending Phase 3 confirmation.
+  standalone_tag_bytes: 4
+  standalone_confidence: ASSUMED
+  # BOOL members inside a UDT pack 8-per-byte into a hidden backing SINT.
+  # L5X encodes this explicitly (hidden SINT member + visible BIT-alias
+  # members with Target/BitNumber), so the parser reads it directly rather
+  # than re-deriving it -- these constants are what the parser expects to
+  # find, not values it computes.
+  member_bits_per_backing_byte: 8
+  member_backing_type: SINT
+  member_confidence: KNOWN
+  # BOOL *array* tags (distinct from standalone BOOL tags above) bit-pack
+  # 32-per-DINT-sized-word. See OQ-BOOLARRAY -- ASSUMED, not yet validated.
+  array_bits_per_packed_word: 32
+  array_packed_word_bytes: 4
+  array_confidence: ASSUMED
+
+string:
+  # Built-in STRING: 4-byte LEN (DINT) + 82-byte DATA (SINT[82]) default.
+  len_field_bytes: 4
+  default_data_bytes: 82
+  confidence: KNOWN
+  # Custom string types (user DataTypes with Family="StringFamily"): same
+  # 4-byte LEN, DATA length taken from the type's own definition.
+  custom_confidence: KNOWN
+
+udt:
+  # No alignment/padding between members -- tight packing, declared order.
+  # UNKNOWN / highest-risk assumption in the model. See OQ-ALIGN.
+  alignment_confidence: UNKNOWN
+
+array:
+  # dimension x element_size, no padding ambiguity for atomic element types.
+  atomic_confidence: KNOWN
+  # dimension x udt_size -- padding treatment (per-element vs whole-block)
+  # not yet resolved. See OQ-ARRAYPACK.
+  udt_confidence: UNKNOWN

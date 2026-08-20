@@ -4,37 +4,49 @@ Checkbox per phase from PROJECT_PLAN.md. Keep granular enough that each item is
 a single commit-sized unit of work.
 
 ## Phase 0 — Setup
-- [ ] Decide stack (OQ-STACK) — parser language, UI framework
-- [ ] Repo skeleton: `src/parser`, `src/sizing`, `src/ui`
+- [x] Decide stack (OQ-STACK) — parser language, UI framework
+- [x] Repo skeleton: `src/parser`, `src/sizing`, `src/ui`
 - [ ] Get one real (sanitized) production L5X into `samples/` as dev fixture
-- [ ] `samples/manifest.csv` created with columns (see SAMPLE_GENERATION.md)
-- [ ] XML load + basic namespace/schema sanity check for whatever L5X version(s)
-      in use (OQ-L5XVERSION)
+      (needs James to drop a sanitized export into `samples/local/`, gitignored)
+- [x] `samples/manifest.csv` created with columns (see SAMPLE_GENERATION.md)
+- [x] XML load + basic namespace/schema sanity check for whatever L5X version(s)
+      in use (OQ-L5XVERSION) — `parser/load.py` validates root tag, records
+      SchemaRevision/SoftwareRevision without enforcing a version yet
 
 ## Phase 1 — Tag / UDT / AOI sizing engine
-- [ ] Atomic type size table (BOOL, SINT, INT, DINT, LINT, REAL, STRING) in
-      MEMORY_MODEL.md, referenced not hardcoded
-- [ ] BOOL packing rule implemented (bits-per-byte within DINT/SINT-backed
-      storage, per OQ-BOOLPACK resolution)
-- [ ] UDT parser: recurse `Controller/DataTypes/DataType/Members`
-- [ ] UDT alignment/padding rule implemented (OQ-ALIGN)
-- [ ] Array-of-atomic sizing (dimension × element size)
-- [ ] Array-of-UDT sizing (dimension × recursive UDT size, padding per-element
-      vs whole-array — OQ-ARRAYPACK)
-- [ ] STRING (built-in) sizing: 4-byte LEN + configurable DATA array
-- [ ] Custom STRING type sizing (user-defined max length UDTs) — separate path
-      from generic UDT recursion
+- [x] Atomic type size table (BOOL, SINT, INT, DINT, LINT, REAL, STRING) in
+      MEMORY_MODEL.md, referenced not hardcoded — `sizing/memory_model.yaml`
+      + `sizing/constants.py`
+- [x] BOOL packing rule implemented (bits-per-byte within DINT/SINT-backed
+      storage, per OQ-BOOLPACK resolution) — standalone tag (4 bytes,
+      unpacked), UDT member (hidden-SINT + BIT-alias, read directly off the
+      L5X shape), array (32-per-DINT bit-packing, OQ-BOOLARRAY)
+- [x] UDT parser: recurse `Controller/DataTypes/DataType/Members`
+- [ ] UDT alignment/padding rule implemented (OQ-ALIGN) — still tight-packing
+      only; every UDT-derived size is tagged confidence=UNKNOWN until this
+      lands
+- [x] Array-of-atomic sizing (dimension × element size)
+- [x] Array-of-UDT sizing (dimension × recursive UDT size, padding per-element
+      vs whole-array — OQ-ARRAYPACK) — formula implemented, confidence tagged
+      UNKNOWN pending that OQ
+- [x] STRING (built-in) sizing: 4-byte LEN + configurable DATA array
+- [x] Custom STRING type sizing (user-defined max length UDTs) — separate path
+      from generic UDT recursion — `Family="StringFamily"` special-cased so it
+      doesn't inherit the UDT-alignment UNKNOWN taint
 - [ ] AOI definition parser: `AddOnInstructionDefinitions` local tags + params
 - [ ] AOI instance multiplication: each call site in logic adds one instance's
       worth of local tag memory (needs call-site count from logic parse —
       coordinate with Phase 4 work, may need to stub this until then)
 - [ ] Module/IO parser: `Controller/Modules` → connection tag sizing (Local I/O
       first, produced/consumed second — OQ-PRODCONS)
-- [ ] Controller-scope vs program-scope tag separation in output
-- [ ] Flat output contract finalized: `{path, category, bytes, pct_of_total,
-      confidence: exact|estimated}`
-- [ ] Unit tests against hand-calculated small UDT (nested, 2 levels, mixed
-      BOOL/DINT/STRING members)
+- [x] Controller-scope vs program-scope tag separation in output
+- [x] Flat output contract finalized: `{path, category, bytes, pct_of_total,
+      confidence: exact|estimated}` — `sizing/report.py`'s `SizeEntry`
+      (`tier` = exact/estimated, plus a finer-grained `basis` =
+      KNOWN/ASSUMED/FITTED/UNKNOWN so exact-tier numbers still carry their
+      MEMORY_MODEL.md confidence)
+- [x] Unit tests against hand-calculated small UDT (nested, 2 levels, mixed
+      BOOL/DINT/STRING members) — `tests/test_sizing.py`, `tests/test_parser.py`
 
 ## Phase 2 — UI v1
 - [ ] Treemap component (squarified or similar algorithm)

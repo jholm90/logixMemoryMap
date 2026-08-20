@@ -47,6 +47,10 @@ Every entry is tagged with a confidence level:
   special case — BOOL *arrays* bit-pack into DINT-sized words, unlike standalone
   BOOL tags; confirm this distinction explicitly in Phase 3, don't conflate with
   OQ-BOOLPACK).
+  - BOOL array formula (ASSUMED, OQ-BOOLARRAY): `ceil(dimension / 32) × 4`
+    bytes — 32 bits packed per DINT-sized word. Implemented now since it's
+    standard/documented AB behavior, but not yet validated by this project's
+    own sample data.
 - Array of UDT: `dimension × udt_size`, formula pending OQ-ARRAYPACK (per-element
   vs whole-block padding).
 - Multi-dimensional arrays: product of all dimensions × element size, no known

@@ -1,6 +1,11 @@
 # Project Plan
 
-**Current phase: 0 — Setup (not started)**
+**Current phase: 1 — Tag / UDT / AOI sizing engine (in progress)**
+
+Phase 0 exit criterion met (skeleton loads and prints raw XML of a sample
+L5X). Phase 1 tag/UDT/array/string sizing is implemented and unit-tested;
+AOI definitions, AOI instance multiplication, and Module/IO parsing are
+still open before this phase's own exit criterion is met.
 
 Update the line above as phases close. Each phase has an exit criterion; don't
 start the next phase until it's met, even if it's tempting to jump ahead on UI

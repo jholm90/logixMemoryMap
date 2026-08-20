@@ -41,6 +41,12 @@ Directly affects whether member *order* in a UDT affects its memory footprint �
 if alignment is real, reordering members for tight packing is itself a finding
 worth surfacing in the UI ("reorder these members to save N bytes").
 
+**OQ-BOOLARRAY** — BOOL *array* tags (as opposed to standalone BOOL tags,
+OQ-BOOLPACK) are assumed to bit-pack 32-per-DINT-sized-word (`ceil(n/32) × 4`
+bytes), standard documented AB behavior. Implemented in the sizing engine as
+ASSUMED pending Phase 3 confirmation against this project's own sample data —
+don't conflate with OQ-BOOLPACK, which covers scalar standalone BOOL tags.
+
 **OQ-ARRAYPACK** — For an array of UDTs, is padding applied per-element
 (so each element wastes the same padding) or is the array treated as one
 contiguous block? Affects array-of-UDT formula.
