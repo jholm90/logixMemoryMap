@@ -1,0 +1,55 @@
+# Per-processor memory budgets. James (2026-08-20): the budget denominator
+# was hardcoded to a flat 4MB regardless of ProcessorType -- wrong, since
+# capacity is genuinely part-number-specific (0.6MB up to 40MB across real
+# catalog numbers) and, per Rockwell's own docs, the *architecture* differs
+# by controller generation too:
+#
+#   - CompactLogix 5380 (5069-L3xx) and ControlLogix 5580/5590 (1756-L8x):
+#     ONE unified memory pool -- Rockwell's own Logix5000 I/O and Tag Data
+#     manual states these "store all elements in one common area" rather
+#     than dividing memory into sections.
+#   - Legacy ControlLogix 5570 (1756-L6x/L7x): DIVIDED into separate
+#     "I/O memory" and "Data and Logic memory" pools -- a fixed I/O pool
+#     (~1MB, fairly constant across the L7x line) plus a per-model user/
+#     data-logic pool that's the number usually quoted as "memory size".
+#
+# Sourced 2026-08-20 via aggregated web search (Rockwell's own literature
+# site is blocked by this session's egress proxy, so these are converged
+# secondary-source figures -- distributor/reseller spec listings that
+# agree with each other across multiple independent queries -- not a
+# direct read of Rockwell's own PDF). Tagged ASSUMED, not KNOWN, per this
+# project's confidence discipline; matches key = processor_type PREFIX
+# (catalog suffixes like ERM/ERMS2/K are motion/safety/conformal-coat
+# modifiers that don't change the memory tier a part is built on).
+#
+# Deliberately incomplete rather than guessed: 5069-L340ER/L350ER weren't
+# confirmed by any source found, so they're left out rather than
+# interpolated from the naming pattern (06->0.6MB, 10->1MB, 20->2MB,
+# 30->3MB "looks like" it continues 40->4MB, 50->5MB, but that's a guess,
+# not a citation -- fill in once actually confirmed).
+
+architecture: unified  # default for entries below unless overridden per-entry
+
+processors:
+  # CompactLogix 5380 -- 5069-L3xx, unified memory
+  "5069-L306ER": { bytes: 629145, confidence: ASSUMED }   # 600 KB
+  "5069-L310ER": { bytes: 1048576, confidence: ASSUMED }  # 1 MB
+  "5069-L320ER": { bytes: 2097152, confidence: ASSUMED }  # 2 MB
+  "5069-L330ER": { bytes: 3145728, confidence: ASSUMED }  # 3 MB
+  "5069-L3100ER": { bytes: 10485760, confidence: ASSUMED } # 10 MB
+
+  # ControlLogix 5580 -- 1756-L8x, unified memory
+  "1756-L81E": { bytes: 3145728, confidence: ASSUMED }    # 3 MB
+  "1756-L82E": { bytes: 5242880, confidence: ASSUMED }    # 5 MB
+  "1756-L83E": { bytes: 10485760, confidence: ASSUMED }   # 10 MB
+  "1756-L84E": { bytes: 20971520, confidence: ASSUMED }   # 20 MB
+  "1756-L85E": { bytes: 41943040, confidence: ASSUMED }   # 40 MB
+
+  # ControlLogix 5570 (legacy, "L7 v30"-class hardware James spot-checks
+  # against) -- DIVIDED memory: separate data_logic_bytes + io_bytes pools,
+  # not one number. io_bytes ~1MB is fairly constant across the L7x line.
+  "1756-L61": { data_logic_bytes: 2097152, io_bytes: 489472, confidence: ASSUMED, architecture: divided }  # 2048KB + 478KB
+  "1756-L71": { data_logic_bytes: 2097152, io_bytes: 1028096, confidence: ASSUMED, architecture: divided } # 2MB total incl ~0.98MB I/O, split not fully confirmed
+  "1756-L72": { data_logic_bytes: 4194304, io_bytes: 1028096, confidence: ASSUMED, architecture: divided } # 4MB
+  "1756-L73": { data_logic_bytes: 8388608, io_bytes: 1028096, confidence: ASSUMED, architecture: divided } # 8MB
+  "1756-L75": { data_logic_bytes: 33554432, io_bytes: 1028096, confidence: ASSUMED, architecture: divided } # 32MB

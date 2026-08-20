@@ -22,6 +22,7 @@ from l5x_memory_analyzer.parser.datatypes import DataTypeDef, parse_data_types
 from l5x_memory_analyzer.parser.load import L5XDocument, L5XFormatError, load_l5x, load_l5x_bytes
 from l5x_memory_analyzer.parser.tags import parse_tags
 from l5x_memory_analyzer.sizing.constants import MemoryModel, load_memory_model
+from l5x_memory_analyzer.sizing.controller_budgets import load_controller_budgets
 from l5x_memory_analyzer.sizing.report import build_report
 from l5x_memory_analyzer.sizing.tree import (
     NotDrillableError,
@@ -33,7 +34,7 @@ from l5x_memory_analyzer.ui.hierarchy import build_hierarchy, type_utilization
 
 STATIC_DIR = Path(__file__).with_name("static")
 
-CONTROLLER_MEMORY_BUDGET_BYTES = 4 * 1024 * 1024  # 4MB -- see OQ re: selectable budgets, Phase 6
+_BUDGET_TABLE = load_controller_budgets()
 
 _PATH_SEGMENT_RE = re.compile(r"\.[A-Za-z_][A-Za-z0-9_]*|\[\d+\]")
 
@@ -55,6 +56,8 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
     tag_index = {t.path: (t.data_type, t.dimensions) for t in tags if not t.is_alias}
 
     entries, errors = build_report(doc.root, model)
+
+    budget = _BUDGET_TABLE.lookup(doc.processor_type)
 
     report_json = {
         "loaded": True,
@@ -80,7 +83,9 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         ],
         "errors": [{"path": err.path, "message": err.message} for err in errors],
         "total_bytes": sum(e.bytes for e in entries),
-        "budget_bytes": CONTROLLER_MEMORY_BUDGET_BYTES,
+        "budget_bytes": budget.display_total_bytes if budget else None,
+        "budget_architecture": budget.architecture if budget else None,
+        "budget_confidence": budget.confidence if budget else None,
     }
 
     return DocState(doc=doc, model=model, data_types=data_types, tag_index=tag_index, report_json=report_json)

@@ -122,6 +122,20 @@ just "code compiles," actually rendered and clicked through.
       **backlog feature request** (see OPEN_QUESTIONS.md OQ-EXPORTSCOPE),
       not built now — today's focus stays full Controller exports per
       James's explicit scoping.
+- [x] **List/Type Summary scoped to current tree level — 2026-08-20,
+      James: "if im down branches then those should represent the current
+      level."** Both tabs now render `CURRENT_NODE`'s direct children
+      (percentages relative to that node's own total) instead of always
+      showing the whole file's top-level entries, and re-render on every
+      navigation so they stay in sync with wherever the treemap is even
+      when not the active tab.
+- [x] **Breadcrumb sibling browser — 2026-08-20, James: "I want to browse
+      to neighbors as well if mouse over."** Hovering a non-root breadcrumb
+      segment shows a popup of (up to 10) sibling nodes under its parent,
+      click one to jump sideways without backing all the way up and
+      re-drilling down. Entirely client-side, no new endpoint needed —
+      every ancestor on the breadcrumb already has its full children list
+      cached in memory from having been drilled through.
 
 ## Phase 2b — AOI sizing (deferred from Phase 1)
 - [x] AOI definition parser: `AddOnInstructionDefinitions` local tags + params
@@ -240,6 +254,20 @@ PID and ASCII-module instructions dropped entirely (zero occurrences found).
 ## Phase 6 — Polish
 - [ ] Safety task scope decision implemented (OQ-SAFETY)
 - [ ] Alarm instance (ALMD/ALMA) overhead if in scope (OQ-ALARM)
-- [ ] Selectable controller memory budget (750KB/1MB/2MB/4MB/8MB) instead of
-      hardcoded 4MB denominator
+- [x] **Per-part-number memory budget — 2026-08-20, James: "why are you
+      assuming 4MB for all processor types... this should be based on
+      blocks and total should be part number based."** Was hardcoded to a
+      flat 4MB; real capacity ranges 0.6MB-40MB by catalog number.
+      `sizing/controller_budgets.yaml` + `controller_budgets.py`: looks up
+      `Controller/@ProcessorType` (prefix-matched, so safety/motion/coating
+      suffixes like "1756-L81ES" still resolve) against a sourced table.
+      Also confirmed James's "blocks" instinct against Rockwell's own docs:
+      legacy ControlLogix 5570 (1756-L6x/L7x) really does divide memory
+      into separate I/O and Data/Logic pools, but CompactLogix 5380 and
+      ControlLogix 5580/5590 (his actual target hardware) use one unified
+      pool per Rockwell's own Logix5000 I/O and Tag Data manual. Unknown
+      processor types show "budget unknown" rather than a fake number —
+      table is deliberately incomplete (e.g. 5069-L340ER/L350ER weren't
+      confirmed by any source, left out rather than guessed from the
+      naming pattern) and 1769-Lxx CompactLogix 5370 isn't covered yet.
 - [ ] Export report (CSV/XLSX — reuse ControlsAutomation XLAM patterns if useful)

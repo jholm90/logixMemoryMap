@@ -54,12 +54,23 @@ function renderAll() {
     warn.classList.add("hidden");
   }
 
-  const pct = REPORT.budget_bytes ? (REPORT.total_bytes / REPORT.budget_bytes) * 100 : 0;
   const fill = document.getElementById("budget-bar-fill");
-  fill.style.width = `${Math.min(pct, 100)}%`;
-  fill.classList.toggle("over", pct > 100);
-  document.getElementById("budget-label").textContent =
-    `${fmtBytes(REPORT.total_bytes)} / ${fmtBytes(REPORT.budget_bytes)} (${pct.toFixed(2)}%)`;
+  const label = document.getElementById("budget-label");
+  if (REPORT.budget_bytes) {
+    const pct = (REPORT.total_bytes / REPORT.budget_bytes) * 100;
+    fill.style.width = `${Math.min(pct, 100)}%`;
+    fill.classList.toggle("over", pct > 100);
+    const archNote = REPORT.budget_architecture === "divided" ? " (I/O + Data/Logic pools summed)" : "";
+    label.textContent =
+      `${fmtBytes(REPORT.total_bytes)} / ${fmtBytes(REPORT.budget_bytes)} (${pct.toFixed(2)}%)${archNote}`;
+  } else {
+    // James (2026-08-20): capacity is part-number specific, don't fake a
+    // number for a processor type we don't have real data for.
+    fill.style.width = "0%";
+    fill.classList.remove("over");
+    label.textContent =
+      `${fmtBytes(REPORT.total_bytes)} used -- budget unknown for processor "${REPORT.processor_type || "?"}"`;
+  }
 
   const errEl = document.getElementById("errors-footer");
   if (REPORT.errors && REPORT.errors.length) {
@@ -75,6 +86,14 @@ function renderAll() {
   annotateTagPaths(CURRENT_NODE);
   NODE_STACK = [];
 
+  renderCurrentLevel();
+}
+
+// Re-renders everything that depends on CURRENT_NODE -- called after any
+// navigation (drill in, breadcrumb click, sibling jump) so the List and
+// Type Summary tabs stay in sync with wherever the treemap is, even if
+// they're not the active tab right now.
+function renderCurrentLevel() {
   renderBreadcrumb();
   renderTreemap();
   renderList();
@@ -183,11 +202,71 @@ function renderBreadcrumb() {
     crumb.addEventListener("click", () => {
       NODE_STACK = chain.slice(0, i);
       CURRENT_NODE = node;
-      renderBreadcrumb();
-      renderTreemap();
+      renderCurrentLevel();
     });
+
+    // Sibling browser: hover a crumb to jump sideways without backing all
+    // the way up and re-drilling down (James, 2026-08-20). The parent's
+    // children are already sitting in memory -- every ancestor here got
+    // onto the breadcrumb by having its children enumerated already.
+    if (i > 0) {
+      const parent = chain[i - 1];
+      const siblings = (parent.children || []).filter(s => s !== node);
+      if (siblings.length) {
+        crumb.addEventListener("mouseenter", () => showSiblingPreview(crumb, parent, siblings, chain.slice(0, i)));
+        crumb.addEventListener("mouseleave", scheduleHideSiblingPreview);
+      }
+    }
+
     el.appendChild(crumb);
   });
+}
+
+let _siblingHideTimer = null;
+
+function showSiblingPreview(anchorEl, parentNode, siblings, stackForJump) {
+  clearTimeout(_siblingHideTimer);
+  hideSiblingPreview();
+
+  const popup = document.createElement("div");
+  popup.id = "sibling-popup";
+  const preview = siblings.slice(0, 10);
+  popup.innerHTML =
+    `<div class="sibling-popup-header">${preview.length} of ${siblings.length} siblings under "${parentNode.name === "root" ? "All" : parentNode.name}"</div>` +
+    preview.map((s, idx) =>
+      `<div class="sibling-item" data-idx="${idx}">${s.name} <span class="sibling-bytes">${fmtBytes(nodeValue(s))}</span></div>`
+    ).join("");
+
+  popup.addEventListener("mouseenter", () => clearTimeout(_siblingHideTimer));
+  popup.addEventListener("mouseleave", scheduleHideSiblingPreview);
+  popup.querySelectorAll(".sibling-item").forEach((el, idx) => {
+    el.addEventListener("click", () => {
+      hideSiblingPreview();
+      jumpToSibling(preview[idx], stackForJump);
+    });
+  });
+
+  document.body.appendChild(popup);
+  const rect = anchorEl.getBoundingClientRect();
+  popup.style.left = rect.left + "px";
+  popup.style.top = (rect.bottom + 4) + "px";
+}
+
+function scheduleHideSiblingPreview() {
+  _siblingHideTimer = setTimeout(hideSiblingPreview, 250);
+}
+
+function hideSiblingPreview() {
+  const existing = document.getElementById("sibling-popup");
+  if (existing) existing.remove();
+}
+
+async function jumpToSibling(sibling, parentStack) {
+  const kids = await ensureChildren(sibling);
+  if (!kids || !kids.length) return; // leaf sibling -- nothing to show as a treemap root
+  NODE_STACK = parentStack;
+  CURRENT_NODE = sibling;
+  renderCurrentLevel();
 }
 
 async function ensureChildren(node) {
@@ -220,8 +299,7 @@ async function drillInto(node) {
   if (!kids || !kids.length) return;
   NODE_STACK.push(CURRENT_NODE);
   CURRENT_NODE = node;
-  renderBreadcrumb();
-  renderTreemap();
+  renderCurrentLevel();
 }
 
 // ---- squarified treemap ----
@@ -406,15 +484,29 @@ function hideTooltip() {
 }
 
 // ---- list view ----
-// Note: the list/type-summary tabs still reflect only the top-level tag
-// entries from /api/report, not the full lazily-drilled tree -- deep
-// member-level rows would need every array/UDT expanded eagerly, which is
-// exactly what the lazy /api/node design avoids. Treemap is the place for
-// infinite-depth browsing; list/type-summary stay a top-level rollup.
+// Scoped to CURRENT_NODE's direct children (James, 2026-08-20: "if im down
+// branches then those should represent the current level") -- not the
+// whole file. Re-rendered on every navigation via renderCurrentLevel so it
+// stays in sync even when this tab isn't the active one.
+
+function currentLevelRows() {
+  const kids = CURRENT_NODE.children || [];
+  const total = kids.reduce((s, c) => s + nodeValue(c), 0);
+  return kids.map(c => {
+    const bytes = nodeValue(c);
+    return {
+      name: c.name,
+      data_type: c.data_type || "(group)",
+      bytes,
+      pct_of_total: total ? (bytes / total) * 100 : 0,
+      basis: c.basis || "",
+    };
+  });
+}
 
 function renderList() {
   const tbody = document.querySelector("#list-table tbody");
-  const rows = [...REPORT.entries].sort((a, b) => {
+  const rows = currentLevelRows().sort((a, b) => {
     const { key, dir } = SORT_STATE;
     if (typeof a[key] === "string") return a[key].localeCompare(b[key]) * dir;
     return (a[key] - b[key]) * dir;
@@ -424,12 +516,11 @@ function renderList() {
   for (const e of rows) {
     const tr = document.createElement("tr");
     tr.innerHTML =
-      `<td>${e.path}</td>` +
+      `<td>${e.name}</td>` +
       `<td>${e.data_type}</td>` +
-      `<td>${e.category}</td>` +
-      `<td class="num">${e.bytes.toLocaleString()}</td>` +
+      `<td class="num">${Math.round(e.bytes).toLocaleString()}</td>` +
       `<td class="num">${e.pct_of_total.toFixed(2)}%</td>` +
-      `<td><span class="basis-chip basis-${e.basis}">${e.basis}</span></td>`;
+      `<td>${e.basis ? `<span class="basis-chip basis-${e.basis}">${e.basis}</span>` : ""}</td>`;
     tbody.appendChild(tr);
   }
 
@@ -444,12 +535,25 @@ function renderList() {
 }
 
 // ---- type summary ----
+// Also scoped to CURRENT_NODE's direct children, same reasoning as the list.
 
 function renderTypeSummary() {
   const el = document.getElementById("type-summary");
   el.innerHTML = "";
-  const maxPct = Math.max(...REPORT.type_summary.map(t => t.pct_of_total), 1);
-  for (const t of REPORT.type_summary) {
+
+  const kids = CURRENT_NODE.children || [];
+  const totals = {};
+  for (const c of kids) {
+    const key = c.data_type || "(group)";
+    totals[key] = (totals[key] || 0) + nodeValue(c);
+  }
+  const grandTotal = Object.values(totals).reduce((s, v) => s + v, 0);
+  const rows = Object.entries(totals)
+    .map(([data_type, bytes]) => ({ data_type, bytes, pct_of_total: grandTotal ? (bytes / grandTotal) * 100 : 0 }))
+    .sort((a, b) => b.bytes - a.bytes);
+
+  const maxPct = Math.max(...rows.map(t => t.pct_of_total), 1);
+  for (const t of rows) {
     const row = document.createElement("div");
     row.className = "type-row";
     row.innerHTML =

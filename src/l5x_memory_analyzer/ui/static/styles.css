@@ -122,6 +122,38 @@ body {
 #breadcrumb span:hover { color: var(--accent); text-decoration: underline; }
 #breadcrumb .sep { margin: 0 0.35rem; }
 
+#sibling-popup {
+  position: fixed;
+  z-index: 20;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  padding: 0.3rem 0;
+  min-width: 220px;
+  max-width: 340px;
+  font-size: 0.8rem;
+}
+.sibling-popup-header {
+  padding: 0.25rem 0.7rem 0.4rem;
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.2rem;
+}
+.sibling-item {
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.sibling-item:hover { background: var(--accent); color: #fff; }
+.sibling-bytes { color: var(--text-dim); flex-shrink: 0; }
+.sibling-item:hover .sibling-bytes { color: #fff; opacity: 0.85; }
+
 main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
 .panel { display: none; height: 100%; }
 .panel.active { display: block; }

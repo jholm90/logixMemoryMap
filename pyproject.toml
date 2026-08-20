@@ -21,7 +21,7 @@ l5x-memory-analyzer = "l5x_memory_analyzer.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-l5x_memory_analyzer = ["sizing/memory_model.yaml", "ui/static/*"]
+l5x_memory_analyzer = ["sizing/memory_model.yaml", "sizing/controller_budgets.yaml", "ui/static/*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
