@@ -6,9 +6,12 @@
   samples/manifest.csv. Resumable: already-logged l5x_path rows are skipped,
   so you can stop partway through a few hundred samples and pick back up.
 
-  This does NOT go online/download or read memory automatically — that part
-  (OQ-MEMREADMETHOD) is still open. This script only removes the file-hunting
-  and manifest-formatting toil around the manual read.
+  No download/online step needed -- Logix Designer shows memory usage in
+  Controller Properties as soon as the project successfully verifies/
+  compiles offline (confirmed 2026-08-20, see docs/TESTING_PLAN.md). This
+  script does NOT read that value automatically (OQ-MEMREADMETHOD: no
+  programmatic path exists at all, online or offline) -- it only removes
+  the file-hunting and manifest-formatting toil around the manual read.
 
 .PREREQS
   Run batch_l5x_to_acd.ps1 first; this script consumes its convert_log.csv.
@@ -60,7 +63,7 @@ foreach ($row in $rows) {
     Write-Host "Opening $($row.acd_path) ..."
     Start-Process $row.acd_path
 
-    $bytes = Read-Host "Bytes used (Controller Properties -> Memory tab). Enter number, 's' to skip, or 'q' to stop"
+    $bytes = Read-Host "Verify/compile the project, then enter Bytes used from Controller Properties -> Memory tab. Enter number, 's' to skip, or 'q' to stop"
     if ($bytes -eq 'q') {
         Write-Host "Stopping. Resume later by re-running this script — completed rows are skipped."
         break

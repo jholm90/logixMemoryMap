@@ -5,10 +5,22 @@ to compare against this tool's prediction. This is the whole feedback loop that
 Phases 3/4/4b run on — get the procedure locked before generating 30-40 files
 against it, or the whole batch has to be redone.
 
-## Procedure per sample (batch-convert automated, memory read manual — settled, see OQ-MEMREADMETHOD)
+## Procedure per sample (offline compile, no hardware/emulator — settled 2026-08-20)
 
-Researched 2026-08-20 (see OQ-GENMETHOD/OQ-MEMREADMETHOD for sourcing): Rockwell
-publishes an official **Logix Designer SDK** (.NET, `RockwellAutomation.LogixDesigner`)
+**Corrected 2026-08-20 (James, resolving OQ-EMULATE):** no download to a
+controller or Emulate is needed at all. Logix Designer shows memory usage in
+Controller Properties as soon as a project **successfully compiles/verifies
+offline** — that was an incorrect assumption in this file's earlier version
+of the procedure (and made the Logix Echo/SDK-download research below look
+more load-bearing than it turned out to be; keeping that research inline
+since it's still accurate about what the SDK can do, just not the critical
+path for this loop). Design rule of thumb: build/validate primarily against
+real hardware (L6/L7/L8, no emulator) when a physical download-and-run check
+is actually warranted — not the default per-sample step. Real unit available
+for that: a 5069-L306ERS (CompactLogix 5380-class, no safety program on it).
+
+Researched 2026-08-20 (see OQ-GENMETHOD for sourcing): Rockwell publishes an
+official **Logix Designer SDK** (.NET, `RockwellAutomation.LogixDesigner`)
 plus two CLI tools built on it in `RockwellAutomation/ra-logix-designer-vcs-custom-tools`
 (GitHub) — `l5xplode`/`l5xgit`. `l5xgit l5x2acd --l5x <file> --acd <file>` converts
 L5X → ACD headlessly, no Logix Designer UI interaction. This is real and confirmed
@@ -18,44 +30,45 @@ L5X → ACD headlessly, no Logix Designer UI interaction. This is real and confi
 What's confirmed to exist in the SDK beyond that (via `ra-logix-cicd`'s
 `LogixDesigner_ClassLibrary`/`LogixEcho_ClassLibrary` sample code): `LogixProject`
 exposes `SaveAsync`/`DownloadAsync`/`SetCommunicationsPathAsync` and per-type
-`GetTagValue*Async`/`SetTagValue*Async` (BOOL/SINT/INT/DINT/LINT/REAL/STRING,
-plus a byte-array path for structured types) once online — so reading an
-arbitrary tag's value back programmatically is solved. Separately, the
+`GetTagValue*Async`/`SetTagValue*Async` once online, and separately the
 **FactoryTalk Logix Echo** SDK can spin up an emulated chassis+controller
-straight from an ACD file (`CreateChassisFromACD`) and hand back a
-communications path — so "download to a target" doesn't require a real
-controller or manual Emulate setup either.
+straight from an ACD file. Neither is needed for the default loop now that
+offline compile is enough — worth revisiting only if the SDK turns out to
+also expose a scripted "verify project, read compiled memory stat" call
+*without* going online, which would close the automation loop with zero
+hardware involved at all. Not yet researched; flag for whoever picks this up
+next rather than assumed.
 
-**RESOLVED 2026-08-20 (OQ-MEMREADMETHOD): there is no programmatic memory read
-on target hardware.** GSV has no memory attribute on any Logix 5000 platform.
-Rockwell does document an MSG/CIP path ("Determine Controller Memory
-Information"), but its own docs state it's explicitly unsupported on
-CompactLogix 5380/5480, ControlLogix 5580, and GuardLogix 5380/5580 — i.e.
-the entire current lineup. So there's no automated download+read loop worth
-building: Controller Properties → Memory tab, read by eye, is not a fallback,
-it's the only method. Emulator automation (Logix Echo) isn't worth pursuing
-for this purpose either, since it would only pay off if the memory read on
-the other end were also automatable, and it isn't.
+**RESOLVED 2026-08-20 (OQ-MEMREADMETHOD): there is no programmatic memory
+read, online or offline.** GSV has no memory attribute on any Logix 5000
+platform, and Rockwell's documented MSG/CIP path is explicitly unsupported
+on the entire current controller lineup regardless. Controller Properties →
+Memory tab, read by eye, is the only method — but per the correction above,
+it only requires an offline compile, not a download.
 
-1. Start from a fixed empty baseline project (same controller model/firmware
-   rev for every sample — do not mix CompactLogix models mid-test, memory
-   reporting granularity may differ).
-2. Convert the sample L5X to ACD (`scripts/batch_l5x_to_acd.ps1`, batchable —
+1. Convert the sample L5X to ACD (`scripts/batch_l5x_to_acd.ps1`, batchable —
    no per-sample manual import).
-3. Verify/compile (no errors — a sample that doesn't compile is not valid data).
-4. Download to controller (real hardware or Emulate — decision per OQ-EMULATE;
-   note Logix Echo automation buys nothing here beyond convenience, since the
-   memory read on the other end is manual regardless).
-5. Read memory used: Controller Properties → Memory tab (bytes used / bytes
-   free) — this is the only method, confirmed, not a placeholder pending
-   automation. `scripts/batch_memory_capture.ps1` opens each converted ACD
-   in turn and prompts for this number so the file-hunting and manifest-row
-   formatting isn't manual too, even though the read itself always will be.
-6. Record: baseline-before bytes, after bytes, delta = sample's actual footprint.
-7. Log to `samples/manifest.csv` (batch_memory_capture.ps1 does this per-row;
+2. Open in Logix Designer, verify/compile (no errors — a sample that doesn't
+   compile is not valid data). No download, no going online.
+3. Read memory used: Controller Properties → Memory tab (bytes used / bytes
+   free) — this is the only method, confirmed, and available right after
+   compile. `scripts/batch_memory_capture.ps1` opens each converted ACD in
+   turn and prompts for this number so the file-hunting and manifest-row
+   formatting isn't manual too, even though the read itself always will be
+   (update that script's comments to stop implying a download step).
+4. Record predicted vs. actual, delta.
+5. Log to `samples/manifest.csv` (batch_memory_capture.ps1 does this per-row,
    resumable across a multi-session batch of hundreds of samples).
-8. Return controller to the fixed empty baseline before the next sample (don't
-   accumulate — isolate one variable per sample).
+
+Keep controller model/firmware rev consistent across a comparison set (don't
+mix CompactLogix models mid-test — memory reporting granularity may differ),
+but there's no shared physical resource to reset between samples anymore
+since nothing gets downloaded — each ACD compile is independent.
+
+Occasional spot-check against the 5069-L306ERS (actual download, real
+running memory) is still worth doing periodically to confirm compiled/
+offline-shown memory actually matches what the controller reports once
+running — not proven identical yet, just assumed for now.
 
 ## Manifest columns (`samples/manifest.csv`)
 

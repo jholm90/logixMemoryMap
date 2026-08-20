@@ -249,6 +249,25 @@ file-hunting/manifest-formatting around a manual one. If a legacy
 set, the MSG path becomes viable for those specific samples and could be
 worth automating then — not before.
 
-**OQ-EMULATE** — Is validation done against a real CompactLogix, or Logix
-Emulate? If emulate, confirm memory reporting matches real hardware behavior
-(not guaranteed — emulate is a different runtime).
+**OQ-EMULATE — RESOLVED (2026-08-20).** Real hardware only, no Logix Emulate
+— explicit design rule of thumb: "primarily run on hardware L6/L7/L8 and not
+emulators." Real unit available for validation: a 5069-L306ERS (CompactLogix
+5380-class) with no safety program on it currently. This also settles the
+emulate-vs-real question that OQ-MEMREADMETHOD's Logix Echo research left
+open — moot now, not being used regardless of whether it would have worked.
+
+**Bigger finding from the same answer, corrects OQ-MEMREADMETHOD's
+procedure (not its programmatic-access conclusion):** James doesn't need to
+download to hardware at all for memory validation. Logix Designer shows
+memory usage in Controller Properties as soon as the project successfully
+**compiles/verifies offline** — no online/download step required. This was
+an incorrect assumption baked into `docs/TESTING_PLAN.md`'s procedure (step
+4 currently says "download to controller or Emulate" before reading memory)
+and into how big a deal the Logix Echo/download research seemed — the real
+loop is just: convert L5X→ACD (`scripts/batch_l5x_to_acd.ps1`) → open in
+Logix Designer → verify/compile → read Controller Properties → Memory tab.
+No hardware, no emulator, no online session needed for the bulk of sample
+validation. The 5069-L306ERS is still worth having for occasional spot
+double-checks (compiled-memory-estimate vs. actual-downloaded-and-running
+memory could theoretically differ), but it's not the default per-sample
+loop. TESTING_PLAN.md needs updating to match — see that file.
