@@ -96,12 +96,24 @@ just "code compiles," actually rendered and clicked through.
 - [x] Load Phase-0 dev fixture, sanity-check against manual spot-checks
 
 ## Phase 2b — AOI sizing (deferred from Phase 1)
-- [ ] AOI definition parser: `AddOnInstructionDefinitions` local tags + params
+- [x] AOI definition parser: `AddOnInstructionDefinitions` local tags + params
+      — `parser/aoi.py`, 2026-08-20. Turned out NOT to need logic parsing:
+      real production data confirmed every AOI-typed tag is a plain named
+      Tag, sized exactly like a UDT-typed tag by merging AOI definitions
+      into the same `data_types` dict `compute_udt_size` already recurses.
+      `Input`/`Output` Parameters + `LocalTags` = members; `InOut` Parameters
+      excluded (reference, not storage). Nested AOI-in-AOI recurses with the
+      same cycle detection as nested UDTs. Dropped sizing-engine error rate
+      on the real corpus from 29.5% → 8.8%.
 - [ ] UI: click-to-drill into an AOI defs pool node → locals+params breakdown
-- [ ] AOI instance multiplication: each call site in logic adds one instance's
-      worth of local tag memory (needs call-site count from logic parse —
-      coordinate with Phase 4 work, may need to stub this until then,
-      OQ-AOIINSTANCE)
+      — still not built, same report-contract gap as the UDT-member-drill
+      item in Phase 2 (no member-level entries in the flat SizeEntry list yet)
+- [ ] AOI instance multiplication for inline/anonymous instances with no
+      backing tag (if Logix even permits that) — still needs call-site count
+      from logic parse, still a Phase 1/4 dependency (OQ-AOIINSTANCE,
+      narrowed 2026-08-20 — real sample data didn't turn up an example of
+      this actually happening, worth checking whether it's even possible
+      before investing more here)
 
 ## Phase 3 — Sample validation round 1
 - [ ] Generate: 10k-element BOOL array (controller tag)

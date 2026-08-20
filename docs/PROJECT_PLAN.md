@@ -1,22 +1,28 @@
 # Project Plan
 
-**Current phase: 2 — UI v1 (in progress)**
+**Current phase: 2 / 2b — UI v1 shipped, AOI-instance sizing shipped
+(in progress)**
 
 Phase 0 exit criterion met. Phase 1 tag/UDT/array/string sizing is
 implemented and unit-tested; Module/IO parsing is still open (needs real
-sample L5X files to verify module-tag XML shape against — none in
-`samples/local/` yet). AOI sizing was pulled out of Phase 1 into Phase 2b —
-an AOI is part local-tag data, part compiled logic (call-site
-multiplication), so sizing it correctly means touching the same unresolved
-logic-size problem Phase 4 exists to solve.
+sample L5X files to verify module-tag XML shape against — real files exist
+in `samples/local/` now, this just hasn't been picked up yet).
 
-Phase 2 UI v1 is underway: local Flask server + hand-rolled vanilla JS/SVG
-squarified treemap (`l5x-memory-analyzer ui <path>`), verified rendering
-against both the Phase-0 fixture and a richer synthetic multi-program/UDT
-fixture via headless-Chromium screenshots. Treemap, breadcrumb drill,
-sortable list, and type-utilization pane are working; UDT-defs-pool /
-module-overhead root groups and UDT-member drill-down are not yet built
-(see docs/TASKS.md for the precise cut line).
+Phase 2 UI v1 merged (PR #2): local Flask server + hand-rolled vanilla JS/SVG
+squarified treemap (`l5x-memory-analyzer ui <path>`), verified rendering via
+headless-Chromium screenshots. Treemap, breadcrumb drill, sortable list, and
+type-utilization pane are working; UDT-defs-pool/module-overhead root groups
+and UDT-member drill-down are not yet built (see docs/TASKS.md).
+
+Phase 2b (AOI sizing) turned out to be much less blocked than originally
+scoped: validating against 4 real production L5X files (2026-08-20) showed
+every real AOI-typed tag is a plain named Tag sized exactly like a UDT-typed
+one — no logic/call-site parsing needed. That part is now implemented
+(`parser/aoi.py`). Sizing-engine error rate on the real corpus went
+41.6% → 29.5% (alias tags + TIMER/COUNTER/CONTROL) → 8.8% (AOI-instance
+sizing). What's left of Phase 2b — inline/anonymous AOI instances with no
+backing tag, if those even exist in practice — stays deferred, see
+OQ-AOIINSTANCE.
 
 Update the line above as phases close. Each phase has an exit criterion; don't
 start the next phase until it's met, even if it's tempting to jump ahead on UI

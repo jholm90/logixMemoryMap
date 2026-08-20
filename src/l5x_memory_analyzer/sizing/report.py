@@ -16,6 +16,7 @@ from __future__ import annotations
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
+from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
 from l5x_memory_analyzer.parser.datatypes import parse_data_types
 from l5x_memory_analyzer.parser.tags import CONTROLLER_SCOPE, parse_tags
 from l5x_memory_analyzer.sizing.constants import MemoryModel
@@ -47,7 +48,10 @@ class SizeError:
 
 
 def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry], list[SizeError]]:
-    data_types = parse_data_types(root)
+    # AOI names and UDT names share one namespace in Logix (a controller can't
+    # have both), so merging is safe -- an AOI-typed tag is sized exactly like
+    # a UDT-typed one once its Parameters/LocalTags are in this dict.
+    data_types = {**parse_data_types(root), **parse_aoi_definitions(root)}
     tags = parse_tags(root)
 
     sized: list[tuple[str, str, str, int, str]] = []

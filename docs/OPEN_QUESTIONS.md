@@ -66,33 +66,59 @@ tail of other firmware-native/library structure types that also never get a
 member list in `Controller/DataTypes`, so they currently surface as explicit
 sizing errors (correct/honest behavior per the ground-truth constraint --
 better an explicit error than a silently wrong guessed number) rather than
-counting toward any total. Frequency across 4 real files (3394 tags, 1411
-total sizing errors):
+counting toward any total. **Updated 2026-08-20 after Phase 2b (AOI-instance
+sizing) landed** — that fix also resolved every AOI-nested reference to these
+same types (e.g. an AOI LocalTag typed `TIMER` inside another AOI), so the
+counts below are what's left of the 300 remaining errors (down from 1411 at
+session start) across 4 real files, 3394 tags total:
 
 | Type | Count | Notes |
 |---|---|---|
-| MOTION_INSTRUCTION | 20 | |
+| MOTION_INSTRUCTION | 86 | |
 | AXIS_CIP_DRIVE | 64 | |
+| FBD_TIMER | 47 | FBD (function block diagram) variant of TIMER, different layout, don't assume it's also 12 bytes |
+| AxisSTO | 29 | likely Safety/Guard I/O device-profile-generated |
+| DCI_STOP | 26 | likely Safety/Guard I/O device-profile-generated |
+| RATE_LIMITER | 10 | |
+| CONFIGURABLE_ROUT | 7 | |
 | AXIS_VIRTUAL | 5 | |
-| MOTION_GROUP | 3 | |
+| GateBox | 5 | |
 | MESSAGE | 4 | real MSG structure is large/version-dependent, do not guess |
-| ts_CIPAxis, ts_MContactAxis, ts_VFDAxis | 63 combined | not in DataTypes or AOI defs in the source file -- likely from an external motion/axis library this project references but doesn't locally re-export |
-| DCI_STOP, CONFIGURABLE_ROUT, AxisSTO | 61 combined | likely Safety/Guard I/O device-profile-generated structures |
-| FBD_TIMER | 5 | FBD (function block diagram) variant of TIMER, different layout, don't assume it's also 12 bytes |
+| MOTION_GROUP | 3 | |
+| CAM_PROFILE | 4 | |
+| a handful of others (≤3 each) | ~14 | `Ud_Sensor`, `JulianDay`, `IO_Block`, module-connection-style names like `AB:ENC1_DIAG:I:0`, all in the one `TargetType="Program"` partial export -- likely types only fully defined in the parent project this snippet was cut from, not a parser gap |
 
 None of these get a guessed size -- they need either real Rockwell
 documentation confirming a stable byte layout (like TIMER/COUNTER/CONTROL
 already have) or empirical Phase 3 measurement before going in
-MEMORY_MODEL.md. Motion/axis structures (AXIS_CIP_DRIVE etc.) are the
-highest-frequency and most worth chasing next: 64+63+5+3 = 135 occurrences,
-and motion axis structures are known to be large, so likely a meaningful
-chunk of unaccounted memory in motion-heavy programs specifically.
+MEMORY_MODEL.md. Motion/axis structures (MOTION_INSTRUCTION, AXIS_CIP_DRIVE,
+AXIS_VIRTUAL, MOTION_GROUP = 158 occurrences) are the highest-frequency and
+most worth chasing next, and motion axis structures are known to be large,
+so likely a meaningful chunk of unaccounted memory in motion-heavy programs
+specifically.
 
-**OQ-AOIINSTANCE** — Does each AOI *call site* in logic allocate a full new set
-of local tag memory, or can Logix share/optimize in any case? Assumption is
-full per-instance allocation (this is standard AOI behavior) but needs
-confirmation, and needs the call-site count to come from logic parsing —
-creates a Phase 1 / Phase 4 dependency that TASKS.md currently stubs.
+**OQ-AOIINSTANCE — NARROWED (2026-08-20).** Named AOI-instance tags (a real
+Tag with `DataType=<AOIName>`) are now sized (Phase 2b, see MEMORY_MODEL.md)
+and turned out to be 660 of 3394 tags in real production data — the
+overwhelming majority of real AOI usage, and it needed no logic parsing at
+all since it's sized exactly like a UDT-typed tag. What's still genuinely
+open is narrower than originally scoped: does an AOI called in logic
+*without* a named backing tag (an inline/anonymous instance, if Logix even
+allows that) allocate memory the same way, and does it need call-site
+counting from logic parsing to size? Real sample data didn't turn up an
+example of this happening, so it's unclear how common (or possible) it even
+is — worth checking whether Logix Designer actually permits an AOI call
+without a backing tag before investing more here.
+
+**OQ-AOIBOOLPACK — NEW (2026-08-20).** Do BOOL Parameters/LocalTags inside an
+AOI definition pack 8-per-byte the way UDT BOOL members do (OQ-BOOLPACK/
+OQ-ALIGN), or allocate unpacked like a standalone tag? The L5X evidence points
+away from UDT-style packing: AOI BOOL Parameters/LocalTags appear as plain
+`DataType="BOOL"` elements with no hidden-SINT/BIT-alias representation the
+way a UDT's BOOL members always get. Implemented as unpacked (4 bytes) since
+that matches what the XML actually shows, but this is inference from XML
+shape, not a confirmed fact — needs the same kind of empirical Phase 3
+confirmation as OQ-BOOLPACK, just for AOI instance structures specifically.
 
 **OQ-COMMENTS** — Do tag descriptions, rung comments, and routine comments
 consume controller memory at all, or are they development-environment-only

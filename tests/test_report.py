@@ -9,10 +9,22 @@ _XML = """
 <RSLogix5000Content SchemaRevision="1.0">
   <Controller Name="Test">
     <DataTypes/>
+    <AddOnInstructionDefinitions>
+      <AddOnInstructionDefinition Name="fbDebounce" Class="None">
+        <Parameters>
+          <Parameter Name="EnableIn" DataType="BOOL" Usage="Input" Dimension="0"/>
+          <Parameter Name="RawTag" DataType="DINT" Usage="InOut" Dimension="0"/>
+        </Parameters>
+        <LocalTags>
+          <LocalTag Name="DebTmr" DataType="TIMER"/>
+        </LocalTags>
+      </AddOnInstructionDefinition>
+    </AddOnInstructionDefinitions>
     <Tags>
       <Tag Name="RealDint" TagType="Base" DataType="DINT"/>
       <Tag Name="AliasedIO" TagType="Alias" AliasFor="Local:2:I.Ch0Data"/>
       <Tag Name="RunTmr" TagType="Base" DataType="TIMER"/>
+      <Tag Name="DebSensor1" TagType="Base" DataType="fbDebounce"/>
     </Tags>
     <Programs/>
   </Controller>
@@ -39,4 +51,9 @@ def test_alias_tags_size_zero_known_not_error():
     # total_bytes / pct_of_total shouldn't be thrown off by the alias's 0 bytes
     real_dint = by_path["controller/RealDint"]
     assert real_dint.bytes == 4
-    assert real_dint.pct_of_total == (4 / 16) * 100
+
+    aoi_instance = by_path["controller/DebSensor1"]
+    assert aoi_instance.bytes == 16  # EnableIn(4) + DebTmr(TIMER,12), InOut excluded
+    assert aoi_instance.basis == "UNKNOWN"
+
+    assert real_dint.pct_of_total == (4 / (4 + 12 + 16)) * 100

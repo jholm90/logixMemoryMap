@@ -84,15 +84,36 @@ DataType, ~21% of everything that failed to size before this was handled.
 
 ## AOI sizing
 
-- Definition: sum of local tag sizes (own UDT-like recursion) + parameter tag
-  sizes, computed once from `AddOnInstructionDefinitions`.
-- Instance cost: **ASSUMED** each call site allocates a full separate copy of
-  local tag memory (standard AOI instance behavior) — pending OQ-AOIINSTANCE
-  and blocked on logic-parse call-site counting (Phase 1/4 dependency).
-- Formula: `total_aoi_memory = call_site_count × (locals + params)`, params
-  typically small/pointer-like but need explicit confirmation they don't
-  duplicate the *referenced* tag's memory (they shouldn't — parameters are
-  references to caller-scope tags, not new allocations — but confirm).
+**Named AOI-instance tags (implemented, Phase 2b, 2026-08-20):** confirmed
+against real production L5X data that every AOI-typed tag found there is a
+plain named `Tag` with `DataType=<AOIName>`, sized identically to a UDT-typed
+tag — no logic/call-site parsing needed for this case, which turned out to be
+the overwhelming majority of real usage (660 of 3394 real tags). Recurses the
+same as a UDT: `Input`/`Output` usage Parameters + `LocalTags` are storage
+members; `InOut` usage Parameters are excluded entirely (a reference to the
+caller-scope tag passed in, not a new allocation — this is the one place the
+old "confirm params don't duplicate the referenced tag's memory" question
+below is actually answered: they don't, because they're not sized at all).
+AOI definitions can nest other AOIs as a LocalTag's type, recursed the same
+way nested UDTs are, with the same self-reference cycle detection.
+
+Confidence: inherits `udt.alignment_confidence` (currently UNKNOWN) via the
+same `compute_udt_size` path, since an AOI instance structure is internally
+UDT-shaped. One AOI-specific sub-question doesn't reduce to OQ-ALIGN/
+OQ-BOOLPACK though — see OQ-AOIBOOLPACK: unlike UDT members, AOI
+Parameters/LocalTags of type BOOL show up in L5X as plain `DataType="BOOL"`
+with no hidden-SINT/BIT-alias representation, so it's not yet confirmed
+whether they pack 8-per-byte like a UDT member or allocate unpacked like a
+standalone tag. Implemented as unpacked (4 bytes) since that's what the XML
+shape actually shows with no basis to assume otherwise, but this is a real
+open question, not a confirmed KNOWN fact.
+
+**Inline/anonymous instances and call-site multiplication (OQ-AOIINSTANCE,
+still blocked):** a *separate*, smaller question from the above — whether an
+AOI called in logic without ever getting its own named backing tag (does
+Logix always require one, or can it be anonymous/inline?) allocates memory
+per call site the same way. Needs call-site counting from logic parsing,
+which is a genuine Phase 1/4 dependency and stays deferred.
 
 ## Module / I/O tag sizing
 
