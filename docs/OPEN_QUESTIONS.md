@@ -442,6 +442,19 @@ it only sizes raw data bytes.
   standalone tags of one type, DataType defined-but-uninstantiated vs
   instantiated) to fit an actual per-tag and per-DataType-member constant
   before this goes in MEMORY_MODEL.md.
+- **Added variable (2026-08-20), James's hunch:** "_TAG_ probably occupies
+  less space than _TAG_LONG_TAG_NAME_DONT_MISS" — the ~92-96/tag figure
+  above might be partly or wholly a tag-*name-string* cost (symbol table
+  entry), not a flat descriptor cost. Generated an isolating pair to test
+  it: `tagname_short_100dint.L5X` (100 DINT tags, 4-char names, `T_00`..
+  `T_99`) vs `tagname_long_100dint.L5X` (same 100 DINT tags, names padded
+  to 40 chars, `TAG_LONGTAGNAME_..._00` etc.) — both predicted 400 bytes
+  (name length isn't modeled at all yet, which is the point). If actual
+  blocks differ between the two, that isolates a per-character (or
+  per-name-length-bucket) component of the tag cost; if identical, the
+  ~92-96/tag cost is unrelated to name length and points more toward a
+  fixed descriptor/connection-reference cost instead. `sample_gen.cli tags`
+  now supports `--name-prefix`/`--name-len` for building more of these.
 
 **OQ-LOGICVISIBILITY — NEW (2026-08-20), high impact, blocks Phase 4.**
 1000 rungs of `XIC(In{i})OTE(Out{i});`, both with and without a 100-char

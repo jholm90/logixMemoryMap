@@ -70,13 +70,31 @@ def _cmd_udt(args: argparse.Namespace) -> int:
     return 0
 
 
+def _padded_tag_name(prefix: str, i: int, count: int, length: int | None) -> str:
+    """Tag name of exactly `length` chars where possible (James, 2026-08-20:
+    "_TAG_ probably occupies less space than _TAG_LONG_TAG_NAME_DONT_MISS" --
+    isolating tag-name-length as its own OQ-TAGOVERHEAD variable). The
+    numeric suffix (needed for uniqueness across `count` tags) always stays
+    intact at the end; filler is inserted in the middle to hit `length`.
+    Falls back to the un-padded prefix+suffix if that's already >= length."""
+    idx_width = len(str(count - 1)) if count > 1 else 0
+    suffix = f"_{i:0{idx_width}d}" if count > 1 else ""
+    base = f"{prefix}{suffix}"
+    if length is None or len(base) >= length:
+        return base
+    pad_needed = length - len(base)
+    filler = ("_LONGTAGNAME" * (pad_needed // 12 + 1))[:pad_needed]
+    return f"{prefix}{filler}{suffix}"
+
+
 def _cmd_tags(args: argparse.Namespace) -> int:
     dims = tuple(int(d) for d in args.dims.split(",")) if args.dims else ()
     desc = _filler_comment(args.desc_len) if args.desc_len else None
+    name_prefix = args.name_prefix or args.out
 
     tags = []
     for i in range(args.count):
-        name = f"{args.out}_{i}" if args.count > 1 else args.out
+        name = _padded_tag_name(name_prefix, i, args.count, args.name_len)
         tags.append(tag_xml(name, args.type, dims, description=desc))
     tags_frag = "\n".join(tags)
 
@@ -127,6 +145,13 @@ def main(argv: list[str] | None = None) -> int:
     tags_parser.add_argument("--count", type=int, default=1, help="How many tags to generate")
     tags_parser.add_argument("--desc-len", type=int, default=0,
                               help="Give every tag a filler Description of this length (0 = none)")
+    tags_parser.add_argument("--name-prefix", default="",
+                              help="Tag name prefix, independent of --out (defaults to --out) -- "
+                                   "e.g. keep --out descriptive for the filename while --name-prefix "
+                                   "stays short/long for an OQ-TAGOVERHEAD name-length test")
+    tags_parser.add_argument("--name-len", type=int, default=None,
+                              help="Pad every tag name to this many characters (filler in the middle, "
+                                   "unique numeric suffix preserved) -- OQ-TAGOVERHEAD name-length test")
     tags_parser.add_argument("--out", required=True, help="Output file basename / tag name prefix")
     tags_parser.set_defaults(func=_cmd_tags)
 
