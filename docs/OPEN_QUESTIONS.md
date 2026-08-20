@@ -400,3 +400,80 @@ validation. The 5069-L306ERS is still worth having for occasional spot
 double-checks (compiled-memory-estimate vs. actual-downloaded-and-running
 memory could theoretically differ), but it's not the default per-sample
 loop. TESTING_PLAN.md needs updating to match — see that file.
+
+**Unit correction (2026-08-20):** the dialog James actually reads from is
+Controller Properties → **Capacity** tab (not a "Memory" tab), and its
+numbers are labeled **"blocks,"** not bytes. Confirmed 1 block == 1 byte:
+Total shown there for a 1756-L81E (35.11) was exactly 3,145,728, matching
+this project's `controller_budgets.yaml` figure to the byte — upgraded that
+entry ASSUMED→KNOWN. `batch_memory_capture.ps1` now prompts for "blocks"
+explicitly so there's no unit ambiguity in what James types in.
+
+## First real batch (2026-08-20) — 7 samples, 1756-L81E v35.11
+
+First round of real data back from `batch_memory_capture.ps1`, all against
+the same empty-project baseline (`sample_0001`, 0 extra tags, Capacity Used
+= **18,128 blocks** — this is real fixed overhead: controller scaffolding,
+MainTask/MainProgram/MainRoutine, the module, etc., and every delta below
+is baseline-corrected against it, i.e. `(actual - 18128) - predicted`, per
+`samples/manifest.csv`). Full numbers there; three real findings came out
+of it, filed as new open questions rather than silently folded into
+MEMORY_MODEL.md, since one data point each isn't enough to fit a constant:
+
+**OQ-TAGOVERHEAD — NEW (2026-08-20), high impact.** There's a real fixed
+cost per tag/DataType that the current model doesn't account for at all —
+it only sizes raw data bytes.
+- 1000 standalone BOOL tags (`sample_0002`): predicted 4000, baseline-corrected
+  actual 96000 → **~92 blocks/tag** beyond the predicted 4 bytes/tag.
+- `dint_10k_array` (1 array tag, 10000 elements): predicted 40000, actual
+  delta 40096 → **96 blocks** overshoot for a *single* tag, i.e. this looks
+  like a flat per-tag-descriptor cost (~92-96), not per-element — matches
+  the /tag rate above closely.
+- `motorstatus_test` (1 scalar UDT-typed tag, and the sample also defines
+  the `MotorStatus` DataType with 3 members): predicted 6, actual delta
+  402 — much bigger than the ~96 flat tag cost alone, implying the DataType
+  *definition* itself (independent of instance count) also costs real
+  blocks, roughly ~300 here for a 3-member UDT with no descriptions.
+- Net effect: predicted_bytes will systematically **undershoot** real
+  usage on any file with many small/atomic tags, and the undershoot is
+  driven by tag *count*, not byte size — the opposite failure mode a
+  WinDirStat-style tool needs to avoid (silently making small stuff look
+  cheaper than it is). Needs isolating follow-up samples (1/10/100/1000
+  standalone tags of one type, DataType defined-but-uninstantiated vs
+  instantiated) to fit an actual per-tag and per-DataType-member constant
+  before this goes in MEMORY_MODEL.md.
+
+**OQ-LOGICVISIBILITY — NEW (2026-08-20), high impact, blocks Phase 4.**
+1000 rungs of `XIC(In{i})OTE(Out{i});`, both with and without a 100-char
+comment on every rung, showed Capacity Used identical at 18,112 — actually
+*below* the 18,128 baseline (delta -16, i.e. noise-level, not growth).
+**Zero measurable cost for 1000 rungs of real logic**, comments included.
+Two possible explanations, not yet distinguished: (a) the Capacity tab
+specifically reflects I/O-and-tag-data memory only, and compiled ladder
+logic lives in a separate pool this dialog never shows (consistent with
+Rockwell's own "Logix5000 I/O and Tag Data" memory-manual terminology
+referenced under OQ-MEMREADMETHOD); or (b) 1000 simple two-instruction
+rungs is genuinely too small relative to the ~18K baseline to register.
+This matters a lot: if (a), then **offline Capacity-tab reads can never
+validate the Phase 4 logic-size heuristic at all**, no matter how large a
+logic sample gets, and a different validation method is needed for that
+piece specifically. Next step: one sample with a drastically larger/more
+complex logic body (e.g. 10,000+ rungs, or rungs with many operands/AOI
+calls) — if Capacity still doesn't move, that's a strong signal for (a).
+
+**OQ-UDTARRAYALIGN — NEW (2026-08-20).** `oddudt5_array_1000` (array of
+1000 `OddUdt5` structures, each predicted at 5 bytes: DINT=4 + two packed
+BOOLs sharing 1 backing SINT): predicted 5000, baseline-corrected actual
+delta 3360 → **actual ≈8.36 blocks/element**, well above both the 96-block
+flat per-tag cost (OQ-TAGOVERHEAD) and the 5-byte/element prediction even
+after subtracting it (3360 - ~96 ≈ 3264 over 1000 elements ≈ 3.26/element
+extra). Plausible explanation: each element of an array-of-structure gets
+padded up to a 4-byte (DINT) boundary for addressing — 5 bytes/element
+tight-packed would round up to 8 bytes/element (8000 total), which is much
+closer to the observed 3360-ish-over-flat-overhead than 5000 is. This does
+**not** contradict OQ-ALIGN's earlier "UDT members tight-pack with no 4-byte
+alignment" finding — that was about *member* layout inside one struct;
+this would be a separate *array-element* alignment rule. Needs an isolating
+sample: an array of a UDT that's already exactly 4 (or 8) bytes tight-packed
+— if the overshoot-per-element disappears, that confirms element rounding
+to a 4-byte boundary rather than some other cause.
