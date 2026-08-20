@@ -4,6 +4,13 @@
   CLI (from RockwellAutomation/ra-logix-designer-vcs-custom-tools), so
   hundreds of samples can be compiled without opening Logix Designer by hand.
 
+  Resumable (James, 2026-08-20): re-running with the same -OutputDir picks
+  up where it left off -- already-converted files (status "ok" in
+  convert_log.csv) are skipped, so stopping partway through doesn't lose
+  progress. Press any key at any point to stop cleanly after the file
+  currently converting finishes; nothing is lost, just re-run the same
+  command later to continue.
+
 .PREREQS
   - Studio 5000 Logix Designer + Logix Designer SDK 2.2+ installed
   - l5xgit.exe built from https://github.com/RockwellAutomation/ra-logix-designer-vcs-custom-tools
@@ -21,16 +28,31 @@ param(
 
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 $logPath = Join-Path $OutputDir "convert_log.csv"
-"l5x_path,acd_path,status,message" | Out-File -FilePath $logPath -Encoding utf8
+
+$alreadyDone = @{}
+if (Test-Path $logPath) {
+    Import-Csv $logPath | Where-Object { $_.status -eq "ok" } | ForEach-Object { $alreadyDone[$_.l5x_path] = $true }
+} else {
+    "l5x_path,acd_path,status,message" | Out-File -FilePath $logPath -Encoding utf8
+}
 
 $files = Get-ChildItem -Path $InputDir -Filter *.L5X -Recurse
-Write-Host "Found $($files.Count) L5X file(s) under $InputDir"
+Write-Host "Found $($files.Count) L5X file(s) under $InputDir; $($alreadyDone.Count) already converted."
+Write-Host "Press any key at any time to stop cleanly after the current file (resume later by re-running)."
+
+# Clear any buffered keypresses from before the loop started.
+while ([Console]::KeyAvailable) { [Console]::ReadKey($true) | Out-Null }
 
 $i = 0
+$stopRequested = $false
 foreach ($f in $files) {
+    if ($alreadyDone.ContainsKey($f.FullName)) {
+        continue
+    }
+
     $i++
     $acdPath = Join-Path $OutputDir ($f.BaseName + ".ACD")
-    Write-Host "[$i/$($files.Count)] $($f.Name) -> $acdPath"
+    Write-Host "[$i/$($files.Count - $alreadyDone.Count)] $($f.Name) -> $acdPath"
 
     $argList = @("l5x2acd", "--l5x", $f.FullName, "--acd", $acdPath)
     if ($UnsafeSkipDependencyCheck) { $argList += "--unsafe-skip-dependency-check" }
@@ -45,6 +67,17 @@ foreach ($f in $files) {
         "$($f.FullName),$acdPath,FAILED,$msg" | Out-File -FilePath $logPath -Append -Encoding utf8
         Write-Warning "  Conversion failed: $msg"
     }
+
+    if ([Console]::KeyAvailable) {
+        [Console]::ReadKey($true) | Out-Null
+        Write-Host "Key pressed -- stopping. Re-run the same command to resume; already-converted files are skipped."
+        $stopRequested = $true
+        break
+    }
 }
 
-Write-Host "Done. Log: $logPath"
+if (-not $stopRequested) {
+    Write-Host "Done. Log: $logPath"
+} else {
+    Write-Host "Stopped early. Log: $logPath"
+}

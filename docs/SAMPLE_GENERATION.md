@@ -53,6 +53,19 @@ over-invest in perfecting the XML generator for edge cases that hit once.
 - Keep generator scripts in `src/sample_gen/` so a sample can be regenerated
   exactly (not hand-edited and drifted from its own generator)
 
+**Generator CLI built 2026-08-20** (James: "the l5x generator application
+where you make up the l5x files based on things you want to test"):
+`python -m sample_gen.cli {udt,tags,rungs} ...` -- see that module's
+docstring for exact flags. `udt` builds a UDT + one tag of it (matches the
+now-confirmed BOOL-packing-run rule exactly, see OQ-ALIGN); `tags` builds N
+tags of a given type/dimensions; `rungs` builds N rungs of an instruction
+pattern with an optional filler comment (OQ-COMMENTS). All three write the
+L5X, compute predicted_bytes via this project's own sizing engine, and log
+a manifest.csv row automatically -- actual_bytes stays blank until run
+through `scripts/batch_l5x_to_acd.ps1` + `scripts/batch_memory_capture.ps1`
+(both resumable, "press any key to stop" / "close the window at any time"
+per James's spec) or manually through Studio 5000.
+
 ## Feedback loop shape
 
 ```

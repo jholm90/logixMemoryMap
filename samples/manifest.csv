@@ -1,3 +1,7 @@
 sample_id,description,category,l5x_path,predicted_bytes,actual_bytes,delta,delta_pct,controller_model,firmware_rev,date_tested,notes
 sample_0001,"boolpack baseline, 0 extra tags",tag,samples/generated/boolpack/sample_0001_boolpack_baseline_0bool.L5X,0,,,,,,,
 sample_0002,"boolpack test, 1000 standalone BOOL tags",tag,samples/generated/boolpack/sample_0002_boolpack_1000bool.L5X,4000,,,,,,,
+motorstatus_test,"UDT MotorStatus: BOOL, DINT, BOOL",udt,samples/generated/udt/motorstatus_test.L5X,6,,,,,,,
+dint_10k_array,1x DINT[10000] tag(s),tag,samples/generated/tags/dint_10k_array.L5X,40000,,,,,,,
+xic_ote_1000_comment100,"1000 rungs of 'XIC(In{i})OTE(Out{i});', comment_len=100",logic_bit,samples/generated/logic/xic_ote_1000_comment100.L5X,0,,,,,,,
+xic_ote_1000_nocomment,"1000 rungs of 'XIC(In{i})OTE(Out{i});', comment_len=0",logic_bit,samples/generated/logic/xic_ote_1000_nocomment.L5X,0,,,,,,,

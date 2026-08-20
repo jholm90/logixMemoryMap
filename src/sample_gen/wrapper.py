@@ -23,11 +23,16 @@ def build_l5x(
     major_rev: str = DEFAULT_MAJOR_REV,
     minor_rev: str = DEFAULT_MINOR_REV,
     software_revision: str = DEFAULT_SOFTWARE_REVISION,
+    extra_datatypes_xml: str = "",
+    extra_rungs_xml: str = "",
 ) -> str:
+    rungs = extra_rungs_xml if extra_rungs_xml.strip() else '              <Rung Number="0" Type="N">\n                <Text>NOP();</Text>\n              </Rung>'
     return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="{software_revision}" TargetName="{target_name}" TargetType="Controller" ContainsContext="false" ExportOptions="References NoRawData L5KData DecoratedData Context Dependencies ForceProtectedEncoding AllProjDocTrans">
   <Controller Use="Target" Name="{target_name}" ProcessorType="{processor_type}" MajorRev="{major_rev}" MinorRev="{minor_rev}" TimeSlice="20" ShareUnusedTimeSlice="1" InstructionSet="v{major_rev}" RedundancyEnabled="false" Class="Standard">
-    <DataTypes/>
+    <DataTypes>
+{extra_datatypes_xml}
+    </DataTypes>
     <Modules>
       <Module Name="Local" CatalogNumber="{processor_type}" Vendor="1" ProductType="14" ProductCode="149" Major="{major_rev}" Minor="{minor_rev}" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
         <EKey State="ExactMatch"/>
@@ -46,9 +51,7 @@ def build_l5x(
         <Routines>
           <Routine Name="MainRoutine" Type="RLL">
             <RLLContent>
-              <Rung Number="0" Type="N">
-                <Text>NOP();</Text>
-              </Rung>
+{rungs}
             </RLLContent>
           </Routine>
         </Routines>

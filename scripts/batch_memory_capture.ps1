@@ -1,24 +1,30 @@
 <#
 .SYNOPSIS
-  Walks a batch of converted .ACD files one at a time, opens each in Studio
-  5000 Logix Designer, and prompts you to type in the memory-used figure from
-  Controller Properties -> Memory tab. Appends each result as a row to
-  samples/manifest.csv. Resumable: already-logged l5x_path rows are skipped,
-  so you can stop partway through a few hundred samples and pick back up.
+  Walks a batch of converted .ACD files one at a time with an explicit
+  open / enter-memory / close / continue loop (James, 2026-08-20):
 
-  No download/online step needed -- Logix Designer shows memory usage in
-  Controller Properties as soon as the project successfully verifies/
-  compiles offline (confirmed 2026-08-20, see docs/TESTING_PLAN.md). This
-  script does NOT read that value automatically (OQ-MEMREADMETHOD: no
-  programmatic path exists at all, online or offline) -- it only removes
-  the file-hunting and manifest-formatting toil around the manual read.
+    1. Shows the next file.
+    2. Press Enter to open it in Studio 5000.
+    3. Verify/compile the project (no download needed -- Logix Designer
+       shows memory usage in Controller Properties as soon as it compiles
+       offline, see docs/TESTING_PLAN.md), read the Memory tab, type the
+       number in.
+    4. Close the project in Studio 5000, then press Enter to continue --
+       this gate exists so the next file's Studio 5000 instance doesn't
+       stack up on top of one still open.
+    5. Row is logged immediately, then loops to the next file.
+
+  Resumable: you can close this window at any point without losing place.
+  Already-logged l5x_path rows are skipped on the next run, and nothing is
+  written until a row is actually complete, so there's never a half-done
+  row to clean up.
 
 .PREREQS
   Run batch_l5x_to_acd.ps1 first; this script consumes its convert_log.csv.
 
 .EXAMPLE
   ./batch_memory_capture.ps1 -ConvertLog C:\l5x_scratch\acd\convert_log.csv `
-      -ManifestPath ..\samples\manifest.csv -ControllerModel "1769-L33ER" -FirmwareRev "35.11"
+      -ManifestPath ..\samples\manifest.csv -ControllerModel "5069-L306ER" -FirmwareRev "35.11"
 #>
 param(
     [Parameter(Mandatory = $true)][string]$ConvertLog,
@@ -48,32 +54,36 @@ if (Test-Path $ManifestPath) {
 }
 
 $rows = Import-Csv $ConvertLog | Where-Object { $_.status -eq "ok" }
-Write-Host "$($rows.Count) converted sample(s) in log; $($alreadyLogged.Count) already in manifest."
+$remaining = $rows | Where-Object { -not $alreadyLogged.ContainsKey($_.l5x_path) }
+Write-Host "$($rows.Count) converted sample(s) in log; $($alreadyLogged.Count) already logged; $($remaining.Count) remaining."
+Write-Host "You can close this window at any time -- already-logged rows are skipped on the next run."
 
-foreach ($row in $rows) {
-    if ($alreadyLogged.ContainsKey($row.l5x_path)) {
-        continue
-    }
-
+foreach ($row in $remaining) {
     $meta = Get-SampleIdAndDescription $row.l5x_path
     $category = Get-Category $row.l5x_path
 
     Write-Host ""
     Write-Host "=== $($meta.Id) : $($meta.Desc) [$category] ==="
-    Write-Host "Opening $($row.acd_path) ..."
-    Start-Process $row.acd_path
-
-    $bytes = Read-Host "Verify/compile the project, then enter Bytes used from Controller Properties -> Memory tab. Enter number, 's' to skip, or 'q' to stop"
-    if ($bytes -eq 'q') {
-        Write-Host "Stopping. Resume later by re-running this script — completed rows are skipped."
+    Write-Host "Next file: $($row.acd_path)"
+    $key = Read-Host "Press Enter to open it (or 'q' to stop here)"
+    if ($key -eq 'q') {
+        Write-Host "Stopping. Resume later by re-running this script -- completed rows are skipped."
         break
     }
+
+    Start-Process $row.acd_path
+    Write-Host "Opened. Verify/compile the project, then read Controller Properties -> Memory tab."
+
+    $bytes = Read-Host "Bytes used (or 's' to skip this file)"
     if ($bytes -eq 's' -or [string]::IsNullOrWhiteSpace($bytes)) {
-        Write-Host "Skipped."
+        Write-Host "Skipped -- close the project manually if you opened it."
         continue
     }
 
     $notes = Read-Host "Notes (optional)"
+
+    Read-Host "Close the project in Studio 5000, then press Enter to continue"
+
     $date = Get-Date -Format "yyyy-MM-dd"
     $line = @($meta.Id, $meta.Desc, $category, $row.l5x_path, "", $bytes, "", "", $ControllerModel, $FirmwareRev, $date, $notes) -join ","
     $line | Out-File -FilePath $ManifestPath -Append -Encoding utf8
@@ -81,4 +91,4 @@ foreach ($row in $rows) {
 }
 
 Write-Host ""
-Write-Host "Done. predicted_bytes/delta/delta_pct columns left blank — fill by cross-referencing this tool's own 'size' CLI output per sample."
+Write-Host "Done for now. predicted_bytes/delta/delta_pct columns left blank -- fill by cross-referencing this tool's own 'size' CLI output (or the manifest row the sample generator already wrote, if this was a sample_gen-produced file)."
