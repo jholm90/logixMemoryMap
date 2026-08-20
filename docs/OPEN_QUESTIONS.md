@@ -249,13 +249,20 @@ trigger event — but unconfirmed), and is there any event-task-specific
 overhead (trigger configuration, watchdog, etc.) beyond the routine logic
 itself? Checked the real corpus immediately: **52 of 86 real Tasks (60%) are Type
 "EVENT"** — more common than PERIODIC (19) and CONTINUOUS (14) combined.
-This is not an edge case, it's the dominant task type in James's real
-programs (mostly "DataMove"/tracking-style routines, consistent with the
-camming/motion-heavy usage already established). Raises this OQ's priority
-significantly — needs a decision on whether Phase 4/5's Task→Program→
-Routine drill-down treats Event Tasks any differently from Continuous/
-Periodic before that phase starts, not an afterthought. Not yet scoped into
-any phase's task list.
+
+**Clarified by James (2026-08-20):** these are triggered on an axis rolling
+past a motion watch point (MAW), and the logic inside each one is small —
+"not a big handful of logic inside" — shifting/moving some data, matching
+the real task names seen (`DataMove_GradingLC`, `zDataMove_ScannerLC`,
+etc). So the priority here isn't "invest heavily in event-task-specific
+overhead research" — the per-task logic footprint is small and probably
+sizes fine as an ordinary Routine once Phase 4/5 exists. The actual risk is
+**correctness, not depth**: Phase 4/5's Task→Program→Routine parsing must
+not silently skip or mis-handle Type="EVENT" tasks just because they're
+structured differently from Continuous/Periodic — James: "not something to
+forget." Treat Event Tasks the same as any other Task for structural
+parsing purposes; no special event-triggering-overhead modeling needed
+unless real data later suggests otherwise.
 
 **OQ-INSTRUCTIONSCOPE — RESOLVED (2026-08-20), real data not guessed.** Ran a
 frequency count across all 4 real production L5X files instead of asking
