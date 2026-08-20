@@ -116,6 +116,14 @@ just "code compiles," actually rendered and clicked through.
       before investing more here)
 
 ## Phase 3 — Sample validation round 1
+- [x] Generate: 1000 standalone BOOL controller tags vs. 0-tag baseline
+      (`src/sample_gen/gen_boolpack_test.py`, 2026-08-20) — direct isolating
+      test for OQ-BOOLPACK, since James's own hunch contradicts the current
+      4-bytes/tag model. Predicted delta: 4000 bytes (4.0 bytes/tag) if the
+      current model is right. **Awaiting actual bytes from James** —
+      compile both `samples/generated/boolpack/sample_000{1,2}_*.L5X` in
+      Studio 5000, read Controller Properties → Memory tab, report both
+      numbers (no download needed, see TESTING_PLAN.md).
 - [ ] Generate: 10k-element BOOL array (controller tag)
 - [ ] Generate: 10k-element DINT array
 - [ ] Generate: 10k-element UDT array (UDT = mix of BOOL/DINT/REAL, ~20 bytes/ea)

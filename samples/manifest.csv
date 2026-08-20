@@ -1,1 +1,3 @@
 sample_id,description,category,l5x_path,predicted_bytes,actual_bytes,delta,delta_pct,controller_model,firmware_rev,date_tested,notes
+sample_0001,"boolpack baseline, 0 extra tags",tag,samples/generated/boolpack/sample_0001_boolpack_baseline_0bool.L5X,0,,,,,,,
+sample_0002,"boolpack test, 1000 standalone BOOL tags",tag,samples/generated/boolpack/sample_0002_boolpack_1000bool.L5X,4000,,,,,,,
