@@ -145,7 +145,9 @@ assume ST scales the same way rung-based logic does.
 - [ ] Generate: same counts for XIO, OTL, OTU
 - [ ] Generate: branch depth variations (1, 3, 5 parallel branches) at fixed
       rung count
-- [ ] Generate: rung comment presence vs absence at fixed rung count (OQ-COMMENTS)
+- [ ] Generate: rung comment presence vs absence, sample pair specified by
+      James (2026-08-20) — 10k rungs of XIC/OTE with no comments vs. 10k
+      rungs of XIC/OTE with a 100-char comment per rung (OQ-COMMENTS)
 - [ ] Generate: empty rungs (comment-only, no instructions) at scale
 - [ ] Record actual memory delta per sample
 - [ ] Fit initial per-instruction weight, log residuals

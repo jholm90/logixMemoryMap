@@ -156,11 +156,13 @@ that matches what the XML actually shows, but this is inference from XML
 shape, not a confirmed fact — needs the same kind of empirical Phase 3
 confirmation as OQ-BOOLPACK, just for AOI instance structures specifically.
 
-**OQ-COMMENTS** — Do tag descriptions, rung comments, and routine comments
-consume controller memory at all, or are they development-environment-only
-(stripped at compile/download)? If they do consume memory, that's a very
-different kind of "memory hog" to flag (verbose commenting habits) than data
-structure bloat.
+**OQ-COMMENTS — test plan set (2026-08-20), still genuinely open.** James
+doesn't know from experience either ("i dunno, i assume it takes up space
+somewhere") — this one actually needs the Phase 3/4 empirical test, no
+shortcut from asking. Test pair specified: 10k rungs of XIC/OTE with no
+comments vs. 10k rungs of XIC/OTE with a 100-char comment per rung, same
+rung/instruction count otherwise so the only variable is comment presence.
+Logged in TASKS.md Phase 4 with these exact parameters.
 
 **OQ-ALARM — PARTIALLY RESOLVED (2026-08-20), scope split in two.** James:
 alarms are part of standard code, worth adding to the necessary list — but
