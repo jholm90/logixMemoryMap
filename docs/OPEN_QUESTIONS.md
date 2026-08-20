@@ -567,7 +567,28 @@ it only sizes raw data bytes.
     name-length storage cost that tag names do**, which wasn't held
     constant as a controlled variable across these two sweeps. Real,
     testable follow-up: fix the UDT name length and count separately, the
-    same way the tag-name-length sweep did for tags.
+    same way the tag-name-length sweep did for tags. **Update, same day:**
+    generated (`udtname_len08/13/20/30.L5X`, 4 DINT members held constant,
+    only the UDT name length varies) — pending test.
+  - **AOI name length (James, 2026-08-20): "just thinking of stuff that
+    could be an issue"** — does an AOI *definition's* own name length cost
+    anything, the same way a UDT DataType name might? Not yet testable:
+    `sample_gen` has no AOI-generation support at all (only UDT), so this
+    stays backlog until AOI generation exists as a generator capability.
+  - **Four distinct comment/description fields (James, 2026-08-20):**
+    "comment length in the tag vs comment length in the udt element vs
+    udt description vs udt tag description" — none of these were varied
+    independently before. Added `--type-desc-len` (DataType-level
+    Description, confirmed real shape against `samples/local/
+    SJ_Gormley_20251112_r02.L5X`'s `Board` UDT) and `--tag-desc-len`
+    (tag-instance Description) to `sample_gen.cli udt`, alongside the
+    existing `--desc-len` (atomic tag) and `--member-desc-len` (UDT
+    member). Generated 24-sample sweep (0/10/25/50/100/200 chars ×
+    4 fields, everything else held constant): `tagcomment_len*.L5X`
+    (atomic tag Description), `udtmembercomment_len*.L5X` (one DataType
+    Member's Description), `udttypecomment_len*.L5X` (the DataType's own
+    top-level Description), `udttagcomment_len*.L5X` (Description on a
+    UDT-typed tag instance) — pending test.
 
 **OQ-LOGICVISIBILITY — NEW (2026-08-20), high impact, blocks Phase 4.**
 1000 rungs of `XIC(In{i})OTE(Out{i});`, both with and without a 100-char

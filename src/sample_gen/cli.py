@@ -54,15 +54,18 @@ def _cmd_udt(args: argparse.Namespace) -> int:
         desc = _filler_comment(args.member_desc_len)
         members = [MemberSpec(m.name, m.data_type, m.dimension, desc) for m in members]
 
-    udt_frag = udt_xml(args.name, members)
+    type_desc = _filler_comment(args.type_desc_len) if args.type_desc_len else None
+    udt_frag = udt_xml(args.name, members, description=type_desc)
+
+    tag_desc = _filler_comment(args.tag_desc_len) if args.tag_desc_len else None
     tag_dims = tuple(int(d) for d in args.tag_dims.split(",")) if args.tag_dims else ()
     if args.instances == 0:
         tag_frag = ""
     elif args.instances == 1:
-        tag_frag = tag_xml("TestInstance", args.name, tag_dims, udt_members=members)
+        tag_frag = tag_xml("TestInstance", args.name, tag_dims, description=tag_desc, udt_members=members)
     else:
         tag_frag = "\n".join(
-            tag_xml(f"TestInstance{i}", args.name, tag_dims, udt_members=members)
+            tag_xml(f"TestInstance{i}", args.name, tag_dims, description=tag_desc, udt_members=members)
             for i in range(args.instances)
         )
     l5x = build_l5x(
@@ -143,6 +146,13 @@ def main(argv: list[str] | None = None) -> int:
                              help="NAME:TYPE or NAME:TYPE:DIM, repeatable, in declared order")
     udt_parser.add_argument("--member-desc-len", type=int, default=0,
                              help="Give every member a filler Description of this length (0 = none)")
+    udt_parser.add_argument("--type-desc-len", type=int, default=0,
+                             help="Give the DataType itself a filler Description of this length "
+                                  "(0 = none) -- distinct from --member-desc-len, OQ-TAGOVERHEAD")
+    udt_parser.add_argument("--tag-desc-len", type=int, default=0,
+                             help="Give each tag instance a filler Description of this length "
+                                  "(0 = none) -- the same tag-level Description atomic tags get, "
+                                  "for a UDT-typed tag specifically, OQ-TAGOVERHEAD")
     udt_parser.add_argument("--tag-dims", default="",
                              help="Make TestInstance an array instead of scalar, e.g. '1000' -- for OQ-ARRAYPACK")
     udt_parser.add_argument("--instances", type=int, default=1,

@@ -170,11 +170,16 @@ def _udt_members_xml(members: list[MemberSpec]) -> str:
     return "\n".join(parts)
 
 
-def udt_xml(name: str, members: list[MemberSpec], family: str = "NoFamily") -> str:
+def udt_xml(name: str, members: list[MemberSpec], family: str = "NoFamily",
+            description: str | None = None) -> str:
     members_xml = _udt_members_xml(members)
+    # Real exports (2026-08-20, samples/local/SJ_Gormley_20251112_r02.L5X):
+    # a DataType-level Description sits right after the opening tag, before
+    # Members -- same CDATA shape as a Tag's Description.
+    desc_xml = f"<Description><![CDATA[{description}]]></Description>\n      " if description else ""
     return (
         f'    <DataType Name="{name}" Family="{family}" Class="User">\n'
-        f"      <Members>\n{members_xml}\n      </Members>\n"
+        f"      {desc_xml}<Members>\n{members_xml}\n      </Members>\n"
         f"    </DataType>"
     )
 
