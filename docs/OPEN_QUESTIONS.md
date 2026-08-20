@@ -87,11 +87,17 @@ Confidence still ASSUMED, not KNOWN — a confident field opinion isn't the
 same evidentiary bar as a real Phase 3 controller measurement, which hasn't
 happened yet.
 
-**OQ-BOOLARRAY** — BOOL *array* tags (as opposed to standalone BOOL tags,
-OQ-BOOLPACK) are assumed to bit-pack 32-per-DINT-sized-word (`ceil(n/32) × 4`
-bytes), standard documented AB behavior. Implemented in the sizing engine as
-ASSUMED pending Phase 3 confirmation against this project's own sample data —
-don't conflate with OQ-BOOLPACK, which covers scalar standalone BOOL tags.
+**OQ-BOOLARRAY — confirmed by direct observation (2026-08-20), strong
+evidence but stays ASSUMED per project discipline.** James: "i cannot make a
+bool array of 12, it will round to 32. making a bool array of 33 will round
+to 64" — this is Studio 5000's own tag-creation behavior he's directly
+observed repeatedly, not a recollection or guess, and matches the
+`ceil(n/32) × 4` bytes formula exactly (n=12 → 1 word = 32 bits; n=33 → 2
+words = 64 bits). Stronger evidence than a field opinion, but still not a
+real controller memory-tab measurement, so this stays ASSUMED rather than
+promoted to KNOWN — Phase 3 should still confirm it, just doesn't need to
+prioritize it the way OQ-BOOLPACK now does (that one, unlike this, has a
+hunch pointing *against* the current model).
 
 **OQ-ARRAYPACK** — For an array of UDTs, is padding applied per-element
 (so each element wastes the same padding) or is the array treated as one
