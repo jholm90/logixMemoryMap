@@ -1,68 +1,72 @@
-﻿"sample_id","description","category","l5x_path","predicted_bytes","actual_bytes","delta","delta_pct","controller_model","firmware_rev","date_tested","notes"
-"sample_0001","boolpack baseline, 0 extra tags","tag","samples/generated/boolpack/sample_0001_boolpack_baseline_0bool.L5X","0","18128","0","","1756-L81E","35.05","2026-08-20","empty-project baseline overhead (Capacity Total 3145728 blocks, Available 3127600) -- every other row's delta below is baseline-corrected against this row's actual_bytes, not a raw actual-minus-predicted"
-"sample_0002","boolpack test, 1000 standalone BOOL tags","tag","samples/generated/boolpack/sample_0002_boolpack_1000bool.L5X","4000","114128","92000","2300","1756-L81E","35.05","2026-08-20","baseline-corrected delta = (114128-18128)-4000 = 92000, i.e. ~92 blocks/tag beyond predicted -- see OQ-TAGOVERHEAD"
-"motorstatus_test","UDT MotorStatus: BOOL, DINT, BOOL","udt","samples/generated/udt/motorstatus_test.L5X","6","18536","402","6700","1756-L81E","35.05","2026-08-20","baseline-corrected delta = (18536-18128)-6 = 402 -- see OQ-TAGOVERHEAD (DataType definition storage not modeled)"
-"dint_10k_array","1x DINT[10000] tag(s)","tag","samples/generated/tags/dint_10k_array.L5X","40000","58224","96","0.24","1756-L81E","35.05","2026-08-20","baseline-corrected delta = (58224-18128)-40000 = 96 -- matches sample_0002's ~92-96/tag overhead closely, single-tag case"
-"xic_ote_1000_comment100","1000 rungs of 'XIC(In{i})OTE(Out{i});', comment_len=100","logic_bit","samples/generated/logic/xic_ote_1000_comment100.L5X","0","18112","-16","","1756-L81E","35.05","2026-08-20","baseline-corrected delta = (18112-18128)-0 = -16, i.e. no measurable logic cost at all -- see OQ-LOGICVISIBILITY, this is a major finding for Phase 4"
-"xic_ote_1000_nocomment","1000 rungs of 'XIC(In{i})OTE(Out{i});', comment_len=0","logic_bit","samples/generated/logic/xic_ote_1000_nocomment.L5X","0","18112","-16","","1756-L81E","35.05","2026-08-20","same as comment100 row, identical actual_bytes -- comments show zero measurable cost either way, see OQ-LOGICVISIBILITY"
-"oddudt5_array_1000","UDT OddUdt5: DINT, BOOL, BOOL","udt","samples/generated/udt/oddudt5_array_1000.L5X","5000","26488","3360","67.2","1756-L81E","35.05","2026-08-20","baseline-corrected delta = (26488-18128)-5000 = 3360 over 1000 elements (~3.36/element) -- see OQ-UDTARRAYALIGN, larger than the flat per-tag overhead alone explains"
-"tagname_short_100dint","100x DINT tag(s)","tag","samples/generated/tags/tagname_short_100dint.L5X","400","26928","26528","6632","1756-L81E","35.11","2026-08-20",""
-"tagname_long_100dint","100x DINT tag(s)","tag","samples/generated/tags/tagname_long_100dint.L5X","400","30928","30528","7632","1756-L81E","35.11","2026-08-20",""
-"motorstatus_def_only","UDT MotorStatus: BOOL, DINT, BOOL, 0 instance(s)","udt","samples/generated/udt/motorstatus_def_only.L5X","0","18432","18432","","1756-L81E","35.11","2026-08-20",""
-"motorstatus_10_instances","UDT MotorStatus: BOOL, DINT, BOOL, 10 instance(s)","udt","samples/generated/udt/motorstatus_10_instances.L5X","60","19472","19412","32353.33","1756-L81E","35.11","2026-08-20",""
-"tagname_len04_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len04_50dint.L5X","200","22528","22328","11164","1756-L81E","35.11","2026-08-20",""
-"tagname_len07_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len07_50dint.L5X","200","22528","22328","11164","1756-L81E","35.11","2026-08-20",""
-"tagname_len10_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len10_50dint.L5X","200","22928","22728","11364","1756-L81E","35.11","2026-08-20",""
-"tagname_len13_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len13_50dint.L5X","200","22928","22728","11364","1756-L81E","35.11","2026-08-20",""
-"tagname_len16_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len16_50dint.L5X","200","23328","23128","11564","1756-L81E","35.11","2026-08-20",""
-"tagname_len19_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len19_50dint.L5X","200","23328","23128","11564","1756-L81E","35.11","2026-08-20",""
-"tagname_len22_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len22_50dint.L5X","200","23328","23128","11564","1756-L81E","35.11","2026-08-20",""
-"tagname_len25_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len25_50dint.L5X","200","23728","23528","11764","1756-L81E","35.11","2026-08-20",""
-"tagname_len28_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len28_50dint.L5X","200","23728","23528","11764","1756-L81E","35.11","2026-08-20",""
-"tagname_len31_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len31_50dint.L5X","200","23728","23528","11764","1756-L81E","35.11","2026-08-20",""
-"tagname_len34_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len34_50dint.L5X","200","24128","23928","11964","1756-L81E","35.11","2026-08-20",""
-"tagname_len37_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len37_50dint.L5X","200","24128","23928","11964","1756-L81E","35.11","2026-08-20",""
-"tagname_len40_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len40_50dint.L5X","200","24528","24328","12164","1756-L81E","35.11","2026-08-20",""
-"type_sint_50tag","50x SINT tag(s)","tag","samples/generated/tags/type_sint_50tag.L5X","50","22928","22878","45756","1756-L81E","35.11","2026-08-20",""
-"type_int_50tag","50x INT tag(s)","tag","samples/generated/tags/type_int_50tag.L5X","100","22928","22828","22828","1756-L81E","35.11","2026-08-20",""
-"type_dint_50tag","50x DINT tag(s)","tag","samples/generated/tags/type_dint_50tag.L5X","200","22928","22728","11364","1756-L81E","35.11","2026-08-20",""
-"type_lint_50tag","50x LINT tag(s)","tag","samples/generated/tags/type_lint_50tag.L5X","400","22928","22528","5632","1756-L81E","35.11","2026-08-20",""
-"type_real_50tag","50x REAL tag(s)","tag","samples/generated/tags/type_real_50tag.L5X","200","22928","22728","11364","1756-L81E","35.11","2026-08-20",""
-"type_bool_50tag","50x BOOL tag(s)","tag","samples/generated/tags/type_bool_50tag.L5X","200","22928","22728","11364","1756-L81E","35.11","2026-08-20",""
-"count_0001_dint","1x DINT tag(s)","tag","samples/generated/tags/count_0001_dint.L5X","4","18224","18220","455500","1756-L81E","35.11","2026-08-20",""
-"count_0002_dint","2x DINT tag(s)","tag","samples/generated/tags/count_0002_dint.L5X","8","18230","18222","227775","1756-L81E","35.11","2026-08-20",""
-"count_0005_dint","5x DINT tag(s)","tag","samples/generated/tags/count_0005_dint.L5X","20","18608","18588","92940","1756-L81E","35.11","2026-08-20",""
-"count_0010_dint","10x DINT tag(s)","tag","samples/generated/tags/count_0010_dint.L5X","40","19088","19048","47620","1756-L81E","35.11","2026-08-20",""
-"count_0025_dint","25x DINT tag(s)","tag","samples/generated/tags/count_0025_dint.L5X","100","20528","20428","20428","1756-L81E","35.11","2026-08-20",""
-"count_0050_dint","50x DINT tag(s)","tag","samples/generated/tags/count_0050_dint.L5X","200","22928","22728","11364","1756-L81E","35.11","2026-08-20",""
-"count_0100_dint","100x DINT tag(s)","tag","samples/generated/tags/count_0100_dint.L5X","400","27728","27328","6832","1756-L81E","35.11","2026-08-20",""
-"count_0250_dint","250x DINT tag(s)","tag","samples/generated/tags/count_0250_dint.L5X","1000","42128","41128","4112.8","1756-L81E","35.11","2026-08-20",""
-"count_0500_dint","500x DINT tag(s)","tag","samples/generated/tags/count_0500_dint.L5X","2000","66128","64128","3206.4","1756-L81E","35.11","2026-08-20",""
-"count_1000_dint","1000x DINT tag(s)","tag","samples/generated/tags/count_1000_dint.L5X","4000","114128","110128","2753.2","1756-L81E","35.11","2026-08-20",""
-"array_dint_00001","1x DINT[1] tag(s)","tag","samples/generated/tags/array_dint_00001.L5X","4","18240","18236","455900","1756-L81E","35.11","2026-08-20",""
-"array_dint_00002","1x DINT[2] tag(s)","tag","samples/generated/tags/array_dint_00002.L5X","8","18240","18232","227900","1756-L81E","35.11","2026-08-20",""
-"array_dint_00005","1x DINT[5] tag(s)","tag","samples/generated/tags/array_dint_00005.L5X","20","18256","18236","91180","1756-L81E","35.11","2026-08-20",""
-"array_dint_00010","1x DINT[10] tag(s)","tag","samples/generated/tags/array_dint_00010.L5X","40","18272","18232","45580","1756-L81E","35.11","2026-08-20",""
-"array_dint_00025","1x DINT[25] tag(s)","tag","samples/generated/tags/array_dint_00025.L5X","100","18336","18236","18236","1756-L81E","35.11","2026-08-20",""
-"array_dint_00050","1x DINT[50] tag(s)","tag","samples/generated/tags/array_dint_00050.L5X","200","18432","18232","9116","1756-L81E","35.11","2026-08-20",""
-"array_dint_00100","1x DINT[100] tag(s)","tag","samples/generated/tags/array_dint_00100.L5X","400","18632","18232","4558","1756-L81E","35.11","2026-08-20",""
-"array_dint_00250","1x DINT[250] tag(s)","tag","samples/generated/tags/array_dint_00250.L5X","1000","19232","18232","1823.2","1756-L81E","35.11","2026-08-20",""
-"array_dint_00500","1x DINT[500] tag(s)","tag","samples/generated/tags/array_dint_00500.L5X","2000","20232","18232","911.6","1756-L81E","35.11","2026-08-20",""
-"array_dint_01000","1x DINT[1000] tag(s)","tag","samples/generated/tags/array_dint_01000.L5X","4000","22232","18232","455.8","1756-L81E","35.11","2026-08-20",""
-"array_dint_02500","1x DINT[2500] tag(s)","tag","samples/generated/tags/array_dint_02500.L5X","10000","28232","18232","182.32","1756-L81E","35.11","2026-08-20",""
-"array_dint_05000","1x DINT[5000] tag(s)","tag","samples/generated/tags/array_dint_05000.L5X","20000","38232","18232","91.16","1756-L81E","35.11","2026-08-20",""
-"udtmembers_n01_dint","UDT SweepN01: DINT, 0 instance(s)","udt","samples/generated/udt/udtmembers_n01_dint.L5X","0","18320","18320","","1756-L81E","35.11","2026-08-20",""
-"udtmembers_n02_dint","UDT SweepN02: DINT, DINT, 0 instance(s)","udt","samples/generated/udt/udtmembers_n02_dint.L5X","0","18336","18336","","1756-L81E","35.11","2026-08-20",""
-"udtmembers_n04_dint","UDT SweepN04: DINT, DINT, DINT, DINT, 0 instance(s)","udt","samples/generated/udt/udtmembers_n04_dint.L5X","0","18360","18360","","1756-L81E","35.11","2026-08-20",""
-"udtmembers_n08_dint","UDT SweepN08: DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, 0 instance(s)","udt","samples/generated/udt/udtmembers_n08_dint.L5X","0","18424","18424","","1756-L81E","35.11","2026-08-20",""
-"udtmembers_n16_dint","UDT SweepN16: DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, 0 instance(s)","udt","samples/generated/udt/udtmembers_n16_dint.L5X","0","18552","18552","","1756-L81E","35.11","2026-08-20",""
-"udtmembers_n32_dint","UDT SweepN32: DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, 0 instance(s)","udt","samples/generated/udt/udtmembers_n32_dint.L5X","0","18808","18808","","1756-L81E","35.11","2026-08-20",""
-"udttype_sint_n4","UDT SweepTypeSINT: SINT, SINT, SINT, SINT, 0 instance(s)","udt","samples/generated/udt/udttype_sint_n4.L5X","0","18368","18368","","1756-L81E","35.11","2026-08-20",""
-"udttype_int_n4","UDT SweepTypeINT: INT, INT, INT, INT, 0 instance(s)","udt","samples/generated/udt/udttype_int_n4.L5X","0","18368","18368","","1756-L81E","35.11","2026-08-20",""
-"udttype_dint_n4","UDT SweepTypeDINT: DINT, DINT, DINT, DINT, 0 instance(s)","udt","samples/generated/udt/udttype_dint_n4.L5X","0","18368","18368","","1756-L81E","35.11","2026-08-20",""
-"udttype_lint_n4","UDT SweepTypeLINT: LINT, LINT, LINT, LINT, 0 instance(s)","udt","samples/generated/udt/udttype_lint_n4.L5X","0","18368","18368","","1756-L81E","35.11","2026-08-20",""
-"udttype_real_n4","UDT SweepTypeREAL: REAL, REAL, REAL, REAL, 0 instance(s)","udt","samples/generated/udt/udttype_real_n4.L5X","0","18368","18368","","1756-L81E","35.11","2026-08-20",""
-"udttype_bool_n4","UDT SweepTypeBOOL: BOOL, BOOL, BOOL, BOOL, 0 instance(s)","udt","samples/generated/udt/udttype_bool_n4.L5X","0","18400","18400","","1756-L81E","35.11","2026-08-20",""
-"tagname_spotlen08_40real","40x REAL tag(s)","tag","samples/generated/tags/tagname_spotlen08_40real.L5X","160","","","","","","",""
-"tagname_spotlen24_40real","40x REAL tag(s)","tag","samples/generated/tags/tagname_spotlen24_40real.L5X","160","","","","","","",""
-"tagname_spotlen40_40real","40x REAL tag(s)","tag","samples/generated/tags/tagname_spotlen40_40real.L5X","160","","","","","","",""
+sample_id,description,category,l5x_path,predicted_bytes,actual_bytes,delta,delta_pct,controller_model,firmware_rev,date_tested,notes
+sample_0001,"boolpack baseline, 0 extra tags",tag,samples/generated/boolpack/sample_0001_boolpack_baseline_0bool.L5X,0,18128,0,,1756-L81E,35.05,2026-08-20,"empty-project baseline overhead (Capacity Total 3145728 blocks, Available 3127600) -- every other row's delta below is baseline-corrected against this row's actual_bytes, not a raw actual-minus-predicted"
+sample_0002,"boolpack test, 1000 standalone BOOL tags",tag,samples/generated/boolpack/sample_0002_boolpack_1000bool.L5X,4000,114128,92000,2300,1756-L81E,35.05,2026-08-20,"baseline-corrected delta = (114128-18128)-4000 = 92000, i.e. ~92 blocks/tag beyond predicted -- see OQ-TAGOVERHEAD"
+motorstatus_test,"UDT MotorStatus: BOOL, DINT, BOOL",udt,samples/generated/udt/motorstatus_test.L5X,6,18536,402,6700,1756-L81E,35.05,2026-08-20,baseline-corrected delta = (18536-18128)-6 = 402 -- see OQ-TAGOVERHEAD (DataType definition storage not modeled)
+dint_10k_array,1x DINT[10000] tag(s),tag,samples/generated/tags/dint_10k_array.L5X,40000,58224,96,0.24,1756-L81E,35.05,2026-08-20,"baseline-corrected delta = (58224-18128)-40000 = 96 -- matches sample_0002's ~92-96/tag overhead closely, single-tag case"
+xic_ote_1000_comment100,"1000 rungs of 'XIC(In{i})OTE(Out{i});', comment_len=100",logic_bit,samples/generated/logic/xic_ote_1000_comment100.L5X,0,18112,-16,,1756-L81E,35.05,2026-08-20,"baseline-corrected delta = (18112-18128)-0 = -16, i.e. no measurable logic cost at all -- see OQ-LOGICVISIBILITY, this is a major finding for Phase 4"
+xic_ote_1000_nocomment,"1000 rungs of 'XIC(In{i})OTE(Out{i});', comment_len=0",logic_bit,samples/generated/logic/xic_ote_1000_nocomment.L5X,0,18112,-16,,1756-L81E,35.05,2026-08-20,"same as comment100 row, identical actual_bytes -- comments show zero measurable cost either way, see OQ-LOGICVISIBILITY"
+oddudt5_array_1000,"UDT OddUdt5: DINT, BOOL, BOOL",udt,samples/generated/udt/oddudt5_array_1000.L5X,5000,26488,3360,67.2,1756-L81E,35.05,2026-08-20,"baseline-corrected delta = (26488-18128)-5000 = 3360 over 1000 elements (~3.36/element) -- see OQ-UDTARRAYALIGN, larger than the flat per-tag overhead alone explains"
+tagname_short_100dint,100x DINT tag(s),tag,samples/generated/tags/tagname_short_100dint.L5X,400,26928,26528,6632,1756-L81E,35.11,2026-08-20,
+tagname_long_100dint,100x DINT tag(s),tag,samples/generated/tags/tagname_long_100dint.L5X,400,30928,30528,7632,1756-L81E,35.11,2026-08-20,
+motorstatus_def_only,"UDT MotorStatus: BOOL, DINT, BOOL, 0 instance(s)",udt,samples/generated/udt/motorstatus_def_only.L5X,0,18432,18432,,1756-L81E,35.11,2026-08-20,
+motorstatus_10_instances,"UDT MotorStatus: BOOL, DINT, BOOL, 10 instance(s)",udt,samples/generated/udt/motorstatus_10_instances.L5X,60,19472,19412,32353.33,1756-L81E,35.11,2026-08-20,
+tagname_len04_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len04_50dint.L5X,200,22528,22328,11164,1756-L81E,35.11,2026-08-20,
+tagname_len07_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len07_50dint.L5X,200,22528,22328,11164,1756-L81E,35.11,2026-08-20,
+tagname_len10_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len10_50dint.L5X,200,22928,22728,11364,1756-L81E,35.11,2026-08-20,
+tagname_len13_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len13_50dint.L5X,200,22928,22728,11364,1756-L81E,35.11,2026-08-20,
+tagname_len16_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len16_50dint.L5X,200,23328,23128,11564,1756-L81E,35.11,2026-08-20,
+tagname_len19_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len19_50dint.L5X,200,23328,23128,11564,1756-L81E,35.11,2026-08-20,
+tagname_len22_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len22_50dint.L5X,200,23328,23128,11564,1756-L81E,35.11,2026-08-20,
+tagname_len25_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len25_50dint.L5X,200,23728,23528,11764,1756-L81E,35.11,2026-08-20,
+tagname_len28_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len28_50dint.L5X,200,23728,23528,11764,1756-L81E,35.11,2026-08-20,
+tagname_len31_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len31_50dint.L5X,200,23728,23528,11764,1756-L81E,35.11,2026-08-20,
+tagname_len34_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len34_50dint.L5X,200,24128,23928,11964,1756-L81E,35.11,2026-08-20,
+tagname_len37_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len37_50dint.L5X,200,24128,23928,11964,1756-L81E,35.11,2026-08-20,
+tagname_len40_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len40_50dint.L5X,200,24528,24328,12164,1756-L81E,35.11,2026-08-20,
+type_sint_50tag,50x SINT tag(s),tag,samples/generated/tags/type_sint_50tag.L5X,50,22928,22878,45756,1756-L81E,35.11,2026-08-20,
+type_int_50tag,50x INT tag(s),tag,samples/generated/tags/type_int_50tag.L5X,100,22928,22828,22828,1756-L81E,35.11,2026-08-20,
+type_dint_50tag,50x DINT tag(s),tag,samples/generated/tags/type_dint_50tag.L5X,200,22928,22728,11364,1756-L81E,35.11,2026-08-20,
+type_lint_50tag,50x LINT tag(s),tag,samples/generated/tags/type_lint_50tag.L5X,400,22928,22528,5632,1756-L81E,35.11,2026-08-20,
+type_real_50tag,50x REAL tag(s),tag,samples/generated/tags/type_real_50tag.L5X,200,22928,22728,11364,1756-L81E,35.11,2026-08-20,
+type_bool_50tag,50x BOOL tag(s),tag,samples/generated/tags/type_bool_50tag.L5X,200,22928,22728,11364,1756-L81E,35.11,2026-08-20,
+count_0001_dint,1x DINT tag(s),tag,samples/generated/tags/count_0001_dint.L5X,4,18224,18220,455500,1756-L81E,35.11,2026-08-20,
+count_0002_dint,2x DINT tag(s),tag,samples/generated/tags/count_0002_dint.L5X,8,18230,18222,227775,1756-L81E,35.11,2026-08-20,
+count_0005_dint,5x DINT tag(s),tag,samples/generated/tags/count_0005_dint.L5X,20,18608,18588,92940,1756-L81E,35.11,2026-08-20,
+count_0010_dint,10x DINT tag(s),tag,samples/generated/tags/count_0010_dint.L5X,40,19088,19048,47620,1756-L81E,35.11,2026-08-20,
+count_0025_dint,25x DINT tag(s),tag,samples/generated/tags/count_0025_dint.L5X,100,20528,20428,20428,1756-L81E,35.11,2026-08-20,
+count_0050_dint,50x DINT tag(s),tag,samples/generated/tags/count_0050_dint.L5X,200,22928,22728,11364,1756-L81E,35.11,2026-08-20,
+count_0100_dint,100x DINT tag(s),tag,samples/generated/tags/count_0100_dint.L5X,400,27728,27328,6832,1756-L81E,35.11,2026-08-20,
+count_0250_dint,250x DINT tag(s),tag,samples/generated/tags/count_0250_dint.L5X,1000,42128,41128,4112.8,1756-L81E,35.11,2026-08-20,
+count_0500_dint,500x DINT tag(s),tag,samples/generated/tags/count_0500_dint.L5X,2000,66128,64128,3206.4,1756-L81E,35.11,2026-08-20,
+count_1000_dint,1000x DINT tag(s),tag,samples/generated/tags/count_1000_dint.L5X,4000,114128,110128,2753.2,1756-L81E,35.11,2026-08-20,
+array_dint_00001,1x DINT[1] tag(s),tag,samples/generated/tags/array_dint_00001.L5X,4,18240,18236,455900,1756-L81E,35.11,2026-08-20,
+array_dint_00002,1x DINT[2] tag(s),tag,samples/generated/tags/array_dint_00002.L5X,8,18240,18232,227900,1756-L81E,35.11,2026-08-20,
+array_dint_00005,1x DINT[5] tag(s),tag,samples/generated/tags/array_dint_00005.L5X,20,18256,18236,91180,1756-L81E,35.11,2026-08-20,
+array_dint_00010,1x DINT[10] tag(s),tag,samples/generated/tags/array_dint_00010.L5X,40,18272,18232,45580,1756-L81E,35.11,2026-08-20,
+array_dint_00025,1x DINT[25] tag(s),tag,samples/generated/tags/array_dint_00025.L5X,100,18336,18236,18236,1756-L81E,35.11,2026-08-20,
+array_dint_00050,1x DINT[50] tag(s),tag,samples/generated/tags/array_dint_00050.L5X,200,18432,18232,9116,1756-L81E,35.11,2026-08-20,
+array_dint_00100,1x DINT[100] tag(s),tag,samples/generated/tags/array_dint_00100.L5X,400,18632,18232,4558,1756-L81E,35.11,2026-08-20,
+array_dint_00250,1x DINT[250] tag(s),tag,samples/generated/tags/array_dint_00250.L5X,1000,19232,18232,1823.2,1756-L81E,35.11,2026-08-20,
+array_dint_00500,1x DINT[500] tag(s),tag,samples/generated/tags/array_dint_00500.L5X,2000,20232,18232,911.6,1756-L81E,35.11,2026-08-20,
+array_dint_01000,1x DINT[1000] tag(s),tag,samples/generated/tags/array_dint_01000.L5X,4000,22232,18232,455.8,1756-L81E,35.11,2026-08-20,
+array_dint_02500,1x DINT[2500] tag(s),tag,samples/generated/tags/array_dint_02500.L5X,10000,28232,18232,182.32,1756-L81E,35.11,2026-08-20,
+array_dint_05000,1x DINT[5000] tag(s),tag,samples/generated/tags/array_dint_05000.L5X,20000,38232,18232,91.16,1756-L81E,35.11,2026-08-20,
+udtmembers_n01_dint,"UDT SweepN01: DINT, 0 instance(s)",udt,samples/generated/udt/udtmembers_n01_dint.L5X,0,18320,18320,,1756-L81E,35.11,2026-08-20,
+udtmembers_n02_dint,"UDT SweepN02: DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtmembers_n02_dint.L5X,0,18336,18336,,1756-L81E,35.11,2026-08-20,
+udtmembers_n04_dint,"UDT SweepN04: DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtmembers_n04_dint.L5X,0,18360,18360,,1756-L81E,35.11,2026-08-20,
+udtmembers_n08_dint,"UDT SweepN08: DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtmembers_n08_dint.L5X,0,18424,18424,,1756-L81E,35.11,2026-08-20,
+udtmembers_n16_dint,"UDT SweepN16: DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtmembers_n16_dint.L5X,0,18552,18552,,1756-L81E,35.11,2026-08-20,
+udtmembers_n32_dint,"UDT SweepN32: DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtmembers_n32_dint.L5X,0,18808,18808,,1756-L81E,35.11,2026-08-20,
+udttype_sint_n4,"UDT SweepTypeSINT: SINT, SINT, SINT, SINT, 0 instance(s)",udt,samples/generated/udt/udttype_sint_n4.L5X,0,18368,18368,,1756-L81E,35.11,2026-08-20,
+udttype_int_n4,"UDT SweepTypeINT: INT, INT, INT, INT, 0 instance(s)",udt,samples/generated/udt/udttype_int_n4.L5X,0,18368,18368,,1756-L81E,35.11,2026-08-20,
+udttype_dint_n4,"UDT SweepTypeDINT: DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udttype_dint_n4.L5X,0,18368,18368,,1756-L81E,35.11,2026-08-20,
+udttype_lint_n4,"UDT SweepTypeLINT: LINT, LINT, LINT, LINT, 0 instance(s)",udt,samples/generated/udt/udttype_lint_n4.L5X,0,18368,18368,,1756-L81E,35.11,2026-08-20,
+udttype_real_n4,"UDT SweepTypeREAL: REAL, REAL, REAL, REAL, 0 instance(s)",udt,samples/generated/udt/udttype_real_n4.L5X,0,18368,18368,,1756-L81E,35.11,2026-08-20,
+udttype_bool_n4,"UDT SweepTypeBOOL: BOOL, BOOL, BOOL, BOOL, 0 instance(s)",udt,samples/generated/udt/udttype_bool_n4.L5X,0,18400,18400,,1756-L81E,35.11,2026-08-20,
+tagname_spotlen08_40real,40x REAL tag(s),tag,samples/generated/tags/tagname_spotlen08_40real.L5X,160,,,,,,,
+tagname_spotlen24_40real,40x REAL tag(s),tag,samples/generated/tags/tagname_spotlen24_40real.L5X,160,,,,,,,
+tagname_spotlen40_40real,40x REAL tag(s),tag,samples/generated/tags/tagname_spotlen40_40real.L5X,160,,,,,,,
+udtname_len08,"UDT UDTNAMED: DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtname_len08.L5X,0,,,,,,,
+udtname_len13,"UDT UDTNAMEDTNAME: DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtname_len13.L5X,0,,,,,,,
+udtname_len20,"UDT UDTNAMEDTNAMEDTNAMED: DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtname_len20.L5X,0,,,,,,,
+udtname_len30,"UDT UDTNAMEDTNAMEDTNAMEDTNAMEDTNAM: DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtname_len30.L5X,0,,,,,,,
