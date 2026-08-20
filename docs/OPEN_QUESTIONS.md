@@ -103,20 +103,28 @@ generated files don't import cleanly, the whole testing loop needs a different
 approach (e.g. generating via Logix Designer's own automation/API instead of
 raw XML authoring).
 
-Candidate for both this and OQ-MEMREADMETHOD, unverified (2026-08-20): Rockwell
-ships an official **Logix Designer SDK** (.NET, callable from PowerShell/C#)
-that scripts Studio 5000 itself — project create/open-from-L5X-import,
-save-as-ACD, go online (real controller or Logix Emulate 5570), download, and
-read/write tag values online. If it holds up, this replaces the whole
-manual click-through loop in TESTING_PLAN.md: script imports every sample L5X,
-compiles, downloads to Emulate, and reads memory back. Two things need
-confirming before betting the pipeline on it: (1) does SDK import success
-mean the same thing as File→Import success for OQ-GENMETHOD purposes, and
-(2) is controller memory usage exposed as a readable value at all (see
-OQ-MEMREADMETHOD) — if not, fall back to scripting a GSV read into a tag and
-reading that tag through the SDK instead of reading it by hand. Needs a spike
-against Rockwell's actual LDSDK docs/samples before Phase 3 planning assumes
-it works.
+**UPDATE 2026-08-20 — CONFIRMED, partially resolves this OQ.** Verified against
+Rockwell's own GitHub repos (`RockwellAutomation/ra-logix-designer-vcs-custom-tools`,
+`RockwellAutomation/ra-logix-cicd`), not just marketing copy:
+- `l5xgit l5x2acd --l5x <file> --acd <file>` (official CLI, built on the Logix
+  Designer SDK) converts L5X → ACD with no Logix Designer UI involved. This
+  answers the batch-compile half of OQ-GENMETHOD directly — it's a real,
+  scriptable, Rockwell-supported path, not raw-XML File→Import at all, so the
+  "does hand-built XML import cleanly" risk this OQ originally worried about
+  is sidestepped for the conversion step (still relevant for whether the
+  *generator's* L5X content itself is schema-valid, which is a generation-time
+  concern, not a conversion-time one).
+- The SDK's `LogixProject` class (confirmed via `ra-logix-cicd` sample code)
+  exposes `DownloadAsync`, `SetCommunicationsPathAsync`, and per-type
+  `GetTagValue*Async`/`SetTagValue*Async` once online.
+- The FactoryTalk **Logix Echo** SDK can create an emulated chassis+controller
+  straight from an ACD file (`CreateChassisFromACD`) and return a comms path —
+  no manual Emulate GUI setup per sample.
+
+`scripts/batch_l5x_to_acd.ps1` in this repo wraps the l5xgit conversion over a
+whole folder. Still open: whether SDK-driven download+online actually behaves
+identically to a GUI-driven one for compile-error detection, and the
+GSV/memory-read piece, which stays with OQ-MEMREADMETHOD below.
 
 **OQ-MEMREADMETHOD** — Best method to read actual controller memory usage
 after download: Studio 5000 Controller Properties → Memory tab (manual read),
@@ -126,7 +134,17 @@ generation AND memory read-back both be automated — worth confirming which
 GSV attributes actually expose this (e.g. WHO/CPU memory attributes) before
 committing to the manual-read workflow in TESTING_PLAN.md. See LDSDK note
 under OQ-GENMETHOD — if GSV exposes it and the SDK can read the tag, this
-closes without ever touching the Controller Properties dialog.
+closes without ever touching the Controller Properties dialog. STILL UNRESOLVED
+as of 2026-08-20 — the SDK research confirmed the *plumbing* to read an
+arbitrary tag value back programmatically (`GetTagValue*Async`), but did not
+turn up confirmation that any GSV attribute actually surfaces memory-used/free.
+Interim fallback in place: `scripts/batch_memory_capture.ps1` opens each
+converted ACD in Studio 5000 and prompts for a manually-read number — not
+automated, but removes the per-sample file-hunting/manifest-formatting toil
+so a batch of hundreds of samples doesn't have to be pointed-and-clicked by
+hand. Whoever spikes the GSV question next should check the Get System Value
+instruction's `WHO`/controller-memory-attribute class list in the current
+Logix Designer instruction help.
 
 **OQ-EMULATE** — Is validation done against a real CompactLogix, or Logix
 Emulate? If emulate, confirm memory reporting matches real hardware behavior
