@@ -32,6 +32,9 @@ architecture: unified  # default for entries below unless overridden per-entry
 
 processors:
   # CompactLogix 5380 -- 5069-L3xx, unified memory
+  # James's physical spot-check unit's real ProcessorType is confirmed
+  # "5069-L306ERS2" (2026-08-20 reference export) -- prefix-matches this
+  # entry fine as-is, no code change needed, just documenting the real value.
   "5069-L306ER": { bytes: 629145, confidence: ASSUMED }   # 600 KB
   "5069-L310ER": { bytes: 1048576, confidence: ASSUMED }  # 1 MB
   "5069-L320ER": { bytes: 2097152, confidence: ASSUMED }  # 2 MB
