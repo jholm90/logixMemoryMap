@@ -5,3 +5,4 @@ motorstatus_test,"UDT MotorStatus: BOOL, DINT, BOOL",udt,samples/generated/udt/m
 dint_10k_array,1x DINT[10000] tag(s),tag,samples/generated/tags/dint_10k_array.L5X,40000,,,,,,,
 xic_ote_1000_comment100,"1000 rungs of 'XIC(In{i})OTE(Out{i});', comment_len=100",logic_bit,samples/generated/logic/xic_ote_1000_comment100.L5X,0,,,,,,,
 xic_ote_1000_nocomment,"1000 rungs of 'XIC(In{i})OTE(Out{i});', comment_len=0",logic_bit,samples/generated/logic/xic_ote_1000_nocomment.L5X,0,,,,,,,
+oddudt5_array_1000,"UDT OddUdt5: DINT, BOOL, BOOL",udt,samples/generated/udt/oddudt5_array_1000.L5X,5000,,,,,,,

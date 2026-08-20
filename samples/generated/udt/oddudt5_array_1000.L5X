@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.11" TargetName="OddUdt5" TargetType="Controller" ContainsContext="false" ExportOptions="References NoRawData L5KData DecoratedData Context Dependencies ForceProtectedEncoding AllProjDocTrans">
+  <Controller Use="Target" Name="OddUdt5" ProcessorType="5069-L306ERS" MajorRev="35" MinorRev="11" TimeSlice="20" ShareUnusedTimeSlice="1" InstructionSet="v35" RedundancyEnabled="false" Class="Standard">
+    <DataTypes>
+    <DataType Name="OddUdt5" Family="NoFamily" Class="User">
+      <Members>
+      <Member Name="Count" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="ZZZZZZZZZZBoolMember00" DataType="SINT" Dimension="0" Hidden="true"/>
+      <Member Name="FlagA" DataType="BIT" Dimension="0" Hidden="false" Target="ZZZZZZZZZZBoolMember00" BitNumber="0"/>
+      <Member Name="FlagB" DataType="BIT" Dimension="0" Hidden="false" Target="ZZZZZZZZZZBoolMember00" BitNumber="1"/>
+      </Members>
+    </DataType>
+    </DataTypes>
+    <Modules>
+      <Module Name="Local" CatalogNumber="5069-L306ERS" Vendor="1" ProductType="14" ProductCode="149" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+        <EKey State="ExactMatch"/>
+        <Ports>
+          <Port Id="1" Address="0" Type="ICP" Upstream="false"/>
+        </Ports>
+      </Module>
+    </Modules>
+    <AddOnInstructionDefinitions/>
+    <Tags>
+      <Tag Name="TestInstance" TagType="Base" DataType="OddUdt5" Dimensions="1000" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"/>
+      </Tag>
+    </Tags>
+    <Programs>
+      <Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+        <Tags/>
+        <Routines>
+          <Routine Name="MainRoutine" Type="RLL">
+            <RLLContent>
+              <Rung Number="0" Type="N">
+                <Text>NOP();</Text>
+              </Rung>
+            </RLLContent>
+          </Routine>
+        </Routines>
+      </Program>
+    </Programs>
+    <Tasks>
+      <Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+        <ScheduledPrograms>
+          <ScheduledProgram Name="MainProgram"/>
+        </ScheduledPrograms>
+      </Task>
+    </Tasks>
+  </Controller>
+</RSLogix5000Content>

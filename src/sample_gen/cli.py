@@ -55,7 +55,8 @@ def _cmd_udt(args: argparse.Namespace) -> int:
         members = [MemberSpec(m.name, m.data_type, m.dimension, desc) for m in members]
 
     udt_frag = udt_xml(args.name, members)
-    tag_frag = tag_xml("TestInstance", args.name)
+    tag_dims = tuple(int(d) for d in args.tag_dims.split(",")) if args.tag_dims else ()
+    tag_frag = tag_xml("TestInstance", args.name, tag_dims)
     l5x = build_l5x(
         target_name=args.name,
         tags_xml=tag_frag,
@@ -115,6 +116,8 @@ def main(argv: list[str] | None = None) -> int:
                              help="NAME:TYPE or NAME:TYPE:DIM, repeatable, in declared order")
     udt_parser.add_argument("--member-desc-len", type=int, default=0,
                              help="Give every member a filler Description of this length (0 = none)")
+    udt_parser.add_argument("--tag-dims", default="",
+                             help="Make TestInstance an array instead of scalar, e.g. '1000' -- for OQ-ARRAYPACK")
     udt_parser.add_argument("--out", required=True, help="Output file basename")
     udt_parser.set_defaults(func=_cmd_udt)
 
