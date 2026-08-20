@@ -56,7 +56,7 @@ def _cmd_udt(args: argparse.Namespace) -> int:
 
     udt_frag = udt_xml(args.name, members)
     tag_dims = tuple(int(d) for d in args.tag_dims.split(",")) if args.tag_dims else ()
-    tag_frag = tag_xml("TestInstance", args.name, tag_dims)
+    tag_frag = tag_xml("TestInstance", args.name, tag_dims, udt_members=members)
     l5x = build_l5x(
         target_name=args.name,
         tags_xml=tag_frag,

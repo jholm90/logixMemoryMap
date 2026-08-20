@@ -28,16 +28,94 @@ class MemberSpec:
     description: str | None = None
 
 
+_FLOAT_TYPES = {"REAL"}
+
+
+def _default_value(data_type: str) -> str:
+    return "0.0" if data_type in _FLOAT_TYPES else "0"
+
+
+def _data_value_xml(data_type: str, radix: str = "Decimal") -> str:
+    return f'<DataValue DataType="{data_type}" Radix="{radix}" Value="{_default_value(data_type)}" />'
+
+
+def _array_body_xml(data_type: str, count: int, radix: str | None = "Decimal", element_fn=None) -> str:
+    """element_fn(i) -> inner XML for one <Element>, defaults to a plain Value attr
+    (atomic element type). Real shape confirmed against a real export
+    (BaillieLeitchField_Edger, Alarms_Edger array) 2026-08-20 -- including
+    that an array-of-UDT has no Radix attribute at all (radix=None), unlike
+    an array-of-atomic which does."""
+    if element_fn is None:
+        elements = "".join(f'<Element Index="[{i}]" Value="{_default_value(data_type)}" />' for i in range(count))
+    else:
+        elements = "".join(f'<Element Index="[{i}]">{element_fn(i)}</Element>' for i in range(count))
+    radix_attr = f' Radix="{radix}"' if radix else ""
+    return f'<Array DataType="{data_type}" Dimensions="{count}"{radix_attr}>{elements}</Array>'
+
+
+def _string_structure_member_xml(name: str) -> str:
+    return (
+        f'<StructureMember Name="{name}" DataType="STRING">'
+        f'<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0" />'
+        f'<DataValueMember Name="DATA" DataType="STRING" Radix="ASCII"></DataValueMember>'
+        f"</StructureMember>"
+    )
+
+
+def _udt_structure_body_xml(members: list["MemberSpec"]) -> str:
+    """Tag-instance <Structure> body for a UDT -- confirmed against a real
+    export (Alarms_SE) 2026-08-20: members appear under their LOGICAL
+    name/type (e.g. a BOOL member as a plain DataValueMember), with no trace
+    of the hidden-SINT/BIT-alias representation that's purely a <DataType>
+    Members-list authoring detail. Much simpler than the definition side.
+    Nested UDT-typed members aren't supported yet (no generator CLI syntax
+    for authoring one), so they're skipped with a comment rather than
+    silently emitting something wrong.
+    """
+    parts = []
+    for m in members:
+        if m.data_type == "STRING":
+            parts.append(_string_structure_member_xml(m.name))
+        elif m.dimension:
+            parts.append(f'<ArrayMember Name="{m.name}" DataType="{m.data_type}" '
+                         f'Dimensions="{m.dimension}" Radix="Decimal">' +
+                         "".join(f'<Element Index="[{i}]" Value="{_default_value(m.data_type)}" />'
+                                 for i in range(m.dimension)) +
+                         "</ArrayMember>")
+        elif m.data_type in ("SINT", "INT", "DINT", "LINT", "REAL", "BOOL"):
+            parts.append(f'<DataValueMember Name="{m.name}" DataType="{m.data_type}" '
+                         f'Value="{_default_value(m.data_type)}" />')
+        else:
+            parts.append(f"<!-- nested UDT member {m.name}:{m.data_type} not yet supported by the generator -->")
+    return "".join(parts)
+
+
 def tag_xml(
     name: str, data_type: str, dimensions: tuple[int, ...] = (), radix: str = "Decimal",
-    description: str | None = None,
+    description: str | None = None, udt_members: list["MemberSpec"] | None = None,
 ) -> str:
     dims_attr = f' Dimensions="{" ".join(str(d) for d in dimensions)}"' if dimensions else ""
     desc_xml = f"\n        <Description><![CDATA[{description}]]></Description>" if description else ""
+
+    # Real exports (2026-08-20): a UDT-typed Tag element carries no Radix
+    # attribute at all -- only atomic-rooted tags (scalar or array) do.
+    radix_attr = f' Radix="{radix}"' if udt_members is None else ""
+
+    if udt_members is not None:
+        structure_body = f'<Structure DataType="{data_type}">{_udt_structure_body_xml(udt_members)}</Structure>'
+        data_body = (
+            _array_body_xml(data_type, dimensions[0], radix=None, element_fn=lambda i: structure_body)
+            if dimensions else structure_body
+        )
+    elif dimensions:
+        data_body = _array_body_xml(data_type, dimensions[0], radix)
+    else:
+        data_body = _data_value_xml(data_type, radix)
+
     return (
-        f'      <Tag Name="{name}" TagType="Base" DataType="{data_type}"{dims_attr} '
-        f'Radix="{radix}" Constant="false" ExternalAccess="Read/Write">{desc_xml}\n'
-        f'        <Data Format="Decorated"/>\n'
+        f'      <Tag Name="{name}" TagType="Base" DataType="{data_type}"{dims_attr}'
+        f'{radix_attr} Constant="false" ExternalAccess="Read/Write">{desc_xml}\n'
+        f'        <Data Format="Decorated">{data_body}</Data>\n'
         f"      </Tag>"
     )
 

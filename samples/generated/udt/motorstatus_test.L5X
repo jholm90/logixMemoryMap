@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="MotorStatus" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Aug 20 15:27:08 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="MotorStatus" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Aug 20 15:27:08 2026" LastModifiedDate="Thu Aug 20 15:27:08 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="MotorStatus" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Aug 20 15:48:10 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="MotorStatus" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Aug 20 15:48:10 2026" LastModifiedDate="Thu Aug 20 15:48:10 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -30,8 +30,8 @@
 </Modules>
 <AddOnInstructionDefinitions/>
 <Tags>
-      <Tag Name="TestInstance" TagType="Base" DataType="MotorStatus" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
-        <Data Format="Decorated"/>
+      <Tag Name="TestInstance" TagType="Base" DataType="MotorStatus" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="MotorStatus"><DataValueMember Name="Running" DataType="BOOL" Value="0" /><DataValueMember Name="Speed" DataType="DINT" Value="0" /><DataValueMember Name="Faulted" DataType="BOOL" Value="0" /></Structure></Data>
       </Tag>
 </Tags>
 <Programs>
