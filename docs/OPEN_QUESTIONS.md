@@ -103,13 +103,30 @@ generated files don't import cleanly, the whole testing loop needs a different
 approach (e.g. generating via Logix Designer's own automation/API instead of
 raw XML authoring).
 
+Candidate for both this and OQ-MEMREADMETHOD, unverified (2026-08-20): Rockwell
+ships an official **Logix Designer SDK** (.NET, callable from PowerShell/C#)
+that scripts Studio 5000 itself — project create/open-from-L5X-import,
+save-as-ACD, go online (real controller or Logix Emulate 5570), download, and
+read/write tag values online. If it holds up, this replaces the whole
+manual click-through loop in TESTING_PLAN.md: script imports every sample L5X,
+compiles, downloads to Emulate, and reads memory back. Two things need
+confirming before betting the pipeline on it: (1) does SDK import success
+mean the same thing as File→Import success for OQ-GENMETHOD purposes, and
+(2) is controller memory usage exposed as a readable value at all (see
+OQ-MEMREADMETHOD) — if not, fall back to scripting a GSV read into a tag and
+reading that tag through the SDK instead of reading it by hand. Needs a spike
+against Rockwell's actual LDSDK docs/samples before Phase 3 planning assumes
+it works.
+
 **OQ-MEMREADMETHOD** — Best method to read actual controller memory usage
 after download: Studio 5000 Controller Properties → Memory tab (manual read),
 or a GSV (Get System Value) instruction reading a memory-related system
 attribute for a fully scripted read-back? GSV approach would let sample
 generation AND memory read-back both be automated — worth confirming which
 GSV attributes actually expose this (e.g. WHO/CPU memory attributes) before
-committing to the manual-read workflow in TESTING_PLAN.md.
+committing to the manual-read workflow in TESTING_PLAN.md. See LDSDK note
+under OQ-GENMETHOD — if GSV exposes it and the SDK can read the tag, this
+closes without ever touching the Controller Properties dialog.
 
 **OQ-EMULATE** — Is validation done against a real CompactLogix, or Logix
 Emulate? If emulate, confirm memory reporting matches real hardware behavior

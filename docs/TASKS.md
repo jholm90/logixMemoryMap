@@ -33,10 +33,6 @@ a single commit-sized unit of work.
 - [x] Custom STRING type sizing (user-defined max length UDTs) — separate path
       from generic UDT recursion — `Family="StringFamily"` special-cased so it
       doesn't inherit the UDT-alignment UNKNOWN taint
-- [ ] AOI definition parser: `AddOnInstructionDefinitions` local tags + params
-- [ ] AOI instance multiplication: each call site in logic adds one instance's
-      worth of local tag memory (needs call-site count from logic parse —
-      coordinate with Phase 4 work, may need to stub this until then)
 - [ ] Module/IO parser: `Controller/Modules` → connection tag sizing (Local I/O
       first, produced/consumed second — OQ-PRODCONS)
 - [x] Controller-scope vs program-scope tag separation in output
@@ -51,8 +47,8 @@ a single commit-sized unit of work.
 ## Phase 2 — UI v1
 - [ ] Treemap component (squarified or similar algorithm)
 - [ ] Root view: controller tags / program tags (per program) / UDT defs pool /
-      AOI defs pool / module overhead, sized by bytes
-- [ ] Click-to-drill: UDT → members, AOI → locals+params, program → its tags
+      module overhead, sized by bytes (no AOI pool yet — see Phase 2b)
+- [ ] Click-to-drill: UDT → members, program → its tags
 - [ ] Breadcrumb / back navigation
 - [ ] Sortable list view (name / type / bytes / %)
 - [ ] Type-utilization summary pane (% of budget per data type across whole
@@ -60,6 +56,14 @@ a single commit-sized unit of work.
 - [ ] Color coding: exact (tags/UDT) vs estimated (logic, once Phase 5 lands) —
       build the visual language now even if unused until later
 - [ ] Load Phase-0 dev fixture, sanity-check against manual spot-checks
+
+## Phase 2b — AOI sizing (deferred from Phase 1)
+- [ ] AOI definition parser: `AddOnInstructionDefinitions` local tags + params
+- [ ] UI: click-to-drill into an AOI defs pool node → locals+params breakdown
+- [ ] AOI instance multiplication: each call site in logic adds one instance's
+      worth of local tag memory (needs call-site count from logic parse —
+      coordinate with Phase 4 work, may need to stub this until then,
+      OQ-AOIINSTANCE)
 
 ## Phase 3 — Sample validation round 1
 - [ ] Generate: 10k-element BOOL array (controller tag)
