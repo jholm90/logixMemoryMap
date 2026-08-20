@@ -45,17 +45,41 @@ a single commit-sized unit of work.
       BOOL/DINT/STRING members) — `tests/test_sizing.py`, `tests/test_parser.py`
 
 ## Phase 2 — UI v1
-- [ ] Treemap component (squarified or similar algorithm)
-- [ ] Root view: controller tags / program tags (per program) / UDT defs pool /
-      module overhead, sized by bytes (no AOI pool yet — see Phase 2b)
-- [ ] Click-to-drill: UDT → members, program → its tags
-- [ ] Breadcrumb / back navigation
-- [ ] Sortable list view (name / type / bytes / %)
-- [ ] Type-utilization summary pane (% of budget per data type across whole
+Stack decided 2026-08-20 (OQ-STACK closed): local Flask server, vanilla JS/SVG
+squarified treemap in the browser, zero CDN/external-JS dependency (engineering
+workstations on OT networks are frequently airgapped — a public tool can't
+assume runtime internet access). `l5x-memory-analyzer ui <path>` serves it.
+Verified 2026-08-20 against both the Phase-0 fixture and a richer synthetic
+multi-program/multi-UDT fixture, screenshotted via headless Chromium — not
+just "code compiles," actually rendered and clicked through.
+
+- [x] Treemap component (squarified algorithm, hand-rolled in
+      `ui/static/app.js` — no D3/external lib)
+- [x] Root view: controller tags / program tags (per program), sized by bytes
+- [ ] UDT defs pool / module overhead as their own root-level groups — not
+      built. Right now a UDT only appears sized-in-place at each tag that
+      uses it; there's no separate "all UDT definitions" browsable pool.
+      Module overhead has nothing to show yet regardless (Module/IO parser
+      still unimplemented, see Phase 1).
+- [x] Click-to-drill: program → its tags (drilling into a "Program: X" group
+      node shows that program's tags)
+- [ ] Click-to-drill: UDT → members — NOT built. `sizing/report.py`'s flat
+      SizeEntry only carries a UDT tag's *total* size, not a member-level
+      breakdown, so there's nothing for the UI to drill into yet. Needs a
+      report-contract change (nested entries or a members sub-list per UDT
+      tag), not just a frontend change.
+- [x] Breadcrumb / back navigation
+- [x] Sortable list view (name / type / bytes / %) — click column header to sort
+- [x] Type-utilization summary pane (% of budget per data type across whole
       project, not just top-level categories)
-- [ ] Color coding: exact (tags/UDT) vs estimated (logic, once Phase 5 lands) —
-      build the visual language now even if unused until later
-- [ ] Load Phase-0 dev fixture, sanity-check against manual spot-checks
+- [x] Color coding — reinterpreted: coded by `basis` (KNOWN/ASSUMED/FITTED/
+      UNKNOWN) rather than `tier` (exact/estimated), since every entry is
+      tier=exact until Phase 4/5 adds logic sizing and a tier-based scheme
+      would have nothing to distinguish yet. Basis-coding is live now and
+      immediately useful (e.g. a UDT-containing tag renders red/UNKNOWN
+      because of the still-open OQ-ALIGN taint). Revisit/extend to tier once
+      Phase 5 gives it something to encode.
+- [x] Load Phase-0 dev fixture, sanity-check against manual spot-checks
 
 ## Phase 2b — AOI sizing (deferred from Phase 1)
 - [ ] AOI definition parser: `AddOnInstructionDefinitions` local tags + params

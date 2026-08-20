@@ -6,12 +6,15 @@ can reference it instead of restating it. Resolve in place — don't delete, mar
 
 ## Scope / stack
 
-**OQ-STACK — RESOLVED (2026-08-19).** Parser/sizing engine: Python. Public
-release intended, so standard OSS packaging applies (setup.py/pyproject.toml,
-pip-installable, CLI entry point). UI framework still open — a Python-native UI
-(e.g. a local web server + the existing treemap plan rendered in-browser) keeps
-the whole project one language, which matters more now that it's public and
-contributors shouldn't need two toolchains to build it.
+**OQ-STACK — RESOLVED (2026-08-19, UI half resolved 2026-08-20).**
+Parser/sizing engine: Python. Public release intended, so standard OSS
+packaging applies (setup.py/pyproject.toml, pip-installable, CLI entry
+point). UI: local Flask server (`l5x-memory-analyzer ui <path>`) + a
+hand-rolled vanilla JS/SVG squarified treemap in the browser — deliberately
+no D3 or any CDN-loaded JS, since engineering workstations running Studio
+5000 are frequently on airgapped OT networks and a public tool can't assume
+the browser has internet access at runtime. Keeps the whole project
+pip-installable in one language plus a dependency-free frontend.
 
 **OQ-L5XVERSION** — Which Logix Designer / L5X schema version(s) must this
 support? Studio 5000 versions have changed L5X schema details over the years

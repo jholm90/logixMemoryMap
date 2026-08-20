@@ -1,15 +1,22 @@
 # Project Plan
 
-**Current phase: 1 — Tag / UDT sizing engine (in progress)**
+**Current phase: 2 — UI v1 (in progress)**
 
-Phase 0 exit criterion met (skeleton loads and prints raw XML of a sample
-L5X). Phase 1 tag/UDT/array/string sizing is implemented and unit-tested;
-Module/IO parsing is still open. AOI sizing has been pulled out of Phase 1
-and deferred to Phase 2b (see below) — an AOI is part local-tag data, part
-compiled logic (call-site multiplication), so sizing it correctly means
-touching the same unresolved logic-size problem Phase 4 exists to solve.
-Better to get the UI proven out against what's already exact (tags/UDTs)
-than sink time into AOI now and end up half-blocked on Phase 4 anyway.
+Phase 0 exit criterion met. Phase 1 tag/UDT/array/string sizing is
+implemented and unit-tested; Module/IO parsing is still open (needs real
+sample L5X files to verify module-tag XML shape against — none in
+`samples/local/` yet). AOI sizing was pulled out of Phase 1 into Phase 2b —
+an AOI is part local-tag data, part compiled logic (call-site
+multiplication), so sizing it correctly means touching the same unresolved
+logic-size problem Phase 4 exists to solve.
+
+Phase 2 UI v1 is underway: local Flask server + hand-rolled vanilla JS/SVG
+squarified treemap (`l5x-memory-analyzer ui <path>`), verified rendering
+against both the Phase-0 fixture and a richer synthetic multi-program/UDT
+fixture via headless-Chromium screenshots. Treemap, breadcrumb drill,
+sortable list, and type-utilization pane are working; UDT-defs-pool /
+module-overhead root groups and UDT-member drill-down are not yet built
+(see docs/TASKS.md for the precise cut line).
 
 Update the line above as phases close. Each phase has an exit criterion; don't
 start the next phase until it's met, even if it's tempting to jump ahead on UI
