@@ -88,19 +88,30 @@ def group_custom_string() -> None:
 # ---------------------------------------------------------------------------
 
 def group_aoi() -> None:
-    # Basic AOI: 2 Input, 1 Output, 1 InOut (no storage), 2 LocalTags.
+    # Basic AOI: 2 Input, 1 Output, 2 LocalTags. No InOut param -- none of
+    # James's real AOI templates use one, so it's dropped here rather than
+    # kept as an unconfirmed pattern on a second attempt at this batch.
     inputs = [MemberSpec("SetPoint", "REAL"), MemberSpec("Enable", "BOOL")]
     outputs = [MemberSpec("Status", "DINT")]
-    inouts = [MemberSpec("RefTag", "DINT")]
     locals_ = [MemberSpec("Accum", "REAL"), MemberSpec("Temp", "DINT")]
-    definition, storage = aoi_xml("BasicAOI", inputs, outputs, inouts, locals_)
+    definition, storage = aoi_xml("BasicAOI", inputs, outputs, [], locals_)
 
     l5x_def_only = build_l5x(target_name="BasicAOI", tags_xml="", extra_aoi_xml=definition)
-    _write(l5x_def_only, "aoi", "basic_aoi_def_only", "Basic AOI (2 In/1 Out/1 InOut/2 Local), 0 instances")
+    _write(l5x_def_only, "aoi", "basic_aoi_def_only", "Basic AOI (2 In/1 Out/2 Local), 0 instances")
 
     tag = tag_xml("TestInstance", "BasicAOI", udt_members=storage)
     l5x_1inst = build_l5x(target_name="BasicAOI", tags_xml=tag, extra_aoi_xml=definition)
-    _write(l5x_1inst, "aoi", "basic_aoi_1_instance", "Basic AOI (2 In/1 Out/1 InOut/2 Local), 1 instance")
+    _write(l5x_1inst, "aoi", "basic_aoi_1_instance", "Basic AOI (2 In/1 Out/2 Local), 1 instance")
+
+    # Array of AOI-INSTANCE tags -- real shape confirmed 2026-08-20 against
+    # James's Aoi_Nested_requiredParams_UsedInMainPrgArray.L5X (a controller
+    # tag Dimensions="10" of the AOI type, same Array/Element/Structure
+    # pattern already confirmed for array-of-UDT). This is the "arrays with
+    # AOIs" case that's actually confirmed real -- separate from the
+    # array-dimensioned-Parameter/LocalTag cases below, which aren't.
+    tag = tag_xml("TestInstanceArray", "BasicAOI", dimensions=(10,), udt_members=storage)
+    l5x = build_l5x(target_name="BasicAOI", tags_xml=tag, extra_aoi_xml=definition)
+    _write(l5x, "aoi", "basic_aoi_10_instance_array", "Basic AOI (2 In/1 Out/2 Local), array of 10 instances (confirmed real pattern)")
 
     # AOI with an array LocalTag ("arrays inside the aois").
     array_locals = [MemberSpec("Buffer", "DINT", dimension=100)]

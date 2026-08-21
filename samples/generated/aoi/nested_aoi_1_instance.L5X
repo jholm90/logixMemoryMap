@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="OuterAOI" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Aug 21 00:55:42 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="OuterAOI" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Aug 21 00:55:42 2026" LastModifiedDate="Fri Aug 21 00:55:42 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="OuterAOI" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Aug 21 01:28:12 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="OuterAOI" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Aug 21 01:28:12 2026" LastModifiedDate="Fri Aug 21 01:28:12 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -21,37 +21,27 @@
 </Module>
 </Modules>
 <AddOnInstructionDefinitions>
-    <AddOnInstructionDefinition Name="InnerAOI" Revision="1.0" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" SoftwareRevision="v35.00">
+    <AddOnInstructionDefinition Name="InnerAOI" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
       <Parameters>
 <Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
 <Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
-<Parameter Name="X" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="X" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
       </Parameters>
-      <LocalTags>
-
-      </LocalTags>
+      <LocalTags/>
       <Routines>
-        <Routine Name="Logic" Type="RLL">
-          <RLLContent>
-            <Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
-          </RLLContent>
-        </Routine>
+        <Routine Name="Logic" Type="RLL"/>
       </Routines>
     </AddOnInstructionDefinition>
-    <AddOnInstructionDefinition Name="OuterAOI" Revision="1.0" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" SoftwareRevision="v35.00">
+    <AddOnInstructionDefinition Name="OuterAOI" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
       <Parameters>
 <Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
 <Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
       </Parameters>
       <LocalTags>
-<LocalTag Name="NestedInstance" DataType="InnerAOI" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="InnerAOI" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="NestedInstance" DataType="InnerAOI" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[[0,0,0,0]]]></DefaultData><DefaultData Format="Decorated"><Structure DataType="InnerAOI"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="X" DataType="DINT" Value="0" /></Structure></DefaultData></LocalTag>
       </LocalTags>
       <Routines>
-        <Routine Name="Logic" Type="RLL">
-          <RLLContent>
-            <Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
-          </RLLContent>
-        </Routine>
+        <Routine Name="Logic" Type="RLL"/>
       </Routines>
     </AddOnInstructionDefinition>
 </AddOnInstructionDefinitions>

@@ -257,49 +257,79 @@ def custom_string_type_xml(name: str, max_len: int) -> str:
 
 
 def _aoi_default_data_xml(m: "MemberSpec") -> str:
+    """DefaultData for an atomic Parameter/LocalTag. Nested-UDT/nested-AOI
+    members need _aoi_nested_default_data_xml instead (Structure body, not
+    a scalar DataValue)."""
     val = _default_value(m.data_type)
-    l5k_val = val if m.data_type in _FLOAT_TYPES else val
+    radix = "Float" if m.data_type in _FLOAT_TYPES else "Decimal"
     return (
-        f'<DefaultData Format="L5K"><![CDATA[{l5k_val}]]></DefaultData>'
-        f'<DefaultData Format="Decorated">{_data_value_xml(m.data_type, "Float" if m.data_type in _FLOAT_TYPES else "Decimal")}</DefaultData>'
+        f'<DefaultData Format="L5K"><![CDATA[{val}]]></DefaultData>'
+        f'<DefaultData Format="Decorated">{_data_value_xml(m.data_type, radix)}</DefaultData>'
+    )
+
+
+def _aoi_nested_default_data_xml(m: "MemberSpec") -> str:
+    """DefaultData for a LocalTag whose type is a nested UDT/AOI -- real
+    shape confirmed 2026-08-20 (James's Aoi_Nested.L5X, LocalTag
+    "InReal_OutReal" of type InReal_OutReal): L5K is a positional value
+    list `[1,val,val,...]` (leading 1 = EnableIn's real captured value, not
+    modeled precisely here since it doesn't affect byte size -- 0 is fine),
+    Decorated wraps a <Structure> the same way _udt_structure_body_xml does."""
+    inner = _udt_structure_body_xml(list(m.nested_members))
+    l5k_vals = ",".join(_default_value(nm.data_type) for nm in m.nested_members)
+    return (
+        f'<DefaultData Format="L5K"><![CDATA[[0,{l5k_vals}]]]></DefaultData>'
+        f'<DefaultData Format="Decorated"><Structure DataType="{m.data_type}">{inner}</Structure></DefaultData>'
     )
 
 
 def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
-    # Real shape confirmed 2026-08-20 (samples/local/L5X_Samples/CMU_2025_10_14r00.L5X,
-    # AbsoluteMoveOnlyForward AOI) for scalar atomic Input/Output parameters,
-    # including the dual DefaultData L5K+Decorated pair. Array-dimensioned
-    # parameters (Dimension attr) are NOT confirmed against a real export --
-    # extrapolated from the same convention UDT <Member Dimension="N"> uses,
-    # flagged in docs/OPEN_QUESTIONS.md pending real Studio 5000 import result.
+    # Real shape confirmed 2026-08-20 against James's own AOI templates
+    # (AOI_Definition.L5X, AOI_Definition2.L5X, Aoi_Nested*.L5X) -- these
+    # superseded an earlier guess built off one different real AOI
+    # (CMU_2025_10_14r00.L5X) that turned out wrong on several attributes:
+    # Required/Visible are author-chosen per parameter (both true and false
+    # appear across James's real files), not derivable from Usage, so
+    # "false"/"false" is used here as a safe default matching most of his
+    # examples. ExternalAccess is "Read/Write" for Input, "Read Only" for
+    # Output/EnableIn/EnableOut -- confirmed across every one of his files,
+    # not "None" (the earlier guess).
     dim_attr = f' Dimension="{m.dimension}"' if m.dimension else ""
     radix_attr = "" if usage == "InOut" else f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
+    external_access = "Read Only" if usage == "Output" else "Read/Write"
 
     if m.name in ("EnableIn", "EnableOut"):
-        # Real shape confirmed: system-defined params are Required="false"
-        # Visible="false" ExternalAccess="Read Only" (not the generic
-        # user-parameter attributes below).
         return (
             f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{radix_attr} Usage="{usage}" '
             f'Required="false" Visible="false" ExternalAccess="Read Only"/>'
         )
 
-    required = "true" if usage != "InOut" else "false"
     default = "" if usage == "InOut" or m.dimension else _aoi_default_data_xml(m)
     return (
         f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{dim_attr} Usage="{usage}"'
-        f'{radix_attr} Required="{required}" Visible="true" ExternalAccess="None">{default}</Parameter>'
+        f'{radix_attr} Required="false" Visible="false" ExternalAccess="{external_access}">{default}</Parameter>'
     )
 
 
 def _aoi_local_tag_xml(m: "MemberSpec") -> str:
     dim_attr = f' Dimension="{m.dimension}"' if m.dimension else ""
+    if m.nested_members is not None:
+        # Real shape confirmed: a nested-UDT/nested-AOI LocalTag has no
+        # Radix attribute at all (matches the same UDT-typed-tag rule).
+        default = "" if m.dimension else _aoi_nested_default_data_xml(m)
+        return f'<LocalTag Name="{m.name}" DataType="{m.data_type}"{dim_attr} ExternalAccess="None">{default}</LocalTag>'
     radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
     default = "" if m.dimension else _aoi_default_data_xml(m)
     return (
         f'<LocalTag Name="{m.name}" DataType="{m.data_type}"{dim_attr}{radix_attr} '
         f'ExternalAccess="None">{default}</LocalTag>'
     )
+
+
+# Static but well-formed, matches the shape of James's real AOI exports
+# closely enough to import (these attributes don't affect byte size, only
+# well-formedness) -- doesn't need to be live/unique per generated file.
+_AOI_CREATED_DATE = "2026-08-20T12:00:00.000Z"
 
 
 def aoi_xml(
@@ -310,15 +340,22 @@ def aoi_xml(
     local_tags: list["MemberSpec"] | None = None,
 ) -> tuple[str, list["MemberSpec"]]:
     """AddOnInstructionDefinition + the "storage member list" for generating
-    an instance tag of it. Real shape confirmed 2026-08-20 against
-    samples/local/L5X_Samples/CMU_2025_10_14r00.L5X (AbsoluteMoveOnlyForward):
-    every AOI carries system-defined EnableIn (Input BOOL)/EnableOut (Output
-    BOOL) parameters, auto-added here to match. AOI-instance tags render
-    exactly like UDT instances (confirmed 2026-08-20 against 4 real
-    production files, see PROJECT_PLAN.md Phase 4c) -- InOut params carry no
-    storage of their own (reference-only), so the returned storage list is
-    EnableIn/EnableOut + input/output params + local tags, usable directly
-    with tag_xml(udt_members=...) the same way a UDT instance is.
+    an instance tag of it. Real shape confirmed 2026-08-20 against James's
+    own real AOI export templates (AOI_Definition.L5X, AOI_Definition2.L5X,
+    Aoi_Nested*.L5X) after an earlier version of this function (built off a
+    different real AOI) failed Studio 5000 import -- fixed several real
+    discrepancies: AddOnInstructionDefinition needs Vendor/CreatedDate/
+    CreatedBy/EditedDate/EditedBy attributes (the earlier version omitted
+    them entirely); Parameter ExternalAccess is Read/Write (Input) or
+    Read Only (Output), not "None"; a nested-UDT/AOI-typed LocalTag needs a
+    Structure-shaped DefaultData, not the atomic DataValue every Parameter/
+    LocalTag got before (this was silently wrong, not just cosmetically
+    off). AOI-instance tags render exactly like UDT instances (confirmed
+    2026-08-20 against 4 real production files, see PROJECT_PLAN.md Phase
+    4c) -- InOut params carry no storage of their own (reference-only), so
+    the returned storage list is EnableIn/EnableOut + input/output params +
+    local tags, usable directly with tag_xml(udt_members=...) the same way
+    a UDT instance is.
     """
     input_params = input_params or []
     output_params = output_params or []
@@ -334,18 +371,17 @@ def aoi_xml(
     param_parts += [_aoi_parameter_xml(m, "InOut") for m in inout_params]
 
     local_parts = [_aoi_local_tag_xml(m) for m in local_tags]
+    locals_xml = ("<LocalTags>\n" + "\n".join(local_parts) + "\n      </LocalTags>") if local_parts else "<LocalTags/>"
 
     definition = (
-        f'    <AddOnInstructionDefinition Name="{name}" Revision="1.0" ExecutePrescan="false" '
-        f'ExecutePostscan="false" ExecuteEnableInFalse="false" SoftwareRevision="v35.00">\n'
+        f'    <AddOnInstructionDefinition Name="{name}" Revision="1.0" Vendor="LogixMemoryMap" '
+        f'ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" '
+        f'CreatedDate="{_AOI_CREATED_DATE}" CreatedBy="Generator" EditedDate="{_AOI_CREATED_DATE}" '
+        f'EditedBy="Generator" SoftwareRevision="v35.05">\n'
         f'      <Parameters>\n' + "\n".join(param_parts) + "\n      </Parameters>\n"
-        f'      <LocalTags>\n' + "\n".join(local_parts) + "\n      </LocalTags>\n"
+        f'      {locals_xml}\n'
         f'      <Routines>\n'
-        f'        <Routine Name="Logic" Type="RLL">\n'
-        f'          <RLLContent>\n'
-        f'            <Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>\n'
-        f'          </RLLContent>\n'
-        f'        </Routine>\n'
+        f'        <Routine Name="Logic" Type="RLL"/>\n'
         f'      </Routines>\n'
         f"    </AddOnInstructionDefinition>"
     )
