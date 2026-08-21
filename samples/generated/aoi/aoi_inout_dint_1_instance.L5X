@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="ArrayLocalAOI" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Aug 21 01:32:57 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="ArrayLocalAOI" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Aug 21 01:32:57 2026" LastModifiedDate="Fri Aug 21 01:32:57 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="InOutDintAOI" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Aug 21 01:32:57 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="InOutDintAOI" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Aug 21 01:32:57 2026" LastModifiedDate="Fri Aug 21 01:32:57 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -21,13 +21,14 @@
 </Module>
 </Modules>
 <AddOnInstructionDefinitions>
-    <AddOnInstructionDefinition Name="ArrayLocalAOI" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+    <AddOnInstructionDefinition Name="InOutDintAOI" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
       <Parameters>
 <Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
 <Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InOut" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
       </Parameters>
       <LocalTags>
-<LocalTag Name="Buffer" DataType="DINT" Dimension="100" Radix="Decimal" ExternalAccess="None"></LocalTag>
+<LocalTag Name="Buffer" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
       </LocalTags>
       <Routines>
         <Routine Name="Logic" Type="RLL"/>
@@ -35,7 +36,9 @@
     </AddOnInstructionDefinition>
 </AddOnInstructionDefinitions>
 <Tags>
-
+      <Tag Name="TestInstance" TagType="Base" DataType="InOutDintAOI" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="InOutDintAOI"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="Buffer" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
 </Tags>
 <Programs>
 <Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">

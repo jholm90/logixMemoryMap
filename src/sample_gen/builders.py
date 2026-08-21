@@ -285,26 +285,45 @@ def _aoi_nested_default_data_xml(m: "MemberSpec") -> str:
 
 def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
     # Real shape confirmed 2026-08-20 against James's own AOI templates
-    # (AOI_Definition.L5X, AOI_Definition2.L5X, Aoi_Nested*.L5X) -- these
-    # superseded an earlier guess built off one different real AOI
-    # (CMU_2025_10_14r00.L5X) that turned out wrong on several attributes:
-    # Required/Visible are author-chosen per parameter (both true and false
-    # appear across James's real files), not derivable from Usage, so
-    # "false"/"false" is used here as a safe default matching most of his
+    # (AOI_Definition.L5X, AOI_Definition2.L5X, Aoi_Nested*.L5X, and the
+    # InOut examples aoi_inOut_OneDint.L5X/aoi_inOut_OneString.L5X) --
+    # superseded an earlier guess built off one different real AOI that
+    # turned out wrong on several attributes: Required/Visible are
+    # author-chosen per parameter (both true and false appear across
+    # James's real files), not derivable from Usage, so "false"/"false" is
+    # used here for Input/Output as a safe default matching most of his
     # examples. ExternalAccess is "Read/Write" for Input, "Read Only" for
     # Output/EnableIn/EnableOut -- confirmed across every one of his files,
     # not "None" (the earlier guess).
-    dim_attr = f' Dimension="{m.dimension}"' if m.dimension else ""
-    radix_attr = "" if usage == "InOut" else f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
-    external_access = "Read Only" if usage == "Output" else "Read/Write"
-
     if m.name in ("EnableIn", "EnableOut"):
+        radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
         return (
             f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{radix_attr} Usage="{usage}" '
             f'Required="false" Visible="false" ExternalAccess="Read Only"/>'
         )
 
-    default = "" if usage == "InOut" or m.dimension else _aoi_default_data_xml(m)
+    if usage == "InOut":
+        # Real shape confirmed 2026-08-20 (aoi_inOut_OneDint.L5X,
+        # aoi_inOut_OneString.L5X): self-closed, no DefaultData, no
+        # ExternalAccess at all, Required="true" Visible="true"
+        # Constant="false" (not the false/false used for Input/Output).
+        # Radix appears for an atomic type (DINT) but not for STRING --
+        # matches the same "STRING never gets a bare Radix" rule seen
+        # elsewhere in this file. Confirmed separately: an InOut param
+        # carries no storage of its own -- the real instance Tag's
+        # Structure body only ever contains EnableIn/EnableOut, InOut is
+        # completely absent -- so aoi_xml() already excludes inout_params
+        # from the returned storage_members list, unchanged by this fix.
+        radix_attr = "" if m.data_type == "STRING" else f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
+        return (
+            f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{radix_attr} Usage="InOut" '
+            f'Required="true" Visible="true" Constant="false"/>'
+        )
+
+    dim_attr = f' Dimension="{m.dimension}"' if m.dimension else ""
+    radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
+    external_access = "Read Only" if usage == "Output" else "Read/Write"
+    default = "" if m.dimension else _aoi_default_data_xml(m)
     return (
         f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{dim_attr} Usage="{usage}"'
         f'{radix_attr} Required="false" Visible="false" ExternalAccess="{external_access}">{default}</Parameter>'

@@ -128,6 +128,30 @@ def group_aoi() -> None:
     l5x = build_l5x(target_name="ArrayParamAOI", tags_xml="", extra_aoi_xml=definition3)
     _write(l5x, "aoi", "aoi_array_param_def_only", "AOI with a 50-element array Input Parameter, 0 instances")
 
+    # InOut parameters (James: real examples aoi_inOut_OneDint.L5X /
+    # aoi_inOut_OneString.L5X -- confirmed an InOut param carries zero
+    # storage of its own; the real instance Tag's Structure body only ever
+    # has EnableIn/EnableOut, InOut is completely absent from it). One
+    # DINT InOut, one STRING InOut (STRING never gets a Radix attribute,
+    # confirmed separately) -- both also keep the scalar DINT LocalTag
+    # "Buffer" his real files paired with the InOut param.
+    inout_dint = [MemberSpec("InOut", "DINT")]
+    dint_locals = [MemberSpec("Buffer", "DINT")]
+    def_dint, storage_dint = aoi_xml("InOutDintAOI", [], [], inout_dint, dint_locals)
+    l5x = build_l5x(target_name="InOutDintAOI", tags_xml="", extra_aoi_xml=def_dint)
+    _write(l5x, "aoi", "aoi_inout_dint_def_only", "AOI with 1 InOut DINT param + 1 DINT LocalTag, 0 instances")
+    tag = tag_xml("TestInstance", "InOutDintAOI", udt_members=storage_dint)
+    l5x = build_l5x(target_name="InOutDintAOI", tags_xml=tag, extra_aoi_xml=def_dint)
+    _write(l5x, "aoi", "aoi_inout_dint_1_instance", "AOI with 1 InOut DINT param + 1 DINT LocalTag, 1 instance -- confirms InOut adds no instance storage")
+
+    inout_string = [MemberSpec("InOut", "STRING")]
+    def_str, storage_str = aoi_xml("InOutStringAOI", [], [], inout_string, dint_locals)
+    l5x = build_l5x(target_name="InOutStringAOI", tags_xml="", extra_aoi_xml=def_str)
+    _write(l5x, "aoi", "aoi_inout_string_def_only", "AOI with 1 InOut STRING param + 1 DINT LocalTag, 0 instances")
+    tag = tag_xml("TestInstance", "InOutStringAOI", udt_members=storage_str)
+    l5x = build_l5x(target_name="InOutStringAOI", tags_xml=tag, extra_aoi_xml=def_str)
+    _write(l5x, "aoi", "aoi_inout_string_1_instance", "AOI with 1 InOut STRING param + 1 DINT LocalTag, 1 instance -- confirms InOut adds no instance storage")
+
     # Nested AOI: outer AOI has a LocalTag whose type is the inner AOI
     # (James: "nested aois need to be tested"). Data-space only -- the
     # outer AOI's logic doesn't actually call the inner one (that's Phase

@@ -120,3 +120,7 @@ axis_cip_drive_only,MotionGroup + 1 AXIS_CIP_DRIVE instance (unmodeled predefine
 axis_servo_only,MotionGroup + 1 AXIS_SERVO instance (unmodeled predefined structure),axis,samples/generated/axis/axis_servo_only.L5X,0,,,,,,,
 axis_coordinate_system_only,MotionGroup + 1 COORDINATE_SYSTEM instance (unmodeled predefined structure),axis,samples/generated/axis/axis_coordinate_system_only.L5X,0,,,,,,,
 basic_aoi_10_instance_array,"Basic AOI (2 In/1 Out/2 Local), array of 10 instances (confirmed real pattern)",aoi,samples/generated/aoi/basic_aoi_10_instance_array.L5X,280,,,,,,,
+aoi_inout_dint_def_only,"AOI with 1 InOut DINT param + 1 DINT LocalTag, 0 instances",aoi,samples/generated/aoi/aoi_inout_dint_def_only.L5X,0,,,,,,,
+aoi_inout_dint_1_instance,"AOI with 1 InOut DINT param + 1 DINT LocalTag, 1 instance -- confirms InOut adds no instance storage",aoi,samples/generated/aoi/aoi_inout_dint_1_instance.L5X,12,,,,,,,
+aoi_inout_string_def_only,"AOI with 1 InOut STRING param + 1 DINT LocalTag, 0 instances",aoi,samples/generated/aoi/aoi_inout_string_def_only.L5X,0,,,,,,,
+aoi_inout_string_1_instance,"AOI with 1 InOut STRING param + 1 DINT LocalTag, 1 instance -- confirms InOut adds no instance storage",aoi,samples/generated/aoi/aoi_inout_string_1_instance.L5X,12,,,,,,,
