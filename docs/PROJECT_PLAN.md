@@ -43,10 +43,13 @@ sample L5X file.
 ## Phase 1 — Tag / UDT sizing engine
 Build the calculable-with-confidence half of the tool first, since it doesn't
 depend on empirical logic-compilation data. AOI sizing is intentionally not
-part of this phase — see Phase 2b.
+part of this phase — see Phase 4c.
 
 - Parse `Controller/DataTypes` (UDTs) → recursive size calculator
-- Parse `Controller/Modules` → I/O tag + connection size
+- Parse `Controller/Modules` → I/O tag + connection size — **deferred, James
+  2026-08-20: "we will leave the module stuff to later, after we get program
+  logic sizing stuff taken care of."** Real sample files already exist in
+  `samples/local/` for when this gets picked back up; not blocking Phase 3.
 - Parse `Controller/Tags` (controller-scope) and `Programs/Program/Tags`
   (program-scope) → resolve each tag's type to a byte size
 - Atomic type table, BOOL packing rule, STRING/custom string overhead, array
@@ -93,6 +96,12 @@ every remaining discrepancy is explained, not just absorbed into a fudge factor.
 - Timers/counters (TON/TOF/RTO/CTU/CTD), math (ADD/SUB/MUL/DIV/CPT), move/logical
   (MOV/AND/OR/MEQ), array/file instructions (COP/FLL/indirect addressing), MSG,
   JSR/subroutine call overhead, indirect/pointer addressing overhead
+- **Functional call/task size** (James, 2026-08-20's "big game" category
+  breakdown: tag/data size, logic/program size, functional call/task size,
+  AOI size, module/IO size): JSR call-site overhead is already listed above;
+  separately, per-Task overhead (adding a second/third Task, watchdog
+  config, scheduled-program list) isn't yet isolated as its own variable —
+  needs samples varying Task count independent of program/routine content.
 - Same sample → record → fit loop
 - Consolidate into a single instruction-weight table in `MEMORY_MODEL.md`,
   flagged as fitted/estimated, with the sample corpus size and residual error
@@ -126,13 +135,42 @@ sizing).
 - AOI instance multiplication per call site (needs Phase 4's logic parsing)
 - **Nested AOIs (James, 2026-08-20): "nested aois need to be tested in
   phase 4 after logic size has been estimated"** — an AOI that calls
-  another AOI, tested here specifically, not before
+  another AOI, tested here specifically, not before. Generator capability
+  built 2026-08-20 (`aoi_xml()`, supports Parameters/LocalTags, array
+  dims, and a LocalTag typed as another AOI) so samples are ready to go
+  the moment this phase actually starts — building the tool now isn't the
+  same as running the analysis early, which stays parked per the reorder.
 - AOI-instance sizing validated the same way as tags/UDTs (real Capacity-tab
   data, not just L5X-schema inference) — "aoi size needs to be validated"
 
 **Exit criterion:** AOI definitions sized and drillable in the UI at the
 per-instance-definition level; instance multiplication implemented (unblocked
 by then, since Phase 4/4b are done); nested-AOI call chains sized correctly.
+
+## Phase 4d — Motion structures (AXIS_CIP_DRIVE, AXIS_VIRTUAL, etc.)
+**New, James 2026-08-20: "outside the normal scope... maybe ill just upload
+a sample program you can modify."** Real reference exports provided
+(`samples/generated/axis/`: MotionGroup-only baseline, AXIS_VIRTUAL,
+AXIS_CIP_DRIVE, AXIS_SERVO, COORDINATE_SYSTEM, one axis type each). These
+are genuinely predefined Rockwell structures exported in `Data Format="Axis"`
+with a flat attribute list (`<AxisParameters .../>`), not the
+Structure/DataValueMember shape UDTs use — completely unmodeled by the
+sizing engine today (confirmed: `build_report` returns an UnknownDataType
+error for every AXIS_* tag, doesn't crash, but sizes nothing). Can't be
+regenerated synthetically like a UDT; treat as fixed predefined-structure
+byte constants once real Capacity-tab numbers come back, same tier as
+TIMER/COUNTER/CONTROL. James: still want tests with only CIP drives, only
+virtual, and a combination of both in one project — only single-axis-type
+reference files exist so far, a combined file is a real follow-up (either
+he exports one, or this phase revisits it).
+
+## Phase 4e — Big game: combined final validation
+**New, James 2026-08-20 ("big game with all of the above final testing").**
+Once tag/data, logic/program, functional call/task, AOI, and module/IO
+sizing are each independently validated, run one (or a few) large, realistic
+combined program(s) exercising all of them together and check the tool's
+total prediction against real Capacity-tab data end to end — the actual
+product validation, not just isolated-variable sweeps.
 
 ## Phase 5 — UI v2 (logic browsing)
 - Extend treemap/list to drill into Tasks → Programs → Routines → Rungs

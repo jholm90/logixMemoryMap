@@ -26,6 +26,15 @@ class MemberSpec:
     data_type: str
     dimension: int = 0
     description: str | None = None
+    # Nested UDT support (James, 2026-08-20: "nested UDTs need to be
+    # tested"). When set, `data_type` names another UDT and this is that
+    # UDT's own member list -- both the definition side (_udt_members_xml,
+    # a plain type-name reference, no recursion needed) and the
+    # instance/Structure side (_udt_structure_body_xml, which does need to
+    # recurse) use this to render the nested type correctly. Works combined
+    # with `dimension` for "array of nested UDT" (a member that's an array
+    # of another UDT's instances -- OQ-TAGOVERHEAD "nested array udts").
+    nested_members: tuple["MemberSpec", ...] | None = None
 
 
 _FLOAT_TYPES = {"REAL"}
@@ -68,13 +77,26 @@ def _udt_structure_body_xml(members: list["MemberSpec"]) -> str:
     name/type (e.g. a BOOL member as a plain DataValueMember), with no trace
     of the hidden-SINT/BIT-alias representation that's purely a <DataType>
     Members-list authoring detail. Much simpler than the definition side.
-    Nested UDT-typed members aren't supported yet (no generator CLI syntax
-    for authoring one), so they're skipped with a comment rather than
-    silently emitting something wrong.
+
+    Nested-UDT members (m.nested_members set) recurse into their own
+    <Structure>, and combined with m.dimension produce an array of nested
+    Structures -- the same Array/Element/Structure shape already confirmed
+    for a top-level array-of-UDT tag (tag_xml), just one level deeper.
     """
     parts = []
     for m in members:
-        if m.data_type == "STRING":
+        if m.nested_members is not None:
+            inner = _udt_structure_body_xml(list(m.nested_members))
+            if m.dimension:
+                elements = "".join(
+                    f'<Element Index="[{i}]"><Structure DataType="{m.data_type}">{inner}</Structure></Element>'
+                    for i in range(m.dimension)
+                )
+                parts.append(f'<ArrayMember Name="{m.name}" DataType="{m.data_type}" '
+                             f'Dimensions="{m.dimension}">{elements}</ArrayMember>')
+            else:
+                parts.append(f'<StructureMember Name="{m.name}" DataType="{m.data_type}">{inner}</StructureMember>')
+        elif m.data_type == "STRING":
             parts.append(_string_structure_member_xml(m.name))
         elif m.dimension:
             parts.append(f'<ArrayMember Name="{m.name}" DataType="{m.data_type}" '
@@ -86,20 +108,57 @@ def _udt_structure_body_xml(members: list["MemberSpec"]) -> str:
             parts.append(f'<DataValueMember Name="{m.name}" DataType="{m.data_type}" '
                          f'Value="{_default_value(m.data_type)}" />')
         else:
-            parts.append(f"<!-- nested UDT member {m.name}:{m.data_type} not yet supported by the generator -->")
+            parts.append(f"<!-- unsupported member {m.name}:{m.data_type} -->")
     return "".join(parts)
+
+
+def collect_nested_datatypes(name: str, members: list["MemberSpec"], family: str = "NoFamily") -> str:
+    """Every nested UDT referenced (transitively) by `members` needs its own
+    <DataType> definition alongside the top one -- returns all of them,
+    innermost-first, ready to concatenate into <DataTypes>."""
+    parts = []
+    for m in members:
+        if m.nested_members is not None:
+            parts.append(collect_nested_datatypes(m.data_type, list(m.nested_members), family))
+    parts.append(udt_xml(name, members, family))
+    return "\n".join(parts)
+
+
+def _string_tag_data_xml(max_len: int) -> str:
+    """Standalone STRING-typed (built-in or custom-length) tag body --
+    confirmed against real corpus (2026-08-20, multiple files e.g.
+    RobbinsGrn_2026_05_13r00.L5X szInstruction): a top-level STRING tag
+    exports as a *pair* of <Data> elements (Format="L5K" and Format="String"),
+    NOT the <Data Format="Decorated"> every other tag type uses. A STRING
+    *member inside a UDT* is different again (Decorated StructureMember,
+    see _string_structure_member_xml) -- confirmed separately, real shape,
+    not the same rule applied twice by assumption."""
+    l5k_padding = "$00" * max_len
+    return (
+        f'<Data Format="L5K">\n<![CDATA[[0,\'{l5k_padding}\'\n\t\t]]]>\n</Data>\n'
+        f'        <Data Format="String" Length="0">\n<![CDATA[\'\']]>\n</Data>'
+    )
 
 
 def tag_xml(
     name: str, data_type: str, dimensions: tuple[int, ...] = (), radix: str = "Decimal",
     description: str | None = None, udt_members: list["MemberSpec"] | None = None,
+    string_max_len: int | None = None,
 ) -> str:
     dims_attr = f' Dimensions="{" ".join(str(d) for d in dimensions)}"' if dimensions else ""
     desc_xml = f"\n        <Description><![CDATA[{description}]]></Description>" if description else ""
 
     # Real exports (2026-08-20): a UDT-typed Tag element carries no Radix
     # attribute at all -- only atomic-rooted tags (scalar or array) do.
-    radix_attr = f' Radix="{radix}"' if udt_members is None else ""
+    radix_attr = f' Radix="{radix}"' if udt_members is None and string_max_len is None else ""
+
+    if string_max_len is not None:
+        return (
+            f'      <Tag Name="{name}" TagType="Base" DataType="{data_type}"'
+            f' Constant="false" ExternalAccess="Read/Write">{desc_xml}\n'
+            f'        {_string_tag_data_xml(string_max_len)}\n'
+            f"      </Tag>"
+        )
 
     if udt_members is not None:
         structure_body = f'<Structure DataType="{data_type}">{_udt_structure_body_xml(udt_members)}</Structure>'
@@ -185,14 +244,113 @@ def udt_xml(name: str, members: list[MemberSpec], family: str = "NoFamily",
 
 
 def custom_string_type_xml(name: str, max_len: int) -> str:
+    # Real shape confirmed 2026-08-20, samples/local/SJ_Gormley_20251112_r02.L5X
+    # (DataType Name="Long_String", DATA Dimension="128").
     return (
         f'    <DataType Name="{name}" Family="StringFamily" Class="User">\n'
         f"      <Members>\n"
-        f'        <Member Name="LEN" DataType="DINT" Dimension="0" Hidden="false"/>\n'
-        f'        <Member Name="DATA" DataType="SINT" Dimension="{max_len}" Hidden="false" Radix="ASCII"/>\n'
+        f'        <Member Name="LEN" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false" ExternalAccess="Read/Write"/>\n'
+        f'        <Member Name="DATA" DataType="SINT" Dimension="{max_len}" Radix="ASCII" Hidden="false" ExternalAccess="Read/Write"/>\n'
         f"      </Members>\n"
         f"    </DataType>"
     )
+
+
+def _aoi_default_data_xml(m: "MemberSpec") -> str:
+    val = _default_value(m.data_type)
+    l5k_val = val if m.data_type in _FLOAT_TYPES else val
+    return (
+        f'<DefaultData Format="L5K"><![CDATA[{l5k_val}]]></DefaultData>'
+        f'<DefaultData Format="Decorated">{_data_value_xml(m.data_type, "Float" if m.data_type in _FLOAT_TYPES else "Decimal")}</DefaultData>'
+    )
+
+
+def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
+    # Real shape confirmed 2026-08-20 (samples/local/L5X_Samples/CMU_2025_10_14r00.L5X,
+    # AbsoluteMoveOnlyForward AOI) for scalar atomic Input/Output parameters,
+    # including the dual DefaultData L5K+Decorated pair. Array-dimensioned
+    # parameters (Dimension attr) are NOT confirmed against a real export --
+    # extrapolated from the same convention UDT <Member Dimension="N"> uses,
+    # flagged in docs/OPEN_QUESTIONS.md pending real Studio 5000 import result.
+    dim_attr = f' Dimension="{m.dimension}"' if m.dimension else ""
+    radix_attr = "" if usage == "InOut" else f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
+
+    if m.name in ("EnableIn", "EnableOut"):
+        # Real shape confirmed: system-defined params are Required="false"
+        # Visible="false" ExternalAccess="Read Only" (not the generic
+        # user-parameter attributes below).
+        return (
+            f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{radix_attr} Usage="{usage}" '
+            f'Required="false" Visible="false" ExternalAccess="Read Only"/>'
+        )
+
+    required = "true" if usage != "InOut" else "false"
+    default = "" if usage == "InOut" or m.dimension else _aoi_default_data_xml(m)
+    return (
+        f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{dim_attr} Usage="{usage}"'
+        f'{radix_attr} Required="{required}" Visible="true" ExternalAccess="None">{default}</Parameter>'
+    )
+
+
+def _aoi_local_tag_xml(m: "MemberSpec") -> str:
+    dim_attr = f' Dimension="{m.dimension}"' if m.dimension else ""
+    radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
+    default = "" if m.dimension else _aoi_default_data_xml(m)
+    return (
+        f'<LocalTag Name="{m.name}" DataType="{m.data_type}"{dim_attr}{radix_attr} '
+        f'ExternalAccess="None">{default}</LocalTag>'
+    )
+
+
+def aoi_xml(
+    name: str,
+    input_params: list["MemberSpec"] | None = None,
+    output_params: list["MemberSpec"] | None = None,
+    inout_params: list["MemberSpec"] | None = None,
+    local_tags: list["MemberSpec"] | None = None,
+) -> tuple[str, list["MemberSpec"]]:
+    """AddOnInstructionDefinition + the "storage member list" for generating
+    an instance tag of it. Real shape confirmed 2026-08-20 against
+    samples/local/L5X_Samples/CMU_2025_10_14r00.L5X (AbsoluteMoveOnlyForward):
+    every AOI carries system-defined EnableIn (Input BOOL)/EnableOut (Output
+    BOOL) parameters, auto-added here to match. AOI-instance tags render
+    exactly like UDT instances (confirmed 2026-08-20 against 4 real
+    production files, see PROJECT_PLAN.md Phase 4c) -- InOut params carry no
+    storage of their own (reference-only), so the returned storage list is
+    EnableIn/EnableOut + input/output params + local tags, usable directly
+    with tag_xml(udt_members=...) the same way a UDT instance is.
+    """
+    input_params = input_params or []
+    output_params = output_params or []
+    inout_params = inout_params or []
+    local_tags = local_tags or []
+
+    enable_in = MemberSpec("EnableIn", "BOOL")
+    enable_out = MemberSpec("EnableOut", "BOOL")
+
+    param_parts = [_aoi_parameter_xml(enable_in, "Input"), _aoi_parameter_xml(enable_out, "Output")]
+    param_parts += [_aoi_parameter_xml(m, "Input") for m in input_params]
+    param_parts += [_aoi_parameter_xml(m, "Output") for m in output_params]
+    param_parts += [_aoi_parameter_xml(m, "InOut") for m in inout_params]
+
+    local_parts = [_aoi_local_tag_xml(m) for m in local_tags]
+
+    definition = (
+        f'    <AddOnInstructionDefinition Name="{name}" Revision="1.0" ExecutePrescan="false" '
+        f'ExecutePostscan="false" ExecuteEnableInFalse="false" SoftwareRevision="v35.00">\n'
+        f'      <Parameters>\n' + "\n".join(param_parts) + "\n      </Parameters>\n"
+        f'      <LocalTags>\n' + "\n".join(local_parts) + "\n      </LocalTags>\n"
+        f'      <Routines>\n'
+        f'        <Routine Name="Logic" Type="RLL">\n'
+        f'          <RLLContent>\n'
+        f'            <Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>\n'
+        f'          </RLLContent>\n'
+        f'        </Routine>\n'
+        f'      </Routines>\n'
+        f"    </AddOnInstructionDefinition>"
+    )
+    storage_members = [enable_in, enable_out, *input_params, *output_params, *local_tags]
+    return definition, storage_members
 
 
 def rung_xml(number: int, instructions: str, comment: str | None = None) -> str:

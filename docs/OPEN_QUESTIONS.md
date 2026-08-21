@@ -688,3 +688,85 @@ local reference) cost anything extra in compiled logic size? Explicitly
 logic-size territory (estimated/heuristic model, not the exact tag-data
 sizing this project can nail down precisely per CLAUDE.md's ground-truth
 constraint) — parked here until Phase 4 starts, not actionable yet.
+
+## Second big batch (2026-08-20) — nested structures, strings, AOI, scale
+
+**OQ-NESTEDUDT — NEW (2026-08-20).** James: "nested UDTs need to be tested.
+nested array udts need to be tested." Generator support built
+(`MemberSpec.nested_members`, `_udt_structure_body_xml` recursion,
+`collect_nested_datatypes()` for emitting every referenced type). Three
+samples pending: `nested_udt_scalar.L5X` (outer UDT with one nested-UDT
+scalar member), `nested_udt_array_member.L5X` (a 10-element array-of-
+nested-UDT *member* inside a UDT), `array_of_nested_udt_100.L5X` (a
+100-element array-of-UDT *tag* where each element's UDT itself contains a
+nested UDT member — the other nested-array shape). XML shape extrapolated
+from two independently-confirmed real patterns (array-of-UDT at the tag
+level, StructureMember-in-Structure for a plain nested member) rather than
+guessed from nothing, but the *combination* (array-of-nested-Structure
+inside a Structure) isn't itself confirmed against a real export — that's
+exactly what testing this answers.
+
+**OQ-CUSTOMSTRING — NEW (2026-08-20).** James: "custom length strings need
+to be validated. just a few spot checks, especially in the 500+ char
+range." Found and fixed a real generator bug in the process: a standalone
+STRING-typed *tag* (built-in or custom-length) exports as a **pair** of
+`<Data Format="L5K">`/`<Data Format="String">` elements, not
+`<Data Format="Decorated">` like every other tag type — confirmed against
+multiple real corpus files (e.g. `RobbinsGrn_2026_05_13r00.L5X`
+`szInstruction`). A STRING *member inside a UDT* is different again and
+was already correct (Decorated `StructureMember`, confirmed separately
+against `SJ_Gormley_20251112_r02.L5X`'s `AxisName` member) — two distinct
+real shapes, not one rule guessed and reused. `tag_xml()` gained
+`string_max_len` to emit the correct standalone-tag shape.
+`customstring_len0010/0082/0100/0250/0500/1000/2000.L5X` generated —
+pending test.
+
+**OQ-AOIGEN — NEW (2026-08-20).** James: "compile/update the udt generator
+to make up the nested aois and arrays inside the aois." Built `aoi_xml()`
+(real shape confirmed against `samples/local/L5X_Samples/
+CMU_2025_10_14r00.L5X`'s `AbsoluteMoveOnlyForward` AOI, including the
+auto `EnableIn`/`EnableOut` system parameters' exact
+`Required="false" Visible="false" ExternalAccess="Read Only"` attributes)
+plus a new `aoi` category. Since AOI *analysis* is deliberately parked
+until Phase 4c (see PROJECT_PLAN.md), this only builds the generator
+capability and collects real data now for later use — not jumping the
+roadmap order. Generated: `basic_aoi_def_only/1_instance`,
+`aoi_array_localtag_def_only/1_instance`, `aoi_array_param_def_only`,
+`nested_aoi_def_only/1_instance`. **Caveat, not yet confirmed:** an
+array-dimensioned `<Parameter>`/`<LocalTag>` (the `Dimension="N"` attribute)
+has no real-corpus example to check against — extrapolated from the UDT
+`<Member Dimension="N">` convention. If Studio 5000 rejects
+`aoi_array_localtag_*`/`aoi_array_param_*` specifically while everything
+else imports, that's the signal this guess was wrong.
+
+**OQ-LARGEMIXED — NEW (2026-08-20).** James: "start adding in a couple of
+multiple UDT/tag combinations and check your numbers against my numbers
+with no logic... a couple tests with 100+ tags and a couple tests with
+1000+ tags." First real end-to-end validation of the composite model
+(every confirmed OQ-TAGOVERHEAD constant applied together) rather than
+one isolated variable at a time. `large_mixed_100tags.L5X` (100 tags: 20
+each of DINT/BOOL/REAL/SINT scalars + 20 3-member-UDT instances),
+`large_mixed_1100tags.L5X` (same shape at 220 each = 1100 tags),
+`large_mixed_1000tags_arrays.L5X` (a different composition: 200 each of
+DINT[10]/BOOL[32]/REAL[10] array tags + 400 UDT instances = 1000 tags) —
+two independent 1000+-tag points, not one repeated shape. All no-logic.
+Once real numbers land, compare against the model's prediction (built from
+every confirmed constant above) as a genuine held-out check, not another
+single-variable fit.
+
+**OQ-AXISSTRUCT — NEW (2026-08-20).** James: "you will have to get sizing
+for AXIS_CIP_DRIVE, AXIS_VIRTUAL etc... these are going to be outside the
+normal scope." Real reference exports provided (`samples/generated/axis/`)
+— confirmed these use `<Data Format="Axis">` with a flat
+`<AxisParameters .../>` attribute list, a completely different shape from
+every UDT/AOI pattern this project handles, and totally unmodeled by the
+sizing engine today (confirmed: returns an UnknownDataType error per
+AXIS_* tag rather than crashing, but predicts nothing). Not attempting to
+synthetically regenerate these — they're genuine Rockwell predefined
+structures, same tier of "just measure it" as TIMER/COUNTER/CONTROL, not
+something to guess at from the L5X schema. 5 samples ready to test:
+MotionGroup-only baseline, AXIS_VIRTUAL, AXIS_CIP_DRIVE, AXIS_SERVO,
+COORDINATE_SYSTEM (one axis type each). James also wants CIP-drive-only,
+virtual-only, and a *combination* of both in one project — only the
+single-type files exist so far, a combined file is a real follow-up. See
+PROJECT_PLAN.md Phase 4d.

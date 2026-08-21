@@ -54,6 +54,7 @@ def build_l5x(
     software_revision: str = DEFAULT_SOFTWARE_REVISION,
     extra_datatypes_xml: str = "",
     extra_rungs_xml: str = "",
+    extra_aoi_xml: str = "",
 ) -> str:
     rungs = extra_rungs_xml if extra_rungs_xml.strip() else (
         '<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>'
@@ -83,7 +84,9 @@ def build_l5x(
 </Ports>
 </Module>
 </Modules>
-<AddOnInstructionDefinitions/>
+<AddOnInstructionDefinitions>
+{extra_aoi_xml}
+</AddOnInstructionDefinitions>
 <Tags>
 {tags_xml}
 </Tags>
