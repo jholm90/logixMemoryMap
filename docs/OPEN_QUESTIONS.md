@@ -589,6 +589,40 @@ it only sizes raw data bytes.
     Member's Description), `udttypecomment_len*.L5X` (the DataType's own
     top-level Description), `udttagcomment_len*.L5X` (Description on a
     UDT-typed tag instance) — pending test.
+  - **Comments cost ZERO blocks, confirmed at all 4 locations — CONFIRMED
+    (2026-08-20), real data, exact.** All four groups above came back:
+    `tagcomment_len*` = 18232 for every length 0-200; `udtmembercomment_len*`
+    = 18320 for every length; `udttypecomment_len*` = 18320 for every
+    length; `udttagcomment_len*` = 18416 for every length. **Byte-for-byte
+    identical regardless of comment length, at every one of the 4 places a
+    comment can live.** James: "it looks like documentation does not take
+    from program memory space... this is very good." Consistent with
+    OQ-LOGICVISIBILITY's rung-comment finding below — same conclusion (a):
+    the Capacity tab reflects I/O-and-tag-*data* memory only, and
+    documentation/comments live in a separate pool this dialog never
+    shows. Practical implication for real programs: comment liberally,
+    it's free. Safe to model as a flat 0-byte cost with KNOWN confidence
+    once this is written into MEMORY_MODEL.md.
+  - **Tag-name-length step function — FULLY SOLVED (2026-08-20), exact
+    formula, 16/16 data points match with zero error.** Combining the
+    13-point DINT-50-tag sweep with the 3-point REAL-40-tag spot-checks
+    (different type *and* count, so a genuine independent check):
+    `overhead = 84 + 8 × floor(name_length / 8)`. Every single one of the
+    16 measured points fits this exactly — tag names are clearly stored in
+    8-character-aligned chunks internally (consistent with a compiled
+    binary format rounding string storage to a fixed alignment). This is
+    now a real, confirmed constant, not a fitted-line guess — ready to
+    replace the flat single-number tag overhead in MEMORY_MODEL.md once
+    that gets written up.
+  - **UDT-name-length shows the same step pattern but isn't pinned down
+    yet.** `udtname_len08/13/20/30` (4 DINT members held constant) gave
+    18360/18368/18376/18384 — a flat +8 at *every* one of the 4 sample
+    points, which doesn't fit the tag-name formula's `floor(len/8)`
+    bucketing directly (8 and 13 would land in the same bucket under that
+    rule, but didn't here) — the UDT-name bucket size/offset is different
+    from the tag-name one, or off-by-one from it. Needs denser sampling
+    (like the 13-point tag-name sweep got) before this becomes a real
+    formula rather than "same phenomenon, different constant."
 
 **OQ-LOGICVISIBILITY — NEW (2026-08-20), high impact, blocks Phase 4.**
 1000 rungs of `XIC(In{i})OTE(Out{i});`, both with and without a 100-char

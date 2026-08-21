@@ -1,7 +1,6 @@
 # Project Plan
 
-**Current phase: 2 / 2b — UI v1 shipped, AOI-instance sizing shipped
-(in progress)**
+**Current phase: 3 — Sample validation round 1 (tags/UDTs), in progress**
 
 Phase 0 exit criterion met. Phase 1 tag/UDT/array/string sizing is
 implemented and unit-tested; Module/IO parsing is still open (needs real
@@ -14,15 +13,18 @@ headless-Chromium screenshots. Treemap, breadcrumb drill, sortable list, and
 type-utilization pane are working; UDT-defs-pool/module-overhead root groups
 and UDT-member drill-down are not yet built (see docs/TASKS.md).
 
-Phase 2b (AOI sizing) turned out to be much less blocked than originally
-scoped: validating against 4 real production L5X files (2026-08-20) showed
-every real AOI-typed tag is a plain named Tag sized exactly like a UDT-typed
-one — no logic/call-site parsing needed. That part is now implemented
-(`parser/aoi.py`). Sizing-engine error rate on the real corpus went
-41.6% → 29.5% (alias tags + TIMER/COUNTER/CONTROL) → 8.8% (AOI-instance
-sizing). What's left of Phase 2b — inline/anonymous AOI instances with no
-backing tag, if those even exist in practice — stays deferred, see
-OQ-AOIINSTANCE.
+**Phase 2b (AOI sizing) reordered to Phase 4c, 2026-08-20** — James: don't
+want to guess AOI size until program logic size is known. What was already
+built there (AOI-instance = plain UDT-shaped tag, real-corpus validated,
+`parser/aoi.py`) stays in place; the phase itself now runs after Phase 4/4b.
+
+Phase 3 is the active phase: real Studio 5000 Capacity-tab data collected
+against 80+ generated samples so far (2026-08-20), see docs/OPEN_QUESTIONS.md
+OQ-TAGOVERHEAD for the full results. Several genuinely exact, confirmed
+constants have come out of this round already (flat per-tag overhead formula,
+UDT-definition-cost-vs-member-count formula, comments cost zero at every
+location tested) — see the status summary in chat/OPEN_QUESTIONS.md for what's
+closed vs still open before this phase's exit criterion is met.
 
 Update the line above as phases close. Each phase has an exit criterion; don't
 start the next phase until it's met, even if it's tempting to jump ahead on UI
@@ -67,21 +69,6 @@ Phase 3 validation) but the code path is complete end to end.
 **Exit criterion:** load a blank/near-blank L5X (tags only, no meaningful logic),
 UI renders treemap + list + type summary correctly against Phase 1 output.
 
-## Phase 2b — AOI sizing (deferred from Phase 1)
-Picked up once the UI shell exists, so AOI's local-tag-plus-logic-call-site
-nature doesn't stall UI progress. Definition-level sizing (locals + params)
-is tag-like and tractable now; instance multiplication needs call-site counts
-and is likely blocked on Phase 4 logic parsing (OQ-AOIINSTANCE) — expect this
-phase to close partially and finish once Phase 4 lands.
-
-- Parse `Controller/AddOnInstructionDefinitions` → AOI definition size
-- Click-to-drill into an AOI to see local/param-level breakdown (UI addition)
-- AOI instance multiplication per call site (may stub pending Phase 4)
-
-**Exit criterion:** AOI definitions sized and drillable in the UI at the
-per-instance-definition level; instance multiplication either implemented or
-explicitly stubbed with the blocking dependency documented.
-
 ## Phase 3 — Sample validation round 1 (tags/UDTs only)
 - Generate controlled L5X samples (10k BOOL array, 10k DINT array, 10k-element
   UDT array, nested UDT, string arrays, produced/consumed tag, AOI called N
@@ -115,6 +102,37 @@ every remaining discrepancy is explained, not just absorbed into a fudge factor.
 type actually used in real production programs (not exhaustive AB instruction
 set — scope to what's actually in use), residual error on held-out samples is
 understood and acceptable.
+
+## Phase 4c — AOI sizing (moved here 2026-08-20, was Phase 2b)
+**Reordered — James, 2026-08-20: "lets change the roadmap and permanently
+move AOI testing after all program logic size testing has been completed. i
+dont want to guess aoi size until we know how big programs are."** AOI
+instances are, by the real-corpus finding below, plain named tags sized
+exactly like a UDT instance — so AOI *data-space* sizing doesn't strictly
+need logic parsing. But AOI-instance *call-site multiplication* and AOI
+*logic content* both do depend on knowing what a program actually costs, so
+the whole phase waits until Phase 4/4b are done rather than being tested on
+guesswork now.
+
+Validating against 4 real production L5X files (2026-08-20) showed every
+real AOI-typed tag is a plain named Tag sized exactly like a UDT-typed one —
+no logic/call-site parsing needed for that part. That's implemented
+(`parser/aoi.py`). Sizing-engine error rate on the real corpus went
+41.6% → 29.5% (alias tags + TIMER/COUNTER/CONTROL) → 8.8% (AOI-instance
+sizing).
+
+- Parse `Controller/AddOnInstructionDefinitions` → AOI definition size
+- Click-to-drill into an AOI to see local/param-level breakdown (UI addition)
+- AOI instance multiplication per call site (needs Phase 4's logic parsing)
+- **Nested AOIs (James, 2026-08-20): "nested aois need to be tested in
+  phase 4 after logic size has been estimated"** — an AOI that calls
+  another AOI, tested here specifically, not before
+- AOI-instance sizing validated the same way as tags/UDTs (real Capacity-tab
+  data, not just L5X-schema inference) — "aoi size needs to be validated"
+
+**Exit criterion:** AOI definitions sized and drillable in the UI at the
+per-instance-definition level; instance multiplication implemented (unblocked
+by then, since Phase 4/4b are done); nested-AOI call chains sized correctly.
 
 ## Phase 5 — UI v2 (logic browsing)
 - Extend treemap/list to drill into Tasks → Programs → Routines → Rungs
