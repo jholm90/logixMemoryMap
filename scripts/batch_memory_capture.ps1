@@ -128,6 +128,8 @@ if (Test-Path $OpenRequestPath) { Remove-Item $OpenRequestPath -Force }
 $total = $remaining.Count
 $idx = 0
 $stopRequested = $false
+$fileTimes = @()
+$batchSw = [System.Diagnostics.Stopwatch]::StartNew()
 foreach ($row in $remaining) {
     if ($stopRequested) { break }
     $idx++
@@ -135,6 +137,7 @@ foreach ($row in $remaining) {
     $meta = Get-SampleIdAndDescription $row.l5x_path
     $category = Get-Category $row.l5x_path
     $existing = $manifest | Where-Object { $_.l5x_path -eq $relPath } | Select-Object -First 1
+    $fileSw = [System.Diagnostics.Stopwatch]::StartNew()
 
     Write-Host ""
     Write-Host "=== [$idx/$total] $($meta.Id) : $($meta.Desc) [$category] ==="
@@ -219,10 +222,19 @@ foreach ($row in $remaining) {
         }
     }
     $manifest | Export-Csv -Path $ManifestPath -NoTypeInformation -Encoding utf8
-    Write-Host "Logged: actual_bytes=$blocksUsed errors=$errorCount warnings=$warningCount message=`"$messageValue`""
+    $fileSw.Stop()
+    $fileSeconds = [math]::Round($fileSw.Elapsed.TotalSeconds, 1)
+    $fileTimes += $fileSeconds
+    Write-Host "Logged: actual_bytes=$blocksUsed errors=$errorCount warnings=$warningCount message=`"$messageValue`" (${fileSeconds}s)"
 }
 
+$batchSw.Stop()
 Write-Host ""
+if ($fileTimes.Count -gt 0) {
+    $avgSeconds = [math]::Round((($fileTimes | Measure-Object -Average).Average), 1)
+    $totalMinutes = [math]::Round($batchSw.Elapsed.TotalMinutes, 1)
+    Write-Host "Batch: $($fileTimes.Count) file(s) logged, ${totalMinutes}min total, avg ${avgSeconds}s/file."
+}
 Write-Host "Done for now."
 
 # Auto-push (James, 2026-08-20: "so i dont have to ask").

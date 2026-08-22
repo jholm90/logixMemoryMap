@@ -49,6 +49,8 @@ while ([Console]::KeyAvailable) { [Console]::ReadKey($true) | Out-Null }
 
 $i = 0
 $stopRequested = $false
+$fileTimes = @()
+$batchSw = [System.Diagnostics.Stopwatch]::StartNew()
 foreach ($f in $files) {
     if ($alreadyDone.ContainsKey($f.FullName)) {
         continue
@@ -57,19 +59,24 @@ foreach ($f in $files) {
     $i++
     $acdPath = Join-Path $OutputDir ($f.BaseName + ".ACD")
     Write-Host "[$i/$($files.Count - $alreadyDone.Count)] $($f.Name) -> $acdPath"
+    $fileSw = [System.Diagnostics.Stopwatch]::StartNew()
 
     $argList = @("l5x2acd", "--l5x", $f.FullName, "--acd", $acdPath)
     if ($UnsafeSkipDependencyCheck) { $argList += "--unsafe-skip-dependency-check" }
 
     $result = & $L5xGitPath @argList 2>&1
     $exitCode = $LASTEXITCODE
+    $fileSw.Stop()
+    $fileSeconds = [math]::Round($fileSw.Elapsed.TotalSeconds, 1)
+    $fileTimes += $fileSeconds
 
     if ($exitCode -eq 0) {
         "$($f.FullName),$acdPath,ok," | Out-File -FilePath $logPath -Append -Encoding utf8
+        Write-Host "  ok (${fileSeconds}s)"
     } else {
         $msg = ($result -join " ") -replace ",", ";"
         "$($f.FullName),$acdPath,FAILED,$msg" | Out-File -FilePath $logPath -Append -Encoding utf8
-        Write-Warning "  Conversion failed: $msg"
+        Write-Warning "  Conversion failed (${fileSeconds}s): $msg"
     }
 
     if ([Console]::KeyAvailable) {
@@ -78,6 +85,13 @@ foreach ($f in $files) {
         $stopRequested = $true
         break
     }
+}
+$batchSw.Stop()
+
+if ($fileTimes.Count -gt 0) {
+    $avgSeconds = [math]::Round((($fileTimes | Measure-Object -Average).Average), 1)
+    $totalMinutes = [math]::Round($batchSw.Elapsed.TotalMinutes, 1)
+    Write-Host "Batch: $($fileTimes.Count) file(s) converted this pass, ${totalMinutes}min total, avg ${avgSeconds}s/file."
 }
 
 if (-not $stopRequested) {
