@@ -19,20 +19,31 @@
 using System.Reflection;
 using RockwellAutomation.LogixDesigner;
 
-Type[] types;
-try
+static IEnumerable<Type> SafeGetTypes(Assembly asm)
 {
-    types = typeof(LogixProject).Assembly.GetTypes();
+    try { return asm.GetTypes(); }
+    catch (ReflectionTypeLoadException ex) { return ex.Types.Where(t => t != null)!; }
+    catch { return Enumerable.Empty<Type>(); }
 }
-catch (ReflectionTypeLoadException ex)
+
+// Scan every DLL sitting alongside LogixProject's own assembly in the build
+// output, not just that one assembly -- the SDK package ships several
+// assemblies together (this DLL plus whatever it depends on), and a type
+// like IOperationEvent or StdOutEventLogger, referenced by name in
+// Rockwell's own reference code but not obviously part of LogixProject
+// itself, could live in any of them.
+string sdkDir = Path.GetDirectoryName(typeof(LogixProject).Assembly.Location)!;
+var loadedAssemblies = new List<Assembly> { typeof(LogixProject).Assembly };
+foreach (var dll in Directory.GetFiles(sdkDir, "*.dll"))
 {
-    Console.WriteLine("GetTypes() partially failed -- some referenced type couldn't load. Loader exceptions:");
-    foreach (var le in ex.LoaderExceptions)
-        Console.WriteLine($"  - {le?.Message}");
-    Console.WriteLine();
-    Console.WriteLine("Continuing with the types that DID load successfully (ex.Types, nulls filtered):");
-    types = ex.Types.Where(t => t != null).Cast<Type>().ToArray();
+    if (loadedAssemblies.Any(a => string.Equals(a.Location, dll, StringComparison.OrdinalIgnoreCase)))
+        continue;
+    try { loadedAssemblies.Add(Assembly.LoadFrom(dll)); }
+    catch { /* not a loadable managed assembly, or already loaded under a different identity -- skip */ }
 }
+
+var types = loadedAssemblies.SelectMany(SafeGetTypes).ToArray();
+Console.WriteLine($"Scanned {loadedAssemblies.Count} assembl{(loadedAssemblies.Count == 1 ? "y" : "ies")} under {sdkDir}, found {types.Length} total types.");
 
 var logixProjectType = types.FirstOrDefault(t => t.Name == "LogixProject");
 if (logixProjectType is null)
@@ -81,6 +92,56 @@ Console.WriteLine("=== Nested types/enums on LogixProject (e.g. ControllerMode, 
 foreach (var nested in logixProjectType.GetNestedTypes(BindingFlags.Public).OrderBy(t => t.Name))
 {
     Console.WriteLine(nested.Name + (nested.IsEnum ? $" (enum: {string.Join(", ", Enum.GetNames(nested))})" : ""));
+}
+
+// BuildAsync (found 2026-08-22 -- RequestedBuildTarget.DefaultTarget looks
+// like exactly the no-download, no-Echo offline compile/verify path James
+// needs) returns bare Task with no result object, so however build errors
+// get reported, it's either (a) an exception on failure, or (b) delivered
+// through the SDK's own event-handler mechanism -- AddEventHandler(IOperationEvent)
+// is a real method, and the ra-logix-cicd reference code passes a
+// StdOutEventLogger to it that isn't defined in that repo's own source, so
+// it must ship in the SDK itself. Dump both types so the actual validator
+// tool can be built against real signatures instead of guessing.
+Console.WriteLine();
+Console.WriteLine("=== IOperationEvent interface members ===");
+var opEventType = types.FirstOrDefault(t => t.Name == "IOperationEvent");
+if (opEventType is null)
+{
+    Console.WriteLine("(not found in this assembly -- may live in a different assembly the SDK pulls in)");
+}
+else
+{
+    foreach (var m in opEventType.GetMethods().OrderBy(m => m.Name))
+        Console.WriteLine(Sig(m));
+}
+
+Console.WriteLine();
+Console.WriteLine("=== StdOutEventLogger (used by Rockwell's own ra-logix-cicd reference code) ===");
+var loggerType = types.FirstOrDefault(t => t.Name == "StdOutEventLogger");
+if (loggerType is null)
+{
+    Console.WriteLine("(not found in this assembly -- check other assemblies loaded alongside it)");
+}
+else
+{
+    Console.WriteLine($"Full name: {loggerType.FullName}");
+    Console.WriteLine($"Implements: {string.Join(", ", loggerType.GetInterfaces().Select(i => i.Name))}");
+    foreach (var ctor in loggerType.GetConstructors())
+        Console.WriteLine($"  ctor({string.Join(", ", ctor.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}"))})");
+}
+
+// Also list every type in the assembly whose name mentions Event/Error/Log
+// /Result/Message -- BuildAsync's actual error-reporting shape (event
+// stream vs. exception vs. a result object elsewhere) is the one open
+// question left before this can be trusted for a real validation run.
+Console.WriteLine();
+Console.WriteLine("=== All types in this assembly matching Event|Error|Log|Result|Message|Diagnostic ===");
+foreach (var t in types.Where(t => t.Name.Contains("Event") || t.Name.Contains("Error") || t.Name.Contains("Log")
+             || t.Name.Contains("Result") || t.Name.Contains("Message") || t.Name.Contains("Diagnostic"))
+         .OrderBy(t => t.Name))
+{
+    Console.WriteLine(t.FullName);
 }
 
 return 0;
