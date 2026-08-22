@@ -20,20 +20,37 @@
 // isn't actually catching what it needs to and no "ok" from `validate` mode
 // can be trusted.
 //
-// CONFIRMED DEAD END on James's environment (2026-08-22): first self-test run
-// showed both bad fixtures failing with the identical "Operation not
-// supported on Logix Designer version 35.5" -- looked like a pass (both
-// failed) but was actually a universal failure, not real ladder-logic
-// detection. Adding a KNOWN_GOOD_ fixture caught it immediately: it failed
-// with the exact same message. DefaultTarget does not work on Designer 35.5
-// -- no public doc pins the exact minimum version, but the SDK client
-// (2.2.1109) and the Designer application version independently, and 35.5
-// is old relative to that SDK. The other two RequestedBuildTarget values
-// (PhysicalController, EchoController) both need exactly what's been ruled
-// out (a controller, Echo). This tool's Open/Build/timing harness is kept
-// as reusable infrastructure, but `validate` mode should not be trusted
-// until `selftest` genuinely passes against whatever mechanism replaces
-// DefaultTarget.
+// CONFIRMED DEAD END on James's installed Designer version, 35.5 (2026-08-22).
+// First self-test run showed both bad fixtures failing with the identical
+// "Operation not supported on Logix Designer version 35.5" -- looked like a
+// pass (both failed) but was actually a universal failure, not real
+// ladder-logic detection. A KNOWN_GOOD_ fixture caught it immediately: it
+// failed with the exact same message.
+//
+// Root cause, per Rockwell's own docs (two sources James supplied): the
+// SdkProjectBuildPage.html doc page (from his local SDK install) says the
+// build() method "causes Logix Designer to compile the user programs into
+// binary format" -- genuinely sounds like a real offline compile -- and a
+// version-support note on that same page says plainly: "Operation supported
+// from Logix Designer release v37. With previous releases OperationFailedException
+// is thrown." That matches the observed failure exactly (35.5 < 37, same
+// exception type). Read DefaultTarget's "Builds for the last specified
+// target, or a physical controller" wording as describing its FALLBACK
+// behavior on a supported version when no comm path was ever set, not proof
+// it always needs a live device -- that distinction is still not fully
+// nailed down, because there's no v37+ install here to test it against.
+//
+// Practical state as of 2026-08-22: James has v38 installed but doesn't want
+// to test against it today (different instruction set/behavior from the
+// v35.5 corpus this whole sizing model is fit against -- see the
+// "Cross-version instruction/behavior differences" item in
+// docs/PROJECT_PLAN.md's feature backlog). So on the Designer version this
+// project actually validates against, BuildAsync/DefaultTarget is unusable
+// today, whether or not it would work on v37+. This tool's Open/Build/timing
+// harness is kept as reusable infrastructure for whenever that's revisited.
+// Near-term path: AutoHotkey against Studio 5000's own offline Verify
+// (right-click Controller -> Verify), which needs no SDK version, no
+// controller, no Echo, on the version already in use.
 
 using RockwellAutomation.LogixDesigner;
 using RockwellAutomation.LogixDesigner.Logging;
