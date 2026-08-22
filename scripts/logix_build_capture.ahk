@@ -85,10 +85,20 @@ Status(msg) {
         ; focus (PowerShell's console, most likely) doesn't matter after
         ; this. Without it, "A" (active window) below could target the
         ; wrong thing entirely.
-        if !WinActivate(LOGIX_WIN) {
-            MsgBox "Couldn't find/activate the Logix Designer window (" LOGIX_WIN ")."
+        ;
+        ; WinActivate itself doesn't return a testable success value in AHK
+        ; v2 (it silently no-ops if nothing matches) -- WinExist is the one
+        ; that actually returns a real HWND (truthy) or 0 (falsy), and sets
+        ; the "last found window" that a bare WinActivate then acts on.
+        if !WinExist(LOGIX_WIN) {
+            MsgBox "Couldn't find the Logix Designer window (" LOGIX_WIN "). If it's definitely"
+                . " running, check: (1) is this AHK script elevated (Run as administrator) while"
+                . " Logix Designer is NOT? Windows blocks a higher-privilege process from seeing/"
+                . " activating a lower one (UIPI) -- match their privilege levels. (2) is"
+                . " LOGIX_WIN's exe name exactly right -- try Window Spy on the real window."
             continue
         }
+        WinActivate
         Sleep 100
 
         Status("Opening next file (from clipboard)")
