@@ -55,6 +55,14 @@ because it's more fun than writing another sizing table.
    ranged v31–v35).
 5. **ControlNet/DeviceNet module support** — deferred alongside item 1's
    Ethernet/local scope, see `docs/IO_MODULES.md`.
+6. **Cross-version instruction/behavior differences** (James, 2026-08-22,
+   found while chasing the SDK BuildAsync dead-end: his v38 Designer install
+   has different instruction names than the v35.5 install the whole logic
+   sizing sweep was fit against). The 41-instruction weight table in
+   `docs/MEMORY_MODEL.md` and `scripts/l5x_validator`'s SDK tooling both
+   currently assume one Designer/firmware version's behavior; real fleets
+   run mixed versions. Not in scope to chase today — revisit once the
+   current-version sizing model is solid.
 
 ---
 
