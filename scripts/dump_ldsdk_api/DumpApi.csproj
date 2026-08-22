@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <!-- James's installed package (2026-08-22) resolved to lib\net10.0 --
+    <!-- James's installed package (2026-08-22) resolved to lib\net10.0,
          match it. If your SDK version differs, `dotnet build` will say so
          plainly (missing framework/package error) rather than the opaque
          ReflectionTypeLoadException the old PowerShell-reflection approach
