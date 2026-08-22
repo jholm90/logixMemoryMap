@@ -12,10 +12,17 @@
 ;
 ; Confirmed empirically on James's machine (2026-08-22):
 ;   - Ctrl+O opens a dialog titled "Open Project" (not generic "Open").
-;   - Switching files after a Build can trigger a save prompt with the text
-;     "Project file '<name>.ACD' has been changed. Save the changes?" --
-;     dismissed with 'n' (discard) since Build's cache write should never
-;     get persisted back into a tracked sample file.
+;   - The save-changes prompt ("Project file '<name>.ACD' has been changed.
+;     Save the changes?") actually fires AFTER pasting the new path + Enter,
+;     not before the Open Project dialog -- dismissed with 'n' (discard),
+;     since Build's cache write should never get persisted back into a
+;     tracked sample file. A second save-prompt can also appear after the
+;     Controller Properties/Capacity read, handled the same way.
+;   - Controller Properties dialog title is "Controller Properties - <name>"
+;     (dynamic per file), ahk_class #32770, ahk_exe LogixDesigner.Exe.
+;   - Reading Edit3 (the Capacity/OCD value) can come back comma-formatted
+;     by Studio 5000 (e.g. "99,999") -- stripped before it ever reaches the
+;     handoff CSV, since an embedded comma would split into two columns.
 ;   - TODO (still needs verification): the "n" keystroke for the save
 ;     prompt, the exact ahk_exe/class for WinActivate, and a real "project
 ;     finished loading" signal to replace the fixed Sleep after Open.
@@ -40,7 +47,7 @@ OPEN_REQUEST_PATH := A_ScriptDir "\ahk_runtime\open_request.txt"  ; must match -
 ; this once by hand) -- FileExist below would just wait forever silently
 ; otherwise.
 DirCreate A_ScriptDir "\ahk_runtime"
-LOGIX_WIN := "ahk_exe LogixDesigner.exe"             ; TODO: confirm via Window Spy
+LOGIX_WIN := "ahk_exe LogixDesigner.exe"             ; confirmed via Window Spy, 2026-08-22
 
 global OCDValue := ""
 global ErrorValue := ""
@@ -55,6 +62,15 @@ ExtractCount(text) {
     if RegExMatch(Trim(text), "^(\d+)", &m)
         return m[1]
     return ""
+}
+
+; Studio 5000 formats some numeric fields (confirmed: the Capacity/OCD
+; value) with thousands-separator commas -- e.g. "99,999" -- which would
+; otherwise split into two columns once written into a comma-delimited
+; handoff CSV. Strip commas from every value right before it's written,
+; not just OCDValue, since any of these could pick one up.
+StripCommas(text) {
+    return StrReplace(text, ",", "")
 }
 
 StatusGui := Gui("+AlwaysOnTop +ToolWindow", "Loop Status.  Press ESC to Abort")
@@ -104,13 +120,6 @@ Status(msg) {
         Status("Opening next file (from clipboard)")
         Send "^o"
 
-        ; Switching away from a Build-modified project can prompt to save
-        ; first -- discard, never persist Build's cache write into the
-        ; tracked sample file. TODO: confirm 'n' is really the access key
-        ; for this dialog's "No"/"Don't Save" button.
-        if WinWait(, "Save the changes?", 2)
-            Send "n"
-
         if !WinWait("Open Project", , 5) {
             MsgBox "Open Project dialog didn't appear within 5s -- check the Ctrl+O shortcut."
             continue
@@ -119,6 +128,13 @@ Status(msg) {
         Send "^v"   ; paste the path PowerShell put on the clipboard
         Sleep 100
         Send "{Enter}"
+
+        ; Switching away from a Build-modified project can prompt to save
+        ; first -- discard, never persist Build's cache write into the
+        ; tracked sample file. TODO: confirm 'n' is really the access key
+        ; for this dialog's "No"/"Don't Save" button.
+        if WinWait(, "Save the changes?", 2)
+            Send "n"
 
         ; Wait for the project to actually load. TODO: replace with a real
         ; "loaded" signal (e.g. WinWaitActive on a title pattern) once you
@@ -183,19 +199,24 @@ Status(msg) {
 
         Status("Reading Edit3 value")
         Sleep 2000
-        OCDValue := Trim(ControlGetText("Edit3", "A"))
+        OCDValue := StripCommas(Trim(ControlGetText("Edit3", "A")))
         Status("Read OCD value: " OCDValue)
         Sleep 250
 
         Send "!{F4}"
         Sleep 250
-        Send "!{F4}"
-        Sleep 2000
+
+        ; A second save-changes prompt can appear here too, after closing
+        ; Controller Properties -- same dismissal, discard and move on.
+        if WinWait(, "Save the changes?", 2) {
+            Send "n"
+            Sleep 250
+        }
 
         ; --- Hand results back to PowerShell ---
         handoffFile := FileOpen(HANDOFF_PATH, "w")
         handoffFile.Write("error_count,warning_count,message_value,ocd_value`n")
-        handoffFile.Write(ErrorValue "," WarningValue "," MessageValue "," OCDValue "`n")
+        handoffFile.Write(StripCommas(ErrorValue) "," StripCommas(WarningValue) "," StripCommas(MessageValue) "," OCDValue "`n")
         handoffFile.Close()
 
         Status("Looping -- waiting for next file...")
