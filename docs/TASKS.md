@@ -237,6 +237,23 @@ uses). **The weight table is data only — no logic-sizing engine code
 exists yet** (no parser walks Routines/Rungs and applies these weights);
 that's the actual remaining Phase 4/4b implementation work.
 
+- [ ] **Process full-directory AHK build/verify batch results, 2026-08-22
+      (in progress on James's machine as of this writing).** Many files in
+      the real corpus are showing genuine Build errors (not a capture
+      artifact — window-title cross-check confirms real files, and build
+      time itself tracks it: ~16s/file clean vs 80s+ when Studio 5000 is
+      populating a long error list). Once James pushes the finished
+      manifest.csv: scan every row with `error_count` > 0, extract the
+      *unique* set of instruction mnemonics involved (dedup across all
+      failing files — not one line per file), hand back as a single
+      compact line, e.g. `mov()equ()ton();` — James builds one fresh/fixed
+      sample file covering that whole list and sends it back, rather than
+      trading 10,000 near-duplicate error reports back and forth.
+- [ ] **Re-capture genuine title-bar mismatch rows from the same batch.**
+      James confirmed a couple of real ones during the full run (distinct
+      from the false-positive extension-matching bug already fixed) —
+      wipe just those specific rows once he flags which sample_ids, not
+      the whole batch.
 - [ ] Timer instructions (TON/TOF/RTO) at scale — no CTU/CTD-heavy usage seen
       but include CTU (25 real uses; CTD had zero, low priority)
 - [ ] Math/compare instructions (MOV/EQU/ADD/NEQ/GRT/MUL/GEQ/LES/SUB/LIM/LEQ/
