@@ -46,32 +46,35 @@ Console.WriteLine($"Assembly: {logixProjectType.Assembly.Location}");
 Console.WriteLine($"Assembly version: {logixProjectType.Assembly.GetName().Version}");
 Console.WriteLine();
 
-var methods = logixProjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-    .Select(m => m.Name)
-    .Distinct()
-    .OrderBy(n => n)
+static string Sig(MethodInfo m)
+{
+    string TypeName(Type t)
+    {
+        if (!t.IsGenericType) return t.Name;
+        string baseName = t.Name.Substring(0, t.Name.IndexOf('`'));
+        string args = string.Join(", ", t.GetGenericArguments().Select(TypeName));
+        return $"{baseName}<{args}>";
+    }
+    string ps = string.Join(", ", m.GetParameters().Select(p => $"{TypeName(p.ParameterType)} {p.Name}"));
+    string mods = m.IsStatic ? "static " : "";
+    return $"{mods}{TypeName(m.ReturnType)} {m.Name}({ps})";
+}
+
+var allMethods = logixProjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+    .Where(m => !m.IsSpecialName) // drop property get_/set_ noise
+    .OrderBy(m => m.Name)
     .ToList();
 
-Console.WriteLine("=== All public methods on LogixProject ===");
-foreach (var name in methods)
-    Console.WriteLine(name);
+Console.WriteLine("=== All public methods on LogixProject (full signatures) ===");
+foreach (var m in allMethods)
+    Console.WriteLine(Sig(m));
 
 Console.WriteLine();
-Console.WriteLine("=== Methods matching Memory|Verify|Build|Compile|Usage|Propert|Controller|Error|Check|Offline ===");
-var filtered = methods.Where(n =>
-        n.Contains("Memory", StringComparison.OrdinalIgnoreCase) ||
-        n.Contains("Verify", StringComparison.OrdinalIgnoreCase) ||
-        n.Contains("Build", StringComparison.OrdinalIgnoreCase) ||
-        n.Contains("Compile", StringComparison.OrdinalIgnoreCase) ||
-        n.Contains("Usage", StringComparison.OrdinalIgnoreCase) ||
-        n.Contains("Propert", StringComparison.OrdinalIgnoreCase) ||
-        n.Contains("Controller", StringComparison.OrdinalIgnoreCase) ||
-        n.Contains("Error", StringComparison.OrdinalIgnoreCase) ||
-        n.Contains("Check", StringComparison.OrdinalIgnoreCase) ||
-        n.Contains("Offline", StringComparison.OrdinalIgnoreCase))
-    .ToList();
-foreach (var name in filtered)
-    Console.WriteLine(name);
+Console.WriteLine("=== Full signatures: BuildAsync, ChangeControllerModeAsync, ChangeControllerTypeAsync, GoOfflineAsync, GoOnlineAsync, ReadControllerModeAsync, OpenLogixProjectAsync, DownloadAsync, UploadAsync ===");
+var namesOfInterest = new[] { "BuildAsync", "ChangeControllerModeAsync", "ChangeControllerTypeAsync", "GoOfflineAsync",
+    "GoOnlineAsync", "ReadControllerModeAsync", "OpenLogixProjectAsync", "DownloadAsync", "UploadAsync" };
+foreach (var m in allMethods.Where(m => namesOfInterest.Contains(m.Name)))
+    Console.WriteLine(Sig(m));
 
 Console.WriteLine();
 Console.WriteLine("=== Nested types/enums on LogixProject (e.g. ControllerMode, RequestedControllerMode) ===");
