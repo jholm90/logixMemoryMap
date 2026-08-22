@@ -54,6 +54,18 @@ generator already covers them, just waiting on the next capture batch.
    against the existing tag-vs-tag baseline. `gen_cmpcpt_layout.py`.
    Awaiting capture.
 
+   **2026-08-22 batch result:** the 3 compound-CMP files (`cmpcpt_cmp_
+   and_compound`, `_or_compound`, `_duplicate_cond` — expressions like
+   `L0>L1&L2<L3`, no parens around each comparison) failed Build 100% of
+   rungs. James's own verified `categoryB.L5X` only exercises a *single*
+   CMP condition (`CMP(ThisVal >= (ThatVal+1))`, matches the already-
+   passing `cmpcpt_cmp_single` variant) so it doesn't confirm or deny the
+   compound case. Hypothesis, NOT yet confirmed against real corpus or a
+   real sample per this project's rule against guessing instruction
+   syntax: each comparison sub-clause may need its own parens, e.g.
+   `CMP((L0>L1)&(L2<L3))`. Needs a real Studio 5000-verified sample
+   before `gen_cmpcpt_layout.py`'s `group_cmp_layout` gets touched.
+
 11. **OQ-PREDEFINED [test built].** Rockwell's own literature site is
     blocked by this session's network proxy, but the real corpus had
     everything needed. `gen_motion_predefined.py`: MOTION_INSTRUCTION (real
@@ -97,3 +109,19 @@ generator already covers them, just waiting on the next capture batch.
     (James: "Does tag[idx+1] take up the same space as tag[Idx]?") a third
     variant with an arithmetic offset inside the index. Same
     instruction/count throughout. Awaiting capture.
+
+16. **OQ-LBLJMP-STALE [2026-08-22 batch result].** All 5 `instr_lbljmp_n*`
+    files (`LBL(L{i});` / `JMP(L{i});` pairs, unique labels, matches the
+    `LBL(ThisLabel)NOP();` ... `JMP(ThisLabel);` shape confirmed real in
+    James's `categoryB.L5X`) showed error_count == pair count -- every
+    rung failed. Rung text itself looks structurally fine (verified by
+    dumping the raw CDATA, no duplicate/undefined labels). Same "100% of
+    rungs errored" signature as the CPS/COP/FLL/BTD rows that turned out
+    to be a stale-ACD-conversion-cache artifact (see `batch_l5x_to_acd.
+    ps1`'s `l5x_mtime` fix, 2026-08-22) rather than a real syntax bug --
+    LBL/JMP's source was never touched by that fix, but if it converted
+    in the same batch pass its ACD binary could be equally stale. Best
+    guess is this clears on its own once James reconverts with the fixed
+    script + recaptures; if it's still failing after that, it's a real,
+    distinct bug and needs its own investigation (not the same root
+    cause as the bracket-subscript fixes).

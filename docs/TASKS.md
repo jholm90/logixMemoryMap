@@ -237,23 +237,53 @@ uses). **The weight table is data only — no logic-sizing engine code
 exists yet** (no parser walks Routines/Rungs and applies these weights);
 that's the actual remaining Phase 4/4b implementation work.
 
-- [ ] **Process full-directory AHK build/verify batch results, 2026-08-22
-      (in progress on James's machine as of this writing).** Many files in
-      the real corpus are showing genuine Build errors (not a capture
-      artifact — window-title cross-check confirms real files, and build
-      time itself tracks it: ~16s/file clean vs 80s+ when Studio 5000 is
-      populating a long error list). Once James pushes the finished
-      manifest.csv: scan every row with `error_count` > 0, extract the
-      *unique* set of instruction mnemonics involved (dedup across all
-      failing files — not one line per file), hand back as a single
-      compact line, e.g. `mov()equ()ton();` — James builds one fresh/fixed
-      sample file covering that whole list and sends it back, rather than
-      trading 10,000 near-duplicate error reports back and forth.
+- [x] **Process full-directory AHK build/verify batch results, 2026-08-22.**
+      Reviewed against James's two real Studio 5000-verified samples
+      (`COP_Samples.L5X`, `categoryB.L5X`) plus direct code inspection —
+      not a blind mnemonic dump. Findings:
+      - **SIZE (5 rows, real bug, fixed):** generator used a bracketed
+        `.DATA[0]` subscript; James's sample proved SIZE takes the bare
+        array tag with no subscript at all (`SIZE(COP_Source,0,COP_Size);`).
+        Fixed in `gen_logic_sweep.py` + `lint.py`'s SIZE exception,
+        regenerated, no new sample needed.
+      - **xic_ote_1000_comment100/nocomment (2 rows, real bug, fixed):**
+        `sample_gen.cli rungs` never declared the tags referenced by
+        `--instr` (passed `tags_xml=""` unconditionally) — exactly James's
+        catch. Added `--decl-tag` to auto-declare them, regenerated both
+        files (2000 declared BOOL tags), no new sample needed.
+      - **CPS/COP/FLL/BTD (21 rows) + LBL/JMP (5 rows):** every rung in
+        each file errored (error_count == rung count) — the same signature
+        already traced to the stale-ACD-conversion-cache bug fixed in
+        `batch_l5x_to_acd.ps1` (`l5x_mtime` tracking), which James hasn't
+        re-run yet. Very likely false alarms against pre-fix ACD binaries,
+        not real syntax bugs. LBL/JMP is new since the last review pass —
+        logged as OQ-LBLJMP-STALE in OPEN_QUESTIONS.md in case it's a real,
+        separate bug once reconversion rules out staleness.
+      - **CMP compound (3 rows, unconfirmed):** James's categoryB.L5X only
+        exercises a single CMP condition, which already passes — it
+        doesn't cover the `&`/`|` compound-condition case that's actually
+        failing. NOT guessed/fixed blind; logged as an extension to
+        OQ-CMPCPTLAYOUT with a hypothesis (each comparison needs its own
+        parens) pending a real sample.
+      **Net "samples needed" list, corrected from the original blind scan:**
+      one real open question — a Studio 5000-verified compound-CMP example,
+      e.g. `CMP((L0>L1)&(L2<L3))OTE(x);` or however the real syntax turns
+      out to need it. Nothing else on the original error list needs a new
+      sample.
 - [ ] **Re-capture genuine title-bar mismatch rows from the same batch.**
-      James confirmed a couple of real ones during the full run (distinct
-      from the false-positive extension-matching bug already fixed) —
-      wipe just those specific rows once he flags which sample_ids, not
-      the whole batch.
+      6 rows still flagged in manifest.csv `notes` as `WINDOW TITLE
+      MISMATCH` (real ones, not the false-positive extension-matching bug
+      already fixed): `paramcount_n04_def_only`, `paramcount_n08_def_only`,
+      `array_dint_00001`, `array_dint_00002`, `array_dint_00005`,
+      `udttagcomment_len000` (this last one's captured title was literally
+      "Snap Assist" — a Windows OS element, so focus was fully off Logix
+      Designer for that capture). Confirm this is the complete/correct
+      list with James, then wipe just those rows for re-capture, not the
+      whole batch.
+- [ ] **Re-run `batch_l5x_to_acd.ps1` + `batch_memory_capture.ps1` for
+      CPS/COP/FLL/BTD/LBL-JMP (26 rows)** now that the `l5x_mtime`
+      staleness fix is in place, to confirm/rule out the stale-ACD-cache
+      theory above.
 - [ ] Timer instructions (TON/TOF/RTO) at scale — no CTU/CTD-heavy usage seen
       but include CTU (25 real uses; CTD had zero, low priority)
 - [ ] Math/compare instructions (MOV/EQU/ADD/NEQ/GRT/MUL/GEQ/LES/SUB/LIM/LEQ/

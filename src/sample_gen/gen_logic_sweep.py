@@ -150,12 +150,17 @@ INSTRUCTIONS: dict[str, "callable"] = {
     "CONCAT": lambda i: f"CONCAT({_sd(i)},{_sd((i+1)%5)},{_sd((i+2)%5)});",
     "MID": lambda i: f"MID({_sd(i)},2,1,{_sd((i+1)%5)});",
     "DELETE": lambda i: f"DELETE({_sd(i)},1,1,{_sd((i+1)%5)});",
-    # Real corpus: SIZE's first operand needs an explicit array-element
-    # subscript too (SIZE(History[0],0,Size);, or for a STRING specifically
-    # SIZE(_DisplayBuffer.szString[0],0,...);  -- reaching into .DATA[0],
-    # not the bare STRING tag). Same bracket-subscript bug as CPS/COP/
-    # FLL/BTD above, found and fixed together 2026-08-22.
-    "SIZE": lambda i: f"SIZE({_sd(i)}.DATA[0],0,{_d(i)});",
+    # James's own Studio-5000-verified sample (COP_Samples.L5X, 2026-08-22)
+    # compiles SIZE(COP_Source,0,COP_Size); against a plain DINT[10] array
+    # -- bare tag name, NO [index] subscript and no .DATA reach-in. That
+    # directly contradicts the bracketed/`.DATA[0]` version this used to
+    # test (based on an ambiguous, unconfirmed STRING-specific corpus
+    # reference) -- SIZE is the one array-taking instruction in this file
+    # that does NOT follow the CPS/COP/FLL/BTD bracket rule below, since
+    # unlike those it operates on the whole array, not one element of it.
+    # Switched off the STRING pool (_sd) onto the plain-array pool (_arr)
+    # to match the confirmed sample exactly.
+    "SIZE": lambda i: f"SIZE({_arr(i)},0,{_d(i)});",
     "STOD": lambda i: f"STOD({_sd(i)},{_d(i)});",
     "DTOS": lambda i: f"DTOS({_d(i)},{_sd(i)});",
     "ABS": lambda i: f"ABS({_d(i)},{_r(i)});",

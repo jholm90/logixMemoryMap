@@ -19,8 +19,10 @@ spends real capture time on it.
 
 Two checks:
   1. Array-typed tag referenced without a [index] subscript anywhere it's
-     used as an instruction operand in rung text (the CPS/COP/FLL/BTD/SIZE
-     bug).
+     used as an instruction operand in rung text (the CPS/COP/FLL/BTD bug).
+     SIZE is a confirmed exception (James's real COP_Samples.L5X, 2026-08-22:
+     SIZE(COP_Source,0,COP_Size); -- bare array tag, no bracket) since its
+     first operand is the whole array, not one element -- see lint_l5x.
   2. An instruction/AOI-style call (ALLCAPS mnemonic followed by "(") whose
      name isn't a known native instruction AND doesn't match any
      AddOnInstructionDefinition actually declared in the same file (the
@@ -108,7 +110,14 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
 
     for text in rung_texts:
         for tag in array_tags:
-            pattern = re.compile(r"\b" + re.escape(tag) + r"\b(?!\s*\[)")
+            # SIZE is a confirmed exception to the bracket rule (James's
+            # own Studio-5000-verified COP_Samples.L5X, 2026-08-22:
+            # SIZE(COP_Source,0,COP_Size); compiles clean against a plain
+            # DINT[10] array with NO [index] subscript) -- unlike CPS/COP/
+            # FLL/BTD, SIZE's first operand is the whole array, not one
+            # element of it, so a bare tag immediately after "SIZE(" is
+            # not a missing-subscript bug.
+            pattern = re.compile(r"(?<!SIZE\()\b" + re.escape(tag) + r"\b(?!\s*\[)")
             if pattern.search(text):
                 findings.append(LintFinding(
                     "missing_array_subscript",

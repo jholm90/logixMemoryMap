@@ -14,6 +14,7 @@ Examples:
   python -m sample_gen.cli tags --type DINT --dims 10000 --out dint_10k_array
 
   python -m sample_gen.cli rungs --count 1000 --instr "XIC(In{i})OTE(Out{i});" \\
+      --decl-tag "In{i}:BOOL" --decl-tag "Out{i}:BOOL" \\
       --comment-len 100 --out xic_ote_1000_comment100
 """
 
@@ -124,7 +125,20 @@ def _cmd_rungs(args: argparse.Namespace) -> int:
     instr_fn = lambda i: args.instr.format(i=i)
     rungs_frag = rungs_xml(args.count, instr_fn, comment_fn)
 
-    l5x = build_l5x(target_name=args.out, tags_xml="", extra_rungs_xml=rungs_frag)
+    # James, 2026-08-22: the original xic_ote_1000_* samples referenced
+    # 2000 tags (In0..In999/Out0..Out999) inside --instr but this command
+    # always passed tags_xml="" -- nothing declared them, so Studio 5000
+    # rejected the file ("you decided not to generate those tags"). --decl-tag
+    # closes that gap: each NAME_PATTERN gets the same {i} substitution as
+    # --instr, for every i in range(--count), deduped by name.
+    decl_tags: dict[str, str] = {}
+    for spec in args.decl_tag:
+        name_pattern, dtype = spec.rsplit(":", 1)
+        for i in range(args.count):
+            decl_tags[name_pattern.format(i=i)] = dtype
+    tags_frag = "\n".join(tag_xml(name, dtype) for name, dtype in decl_tags.items())
+
+    l5x = build_l5x(target_name=args.out, tags_xml=tags_frag, extra_rungs_xml=rungs_frag)
     out_path = OUT_ROOT / "logic" / f"{args.out}.L5X"
     bytes_ = write_sample(l5x, out_path)
     append_manifest_row(
@@ -185,6 +199,13 @@ def main(argv: list[str] | None = None) -> int:
                                     "e.g. 'XIC(In{i})OTE(Out{i});'")
     rungs_parser.add_argument("--comment-len", type=int, default=0,
                                help="Give every rung a filler comment of this length (0 = none) -- OQ-COMMENTS")
+    rungs_parser.add_argument("--decl-tag", action="append", default=[],
+                               help="Auto-declare a tag referenced by --instr, as NAME_PATTERN:TYPE "
+                                    "(NAME_PATTERN gets the same {i} substitution as --instr, one tag "
+                                    "per rung index) -- repeatable, e.g. --decl-tag 'In{i}:BOOL' "
+                                    "--decl-tag 'Out{i}:BOOL' for --instr 'XIC(In{i})OTE(Out{i});'. "
+                                    "Any tag name embedded in --instr that isn't covered by a --decl-tag "
+                                    "is left undeclared and Studio 5000 will reject the file.")
     rungs_parser.add_argument("--out", required=True, help="Output file basename")
     rungs_parser.set_defaults(func=_cmd_rungs)
 
