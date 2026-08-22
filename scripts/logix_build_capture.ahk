@@ -151,7 +151,7 @@ Status(msg) {
         ; "loaded" signal (e.g. WinWaitActive on a title pattern) once you
         ; know what changes on screen when load finishes -- file size will
         ; vary this just like Build does, same reasoning as the Build popup.
-        Sleep 3000
+        Sleep 2000
 
         ; --- Build ---
         Status("Alt")
@@ -171,7 +171,7 @@ Status(msg) {
                 MsgBox "Build popup didn't close within " maxWaitSeconds "s -- possible hang, check manually."
         }
 
-        Sleep 1000
+        Sleep 250
         ; Captured at the same moment as Error/Warning/Message -- the
         ; window title has the open .ACD filename baked in (James, 2026-08-22:
         ; "window title is valid there with the filename.acd present inside"),
@@ -187,13 +187,12 @@ Status(msg) {
         Sleep 1000
         Status("Alt")
         Send "{Alt}"
-        Sleep 50
+        Sleep 10
         Status("e")
         Send "e"
-        Sleep 50
+        Sleep 10
         Status("n")
         Send "n"
-        Sleep 250
 
         ; Wait for the Controller Properties dialog itself instead of
         ; guessing a fixed delay -- title is "Controller Properties - <name>"
@@ -204,7 +203,7 @@ Status(msg) {
             MsgBox "Controller Properties dialog didn't appear within 5s."
             continue
         }
-        Sleep 250
+        Sleep 50
 
         Status("Selecting tab")
         Send "+{Tab}"
@@ -215,20 +214,28 @@ Status(msg) {
         Sleep 50
 
         Status("Reading Edit3 value")
-        Sleep 2000
+        Sleep 20
         OCDValue := StripCommas(Trim(ControlGetText("Edit3", "A")))
         Status("Read OCD value: " OCDValue)
-        Sleep 250
+        Sleep 5
+
+        Status("~~~ Read OCD value: " OCDValue)
 
         Send "!{F4}"
-        Sleep 250
+        Sleep 25
 
         ; A second save-changes prompt can appear here too, after closing
         ; Controller Properties -- same dismissal, discard and move on.
-        if WinWait(, "Save the changes?", 2) {
-            Send "n"
-            Sleep 250
-        }
+        ; Disabled 2026-08-22 -- James found it wasn't actually firing at
+        ; this point in practice; left in place, commented, in case it
+        ; resurfaces on a different file shape.
+        ;if WinWait(, "Save the changes?", 2) {
+        ;    Send "n"
+        ;    Sleep 250
+        ;}
+
+        Status("Write Changes to manifest file")
+        Sleep 5
 
         ; --- Hand results back to PowerShell ---
         handoffFile := FileOpen(HANDOFF_PATH, "w")
