@@ -1,46 +1,39 @@
-# Searches several real candidate locations rather than one guessed path
-# (James, 2026-08-20: the original single hardcoded path didn't exist on his
-# machine) -- NuGet always unpacks a restored package into the user's global
-# packages cache regardless of which feed it came from, so that's checked
-# first since ra-logix-designer-vcs-custom-tools already built successfully
-# against this exact package.
-$candidateRoots = @(
-    (Join-Path $env:USERPROFILE ".nuget\packages\rockwellautomation.logixdesigner.csclient"),
-    "C:\Users\Public\Documents\Studio 5000\Logix Designer SDK\dotnet",
-    "C:\Program Files\Rockwell Software",
-    "C:\Program Files (x86)\Rockwell Software",
-    "C:\Program Files\Common Files\Rockwell",
-    "C:\Program Files (x86)\Common Files\Rockwell"
-)
+<#
+.SYNOPSIS
+  Prints every public method on the installed Logix Designer SDK's
+  LogixProject class, plus a filtered subset likely to include any
+  offline compile/verify/build capability.
 
-$dll = $null
-foreach ($root in $candidateRoots) {
-    if (-not (Test-Path $root)) { continue }
-    $found = Get-ChildItem -Path $root -Recurse -Filter "RockwellAutomation.LogixDesigner*.dll" -ErrorAction SilentlyContinue |
-        Where-Object { $_.FullName -notmatch "\\ref\\" } | Select-Object -First 1
-    if ($found) { $dll = $found; break }
-}
+  Rewritten 2026-08-22 (James hit ReflectionTypeLoadException with the
+  original raw Assembly.LoadFrom approach) -- that failure mode is almost
+  certainly LoadFrom not resolving LogixProject's own dependencies
+  (Protobuf/gRPC etc, which live in sibling NuGet package folders a bare
+  PowerShell reflection call has no reason to search). This version
+  builds a real, tiny console project (dump_ldsdk_api\) that references
+  the SDK package properly, so .NET's own dependency resolution (via the
+  generated deps.json) handles it instead of hand-rolled reflection.
 
-if (-not $dll) {
-    Write-Host "DLL not found under any candidate root. Searched:"
-    $candidateRoots | ForEach-Object { Write-Host "  $_" }
-    Write-Host ""
-    Write-Host "Find it directly instead, e.g.:"
-    Write-Host '  Get-ChildItem -Path C:\ -Recurse -Filter "RockwellAutomation.LogixDesigner*.dll" -ErrorAction SilentlyContinue'
+.PREREQS
+  - Logix Designer SDK NuGet package already restoring successfully on
+    this machine (confirmed 2026-08-22: rockwellautomation.logixdesigner.
+    csclient 2.2.1109, net10.0). If dump_ldsdk_api\DumpApi.csproj's pinned
+    version doesn't match what's actually available, `dotnet build` will
+    say so plainly -- update the PackageReference Version in that file.
+  - .NET 10 SDK (same one l5xgit was built against).
+
+.EXAMPLE
+  ./dump_ldsdk_api.ps1
+#>
+$projectDir = Join-Path $PSScriptRoot "dump_ldsdk_api"
+if (-not (Test-Path (Join-Path $projectDir "DumpApi.csproj"))) {
+    Write-Error "Expected DumpApi.csproj under $projectDir -- run this from a checkout of the repo."
     exit 1
 }
-Write-Host "Loading: $($dll.FullName)"
 
-$asm = [System.Reflection.Assembly]::LoadFrom($dll.FullName)
-$type = $asm.GetTypes() | Where-Object { $_.Name -eq "LogixProject" }
-if (-not $type) { Write-Host "LogixProject type not found in this assembly."; exit 1 }
-
-Write-Host ""
-Write-Host "=== All public methods on LogixProject ==="
-$type.GetMethods([System.Reflection.BindingFlags]::Public -bor [System.Reflection.BindingFlags]::Instance -bor [System.Reflection.BindingFlags]::Static) |
-    Sort-Object Name -Unique | ForEach-Object { Write-Host $_.Name }
-
-Write-Host ""
-Write-Host "=== Methods matching Memory/Verify/Build/Compile/Usage/Properties/Controller ==="
-$type.GetMethods() | Where-Object { $_.Name -match "Memory|Verify|Build|Compile|Usage|Propert|Controller" } |
-    Sort-Object Name -Unique | ForEach-Object { Write-Host $_.Name }
+Push-Location $projectDir
+try {
+    dotnet run -c Release
+    exit $LASTEXITCODE
+} finally {
+    Pop-Location
+}
