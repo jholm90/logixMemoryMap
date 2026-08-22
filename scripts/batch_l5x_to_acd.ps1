@@ -11,6 +11,17 @@
   currently converting finishes; nothing is lost, just re-run the same
   command later to continue.
 
+  Staleness-aware (2026-08-22 fix, James: found real Build errors that
+  turned out to be against pre-fix .ACD binaries -- the L5X source for
+  BTD/COP/SIZE etc had already been fixed, but convert_log.csv's "already
+  converted" cache had no way to know that and kept skipping reconversion
+  forever). Every "ok" row now also records the L5X's LastWriteTimeUtc at
+  conversion time; on the next run, a file is only treated as already-done
+  if that timestamp still matches -- if the L5X has been touched since
+  (regenerated, hand-edited, whatever), it's reconverted automatically.
+  Old-format log rows (no l5x_mtime column) are always treated as stale,
+  so upgrading to this version forces one fresh pass over everything.
+
   Auto-pushes a copy of the log to samples/convert_log.csv in the repo on
   every run (success or early-stop) so conversion failures are visible
   without pasting terminal output.
@@ -33,32 +44,37 @@ param(
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 $logPath = Join-Path $OutputDir "convert_log.csv"
 
+# Keyed by l5x_path -> the recorded L5X mtime at conversion time (empty
+# string for old-format rows, which always counts as stale below).
 $alreadyDone = @{}
 if (Test-Path $logPath) {
-    Import-Csv $logPath | Where-Object { $_.status -eq "ok" } | ForEach-Object { $alreadyDone[$_.l5x_path] = $true }
+    Import-Csv $logPath | Where-Object { $_.status -eq "ok" } | ForEach-Object { $alreadyDone[$_.l5x_path] = $_.l5x_mtime }
 } else {
-    "l5x_path,acd_path,status,message" | Out-File -FilePath $logPath -Encoding utf8
+    "l5x_path,acd_path,status,message,l5x_mtime" | Out-File -FilePath $logPath -Encoding utf8
 }
 
-$files = Get-ChildItem -Path $InputDir -Filter *.L5X -Recurse
-Write-Host "Found $($files.Count) L5X file(s) under $InputDir; $($alreadyDone.Count) already converted."
+$allFiles = Get-ChildItem -Path $InputDir -Filter *.L5X -Recurse
+$files = $allFiles | Where-Object {
+    $recorded = $alreadyDone[$_.FullName]
+    if (-not $recorded) { return $true }  # never converted, or old-format row -- needs (re)conversion
+    return $recorded -ne $_.LastWriteTimeUtc.ToString("o")  # true if the L5X changed since it was last converted
+}
+$upToDateCount = $allFiles.Count - $files.Count
+Write-Host "Found $($allFiles.Count) L5X file(s) under $InputDir; $upToDateCount already converted and up to date; $($files.Count) to convert this pass."
 Write-Host "Press any key at any time to stop cleanly after the current file (resume later by re-running)."
 
 # Clear any buffered keypresses from before the loop started.
 while ([Console]::KeyAvailable) { [Console]::ReadKey($true) | Out-Null }
 
 $i = 0
+$total = $files.Count
 $stopRequested = $false
 $fileTimes = @()
 $batchSw = [System.Diagnostics.Stopwatch]::StartNew()
 foreach ($f in $files) {
-    if ($alreadyDone.ContainsKey($f.FullName)) {
-        continue
-    }
-
     $i++
     $acdPath = Join-Path $OutputDir ($f.BaseName + ".ACD")
-    Write-Host "[$i/$($files.Count - $alreadyDone.Count)] $($f.Name) -> $acdPath"
+    Write-Host "[$i/$total] $($f.Name) -> $acdPath"
     $fileSw = [System.Diagnostics.Stopwatch]::StartNew()
 
     $argList = @("l5x2acd", "--l5x", $f.FullName, "--acd", $acdPath)
@@ -69,13 +85,14 @@ foreach ($f in $files) {
     $fileSw.Stop()
     $fileSeconds = [math]::Round($fileSw.Elapsed.TotalSeconds, 1)
     $fileTimes += $fileSeconds
+    $mtime = $f.LastWriteTimeUtc.ToString("o")
 
     if ($exitCode -eq 0) {
-        "$($f.FullName),$acdPath,ok," | Out-File -FilePath $logPath -Append -Encoding utf8
+        "$($f.FullName),$acdPath,ok,,$mtime" | Out-File -FilePath $logPath -Append -Encoding utf8
         Write-Host "  ok (${fileSeconds}s)"
     } else {
         $msg = ($result -join " ") -replace ",", ";"
-        "$($f.FullName),$acdPath,FAILED,$msg" | Out-File -FilePath $logPath -Append -Encoding utf8
+        "$($f.FullName),$acdPath,FAILED,$msg,$mtime" | Out-File -FilePath $logPath -Append -Encoding utf8
         Write-Warning "  Conversion failed (${fileSeconds}s): $msg"
     }
 
