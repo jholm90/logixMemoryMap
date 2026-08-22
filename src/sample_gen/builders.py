@@ -469,3 +469,33 @@ def counter_tag_xml(name: str, preset: int = 100) -> str:
         f'<DataValueMember Name="UN" DataType="BOOL" Value="0" /></Structure></Data>\n'
         f"      </Tag>"
     )
+
+
+def program_tag_xml(name: str, data_type: str, usage: str | None = None) -> str:
+    """Program-scoped (Program/Tags, not Controller/Tags) atomic tag. Real
+    shape confirmed 2026-08-22 (samples/local/SJ_Gormley_20251112_r02.L5X,
+    PC366_BitPos/DLugNum): a Program-scoped tag -- Local (no Usage attribute)
+    or Public (Usage="Public") alike -- uses the dual Format="L5K"/
+    Format="Decorated" pair, unlike a Controller-scoped atomic tag which
+    gets Decorated only (see tag_xml). The dual format is a program-scope
+    convention, not something specific to Usage="Public" -- confirmed by
+    checking a same-file Local-scope tag (DLugNum, no Usage attribute) shows
+    the identical dual-Data shape. OQ-TAGSCOPE."""
+    usage_attr = f' Usage="{usage}"' if usage else ""
+    val = _default_value(data_type)
+    radix = "Float" if data_type in _FLOAT_TYPES else "Decimal"
+    return (
+        f'      <Tag Name="{name}" TagType="Base" DataType="{data_type}" Radix="{radix}"{usage_attr} '
+        f'Constant="false" ExternalAccess="Read/Write">\n'
+        f'        <Data Format="L5K"><![CDATA[{val}]]></Data>\n'
+        f'        <Data Format="Decorated">{_data_value_xml(data_type, radix)}</Data>\n'
+        f"      </Tag>"
+    )
+
+
+def alias_tag_xml(name: str, alias_for: str, radix: str = "Decimal") -> str:
+    """Alias tag -- real shape confirmed 2026-08-20 (multiple real corpus
+    files, e.g. samples/local/BAI10048_TrimmerTally_20250704.L5X): self-
+    closed, no Data element at all, just AliasFor pointing at the real
+    target tag's path. OQ-ALIASSIZE."""
+    return f'      <Tag Name="{name}" TagType="Alias" Radix="{radix}" AliasFor="{alias_for}" ExternalAccess="Read/Write"/>'
