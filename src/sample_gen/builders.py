@@ -409,10 +409,15 @@ def aoi_xml(
 
 
 def rung_xml(number: int, instructions: str, comment: str | None = None) -> str:
+    # Real exports always wrap rung Text in CDATA (2026-08-21: caught while
+    # building the instruction sweep -- this was missing here, harmless so
+    # far only because no rung text generated to date needed a literal '<',
+    # but CMP's real syntax does e.g. CMP(A>B), and a future '<' would have
+    # produced invalid XML without this).
     comment_xml = f"<Comment><![CDATA[{comment}]]></Comment>\n                " if comment else ""
     return (
         f'              <Rung Number="{number}" Type="N">\n'
-        f"                {comment_xml}<Text>{instructions}</Text>\n"
+        f"                {comment_xml}<Text><![CDATA[{instructions}]]></Text>\n"
         f"              </Rung>"
     )
 
@@ -425,3 +430,42 @@ def rungs_xml(count: int, instructions_fn, comment_fn=None) -> str:
         comment = comment_fn(i) if comment_fn else None
         rungs.append(rung_xml(i, instructions_fn(i), comment))
     return "\n".join(rungs)
+
+
+def timer_tag_xml(name: str, preset: int = 1000) -> str:
+    """Real shape confirmed 2026-08-21 (samples/local/SJ_Gormley_20251112_r02.L5X,
+    IncisorOtfdBeltJogDwell): a TIMER tag, like STRING, uses the dual
+    Format="L5K"/Format="Decorated" pair at the top level -- NOT the single
+    Format="Decorated" every UDT/atomic tag gets. 5 real members (PRE/ACC
+    DINT, EN/TT/DN BOOL) match this project's already-confirmed 12-byte
+    TIMER constant (docs/MEMORY_MODEL.md)."""
+    return (
+        f'      <Tag Name="{name}" TagType="Base" DataType="TIMER" Constant="false" ExternalAccess="Read/Write">\n'
+        f'        <Data Format="L5K"><![CDATA[[0,{preset},0]]]></Data>\n'
+        f'        <Data Format="Decorated"><Structure DataType="TIMER">'
+        f'<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="{preset}" />'
+        f'<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0" />'
+        f'<DataValueMember Name="EN" DataType="BOOL" Value="0" />'
+        f'<DataValueMember Name="TT" DataType="BOOL" Value="0" />'
+        f'<DataValueMember Name="DN" DataType="BOOL" Value="0" /></Structure></Data>\n'
+        f"      </Tag>"
+    )
+
+
+def counter_tag_xml(name: str, preset: int = 100) -> str:
+    """Real shape confirmed 2026-08-21 (samples/local/SJ_Gormley_20251112_r02.L5X,
+    LL_BlowoffCTR_PkgIFLL): same dual-format shape as TIMER, 7 real members
+    (PRE/ACC DINT, CU/CD/DN/OV/UN BOOL)."""
+    return (
+        f'      <Tag Name="{name}" TagType="Base" DataType="COUNTER" Constant="false" ExternalAccess="Read/Write">\n'
+        f'        <Data Format="L5K"><![CDATA[[0,{preset},0]]]></Data>\n'
+        f'        <Data Format="Decorated"><Structure DataType="COUNTER">'
+        f'<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="{preset}" />'
+        f'<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0" />'
+        f'<DataValueMember Name="CU" DataType="BOOL" Value="0" />'
+        f'<DataValueMember Name="CD" DataType="BOOL" Value="0" />'
+        f'<DataValueMember Name="DN" DataType="BOOL" Value="0" />'
+        f'<DataValueMember Name="OV" DataType="BOOL" Value="0" />'
+        f'<DataValueMember Name="UN" DataType="BOOL" Value="0" /></Structure></Data>\n'
+        f"      </Tag>"
+    )

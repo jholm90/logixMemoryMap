@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="InstrSUB" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sat Aug 22 02:44:42 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="InstrSUB" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sat Aug 22 02:44:42 2026" LastModifiedDate="Sat Aug 22 02:44:42 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+      <Tag Name="D0" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D1" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D2" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D3" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D4" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D5" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D6" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D7" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D8" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D9" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="R0" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R1" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R2" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R3" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R4" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R5" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R6" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R7" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R8" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R9" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="B0" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B1" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B2" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B3" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B4" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B5" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B6" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B7" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B8" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B9" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="S0" TagType="Base" DataType="SINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="SINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="S1" TagType="Base" DataType="SINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="SINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="S2" TagType="Base" DataType="SINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="SINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="S3" TagType="Base" DataType="SINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="SINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="S4" TagType="Base" DataType="SINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="SINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="STR0" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="STR1" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="STR2" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="STR3" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="STR4" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="TMR0" TagType="Base" DataType="TIMER" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K"><![CDATA[[0,1000,0]]]></Data>
+        <Data Format="Decorated"><Structure DataType="TIMER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="1000" /><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0" /><DataValueMember Name="EN" DataType="BOOL" Value="0" /><DataValueMember Name="TT" DataType="BOOL" Value="0" /><DataValueMember Name="DN" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TMR1" TagType="Base" DataType="TIMER" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K"><![CDATA[[0,1000,0]]]></Data>
+        <Data Format="Decorated"><Structure DataType="TIMER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="1000" /><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0" /><DataValueMember Name="EN" DataType="BOOL" Value="0" /><DataValueMember Name="TT" DataType="BOOL" Value="0" /><DataValueMember Name="DN" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TMR2" TagType="Base" DataType="TIMER" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K"><![CDATA[[0,1000,0]]]></Data>
+        <Data Format="Decorated"><Structure DataType="TIMER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="1000" /><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0" /><DataValueMember Name="EN" DataType="BOOL" Value="0" /><DataValueMember Name="TT" DataType="BOOL" Value="0" /><DataValueMember Name="DN" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="CTR0" TagType="Base" DataType="COUNTER" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K"><![CDATA[[0,100,0]]]></Data>
+        <Data Format="Decorated"><Structure DataType="COUNTER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="100" /><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0" /><DataValueMember Name="CU" DataType="BOOL" Value="0" /><DataValueMember Name="CD" DataType="BOOL" Value="0" /><DataValueMember Name="DN" DataType="BOOL" Value="0" /><DataValueMember Name="OV" DataType="BOOL" Value="0" /><DataValueMember Name="UN" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="CTR1" TagType="Base" DataType="COUNTER" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K"><![CDATA[[0,100,0]]]></Data>
+        <Data Format="Decorated"><Structure DataType="COUNTER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="100" /><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0" /><DataValueMember Name="CU" DataType="BOOL" Value="0" /><DataValueMember Name="CD" DataType="BOOL" Value="0" /><DataValueMember Name="DN" DataType="BOOL" Value="0" /><DataValueMember Name="OV" DataType="BOOL" Value="0" /><DataValueMember Name="UN" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="CTR2" TagType="Base" DataType="COUNTER" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K"><![CDATA[[0,100,0]]]></Data>
+        <Data Format="Decorated"><Structure DataType="COUNTER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="100" /><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0" /><DataValueMember Name="CU" DataType="BOOL" Value="0" /><DataValueMember Name="CD" DataType="BOOL" Value="0" /><DataValueMember Name="DN" DataType="BOOL" Value="0" /><DataValueMember Name="OV" DataType="BOOL" Value="0" /><DataValueMember Name="UN" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="ARR0" TagType="Base" DataType="DINT" Dimensions="20" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Array DataType="DINT" Dimensions="20" Radix="Decimal"><Element Index="[0]" Value="0" /><Element Index="[1]" Value="0" /><Element Index="[2]" Value="0" /><Element Index="[3]" Value="0" /><Element Index="[4]" Value="0" /><Element Index="[5]" Value="0" /><Element Index="[6]" Value="0" /><Element Index="[7]" Value="0" /><Element Index="[8]" Value="0" /><Element Index="[9]" Value="0" /><Element Index="[10]" Value="0" /><Element Index="[11]" Value="0" /><Element Index="[12]" Value="0" /><Element Index="[13]" Value="0" /><Element Index="[14]" Value="0" /><Element Index="[15]" Value="0" /><Element Index="[16]" Value="0" /><Element Index="[17]" Value="0" /><Element Index="[18]" Value="0" /><Element Index="[19]" Value="0" /></Array></Data>
+      </Tag>
+      <Tag Name="ARR1" TagType="Base" DataType="DINT" Dimensions="20" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Array DataType="DINT" Dimensions="20" Radix="Decimal"><Element Index="[0]" Value="0" /><Element Index="[1]" Value="0" /><Element Index="[2]" Value="0" /><Element Index="[3]" Value="0" /><Element Index="[4]" Value="0" /><Element Index="[5]" Value="0" /><Element Index="[6]" Value="0" /><Element Index="[7]" Value="0" /><Element Index="[8]" Value="0" /><Element Index="[9]" Value="0" /><Element Index="[10]" Value="0" /><Element Index="[11]" Value="0" /><Element Index="[12]" Value="0" /><Element Index="[13]" Value="0" /><Element Index="[14]" Value="0" /><Element Index="[15]" Value="0" /><Element Index="[16]" Value="0" /><Element Index="[17]" Value="0" /><Element Index="[18]" Value="0" /><Element Index="[19]" Value="0" /></Array></Data>
+      </Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags/>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+              <Rung Number="0" Type="N">
+                <Text><![CDATA[SUB(D0,D1,D2);]]></Text>
+              </Rung>
+              <Rung Number="1" Type="N">
+                <Text><![CDATA[SUB(D1,D2,D3);]]></Text>
+              </Rung>
+              <Rung Number="2" Type="N">
+                <Text><![CDATA[SUB(D2,D3,D4);]]></Text>
+              </Rung>
+              <Rung Number="3" Type="N">
+                <Text><![CDATA[SUB(D3,D4,D5);]]></Text>
+              </Rung>
+              <Rung Number="4" Type="N">
+                <Text><![CDATA[SUB(D4,D5,D6);]]></Text>
+              </Rung>
+              <Rung Number="5" Type="N">
+                <Text><![CDATA[SUB(D5,D6,D7);]]></Text>
+              </Rung>
+              <Rung Number="6" Type="N">
+                <Text><![CDATA[SUB(D6,D7,D8);]]></Text>
+              </Rung>
+              <Rung Number="7" Type="N">
+                <Text><![CDATA[SUB(D7,D8,D9);]]></Text>
+              </Rung>
+              <Rung Number="8" Type="N">
+                <Text><![CDATA[SUB(D8,D9,D0);]]></Text>
+              </Rung>
+              <Rung Number="9" Type="N">
+                <Text><![CDATA[SUB(D9,D0,D1);]]></Text>
+              </Rung>
+              <Rung Number="10" Type="N">
+                <Text><![CDATA[SUB(D0,D1,D2);]]></Text>
+              </Rung>
+              <Rung Number="11" Type="N">
+                <Text><![CDATA[SUB(D1,D2,D3);]]></Text>
+              </Rung>
+              <Rung Number="12" Type="N">
+                <Text><![CDATA[SUB(D2,D3,D4);]]></Text>
+              </Rung>
+              <Rung Number="13" Type="N">
+                <Text><![CDATA[SUB(D3,D4,D5);]]></Text>
+              </Rung>
+              <Rung Number="14" Type="N">
+                <Text><![CDATA[SUB(D4,D5,D6);]]></Text>
+              </Rung>
+              <Rung Number="15" Type="N">
+                <Text><![CDATA[SUB(D5,D6,D7);]]></Text>
+              </Rung>
+              <Rung Number="16" Type="N">
+                <Text><![CDATA[SUB(D6,D7,D8);]]></Text>
+              </Rung>
+              <Rung Number="17" Type="N">
+                <Text><![CDATA[SUB(D7,D8,D9);]]></Text>
+              </Rung>
+              <Rung Number="18" Type="N">
+                <Text><![CDATA[SUB(D8,D9,D0);]]></Text>
+              </Rung>
+              <Rung Number="19" Type="N">
+                <Text><![CDATA[SUB(D9,D0,D1);]]></Text>
+              </Rung>
+              <Rung Number="20" Type="N">
+                <Text><![CDATA[SUB(D0,D1,D2);]]></Text>
+              </Rung>
+              <Rung Number="21" Type="N">
+                <Text><![CDATA[SUB(D1,D2,D3);]]></Text>
+              </Rung>
+              <Rung Number="22" Type="N">
+                <Text><![CDATA[SUB(D2,D3,D4);]]></Text>
+              </Rung>
+              <Rung Number="23" Type="N">
+                <Text><![CDATA[SUB(D3,D4,D5);]]></Text>
+              </Rung>
+              <Rung Number="24" Type="N">
+                <Text><![CDATA[SUB(D4,D5,D6);]]></Text>
+              </Rung>
+              <Rung Number="25" Type="N">
+                <Text><![CDATA[SUB(D5,D6,D7);]]></Text>
+              </Rung>
+              <Rung Number="26" Type="N">
+                <Text><![CDATA[SUB(D6,D7,D8);]]></Text>
+              </Rung>
+              <Rung Number="27" Type="N">
+                <Text><![CDATA[SUB(D7,D8,D9);]]></Text>
+              </Rung>
+              <Rung Number="28" Type="N">
+                <Text><![CDATA[SUB(D8,D9,D0);]]></Text>
+              </Rung>
+              <Rung Number="29" Type="N">
+                <Text><![CDATA[SUB(D9,D0,D1);]]></Text>
+              </Rung>
+              <Rung Number="30" Type="N">
+                <Text><![CDATA[SUB(D0,D1,D2);]]></Text>
+              </Rung>
+              <Rung Number="31" Type="N">
+                <Text><![CDATA[SUB(D1,D2,D3);]]></Text>
+              </Rung>
+              <Rung Number="32" Type="N">
+                <Text><![CDATA[SUB(D2,D3,D4);]]></Text>
+              </Rung>
+              <Rung Number="33" Type="N">
+                <Text><![CDATA[SUB(D3,D4,D5);]]></Text>
+              </Rung>
+              <Rung Number="34" Type="N">
+                <Text><![CDATA[SUB(D4,D5,D6);]]></Text>
+              </Rung>
+              <Rung Number="35" Type="N">
+                <Text><![CDATA[SUB(D5,D6,D7);]]></Text>
+              </Rung>
+              <Rung Number="36" Type="N">
+                <Text><![CDATA[SUB(D6,D7,D8);]]></Text>
+              </Rung>
+              <Rung Number="37" Type="N">
+                <Text><![CDATA[SUB(D7,D8,D9);]]></Text>
+              </Rung>
+              <Rung Number="38" Type="N">
+                <Text><![CDATA[SUB(D8,D9,D0);]]></Text>
+              </Rung>
+              <Rung Number="39" Type="N">
+                <Text><![CDATA[SUB(D9,D0,D1);]]></Text>
+              </Rung>
+              <Rung Number="40" Type="N">
+                <Text><![CDATA[SUB(D0,D1,D2);]]></Text>
+              </Rung>
+              <Rung Number="41" Type="N">
+                <Text><![CDATA[SUB(D1,D2,D3);]]></Text>
+              </Rung>
+              <Rung Number="42" Type="N">
+                <Text><![CDATA[SUB(D2,D3,D4);]]></Text>
+              </Rung>
+              <Rung Number="43" Type="N">
+                <Text><![CDATA[SUB(D3,D4,D5);]]></Text>
+              </Rung>
+              <Rung Number="44" Type="N">
+                <Text><![CDATA[SUB(D4,D5,D6);]]></Text>
+              </Rung>
+              <Rung Number="45" Type="N">
+                <Text><![CDATA[SUB(D5,D6,D7);]]></Text>
+              </Rung>
+              <Rung Number="46" Type="N">
+                <Text><![CDATA[SUB(D6,D7,D8);]]></Text>
+              </Rung>
+              <Rung Number="47" Type="N">
+                <Text><![CDATA[SUB(D7,D8,D9);]]></Text>
+              </Rung>
+              <Rung Number="48" Type="N">
+                <Text><![CDATA[SUB(D8,D9,D0);]]></Text>
+              </Rung>
+              <Rung Number="49" Type="N">
+                <Text><![CDATA[SUB(D9,D0,D1);]]></Text>
+              </Rung>
+              <Rung Number="50" Type="N">
+                <Text><![CDATA[SUB(D0,D1,D2);]]></Text>
+              </Rung>
+              <Rung Number="51" Type="N">
+                <Text><![CDATA[SUB(D1,D2,D3);]]></Text>
+              </Rung>
+              <Rung Number="52" Type="N">
+                <Text><![CDATA[SUB(D2,D3,D4);]]></Text>
+              </Rung>
+              <Rung Number="53" Type="N">
+                <Text><![CDATA[SUB(D3,D4,D5);]]></Text>
+              </Rung>
+              <Rung Number="54" Type="N">
+                <Text><![CDATA[SUB(D4,D5,D6);]]></Text>
+              </Rung>
+              <Rung Number="55" Type="N">
+                <Text><![CDATA[SUB(D5,D6,D7);]]></Text>
+              </Rung>
+              <Rung Number="56" Type="N">
+                <Text><![CDATA[SUB(D6,D7,D8);]]></Text>
+              </Rung>
+              <Rung Number="57" Type="N">
+                <Text><![CDATA[SUB(D7,D8,D9);]]></Text>
+              </Rung>
+              <Rung Number="58" Type="N">
+                <Text><![CDATA[SUB(D8,D9,D0);]]></Text>
+              </Rung>
+              <Rung Number="59" Type="N">
+                <Text><![CDATA[SUB(D9,D0,D1);]]></Text>
+              </Rung>
+              <Rung Number="60" Type="N">
+                <Text><![CDATA[SUB(D0,D1,D2);]]></Text>
+              </Rung>
+              <Rung Number="61" Type="N">
+                <Text><![CDATA[SUB(D1,D2,D3);]]></Text>
+              </Rung>
+              <Rung Number="62" Type="N">
+                <Text><![CDATA[SUB(D2,D3,D4);]]></Text>
+              </Rung>
+              <Rung Number="63" Type="N">
+                <Text><![CDATA[SUB(D3,D4,D5);]]></Text>
+              </Rung>
+              <Rung Number="64" Type="N">
+                <Text><![CDATA[SUB(D4,D5,D6);]]></Text>
+              </Rung>
+              <Rung Number="65" Type="N">
+                <Text><![CDATA[SUB(D5,D6,D7);]]></Text>
+              </Rung>
+              <Rung Number="66" Type="N">
+                <Text><![CDATA[SUB(D6,D7,D8);]]></Text>
+              </Rung>
+              <Rung Number="67" Type="N">
+                <Text><![CDATA[SUB(D7,D8,D9);]]></Text>
+              </Rung>
+              <Rung Number="68" Type="N">
+                <Text><![CDATA[SUB(D8,D9,D0);]]></Text>
+              </Rung>
+              <Rung Number="69" Type="N">
+                <Text><![CDATA[SUB(D9,D0,D1);]]></Text>
+              </Rung>
+              <Rung Number="70" Type="N">
+                <Text><![CDATA[SUB(D0,D1,D2);]]></Text>
+              </Rung>
+              <Rung Number="71" Type="N">
+                <Text><![CDATA[SUB(D1,D2,D3);]]></Text>
+              </Rung>
+              <Rung Number="72" Type="N">
+                <Text><![CDATA[SUB(D2,D3,D4);]]></Text>
+              </Rung>
+              <Rung Number="73" Type="N">
+                <Text><![CDATA[SUB(D3,D4,D5);]]></Text>
+              </Rung>
+              <Rung Number="74" Type="N">
+                <Text><![CDATA[SUB(D4,D5,D6);]]></Text>
+              </Rung>
+              <Rung Number="75" Type="N">
+                <Text><![CDATA[SUB(D5,D6,D7);]]></Text>
+              </Rung>
+              <Rung Number="76" Type="N">
+                <Text><![CDATA[SUB(D6,D7,D8);]]></Text>
+              </Rung>
+              <Rung Number="77" Type="N">
+                <Text><![CDATA[SUB(D7,D8,D9);]]></Text>
+              </Rung>
+              <Rung Number="78" Type="N">
+                <Text><![CDATA[SUB(D8,D9,D0);]]></Text>
+              </Rung>
+              <Rung Number="79" Type="N">
+                <Text><![CDATA[SUB(D9,D0,D1);]]></Text>
+              </Rung>
+              <Rung Number="80" Type="N">
+                <Text><![CDATA[SUB(D0,D1,D2);]]></Text>
+              </Rung>
+              <Rung Number="81" Type="N">
+                <Text><![CDATA[SUB(D1,D2,D3);]]></Text>
+              </Rung>
+              <Rung Number="82" Type="N">
+                <Text><![CDATA[SUB(D2,D3,D4);]]></Text>
+              </Rung>
+              <Rung Number="83" Type="N">
+                <Text><![CDATA[SUB(D3,D4,D5);]]></Text>
+              </Rung>
+              <Rung Number="84" Type="N">
+                <Text><![CDATA[SUB(D4,D5,D6);]]></Text>
+              </Rung>
+              <Rung Number="85" Type="N">
+                <Text><![CDATA[SUB(D5,D6,D7);]]></Text>
+              </Rung>
+              <Rung Number="86" Type="N">
+                <Text><![CDATA[SUB(D6,D7,D8);]]></Text>
+              </Rung>
+              <Rung Number="87" Type="N">
+                <Text><![CDATA[SUB(D7,D8,D9);]]></Text>
+              </Rung>
+              <Rung Number="88" Type="N">
+                <Text><![CDATA[SUB(D8,D9,D0);]]></Text>
+              </Rung>
+              <Rung Number="89" Type="N">
+                <Text><![CDATA[SUB(D9,D0,D1);]]></Text>
+              </Rung>
+              <Rung Number="90" Type="N">
+                <Text><![CDATA[SUB(D0,D1,D2);]]></Text>
+              </Rung>
+              <Rung Number="91" Type="N">
+                <Text><![CDATA[SUB(D1,D2,D3);]]></Text>
+              </Rung>
+              <Rung Number="92" Type="N">
+                <Text><![CDATA[SUB(D2,D3,D4);]]></Text>
+              </Rung>
+              <Rung Number="93" Type="N">
+                <Text><![CDATA[SUB(D3,D4,D5);]]></Text>
+              </Rung>
+              <Rung Number="94" Type="N">
+                <Text><![CDATA[SUB(D4,D5,D6);]]></Text>
+              </Rung>
+              <Rung Number="95" Type="N">
+                <Text><![CDATA[SUB(D5,D6,D7);]]></Text>
+              </Rung>
+              <Rung Number="96" Type="N">
+                <Text><![CDATA[SUB(D6,D7,D8);]]></Text>
+              </Rung>
+              <Rung Number="97" Type="N">
+                <Text><![CDATA[SUB(D7,D8,D9);]]></Text>
+              </Rung>
+              <Rung Number="98" Type="N">
+                <Text><![CDATA[SUB(D8,D9,D0);]]></Text>
+              </Rung>
+              <Rung Number="99" Type="N">
+                <Text><![CDATA[SUB(D9,D0,D1);]]></Text>
+              </Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

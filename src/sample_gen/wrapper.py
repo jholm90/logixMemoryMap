@@ -55,6 +55,7 @@ def build_l5x(
     extra_datatypes_xml: str = "",
     extra_rungs_xml: str = "",
     extra_aoi_xml: str = "",
+    extra_routines_xml: str = "",
 ) -> str:
     rungs = extra_rungs_xml if extra_rungs_xml.strip() else (
         '<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>'
@@ -99,6 +100,7 @@ def build_l5x(
 {rungs}
 </RLLContent>
 </Routine>
+{extra_routines_xml}
 </Routines>
 </Program>
 </Programs>
