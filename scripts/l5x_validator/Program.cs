@@ -15,14 +15,29 @@
 //
 // PREREQ before trusting any "ok" result: run `selftest` first. It runs this
 // exact Open -> BuildAsync(DefaultTarget) -> check-for-Error-events pipeline
-// against two files this project already knows are broken (the real pre-fix
-// CPS array-subscript bug and the T_ADD-called-as-native-instruction bug
-// James caught by hand). Both must come back FAILED with real error text, or
-// this mechanism isn't actually catching what it needs to and no "ok" from
-// `validate` mode can be trusted.
+// against known-bad AND known-good negative-control fixtures. Both bad
+// fixtures must FAIL and the good one must come back ok, or this mechanism
+// isn't actually catching what it needs to and no "ok" from `validate` mode
+// can be trusted.
+//
+// CONFIRMED DEAD END on James's environment (2026-08-22): first self-test run
+// showed both bad fixtures failing with the identical "Operation not
+// supported on Logix Designer version 35.5" -- looked like a pass (both
+// failed) but was actually a universal failure, not real ladder-logic
+// detection. Adding a KNOWN_GOOD_ fixture caught it immediately: it failed
+// with the exact same message. DefaultTarget does not work on Designer 35.5
+// -- no public doc pins the exact minimum version, but the SDK client
+// (2.2.1109) and the Designer application version independently, and 35.5
+// is old relative to that SDK. The other two RequestedBuildTarget values
+// (PhysicalController, EchoController) both need exactly what's been ruled
+// out (a controller, Echo). This tool's Open/Build/timing harness is kept
+// as reusable infrastructure, but `validate` mode should not be trusted
+// until `selftest` genuinely passes against whatever mechanism replaces
+// DefaultTarget.
 
 using RockwellAutomation.LogixDesigner;
 using RockwellAutomation.LogixDesigner.Logging;
+using System.Diagnostics;
 
 if (args.Length == 0)
 {
@@ -125,7 +140,7 @@ static async Task<int> RunSelfTestAsync(string logPath)
     Console.WriteLine();
 
     if (!File.Exists(logPath))
-        File.WriteAllText(logPath, "l5x_path,status,error_count,messages\n");
+        File.WriteAllText(logPath, "l5x_path,status,error_count,messages,elapsed_ms,opened_as_acd\n");
 
     bool ok = true;
     var allMessages = new List<(string file, bool expectedBad, ValidationResult result)>();
@@ -138,7 +153,7 @@ static async Task<int> RunSelfTestAsync(string logPath)
         var result = await ValidateOneFileAsync(f, f);
         LogResult(logPath, result);
         allMessages.Add((f, expectedBad, result));
-        Console.WriteLine($"  -> {result.Status} ({result.ErrorCount} error event(s))");
+        Console.WriteLine($"  -> {result.Status} ({result.ErrorCount} error event(s), {FormatElapsed(result.ElapsedMs)})");
         foreach (var msg in result.Messages.Take(5))
             Console.WriteLine($"     {msg}");
 
@@ -214,7 +229,7 @@ static async Task<int> RunValidateAsync(string inputDir, string logPath, int? li
     }
     else
     {
-        File.WriteAllText(logPath, "l5x_path,status,error_count,messages\n");
+        File.WriteAllText(logPath, "l5x_path,status,error_count,messages,elapsed_ms,opened_as_acd\n");
     }
 
     var allFiles = Directory.GetFiles(inputDir, "*.L5X", SearchOption.AllDirectories);
@@ -228,6 +243,8 @@ static async Task<int> RunValidateAsync(string inputDir, string logPath, int? li
 
     int i = 0;
     int failCount = 0;
+    var results = new List<ValidationResult>();
+    var batchSw = Stopwatch.StartNew();
     foreach (var f in todo)
     {
         i++;
@@ -235,21 +252,37 @@ static async Task<int> RunValidateAsync(string inputDir, string logPath, int? li
         Console.WriteLine($"[{i}/{todo.Count}] {Path.GetFileName(f)}{(openPath != f ? " (opening existing .ACD)" : "")}");
         var result = await ValidateOneFileAsync(f, openPath);
         LogResult(logPath, result);
+        results.Add(result);
         if (result.Status == "ok")
         {
-            Console.WriteLine("  -> ok");
+            Console.WriteLine($"  -> ok ({FormatElapsed(result.ElapsedMs)})");
         }
         else
         {
             failCount++;
-            Console.WriteLine($"  -> FAILED ({result.ErrorCount} error event(s))");
+            Console.WriteLine($"  -> FAILED ({result.ErrorCount} error event(s), {FormatElapsed(result.ElapsedMs)})");
             foreach (var msg in result.Messages.Take(5))
                 Console.WriteLine($"     {msg}");
         }
     }
+    batchSw.Stop();
 
     Console.WriteLine();
     Console.WriteLine($"Done this pass. {todo.Count - failCount} ok, {failCount} FAILED. Full log: {logPath}");
+
+    if (results.Count > 0)
+    {
+        double avgMs = results.Average(r => r.ElapsedMs);
+        Console.WriteLine($"Batch: {FormatElapsed(batchSw.ElapsedMilliseconds)} total for {results.Count} file(s), avg {FormatElapsed((long)avgMs)}/file.");
+
+        var acdResults = results.Where(r => r.OpenedAsAcd).ToList();
+        var l5xResults = results.Where(r => !r.OpenedAsAcd).ToList();
+        if (acdResults.Count > 0)
+            Console.WriteLine($"  Opened from .ACD: {acdResults.Count} file(s), avg {FormatElapsed((long)acdResults.Average(r => r.ElapsedMs))}/file.");
+        if (l5xResults.Count > 0)
+            Console.WriteLine($"  Opened from .L5X: {l5xResults.Count} file(s), avg {FormatElapsed((long)l5xResults.Average(r => r.ElapsedMs))}/file.");
+    }
+
     return 0;
 }
 
@@ -257,14 +290,19 @@ static void LogResult(string logPath, ValidationResult r)
 {
     string Escape(string s) => s.Replace(",", ";").Replace("\r", " ").Replace("\n", " ");
     string joined = Escape(string.Join(" | ", r.Messages));
-    File.AppendAllText(logPath, $"{Escape(r.L5xPath)},{r.Status},{r.ErrorCount},{joined}\n");
+    File.AppendAllText(logPath, $"{Escape(r.L5xPath)},{r.Status},{r.ErrorCount},{joined},{r.ElapsedMs},{r.OpenedAsAcd}\n");
 }
 
 static async Task<ValidationResult> ValidateOneFileAsync(string l5xPath, string openPath)
 {
     var collector = new ErrorCollector();
-    var result = new ValidationResult { L5xPath = l5xPath, Status = "FAILED", ErrorCount = 0, Messages = new List<string>() };
+    var result = new ValidationResult
+    {
+        L5xPath = l5xPath, Status = "FAILED", ErrorCount = 0, Messages = new List<string>(),
+        ElapsedMs = 0, OpenedAsAcd = !string.Equals(openPath, l5xPath, StringComparison.OrdinalIgnoreCase),
+    };
 
+    var sw = Stopwatch.StartNew();
     try
     {
         var project = await LogixProject.OpenLogixProjectAsync(openPath, collector, CancellationToken.None);
@@ -275,12 +313,16 @@ static async Task<ValidationResult> ValidateOneFileAsync(string l5xPath, string 
     {
         collector.Errors.Add((openPath, $"[exception] {ex.GetType().Name}: {ex.Message}"));
     }
+    sw.Stop();
 
+    result.ElapsedMs = sw.ElapsedMilliseconds;
     result.ErrorCount = collector.Errors.Count;
     result.Messages = collector.Errors.Select(e => $"{Path.GetFileName(e.file)}: {e.msg}").ToList();
     result.Status = result.ErrorCount == 0 ? "ok" : "FAILED";
     return result;
 }
+
+static string FormatElapsed(long ms) => ms >= 1000 ? $"{ms / 1000.0:F1}s" : $"{ms}ms";
 
 class ErrorCollector : IOperationEvent
 {
@@ -300,4 +342,6 @@ class ValidationResult
     public required string Status { get; set; }
     public required int ErrorCount { get; set; }
     public required List<string> Messages { get; set; }
+    public required long ElapsedMs { get; set; }
+    public required bool OpenedAsAcd { get; set; }
 }
