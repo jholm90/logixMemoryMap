@@ -50,30 +50,35 @@
   error_count,warning_count,message_value,ocd_value) before looping back
   to wait for the next request.
 
+  ManifestPath/HandoffPath/OpenRequestPath all default to locations relative
+  to this script's own folder (scripts\ahk_runtime\ for the two handoff
+  files -- gitignored, never committed), so the common case needs none of
+  them typed out. logix_build_capture.ahk's HANDOFF_PATH/OPEN_REQUEST_PATH
+  constants must point at the exact same two paths -- update them once and
+  you're done, no more copy-pasting a path into two places every run.
+
 .EXAMPLE
   # Smoke test on the first 10 files before committing to a full run:
   ./batch_memory_capture.ps1 -ConvertLog C:\l5x_scratch\acd\convert_log.csv `
-      -ManifestPath ..\samples\manifest.csv -ControllerModel "5069-L306ER" -FirmwareRev "35.11" `
-      -HandoffPath C:\path\to\your\ahk\ahk_handoff.csv `
-      -OpenRequestPath C:\path\to\your\ahk\open_request.txt `
-      -Limit 10
+      -ControllerModel "5069-L306ER" -FirmwareRev "35.11" -Limit 10
 
   # Full run, same command without -Limit:
   ./batch_memory_capture.ps1 -ConvertLog C:\l5x_scratch\acd\convert_log.csv `
-      -ManifestPath ..\samples\manifest.csv -ControllerModel "5069-L306ER" -FirmwareRev "35.11" `
-      -HandoffPath C:\path\to\your\ahk\ahk_handoff.csv `
-      -OpenRequestPath C:\path\to\your\ahk\open_request.txt
+      -ControllerModel "5069-L306ER" -FirmwareRev "35.11"
 #>
 param(
     [Parameter(Mandatory = $true)][string]$ConvertLog,
-    [Parameter(Mandatory = $true)][string]$ManifestPath,
+    [string]$ManifestPath = (Join-Path $PSScriptRoot "..\samples\manifest.csv"),
     [Parameter(Mandatory = $true)][string]$ControllerModel,
     [Parameter(Mandatory = $true)][string]$FirmwareRev,
-    [Parameter(Mandatory = $true)][string]$HandoffPath,
-    [Parameter(Mandatory = $true)][string]$OpenRequestPath,
+    [string]$HandoffPath = (Join-Path $PSScriptRoot "ahk_runtime\ahk_handoff.csv"),
+    [string]$OpenRequestPath = (Join-Path $PSScriptRoot "ahk_runtime\open_request.txt"),
     [int]$TimeoutSeconds = 1200,
     [int]$Limit
 )
+
+New-Item -ItemType Directory -Force -Path (Split-Path $HandoffPath -Parent) | Out-Null
+New-Item -ItemType Directory -Force -Path (Split-Path $OpenRequestPath -Parent) | Out-Null
 
 function Get-SampleIdAndDescription($l5xPath) {
     $base = [System.IO.Path]::GetFileNameWithoutExtension($l5xPath)

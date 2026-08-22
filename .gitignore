@@ -24,3 +24,8 @@ samples/local/
 !samples/samplePrograms/RockwellSamples/**/*.l5x
 !scripts/l5x_validator/negative_control_fixtures/**/*.L5X
 !scripts/l5x_validator/negative_control_fixtures/**/*.l5x
+
+# Transient IPC handoff files between batch_memory_capture.ps1 and
+# logix_build_capture.ahk (2026-08-22) -- rewritten every few seconds
+# during a run, never meant to be tracked or committed.
+scripts/ahk_runtime/

@@ -28,8 +28,18 @@
 SendMode "Event"
 SetKeyDelay 50, 50
 
-HANDOFF_PATH := "C:\path\to\ahk_handoff.csv"        ; must match -HandoffPath
-OPEN_REQUEST_PATH := "C:\path\to\open_request.txt"   ; must match -OpenRequestPath
+; scripts\ahk_runtime\ is gitignored (transient IPC files, never committed).
+; A_ScriptDir resolves automatically as long as this file stays where it's
+; tracked (scripts\logix_build_capture.ahk) -- matches
+; batch_memory_capture.ps1's own $PSScriptRoot-relative defaults, so
+; neither side needs a path typed in by hand.
+HANDOFF_PATH := A_ScriptDir "\ahk_runtime\ahk_handoff.csv"        ; must match -HandoffPath
+OPEN_REQUEST_PATH := A_ScriptDir "\ahk_runtime\open_request.txt"  ; must match -OpenRequestPath
+
+; ahk_runtime\ won't exist until the PowerShell side creates it (or run
+; this once by hand) -- FileExist below would just wait forever silently
+; otherwise.
+DirCreate A_ScriptDir "\ahk_runtime"
 LOGIX_WIN := "ahk_exe LogixDesigner.exe"             ; TODO: confirm via Window Spy
 
 global OCDValue := ""
