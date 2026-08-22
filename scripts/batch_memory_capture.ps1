@@ -1,60 +1,78 @@
 <#
 .SYNOPSIS
-  Walks a batch of converted .ACD files one at a time, now driven by
-  James's AHK build/verify automation instead of manual typing (2026-08-22
-  rewrite -- was: read the Capacity tab's "Used" figure by eye and type it
-  in; the AHK script now reads that value AND the Build results (error
-  count, warning count, a trending message) directly off screen via
-  ControlGetText, so this script's job shrinks to: open the next file,
-  wait for the AHK cycle to finish, read what it captured, log it, repeat.
+  Fully unattended now (2026-08-22 rewrite #2, James: "I did a file|open and
+  was able to open one of your generated files in less than 5s, as opposed
+  to the 65s to do the close LogixDesigner/reOpen every time" -- 5s vs 65s
+  across 500+ files is the whole ballgame). PowerShell no longer launches a
+  new process per file (Start-Process, ~65s close/reopen cycle) -- it hands
+  AHK the next ACD path to open via -OpenRequestPath, and AHK drives Studio
+  5000's own File > Open (Ctrl+O) to switch files inside the SAME already-
+  running instance. No Read-Host prompts anywhere in the loop anymore --
+  this can run overnight against the full 500+ file corpus unattended.
 
-    1. Shows "[N/Total] sample_id : description" and auto-opens the ACD --
-       no gate before opening.
-    2. Prompts you to run the AHK build/verify automation (Ctrl+F1 in the
-       Logix window, or however your loop is triggered) against the
-       now-open file, then press Enter here once it's finished ('q' to
-       stop here, 's' to skip this file unlogged).
-    3. Reads the AHK handoff CSV (-HandoffPath, overwritten by AHK each
-       cycle: error_count,warning_count,message_value,ocd_value) and logs
-       all four values into this row -- ocd_value becomes actual_bytes
-       (same "Capacity tab, 1 block == 1 byte" figure as before, just
-       captured automatically instead of typed), error_count/warning_count/
-       message_value are new columns for trending build/verify results
-       alongside the memory data.
-    4. The handoff file is deleted right after being read, every cycle --
-       if AHK hasn't written a fresh one by the time you press Enter, this
-       fails loudly and asks you to retry rather than silently reusing a
-       stale value from the previous file (see James's whole session
-       today re: don't trust data unless it's been validated).
-    5. Row is updated in place (matched by l5x_path against the row the
-       sample generator already wrote, so predicted_bytes stays put) and
-       written immediately.
+  Two small handoff files carry the conversation, in opposite directions:
+    -OpenRequestPath   PowerShell -> AHK.  This script writes the next ACD
+                       path here; AHK waits for it, opens the file, deletes
+                       the request (consumed) once read.
+    -HandoffPath        AHK -> PowerShell. AHK overwrites this with
+                       error_count,warning_count,message_value,ocd_value
+                       once its build/verify/Capacity-read cycle finishes
+                       for whatever file it just opened; this script polls
+                       for it (see -TimeoutSeconds), reads, deletes it
+                       (consumed), and logs.
 
-  Nothing in the script waits on you to close the previous Studio 5000
-  instance -- that's on you to manage, not a gate it enforces.
+  Per file:
+    1. Write the ACD path to -OpenRequestPath.
+    2. Poll for -HandoffPath to appear (up to -TimeoutSeconds -- build time
+       scales with file size, so this is generous by default). Timeout logs
+       a warning and asks once whether to retry/skip/stop rather than
+       hanging forever or silently giving up.
+    3. Read + delete -HandoffPath, log ocd_value as actual_bytes plus the
+       new error_count/warning_count/message_value columns, matched by
+       l5x_path against the row the sample generator already wrote (so
+       predicted_bytes stays put).
 
-  Resumable: you can close this window at any point without losing place.
-  Already-logged l5x_path rows are skipped on the next run, and nothing is
-  written until a row is actually complete, so there's never a half-done
-  row to clean up.
+  Never reuses a stale handoff: both files are cleared before being
+  requested/waited on, so a leftover result from a previous run or a
+  skipped file can't silently get attributed to the wrong row (see James's
+  whole session today re: don't trust data that hasn't been validated).
+
+  Resumable: Ctrl+C at any point loses nothing -- already-logged l5x_path
+  rows are skipped on the next run, and nothing is written until a row is
+  actually complete.
 
 .PREREQS
   Run batch_l5x_to_acd.ps1 first; this script consumes its convert_log.csv.
-  Your AHK script must be running and writing its handoff CSV to -HandoffPath
-  every cycle (error_count,warning_count,message_value,ocd_value -- header
-  row + one data row, overwritten not appended).
+  Your AHK script must be running, with a loop that: waits for
+  -OpenRequestPath to appear, reads+deletes it, opens that path via Ctrl+O
+  in the existing Logix Designer window, does its build/verify/Capacity
+  read, then writes -HandoffPath (header + one data row:
+  error_count,warning_count,message_value,ocd_value) before looping back
+  to wait for the next request.
 
 .EXAMPLE
+  # Smoke test on the first 10 files before committing to a full run:
   ./batch_memory_capture.ps1 -ConvertLog C:\l5x_scratch\acd\convert_log.csv `
       -ManifestPath ..\samples\manifest.csv -ControllerModel "5069-L306ER" -FirmwareRev "35.11" `
-      -HandoffPath C:\path\to\your\ahk\ahk_handoff.csv
+      -HandoffPath C:\path\to\your\ahk\ahk_handoff.csv `
+      -OpenRequestPath C:\path\to\your\ahk\open_request.txt `
+      -Limit 10
+
+  # Full run, same command without -Limit:
+  ./batch_memory_capture.ps1 -ConvertLog C:\l5x_scratch\acd\convert_log.csv `
+      -ManifestPath ..\samples\manifest.csv -ControllerModel "5069-L306ER" -FirmwareRev "35.11" `
+      -HandoffPath C:\path\to\your\ahk\ahk_handoff.csv `
+      -OpenRequestPath C:\path\to\your\ahk\open_request.txt
 #>
 param(
     [Parameter(Mandatory = $true)][string]$ConvertLog,
     [Parameter(Mandatory = $true)][string]$ManifestPath,
     [Parameter(Mandatory = $true)][string]$ControllerModel,
     [Parameter(Mandatory = $true)][string]$FirmwareRev,
-    [Parameter(Mandatory = $true)][string]$HandoffPath
+    [Parameter(Mandatory = $true)][string]$HandoffPath,
+    [Parameter(Mandatory = $true)][string]$OpenRequestPath,
+    [int]$TimeoutSeconds = 1200,
+    [int]$Limit
 )
 
 function Get-SampleIdAndDescription($l5xPath) {
@@ -92,16 +110,21 @@ $manifest | Where-Object { $_.actual_bytes } | ForEach-Object { $alreadyLogged[$
 
 $rows = Import-Csv $ConvertLog | Where-Object { $_.status -eq "ok" }
 $remaining = $rows | Where-Object { -not $alreadyLogged.ContainsKey((Get-RelPath $_.l5x_path)) }
-Write-Host "$($rows.Count) converted sample(s) in log; $($alreadyLogged.Count) already logged; $($remaining.Count) remaining."
-Write-Host "You can close this window at any time -- already-logged rows are skipped on the next run."
+if ($Limit -gt 0) { $remaining = $remaining | Select-Object -First $Limit }
+Write-Host "$($rows.Count) converted sample(s) in log; $($alreadyLogged.Count) already logged; $($remaining.Count) remaining this pass."
+Write-Host "Ctrl+C at any time -- already-logged rows are skipped on the next run."
+Write-Host "Make sure your AHK script is already running and waiting before this starts."
 
-# Stale handoff from a previous, unrelated run shouldn't get attributed to
-# the first file of this run -- start clean.
+# Stale files from a previous run (or a skipped file) shouldn't get
+# attributed to the first file of this run -- start clean.
 if (Test-Path $HandoffPath) { Remove-Item $HandoffPath -Force }
+if (Test-Path $OpenRequestPath) { Remove-Item $OpenRequestPath -Force }
 
 $total = $remaining.Count
 $idx = 0
+$stopRequested = $false
 foreach ($row in $remaining) {
+    if ($stopRequested) { break }
     $idx++
     $relPath = Get-RelPath $row.l5x_path
     $meta = Get-SampleIdAndDescription $row.l5x_path
@@ -110,53 +133,56 @@ foreach ($row in $remaining) {
 
     Write-Host ""
     Write-Host "=== [$idx/$total] $($meta.Id) : $($meta.Desc) [$category] ==="
-    Write-Host "Opening: $($row.acd_path)"
-    Start-Process $row.acd_path
+    Write-Host "Requesting AHK open: $($row.acd_path)"
+    Set-Clipboard -Value $row.acd_path  # AHK pastes this into the Open dialog (^v) instead of typing it
+    $row.acd_path | Out-File -FilePath $OpenRequestPath -Encoding utf8 -NoNewline  # existence = "go" signal; content is a fallback if you'd rather FileRead than paste
 
-    $ready = $false
     $blocksUsed = $null
     $errorCount = ""
     $warningCount = ""
     $messageValue = ""
 
-    while (-not $ready) {
-        $ack = Read-Host "Run the AHK build/verify on this file, then press Enter here when it's done ('q' to stop, 's' to skip)"
-        if ($ack -eq 'q') {
-            Write-Host "Stopping. Resume later by re-running this script -- completed rows are skipped."
-            $idx = $total + 1  # break the outer loop below too
-            break
-        }
-        if ($ack -eq 's') {
-            Write-Host "Skipped -- close the project manually if you opened it."
-            break
-        }
-
-        if (-not (Test-Path $HandoffPath)) {
-            Write-Host "No handoff file found at $HandoffPath yet -- AHK hasn't written a result. Try again once it's finished."
-            continue
-        }
-
-        $handoff = Import-Csv $HandoffPath
-        if (-not $handoff -or $handoff.Count -eq 0) {
-            Write-Host "Handoff file is empty/unreadable -- try again."
-            continue
-        }
-        $result = $handoff[0]
-        if ([string]::IsNullOrWhiteSpace($result.ocd_value)) {
-            Write-Host "Handoff file has no ocd_value -- AHK may not have finished the Capacity read. Try again."
-            continue
-        }
-
-        $blocksUsed = $result.ocd_value
-        $errorCount = $result.error_count
-        $warningCount = $result.warning_count
-        $messageValue = $result.message_value
-        Remove-Item $HandoffPath -Force  # consumed -- next file must produce a fresh one
-        $ready = $true
+    $elapsed = 0
+    $pollInterval = 2
+    while ($elapsed -lt $TimeoutSeconds) {
+        if (Test-Path $HandoffPath) { break }
+        Start-Sleep -Seconds $pollInterval
+        $elapsed += $pollInterval
     }
 
-    if ($idx -gt $total) { break }
-    if (-not $ready) { continue }
+    if (-not (Test-Path $HandoffPath)) {
+        Write-Warning "Timed out after ${TimeoutSeconds}s waiting on AHK for $($meta.Id) -- check Studio 5000/AHK manually."
+        $resp = Read-Host "'r' to retry waiting on this same file, 's' to skip it, anything else/Enter to stop"
+        if ($resp -eq 'r') {
+            # Leave the open request in place and just go around again with a fresh wait.
+            $elapsed = 0
+            while ($elapsed -lt $TimeoutSeconds) {
+                if (Test-Path $HandoffPath) { break }
+                Start-Sleep -Seconds $pollInterval
+                $elapsed += $pollInterval
+            }
+        }
+        if (-not (Test-Path $HandoffPath)) {
+            if ($resp -ne 's') { $stopRequested = $true }
+            if (Test-Path $OpenRequestPath) { Remove-Item $OpenRequestPath -Force }
+            continue
+        }
+    }
+
+    Start-Sleep -Milliseconds 300  # let AHK's write fully flush before reading
+    $handoff = Import-Csv $HandoffPath
+    if (-not $handoff -or $handoff.Count -eq 0 -or [string]::IsNullOrWhiteSpace($handoff[0].ocd_value)) {
+        Write-Warning "Handoff for $($meta.Id) was empty/incomplete -- skipping this file, check AHK."
+        Remove-Item $HandoffPath -Force -ErrorAction SilentlyContinue
+        continue
+    }
+
+    $result = $handoff[0]
+    $blocksUsed = $result.ocd_value
+    $errorCount = $result.error_count
+    $warningCount = $result.warning_count
+    $messageValue = $result.message_value
+    Remove-Item $HandoffPath -Force  # consumed -- next file must produce a fresh one
 
     $notes = ""
     $date = Get-Date -Format "yyyy-MM-dd"
