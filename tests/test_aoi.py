@@ -63,7 +63,10 @@ def test_aoi_instance_sizes_like_a_udt():
     # + OneShot(DINT,4) = 28, InOut RawTag excluded entirely
     bytes_, confidence = compute_array_size("DI_V4", (), aois, MODEL)
     assert bytes_ == 28
-    assert confidence == "UNKNOWN"  # UDT-alignment taint applies here too
+    # UDT-alignment is now KNOWN (OQ-ALIGN resolved); standalone BOOL's own
+    # ASSUMED tag (OQ-BOOLPACK's raw-data-size question, distinct from its
+    # confirmed tag_overhead finding) is now the weakest remaining link.
+    assert confidence == "ASSUMED"
 
 
 def test_nested_aoi_local_tag_recurses():

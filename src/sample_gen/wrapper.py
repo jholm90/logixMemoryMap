@@ -44,6 +44,18 @@ DEFAULT_SOFTWARE_REVISION = "35.05"
 _PRODUCT_CODE = "164"
 _ICP_BUS_SIZE = "17"
 
+# Real 5069-family (Compact 5000, no separate chassis) Local-module Ports
+# shape, confirmed 2026-08-22 against samples/local/DnR_Personal/
+# BT1XX_FFC_20240325.L5X (5069-L330ERMS2): local bus Port Type="5069" (not
+# "ICP"), Bus Size="32" (vs 1756's 17-slot-chassis convention), and TWO
+# Ethernet ports (dual embedded switch) rather than 1756's one. James,
+# 2026-08-22: "You'll have to swap to a 5069 processor to test the 5069
+# modules" -- a naive processor_type string swap on the old ICP/single-
+# Ethernet template would still be structurally wrong, so this is a real
+# separate shape, not just a catalog-string substitution.
+_5069_PRODUCT_CODE = "223"
+_5069_BUS_SIZE = "32"
+
 
 def build_l5x(
     target_name: str,
@@ -57,10 +69,32 @@ def build_l5x(
     extra_aoi_xml: str = "",
     extra_routines_xml: str = "",
     extra_program_tags_xml: str = "",
+    extra_programs_xml: str = "",
+    extra_scheduled_programs_xml: str = "",
+    extra_modules_xml: str = "",
+    extra_tasks_xml: str = "",
 ) -> str:
     rungs = extra_rungs_xml if extra_rungs_xml.strip() else (
         '<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>'
     )
+    is_5069 = processor_type.startswith("5069")
+    if is_5069:
+        local_ports_xml = (
+            f'<Port Id="1" Address="0" Type="5069" Upstream="false">\n'
+            f'<Bus Size="{_5069_BUS_SIZE}"/>\n'
+            f'</Port>\n'
+            f'<Port Id="3" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>\n'
+            f'<Port Id="4" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
+        )
+        local_product_code = _5069_PRODUCT_CODE
+    else:
+        local_ports_xml = (
+            f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n'
+            f'<Bus Size="{_ICP_BUS_SIZE}"/>\n'
+            f'</Port>\n'
+            f'<Port Id="2" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
+        )
+        local_product_code = _PRODUCT_CODE
     # Format matches the real reference export exactly (Python's ctime-style
     # strftime): "Thu Aug 20 11:19:00 2026".
     now = datetime.now().strftime("%a %b %d %H:%M:%S %Y")
@@ -74,17 +108,13 @@ def build_l5x(
 {extra_datatypes_xml}
 </DataTypes>
 <Modules>
-<Module Name="Local" CatalogNumber="{processor_type}" Vendor="1" ProductType="14" ProductCode="{_PRODUCT_CODE}" Major="{major_rev}" Minor="{minor_rev}" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<Module Name="Local" CatalogNumber="{processor_type}" Vendor="1" ProductType="14" ProductCode="{local_product_code}" Major="{major_rev}" Minor="{minor_rev}" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
 <EKey State="Disabled"/>
 <Ports>
-<Port Id="1" Address="0" Type="ICP" Upstream="false">
-<Bus Size="{_ICP_BUS_SIZE}"/>
-</Port>
-<Port Id="2" Type="Ethernet" Upstream="false">
-<Bus/>
-</Port>
+{local_ports_xml}
 </Ports>
 </Module>
+{extra_modules_xml}
 </Modules>
 <AddOnInstructionDefinitions>
 {extra_aoi_xml}
@@ -106,13 +136,16 @@ def build_l5x(
 {extra_routines_xml}
 </Routines>
 </Program>
+{extra_programs_xml}
 </Programs>
 <Tasks>
 <Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
 <ScheduledPrograms>
 <ScheduledProgram Name="MainProgram"/>
+{extra_scheduled_programs_xml}
 </ScheduledPrograms>
 </Task>
+{extra_tasks_xml}
 </Tasks>
 <CST MasterID="0"/>
 <WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>

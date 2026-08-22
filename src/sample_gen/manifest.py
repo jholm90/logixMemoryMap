@@ -13,6 +13,8 @@ from pathlib import Path
 from l5x_memory_analyzer.sizing.constants import load_memory_model
 from l5x_memory_analyzer.sizing.report import build_report
 
+from sample_gen.lint import lint_or_raise
+
 REPO_ROOT = Path(__file__).parent.parent.parent
 MANIFEST_PATH = REPO_ROOT / "samples" / "manifest.csv"
 MANIFEST_COLUMNS = (
@@ -31,7 +33,15 @@ def predicted_bytes(l5x_text: str) -> int:
 
 
 def write_sample(l5x_text: str, out_path: Path) -> int:
-    """Writes the L5X file and returns its predicted byte total."""
+    """Writes the L5X file and returns its predicted byte total.
+
+    Runs the local heuristic pre-flight lint first (sample_gen/lint.py,
+    2026-08-22) -- catches the two known real error classes (missing array
+    subscript, instruction/AOI reference with no matching definition)
+    before the file ever ships, since l5x2acd conversion succeeding does
+    NOT mean the ladder logic would actually verify in Studio 5000
+    (confirmed empirically, see lint.py's docstring)."""
+    lint_or_raise(l5x_text, context=str(out_path))
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(l5x_text, encoding="utf-8")
     return predicted_bytes(l5x_text)

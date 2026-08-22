@@ -21,6 +21,32 @@ declared pool, tag-data cost is constant across every file in this sweep,
 so any Capacity movement across the count sweep is attributable to the
 instruction/rung text itself.
 
+**T_ADD removed 2026-08-22 (James's catch):** T_ADD is a real, common
+Rockwell-authored AddOnInstructionDefinition ("DateTime := DateTime +
+Time", found in 18+ of James's real corpus files), not a native
+instruction -- a real research failure earlier in this project mis-
+classified it during the corpus mnemonic scan. The removed test called
+`T_ADD(D0,D1,D2,D3)` with 4 plain DINTs and no AOI definition anywhere in
+the file and no instance tag -- structurally guaranteed not to compile,
+not a useful data point at any rung count. T_ADD belongs with AOI-sizing
+work (Phase 4c) if it's ever tested, using its real call shape
+(`T_ADD(InstanceTag,Ref_DT,Ref_Time,ResultDT)`), not this native-
+instruction sweep. The 5 already-generated `instr_t_add_n*` files and
+their manifest rows are removed, not just flagged for re-capture --
+there's no fix that makes the original test meaningful.
+
+Also confirmed the same day (James: "Curious if the SDK had L5X->ACD with
+controller validation/program checking"): `samples/convert_log.csv` shows
+every T_ADD/CPS/COP/FLL/BTD/SIZE file (including the ones with the
+array-subscript bug fixed nearby) converted with `l5x2acd` status "ok" --
+the SDK's L5X->ACD conversion does NOT perform ladder-logic verification,
+only catches structural/schema-level failures (e.g. an unsupported
+ProcessorType). A file that converts cleanly can still contain rung-level
+errors (an undefined instruction/AOI reference, a missing array
+subscript) that only a real Studio 5000 Verify would catch. See
+`sample_gen/lint.py` for the local heuristic pre-flight check this
+finding motivated.
+
 Run: python -m sample_gen.gen_logic_sweep
 """
 
@@ -107,21 +133,34 @@ INSTRUCTIONS: dict[str, "callable"] = {
     "LEQ": lambda i: f"LEQ({_d(i)},{i % 10})OTE({_b(i)});",
     "LIM": lambda i: f"LIM({_d(i)},{_d((i+1)%10)},{_d((i+2)%10)})OTE({_b(i)});",
     "CPT": lambda i: f"CPT({_r(i)},({_d(i)}+{_d((i+1)%10)})*{_r((i+1)%10)}-{_r((i+2)%10)}/2+1.5);",
-    "CPS": lambda i: f"CPS({_arr(i)},{_arr((i+1)%2)},5);",
-    "COP": lambda i: f"COP({_arr(i)},{_arr((i+1)%2)},5);",
-    "FLL": lambda i: f"FLL({i % 100},{_arr(i)},5);",
+    # Real corpus (2026-08-22 re-check, James's spot-check catch): an
+    # ARRAY-typed tag reference always needs an explicit [index] subscript
+    # -- bare "ARR0" (no bracket) is only valid Rockwell syntax when the
+    # tag itself is a scalar UDT/AOI instance (real examples:
+    # CPS(ASV603,Valve,1)), never when it's actually declared as an array
+    # like ARR0/ARR1 here (DINT[20]). The original bare-name versions of
+    # CPS/COP/FLL/BTD below were invalid syntax -- see git history for
+    # what shipped before this fix, and docs/OPEN_QUESTIONS.md for what
+    # this explains about the "stuck at an identical value" rows.
+    "CPS": lambda i: f"CPS({_arr(i)}[0],{_arr((i+1)%2)}[0],5);",
+    "COP": lambda i: f"COP({_arr(i)}[0],{_arr((i+1)%2)}[0],5);",
+    "FLL": lambda i: f"FLL({i % 100},{_arr(i)}[0],5);",
     "MVM": lambda i: f"MVM({_d(i)},16#0000_00FF,{_d((i+1)%10)});",
     "MEQ": lambda i: f"MEQ({_d(i)},16#0000_00FF,{i % 50})OTE({_b(i)});",
     "CONCAT": lambda i: f"CONCAT({_sd(i)},{_sd((i+1)%5)},{_sd((i+2)%5)});",
     "MID": lambda i: f"MID({_sd(i)},2,1,{_sd((i+1)%5)});",
     "DELETE": lambda i: f"DELETE({_sd(i)},1,1,{_sd((i+1)%5)});",
-    "SIZE": lambda i: f"SIZE({_sd(i)},0,{_d(i)});",
+    # Real corpus: SIZE's first operand needs an explicit array-element
+    # subscript too (SIZE(History[0],0,Size);, or for a STRING specifically
+    # SIZE(_DisplayBuffer.szString[0],0,...);  -- reaching into .DATA[0],
+    # not the bare STRING tag). Same bracket-subscript bug as CPS/COP/
+    # FLL/BTD above, found and fixed together 2026-08-22.
+    "SIZE": lambda i: f"SIZE({_sd(i)}.DATA[0],0,{_d(i)});",
     "STOD": lambda i: f"STOD({_sd(i)},{_d(i)});",
     "DTOS": lambda i: f"DTOS({_d(i)},{_sd(i)});",
     "ABS": lambda i: f"ABS({_d(i)},{_r(i)});",
     "XPY": lambda i: f"XPY(2,{_d(i)},{_r(i)});",
-    "BTD": lambda i: f"BTD({_arr(i)},0,{_d(i)},0,8);",
-    "T_ADD": lambda i: f"T_ADD({_d(i)},{_d((i+1)%10)},{_d((i+2)%10)},{_d((i+3)%10)});",
+    "BTD": lambda i: f"BTD({_arr(i)}[0],0,{_d(i)},0,8);",
     "TON": lambda i: f"TON({_tmr(i)},?,?);",
     "TOF": lambda i: f"TOF({_tmr(i)},?,?);",
     "RTO": lambda i: f"RTO({_tmr(i)},?,?);",

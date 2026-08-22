@@ -18,6 +18,7 @@ class Member:
     name: str
     data_type: str
     dimension: int
+    hidden: bool = False
 
     @property
     def is_bit_alias(self) -> bool:
@@ -52,6 +53,7 @@ def parse_data_types(root: ET.Element) -> dict[str, DataTypeDef]:
                         name=m_el.get("Name"),
                         data_type=m_el.get("DataType"),
                         dimension=int(m_el.get("Dimension", "0")),
+                        hidden=m_el.get("Hidden", "false").lower() == "true",
                     )
                 )
         result[name] = DataTypeDef(

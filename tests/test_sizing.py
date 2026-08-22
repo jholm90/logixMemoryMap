@@ -60,8 +60,8 @@ def test_predefined_structure_as_udt_member():
             Member(name="FaultCtr", data_type="COUNTER", dimension=0),
         ],
     )
-    # 12 (TIMER) + 12 (COUNTER) = 24, still UNKNOWN-tainted by UDT alignment
-    assert size("MotorTimers", data_types={"MotorTimers": udt}) == (24, "UNKNOWN")
+    # 12 (TIMER) + 12 (COUNTER) = 24, UDT alignment is now KNOWN (OQ-ALIGN resolved)
+    assert size("MotorTimers", data_types={"MotorTimers": udt}) == (24, "KNOWN")
 
 
 def test_udt_mixed_bool_dint_string_with_bit_packing():
@@ -81,7 +81,7 @@ def test_udt_mixed_bool_dint_string_with_bit_packing():
     # 4 (DINT) + 1 (backing SINT) + 0 (FlagA alias) + 0 (FlagB alias) + 86 (STRING) = 91
     bytes_, confidence = size("MixedUdt", data_types=data_types)
     assert bytes_ == 91
-    assert confidence == "UNKNOWN"  # tainted by the untested UDT alignment assumption
+    assert confidence == "KNOWN"  # UDT alignment confirmed KNOWN (OQ-ALIGN)
 
 
 def test_udt_nested_two_levels():
@@ -100,7 +100,7 @@ def test_udt_nested_two_levels():
         ],
     )
     data_types = {"Inner": inner, "Outer": outer}
-    assert size("Outer", data_types=data_types) == (9, "UNKNOWN")
+    assert size("Outer", data_types=data_types) == (9, "KNOWN")
 
 
 def test_udt_array_of_udt():
@@ -150,8 +150,8 @@ def test_bool_packing_run_broken_by_non_bool_member():
     ])
     data_types = {"BoolDintBool": bool_dint_bool, "DintBoolBool": dint_bool_bool}
 
-    assert size("BoolDintBool", data_types=data_types) == (6, "UNKNOWN")  # 8+32+8 bits
-    assert size("DintBoolBool", data_types=data_types) == (5, "UNKNOWN")  # 32+8 bits
+    assert size("BoolDintBool", data_types=data_types) == (6, "KNOWN")  # 8+32+8 bits
+    assert size("DintBoolBool", data_types=data_types) == (5, "KNOWN")  # 32+8 bits
 
 
 def test_self_referential_udt_raises():

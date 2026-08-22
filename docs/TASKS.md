@@ -24,9 +24,17 @@ a single commit-sized unit of work.
       unpacked), UDT member (hidden-SINT + BIT-alias, read directly off the
       L5X shape), array (32-per-DINT bit-packing, OQ-BOOLARRAY)
 - [x] UDT parser: recurse `Controller/DataTypes/DataType/Members`
-- [ ] UDT alignment/padding rule implemented (OQ-ALIGN) — still tight-packing
-      only; every UDT-derived size is tagged confidence=UNKNOWN until this
-      lands
+- [x] UDT alignment/padding rule implemented (OQ-ALIGN) — 2026-08-22,
+      confirmed KNOWN (real Capacity data across the whole per-tag/per-UDT-
+      definition sweep, not just James's field opinion). `udt.
+      alignment_confidence` flipped UNKNOWN→KNOWN; tight-packing was
+      already what the code computed, this just stopped tainting every
+      UDT-derived size with UNKNOWN.
+- [x] Per-tag flat overhead + UDT DataType-definition cost landed in code
+      2026-08-22 (`tag_overhead`/`udt_definition` in memory_model.yaml,
+      wired into `report.py`) — the empirically-confirmed formulas from
+      the Phase 3 sweep were sitting in RESOLVED_QUESTIONS.md prose only
+      until now.
 - [x] Array-of-atomic sizing (dimension × element size)
 - [x] Array-of-UDT sizing (dimension × recursive UDT size, padding per-element
       vs whole-array — OQ-ARRAYPACK) — formula implemented, confidence tagged
@@ -212,6 +220,22 @@ Scope set from real instruction-frequency data (OQ-INSTRUCTIONSCOPE,
 2026-08-20), not a guessed list — 24,941 real instruction instances counted
 across James's 4 production files. Ordered by real-world priority below;
 PID and ASCII-module instructions dropped entirely (zero occurrences found).
+
+**Status note, 2026-08-22 — this checklist is stale below and hasn't been
+walked line-by-line yet, but the real position is far ahead of what's
+checked:** the 244-file per-instruction sweep (`gen_logic_sweep.py`)
+already covers bit logic, timers/counters (TON/TOF/RTO/CTU), math/compare
+(ADD/SUB/MUL/DIV/MOD/CPT/MVM/MEQ/EQU/NEQ/GRT/GEQ/LES/LEQ/LIM/MOV),
+array/file (COP/FLL/CLR/BTD/CPS), string (CONCAT/DTOS/SIZE/MID/DELETE),
+GSV/SSV, and JSR — 42 instructions fitted at 0.00% residual, table now in
+`docs/MEMORY_MODEL.md`. Still genuinely open: motion instructions
+(generators built 2026-08-22, `gen_motion_instructions.py`, awaiting
+capture), MAPC/MCCP camming (no real call-syntax reference yet), per-Task
+overhead (generator built, `gen_task_overhead.py`), indirect addressing
+(generator built, `gen_indirect_addressing.py`), MSG (deprioritized, 4 real
+uses). **The weight table is data only — no logic-sizing engine code
+exists yet** (no parser walks Routines/Rungs and applies these weights);
+that's the actual remaining Phase 4/4b implementation work.
 
 - [ ] Timer instructions (TON/TOF/RTO) at scale — no CTU/CTD-heavy usage seen
       but include CTU (25 real uses; CTD had zero, low priority)

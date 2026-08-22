@@ -22,8 +22,8 @@ def test_udt_xml_bool_run_matches_confirmed_packing_rule():
         udt_xml("DintBoolBool", [MemberSpec("C", "DINT"), MemberSpec("A", "BOOL"), MemberSpec("B", "BOOL")]),
     )
     data_types = parse_data_types(root)
-    assert compute_array_size("BoolDintBool", (), data_types, MODEL) == (6, "UNKNOWN")
-    assert compute_array_size("DintBoolBool", (), data_types, MODEL) == (5, "UNKNOWN")
+    assert compute_array_size("BoolDintBool", (), data_types, MODEL) == (6, "KNOWN")
+    assert compute_array_size("DintBoolBool", (), data_types, MODEL) == (5, "KNOWN")
 
 
 def test_udt_xml_bool_run_wraps_every_8_bits():

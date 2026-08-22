@@ -111,3 +111,52 @@ def compute_udt_size(
 
     confidence = weakest(confidence, model.udt.alignment_confidence)
     return total, confidence
+
+
+def compute_udt_definition_cost(
+    name: str, data_types: dict[str, DataTypeDef], model: MemoryModel
+) -> tuple[int, str]:
+    """One-time cost of the DataType *definition* itself (member list +
+    type name), separate from and additive with any instance's tag_overhead
+    + tight-packed member size. See memory_model.yaml udt_definition for the
+    formula and its confirmed-vs-flagged caveats. declared_member_count
+    counts members the way a user would (a BOOL run is still N members, not
+    N+1) -- excludes only the HIDDEN backing SINT, not the visible BIT-alias
+    members it backs, each of which is one real declared BOOL member.
+    Getting this backwards (excluding bit-aliases instead of hidden
+    members) was a real bug caught 2026-08-22: an all-BOOL UDT computed
+    declared_member_count=0 (its only non-bit-alias member IS the hidden
+    one), silently undercounting every UDT with any BOOL members.
+
+    bool_run_bonus applies ONCE PER hidden backing SINT, not once per UDT
+    regardless of count -- also caught 2026-08-22: a BOOL,DINT,BOOL shape
+    (a non-BOOL member breaking the run, per OQ-ALIGN, needs two separate
+    hidden SINTs) real-measured at base+2*bonus, not base+1*bonus."""
+    udt = data_types[name]
+    declared_member_count = sum(1 for m in udt.members if not m.hidden)
+    bool_run_count = sum(1 for m in udt.members if m.hidden)
+    return (
+        model.udt_definition.bytes_for(name, declared_member_count, bool_run_count),
+        model.udt_definition.confidence,
+    )
+
+
+def referenced_data_type_names(
+    data_type: str, data_types: dict[str, DataTypeDef], _seen: set[str] | None = None
+) -> set[str]:
+    """Transitive closure of every UDT name reachable from data_type (itself
+    included if it's a UDT) -- a type only ever used as a nested member,
+    never as a top-level tag's own DataType, still needs its own definition
+    cost counted once."""
+    seen = _seen if _seen is not None else set()
+    if data_type not in data_types or data_type in seen:
+        return seen
+    seen.add(data_type)
+    udt = data_types[data_type]
+    if udt.is_string_family:
+        return seen
+    for member in udt.members:
+        if member.is_bit_alias:
+            continue
+        referenced_data_type_names(member.data_type, data_types, seen)
+    return seen

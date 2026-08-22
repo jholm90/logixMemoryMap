@@ -33,6 +33,19 @@ it. Zero produced/consumed tags in the real corpus anyway. Deprioritized,
 not modeled further; `CONNECTION_STATUS` would need its own
 `predefined_structures` entry if a future real sample actually uses one.
 
+**OQ-ALARMPROPBYTES.** James, 2026-08-22: not in use on any of his live
+projects today, but might be in the future. Not worth a test right now —
+added to the feature wish list instead: extended tag properties (alarm
+config, Min/Max, Engineering Units, that kind of thing) as a future sizing
+category once real usage shows up in the corpus.
+
+**L5X version cross-check.** James, 2026-08-22: keep on the feature wish
+list rather than test now. The 7 personal-project files he added to the
+corpus this session (`samples/local/DnR_Personal/`, gitignored per the
+project's real-export policy) span SoftwareRevision 31.02–35.05 — still no
+v20/v30 example in hand, so there's nothing to test yet either way. Revisit
+if an actual v20/v30 export turns up.
+
 **OQ-SAFETY.** Out of scope for launch entirely. Tool should warn/refuse
 on safety-enabled projects rather than attempt a wrong combined number.
 
@@ -158,6 +171,13 @@ doesn't depend on length," which is wrong. What's actually flat is the
 overhead), not the total. Formula: `total ≈ maxlen + 302` (±2, likely a
 4-byte rounding artifact on maxlen itself).
 
+**OQ-AOIINSTANCE.** James, 2026-08-22, from field experience: every AOI
+instance needs a parent tag — no inline/anonymous instances. That backing
+tag can be Program(Local)-scoped or Controller-scoped, but it always
+exists. Confirms the sizing model's existing assumption (an AOI instance
+is always a real Tag with Structure-shaped storage, same as a UDT
+instance) needs no special-case for a tag-less call.
+
 **OQ-AOIGEN.** Built `aoi_xml()`, real shape confirmed against James's own
 AOI export templates after an earlier version (built off a different real
 AOI) failed Studio 5000 import. Fixed real discrepancies: needs
@@ -202,6 +222,26 @@ for Phase 4/4b: bit logic dominates, then compare/move/math, then
 motion+cam+GSV/SSV (previously not planned for, now confirmed must-have),
 then array/string/program-flow. PID and ASCII-module instructions dropped
 entirely — zero real usage.
+
+**OQ-LOGICVISIBILITY.** Definitively yes — the Capacity tab reflects
+compiled logic size, cleanly and linearly. The 244-file per-instruction
+sweep (baseline 18,128) fits `delta = 4,816 + weight × rung_count` at
+**0.00% residual** across 42 of 46 real instructions (4 more — plus 2
+garbled rows — flagged for re-capture, see docs/OPEN_QUESTIONS.md; the
+resolution here doesn't depend on those). Same fixed 4,816-block base cost
+across every instruction. Weights range 16 blocks/rung (OTE/OTL/OTU/NOP) up
+to 452 (CPT). The earlier "zero movement" finding from 2 pre-sweep samples
+was wrong — an undeclared-tag artifact in that flawed test, not a real
+null result. Full weight table pending the 32-row re-capture before it goes
+into `MEMORY_MODEL.md`.
+
+**OQ-JSRSHARED.** Strong evidence for "compiled once, referenced not
+duplicated": JSR-to-the-same-target cost stays exactly linear
+(`4,816 + 5,096-4,816=280 fixed, 72 blocks/call`) as call count scales
+10→5,000, with zero residual — no blow-up that would appear if the target
+subroutine's body were re-compiled per call site. Not 100% conclusive
+(can't independently isolate the callee's own compiled size from this data
+alone), but nothing in the data points toward duplication either.
 
 **OQ-EVENTTASK.** 52 of 86 real Tasks (60%) are Type="EVENT", more common
 than Periodic+Continuous combined. Triggered by things like a Motion Axis

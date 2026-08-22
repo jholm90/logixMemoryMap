@@ -44,16 +44,131 @@ def test_alias_tags_size_zero_known_not_error():
     assert alias.data_type == "ALIAS"
     assert alias.basis == "KNOWN"
 
+    # Every real tag's own raw data size now also carries tag_overhead
+    # (RESOLVED_QUESTIONS.md OQ-TAGOVERHEAD): 84 + 8*(len(name)//8).
     timer = by_path["controller/RunTmr"]
-    assert timer.bytes == 12
+    assert timer.bytes == 12 + 84  # TIMER(12) + tag_overhead("RunTmr", 6 chars)
     assert timer.basis == "KNOWN"
 
     # total_bytes / pct_of_total shouldn't be thrown off by the alias's 0 bytes
     real_dint = by_path["controller/RealDint"]
-    assert real_dint.bytes == 4
+    assert real_dint.bytes == 4 + 92  # DINT(4) + tag_overhead("RealDint", 8 chars)
 
     aoi_instance = by_path["controller/DebSensor1"]
-    assert aoi_instance.bytes == 16  # EnableIn(4) + DebTmr(TIMER,12), InOut excluded
-    assert aoi_instance.basis == "UNKNOWN"
+    # EnableIn(BOOL,4) + DebTmr(TIMER,12), InOut excluded, + tag_overhead("DebSensor1", 10 chars)
+    assert aoi_instance.bytes == 16 + 92
+    # UDT-alignment is KNOWN now; standalone BOOL's own ASSUMED tag is the
+    # weakest remaining link for this AOI instance.
+    assert aoi_instance.basis == "ASSUMED"
 
-    assert real_dint.pct_of_total == (4 / (4 + 12 + 16)) * 100
+    assert real_dint.pct_of_total == (real_dint.bytes / (real_dint.bytes + timer.bytes + aoi_instance.bytes)) * 100
+
+
+def test_udt_definition_cost_appears_once_per_type_used_by_multiple_instances():
+    xml = """
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test">
+        <DataTypes>
+          <DataType Name="Point3D" Family="NoFamily" Class="User">
+            <Members>
+              <Member Name="X" DataType="DINT" Dimension="0"/>
+              <Member Name="Y" DataType="DINT" Dimension="0"/>
+              <Member Name="Z" DataType="DINT" Dimension="0"/>
+            </Members>
+          </DataType>
+        </DataTypes>
+        <AddOnInstructionDefinitions/>
+        <Tags>
+          <Tag Name="PointA" TagType="Base" DataType="Point3D"/>
+          <Tag Name="PointB" TagType="Base" DataType="Point3D"/>
+        </Tags>
+        <Programs/>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    root = ET.fromstring(xml)
+    entries, errors = build_report(root, MODEL)
+    assert errors == []
+
+    definition_entries = [e for e in entries if e.category == "udt_definition"]
+    assert len(definition_entries) == 1  # once per distinct type, not once per instance
+    definition = definition_entries[0]
+    assert definition.data_type == "Point3D"
+    # base(160) + per_member(16)*3 + name_per_8_chars(8)*ceil(7/8)=1 = 216
+    assert definition.bytes == 160 + 16 * 3 + 8 * 1
+
+    by_path = {e.path: e for e in entries}
+    point_a = by_path["controller/PointA"]
+    # 3*DINT(4) = 12 tight-packed + tag_overhead("PointA", 6 chars) = 84
+    assert point_a.bytes == 12 + 84
+
+
+def test_udt_definition_counted_even_when_only_used_as_a_nested_member():
+    xml = """
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test">
+        <DataTypes>
+          <DataType Name="Inner" Family="NoFamily" Class="User">
+            <Members>
+              <Member Name="V" DataType="DINT" Dimension="0"/>
+            </Members>
+          </DataType>
+          <DataType Name="Outer" Family="NoFamily" Class="User">
+            <Members>
+              <Member Name="Nested" DataType="Inner" Dimension="0"/>
+            </Members>
+          </DataType>
+        </DataTypes>
+        <AddOnInstructionDefinitions/>
+        <Tags>
+          <Tag Name="OuterTag" TagType="Base" DataType="Outer"/>
+        </Tags>
+        <Programs/>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    root = ET.fromstring(xml)
+    entries, errors = build_report(root, MODEL)
+    assert errors == []
+
+    definition_names = {e.data_type for e in entries if e.category == "udt_definition"}
+    # Inner is never a top-level tag's own DataType, only reachable via
+    # Outer's member -- still needs its own definition cost counted.
+    assert definition_names == {"Inner", "Outer"}
+
+
+def test_udt_definition_cost_counts_bool_members_correctly():
+    # Regression test for the 2026-08-22 fix: declared_member_count must
+    # exclude only the HIDDEN backing SINT, not the visible BIT-alias
+    # members it backs -- an all-BOOL UDT was computing 0 declared members
+    # (its only non-bit-alias member IS the hidden one), undercounting.
+    xml = """
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test">
+        <DataTypes>
+          <DataType Name="SweepTypeBOOL" Family="NoFamily" Class="User">
+            <Members>
+              <Member Name="ZZZZZZZZZZBoolMember00" DataType="SINT" Dimension="0" Hidden="true"/>
+              <Member Name="M0" DataType="BIT" Dimension="0" Hidden="false" Target="ZZZZZZZZZZBoolMember00" BitNumber="0"/>
+              <Member Name="M1" DataType="BIT" Dimension="0" Hidden="false" Target="ZZZZZZZZZZBoolMember00" BitNumber="1"/>
+              <Member Name="M2" DataType="BIT" Dimension="0" Hidden="false" Target="ZZZZZZZZZZBoolMember00" BitNumber="2"/>
+              <Member Name="M3" DataType="BIT" Dimension="0" Hidden="false" Target="ZZZZZZZZZZBoolMember00" BitNumber="3"/>
+            </Members>
+          </DataType>
+        </DataTypes>
+        <AddOnInstructionDefinitions/>
+        <Tags/>
+        <Programs/>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    root = ET.fromstring(xml)
+    from l5x_memory_analyzer.sizing.udt import compute_udt_definition_cost
+    from l5x_memory_analyzer.parser.datatypes import parse_data_types
+    data_types = parse_data_types(root)
+    bytes_, confidence = compute_udt_definition_cost("SweepTypeBOOL", data_types, MODEL)
+    # Real Capacity delta for this exact real corpus shape (4 BOOL members,
+    # 13-char name "SweepTypeBOOL") is 272: base(160) + per_member(16)*4 +
+    # name_per_8_chars(8)*ceil(13/8)=2 + bool_run_bonus(32) = 272.
+    assert bytes_ == 160 + 16 * 4 + 8 * 2 + 32
+    assert bytes_ == 272

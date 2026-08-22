@@ -32,6 +32,14 @@ effects, not operand type (already covered by gen_logic_typesweep.py).
      compound, CMP(A>B|C<D) OR-joined compound, and CMP(A>B&A>B) (the same
      condition duplicated) -- extends the optimization question to CMP's
      boolean-expression operand instead of CPT's arithmetic one.
+  F. group_cpt_constant_operand / group_cmp_constant_operand -- James,
+     2026-08-22: "are you testing these with tags only? You might want to
+     test with float/decimal constants as well." Group A only ever
+     compared tag-vs-tag; this adds an integer-LITERAL operand (CPT(L2,
+     L0<op>5)) and a float-LITERAL operand against REAL tags (CPT(R2,
+     R0<op>5.5)) for every operator, plus the CMP equivalent
+     (CMP(L0>5), CMP(L0>5.5)) -- compares directly against group A's
+     tag-vs-tag baseline for the same operator.
 
 Run: python -m sample_gen.gen_cmpcpt_layout
 """
@@ -47,9 +55,14 @@ from sample_gen.wrapper import build_l5x
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "logic"
 RUNG_COUNT = 1000
 
-_POOL_TAGS_XML = "\n".join(tag_xml(f"L{i}", "DINT") for i in range(8)) + "\n" + tag_xml("TB0", "BOOL")
+_POOL_TAGS_XML = (
+    "\n".join(tag_xml(f"L{i}", "DINT") for i in range(8)) + "\n"
+    + "\n".join(tag_xml(f"R{i}", "REAL") for i in range(3)) + "\n"
+    + tag_xml("TB0", "BOOL")
+)
 
 OPERATORS = ["+", "-", "*", "/", "**"]
+_OPNAME = {"+": "add", "-": "sub", "*": "mul", "/": "div", "**": "pow"}
 
 
 def _write(l5x: str, out_name: str, description: str) -> None:
@@ -112,13 +125,46 @@ def group_cmp_layout() -> None:
         _write(l5x, f"cmpcpt_cmp_{name}_n{RUNG_COUNT:05d}", f"{RUNG_COUNT} rungs of CMP({expr}) -- boolean-expression layout sweep")
 
 
+def group_cpt_constant_operand() -> None:
+    for op in OPERATORS:
+        opname = _OPNAME[op]
+        fn_int = lambda i, op=op: f"CPT(L2,L0{op}5);"
+        rungs = rungs_xml(RUNG_COUNT, fn_int)
+        l5x = build_l5x(target_name="CptConstInt", tags_xml=_POOL_TAGS_XML, extra_rungs_xml=rungs)
+        _write(l5x, f"cmpcpt_cpt_op_{opname}_intliteral_n{RUNG_COUNT:05d}",
+               f"{RUNG_COUNT} rungs of CPT(L2,L0{op}5) -- integer literal operand, vs tag-tag baseline "
+               f"cmpcpt_cpt_op_{opname}_n{RUNG_COUNT:05d}")
+
+        fn_float = lambda i, op=op: f"CPT(R2,R0{op}5.5);"
+        rungs = rungs_xml(RUNG_COUNT, fn_float)
+        l5x = build_l5x(target_name="CptConstFloat", tags_xml=_POOL_TAGS_XML, extra_rungs_xml=rungs)
+        _write(l5x, f"cmpcpt_cpt_op_{opname}_floatliteral_n{RUNG_COUNT:05d}",
+               f"{RUNG_COUNT} rungs of CPT(R2,R0{op}5.5) -- float/decimal literal operand, REAL tags/dest")
+
+
+def group_cmp_constant_operand() -> None:
+    fn_int = lambda i: "CMP(L0>5)OTE(TB0);"
+    rungs = rungs_xml(RUNG_COUNT, fn_int)
+    l5x = build_l5x(target_name="CmpConstInt", tags_xml=_POOL_TAGS_XML, extra_rungs_xml=rungs)
+    _write(l5x, f"cmpcpt_cmp_intliteral_n{RUNG_COUNT:05d}",
+           f"{RUNG_COUNT} rungs of CMP(L0>5) -- integer literal operand, vs tag-tag baseline cmpcpt_cmp_single")
+
+    fn_float = lambda i: "CMP(L0>5.5)OTE(TB0);"
+    rungs = rungs_xml(RUNG_COUNT, fn_float)
+    l5x = build_l5x(target_name="CmpConstFloat", tags_xml=_POOL_TAGS_XML, extra_rungs_xml=rungs)
+    _write(l5x, f"cmpcpt_cmp_floatliteral_n{RUNG_COUNT:05d}",
+           f"{RUNG_COUNT} rungs of CMP(L0>5.5) -- float/decimal literal compared against a DINT tag")
+
+
 def main() -> None:
     group_cpt_operator()
     group_cpt_chain()
     group_cpt_dedup()
     group_cpt_noop()
     group_cmp_layout()
-    total = len(OPERATORS) + 1 + 1 + 2 + 4
+    group_cpt_constant_operand()
+    group_cmp_constant_operand()
+    total = len(OPERATORS) + 1 + 1 + 2 + 4 + len(OPERATORS) * 2 + 2
     print(f"\nDone. {total} files.")
 
 

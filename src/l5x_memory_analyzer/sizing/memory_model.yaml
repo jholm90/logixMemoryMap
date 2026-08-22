@@ -56,12 +56,154 @@ string:
 
 udt:
   # No alignment/padding between members -- tight packing, declared order.
-  # UNKNOWN / highest-risk assumption in the model. See OQ-ALIGN.
-  alignment_confidence: UNKNOWN
+  # Confirmed 2026-08-22 (OQ-ALIGN, RESOLVED_QUESTIONS.md): James's own
+  # field-experience call, 100% confident, and every real UDT test across
+  # the whole sweep (dozens of samples) landed on predictions consistent
+  # with tight-packing. Was UNKNOWN, now KNOWN.
+  alignment_confidence: KNOWN
 
 array:
   # dimension x element_size, no padding ambiguity for atomic element types.
   atomic_confidence: KNOWN
   # dimension x udt_size -- padding treatment (per-element vs whole-block)
-  # not yet resolved. See OQ-ARRAYPACK.
+  # not yet resolved. See OQ-ARRAYPACK (test built 2026-08-22, awaiting
+  # capture) -- still genuinely open, do not flip this without real data.
   udt_confidence: UNKNOWN
+
+# Per-tag flat overhead: every top-level <Tag> entry (Controller/Tags or
+# Program/Tags) costs this ON TOP OF its own raw data size (from
+# atomic_types/predefined_structures/udt/array above) -- confirmed
+# 2026-08-20/21, RESOLVED_QUESTIONS.md OQ-TAGOVERHEAD: exact fit across 16
+# independent data points (13-point DINT-50-tag count sweep + 3-point
+# REAL-40-tag cross-check), plus a separate 8/8-point count sweep from 5 to
+# 1000 tags landing on exactly the same per-tag constant at name_length=8 --
+# two independently-derived measurements agreeing exactly is why this is
+# KNOWN, not FITTED. Tag names are stored in 8-character-aligned chunks.
+# Does NOT yet apply to Alias tags (TagType="Alias") -- that's OQ-ALIASSIZE,
+# still open, test built, awaiting capture; alias tags stay at 0 total until
+# that lands, don't guess it's the same formula.
+tag_overhead:
+  flat_base: 84
+  per_8_chars: 8  # bucket = floor(name_length / 8)
+  confidence: KNOWN
+
+# UDT DataType *definition* cost -- a ONE-TIME cost per distinct UDT type
+# actually referenced (not per instance/tag), separate from and additive
+# with tag_overhead above (which is per-Tag) and the tight-packed member
+# size (used for instance/array sizing). Confirmed 2026-08-20/21,
+# RESOLVED_QUESTIONS.md OQ-TAGOVERHEAD: definition_base + per_member exact
+# fit at 4/8/16/32 all-DINT declared members; name_base + name_per_8_chars
+# exact fit at name lengths 8/13/20/30 (4 DINT members held constant).
+# member_count for both formulas is the DECLARED member count (as a user
+# would count them), NOT the raw <Member> XML element count -- a run of N
+# BOOL members still only counts as N declared members even though Logix
+# Designer's XML adds a hidden backing SINT per 8-bit chunk underneath.
+# bool_run_bonus is a flagged, less-certain empirical adjustment: a
+# separate type-cross-check sweep (4 members, one sample each of SINT/INT/
+# DINT/LINT/REAL/BOOL) measured 240 for the non-BOOL types and 272 for
+# BOOL -- the +32 gap is confirmed, but 240 doesn't reconcile exactly
+# against definition_base + per_member*4 = 232 the way the dedicated
+# count-sweep's points do (an 8-block residual between two different
+# sample files never fully re-verified). Use the formula below for
+# member_count, add bool_run_bonus flat if any declared member is BOOL,
+# and treat that specific case as carrying a small known residual rather
+# than pretending perfect precision.
+udt_definition:
+  # CORRECTED 2026-08-22, same day as first landed: originally implemented
+  # as base(168) + per_member*count PLUS SEPARATELY name_base(224) +
+  # name_per_8_chars*ceil(name_len/8), added together -- caught by cross-
+  # checking every real udt-category manifest row against this engine's
+  # prediction (every *_def_only row over-predicted by a consistent
+  # ~224-232 blocks). The two original "168" and "224+..." formulas were
+  # each independently exact-fit against their own sweep (member-count
+  # sweep held name_length=8 fixed; name-length sweep held member_count=4
+  # fixed), but they're two different 1-D slices through the SAME 2-
+  # variable surface, both including the same shared base -- adding them
+  # double-counts it. Solved simultaneously instead: one true base of 160,
+  # confirmed exact against every real udtmembers_n*/udtname_len* data
+  # point for member_count>=4 (n=1,2 keep the same small-N anomaly already
+  # documented for tag count).
+  base: 160
+  per_member: 16
+  name_per_8_chars: 8  # bucket = ceil(name_length / 8), NOT floor -- different from tag_overhead
+  bool_run_bonus: 32
+  confidence: KNOWN
+
+# Logic instruction weights -- FITTED, 2026-08-22. delta_blocks = fixed_base
+# + weight * rung_count, fit from the 244-file per-instruction sweep
+# (gen_logic_sweep.py), 0.00% residual on every instruction listed. See
+# docs/MEMORY_MODEL.md "Logic instruction weights" for the full derivation
+# and caveats. fixed_base is charged ONCE PER ROUTINE by this engine's
+# current implementation -- flagged explicitly: every source sample had
+# exactly 1 Task/1 Program/1 Routine, so whether this cost is really
+# per-routine, per-program, or per-task specifically is NOT yet
+# disambiguated (gen_task_overhead.py is the pending test for this).
+# Treat multi-routine/multi-program predictions as FITTED, not KNOWN, for
+# that reason on top of the regression-fit reason alone.
+#
+# CORRECTED 2026-08-22, same day as first landed: several of these sweep
+# files don't contain ONLY the named instruction -- e.g. XIC's rung text is
+# literally "XIC(tag)OTE(tag);", not "XIC(tag);" alone, because a bare XIC
+# can't legally close a rung. The RAW measured weight for those files is
+# the COMBINED cost of the instruction plus its closing companion (usually
+# OTE, once XIC+ONS+OTE for ONS specifically), not a clean isolated weight
+# for the named instruction alone. Caught by cross-checking this engine's
+# own prediction against real captured data for instr_xic_n01000 (engine
+# said 40,816; real delta was 24,816 -- summing the raw XIC weight AND the
+# raw OTE weight for every rung double-counted OTE, since both instructions
+# are really in every one of those rungs). Every weight below is now the
+# isolated per-instruction-alone value, decomposed using OTE's own clean
+# 16 (its sweep file, "OTE(tag);", never had a companion) as the anchor --
+# e.g. raw XIC-file measurement was 20 = XIC_alone + OTE(16), so
+# XIC_alone = 4. This makes the table properly additive: summing each
+# instruction's own weight by its occurrence count in a rung, however many
+# different instructions that rung actually contains, reconstructs the
+# right total instead of over- or under-counting shared companions. Not
+# yet independently confirmed by real data at the composed level -- that's
+# exactly what gen_logic_random_mix.py's random-combination batch tests.
+logic_instructions:
+  fixed_base_per_routine: 4816
+  jsr_fixed_base_per_routine: 5096  # JSR's routine also declares the target subroutine
+  confidence: FITTED
+  weights:
+    CPT: 452
+    ABS: 120
+    XPY: 116
+    CONCAT: 104
+    MID: 100
+    DELETE: 100
+    CMP: 76      # corrected from raw 92 (CMP+OTE combined); OTE's own 16 subtracted
+    GSV: 84
+    SSV: 84
+    STOD: 80
+    DTOS: 72
+    JSR: 72
+    LIM: 52      # corrected from raw 68 (LIM+OTE combined)
+    ONS: 36      # corrected from raw 56 (XIC+ONS+OTE combined)
+    MUL: 56
+    DIV: 56
+    MOD: 56
+    MVM: 56
+    MEQ: 32      # corrected from raw 48 (MEQ+OTE combined)
+    ADD: 40
+    SUB: 40
+    MOV: 36
+    EQU: 20      # corrected from raw 36 (EQU+OTE combined)
+    NEQ: 20      # corrected from raw 36 (NEQ+OTE combined)
+    GRT: 20      # corrected from raw 36 (GRT+OTE combined)
+    GEQ: 20      # corrected from raw 36 (GEQ+OTE combined)
+    LES: 20      # corrected from raw 36 (LES+OTE combined)
+    LEQ: 20      # corrected from raw 36 (LEQ+OTE combined)
+    CLR: 32
+    XIC: 4       # corrected from raw 20 (XIC+OTE combined)
+    XIO: 4       # corrected from raw 20 (XIO+OTE combined)
+    AFI: 4       # corrected from raw 20 (AFI+OTE combined)
+    TON: 20      # solo rung ("TON(tmr,?,?);", no companion) -- unchanged
+    TOF: 20      # solo -- unchanged
+    RTO: 20      # solo -- unchanged
+    CTU: 20      # solo -- unchanged
+    RES: 20      # solo -- unchanged
+    OTE: 16      # solo, the decomposition anchor -- unchanged
+    OTL: 16      # solo -- unchanged
+    OTU: 16      # solo -- unchanged
+    NOP: 16      # solo -- unchanged

@@ -32,6 +32,32 @@ because it's more fun than writing another sizing table.
 
 ---
 
+## Feature backlog (post-current-phase, priority order set 2026-08-22)
+
+1. **I/O Module / connection sizing — ACTIVE NOW.** `Controller/Modules`
+   parsing, deferred from Phase 3 on 2026-08-20 ("leave the module stuff to
+   later"), picked back up. `docs/IO_MODULES.md` has the full real-corpus
+   module inventory (120 distinct catalog numbers across 54 files) and the
+   rack/chassis topology notes. Scope for this pass: Ethernet and local
+   (in-rack) modules only — ControlNet/DeviceNet explicitly deferred, see
+   item 5 below and the bottom of `docs/IO_MODULES.md`.
+2. **Any-export-type handling.** Program/DataType/AOI-only L5X exports as a
+   first-class mode, not just full controller exports, with the export
+   type identified in the UI (see RESOLVED_QUESTIONS.md OQ-EXPORTSCOPE).
+   *(The per-member/per-tag "why is it this size" breakdown is NOT a
+   separate backlog item — that's the core Phase 5 UI v2 deliverable,
+   already in scope above, not something deferred.)*
+3. **Extended tag properties sizing** (alarm config, Min/Max, Engineering
+   Units) — not in use on James's live projects today, revisit if/when
+   real usage shows up in the corpus.
+4. **v20/v30 L5X schema support** — no real sample in hand for either
+   version yet (7 newer personal-project files added 2026-08-22 still
+   ranged v31–v35).
+5. **ControlNet/DeviceNet module support** — deferred alongside item 1's
+   Ethernet/local scope, see `docs/IO_MODULES.md`.
+
+---
+
 ## Phase 0 — Setup
 - Repo scaffold (this)
 - Pick stack (see Open Questions — OQ-STACK)

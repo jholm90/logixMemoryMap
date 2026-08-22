@@ -2,85 +2,98 @@
 
 Every unresolved question gets an ID (OQ-xxx). Resolved items move to
 `docs/RESOLVED_QUESTIONS.md` — this file stays scannable, open items only.
+Items marked **[test built]** don't need a decision from James — a
+generator already covers them, just waiting on the next capture batch.
 
-1. **OQ-AXISDEEP (elevated priority, 2026-08-22).** James: CIP/virtual axis
-   structures are used *everywhere* in real programs and this needs
-   0.01%-tolerance accuracy, not the single-sample-per-type coverage that
-   exists today. Confirmed in the real corpus: axis usage is never the raw
-   `AXIS_CIP_DRIVE` predefined type alone — it's wrapped in custom UDTs like
-   `ts_CIPAxis` (found in `BaillieLeitchField_Edger_20260812_r00.L5X` and
-   `SJ_Gormley_20251112_r02.L5X`), which nests a real AOI (`DriveAxis`,
-   tagged "Motion Control AOI") plus other nested UDTs (`AutoSpeeds`,
-   `udtServo`) plus a hidden-bit-backed BOOL plus a STRING member, on top of
-   the axis tag itself. Needs: (a) many more real data points per axis type,
-   not one; (b) a combined CIP+Virtual file (subsumes old OQ-AXISCOMBO);
-   (c) a direct test of an `AXIS_CIP_DRIVE`-wrapping composite UDT shaped
-   like `ts_CIPAxis` to validate the nested-AOI-in-UDT-with-axis-member
-   composition math specifically, since axis structures are structurally
-   unlike anything else tested (flat `AxisParameters` attribute list, not
-   Members/StructureMember).
-   *(AXIS_CIP_DRIVE/AXIS_VIRTUAL/AXIS_SERVO/COORDINATE_SYSTEM single-point
-   values are already resolved, see RESOLVED_QUESTIONS.md — this item is
-   about accuracy/coverage, not first discovery.)*
+1. **OQ-CUSTOMSTRINGDEF (new, 2026-08-22).** Custom STRING types
+   (`Family="StringFamily"`) need their own one-time definition-cost
+   constant, distinct from the ordinary UDT-definition formula (which
+   doesn't apply to them — confirmed by removing it and re-checking real
+   data). Every real `customstring_*` manifest row now under-predicts by a
+   fairly consistent ~204-208 blocks once the wrong formula was removed.
+   Real data already exists (7 points, `customstring_len*`) — this is a
+   re-analysis of existing data, not a new capture, just hasn't been done
+   yet.
 
-2. **OQ-MIXEDUDT (new, 2026-08-22, reopens/expands OQ-LARGEMIXED).** James:
-   "majority of our in use programs are not bool[1000] but are mixed and
-   garbled udts" — the 3 existing composite-file validations (0.3-2.6%
-   accuracy) used artificial homogeneous-ish compositions, not real-shaped
-   messy UDTs. Need dedicated tests matching what's actually in the corpus:
-   UDTs nesting AOIs, UDTs nesting other UDTs several levels deep, hidden
-   bit-backed BOOL members mixed with STRING/DINT/nested-struct members in
-   one type (`ts_CIPAxis` above is a real example of exactly this shape).
-   Goal: confirm the composable formulas still hold at real-world
-   messiness, not just in controlled homogeneous sweeps.
+2. **OQ-AXISDEEP [test built].** CIP/virtual axis, used everywhere in real
+   programs, 0.01%-tolerance target. `gen_axis_composite.py` covers the
+   `ts_CIPAxis`-shaped composite UDT + AOI-with-InOut-axis call + full
+   combo. Awaiting capture.
 
-3. **L5X version cross-check** (spin-off of OQ-L5XVERSION). v20/v30 schema
-   differences vs the primary v35 target are completely unvalidated — no
-   sample data for either version. Revisit if a v20/v30 project shows up in
-   the real corpus.
+3. **OQ-MIXEDUDT [test built].** Realistic messy/nested UDTs (not
+   homogeneous arrays) — `gen_axis_composite.py`'s composite UDT covers
+   this too. Awaiting capture.
 
-4. **OQ-ARRAYPACK.** Does a UDT's total size round up to a 32-bit boundary?
-   Still open.
+4. **OQ-ARRAYPACK [test built].** Does a UDT's total size round to a 32-bit
+   boundary? `gen_arraypack_boolarray.py` group C. Awaiting capture.
 
-5. **OQ-BOOLARRAY.** Strong indirect evidence, no clean isolated test yet —
-   need a dedicated real-data test for array-of-BOOL sizing specifically.
+5. **OQ-BOOLARRAY [test built].** Array-of-BOOL sizing, isolated.
+   `gen_arraypack_boolarray.py` group A. Awaiting capture.
 
-6. **OQ-PREDEFINED.** Motion/cam structures other than AXIS_* — MOTION_
-   INSTRUCTION, CAM_PROFILE, CAM, MOTION_GROUP, etc. — still unresolved.
+6. **OQ-AOIBOOLPACK [test built].** Clean re-test, same 20-param total,
+   BOOL grouped vs alternating. `gen_aoi_boolpack_clean.py`. Awaiting
+   capture.
 
-7. **OQ-AOIINSTANCE.** Can an AOI instance be inline/anonymous (no backing
-   tag)? Unclear if that's even possible in real Logix. Untested.
+7. **OQ-UDTARRAYALIGN [test built].** Array of an already-tight UDT — any
+   per-element padding? `gen_arraypack_boolarray.py` group B. Awaiting
+   capture.
 
-8. **OQ-AOIBOOLPACK.** Real data collected but confounded — the
-   interspersed-BOOL comparison file also added 20 extra DINT params vs the
-   consecutive-BOOL file, so the raw delta isn't a clean isolation of
-   packing behavior. Needs a same-total-param-count re-test.
+8. **OQ-TAGSCOPE [test built].** Program tag `Usage="Local"` vs `"Public"`
+   — cost difference? `gen_tagscope_alias.py` group A. Awaiting capture.
 
-9. **OQ-ALARMPROPBYTES.** Memory cost of extended tag properties (alarm
-   config, etc.) — untested.
+9. **OQ-ALIASSIZE [test built].** Alias tag cost at 1/10/1000 scale.
+   `gen_tagscope_alias.py` group B. Awaiting capture.
 
-10. **OQ-JSRSHARED.** Does a JSR'd subroutine's compiled logic get counted
-    once (shared) or duplicated per call site? Pending James's current
-    244-file logic-sweep capture run.
+10. **OQ-CMPCPTLAYOUT [test built, new 2026-08-22, extended same day].**
+   Operator/layout/optimization sweep for CPT and CMP (`tag**tag` vs
+   `tag*tag` vs `tag-tag`, a 6-operand chain, same-tag-vs-distinct-tag and
+   redundant-literal dedup probes, compound boolean expressions) — plus,
+   per James's follow-up ("are you testing these with tags only? You might
+   want to test with float/decimal constants as well"), an integer-literal
+   and float-literal operand variant for every operator, both CPT and CMP,
+   against the existing tag-vs-tag baseline. `gen_cmpcpt_layout.py`.
+   Awaiting capture.
 
-11. **OQ-LOGICVISIBILITY.** The big one: does the Capacity tab reflect
-    compiled logic size at all, and if so how? Only 2 logic samples existed
-    before the 244-file sweep, both showed zero Capacity movement — method
-    validity for logic is still unconfirmed. Pending James's current run.
+11. **OQ-PREDEFINED [test built].** Rockwell's own literature site is
+    blocked by this session's network proxy, but the real corpus had
+    everything needed. `gen_motion_predefined.py`: MOTION_INSTRUCTION (real
+    16-member shape from `BAI10048_TrimmerTally_20250704.L5X`, 1/5/50-tag
+    sweep) and CAM_PROFILE (real 20-element array from
+    `CMU_2025_10_14r00.L5X`, 1/5/20/50-element sweep, built from real
+    captured row data — the visible Decorated shape only exposes 1 of the
+    14 real per-element L5K fields, confirming your "voodoo... hides stuff
+    not visible in the tag browser" call, so there's no way to size this
+    one structurally — needs a pure empirical constant same as Axis).
+    `CAM`/`MOTION_GROUP` (the group wrapper, not per-axis config) still
+    untested. Awaiting capture.
 
-12. **OQ-UDTARRAYALIGN.** Does an array of an already-tight (4/8-byte
-    aligned) UDT get any extra per-element padding? Needs an isolating test.
+12. **OQ-XPROGREF [test built].** Real Logix has no direct cross-program
+    tag-addressing syntax in logic (confirmed: searched all 47 real corpus
+    files, no `Program:Tag`-style reference exists anywhere in rung Text).
+    The real mechanism is what you described earlier — a Controller-scoped
+    global with each program declaring its own Local alias to it. Built
+    `gen_xprogref.py`: single-program alias baseline vs two programs each
+    aliasing the same global, same 1000-rung XIC/OTE pattern, comparable
+    directly against the confirmed 20-blocks/rung XIC weight. Needed a new
+    `build_l5x(extra_programs_xml=...)` wrapper hook for a second Program.
+    Awaiting capture.
 
-13. **OQ-TAGSCOPE.** Program-scoped tag `Usage="Local"` vs `Usage="Public"`
-    — does scope affect storage cost? Real XML shape now confirmed, test
-    not yet built.
+13. **Motion instructions [test built]** (MAM/MAJ/MAH/MAS/MSO/MRP).
+    `gen_motion_instructions.py` — MAH/MSO's 2-operand call syntax is
+    corpus-confirmed, the rest use the same documented signature but
+    aren't independently confirmed for that exact mnemonic. MAPC/MCCP
+    camming skipped, no real call-syntax reference found. Awaiting
+    capture.
 
-14. **OQ-ALIASSIZE.** Cost of an Alias tag at scale (1/10/1000 aliases) —
-    real XML shape now confirmed (self-closed `TagType="Alias"
-    AliasFor="..."`), test not yet built.
+14. **Per-Task overhead [test built].** `gen_task_overhead.py` — 2nd/3rd
+    Task, isolating pure Task/Program scaffolding cost from logic content.
+    Also the only way to disambiguate whether the logic-sizing engine's
+    `fixed_base_per_routine` is really per-routine, per-program, or
+    per-task (every calibration sample had exactly one of each). Awaiting
+    capture.
 
-15. **OQ-XPROGREF.** Cross-program tag reference — any logic-size cost
-    beyond ordinary operand cost? Parked, Phase 4 scope.
-
-16. **Motion instructions** (MAM/MAJ/MAH/MAS/MSO/MRP/MAPC/MCCP). Deferred to
-    Phase 4d — needs real Axis tag setup before these can be tested.
+15. **Indirect addressing overhead [test built, extended 2026-08-22].**
+    `gen_indirect_addressing.py` — direct vs. tag-driven array index, plus
+    (James: "Does tag[idx+1] take up the same space as tag[Idx]?") a third
+    variant with an arithmetic offset inside the index. Same
+    instruction/count throughout. Awaiting capture.
