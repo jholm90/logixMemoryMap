@@ -10,55 +10,15 @@ Run: python -m sample_gen.gen_boolpack_test
 
 from __future__ import annotations
 
-import csv
-import xml.etree.ElementTree as ET
 from pathlib import Path
 
+from sample_gen.manifest import MANIFEST_PATH, append_manifest_row, predicted_bytes as _predicted_bytes
 from sample_gen.wrapper import bool_tags_xml, build_l5x
 
-from l5x_memory_analyzer.sizing.constants import load_memory_model
-from l5x_memory_analyzer.sizing.report import build_report
-
 OUT_DIR = Path(__file__).parent.parent.parent / "samples" / "generated" / "boolpack"
-MANIFEST = Path(__file__).parent.parent.parent / "samples" / "manifest.csv"
+MANIFEST = MANIFEST_PATH
 
 BOOL_COUNT = 1000
-
-
-def _predicted_bytes(l5x_text: str) -> int:
-    root = ET.fromstring(l5x_text)
-    model = load_memory_model()
-    entries, errors = build_report(root, model)
-    if errors:
-        raise RuntimeError(f"sample has unsized tags, fix the generator: {errors}")
-    return sum(e.bytes for e in entries)
-
-
-def _append_manifest_row(sample_id, description, category, l5x_path, predicted_bytes):
-    is_new = not MANIFEST.exists()
-    with open(MANIFEST, "a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        if is_new:
-            writer.writerow(
-                "sample_id,description,category,l5x_path,predicted_bytes,actual_bytes,"
-                "delta,delta_pct,controller_model,firmware_rev,date_tested,notes".split(",")
-            )
-        writer.writerow(
-            [
-                sample_id,
-                description,
-                category,
-                l5x_path,
-                predicted_bytes,
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-            ]
-        )
 
 
 def main() -> None:
@@ -76,16 +36,13 @@ def main() -> None:
     with_bools_path.write_text(with_bools, encoding="utf-8")
     with_bools_bytes = _predicted_bytes(with_bools)
 
-    rel_baseline = baseline_path.relative_to(MANIFEST.parent.parent)
-    rel_with_bools = with_bools_path.relative_to(MANIFEST.parent.parent)
-
-    _append_manifest_row(
+    append_manifest_row(
         "sample_0001", "boolpack baseline, 0 extra tags", "tag",
-        str(rel_baseline), baseline_bytes,
+        baseline_path, baseline_bytes,
     )
-    _append_manifest_row(
+    append_manifest_row(
         "sample_0002", f"boolpack test, {BOOL_COUNT} standalone BOOL tags", "tag",
-        str(rel_with_bools), with_bools_bytes,
+        with_bools_path, with_bools_bytes,
     )
 
     print(f"Wrote {baseline_path} (predicted {baseline_bytes} bytes)")

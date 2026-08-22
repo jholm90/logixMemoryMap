@@ -19,7 +19,8 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 MANIFEST_PATH = REPO_ROOT / "samples" / "manifest.csv"
 MANIFEST_COLUMNS = (
     "sample_id,description,category,l5x_path,predicted_bytes,actual_bytes,"
-    "delta,delta_pct,controller_model,firmware_rev,date_tested,notes"
+    "delta,delta_pct,controller_model,firmware_rev,date_tested,notes,"
+    "error_count,warning_count,message_value"
 ).split(",")
 
 
@@ -65,7 +66,7 @@ def append_manifest_row(sample_id: str, description: str, category: str, l5x_pat
             updated = True
             break
     if not updated:
-        rows.append([sample_id, description, category, rel_path, str(bytes_predicted), "", "", "", "", "", "", ""])
+        rows.append([sample_id, description, category, rel_path, str(bytes_predicted), "", "", "", "", "", "", "", "", "", ""])
 
     with open(MANIFEST_PATH, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
