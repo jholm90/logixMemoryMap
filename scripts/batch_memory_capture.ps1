@@ -198,12 +198,17 @@ foreach ($row in $remaining) {
 
     # Independent cross-check (James, 2026-08-22: "window title is valid
     # there with the filename.acd present inside") -- the title AHK
-    # captured at read-time should contain the exact filename PowerShell
-    # requested. A mismatch means the automation may have read the wrong
-    # file's data (stale window, wrong file loaded, etc.) -- still logged
-    # rather than silently dropped, but flagged loudly and in the row's
-    # own notes so it's never trusted quietly.
-    $expectedFileName = Split-Path $row.acd_path -Leaf
+    # captured at read-time should contain the file PowerShell requested.
+    # Real title format confirmed 2026-08-22 doesn't include the .ACD
+    # extension ("Logix Designer - array_dint_00001 [1756-L81E 35.11]*"),
+    # so match on the base name only -- checking for the extension too
+    # was producing false-positive mismatches. A real mismatch means the
+    # automation may have read stale data (confirmed real case, same day:
+    # a request for array_dint_00005 came back with array_dint_00002 still
+    # in the title -- the file switch silently didn't happen) -- still
+    # logged rather than silently dropped, but flagged loudly and in the
+    # row's own notes so it's never trusted quietly.
+    $expectedFileName = [System.IO.Path]::GetFileNameWithoutExtension($row.acd_path)
     $notes = ""
     if ($windowTitle -notmatch [regex]::Escape($expectedFileName)) {
         Write-Warning "Window title mismatch for $($meta.Id): expected '$expectedFileName' in `"$windowTitle`" -- may have captured the wrong file's data."
@@ -243,8 +248,7 @@ foreach ($row in $remaining) {
     $fileSw.Stop()
     $fileSeconds = [math]::Round($fileSw.Elapsed.TotalSeconds, 1)
     $fileTimes += $fileSeconds
-    $titleCheck = if ($notes) { "TITLE MISMATCH" } else { "title ok" }
-    Write-Host "Logged: actual_bytes=$blocksUsed errors=$errorCount warnings=$warningCount message=`"$messageValue`" ($titleCheck, ${fileSeconds}s)"
+    Write-Host "Logged: ${fileSeconds}s Actual_Bytes=$blocksUsed errors=$errorCount Warnings=$warningCount Message=$messageValue Title=$windowTitle"
 }
 
 $batchSw.Stop()
