@@ -125,3 +125,15 @@ generator already covers them, just waiting on the next capture batch.
     script + recaptures; if it's still failing after that, it's a real,
     distinct bug and needs its own investigation (not the same root
     cause as the bracket-subscript fixes).
+
+    James, same day: "lbl always has to be the 1st element on the line,
+    sometimes the only instruction afterwards is NOP() with no issue.
+    jmp can have conditions before it." Consistent with what the
+    generator already does (bare `LBL(L{i});` as the sole/first
+    instruction on its rung) -- doesn't by itself explain the failure.
+    Still open: is a bare `LBL(L0);` with nothing after it actually
+    valid (categoryB.L5X's only real example pairs LBL with a trailing
+    NOP), or does every LBL rung need a following instruction even when
+    it's a no-op? If that's it, the fix is adding `NOP()` after every
+    `LBL(L{i})` in `gen_logic_sweep.py`'s `group_lbl_jmp`, independent of
+    the stale-ACD-cache question above.
