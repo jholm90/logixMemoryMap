@@ -28,10 +28,20 @@ effects, not operand type (already covered by gen_logic_typesweep.py).
      mathematical no-op) vs CPT(Dest,X) (a bare copy, no operator at all).
      Tests whether Logix folds away a provably-redundant operation or
      charges for the literal operand regardless.
-  E. group_cmp_layout -- CMP(A>B) single condition, CMP(A>B&C<D) AND-joined
-     compound, CMP(A>B|C<D) OR-joined compound, and CMP(A>B&A>B) (the same
-     condition duplicated) -- extends the optimization question to CMP's
-     boolean-expression operand instead of CPT's arithmetic one.
+  E. group_cmp_layout -- CMP(A>B) single numeric comparison, plus a real,
+     corpus-confirmed compound-AND variant. James, 2026-08-22, on why the
+     original `L0>L1&L2<L3` (bare `&`, no parens) failed Build 100% of
+     rungs: "CMP branches of AND/OR would be using the ladder logic
+     editor and not internal to the CMP. CMP would be mostly used for
+     number comparisons not logical comparisons... make a table of all
+     of the existing CMP/CPT instructions in the other L5X sample
+     programs for examples instead of reengineering the wheel." Pulled
+     every real CMP/CPT call from samples/local/ (docs/CMP_CPT_REFERENCE.md)
+     -- while compound conditions ARE rare (12/421 real CMP calls, one
+     file), they do exist, and not with `&`/`|`: EmporiumEdger_20250905r1.
+     L5X uses `A>=(B-10)&&(A<=(B+10))` -- `&&`, first clause bare, second
+     wrapped in its own parens. Fixed to match. `or_compound` uses `||`
+     by symmetry, NOT corpus-confirmed (zero real `||` instances found).
   F. group_cpt_constant_operand / group_cmp_constant_operand -- James,
      2026-08-22: "are you testing these with tags only? You might want to
      test with float/decimal constants as well." Group A only ever
@@ -112,11 +122,15 @@ def group_cpt_noop() -> None:
 
 
 def group_cmp_layout() -> None:
+    # Compound shape corrected 2026-08-22 to match the one real corpus
+    # example (docs/CMP_CPT_REFERENCE.md) -- `&&`/`||`, first clause
+    # bare, second clause parenthesized. The original `L0>L1&L2<L3`
+    # (single `&`, no parens) failed Build on every rung.
     variants = {
         "single": "L0>L1",
-        "and_compound": "L0>L1&L2<L3",
-        "or_compound": "L0>L1|L2<L3",
-        "duplicate_cond": "L0>L1&L0>L1",
+        "and_compound": "L0>L1&&(L2<L3)",
+        "or_compound": "L0>L1||(L2<L3)",
+        "duplicate_cond": "L0>L1&&(L0>L1)",
     }
     for name, expr in variants.items():
         fn = lambda i, expr=expr: f"CMP({expr})OTE(TB0);"

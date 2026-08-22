@@ -77,6 +77,18 @@ foreach ($f in $files) {
     Write-Host "[$i/$total] $($f.Name) -> $acdPath"
     $fileSw = [System.Diagnostics.Stopwatch]::StartNew()
 
+    # James, 2026-08-22: "you will need to append V2 onto the ACD files
+    # you are regenerating as youre probably not overwriting them" -- the
+    # l5x_mtime staleness fix above correctly decides a file needs
+    # reconverting, but that's worthless if l5xgit itself silently
+    # refuses to overwrite an existing .ACD at the destination path
+    # (unverified either way from here -- l5xgit is Windows-only, not
+    # runnable in this environment). Deleting the old file first removes
+    # the question: whatever l5xgit does with a missing destination,
+    # "stale content still on disk after a successful reconversion" can't
+    # happen.
+    if (Test-Path $acdPath) { Remove-Item $acdPath -Force }
+
     $argList = @("l5x2acd", "--l5x", $f.FullName, "--acd", $acdPath)
     if ($UnsafeSkipDependencyCheck) { $argList += "--unsafe-skip-dependency-check" }
 

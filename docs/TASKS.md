@@ -259,17 +259,25 @@ that's the actual remaining Phase 4/4b implementation work.
         not real syntax bugs. LBL/JMP is new since the last review pass —
         logged as OQ-LBLJMP-STALE in OPEN_QUESTIONS.md in case it's a real,
         separate bug once reconversion rules out staleness.
-      - **CMP compound (3 rows, unconfirmed):** James's categoryB.L5X only
-        exercises a single CMP condition, which already passes — it
-        doesn't cover the `&`/`|` compound-condition case that's actually
-        failing. NOT guessed/fixed blind; logged as an extension to
-        OQ-CMPCPTLAYOUT with a hypothesis (each comparison needs its own
-        parens) pending a real sample.
-      **Net "samples needed" list, corrected from the original blind scan:**
-      one real open question — a Studio 5000-verified compound-CMP example,
-      e.g. `CMP((L0>L1)&(L2<L3))OTE(x);` or however the real syntax turns
-      out to need it. Nothing else on the original error list needs a new
-      sample.
+      - **CMP compound (3 rows, real bug, fixed):** James's categoryB.L5X
+        only exercises a single CMP condition, so a new sample wasn't
+        needed — instead pulled every real CMP/CPT call out of
+        `samples/local/` (docs/CMP_CPT_REFERENCE.md, 421 CMP + 1533 CPT
+        calls) per James's direction ("make a table... instead of
+        reengineering the wheel"). Found one real compound-CMP file
+        (`EmporiumEdger_20250905r1.L5X`, 12 instances) using `&&`
+        (double ampersand, not the generator's bare `&`), first clause
+        unparenthesized, second wrapped in its own parens. Fixed
+        `gen_cmpcpt_layout.py` to match, regenerated. `||` (OR) has zero
+        real corpus examples — assumed valid by symmetry, not confirmed.
+      - **LBL/JMP (5 rows, real bug, fixed):** James confirmed directly —
+        a bare `LBL(x);` with nothing after it fails; `LBL(x)NOP();`
+        passes. Fixed `group_lbl_jmp` to always pair LBL with a trailing
+        NOP, regenerated.
+      **Net "samples needed" list, corrected from the original blind scan:
+      zero.** Every real error class from this batch is now either fixed
+      in the generator or explained by the stale-ACD-cache bug pending
+      James's reconversion — nothing needs a brand new hand-built sample.
 - [ ] **Re-capture genuine title-bar mismatch rows from the same batch.**
       6 rows still flagged in manifest.csv `notes` as `WINDOW TITLE
       MISMATCH` (real ones, not the false-positive extension-matching bug
@@ -281,9 +289,15 @@ that's the actual remaining Phase 4/4b implementation work.
       list with James, then wipe just those rows for re-capture, not the
       whole batch.
 - [ ] **Re-run `batch_l5x_to_acd.ps1` + `batch_memory_capture.ps1` for
-      CPS/COP/FLL/BTD/LBL-JMP (26 rows)** now that the `l5x_mtime`
-      staleness fix is in place, to confirm/rule out the stale-ACD-cache
-      theory above.
+      CPS/COP/FLL/BTD (21 rows), SIZE (5 rows), xic_ote_1000 (2 rows),
+      LBL-JMP (5 rows), and CMP compound (3 rows)** — all 36 rows had
+      their manifest actual_bytes/error data cleared pending re-capture
+      against the now-fixed L5X sources. Also picks up a second fix in
+      `batch_l5x_to_acd.ps1` (James, 2026-08-22: "you will need to append
+      V2 onto the ACD files you are regenerating as youre probably not
+      overwriting them") — added an explicit delete of the old `.ACD`
+      before every reconversion, since it was never verified that
+      `l5xgit` itself overwrites an existing destination file.
 - [ ] Timer instructions (TON/TOF/RTO) at scale — no CTU/CTD-heavy usage seen
       but include CTU (25 real uses; CTD had zero, low priority)
 - [ ] Math/compare instructions (MOV/EQU/ADD/NEQ/GRT/MUL/GEQ/LES/SUB/LIM/LEQ/

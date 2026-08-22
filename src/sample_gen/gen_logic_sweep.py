@@ -212,10 +212,17 @@ def group_jsr() -> None:
 def group_lbl_jmp() -> None:
     # LBL/JMP as a pair -- each "count" unit is one LBL rung + one JMP rung
     # jumping to it, so labels stay locally satisfied.
+    #
+    # James, 2026-08-22 (confirmed the OQ-LBLJMP-STALE batch failure was a
+    # real bug, not just the stale-ACD-cache artifact): "lbl needs
+    # something after it, LBL(thisLabel); will fail - LBL(thisLabel)NOP();
+    # will pass." A bare LBL with nothing following it on the same rung
+    # is invalid -- every LBL rung needs a trailing instruction, matching
+    # categoryB.L5X's real LBL(ThisLabel)NOP(); shape.
     for count in COUNTS:
         rungs = []
         for i in range(count):
-            rungs.append(rung_xml(2 * i, f"LBL(L{i});"))
+            rungs.append(rung_xml(2 * i, f"LBL(L{i})NOP();"))
             rungs.append(rung_xml(2 * i + 1, f"JMP(L{i});"))
         l5x = build_l5x(target_name="InstrLBLJMP", tags_xml=_POOL_TAGS_XML, extra_rungs_xml="\n".join(rungs))
         out_name = f"instr_lbljmp_n{count:05d}"

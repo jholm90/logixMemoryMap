@@ -110,30 +110,15 @@ generator already covers them, just waiting on the next capture batch.
     variant with an arithmetic offset inside the index. Same
     instruction/count throughout. Awaiting capture.
 
-16. **OQ-LBLJMP-STALE [2026-08-22 batch result].** All 5 `instr_lbljmp_n*`
-    files (`LBL(L{i});` / `JMP(L{i});` pairs, unique labels, matches the
-    `LBL(ThisLabel)NOP();` ... `JMP(ThisLabel);` shape confirmed real in
-    James's `categoryB.L5X`) showed error_count == pair count -- every
-    rung failed. Rung text itself looks structurally fine (verified by
-    dumping the raw CDATA, no duplicate/undefined labels). Same "100% of
-    rungs errored" signature as the CPS/COP/FLL/BTD rows that turned out
-    to be a stale-ACD-conversion-cache artifact (see `batch_l5x_to_acd.
-    ps1`'s `l5x_mtime` fix, 2026-08-22) rather than a real syntax bug --
-    LBL/JMP's source was never touched by that fix, but if it converted
-    in the same batch pass its ACD binary could be equally stale. Best
-    guess is this clears on its own once James reconverts with the fixed
-    script + recaptures; if it's still failing after that, it's a real,
-    distinct bug and needs its own investigation (not the same root
-    cause as the bracket-subscript fixes).
-
-    James, same day: "lbl always has to be the 1st element on the line,
-    sometimes the only instruction afterwards is NOP() with no issue.
-    jmp can have conditions before it." Consistent with what the
-    generator already does (bare `LBL(L{i});` as the sole/first
-    instruction on its rung) -- doesn't by itself explain the failure.
-    Still open: is a bare `LBL(L0);` with nothing after it actually
-    valid (categoryB.L5X's only real example pairs LBL with a trailing
-    NOP), or does every LBL rung need a following instruction even when
-    it's a no-op? If that's it, the fix is adding `NOP()` after every
-    `LBL(L{i})` in `gen_logic_sweep.py`'s `group_lbl_jmp`, independent of
-    the stale-ACD-cache question above.
+16. **OQ-LBLJMP-STALE [2026-08-22, root cause confirmed].** All 5
+    `instr_lbljmp_n*` files (`LBL(L{i});` / `JMP(L{i});` pairs) showed
+    error_count == pair count -- every rung failed. Initially suspected
+    as another instance of the stale-ACD-conversion-cache artifact (see
+    `batch_l5x_to_acd.ps1`'s `l5x_mtime` fix). **James confirmed it's a
+    real, distinct syntax bug instead:** "lbl needs something after it,
+    LBL(thisLabel); will fail - LBL(thisLabel)NOP(); will pass." A bare
+    LBL with nothing following it on the same rung is invalid -- matches
+    `categoryB.L5X`'s real `LBL(ThisLabel)NOP();` shape, which always
+    pairs LBL with a trailing instruction. Fixed: `group_lbl_jmp` now
+    generates `LBL(L{i})NOP();` for every LBL rung, regenerated. Awaiting
+    re-capture to confirm it clears.
