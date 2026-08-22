@@ -22,13 +22,14 @@
 .EXAMPLE
   ./validate_l5x_offline.ps1 -SelfTest
   ./validate_l5x_offline.ps1 -InputDir ..\samples\generated -LogPath C:\l5x_scratch\validate_log.csv -Limit 10
-  ./validate_l5x_offline.ps1 -InputDir ..\samples\generated -LogPath C:\l5x_scratch\validate_log.csv
+  ./validate_l5x_offline.ps1 -InputDir ..\samples\generated -LogPath C:\l5x_scratch\validate_log.csv -ConvertLog C:\l5x_scratch\acd\convert_log.csv
 #>
 param(
     [switch]$SelfTest,
     [string]$InputDir,
     [string]$LogPath,
     [int]$Limit,
+    [string]$ConvertLog,
     [string]$SelfTestLogPath = (Join-Path $PSScriptRoot "l5x_validator\selftest_log.csv")
 )
 
@@ -57,6 +58,7 @@ try {
             exit 1
         }
         $argList = @("run", "-c", "Release", "--no-build", "--", "validate", $InputDir, $LogPath)
+        if ($ConvertLog) { $argList += @("--convert-log", $ConvertLog) }
         if ($Limit) { $argList += @("--limit", $Limit) }
         dotnet @argList
         $exitCode = $LASTEXITCODE

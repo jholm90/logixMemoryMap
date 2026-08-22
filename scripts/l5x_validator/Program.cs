@@ -47,10 +47,16 @@ else if (mode == "validate")
     string inputDir = args[1];
     string logPath = args[2];
     int? limit = null;
-    if (args.Length > 3 && args[3] == "--limit" && args.Length > 4 && int.TryParse(args[4], out var l))
-        limit = l;
+    string? convertLogPath = null;
+    for (int a = 3; a < args.Length; a++)
+    {
+        if (args[a] == "--limit" && a + 1 < args.Length && int.TryParse(args[a + 1], out var l))
+        { limit = l; a++; }
+        else if (args[a] == "--convert-log" && a + 1 < args.Length)
+        { convertLogPath = args[a + 1]; a++; }
+    }
 
-    return await RunValidateAsync(inputDir, logPath, limit);
+    return await RunValidateAsync(inputDir, logPath, limit, convertLogPath);
 }
 else
 {
@@ -66,11 +72,16 @@ static void PrintUsage()
     Console.WriteLine("      fixtures. RUN THIS FIRST. Both must come back FAILED with real error");
     Console.WriteLine("      text, or 'ok' results from validate mode can't be trusted.");
     Console.WriteLine();
-    Console.WriteLine("  dotnet run -- validate <inputDir> <logCsvPath> [--limit N]");
+    Console.WriteLine("  dotnet run -- validate <inputDir> <logCsvPath> [--convert-log <path>] [--limit N]");
     Console.WriteLine("      Recursively finds every *.L5X under inputDir, opens each and runs");
     Console.WriteLine("      BuildAsync(DefaultTarget) -- offline compile, no download, no Echo --");
     Console.WriteLine("      logs pass/fail + real SDK error text to logCsvPath.");
     Console.WriteLine("      Resumable: files already logged 'ok' are skipped on re-run.");
+    Console.WriteLine("      --convert-log points at an existing batch_l5x_to_acd.ps1 convert_log.csv:");
+    Console.WriteLine("      when a file has a status=ok row there, this opens the already-converted");
+    Console.WriteLine("      .ACD instead of re-importing the raw .L5X (saves the import/convert time");
+    Console.WriteLine("      per file if that's where BuildAsync's cost actually is -- unconfirmed,");
+    Console.WriteLine("      worth comparing a timed run with and without this flag on a small -Limit).");
 }
 
 static async Task<int> RunSelfTestAsync(string logPath)
@@ -85,57 +96,110 @@ static async Task<int> RunSelfTestAsync(string logPath)
     }
 
     var files = Directory.GetFiles(fixturesDir, "*.L5X");
+    var badFiles = files.Where(f => Path.GetFileName(f).StartsWith("KNOWN_BAD_")).ToList();
+    var goodFiles = files.Where(f => Path.GetFileName(f).StartsWith("KNOWN_GOOD_")).ToList();
+    var unclassified = files.Except(badFiles).Except(goodFiles).ToList();
     if (files.Length == 0)
     {
         Console.WriteLine($"No .L5X files found in {fixturesDir}.");
         return 1;
     }
+    if (unclassified.Count > 0)
+    {
+        Console.WriteLine("Fixture file(s) not prefixed KNOWN_BAD_ or KNOWN_GOOD_, skipping: " +
+            string.Join(", ", unclassified.Select(Path.GetFileName)));
+    }
 
-    Console.WriteLine($"=== SELF-TEST: validating {files.Length} known-bad fixture(s) ===");
-    Console.WriteLine("Every one of these MUST come back FAILED. If any comes back 'ok', this");
-    Console.WriteLine("tool is not catching what it's meant to -- stop before running validate.");
+    // Two-sided on purpose (James, 2026-08-22, after the first version's
+    // false pass): BuildAsync failing on a known-bad file only means
+    // something. It could mean the mechanism doesn't work AT ALL on this
+    // Designer version -- the exact failure mode hit here (both fixtures
+    // came back "Operation not supported on Logix Designer version 35.5",
+    // identical text, nothing about ladder content) -- so a known-GOOD file
+    // has to independently come back "ok" or this whole approach is a false
+    // positive machine, not a validator.
+    Console.WriteLine($"=== SELF-TEST: {badFiles.Count} known-bad + {goodFiles.Count} known-good fixture(s) ===");
+    Console.WriteLine("Bad fixtures MUST come back FAILED. Good fixture(s) MUST come back ok.");
+    Console.WriteLine("If a bad fixture fails with the SAME error text a good fixture also gets,");
+    Console.WriteLine("that's not ladder-logic detection -- it's the mechanism failing on everything.");
     Console.WriteLine();
 
     if (!File.Exists(logPath))
         File.WriteAllText(logPath, "l5x_path,status,error_count,messages\n");
 
-    bool allFailed = true;
+    bool ok = true;
+    var allMessages = new List<(string file, bool expectedBad, ValidationResult result)>();
     int i = 0;
-    foreach (var f in files)
+    int total = badFiles.Count + goodFiles.Count;
+    foreach (var (f, expectedBad) in badFiles.Select(f => (f, true)).Concat(goodFiles.Select(f => (f, false))))
     {
         i++;
-        Console.WriteLine($"[{i}/{files.Length}] {Path.GetFileName(f)}");
-        var result = await ValidateOneFileAsync(f);
+        Console.WriteLine($"[{i}/{total}] {Path.GetFileName(f)} (expect {(expectedBad ? "FAILED" : "ok")})");
+        var result = await ValidateOneFileAsync(f, f);
         LogResult(logPath, result);
+        allMessages.Add((f, expectedBad, result));
         Console.WriteLine($"  -> {result.Status} ({result.ErrorCount} error event(s))");
         foreach (var msg in result.Messages.Take(5))
             Console.WriteLine($"     {msg}");
-        if (result.Status == "ok")
-            allFailed = false;
+
+        bool asExpected = expectedBad ? result.Status == "FAILED" : result.Status == "ok";
+        if (!asExpected)
+            ok = false;
     }
+
+    // Specifically check for the false-positive pattern that bit the first
+    // version of this tool: a bad fixture and a good fixture failing with
+    // the exact same message text means the mechanism isn't discriminating
+    // on content at all.
+    var badMessages = allMessages.Where(m => m.expectedBad).SelectMany(m => m.result.Messages).ToHashSet();
+    var goodFailures = allMessages.Where(m => !m.expectedBad && m.result.Status == "FAILED").ToList();
+    bool sharedFailureText = goodFailures.Any(g => g.result.Messages.Any(gm => badMessages.Contains(gm)));
 
     Console.WriteLine();
-    if (allFailed)
+    if (ok && badFiles.Count > 0 && goodFiles.Count > 0)
     {
-        Console.WriteLine("SELF-TEST PASSED: both known-bad fixtures came back FAILED.");
-        Console.WriteLine("Open -> BuildAsync(DefaultTarget) is catching this class of error.");
-        Console.WriteLine("Safe to proceed with: dotnet run -- validate <inputDir> <logCsvPath>");
+        Console.WriteLine("SELF-TEST PASSED: bad fixture(s) FAILED, good fixture(s) came back ok.");
+        Console.WriteLine("Open -> BuildAsync(DefaultTarget) is discriminating real ladder-logic errors,");
+        Console.WriteLine("not just failing universally. Safe to proceed with validate mode.");
         return 0;
     }
-    else
-    {
-        Console.WriteLine("SELF-TEST FAILED: at least one known-bad fixture came back 'ok'.");
-        Console.WriteLine("Do NOT trust 'ok' results from validate mode until this is understood.");
-        return 1;
-    }
+
+    Console.WriteLine("SELF-TEST FAILED.");
+    if (goodFiles.Count == 0)
+        Console.WriteLine("  No KNOWN_GOOD_ fixture present -- can't rule out a universal-failure false positive.");
+    if (sharedFailureText)
+        Console.WriteLine("  A good fixture failed with the SAME message text as a bad one -- looks like a universal failure, not real detection.");
+    Console.WriteLine("Do NOT trust 'ok' results from validate mode until this is understood.");
+    return 1;
 }
 
-static async Task<int> RunValidateAsync(string inputDir, string logPath, int? limit)
+static async Task<int> RunValidateAsync(string inputDir, string logPath, int? limit, string? convertLogPath)
 {
     if (!Directory.Exists(inputDir))
     {
         Console.WriteLine($"Input directory not found: {inputDir}");
         return 1;
+    }
+
+    var acdByL5x = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    if (convertLogPath is not null)
+    {
+        if (!File.Exists(convertLogPath))
+        {
+            Console.WriteLine($"--convert-log path not found: {convertLogPath}");
+            return 1;
+        }
+        int usable = 0;
+        foreach (var line in File.ReadLines(convertLogPath).Skip(1))
+        {
+            var parts = line.Split(',');
+            if (parts.Length >= 3 && parts[2] == "ok" && File.Exists(parts[1]))
+            {
+                acdByL5x[parts[0]] = parts[1];
+                usable++;
+            }
+        }
+        Console.WriteLine($"Loaded {usable} usable L5X->ACD mapping(s) from {convertLogPath}.");
     }
 
     var alreadyDone = new HashSet<string>();
@@ -167,8 +231,9 @@ static async Task<int> RunValidateAsync(string inputDir, string logPath, int? li
     foreach (var f in todo)
     {
         i++;
-        Console.WriteLine($"[{i}/{todo.Count}] {Path.GetFileName(f)}");
-        var result = await ValidateOneFileAsync(f);
+        string openPath = acdByL5x.TryGetValue(f, out var acdPath) ? acdPath : f;
+        Console.WriteLine($"[{i}/{todo.Count}] {Path.GetFileName(f)}{(openPath != f ? " (opening existing .ACD)" : "")}");
+        var result = await ValidateOneFileAsync(f, openPath);
         LogResult(logPath, result);
         if (result.Status == "ok")
         {
@@ -195,20 +260,20 @@ static void LogResult(string logPath, ValidationResult r)
     File.AppendAllText(logPath, $"{Escape(r.L5xPath)},{r.Status},{r.ErrorCount},{joined}\n");
 }
 
-static async Task<ValidationResult> ValidateOneFileAsync(string l5xPath)
+static async Task<ValidationResult> ValidateOneFileAsync(string l5xPath, string openPath)
 {
     var collector = new ErrorCollector();
     var result = new ValidationResult { L5xPath = l5xPath, Status = "FAILED", ErrorCount = 0, Messages = new List<string>() };
 
     try
     {
-        var project = await LogixProject.OpenLogixProjectAsync(l5xPath, collector, CancellationToken.None);
+        var project = await LogixProject.OpenLogixProjectAsync(openPath, collector, CancellationToken.None);
         await project.BuildAsync(LogixProject.RequestedBuildTarget.DefaultTarget, CancellationToken.None);
         project.Dispose();
     }
     catch (Exception ex)
     {
-        collector.Errors.Add((l5xPath, $"[exception] {ex.GetType().Name}: {ex.Message}"));
+        collector.Errors.Add((openPath, $"[exception] {ex.GetType().Name}: {ex.Message}"));
     }
 
     result.ErrorCount = collector.Errors.Count;
