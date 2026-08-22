@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Version pinned to what's confirmed installed on James's machine
+         (dump_ldsdk_api.ps1 output, 2026-08-22). -->
+    <PackageReference Include="RockwellAutomation.LogixDesigner.CSClient" Version="2.2.1109" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="negative_control_fixtures\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

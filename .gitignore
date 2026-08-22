@@ -22,3 +22,5 @@ samples/local/
 !samples/generated/**/*.l5x
 !samples/samplePrograms/RockwellSamples/**/*.L5X
 !samples/samplePrograms/RockwellSamples/**/*.l5x
+!scripts/l5x_validator/negative_control_fixtures/**/*.L5X
+!scripts/l5x_validator/negative_control_fixtures/**/*.l5x
