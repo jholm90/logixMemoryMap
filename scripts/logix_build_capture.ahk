@@ -3,9 +3,10 @@
 ; path to open (file existence at -OpenRequestPath = "go" signal, content +
 ; clipboard both carry the path) and polls for this script's results
 ; (-HandoffPath: error_count,warning_count,message_value,ocd_value,
-; overwritten every cycle, consumed on read). This script never launches or
-; closes Logix Designer -- it drives File > Open inside the same already-
-; running instance (confirmed ~5s vs ~65s for a full close/reopen cycle).
+; window_title, overwritten every cycle, consumed on read). This script
+; never launches or closes Logix Designer -- it drives File > Open inside
+; the same already-running instance (confirmed ~5s vs ~65s for a full
+; close/reopen cycle).
 ;
 ; Update HANDOFF_PATH / OPEN_REQUEST_PATH below to match whatever you pass
 ; to batch_memory_capture.ps1's -HandoffPath / -OpenRequestPath.
@@ -53,6 +54,7 @@ global OCDValue := ""
 global ErrorValue := ""
 global WarningValue := ""
 global MessageValue := ""
+global WindowTitle := ""
 
 ; Pulls the leading integer out of button/label text like "0 Warnings",
 ; "3 Errors", "1 Warning" -- handles singular/plural and any wording since
@@ -73,6 +75,14 @@ StripCommas(text) {
     return StrReplace(text, ",", "")
 }
 
+; Window title is the one field that legitimately needs commas/other
+; punctuation preserved (e.g. "Logix Designer - BoolPackBaseline in
+; sample_0001...ACD [1756-L81E 35.11]") -- quote it for the CSV instead of
+; stripping anything out of it.
+CsvQuote(text) {
+    return '"' StrReplace(text, '"', '""') '"'
+}
+
 StatusGui := Gui("+AlwaysOnTop +ToolWindow", "Loop Status.  Press ESC to Abort")
 StatusGui.SetFont("s12 Bold")
 StatusText := StatusGui.AddText("w320", "IDLE - press Ctrl+F1 in Logix window")
@@ -90,6 +100,7 @@ Status(msg) {
         global ErrorValue := ""
         global WarningValue := ""
         global MessageValue := ""
+        global WindowTitle := ""
 
         ; --- Wait for PowerShell's next-file handoff (file existence = "go") ---
         Status("Waiting for next file from PowerShell...")
@@ -161,10 +172,16 @@ Status(msg) {
         }
 
         Sleep 1000
+        ; Captured at the same moment as Error/Warning/Message -- the
+        ; window title has the open .ACD filename baked in (James, 2026-08-22:
+        ; "window title is valid there with the filename.acd present inside"),
+        ; giving PowerShell an independent cross-check against the filename
+        ; it actually requested, instead of just trusting the handshake blind.
+        WindowTitle := WinGetTitle("A")
         ErrorValue := ExtractCount(ControlGetText("Button10", "A"))
         WarningValue := ExtractCount(ControlGetText("Button11", "A"))
         MessageValue := ExtractCount(ControlGetText("Button12", "A"))
-        Status("Errors/Warnings/Message: " ErrorValue ", " WarningValue ", " MessageValue)
+        Status("Errors/Warnings/Message: " ErrorValue ", " WarningValue ", " MessageValue " | " WindowTitle)
 
         ; --- Controller Properties -> Capacity (OCD value) ---
         Sleep 1000
@@ -215,8 +232,8 @@ Status(msg) {
 
         ; --- Hand results back to PowerShell ---
         handoffFile := FileOpen(HANDOFF_PATH, "w")
-        handoffFile.Write("error_count,warning_count,message_value,ocd_value`n")
-        handoffFile.Write(StripCommas(ErrorValue) "," StripCommas(WarningValue) "," StripCommas(MessageValue) "," OCDValue "`n")
+        handoffFile.Write("error_count,warning_count,message_value,ocd_value,window_title`n")
+        handoffFile.Write(StripCommas(ErrorValue) "," StripCommas(WarningValue) "," StripCommas(MessageValue) "," OCDValue "," CsvQuote(WindowTitle) "`n")
         handoffFile.Close()
 
         Status("Looping -- waiting for next file...")

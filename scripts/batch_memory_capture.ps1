@@ -15,11 +15,14 @@
                        path here; AHK waits for it, opens the file, deletes
                        the request (consumed) once read.
     -HandoffPath        AHK -> PowerShell. AHK overwrites this with
-                       error_count,warning_count,message_value,ocd_value
-                       once its build/verify/Capacity-read cycle finishes
-                       for whatever file it just opened; this script polls
-                       for it (see -TimeoutSeconds), reads, deletes it
-                       (consumed), and logs.
+                       error_count,warning_count,message_value,ocd_value,
+                       window_title once its build/verify/Capacity-read
+                       cycle finishes for whatever file it just opened;
+                       this script polls for it (see -TimeoutSeconds),
+                       reads, deletes it (consumed), and logs. window_title
+                       is cross-checked against the requested filename --
+                       a mismatch is logged loudly and flagged in the
+                       row's own notes rather than trusted quietly.
 
   Per file:
     1. Write the ACD path to -OpenRequestPath.
@@ -47,8 +50,8 @@
   -OpenRequestPath to appear, reads+deletes it, opens that path via Ctrl+O
   in the existing Logix Designer window, does its build/verify/Capacity
   read, then writes -HandoffPath (header + one data row:
-  error_count,warning_count,message_value,ocd_value) before looping back
-  to wait for the next request.
+  error_count,warning_count,message_value,ocd_value,window_title) before
+  looping back to wait for the next request.
 
   ManifestPath/HandoffPath/OpenRequestPath all default to locations relative
   to this script's own folder (scripts\ahk_runtime\ for the two handoff
@@ -104,7 +107,7 @@ function Get-RelPath($fullPath) {
 }
 
 $ManifestColumns = "sample_id,description,category,l5x_path,predicted_bytes,actual_bytes,delta,delta_pct," +
-    "controller_model,firmware_rev,date_tested,notes,error_count,warning_count,message_value"
+    "controller_model,firmware_rev,date_tested,notes,error_count,warning_count,message_value,window_title"
 
 if (-not (Test-Path $ManifestPath)) {
     $ManifestColumns | Out-File -FilePath $ManifestPath -Encoding utf8
@@ -190,9 +193,22 @@ foreach ($row in $remaining) {
     $errorCount = $result.error_count
     $warningCount = $result.warning_count
     $messageValue = $result.message_value
+    $windowTitle = $result.window_title
     Remove-Item $HandoffPath -Force  # consumed -- next file must produce a fresh one
 
+    # Independent cross-check (James, 2026-08-22: "window title is valid
+    # there with the filename.acd present inside") -- the title AHK
+    # captured at read-time should contain the exact filename PowerShell
+    # requested. A mismatch means the automation may have read the wrong
+    # file's data (stale window, wrong file loaded, etc.) -- still logged
+    # rather than silently dropped, but flagged loudly and in the row's
+    # own notes so it's never trusted quietly.
+    $expectedFileName = Split-Path $row.acd_path -Leaf
     $notes = ""
+    if ($windowTitle -notmatch [regex]::Escape($expectedFileName)) {
+        Write-Warning "Window title mismatch for $($meta.Id): expected '$expectedFileName' in `"$windowTitle`" -- may have captured the wrong file's data."
+        $notes = "WINDOW TITLE MISMATCH: expected '$expectedFileName', got `"$windowTitle`""
+    }
     $date = Get-Date -Format "yyyy-MM-dd"
     $predicted = if ($existing -and $existing.predicted_bytes) { $existing.predicted_bytes } else { "" }
     $delta = ""
@@ -213,19 +229,22 @@ foreach ($row in $remaining) {
         $existing.error_count = $errorCount
         $existing.warning_count = $warningCount
         $existing.message_value = $messageValue
+        $existing.window_title = $windowTitle
     } else {
         $manifest += [pscustomobject]@{
             sample_id = $meta.Id; description = $meta.Desc; category = $category; l5x_path = $relPath
             predicted_bytes = ""; actual_bytes = $blocksUsed; delta = $delta; delta_pct = $deltaPct
             controller_model = $ControllerModel; firmware_rev = $FirmwareRev; date_tested = $date; notes = $notes
             error_count = $errorCount; warning_count = $warningCount; message_value = $messageValue
+            window_title = $windowTitle
         }
     }
     $manifest | Export-Csv -Path $ManifestPath -NoTypeInformation -Encoding utf8
     $fileSw.Stop()
     $fileSeconds = [math]::Round($fileSw.Elapsed.TotalSeconds, 1)
     $fileTimes += $fileSeconds
-    Write-Host "Logged: actual_bytes=$blocksUsed errors=$errorCount warnings=$warningCount message=`"$messageValue`" (${fileSeconds}s)"
+    $titleCheck = if ($notes) { "TITLE MISMATCH" } else { "title ok" }
+    Write-Host "Logged: actual_bytes=$blocksUsed errors=$errorCount warnings=$warningCount message=`"$messageValue`" ($titleCheck, ${fileSeconds}s)"
 }
 
 $batchSw.Stop()

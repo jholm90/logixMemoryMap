@@ -1,586 +1,586 @@
-﻿"sample_id","description","category","l5x_path","predicted_bytes","actual_bytes","delta","delta_pct","controller_model","firmware_rev","date_tested","notes","error_count","warning_count","message_value"
-"aoi_array_localtag_1_instance","AOI with a 100-element array LocalTag, 1 instance","aoi","samples/generated/aoi/aoi_array_localtag_1_instance.L5X","408","","","","","","","","","",""
-"aoi_array_localtag_def_only","AOI with a 100-element array LocalTag, 0 instances","aoi","samples/generated/aoi/aoi_array_localtag_def_only.L5X","0","","","","","","","","","",""
-"aoi_array_param_def_only","AOI with a 50-element array Input Parameter, 0 instances","aoi","samples/generated/aoi/aoi_array_param_def_only.L5X","0","","","","","","","","","",""
-"aoi_boolpack_clean_alternating_def_only","AOI, 10 BOOL alternating with 10 DINT (20 total params, same mix as grouped), 0 instances","aoi","samples/generated/aoi/aoi_boolpack_clean_alternating_def_only.L5X","0","","","","","","","","","",""
-"aoi_boolpack_clean_grouped_def_only","AOI, 10 BOOL grouped together + 10 DINT (20 total params), 0 instances -- clean OQ-AOIBOOLPACK re-test","aoi","samples/generated/aoi/aoi_boolpack_clean_grouped_def_only.L5X","0","","","","","","","","","",""
-"aoi_boolpack_consecutive20_1_instance","AOI with 20 consecutive BOOL Input params, 1 instance","aoi","samples/generated/aoi/aoi_boolpack_consecutive20_1_instance.L5X","88","","","","","","","","","",""
-"aoi_boolpack_consecutive20_def_only","AOI with 20 consecutive BOOL Input params, 0 instances","aoi","samples/generated/aoi/aoi_boolpack_consecutive20_def_only.L5X","0","","","","","","","","","",""
-"aoi_boolpack_interspersed20_1_instance","AOI with 20 BOOL Input params each separated by a DINT, 1 instance","aoi","samples/generated/aoi/aoi_boolpack_interspersed20_1_instance.L5X","168","","","","","","","","","",""
-"aoi_boolpack_interspersed20_def_only","AOI with 20 BOOL Input params each separated by a DINT, 0 instances","aoi","samples/generated/aoi/aoi_boolpack_interspersed20_def_only.L5X","0","","","","","","","","","",""
-"aoi_boolrun_n04_def_only","AOI with 4 consecutive BOOL Input params, 0 instances","aoi","samples/generated/aoi/aoi_boolrun_n04_def_only.L5X","0","","","","","","","","","",""
-"aoi_boolrun_n08_def_only","AOI with 8 consecutive BOOL Input params, 0 instances","aoi","samples/generated/aoi/aoi_boolrun_n08_def_only.L5X","0","","","","","","","","","",""
-"aoi_boolrun_n12_def_only","AOI with 12 consecutive BOOL Input params, 0 instances","aoi","samples/generated/aoi/aoi_boolrun_n12_def_only.L5X","0","","","","","","","","","",""
-"aoi_boolrun_n16_def_only","AOI with 16 consecutive BOOL Input params, 0 instances","aoi","samples/generated/aoi/aoi_boolrun_n16_def_only.L5X","0","","","","","","","","","",""
-"aoi_boolrun_n20_def_only","AOI with 20 consecutive BOOL Input params, 0 instances","aoi","samples/generated/aoi/aoi_boolrun_n20_def_only.L5X","0","","","","","","","","","",""
-"aoi_deepnest3_1_instance","3-level nested AOI (A contains B contains C), 1 instance","aoi","samples/generated/aoi/aoi_deepnest3_1_instance.L5X","36","","","","","","","","","",""
-"aoi_deepnest3_def_only","3-level nested AOI (A contains B contains C), 0 instances","aoi","samples/generated/aoi/aoi_deepnest3_def_only.L5X","0","","","","","","","","","",""
-"aoi_inout_dint_1_instance","AOI with 1 InOut DINT param + 1 DINT LocalTag, 1 instance -- confirms InOut adds no instance storage","aoi","samples/generated/aoi/aoi_inout_dint_1_instance.L5X","12","","","","","","","","","",""
-"aoi_inout_dint_def_only","AOI with 1 InOut DINT param + 1 DINT LocalTag, 0 instances","aoi","samples/generated/aoi/aoi_inout_dint_def_only.L5X","0","","","","","","","","","",""
-"aoi_inout_string_1_instance","AOI with 1 InOut STRING param + 1 DINT LocalTag, 1 instance -- confirms InOut adds no instance storage","aoi","samples/generated/aoi/aoi_inout_string_1_instance.L5X","12","","","","","","","","","",""
-"aoi_inout_string_def_only","AOI with 1 InOut STRING param + 1 DINT LocalTag, 0 instances","aoi","samples/generated/aoi/aoi_inout_string_def_only.L5X","0","","","","","","","","","",""
-"aoi_nested_array_localtag_1_instance","AOI with a 10-element array-of-nested-AOI LocalTag, 1 instance","aoi","samples/generated/aoi/aoi_nested_array_localtag_1_instance.L5X","128","","","","","","","","","",""
-"aoi_nested_array_localtag_def_only","AOI with a 10-element array-of-nested-AOI LocalTag, 0 instances","aoi","samples/generated/aoi/aoi_nested_array_localtag_def_only.L5X","0","","","","","","","","","",""
-"aoi_nested_inout_10_instance","Same UDT, array of 10 instances","aoi","samples/generated/aoi/aoi_nested_inout_10_instance.L5X","1182","","","","","","","","","",""
-"aoi_nested_inout_1_instance","Same UDT, 1 instance","aoi","samples/generated/aoi/aoi_nested_inout_1_instance.L5X","1029","","","","","","","","","",""
-"aoi_nested_inout_def_only","UDT nesting an AOI-with-InOut-param as a member (real ts_CIPAxis/DriveAxis pattern), 0 instances","aoi","samples/generated/aoi/aoi_nested_inout_def_only.L5X","0","","","","","","","","","",""
-"aoi_realistic_composite_10_instance_array","Realistic AOI (10 In/10 Out/10 Local, mixed DINT/BOOL/REAL), array of 10 instances","aoi","samples/generated/aoi/aoi_realistic_composite_10_instance_array.L5X","1280","","","","","","","","","",""
-"aoi_realistic_composite_1_instance","Realistic AOI (10 In/10 Out/10 Local, mixed DINT/BOOL/REAL), 1 instance","aoi","samples/generated/aoi/aoi_realistic_composite_1_instance.L5X","128","","","","","","","","","",""
-"aoi_realistic_composite_def_only","Realistic AOI (10 In/10 Out/10 Local, mixed DINT/BOOL/REAL), 0 instances","aoi","samples/generated/aoi/aoi_realistic_composite_def_only.L5X","0","","","","","","","","","",""
-"aoiname_len08_def_only","AOI (4 DINT params) with AOI type name length=8, 0 instances","aoi","samples/generated/aoi/aoiname_len08_def_only.L5X","0","","","","","","","","","",""
-"aoiname_len13_def_only","AOI (4 DINT params) with AOI type name length=13, 0 instances","aoi","samples/generated/aoi/aoiname_len13_def_only.L5X","0","","","","","","","","","",""
-"aoiname_len20_def_only","AOI (4 DINT params) with AOI type name length=20, 0 instances","aoi","samples/generated/aoi/aoiname_len20_def_only.L5X","0","","","","","","","","","",""
-"aoiname_len30_def_only","AOI (4 DINT params) with AOI type name length=30, 0 instances","aoi","samples/generated/aoi/aoiname_len30_def_only.L5X","0","","","","","","","","","",""
-"basic_aoi_10_instance_array","Basic AOI (2 In/1 Out/2 Local), array of 10 instances (confirmed real pattern)","aoi","samples/generated/aoi/basic_aoi_10_instance_array.L5X","280","","","","","","","","","",""
-"basic_aoi_1_instance","Basic AOI (2 In/1 Out/2 Local), 1 instance","aoi","samples/generated/aoi/basic_aoi_1_instance.L5X","28","","","","","","","","","",""
-"basic_aoi_def_only","Basic AOI (2 In/1 Out/2 Local), 0 instances","aoi","samples/generated/aoi/basic_aoi_def_only.L5X","0","","","","","","","","","",""
-"localcount_n01_def_only","AOI with 1 DINT LocalTags, 0 instances","aoi","samples/generated/aoi/localcount_n01_def_only.L5X","0","","","","","","","","","",""
-"localcount_n02_def_only","AOI with 2 DINT LocalTags, 0 instances","aoi","samples/generated/aoi/localcount_n02_def_only.L5X","0","","","","","","","","","",""
-"localcount_n04_def_only","AOI with 4 DINT LocalTags, 0 instances","aoi","samples/generated/aoi/localcount_n04_def_only.L5X","0","","","","","","","","","",""
-"localcount_n08_def_only","AOI with 8 DINT LocalTags, 0 instances","aoi","samples/generated/aoi/localcount_n08_def_only.L5X","0","","","","","","","","","",""
-"localcount_n16_def_only","AOI with 16 DINT LocalTags, 0 instances","aoi","samples/generated/aoi/localcount_n16_def_only.L5X","0","","","","","","","","","",""
-"localcount_n32_def_only","AOI with 32 DINT LocalTags, 0 instances","aoi","samples/generated/aoi/localcount_n32_def_only.L5X","0","","","","","","","","","",""
-"localtype_bool_n4_def_only","AOI with 4 BOOL LocalTags, 0 instances","aoi","samples/generated/aoi/localtype_bool_n4_def_only.L5X","0","","","","","","","","","",""
-"localtype_dint_n4_def_only","AOI with 4 DINT LocalTags, 0 instances","aoi","samples/generated/aoi/localtype_dint_n4_def_only.L5X","0","","","","","","","","","",""
-"localtype_int_n4_def_only","AOI with 4 INT LocalTags, 0 instances","aoi","samples/generated/aoi/localtype_int_n4_def_only.L5X","0","","","","","","","","","",""
-"localtype_lint_n4_def_only","AOI with 4 LINT LocalTags, 0 instances","aoi","samples/generated/aoi/localtype_lint_n4_def_only.L5X","0","","","","","","","","","",""
-"localtype_real_n4_def_only","AOI with 4 REAL LocalTags, 0 instances","aoi","samples/generated/aoi/localtype_real_n4_def_only.L5X","0","","","","","","","","","",""
-"localtype_sint_n4_def_only","AOI with 4 SINT LocalTags, 0 instances","aoi","samples/generated/aoi/localtype_sint_n4_def_only.L5X","0","","","","","","","","","",""
-"nested_aoi_1_instance","Outer AOI with a LocalTag of type InnerAOI (nested AOI), 1 instance","aoi","samples/generated/aoi/nested_aoi_1_instance.L5X","20","","","","","","","","","",""
-"nested_aoi_def_only","Outer AOI with a LocalTag of type InnerAOI (nested AOI), 0 instances","aoi","samples/generated/aoi/nested_aoi_def_only.L5X","0","","","","","","","","","",""
-"paramcount_n01_def_only","AOI with 1 DINT Input params, 0 instances","aoi","samples/generated/aoi/paramcount_n01_def_only.L5X","0","","","","","","","","","",""
-"paramcount_n02_def_only","AOI with 2 DINT Input params, 0 instances","aoi","samples/generated/aoi/paramcount_n02_def_only.L5X","0","","","","","","","","","",""
-"paramcount_n04_def_only","AOI with 4 DINT Input params, 0 instances","aoi","samples/generated/aoi/paramcount_n04_def_only.L5X","0","","","","","","","","","",""
-"paramcount_n08_def_only","AOI with 8 DINT Input params, 0 instances","aoi","samples/generated/aoi/paramcount_n08_def_only.L5X","0","","","","","","","","","",""
-"paramcount_n16_def_only","AOI with 16 DINT Input params, 0 instances","aoi","samples/generated/aoi/paramcount_n16_def_only.L5X","0","","","","","","","","","",""
-"paramcount_n32_def_only","AOI with 32 DINT Input params, 0 instances","aoi","samples/generated/aoi/paramcount_n32_def_only.L5X","0","","","","","","","","","",""
-"paramtype_bool_n4_def_only","AOI with 4 BOOL Input params, 0 instances","aoi","samples/generated/aoi/paramtype_bool_n4_def_only.L5X","0","","","","","","","","","",""
-"paramtype_bool_n8_def_only","AOI with 8 BOOL Input params, 0 instances","aoi","samples/generated/aoi/paramtype_bool_n8_def_only.L5X","0","","","","","","","","","",""
-"paramtype_dint_n4_def_only","AOI with 4 DINT Input params, 0 instances","aoi","samples/generated/aoi/paramtype_dint_n4_def_only.L5X","0","","","","","","","","","",""
-"paramtype_dint_n8_def_only","AOI with 8 DINT Input params, 0 instances","aoi","samples/generated/aoi/paramtype_dint_n8_def_only.L5X","0","","","","","","","","","",""
-"paramtype_int_n4_def_only","AOI with 4 INT Input params, 0 instances","aoi","samples/generated/aoi/paramtype_int_n4_def_only.L5X","0","","","","","","","","","",""
-"paramtype_int_n8_def_only","AOI with 8 INT Input params, 0 instances","aoi","samples/generated/aoi/paramtype_int_n8_def_only.L5X","0","","","","","","","","","",""
-"paramtype_lint_n4_def_only","AOI with 4 LINT Input params, 0 instances","aoi","samples/generated/aoi/paramtype_lint_n4_def_only.L5X","0","","","","","","","","","",""
-"paramtype_lint_n8_def_only","AOI with 8 LINT Input params, 0 instances","aoi","samples/generated/aoi/paramtype_lint_n8_def_only.L5X","0","","","","","","","","","",""
-"paramtype_real_n4_def_only","AOI with 4 REAL Input params, 0 instances","aoi","samples/generated/aoi/paramtype_real_n4_def_only.L5X","0","","","","","","","","","",""
-"paramtype_real_n8_def_only","AOI with 8 REAL Input params, 0 instances","aoi","samples/generated/aoi/paramtype_real_n8_def_only.L5X","0","","","","","","","","","",""
-"paramtype_sint_n4_def_only","AOI with 4 SINT Input params, 0 instances","aoi","samples/generated/aoi/paramtype_sint_n4_def_only.L5X","0","","","","","","","","","",""
-"paramtype_sint_n8_def_only","AOI with 8 SINT Input params, 0 instances","aoi","samples/generated/aoi/paramtype_sint_n8_def_only.L5X","0","","","","","","","","","",""
-"axis_aoi_inout_1_instance","Real AXIS_CIP_DRIVE tag + AOI with BOOL Input + InOut AXIS_CIP_DRIVE param, called from a rung, 1 instance (unmodeled predefined structure)","axis","samples/generated/axis/axis_aoi_inout_1_instance.L5X","0","","","","","","","","","",""
-"axis_baseline_motiongroup_only","Baseline: MotionGroup only, 0 axes (MOTION_GROUP unmodeled predefined structure)","axis","samples/generated/axis/axis_baseline_motiongroup_only.L5X","0","","","","","","","","","",""
-"axis_cip_drive_only","MotionGroup + 1 AXIS_CIP_DRIVE instance (unmodeled predefined structure)","axis","samples/generated/axis/axis_cip_drive_only.L5X","0","","","","","","","","","",""
-"axis_composite_udt_10_instance","ts_CIPAxis-shaped composite UDT, array of 10 instances","axis","samples/generated/axis/axis_composite_udt_10_instance.L5X","1240","","","","","","","","","",""
-"axis_composite_udt_1_instance","ts_CIPAxis-shaped composite UDT, 1 instance","axis","samples/generated/axis/axis_composite_udt_1_instance.L5X","124","","","","","","","","","",""
-"axis_composite_udt_def_only","ts_CIPAxis-shaped composite UDT (nested UDT x2, hidden-bit BOOL, STRING, 4 DINT), 0 instances","axis","samples/generated/axis/axis_composite_udt_def_only.L5X","0","","","","","","","","","",""
-"axis_coordinate_system_only","MotionGroup + 1 COORDINATE_SYSTEM instance (unmodeled predefined structure)","axis","samples/generated/axis/axis_coordinate_system_only.L5X","0","","","","","","","","","",""
-"axis_full_combo","Real AXIS_CIP_DRIVE tag + ts_CIPAxis-shaped composite UDT (1 instance) + AOI-with-InOut-axis call, all together -- additivity check against the individually-confirmed constants (unmodeled predefined structure)","axis","samples/generated/axis/axis_full_combo.L5X","0","","","","","","","","","",""
-"axis_servo_only","MotionGroup + 1 AXIS_SERVO instance (unmodeled predefined structure)","axis","samples/generated/axis/axis_servo_only.L5X","0","","","","","","","","","",""
-"axis_virtual_only","MotionGroup + 1 AXIS_VIRTUAL instance (unmodeled predefined structure)","axis","samples/generated/axis/axis_virtual_only.L5X","0","","","","","","","","","",""
-"camprofile_n00001","1 CAM_PROFILE tag, array of 1 elements (unmodeled predefined structure)","axis","samples/generated/axis/camprofile_n00001.L5X","0","","","","","","","","","",""
-"camprofile_n00005","1 CAM_PROFILE tag, array of 5 elements (unmodeled predefined structure)","axis","samples/generated/axis/camprofile_n00005.L5X","0","","","","","","","","","",""
-"camprofile_n00020","1 CAM_PROFILE tag, array of 20 elements (unmodeled predefined structure)","axis","samples/generated/axis/camprofile_n00020.L5X","0","","","","","","","","","",""
-"camprofile_n00050","1 CAM_PROFILE tag, array of 50 elements (unmodeled predefined structure)","axis","samples/generated/axis/camprofile_n00050.L5X","0","","","","","","","","","",""
-"motioninstr_mah_n00010","10 rungs of MAH(Axis_Cip_Drive,MotionInstr1) -- corpus-confirmed call syntax (unmodeled predefined structure)","axis","samples/generated/axis/motioninstr_mah_n00010.L5X","0","","","","","","","","","",""
-"motioninstr_mah_n00100","100 rungs of MAH(Axis_Cip_Drive,MotionInstr1) -- corpus-confirmed call syntax (unmodeled predefined structure)","axis","samples/generated/axis/motioninstr_mah_n00100.L5X","0","","","","","","","","","",""
-"motioninstr_maj_n00010","10 rungs of MAJ(Axis_Cip_Drive,MotionInstr1) -- standard documented 2-operand signature, not independently corpus-confirmed for this exact mnemonic (unmodeled predefined structure)","axis","samples/generated/axis/motioninstr_maj_n00010.L5X","0","","","","","","","","","",""
-"motioninstr_maj_n00100","100 rungs of MAJ(Axis_Cip_Drive,MotionInstr1) -- standard documented 2-operand signature, not independently corpus-confirmed for this exact mnemonic (unmodeled predefined structure)","axis","samples/generated/axis/motioninstr_maj_n00100.L5X","0","","","","","","","","","",""
-"motioninstr_mam_n00010","10 rungs of MAM(Axis_Cip_Drive,MotionInstr1) -- standard documented 2-operand signature, not independently corpus-confirmed for this exact mnemonic (unmodeled predefined structure)","axis","samples/generated/axis/motioninstr_mam_n00010.L5X","0","","","","","","","","","",""
-"motioninstr_mam_n00100","100 rungs of MAM(Axis_Cip_Drive,MotionInstr1) -- standard documented 2-operand signature, not independently corpus-confirmed for this exact mnemonic (unmodeled predefined structure)","axis","samples/generated/axis/motioninstr_mam_n00100.L5X","0","","","","","","","","","",""
-"motioninstr_mas_n00010","10 rungs of MAS(Axis_Cip_Drive,MotionInstr1) -- standard documented 2-operand signature, not independently corpus-confirmed for this exact mnemonic (unmodeled predefined structure)","axis","samples/generated/axis/motioninstr_mas_n00010.L5X","0","","","","","","","","","",""
-"motioninstr_mas_n00100","100 rungs of MAS(Axis_Cip_Drive,MotionInstr1) -- standard documented 2-operand signature, not independently corpus-confirmed for this exact mnemonic (unmodeled predefined structure)","axis","samples/generated/axis/motioninstr_mas_n00100.L5X","0","","","","","","","","","",""
-"motioninstr_mrp_n00010","10 rungs of MRP(Axis_Cip_Drive,MotionInstr1) -- standard documented 2-operand signature, not independently corpus-confirmed for this exact mnemonic (unmodeled predefined structure)","axis","samples/generated/axis/motioninstr_mrp_n00010.L5X","0","","","","","","","","","",""
-"motioninstr_mrp_n00100","100 rungs of MRP(Axis_Cip_Drive,MotionInstr1) -- standard documented 2-operand signature, not independently corpus-confirmed for this exact mnemonic (unmodeled predefined structure)","axis","samples/generated/axis/motioninstr_mrp_n00100.L5X","0","","","","","","","","","",""
-"motioninstr_mso_n00010","10 rungs of MSO(Axis_Cip_Drive,MotionInstr1) -- corpus-confirmed call syntax (unmodeled predefined structure)","axis","samples/generated/axis/motioninstr_mso_n00010.L5X","0","","","","","","","","","",""
-"motioninstr_mso_n00100","100 rungs of MSO(Axis_Cip_Drive,MotionInstr1) -- corpus-confirmed call syntax (unmodeled predefined structure)","axis","samples/generated/axis/motioninstr_mso_n00100.L5X","0","","","","","","","","","",""
-"motioninstr_n00001","1 MOTION_INSTRUCTION tag(s) (unmodeled predefined structure)","axis","samples/generated/axis/motioninstr_n00001.L5X","0","","","","","","","","","",""
-"motioninstr_n00005","5 MOTION_INSTRUCTION tag(s) (unmodeled predefined structure)","axis","samples/generated/axis/motioninstr_n00005.L5X","0","","","","","","","","","",""
-"motioninstr_n00050","50 MOTION_INSTRUCTION tag(s) (unmodeled predefined structure)","axis","samples/generated/axis/motioninstr_n00050.L5X","0","","","","","","","","","",""
-"sample_0001","boolpack baseline, 0 extra tags","tag","samples/generated/boolpack/sample_0001_boolpack_baseline_0bool.L5X","0","18128","18128","","5069-L306ER","35.11","2026-08-22","","0","0","0"
-"sample_0002","boolpack test, 1000 standalone BOOL tags","tag","samples/generated/boolpack/sample_0002_boolpack_1000bool.L5X","4000","114128","110128","2753.2","5069-L306ER","35.11","2026-08-22","","0","0","0"
-"cmpcpt_cmp_and_compound_n01000","1000 rungs of CMP(L0>L1&L2<L3) -- boolean-expression layout sweep","logic_instr","samples/generated/logic/cmpcpt_cmp_and_compound_n01000.L5X","97872","","","","","","","","","",""
-"cmpcpt_cmp_duplicate_cond_n01000","1000 rungs of CMP(L0>L1&L0>L1) -- boolean-expression layout sweep","logic_instr","samples/generated/logic/cmpcpt_cmp_duplicate_cond_n01000.L5X","97872","","","","","","","","","",""
-"cmpcpt_cmp_floatliteral_n01000","1000 rungs of CMP(L0>5.5) -- float/decimal literal compared against a DINT tag","logic_instr","samples/generated/logic/cmpcpt_cmp_floatliteral_n01000.L5X","97872","","","","","","","","","",""
-"cmpcpt_cmp_intliteral_n01000","1000 rungs of CMP(L0>5) -- integer literal operand, vs tag-tag baseline cmpcpt_cmp_single","logic_instr","samples/generated/logic/cmpcpt_cmp_intliteral_n01000.L5X","97872","","","","","","","","","",""
-"cmpcpt_cmp_or_compound_n01000","1000 rungs of CMP(L0>L1|L2<L3) -- boolean-expression layout sweep","logic_instr","samples/generated/logic/cmpcpt_cmp_or_compound_n01000.L5X","97872","","","","","","","","","",""
-"cmpcpt_cmp_single_n01000","1000 rungs of CMP(L0>L1) -- boolean-expression layout sweep","logic_instr","samples/generated/logic/cmpcpt_cmp_single_n01000.L5X","97872","","","","","","","","","",""
-"cmpcpt_cpt_barecopy_n01000","1000 rungs of CPT(L2,L0) -- bare copy expression, no operator at all","logic_instr","samples/generated/logic/cmpcpt_cpt_barecopy_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_chain6_n01000","1000 rungs of CPT(L7,L0+L1+L2+L3+L4+L5) -- 6-operand chain, vs 2-operand baseline in cmpcpt_cpt_op_add","logic_instr","samples/generated/logic/cmpcpt_cpt_chain6_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_op_add_floatliteral_n01000","1000 rungs of CPT(R2,R0+5.5) -- float/decimal literal operand, REAL tags/dest","logic_instr","samples/generated/logic/cmpcpt_cpt_op_add_floatliteral_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_op_add_intliteral_n01000","1000 rungs of CPT(L2,L0+5) -- integer literal operand, vs tag-tag baseline cmpcpt_cpt_op_add_n01000","logic_instr","samples/generated/logic/cmpcpt_cpt_op_add_intliteral_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_op_add_n01000","1000 rungs of CPT(L2,L0+L1) -- operator layout sweep","logic_instr","samples/generated/logic/cmpcpt_cpt_op_add_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_op_div_floatliteral_n01000","1000 rungs of CPT(R2,R0/5.5) -- float/decimal literal operand, REAL tags/dest","logic_instr","samples/generated/logic/cmpcpt_cpt_op_div_floatliteral_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_op_div_intliteral_n01000","1000 rungs of CPT(L2,L0/5) -- integer literal operand, vs tag-tag baseline cmpcpt_cpt_op_div_n01000","logic_instr","samples/generated/logic/cmpcpt_cpt_op_div_intliteral_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_op_div_n01000","1000 rungs of CPT(L2,L0/L1) -- operator layout sweep","logic_instr","samples/generated/logic/cmpcpt_cpt_op_div_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_op_mul_floatliteral_n01000","1000 rungs of CPT(R2,R0*5.5) -- float/decimal literal operand, REAL tags/dest","logic_instr","samples/generated/logic/cmpcpt_cpt_op_mul_floatliteral_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_op_mul_intliteral_n01000","1000 rungs of CPT(L2,L0*5) -- integer literal operand, vs tag-tag baseline cmpcpt_cpt_op_mul_n01000","logic_instr","samples/generated/logic/cmpcpt_cpt_op_mul_intliteral_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_op_mul_n01000","1000 rungs of CPT(L2,L0*L1) -- operator layout sweep","logic_instr","samples/generated/logic/cmpcpt_cpt_op_mul_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_op_pow_floatliteral_n01000","1000 rungs of CPT(R2,R0**5.5) -- float/decimal literal operand, REAL tags/dest","logic_instr","samples/generated/logic/cmpcpt_cpt_op_pow_floatliteral_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_op_pow_intliteral_n01000","1000 rungs of CPT(L2,L0**5) -- integer literal operand, vs tag-tag baseline cmpcpt_cpt_op_pow_n01000","logic_instr","samples/generated/logic/cmpcpt_cpt_op_pow_intliteral_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_op_pow_n01000","1000 rungs of CPT(L2,L0**L1) -- operator layout sweep","logic_instr","samples/generated/logic/cmpcpt_cpt_op_pow_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_op_sub_floatliteral_n01000","1000 rungs of CPT(R2,R0-5.5) -- float/decimal literal operand, REAL tags/dest","logic_instr","samples/generated/logic/cmpcpt_cpt_op_sub_floatliteral_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_op_sub_intliteral_n01000","1000 rungs of CPT(L2,L0-5) -- integer literal operand, vs tag-tag baseline cmpcpt_cpt_op_sub_n01000","logic_instr","samples/generated/logic/cmpcpt_cpt_op_sub_intliteral_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_op_sub_n01000","1000 rungs of CPT(L2,L0-L1) -- operator layout sweep","logic_instr","samples/generated/logic/cmpcpt_cpt_op_sub_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_pluszero_n01000","1000 rungs of CPT(L2,L0+0) -- mathematically-redundant +0 literal operand","logic_instr","samples/generated/logic/cmpcpt_cpt_pluszero_n01000.L5X","457872","","","","","","","","","",""
-"cmpcpt_cpt_samematag_n01000","1000 rungs of CPT(L2,L0+L0) -- same tag referenced twice, vs distinct-tag baseline in cmpcpt_cpt_op_add","logic_instr","samples/generated/logic/cmpcpt_cpt_samematag_n01000.L5X","457872","","","","","","","","","",""
-"indirect_direct_index_n01000","1000 rungs of MOV(Arr[literal],Dest) -- direct/literal array index","logic_instr","samples/generated/logic/indirect_direct_index_n01000.L5X","41156","","","","","","","","","",""
-"indirect_tag_index_n01000","1000 rungs of MOV(Arr[Idx],Dest) -- indirect/tag-driven array index, same instruction and rung count as the direct-index baseline","logic_instr","samples/generated/logic/indirect_tag_index_n01000.L5X","41156","","","","","","","","","",""
-"indirect_tag_offset_index_n01000","1000 rungs of MOV(Arr[Idx+1],Dest) -- indirect index WITH an arithmetic offset, vs the bare-tag-index baseline indirect_tag_index_n01000","logic_instr","samples/generated/logic/indirect_tag_offset_index_n01000.L5X","41156","","","","","","","","","",""
-"instr_abs_n00010","10 rungs of ABS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_abs_n00010.L5X","10835","","","","","","","","","",""
-"instr_abs_n00050","50 rungs of ABS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_abs_n00050.L5X","15635","","","","","","","","","",""
-"instr_abs_n00100","100 rungs of ABS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_abs_n00100.L5X","21635","","","","","","","","","",""
-"instr_abs_n01000","1000 rungs of ABS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_abs_n01000.L5X","129635","","","","","","","","","",""
-"instr_abs_n05000","5000 rungs of ABS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_abs_n05000.L5X","609635","","","","","","","","","",""
-"instr_add_n00010","10 rungs of ADD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_add_n00010.L5X","10035","","","","","","","","","",""
-"instr_add_n00050","50 rungs of ADD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_add_n00050.L5X","11635","","","","","","","","","",""
-"instr_add_n00100","100 rungs of ADD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_add_n00100.L5X","13635","","","","","","","","","",""
-"instr_add_n01000","1000 rungs of ADD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_add_n01000.L5X","49635","","","","","","","","","",""
-"instr_add_n05000","5000 rungs of ADD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_add_n05000.L5X","209635","","","","","","","","","",""
-"instr_afi_n00010","10 rungs of AFI alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_afi_n00010.L5X","9835","","","","","","","","","",""
-"instr_afi_n00050","50 rungs of AFI alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_afi_n00050.L5X","10635","","","","","","","","","",""
-"instr_afi_n00100","100 rungs of AFI alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_afi_n00100.L5X","11635","","","","","","","","","",""
-"instr_afi_n01000","1000 rungs of AFI alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_afi_n01000.L5X","29635","","","","","","","","","",""
-"instr_afi_n05000","5000 rungs of AFI alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_afi_n05000.L5X","109635","","","","","","","","","",""
-"instr_btd_n00010","10 rungs of BTD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_btd_n00010.L5X","9635","","","","","","","","","",""
-"instr_btd_n00050","50 rungs of BTD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_btd_n00050.L5X","9635","","","","","","","","","",""
-"instr_btd_n00100","100 rungs of BTD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_btd_n00100.L5X","9635","","","","","","","","","",""
-"instr_btd_n01000","1000 rungs of BTD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_btd_n01000.L5X","9635","","","","","","","","","",""
-"instr_btd_n05000","5000 rungs of BTD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_btd_n05000.L5X","9635","","","","","","","","","",""
-"instr_clr_n00010","10 rungs of CLR alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_clr_n00010.L5X","9955","","","","","","","","","",""
-"instr_clr_n00050","50 rungs of CLR alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_clr_n00050.L5X","11235","","","","","","","","","",""
-"instr_clr_n00100","100 rungs of CLR alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_clr_n00100.L5X","12835","","","","","","","","","",""
-"instr_clr_n01000","1000 rungs of CLR alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_clr_n01000.L5X","41635","","","","","","","","","",""
-"instr_clr_n05000","5000 rungs of CLR alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_clr_n05000.L5X","169635","","","","","","","","","",""
-"instr_cmp_n00010","10 rungs of CMP alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cmp_n00010.L5X","10555","","","","","","","","","",""
-"instr_cmp_n00050","50 rungs of CMP alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cmp_n00050.L5X","14235","","","","","","","","","",""
-"instr_cmp_n00100","100 rungs of CMP alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cmp_n00100.L5X","18835","","","","","","","","","",""
-"instr_cmp_n01000","1000 rungs of CMP alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cmp_n01000.L5X","101635","","","","","","","","","",""
-"instr_cmp_n05000","5000 rungs of CMP alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cmp_n05000.L5X","469635","","","","","","","","","",""
-"instr_concat_n00010","10 rungs of CONCAT alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_concat_n00010.L5X","10675","","","","","","","","","",""
-"instr_concat_n00050","50 rungs of CONCAT alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_concat_n00050.L5X","14835","","","","","","","","","",""
-"instr_concat_n00100","100 rungs of CONCAT alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_concat_n00100.L5X","20035","","","","","","","","","",""
-"instr_concat_n01000","1000 rungs of CONCAT alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_concat_n01000.L5X","113635","","","","","","","","","",""
-"instr_concat_n05000","5000 rungs of CONCAT alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_concat_n05000.L5X","529635","","","","","","","","","",""
-"instr_cop_n00010","10 rungs of COP alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cop_n00010.L5X","9635","","","","","","","","","",""
-"instr_cop_n00050","50 rungs of COP alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cop_n00050.L5X","9635","","","","","","","","","",""
-"instr_cop_n00100","100 rungs of COP alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cop_n00100.L5X","9635","","","","","","","","","",""
-"instr_cop_n01000","1000 rungs of COP alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cop_n01000.L5X","9635","","","","","","","","","",""
-"instr_cop_n05000","5000 rungs of COP alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cop_n05000.L5X","9635","","","","","","","","","",""
-"instr_cps_n00010","10 rungs of CPS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cps_n00010.L5X","9635","","","","","","","","","",""
-"instr_cps_n00050","50 rungs of CPS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cps_n00050.L5X","9635","","","","","","","","","",""
-"instr_cps_n00100","100 rungs of CPS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cps_n00100.L5X","9635","","","","","","","","","",""
-"instr_cps_n01000","1000 rungs of CPS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cps_n01000.L5X","9635","","","","","","","","","",""
-"instr_cps_n05000","5000 rungs of CPS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cps_n05000.L5X","9635","","","","","","","","","",""
-"instr_cpt_literaloperands_n01000","1000 rungs of CPT with literal constant operands (vs tags above)","logic_instr","samples/generated/logic/instr_cpt_literaloperands_n01000.L5X","461635","","","","","","","","","",""
-"instr_cpt_n00010","10 rungs of CPT alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cpt_n00010.L5X","14155","","","","","","","","","",""
-"instr_cpt_n00050","50 rungs of CPT alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cpt_n00050.L5X","32235","","","","","","","","","",""
-"instr_cpt_n00100","100 rungs of CPT alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cpt_n00100.L5X","54835","","","","","","","","","",""
-"instr_cpt_n01000","1000 rungs of CPT alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cpt_n01000.L5X","461635","","","","","","","","","",""
-"instr_cpt_n05000","5000 rungs of CPT alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_cpt_n05000.L5X","2269635","","","","","","","","","",""
-"instr_cpt_n05000_comment100","5000 rungs of CPT, 100-char comment on every rung (spot check)","logic_instr","samples/generated/logic/instr_cpt_n05000_comment100.L5X","2269635","","","","","","","","","",""
-"instr_cpt_n05000_nocomment","5000 rungs of CPT, no comments (spot check vs commented below)","logic_instr","samples/generated/logic/instr_cpt_n05000_nocomment.L5X","2269635","","","","","","","","","",""
-"instr_cpt_tagoperands_n01000","1000 rungs of CPT with real tag operands (vs literal below)","logic_instr","samples/generated/logic/instr_cpt_tagoperands_n01000.L5X","461635","","","","","","","","","",""
-"instr_ctu_n00010","10 rungs of CTU alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ctu_n00010.L5X","9835","","","","","","","","","",""
-"instr_ctu_n00050","50 rungs of CTU alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ctu_n00050.L5X","10635","","","","","","","","","",""
-"instr_ctu_n00100","100 rungs of CTU alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ctu_n00100.L5X","11635","","","","","","","","","",""
-"instr_ctu_n01000","1000 rungs of CTU alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ctu_n01000.L5X","29635","","","","","","","","","",""
-"instr_ctu_n05000","5000 rungs of CTU alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ctu_n05000.L5X","109635","","","","","","","","","",""
-"instr_delete_n00010","10 rungs of DELETE alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_delete_n00010.L5X","10635","","","","","","","","","",""
-"instr_delete_n00050","50 rungs of DELETE alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_delete_n00050.L5X","14635","","","","","","","","","",""
-"instr_delete_n00100","100 rungs of DELETE alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_delete_n00100.L5X","19635","","","","","","","","","",""
-"instr_delete_n01000","1000 rungs of DELETE alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_delete_n01000.L5X","109635","","","","","","","","","",""
-"instr_delete_n05000","5000 rungs of DELETE alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_delete_n05000.L5X","509635","","","","","","","","","",""
-"instr_div_n00010","10 rungs of DIV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_div_n00010.L5X","10195","","","","","","","","","",""
-"instr_div_n00050","50 rungs of DIV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_div_n00050.L5X","12435","","","","","","","","","",""
-"instr_div_n00100","100 rungs of DIV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_div_n00100.L5X","15235","","","","","","","","","",""
-"instr_div_n01000","1000 rungs of DIV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_div_n01000.L5X","65635","","","","","","","","","",""
-"instr_div_n05000","5000 rungs of DIV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_div_n05000.L5X","289635","","","","","","","","","",""
-"instr_dtos_n00010","10 rungs of DTOS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_dtos_n00010.L5X","10355","","","","","","","","","",""
-"instr_dtos_n00050","50 rungs of DTOS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_dtos_n00050.L5X","13235","","","","","","","","","",""
-"instr_dtos_n00100","100 rungs of DTOS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_dtos_n00100.L5X","16835","","","","","","","","","",""
-"instr_dtos_n01000","1000 rungs of DTOS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_dtos_n01000.L5X","81635","","","","","","","","","",""
-"instr_dtos_n05000","5000 rungs of DTOS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_dtos_n05000.L5X","369635","","","","","","","","","",""
-"instr_equ_n00010","10 rungs of EQU alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_equ_n00010.L5X","9995","","","","","","","","","",""
-"instr_equ_n00050","50 rungs of EQU alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_equ_n00050.L5X","11435","","","","","","","","","",""
-"instr_equ_n00100","100 rungs of EQU alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_equ_n00100.L5X","13235","","","","","","","","","",""
-"instr_equ_n01000","1000 rungs of EQU alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_equ_n01000.L5X","45635","","","","","","","","","",""
-"instr_equ_n05000","5000 rungs of EQU alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_equ_n05000.L5X","189635","","","","","","","","","",""
-"instr_fll_n00010","10 rungs of FLL alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_fll_n00010.L5X","9635","","","","","","","","","",""
-"instr_fll_n00050","50 rungs of FLL alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_fll_n00050.L5X","9635","","","","","","","","","",""
-"instr_fll_n00100","100 rungs of FLL alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_fll_n00100.L5X","9635","","","","","","","","","",""
-"instr_fll_n01000","1000 rungs of FLL alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_fll_n01000.L5X","9635","","","","","","","","","",""
-"instr_fll_n05000","5000 rungs of FLL alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_fll_n05000.L5X","9635","","","","","","","","","",""
-"instr_geq_n00010","10 rungs of GEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_geq_n00010.L5X","9995","","","","","","","","","",""
-"instr_geq_n00050","50 rungs of GEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_geq_n00050.L5X","11435","","","","","","","","","",""
-"instr_geq_n00100","100 rungs of GEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_geq_n00100.L5X","13235","","","","","","","","","",""
-"instr_geq_n01000","1000 rungs of GEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_geq_n01000.L5X","45635","","","","","","","","","",""
-"instr_geq_n05000","5000 rungs of GEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_geq_n05000.L5X","189635","","","","","","","","","",""
-"instr_grt_n00010","10 rungs of GRT alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_grt_n00010.L5X","9995","","","","","","","","","",""
-"instr_grt_n00050","50 rungs of GRT alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_grt_n00050.L5X","11435","","","","","","","","","",""
-"instr_grt_n00100","100 rungs of GRT alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_grt_n00100.L5X","13235","","","","","","","","","",""
-"instr_grt_n01000","1000 rungs of GRT alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_grt_n01000.L5X","45635","","","","","","","","","",""
-"instr_grt_n05000","5000 rungs of GRT alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_grt_n05000.L5X","189635","","","","","","","","","",""
-"instr_gsv_n00010","10 rungs of GSV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_gsv_n00010.L5X","10475","","","","","","","","","",""
-"instr_gsv_n00050","50 rungs of GSV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_gsv_n00050.L5X","13835","","","","","","","","","",""
-"instr_gsv_n00100","100 rungs of GSV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_gsv_n00100.L5X","18035","","","","","","","","","",""
-"instr_gsv_n01000","1000 rungs of GSV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_gsv_n01000.L5X","93635","","","","","","","","","",""
-"instr_gsv_n05000","5000 rungs of GSV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_gsv_n05000.L5X","429635","","","","","","","","","",""
-"instr_jsr_n00010","10 rungs of JSR to a real dummy subroutine","logic_instr","samples/generated/logic/instr_jsr_n00010.L5X","10635","","","","","","","","","",""
-"instr_jsr_n00050","50 rungs of JSR to a real dummy subroutine","logic_instr","samples/generated/logic/instr_jsr_n00050.L5X","13515","","","","","","","","","",""
-"instr_jsr_n00100","100 rungs of JSR to a real dummy subroutine","logic_instr","samples/generated/logic/instr_jsr_n00100.L5X","17115","","","","","","","","","",""
-"instr_jsr_n01000","1000 rungs of JSR to a real dummy subroutine","logic_instr","samples/generated/logic/instr_jsr_n01000.L5X","81915","","","","","","","","","",""
-"instr_jsr_n05000","5000 rungs of JSR to a real dummy subroutine","logic_instr","samples/generated/logic/instr_jsr_n05000.L5X","369915","","","","","","","","","",""
-"instr_lbljmp_n00010","10 LBL/JMP pairs","logic_instr","samples/generated/logic/instr_lbljmp_n00010.L5X","9635","","","","","","","","","",""
-"instr_lbljmp_n00050","50 LBL/JMP pairs","logic_instr","samples/generated/logic/instr_lbljmp_n00050.L5X","9635","","","","","","","","","",""
-"instr_lbljmp_n00100","100 LBL/JMP pairs","logic_instr","samples/generated/logic/instr_lbljmp_n00100.L5X","9635","","","","","","","","","",""
-"instr_lbljmp_n01000","1000 LBL/JMP pairs","logic_instr","samples/generated/logic/instr_lbljmp_n01000.L5X","9635","","","","","","","","","",""
-"instr_lbljmp_n05000","5000 LBL/JMP pairs","logic_instr","samples/generated/logic/instr_lbljmp_n05000.L5X","9635","","","","","","","","","",""
-"instr_leq_n00010","10 rungs of LEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_leq_n00010.L5X","9995","","","","","","","","","",""
-"instr_leq_n00050","50 rungs of LEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_leq_n00050.L5X","11435","","","","","","","","","",""
-"instr_leq_n00100","100 rungs of LEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_leq_n00100.L5X","13235","","","","","","","","","",""
-"instr_leq_n01000","1000 rungs of LEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_leq_n01000.L5X","45635","","","","","","","","","",""
-"instr_leq_n05000","5000 rungs of LEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_leq_n05000.L5X","189635","","","","","","","","","",""
-"instr_les_n00010","10 rungs of LES alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_les_n00010.L5X","9995","","","","","","","","","",""
-"instr_les_n00050","50 rungs of LES alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_les_n00050.L5X","11435","","","","","","","","","",""
-"instr_les_n00100","100 rungs of LES alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_les_n00100.L5X","13235","","","","","","","","","",""
-"instr_les_n01000","1000 rungs of LES alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_les_n01000.L5X","45635","","","","","","","","","",""
-"instr_les_n05000","5000 rungs of LES alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_les_n05000.L5X","189635","","","","","","","","","",""
-"instr_lim_n00010","10 rungs of LIM alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_lim_n00010.L5X","10315","","","","","","","","","",""
-"instr_lim_n00050","50 rungs of LIM alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_lim_n00050.L5X","13035","","","","","","","","","",""
-"instr_lim_n00100","100 rungs of LIM alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_lim_n00100.L5X","16435","","","","","","","","","",""
-"instr_lim_n01000","1000 rungs of LIM alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_lim_n01000.L5X","77635","","","","","","","","","",""
-"instr_lim_n05000","5000 rungs of LIM alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_lim_n05000.L5X","349635","","","","","","","","","",""
-"instr_meq_n00010","10 rungs of MEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_meq_n00010.L5X","10115","","","","","","","","","",""
-"instr_meq_n00050","50 rungs of MEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_meq_n00050.L5X","12035","","","","","","","","","",""
-"instr_meq_n00100","100 rungs of MEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_meq_n00100.L5X","14435","","","","","","","","","",""
-"instr_meq_n01000","1000 rungs of MEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_meq_n01000.L5X","57635","","","","","","","","","",""
-"instr_meq_n05000","5000 rungs of MEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_meq_n05000.L5X","249635","","","","","","","","","",""
-"instr_mid_n00010","10 rungs of MID alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mid_n00010.L5X","10635","","","","","","","","","",""
-"instr_mid_n00050","50 rungs of MID alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mid_n00050.L5X","14635","","","","","","","","","",""
-"instr_mid_n00100","100 rungs of MID alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mid_n00100.L5X","19635","","","","","","","","","",""
-"instr_mid_n01000","1000 rungs of MID alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mid_n01000.L5X","109635","","","","","","","","","",""
-"instr_mid_n05000","5000 rungs of MID alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mid_n05000.L5X","509635","","","","","","","","","",""
-"instr_mod_n00010","10 rungs of MOD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mod_n00010.L5X","10195","","","","","","","","","",""
-"instr_mod_n00050","50 rungs of MOD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mod_n00050.L5X","12435","","","","","","","","","",""
-"instr_mod_n00100","100 rungs of MOD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mod_n00100.L5X","15235","","","","","","","","","",""
-"instr_mod_n01000","1000 rungs of MOD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mod_n01000.L5X","65635","","","","","","","","","",""
-"instr_mod_n05000","5000 rungs of MOD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mod_n05000.L5X","289635","","","","","","","","","",""
-"instr_mov_n00010","10 rungs of MOV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mov_n00010.L5X","9995","","","","","","","","","",""
-"instr_mov_n00050","50 rungs of MOV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mov_n00050.L5X","11435","","","","","","","","","",""
-"instr_mov_n00100","100 rungs of MOV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mov_n00100.L5X","13235","","","","","","","","","",""
-"instr_mov_n01000","1000 rungs of MOV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mov_n01000.L5X","45635","","","","","","","","","",""
-"instr_mov_n05000","5000 rungs of MOV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mov_n05000.L5X","189635","","","","","","","","","",""
-"instr_mul_n00010","10 rungs of MUL alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mul_n00010.L5X","10195","","","","","","","","","",""
-"instr_mul_n00050","50 rungs of MUL alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mul_n00050.L5X","12435","","","","","","","","","",""
-"instr_mul_n00100","100 rungs of MUL alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mul_n00100.L5X","15235","","","","","","","","","",""
-"instr_mul_n01000","1000 rungs of MUL alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mul_n01000.L5X","65635","","","","","","","","","",""
-"instr_mul_n05000","5000 rungs of MUL alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mul_n05000.L5X","289635","","","","","","","","","",""
-"instr_mvm_n00010","10 rungs of MVM alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mvm_n00010.L5X","10195","","","","","","","","","",""
-"instr_mvm_n00050","50 rungs of MVM alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mvm_n00050.L5X","12435","","","","","","","","","",""
-"instr_mvm_n00100","100 rungs of MVM alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mvm_n00100.L5X","15235","","","","","","","","","",""
-"instr_mvm_n01000","1000 rungs of MVM alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mvm_n01000.L5X","65635","","","","","","","","","",""
-"instr_mvm_n05000","5000 rungs of MVM alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_mvm_n05000.L5X","289635","","","","","","","","","",""
-"instr_neq_n00010","10 rungs of NEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_neq_n00010.L5X","9995","","","","","","","","","",""
-"instr_neq_n00050","50 rungs of NEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_neq_n00050.L5X","11435","","","","","","","","","",""
-"instr_neq_n00100","100 rungs of NEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_neq_n00100.L5X","13235","","","","","","","","","",""
-"instr_neq_n01000","1000 rungs of NEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_neq_n01000.L5X","45635","","","","","","","","","",""
-"instr_neq_n05000","5000 rungs of NEQ alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_neq_n05000.L5X","189635","","","","","","","","","",""
-"instr_nop_n00010","10 rungs of NOP alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_nop_n00010.L5X","9795","","","","","","","","","",""
-"instr_nop_n00050","50 rungs of NOP alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_nop_n00050.L5X","10435","","","","","","","","","",""
-"instr_nop_n00100","100 rungs of NOP alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_nop_n00100.L5X","11235","","","","","","","","","",""
-"instr_nop_n01000","1000 rungs of NOP alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_nop_n01000.L5X","25635","","","","","","","","","",""
-"instr_nop_n05000","5000 rungs of NOP alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_nop_n05000.L5X","89635","","","","","","","","","",""
-"instr_ons_n00010","10 rungs of ONS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ons_n00010.L5X","10195","","","","","","","","","",""
-"instr_ons_n00050","50 rungs of ONS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ons_n00050.L5X","12435","","","","","","","","","",""
-"instr_ons_n00100","100 rungs of ONS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ons_n00100.L5X","15235","","","","","","","","","",""
-"instr_ons_n01000","1000 rungs of ONS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ons_n01000.L5X","65635","","","","","","","","","",""
-"instr_ons_n05000","5000 rungs of ONS alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ons_n05000.L5X","289635","","","","","","","","","",""
-"instr_ote_n00010","10 rungs of OTE alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ote_n00010.L5X","9795","","","","","","","","","",""
-"instr_ote_n00050","50 rungs of OTE alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ote_n00050.L5X","10435","","","","","","","","","",""
-"instr_ote_n00100","100 rungs of OTE alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ote_n00100.L5X","11235","","","","","","","","","",""
-"instr_ote_n01000","1000 rungs of OTE alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ote_n01000.L5X","25635","","","","","","","","","",""
-"instr_ote_n05000","5000 rungs of OTE alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ote_n05000.L5X","89635","","","","","","","","","",""
-"instr_otl_n00010","10 rungs of OTL alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_otl_n00010.L5X","9795","","","","","","","","","",""
-"instr_otl_n00050","50 rungs of OTL alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_otl_n00050.L5X","10435","","","","","","","","","",""
-"instr_otl_n00100","100 rungs of OTL alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_otl_n00100.L5X","11235","","","","","","","","","",""
-"instr_otl_n01000","1000 rungs of OTL alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_otl_n01000.L5X","25635","","","","","","","","","",""
-"instr_otl_n05000","5000 rungs of OTL alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_otl_n05000.L5X","89635","","","","","","","","","",""
-"instr_otu_n00010","10 rungs of OTU alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_otu_n00010.L5X","9795","","","","","","","","","",""
-"instr_otu_n00050","50 rungs of OTU alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_otu_n00050.L5X","10435","","","","","","","","","",""
-"instr_otu_n00100","100 rungs of OTU alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_otu_n00100.L5X","11235","","","","","","","","","",""
-"instr_otu_n01000","1000 rungs of OTU alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_otu_n01000.L5X","25635","","","","","","","","","",""
-"instr_otu_n05000","5000 rungs of OTU alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_otu_n05000.L5X","89635","","","","","","","","","",""
-"instr_res_n00010","10 rungs of RES alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_res_n00010.L5X","9835","","","","","","","","","",""
-"instr_res_n00050","50 rungs of RES alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_res_n00050.L5X","10635","","","","","","","","","",""
-"instr_res_n00100","100 rungs of RES alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_res_n00100.L5X","11635","","","","","","","","","",""
-"instr_res_n01000","1000 rungs of RES alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_res_n01000.L5X","29635","","","","","","","","","",""
-"instr_res_n05000","5000 rungs of RES alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_res_n05000.L5X","109635","","","","","","","","","",""
-"instr_rto_n00010","10 rungs of RTO alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_rto_n00010.L5X","9835","","","","","","","","","",""
-"instr_rto_n00050","50 rungs of RTO alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_rto_n00050.L5X","10635","","","","","","","","","",""
-"instr_rto_n00100","100 rungs of RTO alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_rto_n00100.L5X","11635","","","","","","","","","",""
-"instr_rto_n01000","1000 rungs of RTO alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_rto_n01000.L5X","29635","","","","","","","","","",""
-"instr_rto_n05000","5000 rungs of RTO alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_rto_n05000.L5X","109635","","","","","","","","","",""
-"instr_size_n00010","10 rungs of SIZE alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_size_n00010.L5X","9635","","","","","","","","","",""
-"instr_size_n00050","50 rungs of SIZE alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_size_n00050.L5X","9635","","","","","","","","","",""
-"instr_size_n00100","100 rungs of SIZE alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_size_n00100.L5X","9635","","","","","","","","","",""
-"instr_size_n01000","1000 rungs of SIZE alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_size_n01000.L5X","9635","","","","","","","","","",""
-"instr_size_n05000","5000 rungs of SIZE alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_size_n05000.L5X","9635","","","","","","","","","",""
-"instr_ssv_n00010","10 rungs of SSV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ssv_n00010.L5X","10475","","","","","","","","","",""
-"instr_ssv_n00050","50 rungs of SSV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ssv_n00050.L5X","13835","","","","","","","","","",""
-"instr_ssv_n00100","100 rungs of SSV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ssv_n00100.L5X","18035","","","","","","","","","",""
-"instr_ssv_n01000","1000 rungs of SSV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ssv_n01000.L5X","93635","","","","","","","","","",""
-"instr_ssv_n05000","5000 rungs of SSV alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ssv_n05000.L5X","429635","","","","","","","","","",""
-"instr_stod_n00010","10 rungs of STOD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_stod_n00010.L5X","10435","","","","","","","","","",""
-"instr_stod_n00050","50 rungs of STOD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_stod_n00050.L5X","13635","","","","","","","","","",""
-"instr_stod_n00100","100 rungs of STOD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_stod_n00100.L5X","17635","","","","","","","","","",""
-"instr_stod_n01000","1000 rungs of STOD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_stod_n01000.L5X","89635","","","","","","","","","",""
-"instr_stod_n05000","5000 rungs of STOD alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_stod_n05000.L5X","409635","","","","","","","","","",""
-"instr_sub_n00010","10 rungs of SUB alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_sub_n00010.L5X","10035","","","","","","","","","",""
-"instr_sub_n00050","50 rungs of SUB alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_sub_n00050.L5X","11635","","","","","","","","","",""
-"instr_sub_n00100","100 rungs of SUB alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_sub_n00100.L5X","13635","","","","","","","","","",""
-"instr_sub_n01000","1000 rungs of SUB alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_sub_n01000.L5X","49635","","","","","","","","","",""
-"instr_sub_n05000","5000 rungs of SUB alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_sub_n05000.L5X","209635","","","","","","","","","",""
-"instr_tof_n00010","10 rungs of TOF alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_tof_n00010.L5X","9835","","","","","","","","","",""
-"instr_tof_n00050","50 rungs of TOF alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_tof_n00050.L5X","10635","","","","","","","","","",""
-"instr_tof_n00100","100 rungs of TOF alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_tof_n00100.L5X","11635","","","","","","","","","",""
-"instr_tof_n01000","1000 rungs of TOF alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_tof_n01000.L5X","29635","","","","","","","","","",""
-"instr_tof_n05000","5000 rungs of TOF alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_tof_n05000.L5X","109635","","","","","","","","","",""
-"instr_ton_n00010","10 rungs of TON alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ton_n00010.L5X","9835","","","","","","","","","",""
-"instr_ton_n00050","50 rungs of TON alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ton_n00050.L5X","10635","","","","","","","","","",""
-"instr_ton_n00100","100 rungs of TON alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ton_n00100.L5X","11635","","","","","","","","","",""
-"instr_ton_n01000","1000 rungs of TON alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ton_n01000.L5X","29635","","","","","","","","","",""
-"instr_ton_n05000","5000 rungs of TON alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_ton_n05000.L5X","109635","","","","","","","","","",""
-"instr_xic_n00010","10 rungs of XIC alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_xic_n00010.L5X","9835","","","","","","","","","",""
-"instr_xic_n00050","50 rungs of XIC alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_xic_n00050.L5X","10635","","","","","","","","","",""
-"instr_xic_n00100","100 rungs of XIC alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_xic_n00100.L5X","11635","","","","","","","","","",""
-"instr_xic_n01000","1000 rungs of XIC alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_xic_n01000.L5X","29635","","","","","","","","","",""
-"instr_xic_n05000","5000 rungs of XIC alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_xic_n05000.L5X","109635","","","","","","","","","",""
-"instr_xio_n00010","10 rungs of XIO alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_xio_n00010.L5X","9835","","","","","","","","","",""
-"instr_xio_n00050","50 rungs of XIO alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_xio_n00050.L5X","10635","","","","","","","","","",""
-"instr_xio_n00100","100 rungs of XIO alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_xio_n00100.L5X","11635","","","","","","","","","",""
-"instr_xio_n01000","1000 rungs of XIO alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_xio_n01000.L5X","29635","","","","","","","","","",""
-"instr_xio_n05000","5000 rungs of XIO alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_xio_n05000.L5X","109635","","","","","","","","","",""
-"instr_xpy_n00010","10 rungs of XPY alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_xpy_n00010.L5X","10795","","","","","","","","","",""
-"instr_xpy_n00050","50 rungs of XPY alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_xpy_n00050.L5X","15435","","","","","","","","","",""
-"instr_xpy_n00100","100 rungs of XPY alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_xpy_n00100.L5X","21235","","","","","","","","","",""
-"instr_xpy_n01000","1000 rungs of XPY alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_xpy_n01000.L5X","125635","","","","","","","","","",""
-"instr_xpy_n05000","5000 rungs of XPY alone, shared fixed tag pool","logic_instr","samples/generated/logic/instr_xpy_n05000.L5X","589635","","","","","","","","","",""
-"randommix_00_n00609rungs_06types","Random mix (6 instruction types, 609 total rungs): 92xDELETE, 166xTON, 63xDIV, 23xXIC, 131xABS, 134xLIM","logic_random_mix","samples/generated/logic/randommix_00_n00609rungs_06types.L5X","46156","","","","","","","","","",""
-"randommix_01_n00505rungs_05types","Random mix (5 instruction types, 505 total rungs): 178xMUL, 92xNEQ, 31xAFI, 69xTON, 135xDELETE","logic_random_mix","samples/generated/logic/randommix_01_n00505rungs_05types.L5X","33596","","","","","","","","","",""
-"randommix_02_n00564rungs_05types","Random mix (5 instruction types, 564 total rungs): 48xNEQ, 167xADD, 55xMOD, 96xXPY, 198xAFI","logic_random_mix","samples/generated/logic/randommix_02_n00564rungs_05types.L5X","31400","","","","","","","","","",""
-"randommix_03_n00724rungs_09types","Random mix (9 instruction types, 724 total rungs): 53xDELETE, 60xMOV, 69xSSV, 91xCONCAT, 51xSTOD, 184xCLR, 36xOTE, 134xTOF, 46xNEQ","logic_random_mix","samples/generated/logic/randommix_03_n00724rungs_09types.L5X","42416","","","","","","","","","",""
-"randommix_04_n01019rungs_10types","Random mix (10 instruction types, 1019 total rungs): 155xOTL, 18xLIM, 166xMUL, 14xLES, 147xMID, 167xCMP, 17xMOD, 45xXPY, 174xOTE, 116xDIV","logic_random_mix","samples/generated/logic/randommix_04_n01019rungs_10types.L5X","63836","","","","","","","","","",""
-"randommix_05_n27267rungs_23types","Random mix (23 instruction types, 27267 total rungs): 1274xNOP, 1305xXIC, 1185xMOV, 338xGEQ, 666xAFI, 1126xMUL, 1801xGSV, 804xMVM, 1619xDELETE, 1584xTON, 1574xNEQ, 797xGRT, 958xMID, 938xXPY, 1336xDTOS, 414xLES, 1735xOTL, 670xRTO, 1753xXIO, 1410xONS, 1064xOTE, 1375xCONCAT, 1541xMOD","logic_random_mix","samples/generated/logic/randommix_05_n27267rungs_23types.L5X","1374952","","","","","","","","","",""
-"randommix_06_n18542rungs_19types","Random mix (19 instruction types, 18542 total rungs): 328xMVM, 1739xXIO, 465xRTO, 1548xABS, 1177xMEQ, 604xGRT, 908xOTU, 479xSSV, 171xCTU, 464xNOP, 1586xDELETE, 1909xLEQ, 1403xCMP, 1077xGSV, 321xGEQ, 630xTON, 1077xOTL, 1319xCONCAT, 1337xOTE","logic_random_mix","samples/generated/logic/randommix_06_n18542rungs_19types.L5X","1043696","","","","","","","","","",""
-"randommix_07_n19811rungs_24types","Random mix (24 instruction types, 19811 total rungs): 141xGEQ, 710xOTE, 423xDELETE, 1337xXIC, 1117xDTOS, 326xOTL, 907xAFI, 518xNOP, 234xADD, 978xCMP, 713xLEQ, 177xONS, 208xCPT, 420xDIV, 1895xSUB, 1140xRES, 150xMVM, 1803xGSV, 148xTON, 1256xCTU, 1945xOTU, 1393xCLR, 690xXPY, 1182xMOD","logic_random_mix","samples/generated/logic/randommix_07_n19811rungs_24types.L5X","963272","","","","","","","","","",""
-"taskoverhead_n02tasks","2 total Tasks (1 Continuous + 1 Periodic), each extra Task's Program has only a single NOP rung -- isolates per-Task scaffolding cost from logic content","logic_instr","samples/generated/logic/taskoverhead_n02tasks.L5X","0","","","","","","","","","",""
-"taskoverhead_n03tasks","3 total Tasks (1 Continuous + 2 Periodic), each extra Task's Program has only a single NOP rung -- isolates per-Task scaffolding cost from logic content","logic_instr","samples/generated/logic/taskoverhead_n03tasks.L5X","0","","","","","","","","","",""
-"typesweep_add_dint_n01000","1000 rungs of ADD with DINT operands","logic_instr","samples/generated/logic/typesweep_add_dint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_add_int_n01000","1000 rungs of ADD with INT operands","logic_instr","samples/generated/logic/typesweep_add_int_n01000.L5X","545","","","","","","","","","",""
-"typesweep_add_lint_n01000","1000 rungs of ADD with LINT operands","logic_instr","samples/generated/logic/typesweep_add_lint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_add_real_n01000","1000 rungs of ADD with REAL operands","logic_instr","samples/generated/logic/typesweep_add_real_n01000.L5X","545","","","","","","","","","",""
-"typesweep_add_sint_n01000","1000 rungs of ADD with SINT operands","logic_instr","samples/generated/logic/typesweep_add_sint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_cpt_dint_n01000","1000 rungs of CPT, all-DINT expression","logic_instr","samples/generated/logic/typesweep_cpt_dint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_cpt_real_n01000","1000 rungs of CPT, all-REAL expression","logic_instr","samples/generated/logic/typesweep_cpt_real_n01000.L5X","545","","","","","","","","","",""
-"typesweep_div_dint_n01000","1000 rungs of DIV with DINT operands","logic_instr","samples/generated/logic/typesweep_div_dint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_div_int_n01000","1000 rungs of DIV with INT operands","logic_instr","samples/generated/logic/typesweep_div_int_n01000.L5X","545","","","","","","","","","",""
-"typesweep_div_lint_n01000","1000 rungs of DIV with LINT operands","logic_instr","samples/generated/logic/typesweep_div_lint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_div_real_n01000","1000 rungs of DIV with REAL operands","logic_instr","samples/generated/logic/typesweep_div_real_n01000.L5X","545","","","","","","","","","",""
-"typesweep_div_sint_n01000","1000 rungs of DIV with SINT operands","logic_instr","samples/generated/logic/typesweep_div_sint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_equ_dint_n01000","1000 rungs of EQU with DINT operands","logic_instr","samples/generated/logic/typesweep_equ_dint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_equ_int_n01000","1000 rungs of EQU with INT operands","logic_instr","samples/generated/logic/typesweep_equ_int_n01000.L5X","545","","","","","","","","","",""
-"typesweep_equ_lint_n01000","1000 rungs of EQU with LINT operands","logic_instr","samples/generated/logic/typesweep_equ_lint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_equ_real_n01000","1000 rungs of EQU with REAL operands","logic_instr","samples/generated/logic/typesweep_equ_real_n01000.L5X","545","","","","","","","","","",""
-"typesweep_equ_sint_n01000","1000 rungs of EQU with SINT operands","logic_instr","samples/generated/logic/typesweep_equ_sint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_equ_string_n01000","1000 rungs of EQU with STRING operands (vs numeric types above)","logic_instr","samples/generated/logic/typesweep_equ_string_n01000.L5X","545","","","","","","","","","",""
-"typesweep_geq_dint_n01000","1000 rungs of GEQ with DINT operands","logic_instr","samples/generated/logic/typesweep_geq_dint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_geq_int_n01000","1000 rungs of GEQ with INT operands","logic_instr","samples/generated/logic/typesweep_geq_int_n01000.L5X","545","","","","","","","","","",""
-"typesweep_geq_lint_n01000","1000 rungs of GEQ with LINT operands","logic_instr","samples/generated/logic/typesweep_geq_lint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_geq_real_n01000","1000 rungs of GEQ with REAL operands","logic_instr","samples/generated/logic/typesweep_geq_real_n01000.L5X","545","","","","","","","","","",""
-"typesweep_geq_sint_n01000","1000 rungs of GEQ with SINT operands","logic_instr","samples/generated/logic/typesweep_geq_sint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_grt_dint_n01000","1000 rungs of GRT with DINT operands","logic_instr","samples/generated/logic/typesweep_grt_dint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_grt_int_n01000","1000 rungs of GRT with INT operands","logic_instr","samples/generated/logic/typesweep_grt_int_n01000.L5X","545","","","","","","","","","",""
-"typesweep_grt_lint_n01000","1000 rungs of GRT with LINT operands","logic_instr","samples/generated/logic/typesweep_grt_lint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_grt_real_n01000","1000 rungs of GRT with REAL operands","logic_instr","samples/generated/logic/typesweep_grt_real_n01000.L5X","545","","","","","","","","","",""
-"typesweep_grt_sint_n01000","1000 rungs of GRT with SINT operands","logic_instr","samples/generated/logic/typesweep_grt_sint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_leq_dint_n01000","1000 rungs of LEQ with DINT operands","logic_instr","samples/generated/logic/typesweep_leq_dint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_leq_int_n01000","1000 rungs of LEQ with INT operands","logic_instr","samples/generated/logic/typesweep_leq_int_n01000.L5X","545","","","","","","","","","",""
-"typesweep_leq_lint_n01000","1000 rungs of LEQ with LINT operands","logic_instr","samples/generated/logic/typesweep_leq_lint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_leq_real_n01000","1000 rungs of LEQ with REAL operands","logic_instr","samples/generated/logic/typesweep_leq_real_n01000.L5X","545","","","","","","","","","",""
-"typesweep_leq_sint_n01000","1000 rungs of LEQ with SINT operands","logic_instr","samples/generated/logic/typesweep_leq_sint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_les_dint_n01000","1000 rungs of LES with DINT operands","logic_instr","samples/generated/logic/typesweep_les_dint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_les_int_n01000","1000 rungs of LES with INT operands","logic_instr","samples/generated/logic/typesweep_les_int_n01000.L5X","545","","","","","","","","","",""
-"typesweep_les_lint_n01000","1000 rungs of LES with LINT operands","logic_instr","samples/generated/logic/typesweep_les_lint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_les_real_n01000","1000 rungs of LES with REAL operands","logic_instr","samples/generated/logic/typesweep_les_real_n01000.L5X","545","","","","","","","","","",""
-"typesweep_les_sint_n01000","1000 rungs of LES with SINT operands","logic_instr","samples/generated/logic/typesweep_les_sint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_lim_dint_n01000","1000 rungs of LIM with DINT operands","logic_instr","samples/generated/logic/typesweep_lim_dint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_lim_int_n01000","1000 rungs of LIM with INT operands","logic_instr","samples/generated/logic/typesweep_lim_int_n01000.L5X","545","","","","","","","","","",""
-"typesweep_lim_lint_n01000","1000 rungs of LIM with LINT operands","logic_instr","samples/generated/logic/typesweep_lim_lint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_lim_real_n01000","1000 rungs of LIM with REAL operands","logic_instr","samples/generated/logic/typesweep_lim_real_n01000.L5X","545","","","","","","","","","",""
-"typesweep_lim_sint_n01000","1000 rungs of LIM with SINT operands","logic_instr","samples/generated/logic/typesweep_lim_sint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_mod_dint_n01000","1000 rungs of MOD with DINT operands","logic_instr","samples/generated/logic/typesweep_mod_dint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_mod_int_n01000","1000 rungs of MOD with INT operands","logic_instr","samples/generated/logic/typesweep_mod_int_n01000.L5X","545","","","","","","","","","",""
-"typesweep_mod_lint_n01000","1000 rungs of MOD with LINT operands","logic_instr","samples/generated/logic/typesweep_mod_lint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_mod_real_n01000","1000 rungs of MOD with REAL operands","logic_instr","samples/generated/logic/typesweep_mod_real_n01000.L5X","545","","","","","","","","","",""
-"typesweep_mod_sint_n01000","1000 rungs of MOD with SINT operands","logic_instr","samples/generated/logic/typesweep_mod_sint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_mov_dint_n01000","1000 rungs of MOV with DINT operands","logic_instr","samples/generated/logic/typesweep_mov_dint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_mov_int_n01000","1000 rungs of MOV with INT operands","logic_instr","samples/generated/logic/typesweep_mov_int_n01000.L5X","545","","","","","","","","","",""
-"typesweep_mov_lint_n01000","1000 rungs of MOV with LINT operands","logic_instr","samples/generated/logic/typesweep_mov_lint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_mov_real_n01000","1000 rungs of MOV with REAL operands","logic_instr","samples/generated/logic/typesweep_mov_real_n01000.L5X","545","","","","","","","","","",""
-"typesweep_mov_sint_n01000","1000 rungs of MOV with SINT operands","logic_instr","samples/generated/logic/typesweep_mov_sint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_mul_dint_n01000","1000 rungs of MUL with DINT operands","logic_instr","samples/generated/logic/typesweep_mul_dint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_mul_int_n01000","1000 rungs of MUL with INT operands","logic_instr","samples/generated/logic/typesweep_mul_int_n01000.L5X","545","","","","","","","","","",""
-"typesweep_mul_lint_n01000","1000 rungs of MUL with LINT operands","logic_instr","samples/generated/logic/typesweep_mul_lint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_mul_real_n01000","1000 rungs of MUL with REAL operands","logic_instr","samples/generated/logic/typesweep_mul_real_n01000.L5X","545","","","","","","","","","",""
-"typesweep_mul_sint_n01000","1000 rungs of MUL with SINT operands","logic_instr","samples/generated/logic/typesweep_mul_sint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_neq_dint_n01000","1000 rungs of NEQ with DINT operands","logic_instr","samples/generated/logic/typesweep_neq_dint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_neq_int_n01000","1000 rungs of NEQ with INT operands","logic_instr","samples/generated/logic/typesweep_neq_int_n01000.L5X","545","","","","","","","","","",""
-"typesweep_neq_lint_n01000","1000 rungs of NEQ with LINT operands","logic_instr","samples/generated/logic/typesweep_neq_lint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_neq_real_n01000","1000 rungs of NEQ with REAL operands","logic_instr","samples/generated/logic/typesweep_neq_real_n01000.L5X","545","","","","","","","","","",""
-"typesweep_neq_sint_n01000","1000 rungs of NEQ with SINT operands","logic_instr","samples/generated/logic/typesweep_neq_sint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_neq_string_n01000","1000 rungs of NEQ with STRING operands (vs numeric types above)","logic_instr","samples/generated/logic/typesweep_neq_string_n01000.L5X","545","","","","","","","","","",""
-"typesweep_sub_dint_n01000","1000 rungs of SUB with DINT operands","logic_instr","samples/generated/logic/typesweep_sub_dint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_sub_int_n01000","1000 rungs of SUB with INT operands","logic_instr","samples/generated/logic/typesweep_sub_int_n01000.L5X","545","","","","","","","","","",""
-"typesweep_sub_lint_n01000","1000 rungs of SUB with LINT operands","logic_instr","samples/generated/logic/typesweep_sub_lint_n01000.L5X","545","","","","","","","","","",""
-"typesweep_sub_real_n01000","1000 rungs of SUB with REAL operands","logic_instr","samples/generated/logic/typesweep_sub_real_n01000.L5X","545","","","","","","","","","",""
-"typesweep_sub_sint_n01000","1000 rungs of SUB with SINT operands","logic_instr","samples/generated/logic/typesweep_sub_sint_n01000.L5X","545","","","","","","","","","",""
-"xic_ote_1000_comment100","1000 rungs of 'XIC(In{i})OTE(Out{i});', comment_len=100","logic_bit","samples/generated/logic/xic_ote_1000_comment100.L5X","0","18112","18112","","5069-L306ER","35.11","2026-08-22","","2","0","0"
-"xic_ote_1000_nocomment","1000 rungs of 'XIC(In{i})OTE(Out{i});', comment_len=0","logic_bit","samples/generated/logic/xic_ote_1000_nocomment.L5X","0","18112","18112","","5069-L306ER","35.11","2026-08-22","","2","0","0"
-"xprogref_singleprog_alias_n01000","1000 rungs of XIC/OTE, single program, referencing a Controller-scoped global via a Local alias","logic_instr","samples/generated/logic/xprogref_singleprog_alias_n01000.L5X","8","","","","","","","","","",""
-"xprogref_twoprog_shared_alias_n01000","Two programs, each 1000 rungs of XIC/OTE via its own Local alias to the SAME Controller-scoped global -- the real cross-program-sharing pattern, vs xprogref_singleprog_alias baseline","logic_instr","samples/generated/logic/xprogref_twoprog_shared_alias_n01000.L5X","12","","","","","","","","","",""
-"large_mixed_1000tags_arrays","Realistic mix v2: 200x DINT[10]/BOOL[32]/REAL[10] array tags + 400x 3-member UDT = 1000 tags, no logic","mixed","samples/generated/mixed/large_mixed_1000tags_arrays.L5X","20400","","","","","","","","","",""
-"large_mixed_100tags","Realistic mix: 20x each of DINT/BOOL/REAL/SINT scalar + 20x 3-member UDT = 100 tags, no logic","mixed","samples/generated/mixed/large_mixed_100tags.L5X","440","","","","","","","","","",""
-"large_mixed_1100tags","Realistic mix: 220x each of DINT/BOOL/REAL/SINT scalar + 220x 3-member UDT = 1100 tags, no logic","mixed","samples/generated/mixed/large_mixed_1100tags.L5X","4840","","","","","","","","","",""
-"module_1756_ib16_n01","1 local 1756-IB16 backplane module(s) (module sizing not yet implemented)","modules","samples/generated/modules/module_1756_ib16_n01.L5X","0","","","","","","","","","",""
-"module_1756_ib16_n03","3 local 1756-IB16 backplane module(s) (module sizing not yet implemented)","modules","samples/generated/modules/module_1756_ib16_n03.L5X","0","","","","","","","","","",""
-"module_1756_ib16_n10","10 local 1756-IB16 backplane module(s) (module sizing not yet implemented)","modules","samples/generated/modules/module_1756_ib16_n10.L5X","0","","","","","","","","","",""
-"module_5069_ib16_n01","1 local 5069-IB16/A module(s), 5069-L320ERMS2 processor (non-safety) (module sizing not yet implemented)","modules","samples/generated/modules/module_5069_ib16_n01.L5X","0","","","","","","","","","",""
-"module_5069_ib16_n03","3 local 5069-IB16/A module(s), 5069-L320ERMS2 processor (non-safety) (module sizing not yet implemented)","modules","samples/generated/modules/module_5069_ib16_n03.L5X","0","","","","","","","","","",""
-"module_genericeth_in0002_out0002","1 generic ETHERNET-MODULE device, PrimCxnInputSize=2 PrimCxnOutputSize=2 -- config-variance test, same catalog as every other file in this group (module sizing not yet implemented)","modules","samples/generated/modules/module_genericeth_in0002_out0002.L5X","0","","","","","","","","","",""
-"module_genericeth_in0008_out0008","1 generic ETHERNET-MODULE device, PrimCxnInputSize=8 PrimCxnOutputSize=8 -- config-variance test, same catalog as every other file in this group (module sizing not yet implemented)","modules","samples/generated/modules/module_genericeth_in0008_out0008.L5X","0","","","","","","","","","",""
-"module_genericeth_in0032_out0016","1 generic ETHERNET-MODULE device, PrimCxnInputSize=32 PrimCxnOutputSize=16 -- config-variance test, same catalog as every other file in this group (module sizing not yet implemented)","modules","samples/generated/modules/module_genericeth_in0032_out0016.L5X","0","","","","","","","","","",""
-"module_genericeth_in0450_out0008","1 generic ETHERNET-MODULE device, PrimCxnInputSize=450 PrimCxnOutputSize=8 -- config-variance test, same catalog as every other file in this group (module sizing not yet implemented)","modules","samples/generated/modules/module_genericeth_in0450_out0008.L5X","0","","","","","","","","","",""
-"module_genericeth_in1000_out1000","1 generic ETHERNET-MODULE device, PrimCxnInputSize=1000 PrimCxnOutputSize=1000 -- config-variance test, same catalog as every other file in this group (module sizing not yet implemented)","modules","samples/generated/modules/module_genericeth_in1000_out1000.L5X","0","","","","","","","","","",""
-"module_pointio_1734_n02","1734-AENT adapter + 2 1734-IB8 block(s) behind it (module sizing not yet implemented)","modules","samples/generated/modules/module_pointio_1734_n02.L5X","0","","","","","","","","","",""
-"module_pointio_1734_n08","1734-AENT adapter + 8 1734-IB8 block(s) behind it (module sizing not yet implemented)","modules","samples/generated/modules/module_pointio_1734_n08.L5X","0","","","","","","","","","",""
-"aliassize_n00001","1 Alias tags (round-robin over 5 fixed real DINT targets, target count held constant)","tags","samples/generated/tags/aliassize_n00001.L5X","20","","","","","","","","","",""
-"aliassize_n00010","10 Alias tags (round-robin over 5 fixed real DINT targets, target count held constant)","tags","samples/generated/tags/aliassize_n00010.L5X","20","","","","","","","","","",""
-"aliassize_n01000","1000 Alias tags (round-robin over 5 fixed real DINT targets, target count held constant)","tags","samples/generated/tags/aliassize_n01000.L5X","20","","","","","","","","","",""
-"array_dint_00001","1x DINT[1] tag(s)","tag","samples/generated/tags/array_dint_00001.L5X","4","","","","","","","","","",""
-"array_dint_00002","1x DINT[2] tag(s)","tag","samples/generated/tags/array_dint_00002.L5X","8","","","","","","","","","",""
-"array_dint_00005","1x DINT[5] tag(s)","tag","samples/generated/tags/array_dint_00005.L5X","20","","","","","","","","","",""
-"array_dint_00010","1x DINT[10] tag(s)","tag","samples/generated/tags/array_dint_00010.L5X","40","","","","","","","","","",""
-"array_dint_00025","1x DINT[25] tag(s)","tag","samples/generated/tags/array_dint_00025.L5X","100","","","","","","","","","",""
-"array_dint_00050","1x DINT[50] tag(s)","tag","samples/generated/tags/array_dint_00050.L5X","200","","","","","","","","","",""
-"array_dint_00100","1x DINT[100] tag(s)","tag","samples/generated/tags/array_dint_00100.L5X","400","","","","","","","","","",""
-"array_dint_00250","1x DINT[250] tag(s)","tag","samples/generated/tags/array_dint_00250.L5X","1000","","","","","","","","","",""
-"array_dint_00500","1x DINT[500] tag(s)","tag","samples/generated/tags/array_dint_00500.L5X","2000","","","","","","","","","",""
-"array_dint_01000","1x DINT[1000] tag(s)","tag","samples/generated/tags/array_dint_01000.L5X","4000","","","","","","","","","",""
-"array_dint_02500","1x DINT[2500] tag(s)","tag","samples/generated/tags/array_dint_02500.L5X","10000","","","","","","","","","",""
-"array_dint_05000","1x DINT[5000] tag(s)","tag","samples/generated/tags/array_dint_05000.L5X","20000","","","","","","","","","",""
-"arraypack_odd3b_n00001","Array of 1 instances of a 3-byte (3x SINT) UDT -- does each element round up to 4 bytes?","tags","samples/generated/tags/arraypack_odd3b_n00001.L5X","3","","","","","","","","","",""
-"arraypack_odd3b_n00010","Array of 10 instances of a 3-byte (3x SINT) UDT -- does each element round up to 4 bytes?","tags","samples/generated/tags/arraypack_odd3b_n00010.L5X","30","","","","","","","","","",""
-"arraypack_odd3b_n00100","Array of 100 instances of a 3-byte (3x SINT) UDT -- does each element round up to 4 bytes?","tags","samples/generated/tags/arraypack_odd3b_n00100.L5X","300","","","","","","","","","",""
-"boolarray_n00008","1 tag, array of 8 BOOL elements","tags","samples/generated/tags/boolarray_n00008.L5X","4","","","","","","","","","",""
-"boolarray_n00016","1 tag, array of 16 BOOL elements","tags","samples/generated/tags/boolarray_n00016.L5X","4","","","","","","","","","",""
-"boolarray_n00032","1 tag, array of 32 BOOL elements","tags","samples/generated/tags/boolarray_n00032.L5X","4","","","","","","","","","",""
-"boolarray_n00100","1 tag, array of 100 BOOL elements","tags","samples/generated/tags/boolarray_n00100.L5X","16","","","","","","","","","",""
-"boolarray_n01000","1 tag, array of 1000 BOOL elements","tags","samples/generated/tags/boolarray_n01000.L5X","128","","","","","","","","","",""
-"boolarray_n05000","1 tag, array of 5000 BOOL elements","tags","samples/generated/tags/boolarray_n05000.L5X","628","","","","","","","","","",""
-"count_0001_dint","1x DINT tag(s)","tag","samples/generated/tags/count_0001_dint.L5X","4","","","","","","","","","",""
-"count_0002_dint","2x DINT tag(s)","tag","samples/generated/tags/count_0002_dint.L5X","8","","","","","","","","","",""
-"count_0005_dint","5x DINT tag(s)","tag","samples/generated/tags/count_0005_dint.L5X","20","","","","","","","","","",""
-"count_0010_dint","10x DINT tag(s)","tag","samples/generated/tags/count_0010_dint.L5X","40","","","","","","","","","",""
-"count_0025_dint","25x DINT tag(s)","tag","samples/generated/tags/count_0025_dint.L5X","100","","","","","","","","","",""
-"count_0050_dint","50x DINT tag(s)","tag","samples/generated/tags/count_0050_dint.L5X","200","","","","","","","","","",""
-"count_0100_dint","100x DINT tag(s)","tag","samples/generated/tags/count_0100_dint.L5X","400","","","","","","","","","",""
-"count_0250_dint","250x DINT tag(s)","tag","samples/generated/tags/count_0250_dint.L5X","1000","","","","","","","","","",""
-"count_0500_dint","500x DINT tag(s)","tag","samples/generated/tags/count_0500_dint.L5X","2000","","","","","","","","","",""
-"count_1000_dint","1000x DINT tag(s)","tag","samples/generated/tags/count_1000_dint.L5X","4000","","","","","","","","","",""
-"customstring_len0010","Custom STRING type, max_len=10, 1 tag","tags","samples/generated/tags/customstring_len0010.L5X","14","","","","","","","","","",""
-"customstring_len0082","Custom STRING type, max_len=82, 1 tag","tags","samples/generated/tags/customstring_len0082.L5X","86","","","","","","","","","",""
-"customstring_len0100","Custom STRING type, max_len=100, 1 tag","tags","samples/generated/tags/customstring_len0100.L5X","104","","","","","","","","","",""
-"customstring_len0250","Custom STRING type, max_len=250, 1 tag","tags","samples/generated/tags/customstring_len0250.L5X","254","","","","","","","","","",""
-"customstring_len0500","Custom STRING type, max_len=500, 1 tag","tags","samples/generated/tags/customstring_len0500.L5X","504","","","","","","","","","",""
-"customstring_len1000","Custom STRING type, max_len=1000, 1 tag","tags","samples/generated/tags/customstring_len1000.L5X","1004","","","","","","","","","",""
-"customstring_len2000","Custom STRING type, max_len=2000, 1 tag","tags","samples/generated/tags/customstring_len2000.L5X","2004","","","","","","","","","",""
-"dint_10k_array","1x DINT[10000] tag(s)","tag","samples/generated/tags/dint_10k_array.L5X","40000","58224","18224","45.56","5069-L306ER","35.11","2026-08-22","","0","0","0"
-"tagcomment_len000","1x DINT tag(s)","tag","samples/generated/tags/tagcomment_len000.L5X","4","","","","","","","","","",""
-"tagcomment_len010","1x DINT tag(s)","tag","samples/generated/tags/tagcomment_len010.L5X","4","","","","","","","","","",""
-"tagcomment_len025","1x DINT tag(s)","tag","samples/generated/tags/tagcomment_len025.L5X","4","","","","","","","","","",""
-"tagcomment_len050","1x DINT tag(s)","tag","samples/generated/tags/tagcomment_len050.L5X","4","","","","","","","","","",""
-"tagcomment_len100","1x DINT tag(s)","tag","samples/generated/tags/tagcomment_len100.L5X","4","","","","","","","","","",""
-"tagcomment_len200","1x DINT tag(s)","tag","samples/generated/tags/tagcomment_len200.L5X","4","","","","","","","","","",""
-"tagname_len04_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len04_50dint.L5X","200","","","","","","","","","",""
-"tagname_len07_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len07_50dint.L5X","200","","","","","","","","","",""
-"tagname_len10_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len10_50dint.L5X","200","","","","","","","","","",""
-"tagname_len13_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len13_50dint.L5X","200","","","","","","","","","",""
-"tagname_len16_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len16_50dint.L5X","200","","","","","","","","","",""
-"tagname_len19_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len19_50dint.L5X","200","","","","","","","","","",""
-"tagname_len22_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len22_50dint.L5X","200","","","","","","","","","",""
-"tagname_len25_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len25_50dint.L5X","200","","","","","","","","","",""
-"tagname_len28_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len28_50dint.L5X","200","","","","","","","","","",""
-"tagname_len31_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len31_50dint.L5X","200","","","","","","","","","",""
-"tagname_len34_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len34_50dint.L5X","200","","","","","","","","","",""
-"tagname_len37_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len37_50dint.L5X","200","","","","","","","","","",""
-"tagname_len40_50dint","50x DINT tag(s)","tag","samples/generated/tags/tagname_len40_50dint.L5X","200","","","","","","","","","",""
-"tagname_long_100dint","100x DINT tag(s)","tag","samples/generated/tags/tagname_long_100dint.L5X","400","30928","30528","7632","5069-L306ER","35.11","2026-08-22","","0","0","0"
-"tagname_short_100dint","100x DINT tag(s)","tag","samples/generated/tags/tagname_short_100dint.L5X","400","26928","26528","6632","5069-L306ER","35.11","2026-08-22","","0","0","0"
-"tagname_spotlen08_40real","40x REAL tag(s)","tag","samples/generated/tags/tagname_spotlen08_40real.L5X","160","","","","","","","","","",""
-"tagname_spotlen24_40real","40x REAL tag(s)","tag","samples/generated/tags/tagname_spotlen24_40real.L5X","160","","","","","","","","","",""
-"tagname_spotlen40_40real","40x REAL tag(s)","tag","samples/generated/tags/tagname_spotlen40_40real.L5X","160","","","","","","","","","",""
-"tagscope_local_n00010","10 Program-scoped DINT tags, Usage=Local (default)","tags","samples/generated/tags/tagscope_local_n00010.L5X","40","","","","","","","","","",""
-"tagscope_local_n00100","100 Program-scoped DINT tags, Usage=Local (default)","tags","samples/generated/tags/tagscope_local_n00100.L5X","400","","","","","","","","","",""
-"tagscope_local_n01000","1000 Program-scoped DINT tags, Usage=Local (default)","tags","samples/generated/tags/tagscope_local_n01000.L5X","4000","","","","","","","","","",""
-"tagscope_public_n00010","10 Program-scoped DINT tags, Usage=Public","tags","samples/generated/tags/tagscope_public_n00010.L5X","40","","","","","","","","","",""
-"tagscope_public_n00100","100 Program-scoped DINT tags, Usage=Public","tags","samples/generated/tags/tagscope_public_n00100.L5X","400","","","","","","","","","",""
-"tagscope_public_n01000","1000 Program-scoped DINT tags, Usage=Public","tags","samples/generated/tags/tagscope_public_n01000.L5X","4000","","","","","","","","","",""
-"type_bool_50tag","50x BOOL tag(s)","tag","samples/generated/tags/type_bool_50tag.L5X","200","","","","","","","","","",""
-"type_dint_50tag","50x DINT tag(s)","tag","samples/generated/tags/type_dint_50tag.L5X","200","","","","","","","","","",""
-"type_int_50tag","50x INT tag(s)","tag","samples/generated/tags/type_int_50tag.L5X","100","","","","","","","","","",""
-"type_lint_50tag","50x LINT tag(s)","tag","samples/generated/tags/type_lint_50tag.L5X","400","","","","","","","","","",""
-"type_real_50tag","50x REAL tag(s)","tag","samples/generated/tags/type_real_50tag.L5X","200","","","","","","","","","",""
-"type_sint_50tag","50x SINT tag(s)","tag","samples/generated/tags/type_sint_50tag.L5X","50","","","","","","","","","",""
-"udtarrayalign_tight8b_n00001","Array of 1 instances of an already-8-byte-tight UDT (2x DINT) -- per-element padding check","tags","samples/generated/tags/udtarrayalign_tight8b_n00001.L5X","8","","","","","","","","","",""
-"udtarrayalign_tight8b_n00010","Array of 10 instances of an already-8-byte-tight UDT (2x DINT) -- per-element padding check","tags","samples/generated/tags/udtarrayalign_tight8b_n00010.L5X","80","","","","","","","","","",""
-"udtarrayalign_tight8b_n00100","Array of 100 instances of an already-8-byte-tight UDT (2x DINT) -- per-element padding check","tags","samples/generated/tags/udtarrayalign_tight8b_n00100.L5X","800","","","","","","","","","",""
-"array_of_nested_udt_100","100-element array of a UDT that itself contains a nested-UDT member","udt","samples/generated/udt/array_of_nested_udt_100.L5X","1200","","","","","","","","","",""
-"motorstatus_10_instances","UDT MotorStatus: BOOL, DINT, BOOL, 10 instance(s)","udt","samples/generated/udt/motorstatus_10_instances.L5X","60","19472","19412","32353.33","5069-L306ER","35.11","2026-08-22","","0","0","0"
-"motorstatus_def_only","UDT MotorStatus: BOOL, DINT, BOOL, 0 instance(s)","udt","samples/generated/udt/motorstatus_def_only.L5X","0","","","","","","","","","",""
-"motorstatus_test","UDT MotorStatus: BOOL, DINT, BOOL","udt","samples/generated/udt/motorstatus_test.L5X","6","18536","18530","308833.33","5069-L306ER","35.11","2026-08-22","","0","0","0"
-"nested_udt_array_member","Outer UDT with a 10-element array-of-nested-UDT member","udt","samples/generated/udt/nested_udt_array_member.L5X","84","","","","","","","","","",""
-"nested_udt_scalar","Outer UDT with one nested-UDT scalar member (Inner: 2 DINT)","udt","samples/generated/udt/nested_udt_scalar.L5X","12","","","","","","","","","",""
-"oddudt5_array_1000","UDT OddUdt5: DINT, BOOL, BOOL","udt","samples/generated/udt/oddudt5_array_1000.L5X","5000","26488","21488","429.76","5069-L306ER","35.11","2026-08-22","","0","0","0"
-"udtmembercomment_len000","UDT CommentH: DINT, 0 instance(s)","udt","samples/generated/udt/udtmembercomment_len000.L5X","0","","","","","","","","","",""
-"udtmembercomment_len010","UDT CommentH: DINT, 0 instance(s)","udt","samples/generated/udt/udtmembercomment_len010.L5X","0","","","","","","","","","",""
-"udtmembercomment_len025","UDT CommentH: DINT, 0 instance(s)","udt","samples/generated/udt/udtmembercomment_len025.L5X","0","","","","","","","","","",""
-"udtmembercomment_len050","UDT CommentH: DINT, 0 instance(s)","udt","samples/generated/udt/udtmembercomment_len050.L5X","0","","","","","","","","","",""
-"udtmembercomment_len100","UDT CommentH: DINT, 0 instance(s)","udt","samples/generated/udt/udtmembercomment_len100.L5X","0","","","","","","","","","",""
-"udtmembercomment_len200","UDT CommentH: DINT, 0 instance(s)","udt","samples/generated/udt/udtmembercomment_len200.L5X","0","","","","","","","","","",""
-"udtmembers_n01_dint","UDT SweepN01: DINT, 0 instance(s)","udt","samples/generated/udt/udtmembers_n01_dint.L5X","0","","","","","","","","","",""
-"udtmembers_n02_dint","UDT SweepN02: DINT, DINT, 0 instance(s)","udt","samples/generated/udt/udtmembers_n02_dint.L5X","0","","","","","","","","","",""
-"udtmembers_n04_dint","UDT SweepN04: DINT, DINT, DINT, DINT, 0 instance(s)","udt","samples/generated/udt/udtmembers_n04_dint.L5X","0","","","","","","","","","",""
-"udtmembers_n08_dint","UDT SweepN08: DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, 0 instance(s)","udt","samples/generated/udt/udtmembers_n08_dint.L5X","0","","","","","","","","","",""
-"udtmembers_n16_dint","UDT SweepN16: DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, 0 instance(s)","udt","samples/generated/udt/udtmembers_n16_dint.L5X","0","","","","","","","","","",""
-"udtmembers_n32_dint","UDT SweepN32: DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, 0 instance(s)","udt","samples/generated/udt/udtmembers_n32_dint.L5X","0","","","","","","","","","",""
-"udtname_len08","UDT UDTNAMED: DINT, DINT, DINT, DINT, 0 instance(s)","udt","samples/generated/udt/udtname_len08.L5X","0","","","","","","","","","",""
-"udtname_len13","UDT UDTNAMEDTNAME: DINT, DINT, DINT, DINT, 0 instance(s)","udt","samples/generated/udt/udtname_len13.L5X","0","","","","","","","","","",""
-"udtname_len20","UDT UDTNAMEDTNAMEDTNAMED: DINT, DINT, DINT, DINT, 0 instance(s)","udt","samples/generated/udt/udtname_len20.L5X","0","","","","","","","","","",""
-"udtname_len30","UDT UDTNAMEDTNAMEDTNAMEDTNAMEDTNAM: DINT, DINT, DINT, DINT, 0 instance(s)","udt","samples/generated/udt/udtname_len30.L5X","0","","","","","","","","","",""
-"udttagcomment_len000","UDT CommentJ: DINT, 1 instance(s)","udt","samples/generated/udt/udttagcomment_len000.L5X","4","","","","","","","","","",""
-"udttagcomment_len010","UDT CommentJ: DINT, 1 instance(s)","udt","samples/generated/udt/udttagcomment_len010.L5X","4","","","","","","","","","",""
-"udttagcomment_len025","UDT CommentJ: DINT, 1 instance(s)","udt","samples/generated/udt/udttagcomment_len025.L5X","4","","","","","","","","","",""
-"udttagcomment_len050","UDT CommentJ: DINT, 1 instance(s)","udt","samples/generated/udt/udttagcomment_len050.L5X","4","","","","","","","","","",""
-"udttagcomment_len100","UDT CommentJ: DINT, 1 instance(s)","udt","samples/generated/udt/udttagcomment_len100.L5X","4","","","","","","","","","",""
-"udttagcomment_len200","UDT CommentJ: DINT, 1 instance(s)","udt","samples/generated/udt/udttagcomment_len200.L5X","4","","","","","","","","","",""
-"udttype_bool_n4","UDT SweepTypeBOOL: BOOL, BOOL, BOOL, BOOL, 0 instance(s)","udt","samples/generated/udt/udttype_bool_n4.L5X","0","","","","","","","","","",""
-"udttype_dint_n4","UDT SweepTypeDINT: DINT, DINT, DINT, DINT, 0 instance(s)","udt","samples/generated/udt/udttype_dint_n4.L5X","0","","","","","","","","","",""
-"udttype_int_n4","UDT SweepTypeINT: INT, INT, INT, INT, 0 instance(s)","udt","samples/generated/udt/udttype_int_n4.L5X","0","","","","","","","","","",""
-"udttype_lint_n4","UDT SweepTypeLINT: LINT, LINT, LINT, LINT, 0 instance(s)","udt","samples/generated/udt/udttype_lint_n4.L5X","0","","","","","","","","","",""
-"udttype_real_n4","UDT SweepTypeREAL: REAL, REAL, REAL, REAL, 0 instance(s)","udt","samples/generated/udt/udttype_real_n4.L5X","0","","","","","","","","","",""
-"udttype_sint_n4","UDT SweepTypeSINT: SINT, SINT, SINT, SINT, 0 instance(s)","udt","samples/generated/udt/udttype_sint_n4.L5X","0","","","","","","","","","",""
-"udttypecomment_len000","UDT CommentI: DINT, 0 instance(s)","udt","samples/generated/udt/udttypecomment_len000.L5X","0","","","","","","","","","",""
-"udttypecomment_len010","UDT CommentI: DINT, 0 instance(s)","udt","samples/generated/udt/udttypecomment_len010.L5X","0","","","","","","","","","",""
-"udttypecomment_len025","UDT CommentI: DINT, 0 instance(s)","udt","samples/generated/udt/udttypecomment_len025.L5X","0","","","","","","","","","",""
-"udttypecomment_len050","UDT CommentI: DINT, 0 instance(s)","udt","samples/generated/udt/udttypecomment_len050.L5X","0","","","","","","","","","",""
-"udttypecomment_len100","UDT CommentI: DINT, 0 instance(s)","udt","samples/generated/udt/udttypecomment_len100.L5X","0","","","","","","","","","",""
-"udttypecomment_len200","UDT CommentI: DINT, 0 instance(s)","udt","samples/generated/udt/udttypecomment_len200.L5X","0","","","","","","","","","",""
+sample_id,description,category,l5x_path,predicted_bytes,actual_bytes,delta,delta_pct,controller_model,firmware_rev,date_tested,notes,error_count,warning_count,message_value,window_title
+aoi_array_localtag_1_instance,"AOI with a 100-element array LocalTag, 1 instance",aoi,samples/generated/aoi/aoi_array_localtag_1_instance.L5X,408,,,,,,,,,,,
+aoi_array_localtag_def_only,"AOI with a 100-element array LocalTag, 0 instances",aoi,samples/generated/aoi/aoi_array_localtag_def_only.L5X,0,,,,,,,,,,,
+aoi_array_param_def_only,"AOI with a 50-element array Input Parameter, 0 instances",aoi,samples/generated/aoi/aoi_array_param_def_only.L5X,0,,,,,,,,,,,
+aoi_boolpack_clean_alternating_def_only,"AOI, 10 BOOL alternating with 10 DINT (20 total params, same mix as grouped), 0 instances",aoi,samples/generated/aoi/aoi_boolpack_clean_alternating_def_only.L5X,0,,,,,,,,,,,
+aoi_boolpack_clean_grouped_def_only,"AOI, 10 BOOL grouped together + 10 DINT (20 total params), 0 instances -- clean OQ-AOIBOOLPACK re-test",aoi,samples/generated/aoi/aoi_boolpack_clean_grouped_def_only.L5X,0,,,,,,,,,,,
+aoi_boolpack_consecutive20_1_instance,"AOI with 20 consecutive BOOL Input params, 1 instance",aoi,samples/generated/aoi/aoi_boolpack_consecutive20_1_instance.L5X,88,,,,,,,,,,,
+aoi_boolpack_consecutive20_def_only,"AOI with 20 consecutive BOOL Input params, 0 instances",aoi,samples/generated/aoi/aoi_boolpack_consecutive20_def_only.L5X,0,,,,,,,,,,,
+aoi_boolpack_interspersed20_1_instance,"AOI with 20 BOOL Input params each separated by a DINT, 1 instance",aoi,samples/generated/aoi/aoi_boolpack_interspersed20_1_instance.L5X,168,,,,,,,,,,,
+aoi_boolpack_interspersed20_def_only,"AOI with 20 BOOL Input params each separated by a DINT, 0 instances",aoi,samples/generated/aoi/aoi_boolpack_interspersed20_def_only.L5X,0,,,,,,,,,,,
+aoi_boolrun_n04_def_only,"AOI with 4 consecutive BOOL Input params, 0 instances",aoi,samples/generated/aoi/aoi_boolrun_n04_def_only.L5X,0,,,,,,,,,,,
+aoi_boolrun_n08_def_only,"AOI with 8 consecutive BOOL Input params, 0 instances",aoi,samples/generated/aoi/aoi_boolrun_n08_def_only.L5X,0,,,,,,,,,,,
+aoi_boolrun_n12_def_only,"AOI with 12 consecutive BOOL Input params, 0 instances",aoi,samples/generated/aoi/aoi_boolrun_n12_def_only.L5X,0,,,,,,,,,,,
+aoi_boolrun_n16_def_only,"AOI with 16 consecutive BOOL Input params, 0 instances",aoi,samples/generated/aoi/aoi_boolrun_n16_def_only.L5X,0,,,,,,,,,,,
+aoi_boolrun_n20_def_only,"AOI with 20 consecutive BOOL Input params, 0 instances",aoi,samples/generated/aoi/aoi_boolrun_n20_def_only.L5X,0,,,,,,,,,,,
+aoi_deepnest3_1_instance,"3-level nested AOI (A contains B contains C), 1 instance",aoi,samples/generated/aoi/aoi_deepnest3_1_instance.L5X,36,,,,,,,,,,,
+aoi_deepnest3_def_only,"3-level nested AOI (A contains B contains C), 0 instances",aoi,samples/generated/aoi/aoi_deepnest3_def_only.L5X,0,,,,,,,,,,,
+aoi_inout_dint_1_instance,"AOI with 1 InOut DINT param + 1 DINT LocalTag, 1 instance -- confirms InOut adds no instance storage",aoi,samples/generated/aoi/aoi_inout_dint_1_instance.L5X,12,,,,,,,,,,,
+aoi_inout_dint_def_only,"AOI with 1 InOut DINT param + 1 DINT LocalTag, 0 instances",aoi,samples/generated/aoi/aoi_inout_dint_def_only.L5X,0,,,,,,,,,,,
+aoi_inout_string_1_instance,"AOI with 1 InOut STRING param + 1 DINT LocalTag, 1 instance -- confirms InOut adds no instance storage",aoi,samples/generated/aoi/aoi_inout_string_1_instance.L5X,12,,,,,,,,,,,
+aoi_inout_string_def_only,"AOI with 1 InOut STRING param + 1 DINT LocalTag, 0 instances",aoi,samples/generated/aoi/aoi_inout_string_def_only.L5X,0,,,,,,,,,,,
+aoi_nested_array_localtag_1_instance,"AOI with a 10-element array-of-nested-AOI LocalTag, 1 instance",aoi,samples/generated/aoi/aoi_nested_array_localtag_1_instance.L5X,128,,,,,,,,,,,
+aoi_nested_array_localtag_def_only,"AOI with a 10-element array-of-nested-AOI LocalTag, 0 instances",aoi,samples/generated/aoi/aoi_nested_array_localtag_def_only.L5X,0,,,,,,,,,,,
+aoi_nested_inout_10_instance,"Same UDT, array of 10 instances",aoi,samples/generated/aoi/aoi_nested_inout_10_instance.L5X,1182,,,,,,,,,,,
+aoi_nested_inout_1_instance,"Same UDT, 1 instance",aoi,samples/generated/aoi/aoi_nested_inout_1_instance.L5X,1029,,,,,,,,,,,
+aoi_nested_inout_def_only,"UDT nesting an AOI-with-InOut-param as a member (real ts_CIPAxis/DriveAxis pattern), 0 instances",aoi,samples/generated/aoi/aoi_nested_inout_def_only.L5X,0,,,,,,,,,,,
+aoi_realistic_composite_10_instance_array,"Realistic AOI (10 In/10 Out/10 Local, mixed DINT/BOOL/REAL), array of 10 instances",aoi,samples/generated/aoi/aoi_realistic_composite_10_instance_array.L5X,1280,,,,,,,,,,,
+aoi_realistic_composite_1_instance,"Realistic AOI (10 In/10 Out/10 Local, mixed DINT/BOOL/REAL), 1 instance",aoi,samples/generated/aoi/aoi_realistic_composite_1_instance.L5X,128,,,,,,,,,,,
+aoi_realistic_composite_def_only,"Realistic AOI (10 In/10 Out/10 Local, mixed DINT/BOOL/REAL), 0 instances",aoi,samples/generated/aoi/aoi_realistic_composite_def_only.L5X,0,,,,,,,,,,,
+aoiname_len08_def_only,"AOI (4 DINT params) with AOI type name length=8, 0 instances",aoi,samples/generated/aoi/aoiname_len08_def_only.L5X,0,,,,,,,,,,,
+aoiname_len13_def_only,"AOI (4 DINT params) with AOI type name length=13, 0 instances",aoi,samples/generated/aoi/aoiname_len13_def_only.L5X,0,,,,,,,,,,,
+aoiname_len20_def_only,"AOI (4 DINT params) with AOI type name length=20, 0 instances",aoi,samples/generated/aoi/aoiname_len20_def_only.L5X,0,,,,,,,,,,,
+aoiname_len30_def_only,"AOI (4 DINT params) with AOI type name length=30, 0 instances",aoi,samples/generated/aoi/aoiname_len30_def_only.L5X,0,,,,,,,,,,,
+basic_aoi_10_instance_array,"Basic AOI (2 In/1 Out/2 Local), array of 10 instances (confirmed real pattern)",aoi,samples/generated/aoi/basic_aoi_10_instance_array.L5X,280,,,,,,,,,,,
+basic_aoi_1_instance,"Basic AOI (2 In/1 Out/2 Local), 1 instance",aoi,samples/generated/aoi/basic_aoi_1_instance.L5X,28,,,,,,,,,,,
+basic_aoi_def_only,"Basic AOI (2 In/1 Out/2 Local), 0 instances",aoi,samples/generated/aoi/basic_aoi_def_only.L5X,0,,,,,,,,,,,
+localcount_n01_def_only,"AOI with 1 DINT LocalTags, 0 instances",aoi,samples/generated/aoi/localcount_n01_def_only.L5X,0,,,,,,,,,,,
+localcount_n02_def_only,"AOI with 2 DINT LocalTags, 0 instances",aoi,samples/generated/aoi/localcount_n02_def_only.L5X,0,,,,,,,,,,,
+localcount_n04_def_only,"AOI with 4 DINT LocalTags, 0 instances",aoi,samples/generated/aoi/localcount_n04_def_only.L5X,0,,,,,,,,,,,
+localcount_n08_def_only,"AOI with 8 DINT LocalTags, 0 instances",aoi,samples/generated/aoi/localcount_n08_def_only.L5X,0,,,,,,,,,,,
+localcount_n16_def_only,"AOI with 16 DINT LocalTags, 0 instances",aoi,samples/generated/aoi/localcount_n16_def_only.L5X,0,,,,,,,,,,,
+localcount_n32_def_only,"AOI with 32 DINT LocalTags, 0 instances",aoi,samples/generated/aoi/localcount_n32_def_only.L5X,0,,,,,,,,,,,
+localtype_bool_n4_def_only,"AOI with 4 BOOL LocalTags, 0 instances",aoi,samples/generated/aoi/localtype_bool_n4_def_only.L5X,0,,,,,,,,,,,
+localtype_dint_n4_def_only,"AOI with 4 DINT LocalTags, 0 instances",aoi,samples/generated/aoi/localtype_dint_n4_def_only.L5X,0,,,,,,,,,,,
+localtype_int_n4_def_only,"AOI with 4 INT LocalTags, 0 instances",aoi,samples/generated/aoi/localtype_int_n4_def_only.L5X,0,,,,,,,,,,,
+localtype_lint_n4_def_only,"AOI with 4 LINT LocalTags, 0 instances",aoi,samples/generated/aoi/localtype_lint_n4_def_only.L5X,0,,,,,,,,,,,
+localtype_real_n4_def_only,"AOI with 4 REAL LocalTags, 0 instances",aoi,samples/generated/aoi/localtype_real_n4_def_only.L5X,0,,,,,,,,,,,
+localtype_sint_n4_def_only,"AOI with 4 SINT LocalTags, 0 instances",aoi,samples/generated/aoi/localtype_sint_n4_def_only.L5X,0,,,,,,,,,,,
+nested_aoi_1_instance,"Outer AOI with a LocalTag of type InnerAOI (nested AOI), 1 instance",aoi,samples/generated/aoi/nested_aoi_1_instance.L5X,20,,,,,,,,,,,
+nested_aoi_def_only,"Outer AOI with a LocalTag of type InnerAOI (nested AOI), 0 instances",aoi,samples/generated/aoi/nested_aoi_def_only.L5X,0,,,,,,,,,,,
+paramcount_n01_def_only,"AOI with 1 DINT Input params, 0 instances",aoi,samples/generated/aoi/paramcount_n01_def_only.L5X,0,,,,,,,,,,,
+paramcount_n02_def_only,"AOI with 2 DINT Input params, 0 instances",aoi,samples/generated/aoi/paramcount_n02_def_only.L5X,0,,,,,,,,,,,
+paramcount_n04_def_only,"AOI with 4 DINT Input params, 0 instances",aoi,samples/generated/aoi/paramcount_n04_def_only.L5X,0,,,,,,,,,,,
+paramcount_n08_def_only,"AOI with 8 DINT Input params, 0 instances",aoi,samples/generated/aoi/paramcount_n08_def_only.L5X,0,,,,,,,,,,,
+paramcount_n16_def_only,"AOI with 16 DINT Input params, 0 instances",aoi,samples/generated/aoi/paramcount_n16_def_only.L5X,0,,,,,,,,,,,
+paramcount_n32_def_only,"AOI with 32 DINT Input params, 0 instances",aoi,samples/generated/aoi/paramcount_n32_def_only.L5X,0,,,,,,,,,,,
+paramtype_bool_n4_def_only,"AOI with 4 BOOL Input params, 0 instances",aoi,samples/generated/aoi/paramtype_bool_n4_def_only.L5X,0,,,,,,,,,,,
+paramtype_bool_n8_def_only,"AOI with 8 BOOL Input params, 0 instances",aoi,samples/generated/aoi/paramtype_bool_n8_def_only.L5X,0,,,,,,,,,,,
+paramtype_dint_n4_def_only,"AOI with 4 DINT Input params, 0 instances",aoi,samples/generated/aoi/paramtype_dint_n4_def_only.L5X,0,,,,,,,,,,,
+paramtype_dint_n8_def_only,"AOI with 8 DINT Input params, 0 instances",aoi,samples/generated/aoi/paramtype_dint_n8_def_only.L5X,0,,,,,,,,,,,
+paramtype_int_n4_def_only,"AOI with 4 INT Input params, 0 instances",aoi,samples/generated/aoi/paramtype_int_n4_def_only.L5X,0,,,,,,,,,,,
+paramtype_int_n8_def_only,"AOI with 8 INT Input params, 0 instances",aoi,samples/generated/aoi/paramtype_int_n8_def_only.L5X,0,,,,,,,,,,,
+paramtype_lint_n4_def_only,"AOI with 4 LINT Input params, 0 instances",aoi,samples/generated/aoi/paramtype_lint_n4_def_only.L5X,0,,,,,,,,,,,
+paramtype_lint_n8_def_only,"AOI with 8 LINT Input params, 0 instances",aoi,samples/generated/aoi/paramtype_lint_n8_def_only.L5X,0,,,,,,,,,,,
+paramtype_real_n4_def_only,"AOI with 4 REAL Input params, 0 instances",aoi,samples/generated/aoi/paramtype_real_n4_def_only.L5X,0,,,,,,,,,,,
+paramtype_real_n8_def_only,"AOI with 8 REAL Input params, 0 instances",aoi,samples/generated/aoi/paramtype_real_n8_def_only.L5X,0,,,,,,,,,,,
+paramtype_sint_n4_def_only,"AOI with 4 SINT Input params, 0 instances",aoi,samples/generated/aoi/paramtype_sint_n4_def_only.L5X,0,,,,,,,,,,,
+paramtype_sint_n8_def_only,"AOI with 8 SINT Input params, 0 instances",aoi,samples/generated/aoi/paramtype_sint_n8_def_only.L5X,0,,,,,,,,,,,
+axis_aoi_inout_1_instance,"Real AXIS_CIP_DRIVE tag + AOI with BOOL Input + InOut AXIS_CIP_DRIVE param, called from a rung, 1 instance (unmodeled predefined structure)",axis,samples/generated/axis/axis_aoi_inout_1_instance.L5X,0,,,,,,,,,,,
+axis_baseline_motiongroup_only,"Baseline: MotionGroup only, 0 axes (MOTION_GROUP unmodeled predefined structure)",axis,samples/generated/axis/axis_baseline_motiongroup_only.L5X,0,,,,,,,,,,,
+axis_cip_drive_only,MotionGroup + 1 AXIS_CIP_DRIVE instance (unmodeled predefined structure),axis,samples/generated/axis/axis_cip_drive_only.L5X,0,,,,,,,,,,,
+axis_composite_udt_10_instance,"ts_CIPAxis-shaped composite UDT, array of 10 instances",axis,samples/generated/axis/axis_composite_udt_10_instance.L5X,1240,,,,,,,,,,,
+axis_composite_udt_1_instance,"ts_CIPAxis-shaped composite UDT, 1 instance",axis,samples/generated/axis/axis_composite_udt_1_instance.L5X,124,,,,,,,,,,,
+axis_composite_udt_def_only,"ts_CIPAxis-shaped composite UDT (nested UDT x2, hidden-bit BOOL, STRING, 4 DINT), 0 instances",axis,samples/generated/axis/axis_composite_udt_def_only.L5X,0,,,,,,,,,,,
+axis_coordinate_system_only,MotionGroup + 1 COORDINATE_SYSTEM instance (unmodeled predefined structure),axis,samples/generated/axis/axis_coordinate_system_only.L5X,0,,,,,,,,,,,
+axis_full_combo,"Real AXIS_CIP_DRIVE tag + ts_CIPAxis-shaped composite UDT (1 instance) + AOI-with-InOut-axis call, all together -- additivity check against the individually-confirmed constants (unmodeled predefined structure)",axis,samples/generated/axis/axis_full_combo.L5X,0,,,,,,,,,,,
+axis_servo_only,MotionGroup + 1 AXIS_SERVO instance (unmodeled predefined structure),axis,samples/generated/axis/axis_servo_only.L5X,0,,,,,,,,,,,
+axis_virtual_only,MotionGroup + 1 AXIS_VIRTUAL instance (unmodeled predefined structure),axis,samples/generated/axis/axis_virtual_only.L5X,0,,,,,,,,,,,
+camprofile_n00001,"1 CAM_PROFILE tag, array of 1 elements (unmodeled predefined structure)",axis,samples/generated/axis/camprofile_n00001.L5X,0,,,,,,,,,,,
+camprofile_n00005,"1 CAM_PROFILE tag, array of 5 elements (unmodeled predefined structure)",axis,samples/generated/axis/camprofile_n00005.L5X,0,,,,,,,,,,,
+camprofile_n00020,"1 CAM_PROFILE tag, array of 20 elements (unmodeled predefined structure)",axis,samples/generated/axis/camprofile_n00020.L5X,0,,,,,,,,,,,
+camprofile_n00050,"1 CAM_PROFILE tag, array of 50 elements (unmodeled predefined structure)",axis,samples/generated/axis/camprofile_n00050.L5X,0,,,,,,,,,,,
+motioninstr_mah_n00010,"10 rungs of MAH(Axis_Cip_Drive,MotionInstr1) -- corpus-confirmed call syntax (unmodeled predefined structure)",axis,samples/generated/axis/motioninstr_mah_n00010.L5X,0,,,,,,,,,,,
+motioninstr_mah_n00100,"100 rungs of MAH(Axis_Cip_Drive,MotionInstr1) -- corpus-confirmed call syntax (unmodeled predefined structure)",axis,samples/generated/axis/motioninstr_mah_n00100.L5X,0,,,,,,,,,,,
+motioninstr_maj_n00010,"10 rungs of MAJ(Axis_Cip_Drive,MotionInstr1) -- standard documented 2-operand signature, not independently corpus-confirmed for this exact mnemonic (unmodeled predefined structure)",axis,samples/generated/axis/motioninstr_maj_n00010.L5X,0,,,,,,,,,,,
+motioninstr_maj_n00100,"100 rungs of MAJ(Axis_Cip_Drive,MotionInstr1) -- standard documented 2-operand signature, not independently corpus-confirmed for this exact mnemonic (unmodeled predefined structure)",axis,samples/generated/axis/motioninstr_maj_n00100.L5X,0,,,,,,,,,,,
+motioninstr_mam_n00010,"10 rungs of MAM(Axis_Cip_Drive,MotionInstr1) -- standard documented 2-operand signature, not independently corpus-confirmed for this exact mnemonic (unmodeled predefined structure)",axis,samples/generated/axis/motioninstr_mam_n00010.L5X,0,,,,,,,,,,,
+motioninstr_mam_n00100,"100 rungs of MAM(Axis_Cip_Drive,MotionInstr1) -- standard documented 2-operand signature, not independently corpus-confirmed for this exact mnemonic (unmodeled predefined structure)",axis,samples/generated/axis/motioninstr_mam_n00100.L5X,0,,,,,,,,,,,
+motioninstr_mas_n00010,"10 rungs of MAS(Axis_Cip_Drive,MotionInstr1) -- standard documented 2-operand signature, not independently corpus-confirmed for this exact mnemonic (unmodeled predefined structure)",axis,samples/generated/axis/motioninstr_mas_n00010.L5X,0,,,,,,,,,,,
+motioninstr_mas_n00100,"100 rungs of MAS(Axis_Cip_Drive,MotionInstr1) -- standard documented 2-operand signature, not independently corpus-confirmed for this exact mnemonic (unmodeled predefined structure)",axis,samples/generated/axis/motioninstr_mas_n00100.L5X,0,,,,,,,,,,,
+motioninstr_mrp_n00010,"10 rungs of MRP(Axis_Cip_Drive,MotionInstr1) -- standard documented 2-operand signature, not independently corpus-confirmed for this exact mnemonic (unmodeled predefined structure)",axis,samples/generated/axis/motioninstr_mrp_n00010.L5X,0,,,,,,,,,,,
+motioninstr_mrp_n00100,"100 rungs of MRP(Axis_Cip_Drive,MotionInstr1) -- standard documented 2-operand signature, not independently corpus-confirmed for this exact mnemonic (unmodeled predefined structure)",axis,samples/generated/axis/motioninstr_mrp_n00100.L5X,0,,,,,,,,,,,
+motioninstr_mso_n00010,"10 rungs of MSO(Axis_Cip_Drive,MotionInstr1) -- corpus-confirmed call syntax (unmodeled predefined structure)",axis,samples/generated/axis/motioninstr_mso_n00010.L5X,0,,,,,,,,,,,
+motioninstr_mso_n00100,"100 rungs of MSO(Axis_Cip_Drive,MotionInstr1) -- corpus-confirmed call syntax (unmodeled predefined structure)",axis,samples/generated/axis/motioninstr_mso_n00100.L5X,0,,,,,,,,,,,
+motioninstr_n00001,1 MOTION_INSTRUCTION tag(s) (unmodeled predefined structure),axis,samples/generated/axis/motioninstr_n00001.L5X,0,,,,,,,,,,,
+motioninstr_n00005,5 MOTION_INSTRUCTION tag(s) (unmodeled predefined structure),axis,samples/generated/axis/motioninstr_n00005.L5X,0,,,,,,,,,,,
+motioninstr_n00050,50 MOTION_INSTRUCTION tag(s) (unmodeled predefined structure),axis,samples/generated/axis/motioninstr_n00050.L5X,0,,,,,,,,,,,
+sample_0001,"boolpack baseline, 0 extra tags",tag,samples/generated/boolpack/sample_0001_boolpack_baseline_0bool.L5X,0,,,,,,,,,,,
+sample_0002,"boolpack test, 1000 standalone BOOL tags",tag,samples/generated/boolpack/sample_0002_boolpack_1000bool.L5X,4000,,,,,,,,,,,
+cmpcpt_cmp_and_compound_n01000,1000 rungs of CMP(L0>L1&L2<L3) -- boolean-expression layout sweep,logic_instr,samples/generated/logic/cmpcpt_cmp_and_compound_n01000.L5X,97872,,,,,,,,,,,
+cmpcpt_cmp_duplicate_cond_n01000,1000 rungs of CMP(L0>L1&L0>L1) -- boolean-expression layout sweep,logic_instr,samples/generated/logic/cmpcpt_cmp_duplicate_cond_n01000.L5X,97872,,,,,,,,,,,
+cmpcpt_cmp_floatliteral_n01000,1000 rungs of CMP(L0>5.5) -- float/decimal literal compared against a DINT tag,logic_instr,samples/generated/logic/cmpcpt_cmp_floatliteral_n01000.L5X,97872,,,,,,,,,,,
+cmpcpt_cmp_intliteral_n01000,"1000 rungs of CMP(L0>5) -- integer literal operand, vs tag-tag baseline cmpcpt_cmp_single",logic_instr,samples/generated/logic/cmpcpt_cmp_intliteral_n01000.L5X,97872,,,,,,,,,,,
+cmpcpt_cmp_or_compound_n01000,1000 rungs of CMP(L0>L1|L2<L3) -- boolean-expression layout sweep,logic_instr,samples/generated/logic/cmpcpt_cmp_or_compound_n01000.L5X,97872,,,,,,,,,,,
+cmpcpt_cmp_single_n01000,1000 rungs of CMP(L0>L1) -- boolean-expression layout sweep,logic_instr,samples/generated/logic/cmpcpt_cmp_single_n01000.L5X,97872,,,,,,,,,,,
+cmpcpt_cpt_barecopy_n01000,"1000 rungs of CPT(L2,L0) -- bare copy expression, no operator at all",logic_instr,samples/generated/logic/cmpcpt_cpt_barecopy_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_chain6_n01000,"1000 rungs of CPT(L7,L0+L1+L2+L3+L4+L5) -- 6-operand chain, vs 2-operand baseline in cmpcpt_cpt_op_add",logic_instr,samples/generated/logic/cmpcpt_cpt_chain6_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_op_add_floatliteral_n01000,"1000 rungs of CPT(R2,R0+5.5) -- float/decimal literal operand, REAL tags/dest",logic_instr,samples/generated/logic/cmpcpt_cpt_op_add_floatliteral_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_op_add_intliteral_n01000,"1000 rungs of CPT(L2,L0+5) -- integer literal operand, vs tag-tag baseline cmpcpt_cpt_op_add_n01000",logic_instr,samples/generated/logic/cmpcpt_cpt_op_add_intliteral_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_op_add_n01000,"1000 rungs of CPT(L2,L0+L1) -- operator layout sweep",logic_instr,samples/generated/logic/cmpcpt_cpt_op_add_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_op_div_floatliteral_n01000,"1000 rungs of CPT(R2,R0/5.5) -- float/decimal literal operand, REAL tags/dest",logic_instr,samples/generated/logic/cmpcpt_cpt_op_div_floatliteral_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_op_div_intliteral_n01000,"1000 rungs of CPT(L2,L0/5) -- integer literal operand, vs tag-tag baseline cmpcpt_cpt_op_div_n01000",logic_instr,samples/generated/logic/cmpcpt_cpt_op_div_intliteral_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_op_div_n01000,"1000 rungs of CPT(L2,L0/L1) -- operator layout sweep",logic_instr,samples/generated/logic/cmpcpt_cpt_op_div_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_op_mul_floatliteral_n01000,"1000 rungs of CPT(R2,R0*5.5) -- float/decimal literal operand, REAL tags/dest",logic_instr,samples/generated/logic/cmpcpt_cpt_op_mul_floatliteral_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_op_mul_intliteral_n01000,"1000 rungs of CPT(L2,L0*5) -- integer literal operand, vs tag-tag baseline cmpcpt_cpt_op_mul_n01000",logic_instr,samples/generated/logic/cmpcpt_cpt_op_mul_intliteral_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_op_mul_n01000,"1000 rungs of CPT(L2,L0*L1) -- operator layout sweep",logic_instr,samples/generated/logic/cmpcpt_cpt_op_mul_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_op_pow_floatliteral_n01000,"1000 rungs of CPT(R2,R0**5.5) -- float/decimal literal operand, REAL tags/dest",logic_instr,samples/generated/logic/cmpcpt_cpt_op_pow_floatliteral_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_op_pow_intliteral_n01000,"1000 rungs of CPT(L2,L0**5) -- integer literal operand, vs tag-tag baseline cmpcpt_cpt_op_pow_n01000",logic_instr,samples/generated/logic/cmpcpt_cpt_op_pow_intliteral_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_op_pow_n01000,"1000 rungs of CPT(L2,L0**L1) -- operator layout sweep",logic_instr,samples/generated/logic/cmpcpt_cpt_op_pow_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_op_sub_floatliteral_n01000,"1000 rungs of CPT(R2,R0-5.5) -- float/decimal literal operand, REAL tags/dest",logic_instr,samples/generated/logic/cmpcpt_cpt_op_sub_floatliteral_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_op_sub_intliteral_n01000,"1000 rungs of CPT(L2,L0-5) -- integer literal operand, vs tag-tag baseline cmpcpt_cpt_op_sub_n01000",logic_instr,samples/generated/logic/cmpcpt_cpt_op_sub_intliteral_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_op_sub_n01000,"1000 rungs of CPT(L2,L0-L1) -- operator layout sweep",logic_instr,samples/generated/logic/cmpcpt_cpt_op_sub_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_pluszero_n01000,"1000 rungs of CPT(L2,L0+0) -- mathematically-redundant +0 literal operand",logic_instr,samples/generated/logic/cmpcpt_cpt_pluszero_n01000.L5X,457872,,,,,,,,,,,
+cmpcpt_cpt_samematag_n01000,"1000 rungs of CPT(L2,L0+L0) -- same tag referenced twice, vs distinct-tag baseline in cmpcpt_cpt_op_add",logic_instr,samples/generated/logic/cmpcpt_cpt_samematag_n01000.L5X,457872,,,,,,,,,,,
+indirect_direct_index_n01000,"1000 rungs of MOV(Arr[literal],Dest) -- direct/literal array index",logic_instr,samples/generated/logic/indirect_direct_index_n01000.L5X,41156,,,,,,,,,,,
+indirect_tag_index_n01000,"1000 rungs of MOV(Arr[Idx],Dest) -- indirect/tag-driven array index, same instruction and rung count as the direct-index baseline",logic_instr,samples/generated/logic/indirect_tag_index_n01000.L5X,41156,,,,,,,,,,,
+indirect_tag_offset_index_n01000,"1000 rungs of MOV(Arr[Idx+1],Dest) -- indirect index WITH an arithmetic offset, vs the bare-tag-index baseline indirect_tag_index_n01000",logic_instr,samples/generated/logic/indirect_tag_offset_index_n01000.L5X,41156,,,,,,,,,,,
+instr_abs_n00010,"10 rungs of ABS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_abs_n00010.L5X,10835,,,,,,,,,,,
+instr_abs_n00050,"50 rungs of ABS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_abs_n00050.L5X,15635,,,,,,,,,,,
+instr_abs_n00100,"100 rungs of ABS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_abs_n00100.L5X,21635,,,,,,,,,,,
+instr_abs_n01000,"1000 rungs of ABS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_abs_n01000.L5X,129635,,,,,,,,,,,
+instr_abs_n05000,"5000 rungs of ABS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_abs_n05000.L5X,609635,,,,,,,,,,,
+instr_add_n00010,"10 rungs of ADD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_add_n00010.L5X,10035,,,,,,,,,,,
+instr_add_n00050,"50 rungs of ADD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_add_n00050.L5X,11635,,,,,,,,,,,
+instr_add_n00100,"100 rungs of ADD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_add_n00100.L5X,13635,,,,,,,,,,,
+instr_add_n01000,"1000 rungs of ADD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_add_n01000.L5X,49635,,,,,,,,,,,
+instr_add_n05000,"5000 rungs of ADD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_add_n05000.L5X,209635,,,,,,,,,,,
+instr_afi_n00010,"10 rungs of AFI alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_afi_n00010.L5X,9835,,,,,,,,,,,
+instr_afi_n00050,"50 rungs of AFI alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_afi_n00050.L5X,10635,,,,,,,,,,,
+instr_afi_n00100,"100 rungs of AFI alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_afi_n00100.L5X,11635,,,,,,,,,,,
+instr_afi_n01000,"1000 rungs of AFI alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_afi_n01000.L5X,29635,,,,,,,,,,,
+instr_afi_n05000,"5000 rungs of AFI alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_afi_n05000.L5X,109635,,,,,,,,,,,
+instr_btd_n00010,"10 rungs of BTD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_btd_n00010.L5X,9635,,,,,,,,,,,
+instr_btd_n00050,"50 rungs of BTD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_btd_n00050.L5X,9635,,,,,,,,,,,
+instr_btd_n00100,"100 rungs of BTD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_btd_n00100.L5X,9635,,,,,,,,,,,
+instr_btd_n01000,"1000 rungs of BTD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_btd_n01000.L5X,9635,,,,,,,,,,,
+instr_btd_n05000,"5000 rungs of BTD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_btd_n05000.L5X,9635,,,,,,,,,,,
+instr_clr_n00010,"10 rungs of CLR alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_clr_n00010.L5X,9955,,,,,,,,,,,
+instr_clr_n00050,"50 rungs of CLR alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_clr_n00050.L5X,11235,,,,,,,,,,,
+instr_clr_n00100,"100 rungs of CLR alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_clr_n00100.L5X,12835,,,,,,,,,,,
+instr_clr_n01000,"1000 rungs of CLR alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_clr_n01000.L5X,41635,,,,,,,,,,,
+instr_clr_n05000,"5000 rungs of CLR alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_clr_n05000.L5X,169635,,,,,,,,,,,
+instr_cmp_n00010,"10 rungs of CMP alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cmp_n00010.L5X,10555,,,,,,,,,,,
+instr_cmp_n00050,"50 rungs of CMP alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cmp_n00050.L5X,14235,,,,,,,,,,,
+instr_cmp_n00100,"100 rungs of CMP alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cmp_n00100.L5X,18835,,,,,,,,,,,
+instr_cmp_n01000,"1000 rungs of CMP alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cmp_n01000.L5X,101635,,,,,,,,,,,
+instr_cmp_n05000,"5000 rungs of CMP alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cmp_n05000.L5X,469635,,,,,,,,,,,
+instr_concat_n00010,"10 rungs of CONCAT alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_concat_n00010.L5X,10675,,,,,,,,,,,
+instr_concat_n00050,"50 rungs of CONCAT alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_concat_n00050.L5X,14835,,,,,,,,,,,
+instr_concat_n00100,"100 rungs of CONCAT alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_concat_n00100.L5X,20035,,,,,,,,,,,
+instr_concat_n01000,"1000 rungs of CONCAT alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_concat_n01000.L5X,113635,,,,,,,,,,,
+instr_concat_n05000,"5000 rungs of CONCAT alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_concat_n05000.L5X,529635,,,,,,,,,,,
+instr_cop_n00010,"10 rungs of COP alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cop_n00010.L5X,9635,,,,,,,,,,,
+instr_cop_n00050,"50 rungs of COP alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cop_n00050.L5X,9635,,,,,,,,,,,
+instr_cop_n00100,"100 rungs of COP alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cop_n00100.L5X,9635,,,,,,,,,,,
+instr_cop_n01000,"1000 rungs of COP alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cop_n01000.L5X,9635,,,,,,,,,,,
+instr_cop_n05000,"5000 rungs of COP alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cop_n05000.L5X,9635,,,,,,,,,,,
+instr_cps_n00010,"10 rungs of CPS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cps_n00010.L5X,9635,,,,,,,,,,,
+instr_cps_n00050,"50 rungs of CPS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cps_n00050.L5X,9635,,,,,,,,,,,
+instr_cps_n00100,"100 rungs of CPS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cps_n00100.L5X,9635,,,,,,,,,,,
+instr_cps_n01000,"1000 rungs of CPS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cps_n01000.L5X,9635,,,,,,,,,,,
+instr_cps_n05000,"5000 rungs of CPS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cps_n05000.L5X,9635,,,,,,,,,,,
+instr_cpt_literaloperands_n01000,1000 rungs of CPT with literal constant operands (vs tags above),logic_instr,samples/generated/logic/instr_cpt_literaloperands_n01000.L5X,461635,,,,,,,,,,,
+instr_cpt_n00010,"10 rungs of CPT alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cpt_n00010.L5X,14155,,,,,,,,,,,
+instr_cpt_n00050,"50 rungs of CPT alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cpt_n00050.L5X,32235,,,,,,,,,,,
+instr_cpt_n00100,"100 rungs of CPT alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cpt_n00100.L5X,54835,,,,,,,,,,,
+instr_cpt_n01000,"1000 rungs of CPT alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cpt_n01000.L5X,461635,,,,,,,,,,,
+instr_cpt_n05000,"5000 rungs of CPT alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_cpt_n05000.L5X,2269635,,,,,,,,,,,
+instr_cpt_n05000_comment100,"5000 rungs of CPT, 100-char comment on every rung (spot check)",logic_instr,samples/generated/logic/instr_cpt_n05000_comment100.L5X,2269635,,,,,,,,,,,
+instr_cpt_n05000_nocomment,"5000 rungs of CPT, no comments (spot check vs commented below)",logic_instr,samples/generated/logic/instr_cpt_n05000_nocomment.L5X,2269635,,,,,,,,,,,
+instr_cpt_tagoperands_n01000,1000 rungs of CPT with real tag operands (vs literal below),logic_instr,samples/generated/logic/instr_cpt_tagoperands_n01000.L5X,461635,,,,,,,,,,,
+instr_ctu_n00010,"10 rungs of CTU alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ctu_n00010.L5X,9835,,,,,,,,,,,
+instr_ctu_n00050,"50 rungs of CTU alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ctu_n00050.L5X,10635,,,,,,,,,,,
+instr_ctu_n00100,"100 rungs of CTU alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ctu_n00100.L5X,11635,,,,,,,,,,,
+instr_ctu_n01000,"1000 rungs of CTU alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ctu_n01000.L5X,29635,,,,,,,,,,,
+instr_ctu_n05000,"5000 rungs of CTU alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ctu_n05000.L5X,109635,,,,,,,,,,,
+instr_delete_n00010,"10 rungs of DELETE alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_delete_n00010.L5X,10635,,,,,,,,,,,
+instr_delete_n00050,"50 rungs of DELETE alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_delete_n00050.L5X,14635,,,,,,,,,,,
+instr_delete_n00100,"100 rungs of DELETE alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_delete_n00100.L5X,19635,,,,,,,,,,,
+instr_delete_n01000,"1000 rungs of DELETE alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_delete_n01000.L5X,109635,,,,,,,,,,,
+instr_delete_n05000,"5000 rungs of DELETE alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_delete_n05000.L5X,509635,,,,,,,,,,,
+instr_div_n00010,"10 rungs of DIV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_div_n00010.L5X,10195,,,,,,,,,,,
+instr_div_n00050,"50 rungs of DIV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_div_n00050.L5X,12435,,,,,,,,,,,
+instr_div_n00100,"100 rungs of DIV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_div_n00100.L5X,15235,,,,,,,,,,,
+instr_div_n01000,"1000 rungs of DIV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_div_n01000.L5X,65635,,,,,,,,,,,
+instr_div_n05000,"5000 rungs of DIV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_div_n05000.L5X,289635,,,,,,,,,,,
+instr_dtos_n00010,"10 rungs of DTOS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_dtos_n00010.L5X,10355,,,,,,,,,,,
+instr_dtos_n00050,"50 rungs of DTOS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_dtos_n00050.L5X,13235,,,,,,,,,,,
+instr_dtos_n00100,"100 rungs of DTOS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_dtos_n00100.L5X,16835,,,,,,,,,,,
+instr_dtos_n01000,"1000 rungs of DTOS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_dtos_n01000.L5X,81635,,,,,,,,,,,
+instr_dtos_n05000,"5000 rungs of DTOS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_dtos_n05000.L5X,369635,,,,,,,,,,,
+instr_equ_n00010,"10 rungs of EQU alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_equ_n00010.L5X,9995,,,,,,,,,,,
+instr_equ_n00050,"50 rungs of EQU alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_equ_n00050.L5X,11435,,,,,,,,,,,
+instr_equ_n00100,"100 rungs of EQU alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_equ_n00100.L5X,13235,,,,,,,,,,,
+instr_equ_n01000,"1000 rungs of EQU alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_equ_n01000.L5X,45635,,,,,,,,,,,
+instr_equ_n05000,"5000 rungs of EQU alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_equ_n05000.L5X,189635,,,,,,,,,,,
+instr_fll_n00010,"10 rungs of FLL alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_fll_n00010.L5X,9635,,,,,,,,,,,
+instr_fll_n00050,"50 rungs of FLL alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_fll_n00050.L5X,9635,,,,,,,,,,,
+instr_fll_n00100,"100 rungs of FLL alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_fll_n00100.L5X,9635,,,,,,,,,,,
+instr_fll_n01000,"1000 rungs of FLL alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_fll_n01000.L5X,9635,,,,,,,,,,,
+instr_fll_n05000,"5000 rungs of FLL alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_fll_n05000.L5X,9635,,,,,,,,,,,
+instr_geq_n00010,"10 rungs of GEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_geq_n00010.L5X,9995,,,,,,,,,,,
+instr_geq_n00050,"50 rungs of GEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_geq_n00050.L5X,11435,,,,,,,,,,,
+instr_geq_n00100,"100 rungs of GEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_geq_n00100.L5X,13235,,,,,,,,,,,
+instr_geq_n01000,"1000 rungs of GEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_geq_n01000.L5X,45635,,,,,,,,,,,
+instr_geq_n05000,"5000 rungs of GEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_geq_n05000.L5X,189635,,,,,,,,,,,
+instr_grt_n00010,"10 rungs of GRT alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_grt_n00010.L5X,9995,,,,,,,,,,,
+instr_grt_n00050,"50 rungs of GRT alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_grt_n00050.L5X,11435,,,,,,,,,,,
+instr_grt_n00100,"100 rungs of GRT alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_grt_n00100.L5X,13235,,,,,,,,,,,
+instr_grt_n01000,"1000 rungs of GRT alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_grt_n01000.L5X,45635,,,,,,,,,,,
+instr_grt_n05000,"5000 rungs of GRT alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_grt_n05000.L5X,189635,,,,,,,,,,,
+instr_gsv_n00010,"10 rungs of GSV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_gsv_n00010.L5X,10475,,,,,,,,,,,
+instr_gsv_n00050,"50 rungs of GSV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_gsv_n00050.L5X,13835,,,,,,,,,,,
+instr_gsv_n00100,"100 rungs of GSV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_gsv_n00100.L5X,18035,,,,,,,,,,,
+instr_gsv_n01000,"1000 rungs of GSV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_gsv_n01000.L5X,93635,,,,,,,,,,,
+instr_gsv_n05000,"5000 rungs of GSV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_gsv_n05000.L5X,429635,,,,,,,,,,,
+instr_jsr_n00010,10 rungs of JSR to a real dummy subroutine,logic_instr,samples/generated/logic/instr_jsr_n00010.L5X,10635,,,,,,,,,,,
+instr_jsr_n00050,50 rungs of JSR to a real dummy subroutine,logic_instr,samples/generated/logic/instr_jsr_n00050.L5X,13515,,,,,,,,,,,
+instr_jsr_n00100,100 rungs of JSR to a real dummy subroutine,logic_instr,samples/generated/logic/instr_jsr_n00100.L5X,17115,,,,,,,,,,,
+instr_jsr_n01000,1000 rungs of JSR to a real dummy subroutine,logic_instr,samples/generated/logic/instr_jsr_n01000.L5X,81915,,,,,,,,,,,
+instr_jsr_n05000,5000 rungs of JSR to a real dummy subroutine,logic_instr,samples/generated/logic/instr_jsr_n05000.L5X,369915,,,,,,,,,,,
+instr_lbljmp_n00010,10 LBL/JMP pairs,logic_instr,samples/generated/logic/instr_lbljmp_n00010.L5X,9635,,,,,,,,,,,
+instr_lbljmp_n00050,50 LBL/JMP pairs,logic_instr,samples/generated/logic/instr_lbljmp_n00050.L5X,9635,,,,,,,,,,,
+instr_lbljmp_n00100,100 LBL/JMP pairs,logic_instr,samples/generated/logic/instr_lbljmp_n00100.L5X,9635,,,,,,,,,,,
+instr_lbljmp_n01000,1000 LBL/JMP pairs,logic_instr,samples/generated/logic/instr_lbljmp_n01000.L5X,9635,,,,,,,,,,,
+instr_lbljmp_n05000,5000 LBL/JMP pairs,logic_instr,samples/generated/logic/instr_lbljmp_n05000.L5X,9635,,,,,,,,,,,
+instr_leq_n00010,"10 rungs of LEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_leq_n00010.L5X,9995,,,,,,,,,,,
+instr_leq_n00050,"50 rungs of LEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_leq_n00050.L5X,11435,,,,,,,,,,,
+instr_leq_n00100,"100 rungs of LEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_leq_n00100.L5X,13235,,,,,,,,,,,
+instr_leq_n01000,"1000 rungs of LEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_leq_n01000.L5X,45635,,,,,,,,,,,
+instr_leq_n05000,"5000 rungs of LEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_leq_n05000.L5X,189635,,,,,,,,,,,
+instr_les_n00010,"10 rungs of LES alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_les_n00010.L5X,9995,,,,,,,,,,,
+instr_les_n00050,"50 rungs of LES alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_les_n00050.L5X,11435,,,,,,,,,,,
+instr_les_n00100,"100 rungs of LES alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_les_n00100.L5X,13235,,,,,,,,,,,
+instr_les_n01000,"1000 rungs of LES alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_les_n01000.L5X,45635,,,,,,,,,,,
+instr_les_n05000,"5000 rungs of LES alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_les_n05000.L5X,189635,,,,,,,,,,,
+instr_lim_n00010,"10 rungs of LIM alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_lim_n00010.L5X,10315,,,,,,,,,,,
+instr_lim_n00050,"50 rungs of LIM alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_lim_n00050.L5X,13035,,,,,,,,,,,
+instr_lim_n00100,"100 rungs of LIM alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_lim_n00100.L5X,16435,,,,,,,,,,,
+instr_lim_n01000,"1000 rungs of LIM alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_lim_n01000.L5X,77635,,,,,,,,,,,
+instr_lim_n05000,"5000 rungs of LIM alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_lim_n05000.L5X,349635,,,,,,,,,,,
+instr_meq_n00010,"10 rungs of MEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_meq_n00010.L5X,10115,,,,,,,,,,,
+instr_meq_n00050,"50 rungs of MEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_meq_n00050.L5X,12035,,,,,,,,,,,
+instr_meq_n00100,"100 rungs of MEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_meq_n00100.L5X,14435,,,,,,,,,,,
+instr_meq_n01000,"1000 rungs of MEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_meq_n01000.L5X,57635,,,,,,,,,,,
+instr_meq_n05000,"5000 rungs of MEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_meq_n05000.L5X,249635,,,,,,,,,,,
+instr_mid_n00010,"10 rungs of MID alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mid_n00010.L5X,10635,,,,,,,,,,,
+instr_mid_n00050,"50 rungs of MID alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mid_n00050.L5X,14635,,,,,,,,,,,
+instr_mid_n00100,"100 rungs of MID alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mid_n00100.L5X,19635,,,,,,,,,,,
+instr_mid_n01000,"1000 rungs of MID alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mid_n01000.L5X,109635,,,,,,,,,,,
+instr_mid_n05000,"5000 rungs of MID alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mid_n05000.L5X,509635,,,,,,,,,,,
+instr_mod_n00010,"10 rungs of MOD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mod_n00010.L5X,10195,,,,,,,,,,,
+instr_mod_n00050,"50 rungs of MOD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mod_n00050.L5X,12435,,,,,,,,,,,
+instr_mod_n00100,"100 rungs of MOD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mod_n00100.L5X,15235,,,,,,,,,,,
+instr_mod_n01000,"1000 rungs of MOD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mod_n01000.L5X,65635,,,,,,,,,,,
+instr_mod_n05000,"5000 rungs of MOD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mod_n05000.L5X,289635,,,,,,,,,,,
+instr_mov_n00010,"10 rungs of MOV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mov_n00010.L5X,9995,,,,,,,,,,,
+instr_mov_n00050,"50 rungs of MOV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mov_n00050.L5X,11435,,,,,,,,,,,
+instr_mov_n00100,"100 rungs of MOV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mov_n00100.L5X,13235,,,,,,,,,,,
+instr_mov_n01000,"1000 rungs of MOV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mov_n01000.L5X,45635,,,,,,,,,,,
+instr_mov_n05000,"5000 rungs of MOV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mov_n05000.L5X,189635,,,,,,,,,,,
+instr_mul_n00010,"10 rungs of MUL alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mul_n00010.L5X,10195,,,,,,,,,,,
+instr_mul_n00050,"50 rungs of MUL alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mul_n00050.L5X,12435,,,,,,,,,,,
+instr_mul_n00100,"100 rungs of MUL alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mul_n00100.L5X,15235,,,,,,,,,,,
+instr_mul_n01000,"1000 rungs of MUL alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mul_n01000.L5X,65635,,,,,,,,,,,
+instr_mul_n05000,"5000 rungs of MUL alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mul_n05000.L5X,289635,,,,,,,,,,,
+instr_mvm_n00010,"10 rungs of MVM alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mvm_n00010.L5X,10195,,,,,,,,,,,
+instr_mvm_n00050,"50 rungs of MVM alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mvm_n00050.L5X,12435,,,,,,,,,,,
+instr_mvm_n00100,"100 rungs of MVM alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mvm_n00100.L5X,15235,,,,,,,,,,,
+instr_mvm_n01000,"1000 rungs of MVM alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mvm_n01000.L5X,65635,,,,,,,,,,,
+instr_mvm_n05000,"5000 rungs of MVM alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_mvm_n05000.L5X,289635,,,,,,,,,,,
+instr_neq_n00010,"10 rungs of NEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_neq_n00010.L5X,9995,,,,,,,,,,,
+instr_neq_n00050,"50 rungs of NEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_neq_n00050.L5X,11435,,,,,,,,,,,
+instr_neq_n00100,"100 rungs of NEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_neq_n00100.L5X,13235,,,,,,,,,,,
+instr_neq_n01000,"1000 rungs of NEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_neq_n01000.L5X,45635,,,,,,,,,,,
+instr_neq_n05000,"5000 rungs of NEQ alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_neq_n05000.L5X,189635,,,,,,,,,,,
+instr_nop_n00010,"10 rungs of NOP alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_nop_n00010.L5X,9795,,,,,,,,,,,
+instr_nop_n00050,"50 rungs of NOP alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_nop_n00050.L5X,10435,,,,,,,,,,,
+instr_nop_n00100,"100 rungs of NOP alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_nop_n00100.L5X,11235,,,,,,,,,,,
+instr_nop_n01000,"1000 rungs of NOP alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_nop_n01000.L5X,25635,,,,,,,,,,,
+instr_nop_n05000,"5000 rungs of NOP alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_nop_n05000.L5X,89635,,,,,,,,,,,
+instr_ons_n00010,"10 rungs of ONS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ons_n00010.L5X,10195,,,,,,,,,,,
+instr_ons_n00050,"50 rungs of ONS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ons_n00050.L5X,12435,,,,,,,,,,,
+instr_ons_n00100,"100 rungs of ONS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ons_n00100.L5X,15235,,,,,,,,,,,
+instr_ons_n01000,"1000 rungs of ONS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ons_n01000.L5X,65635,,,,,,,,,,,
+instr_ons_n05000,"5000 rungs of ONS alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ons_n05000.L5X,289635,,,,,,,,,,,
+instr_ote_n00010,"10 rungs of OTE alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ote_n00010.L5X,9795,,,,,,,,,,,
+instr_ote_n00050,"50 rungs of OTE alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ote_n00050.L5X,10435,,,,,,,,,,,
+instr_ote_n00100,"100 rungs of OTE alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ote_n00100.L5X,11235,,,,,,,,,,,
+instr_ote_n01000,"1000 rungs of OTE alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ote_n01000.L5X,25635,,,,,,,,,,,
+instr_ote_n05000,"5000 rungs of OTE alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ote_n05000.L5X,89635,,,,,,,,,,,
+instr_otl_n00010,"10 rungs of OTL alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_otl_n00010.L5X,9795,,,,,,,,,,,
+instr_otl_n00050,"50 rungs of OTL alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_otl_n00050.L5X,10435,,,,,,,,,,,
+instr_otl_n00100,"100 rungs of OTL alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_otl_n00100.L5X,11235,,,,,,,,,,,
+instr_otl_n01000,"1000 rungs of OTL alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_otl_n01000.L5X,25635,,,,,,,,,,,
+instr_otl_n05000,"5000 rungs of OTL alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_otl_n05000.L5X,89635,,,,,,,,,,,
+instr_otu_n00010,"10 rungs of OTU alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_otu_n00010.L5X,9795,,,,,,,,,,,
+instr_otu_n00050,"50 rungs of OTU alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_otu_n00050.L5X,10435,,,,,,,,,,,
+instr_otu_n00100,"100 rungs of OTU alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_otu_n00100.L5X,11235,,,,,,,,,,,
+instr_otu_n01000,"1000 rungs of OTU alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_otu_n01000.L5X,25635,,,,,,,,,,,
+instr_otu_n05000,"5000 rungs of OTU alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_otu_n05000.L5X,89635,,,,,,,,,,,
+instr_res_n00010,"10 rungs of RES alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_res_n00010.L5X,9835,,,,,,,,,,,
+instr_res_n00050,"50 rungs of RES alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_res_n00050.L5X,10635,,,,,,,,,,,
+instr_res_n00100,"100 rungs of RES alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_res_n00100.L5X,11635,,,,,,,,,,,
+instr_res_n01000,"1000 rungs of RES alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_res_n01000.L5X,29635,,,,,,,,,,,
+instr_res_n05000,"5000 rungs of RES alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_res_n05000.L5X,109635,,,,,,,,,,,
+instr_rto_n00010,"10 rungs of RTO alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_rto_n00010.L5X,9835,,,,,,,,,,,
+instr_rto_n00050,"50 rungs of RTO alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_rto_n00050.L5X,10635,,,,,,,,,,,
+instr_rto_n00100,"100 rungs of RTO alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_rto_n00100.L5X,11635,,,,,,,,,,,
+instr_rto_n01000,"1000 rungs of RTO alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_rto_n01000.L5X,29635,,,,,,,,,,,
+instr_rto_n05000,"5000 rungs of RTO alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_rto_n05000.L5X,109635,,,,,,,,,,,
+instr_size_n00010,"10 rungs of SIZE alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_size_n00010.L5X,9635,,,,,,,,,,,
+instr_size_n00050,"50 rungs of SIZE alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_size_n00050.L5X,9635,,,,,,,,,,,
+instr_size_n00100,"100 rungs of SIZE alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_size_n00100.L5X,9635,,,,,,,,,,,
+instr_size_n01000,"1000 rungs of SIZE alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_size_n01000.L5X,9635,,,,,,,,,,,
+instr_size_n05000,"5000 rungs of SIZE alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_size_n05000.L5X,9635,,,,,,,,,,,
+instr_ssv_n00010,"10 rungs of SSV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ssv_n00010.L5X,10475,,,,,,,,,,,
+instr_ssv_n00050,"50 rungs of SSV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ssv_n00050.L5X,13835,,,,,,,,,,,
+instr_ssv_n00100,"100 rungs of SSV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ssv_n00100.L5X,18035,,,,,,,,,,,
+instr_ssv_n01000,"1000 rungs of SSV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ssv_n01000.L5X,93635,,,,,,,,,,,
+instr_ssv_n05000,"5000 rungs of SSV alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ssv_n05000.L5X,429635,,,,,,,,,,,
+instr_stod_n00010,"10 rungs of STOD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_stod_n00010.L5X,10435,,,,,,,,,,,
+instr_stod_n00050,"50 rungs of STOD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_stod_n00050.L5X,13635,,,,,,,,,,,
+instr_stod_n00100,"100 rungs of STOD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_stod_n00100.L5X,17635,,,,,,,,,,,
+instr_stod_n01000,"1000 rungs of STOD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_stod_n01000.L5X,89635,,,,,,,,,,,
+instr_stod_n05000,"5000 rungs of STOD alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_stod_n05000.L5X,409635,,,,,,,,,,,
+instr_sub_n00010,"10 rungs of SUB alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_sub_n00010.L5X,10035,,,,,,,,,,,
+instr_sub_n00050,"50 rungs of SUB alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_sub_n00050.L5X,11635,,,,,,,,,,,
+instr_sub_n00100,"100 rungs of SUB alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_sub_n00100.L5X,13635,,,,,,,,,,,
+instr_sub_n01000,"1000 rungs of SUB alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_sub_n01000.L5X,49635,,,,,,,,,,,
+instr_sub_n05000,"5000 rungs of SUB alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_sub_n05000.L5X,209635,,,,,,,,,,,
+instr_tof_n00010,"10 rungs of TOF alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_tof_n00010.L5X,9835,,,,,,,,,,,
+instr_tof_n00050,"50 rungs of TOF alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_tof_n00050.L5X,10635,,,,,,,,,,,
+instr_tof_n00100,"100 rungs of TOF alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_tof_n00100.L5X,11635,,,,,,,,,,,
+instr_tof_n01000,"1000 rungs of TOF alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_tof_n01000.L5X,29635,,,,,,,,,,,
+instr_tof_n05000,"5000 rungs of TOF alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_tof_n05000.L5X,109635,,,,,,,,,,,
+instr_ton_n00010,"10 rungs of TON alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ton_n00010.L5X,9835,,,,,,,,,,,
+instr_ton_n00050,"50 rungs of TON alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ton_n00050.L5X,10635,,,,,,,,,,,
+instr_ton_n00100,"100 rungs of TON alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ton_n00100.L5X,11635,,,,,,,,,,,
+instr_ton_n01000,"1000 rungs of TON alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ton_n01000.L5X,29635,,,,,,,,,,,
+instr_ton_n05000,"5000 rungs of TON alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_ton_n05000.L5X,109635,,,,,,,,,,,
+instr_xic_n00010,"10 rungs of XIC alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_xic_n00010.L5X,9835,,,,,,,,,,,
+instr_xic_n00050,"50 rungs of XIC alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_xic_n00050.L5X,10635,,,,,,,,,,,
+instr_xic_n00100,"100 rungs of XIC alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_xic_n00100.L5X,11635,,,,,,,,,,,
+instr_xic_n01000,"1000 rungs of XIC alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_xic_n01000.L5X,29635,,,,,,,,,,,
+instr_xic_n05000,"5000 rungs of XIC alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_xic_n05000.L5X,109635,,,,,,,,,,,
+instr_xio_n00010,"10 rungs of XIO alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_xio_n00010.L5X,9835,,,,,,,,,,,
+instr_xio_n00050,"50 rungs of XIO alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_xio_n00050.L5X,10635,,,,,,,,,,,
+instr_xio_n00100,"100 rungs of XIO alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_xio_n00100.L5X,11635,,,,,,,,,,,
+instr_xio_n01000,"1000 rungs of XIO alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_xio_n01000.L5X,29635,,,,,,,,,,,
+instr_xio_n05000,"5000 rungs of XIO alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_xio_n05000.L5X,109635,,,,,,,,,,,
+instr_xpy_n00010,"10 rungs of XPY alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_xpy_n00010.L5X,10795,,,,,,,,,,,
+instr_xpy_n00050,"50 rungs of XPY alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_xpy_n00050.L5X,15435,,,,,,,,,,,
+instr_xpy_n00100,"100 rungs of XPY alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_xpy_n00100.L5X,21235,,,,,,,,,,,
+instr_xpy_n01000,"1000 rungs of XPY alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_xpy_n01000.L5X,125635,,,,,,,,,,,
+instr_xpy_n05000,"5000 rungs of XPY alone, shared fixed tag pool",logic_instr,samples/generated/logic/instr_xpy_n05000.L5X,589635,,,,,,,,,,,
+randommix_00_n00609rungs_06types,"Random mix (6 instruction types, 609 total rungs): 92xDELETE, 166xTON, 63xDIV, 23xXIC, 131xABS, 134xLIM",logic_random_mix,samples/generated/logic/randommix_00_n00609rungs_06types.L5X,46156,,,,,,,,,,,
+randommix_01_n00505rungs_05types,"Random mix (5 instruction types, 505 total rungs): 178xMUL, 92xNEQ, 31xAFI, 69xTON, 135xDELETE",logic_random_mix,samples/generated/logic/randommix_01_n00505rungs_05types.L5X,33596,,,,,,,,,,,
+randommix_02_n00564rungs_05types,"Random mix (5 instruction types, 564 total rungs): 48xNEQ, 167xADD, 55xMOD, 96xXPY, 198xAFI",logic_random_mix,samples/generated/logic/randommix_02_n00564rungs_05types.L5X,31400,,,,,,,,,,,
+randommix_03_n00724rungs_09types,"Random mix (9 instruction types, 724 total rungs): 53xDELETE, 60xMOV, 69xSSV, 91xCONCAT, 51xSTOD, 184xCLR, 36xOTE, 134xTOF, 46xNEQ",logic_random_mix,samples/generated/logic/randommix_03_n00724rungs_09types.L5X,42416,,,,,,,,,,,
+randommix_04_n01019rungs_10types,"Random mix (10 instruction types, 1019 total rungs): 155xOTL, 18xLIM, 166xMUL, 14xLES, 147xMID, 167xCMP, 17xMOD, 45xXPY, 174xOTE, 116xDIV",logic_random_mix,samples/generated/logic/randommix_04_n01019rungs_10types.L5X,63836,,,,,,,,,,,
+randommix_05_n27267rungs_23types,"Random mix (23 instruction types, 27267 total rungs): 1274xNOP, 1305xXIC, 1185xMOV, 338xGEQ, 666xAFI, 1126xMUL, 1801xGSV, 804xMVM, 1619xDELETE, 1584xTON, 1574xNEQ, 797xGRT, 958xMID, 938xXPY, 1336xDTOS, 414xLES, 1735xOTL, 670xRTO, 1753xXIO, 1410xONS, 1064xOTE, 1375xCONCAT, 1541xMOD",logic_random_mix,samples/generated/logic/randommix_05_n27267rungs_23types.L5X,1374952,,,,,,,,,,,
+randommix_06_n18542rungs_19types,"Random mix (19 instruction types, 18542 total rungs): 328xMVM, 1739xXIO, 465xRTO, 1548xABS, 1177xMEQ, 604xGRT, 908xOTU, 479xSSV, 171xCTU, 464xNOP, 1586xDELETE, 1909xLEQ, 1403xCMP, 1077xGSV, 321xGEQ, 630xTON, 1077xOTL, 1319xCONCAT, 1337xOTE",logic_random_mix,samples/generated/logic/randommix_06_n18542rungs_19types.L5X,1043696,,,,,,,,,,,
+randommix_07_n19811rungs_24types,"Random mix (24 instruction types, 19811 total rungs): 141xGEQ, 710xOTE, 423xDELETE, 1337xXIC, 1117xDTOS, 326xOTL, 907xAFI, 518xNOP, 234xADD, 978xCMP, 713xLEQ, 177xONS, 208xCPT, 420xDIV, 1895xSUB, 1140xRES, 150xMVM, 1803xGSV, 148xTON, 1256xCTU, 1945xOTU, 1393xCLR, 690xXPY, 1182xMOD",logic_random_mix,samples/generated/logic/randommix_07_n19811rungs_24types.L5X,963272,,,,,,,,,,,
+taskoverhead_n02tasks,"2 total Tasks (1 Continuous + 1 Periodic), each extra Task's Program has only a single NOP rung -- isolates per-Task scaffolding cost from logic content",logic_instr,samples/generated/logic/taskoverhead_n02tasks.L5X,0,,,,,,,,,,,
+taskoverhead_n03tasks,"3 total Tasks (1 Continuous + 2 Periodic), each extra Task's Program has only a single NOP rung -- isolates per-Task scaffolding cost from logic content",logic_instr,samples/generated/logic/taskoverhead_n03tasks.L5X,0,,,,,,,,,,,
+typesweep_add_dint_n01000,1000 rungs of ADD with DINT operands,logic_instr,samples/generated/logic/typesweep_add_dint_n01000.L5X,545,,,,,,,,,,,
+typesweep_add_int_n01000,1000 rungs of ADD with INT operands,logic_instr,samples/generated/logic/typesweep_add_int_n01000.L5X,545,,,,,,,,,,,
+typesweep_add_lint_n01000,1000 rungs of ADD with LINT operands,logic_instr,samples/generated/logic/typesweep_add_lint_n01000.L5X,545,,,,,,,,,,,
+typesweep_add_real_n01000,1000 rungs of ADD with REAL operands,logic_instr,samples/generated/logic/typesweep_add_real_n01000.L5X,545,,,,,,,,,,,
+typesweep_add_sint_n01000,1000 rungs of ADD with SINT operands,logic_instr,samples/generated/logic/typesweep_add_sint_n01000.L5X,545,,,,,,,,,,,
+typesweep_cpt_dint_n01000,"1000 rungs of CPT, all-DINT expression",logic_instr,samples/generated/logic/typesweep_cpt_dint_n01000.L5X,545,,,,,,,,,,,
+typesweep_cpt_real_n01000,"1000 rungs of CPT, all-REAL expression",logic_instr,samples/generated/logic/typesweep_cpt_real_n01000.L5X,545,,,,,,,,,,,
+typesweep_div_dint_n01000,1000 rungs of DIV with DINT operands,logic_instr,samples/generated/logic/typesweep_div_dint_n01000.L5X,545,,,,,,,,,,,
+typesweep_div_int_n01000,1000 rungs of DIV with INT operands,logic_instr,samples/generated/logic/typesweep_div_int_n01000.L5X,545,,,,,,,,,,,
+typesweep_div_lint_n01000,1000 rungs of DIV with LINT operands,logic_instr,samples/generated/logic/typesweep_div_lint_n01000.L5X,545,,,,,,,,,,,
+typesweep_div_real_n01000,1000 rungs of DIV with REAL operands,logic_instr,samples/generated/logic/typesweep_div_real_n01000.L5X,545,,,,,,,,,,,
+typesweep_div_sint_n01000,1000 rungs of DIV with SINT operands,logic_instr,samples/generated/logic/typesweep_div_sint_n01000.L5X,545,,,,,,,,,,,
+typesweep_equ_dint_n01000,1000 rungs of EQU with DINT operands,logic_instr,samples/generated/logic/typesweep_equ_dint_n01000.L5X,545,,,,,,,,,,,
+typesweep_equ_int_n01000,1000 rungs of EQU with INT operands,logic_instr,samples/generated/logic/typesweep_equ_int_n01000.L5X,545,,,,,,,,,,,
+typesweep_equ_lint_n01000,1000 rungs of EQU with LINT operands,logic_instr,samples/generated/logic/typesweep_equ_lint_n01000.L5X,545,,,,,,,,,,,
+typesweep_equ_real_n01000,1000 rungs of EQU with REAL operands,logic_instr,samples/generated/logic/typesweep_equ_real_n01000.L5X,545,,,,,,,,,,,
+typesweep_equ_sint_n01000,1000 rungs of EQU with SINT operands,logic_instr,samples/generated/logic/typesweep_equ_sint_n01000.L5X,545,,,,,,,,,,,
+typesweep_equ_string_n01000,1000 rungs of EQU with STRING operands (vs numeric types above),logic_instr,samples/generated/logic/typesweep_equ_string_n01000.L5X,545,,,,,,,,,,,
+typesweep_geq_dint_n01000,1000 rungs of GEQ with DINT operands,logic_instr,samples/generated/logic/typesweep_geq_dint_n01000.L5X,545,,,,,,,,,,,
+typesweep_geq_int_n01000,1000 rungs of GEQ with INT operands,logic_instr,samples/generated/logic/typesweep_geq_int_n01000.L5X,545,,,,,,,,,,,
+typesweep_geq_lint_n01000,1000 rungs of GEQ with LINT operands,logic_instr,samples/generated/logic/typesweep_geq_lint_n01000.L5X,545,,,,,,,,,,,
+typesweep_geq_real_n01000,1000 rungs of GEQ with REAL operands,logic_instr,samples/generated/logic/typesweep_geq_real_n01000.L5X,545,,,,,,,,,,,
+typesweep_geq_sint_n01000,1000 rungs of GEQ with SINT operands,logic_instr,samples/generated/logic/typesweep_geq_sint_n01000.L5X,545,,,,,,,,,,,
+typesweep_grt_dint_n01000,1000 rungs of GRT with DINT operands,logic_instr,samples/generated/logic/typesweep_grt_dint_n01000.L5X,545,,,,,,,,,,,
+typesweep_grt_int_n01000,1000 rungs of GRT with INT operands,logic_instr,samples/generated/logic/typesweep_grt_int_n01000.L5X,545,,,,,,,,,,,
+typesweep_grt_lint_n01000,1000 rungs of GRT with LINT operands,logic_instr,samples/generated/logic/typesweep_grt_lint_n01000.L5X,545,,,,,,,,,,,
+typesweep_grt_real_n01000,1000 rungs of GRT with REAL operands,logic_instr,samples/generated/logic/typesweep_grt_real_n01000.L5X,545,,,,,,,,,,,
+typesweep_grt_sint_n01000,1000 rungs of GRT with SINT operands,logic_instr,samples/generated/logic/typesweep_grt_sint_n01000.L5X,545,,,,,,,,,,,
+typesweep_leq_dint_n01000,1000 rungs of LEQ with DINT operands,logic_instr,samples/generated/logic/typesweep_leq_dint_n01000.L5X,545,,,,,,,,,,,
+typesweep_leq_int_n01000,1000 rungs of LEQ with INT operands,logic_instr,samples/generated/logic/typesweep_leq_int_n01000.L5X,545,,,,,,,,,,,
+typesweep_leq_lint_n01000,1000 rungs of LEQ with LINT operands,logic_instr,samples/generated/logic/typesweep_leq_lint_n01000.L5X,545,,,,,,,,,,,
+typesweep_leq_real_n01000,1000 rungs of LEQ with REAL operands,logic_instr,samples/generated/logic/typesweep_leq_real_n01000.L5X,545,,,,,,,,,,,
+typesweep_leq_sint_n01000,1000 rungs of LEQ with SINT operands,logic_instr,samples/generated/logic/typesweep_leq_sint_n01000.L5X,545,,,,,,,,,,,
+typesweep_les_dint_n01000,1000 rungs of LES with DINT operands,logic_instr,samples/generated/logic/typesweep_les_dint_n01000.L5X,545,,,,,,,,,,,
+typesweep_les_int_n01000,1000 rungs of LES with INT operands,logic_instr,samples/generated/logic/typesweep_les_int_n01000.L5X,545,,,,,,,,,,,
+typesweep_les_lint_n01000,1000 rungs of LES with LINT operands,logic_instr,samples/generated/logic/typesweep_les_lint_n01000.L5X,545,,,,,,,,,,,
+typesweep_les_real_n01000,1000 rungs of LES with REAL operands,logic_instr,samples/generated/logic/typesweep_les_real_n01000.L5X,545,,,,,,,,,,,
+typesweep_les_sint_n01000,1000 rungs of LES with SINT operands,logic_instr,samples/generated/logic/typesweep_les_sint_n01000.L5X,545,,,,,,,,,,,
+typesweep_lim_dint_n01000,1000 rungs of LIM with DINT operands,logic_instr,samples/generated/logic/typesweep_lim_dint_n01000.L5X,545,,,,,,,,,,,
+typesweep_lim_int_n01000,1000 rungs of LIM with INT operands,logic_instr,samples/generated/logic/typesweep_lim_int_n01000.L5X,545,,,,,,,,,,,
+typesweep_lim_lint_n01000,1000 rungs of LIM with LINT operands,logic_instr,samples/generated/logic/typesweep_lim_lint_n01000.L5X,545,,,,,,,,,,,
+typesweep_lim_real_n01000,1000 rungs of LIM with REAL operands,logic_instr,samples/generated/logic/typesweep_lim_real_n01000.L5X,545,,,,,,,,,,,
+typesweep_lim_sint_n01000,1000 rungs of LIM with SINT operands,logic_instr,samples/generated/logic/typesweep_lim_sint_n01000.L5X,545,,,,,,,,,,,
+typesweep_mod_dint_n01000,1000 rungs of MOD with DINT operands,logic_instr,samples/generated/logic/typesweep_mod_dint_n01000.L5X,545,,,,,,,,,,,
+typesweep_mod_int_n01000,1000 rungs of MOD with INT operands,logic_instr,samples/generated/logic/typesweep_mod_int_n01000.L5X,545,,,,,,,,,,,
+typesweep_mod_lint_n01000,1000 rungs of MOD with LINT operands,logic_instr,samples/generated/logic/typesweep_mod_lint_n01000.L5X,545,,,,,,,,,,,
+typesweep_mod_real_n01000,1000 rungs of MOD with REAL operands,logic_instr,samples/generated/logic/typesweep_mod_real_n01000.L5X,545,,,,,,,,,,,
+typesweep_mod_sint_n01000,1000 rungs of MOD with SINT operands,logic_instr,samples/generated/logic/typesweep_mod_sint_n01000.L5X,545,,,,,,,,,,,
+typesweep_mov_dint_n01000,1000 rungs of MOV with DINT operands,logic_instr,samples/generated/logic/typesweep_mov_dint_n01000.L5X,545,,,,,,,,,,,
+typesweep_mov_int_n01000,1000 rungs of MOV with INT operands,logic_instr,samples/generated/logic/typesweep_mov_int_n01000.L5X,545,,,,,,,,,,,
+typesweep_mov_lint_n01000,1000 rungs of MOV with LINT operands,logic_instr,samples/generated/logic/typesweep_mov_lint_n01000.L5X,545,,,,,,,,,,,
+typesweep_mov_real_n01000,1000 rungs of MOV with REAL operands,logic_instr,samples/generated/logic/typesweep_mov_real_n01000.L5X,545,,,,,,,,,,,
+typesweep_mov_sint_n01000,1000 rungs of MOV with SINT operands,logic_instr,samples/generated/logic/typesweep_mov_sint_n01000.L5X,545,,,,,,,,,,,
+typesweep_mul_dint_n01000,1000 rungs of MUL with DINT operands,logic_instr,samples/generated/logic/typesweep_mul_dint_n01000.L5X,545,,,,,,,,,,,
+typesweep_mul_int_n01000,1000 rungs of MUL with INT operands,logic_instr,samples/generated/logic/typesweep_mul_int_n01000.L5X,545,,,,,,,,,,,
+typesweep_mul_lint_n01000,1000 rungs of MUL with LINT operands,logic_instr,samples/generated/logic/typesweep_mul_lint_n01000.L5X,545,,,,,,,,,,,
+typesweep_mul_real_n01000,1000 rungs of MUL with REAL operands,logic_instr,samples/generated/logic/typesweep_mul_real_n01000.L5X,545,,,,,,,,,,,
+typesweep_mul_sint_n01000,1000 rungs of MUL with SINT operands,logic_instr,samples/generated/logic/typesweep_mul_sint_n01000.L5X,545,,,,,,,,,,,
+typesweep_neq_dint_n01000,1000 rungs of NEQ with DINT operands,logic_instr,samples/generated/logic/typesweep_neq_dint_n01000.L5X,545,,,,,,,,,,,
+typesweep_neq_int_n01000,1000 rungs of NEQ with INT operands,logic_instr,samples/generated/logic/typesweep_neq_int_n01000.L5X,545,,,,,,,,,,,
+typesweep_neq_lint_n01000,1000 rungs of NEQ with LINT operands,logic_instr,samples/generated/logic/typesweep_neq_lint_n01000.L5X,545,,,,,,,,,,,
+typesweep_neq_real_n01000,1000 rungs of NEQ with REAL operands,logic_instr,samples/generated/logic/typesweep_neq_real_n01000.L5X,545,,,,,,,,,,,
+typesweep_neq_sint_n01000,1000 rungs of NEQ with SINT operands,logic_instr,samples/generated/logic/typesweep_neq_sint_n01000.L5X,545,,,,,,,,,,,
+typesweep_neq_string_n01000,1000 rungs of NEQ with STRING operands (vs numeric types above),logic_instr,samples/generated/logic/typesweep_neq_string_n01000.L5X,545,,,,,,,,,,,
+typesweep_sub_dint_n01000,1000 rungs of SUB with DINT operands,logic_instr,samples/generated/logic/typesweep_sub_dint_n01000.L5X,545,,,,,,,,,,,
+typesweep_sub_int_n01000,1000 rungs of SUB with INT operands,logic_instr,samples/generated/logic/typesweep_sub_int_n01000.L5X,545,,,,,,,,,,,
+typesweep_sub_lint_n01000,1000 rungs of SUB with LINT operands,logic_instr,samples/generated/logic/typesweep_sub_lint_n01000.L5X,545,,,,,,,,,,,
+typesweep_sub_real_n01000,1000 rungs of SUB with REAL operands,logic_instr,samples/generated/logic/typesweep_sub_real_n01000.L5X,545,,,,,,,,,,,
+typesweep_sub_sint_n01000,1000 rungs of SUB with SINT operands,logic_instr,samples/generated/logic/typesweep_sub_sint_n01000.L5X,545,,,,,,,,,,,
+xic_ote_1000_comment100,"1000 rungs of 'XIC(In{i})OTE(Out{i});', comment_len=100",logic_bit,samples/generated/logic/xic_ote_1000_comment100.L5X,0,,,,,,,,,,,
+xic_ote_1000_nocomment,"1000 rungs of 'XIC(In{i})OTE(Out{i});', comment_len=0",logic_bit,samples/generated/logic/xic_ote_1000_nocomment.L5X,0,,,,,,,,,,,
+xprogref_singleprog_alias_n01000,"1000 rungs of XIC/OTE, single program, referencing a Controller-scoped global via a Local alias",logic_instr,samples/generated/logic/xprogref_singleprog_alias_n01000.L5X,8,,,,,,,,,,,
+xprogref_twoprog_shared_alias_n01000,"Two programs, each 1000 rungs of XIC/OTE via its own Local alias to the SAME Controller-scoped global -- the real cross-program-sharing pattern, vs xprogref_singleprog_alias baseline",logic_instr,samples/generated/logic/xprogref_twoprog_shared_alias_n01000.L5X,12,,,,,,,,,,,
+large_mixed_1000tags_arrays,"Realistic mix v2: 200x DINT[10]/BOOL[32]/REAL[10] array tags + 400x 3-member UDT = 1000 tags, no logic",mixed,samples/generated/mixed/large_mixed_1000tags_arrays.L5X,20400,,,,,,,,,,,
+large_mixed_100tags,"Realistic mix: 20x each of DINT/BOOL/REAL/SINT scalar + 20x 3-member UDT = 100 tags, no logic",mixed,samples/generated/mixed/large_mixed_100tags.L5X,440,,,,,,,,,,,
+large_mixed_1100tags,"Realistic mix: 220x each of DINT/BOOL/REAL/SINT scalar + 220x 3-member UDT = 1100 tags, no logic",mixed,samples/generated/mixed/large_mixed_1100tags.L5X,4840,,,,,,,,,,,
+module_1756_ib16_n01,1 local 1756-IB16 backplane module(s) (module sizing not yet implemented),modules,samples/generated/modules/module_1756_ib16_n01.L5X,0,,,,,,,,,,,
+module_1756_ib16_n03,3 local 1756-IB16 backplane module(s) (module sizing not yet implemented),modules,samples/generated/modules/module_1756_ib16_n03.L5X,0,,,,,,,,,,,
+module_1756_ib16_n10,10 local 1756-IB16 backplane module(s) (module sizing not yet implemented),modules,samples/generated/modules/module_1756_ib16_n10.L5X,0,,,,,,,,,,,
+module_5069_ib16_n01,"1 local 5069-IB16/A module(s), 5069-L320ERMS2 processor (non-safety) (module sizing not yet implemented)",modules,samples/generated/modules/module_5069_ib16_n01.L5X,0,,,,,,,,,,,
+module_5069_ib16_n03,"3 local 5069-IB16/A module(s), 5069-L320ERMS2 processor (non-safety) (module sizing not yet implemented)",modules,samples/generated/modules/module_5069_ib16_n03.L5X,0,,,,,,,,,,,
+module_genericeth_in0002_out0002,"1 generic ETHERNET-MODULE device, PrimCxnInputSize=2 PrimCxnOutputSize=2 -- config-variance test, same catalog as every other file in this group (module sizing not yet implemented)",modules,samples/generated/modules/module_genericeth_in0002_out0002.L5X,0,,,,,,,,,,,
+module_genericeth_in0008_out0008,"1 generic ETHERNET-MODULE device, PrimCxnInputSize=8 PrimCxnOutputSize=8 -- config-variance test, same catalog as every other file in this group (module sizing not yet implemented)",modules,samples/generated/modules/module_genericeth_in0008_out0008.L5X,0,,,,,,,,,,,
+module_genericeth_in0032_out0016,"1 generic ETHERNET-MODULE device, PrimCxnInputSize=32 PrimCxnOutputSize=16 -- config-variance test, same catalog as every other file in this group (module sizing not yet implemented)",modules,samples/generated/modules/module_genericeth_in0032_out0016.L5X,0,,,,,,,,,,,
+module_genericeth_in0450_out0008,"1 generic ETHERNET-MODULE device, PrimCxnInputSize=450 PrimCxnOutputSize=8 -- config-variance test, same catalog as every other file in this group (module sizing not yet implemented)",modules,samples/generated/modules/module_genericeth_in0450_out0008.L5X,0,,,,,,,,,,,
+module_genericeth_in1000_out1000,"1 generic ETHERNET-MODULE device, PrimCxnInputSize=1000 PrimCxnOutputSize=1000 -- config-variance test, same catalog as every other file in this group (module sizing not yet implemented)",modules,samples/generated/modules/module_genericeth_in1000_out1000.L5X,0,,,,,,,,,,,
+module_pointio_1734_n02,1734-AENT adapter + 2 1734-IB8 block(s) behind it (module sizing not yet implemented),modules,samples/generated/modules/module_pointio_1734_n02.L5X,0,,,,,,,,,,,
+module_pointio_1734_n08,1734-AENT adapter + 8 1734-IB8 block(s) behind it (module sizing not yet implemented),modules,samples/generated/modules/module_pointio_1734_n08.L5X,0,,,,,,,,,,,
+aliassize_n00001,"1 Alias tags (round-robin over 5 fixed real DINT targets, target count held constant)",tags,samples/generated/tags/aliassize_n00001.L5X,20,,,,,,,,,,,
+aliassize_n00010,"10 Alias tags (round-robin over 5 fixed real DINT targets, target count held constant)",tags,samples/generated/tags/aliassize_n00010.L5X,20,,,,,,,,,,,
+aliassize_n01000,"1000 Alias tags (round-robin over 5 fixed real DINT targets, target count held constant)",tags,samples/generated/tags/aliassize_n01000.L5X,20,,,,,,,,,,,
+array_dint_00001,1x DINT[1] tag(s),tag,samples/generated/tags/array_dint_00001.L5X,4,,,,,,,,,,,
+array_dint_00002,1x DINT[2] tag(s),tag,samples/generated/tags/array_dint_00002.L5X,8,,,,,,,,,,,
+array_dint_00005,1x DINT[5] tag(s),tag,samples/generated/tags/array_dint_00005.L5X,20,,,,,,,,,,,
+array_dint_00010,1x DINT[10] tag(s),tag,samples/generated/tags/array_dint_00010.L5X,40,,,,,,,,,,,
+array_dint_00025,1x DINT[25] tag(s),tag,samples/generated/tags/array_dint_00025.L5X,100,,,,,,,,,,,
+array_dint_00050,1x DINT[50] tag(s),tag,samples/generated/tags/array_dint_00050.L5X,200,,,,,,,,,,,
+array_dint_00100,1x DINT[100] tag(s),tag,samples/generated/tags/array_dint_00100.L5X,400,,,,,,,,,,,
+array_dint_00250,1x DINT[250] tag(s),tag,samples/generated/tags/array_dint_00250.L5X,1000,,,,,,,,,,,
+array_dint_00500,1x DINT[500] tag(s),tag,samples/generated/tags/array_dint_00500.L5X,2000,,,,,,,,,,,
+array_dint_01000,1x DINT[1000] tag(s),tag,samples/generated/tags/array_dint_01000.L5X,4000,,,,,,,,,,,
+array_dint_02500,1x DINT[2500] tag(s),tag,samples/generated/tags/array_dint_02500.L5X,10000,,,,,,,,,,,
+array_dint_05000,1x DINT[5000] tag(s),tag,samples/generated/tags/array_dint_05000.L5X,20000,,,,,,,,,,,
+arraypack_odd3b_n00001,Array of 1 instances of a 3-byte (3x SINT) UDT -- does each element round up to 4 bytes?,tags,samples/generated/tags/arraypack_odd3b_n00001.L5X,3,,,,,,,,,,,
+arraypack_odd3b_n00010,Array of 10 instances of a 3-byte (3x SINT) UDT -- does each element round up to 4 bytes?,tags,samples/generated/tags/arraypack_odd3b_n00010.L5X,30,,,,,,,,,,,
+arraypack_odd3b_n00100,Array of 100 instances of a 3-byte (3x SINT) UDT -- does each element round up to 4 bytes?,tags,samples/generated/tags/arraypack_odd3b_n00100.L5X,300,,,,,,,,,,,
+boolarray_n00008,"1 tag, array of 8 BOOL elements",tags,samples/generated/tags/boolarray_n00008.L5X,4,,,,,,,,,,,
+boolarray_n00016,"1 tag, array of 16 BOOL elements",tags,samples/generated/tags/boolarray_n00016.L5X,4,,,,,,,,,,,
+boolarray_n00032,"1 tag, array of 32 BOOL elements",tags,samples/generated/tags/boolarray_n00032.L5X,4,,,,,,,,,,,
+boolarray_n00100,"1 tag, array of 100 BOOL elements",tags,samples/generated/tags/boolarray_n00100.L5X,16,,,,,,,,,,,
+boolarray_n01000,"1 tag, array of 1000 BOOL elements",tags,samples/generated/tags/boolarray_n01000.L5X,128,,,,,,,,,,,
+boolarray_n05000,"1 tag, array of 5000 BOOL elements",tags,samples/generated/tags/boolarray_n05000.L5X,628,,,,,,,,,,,
+count_0001_dint,1x DINT tag(s),tag,samples/generated/tags/count_0001_dint.L5X,4,,,,,,,,,,,
+count_0002_dint,2x DINT tag(s),tag,samples/generated/tags/count_0002_dint.L5X,8,,,,,,,,,,,
+count_0005_dint,5x DINT tag(s),tag,samples/generated/tags/count_0005_dint.L5X,20,,,,,,,,,,,
+count_0010_dint,10x DINT tag(s),tag,samples/generated/tags/count_0010_dint.L5X,40,,,,,,,,,,,
+count_0025_dint,25x DINT tag(s),tag,samples/generated/tags/count_0025_dint.L5X,100,,,,,,,,,,,
+count_0050_dint,50x DINT tag(s),tag,samples/generated/tags/count_0050_dint.L5X,200,,,,,,,,,,,
+count_0100_dint,100x DINT tag(s),tag,samples/generated/tags/count_0100_dint.L5X,400,,,,,,,,,,,
+count_0250_dint,250x DINT tag(s),tag,samples/generated/tags/count_0250_dint.L5X,1000,,,,,,,,,,,
+count_0500_dint,500x DINT tag(s),tag,samples/generated/tags/count_0500_dint.L5X,2000,,,,,,,,,,,
+count_1000_dint,1000x DINT tag(s),tag,samples/generated/tags/count_1000_dint.L5X,4000,,,,,,,,,,,
+customstring_len0010,"Custom STRING type, max_len=10, 1 tag",tags,samples/generated/tags/customstring_len0010.L5X,14,,,,,,,,,,,
+customstring_len0082,"Custom STRING type, max_len=82, 1 tag",tags,samples/generated/tags/customstring_len0082.L5X,86,,,,,,,,,,,
+customstring_len0100,"Custom STRING type, max_len=100, 1 tag",tags,samples/generated/tags/customstring_len0100.L5X,104,,,,,,,,,,,
+customstring_len0250,"Custom STRING type, max_len=250, 1 tag",tags,samples/generated/tags/customstring_len0250.L5X,254,,,,,,,,,,,
+customstring_len0500,"Custom STRING type, max_len=500, 1 tag",tags,samples/generated/tags/customstring_len0500.L5X,504,,,,,,,,,,,
+customstring_len1000,"Custom STRING type, max_len=1000, 1 tag",tags,samples/generated/tags/customstring_len1000.L5X,1004,,,,,,,,,,,
+customstring_len2000,"Custom STRING type, max_len=2000, 1 tag",tags,samples/generated/tags/customstring_len2000.L5X,2004,,,,,,,,,,,
+dint_10k_array,1x DINT[10000] tag(s),tag,samples/generated/tags/dint_10k_array.L5X,40000,,,,,,,,,,,
+tagcomment_len000,1x DINT tag(s),tag,samples/generated/tags/tagcomment_len000.L5X,4,,,,,,,,,,,
+tagcomment_len010,1x DINT tag(s),tag,samples/generated/tags/tagcomment_len010.L5X,4,,,,,,,,,,,
+tagcomment_len025,1x DINT tag(s),tag,samples/generated/tags/tagcomment_len025.L5X,4,,,,,,,,,,,
+tagcomment_len050,1x DINT tag(s),tag,samples/generated/tags/tagcomment_len050.L5X,4,,,,,,,,,,,
+tagcomment_len100,1x DINT tag(s),tag,samples/generated/tags/tagcomment_len100.L5X,4,,,,,,,,,,,
+tagcomment_len200,1x DINT tag(s),tag,samples/generated/tags/tagcomment_len200.L5X,4,,,,,,,,,,,
+tagname_len04_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len04_50dint.L5X,200,,,,,,,,,,,
+tagname_len07_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len07_50dint.L5X,200,,,,,,,,,,,
+tagname_len10_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len10_50dint.L5X,200,,,,,,,,,,,
+tagname_len13_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len13_50dint.L5X,200,,,,,,,,,,,
+tagname_len16_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len16_50dint.L5X,200,,,,,,,,,,,
+tagname_len19_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len19_50dint.L5X,200,,,,,,,,,,,
+tagname_len22_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len22_50dint.L5X,200,,,,,,,,,,,
+tagname_len25_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len25_50dint.L5X,200,,,,,,,,,,,
+tagname_len28_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len28_50dint.L5X,200,,,,,,,,,,,
+tagname_len31_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len31_50dint.L5X,200,,,,,,,,,,,
+tagname_len34_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len34_50dint.L5X,200,,,,,,,,,,,
+tagname_len37_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len37_50dint.L5X,200,,,,,,,,,,,
+tagname_len40_50dint,50x DINT tag(s),tag,samples/generated/tags/tagname_len40_50dint.L5X,200,,,,,,,,,,,
+tagname_long_100dint,100x DINT tag(s),tag,samples/generated/tags/tagname_long_100dint.L5X,400,,,,,,,,,,,
+tagname_short_100dint,100x DINT tag(s),tag,samples/generated/tags/tagname_short_100dint.L5X,400,,,,,,,,,,,
+tagname_spotlen08_40real,40x REAL tag(s),tag,samples/generated/tags/tagname_spotlen08_40real.L5X,160,,,,,,,,,,,
+tagname_spotlen24_40real,40x REAL tag(s),tag,samples/generated/tags/tagname_spotlen24_40real.L5X,160,,,,,,,,,,,
+tagname_spotlen40_40real,40x REAL tag(s),tag,samples/generated/tags/tagname_spotlen40_40real.L5X,160,,,,,,,,,,,
+tagscope_local_n00010,"10 Program-scoped DINT tags, Usage=Local (default)",tags,samples/generated/tags/tagscope_local_n00010.L5X,40,,,,,,,,,,,
+tagscope_local_n00100,"100 Program-scoped DINT tags, Usage=Local (default)",tags,samples/generated/tags/tagscope_local_n00100.L5X,400,,,,,,,,,,,
+tagscope_local_n01000,"1000 Program-scoped DINT tags, Usage=Local (default)",tags,samples/generated/tags/tagscope_local_n01000.L5X,4000,,,,,,,,,,,
+tagscope_public_n00010,"10 Program-scoped DINT tags, Usage=Public",tags,samples/generated/tags/tagscope_public_n00010.L5X,40,,,,,,,,,,,
+tagscope_public_n00100,"100 Program-scoped DINT tags, Usage=Public",tags,samples/generated/tags/tagscope_public_n00100.L5X,400,,,,,,,,,,,
+tagscope_public_n01000,"1000 Program-scoped DINT tags, Usage=Public",tags,samples/generated/tags/tagscope_public_n01000.L5X,4000,,,,,,,,,,,
+type_bool_50tag,50x BOOL tag(s),tag,samples/generated/tags/type_bool_50tag.L5X,200,,,,,,,,,,,
+type_dint_50tag,50x DINT tag(s),tag,samples/generated/tags/type_dint_50tag.L5X,200,,,,,,,,,,,
+type_int_50tag,50x INT tag(s),tag,samples/generated/tags/type_int_50tag.L5X,100,,,,,,,,,,,
+type_lint_50tag,50x LINT tag(s),tag,samples/generated/tags/type_lint_50tag.L5X,400,,,,,,,,,,,
+type_real_50tag,50x REAL tag(s),tag,samples/generated/tags/type_real_50tag.L5X,200,,,,,,,,,,,
+type_sint_50tag,50x SINT tag(s),tag,samples/generated/tags/type_sint_50tag.L5X,50,,,,,,,,,,,
+udtarrayalign_tight8b_n00001,Array of 1 instances of an already-8-byte-tight UDT (2x DINT) -- per-element padding check,tags,samples/generated/tags/udtarrayalign_tight8b_n00001.L5X,8,,,,,,,,,,,
+udtarrayalign_tight8b_n00010,Array of 10 instances of an already-8-byte-tight UDT (2x DINT) -- per-element padding check,tags,samples/generated/tags/udtarrayalign_tight8b_n00010.L5X,80,,,,,,,,,,,
+udtarrayalign_tight8b_n00100,Array of 100 instances of an already-8-byte-tight UDT (2x DINT) -- per-element padding check,tags,samples/generated/tags/udtarrayalign_tight8b_n00100.L5X,800,,,,,,,,,,,
+array_of_nested_udt_100,100-element array of a UDT that itself contains a nested-UDT member,udt,samples/generated/udt/array_of_nested_udt_100.L5X,1200,,,,,,,,,,,
+motorstatus_10_instances,"UDT MotorStatus: BOOL, DINT, BOOL, 10 instance(s)",udt,samples/generated/udt/motorstatus_10_instances.L5X,60,,,,,,,,,,,
+motorstatus_def_only,"UDT MotorStatus: BOOL, DINT, BOOL, 0 instance(s)",udt,samples/generated/udt/motorstatus_def_only.L5X,0,,,,,,,,,,,
+motorstatus_test,"UDT MotorStatus: BOOL, DINT, BOOL",udt,samples/generated/udt/motorstatus_test.L5X,6,,,,,,,,,,,
+nested_udt_array_member,Outer UDT with a 10-element array-of-nested-UDT member,udt,samples/generated/udt/nested_udt_array_member.L5X,84,,,,,,,,,,,
+nested_udt_scalar,Outer UDT with one nested-UDT scalar member (Inner: 2 DINT),udt,samples/generated/udt/nested_udt_scalar.L5X,12,,,,,,,,,,,
+oddudt5_array_1000,"UDT OddUdt5: DINT, BOOL, BOOL",udt,samples/generated/udt/oddudt5_array_1000.L5X,5000,,,,,,,,,,,
+udtmembercomment_len000,"UDT CommentH: DINT, 0 instance(s)",udt,samples/generated/udt/udtmembercomment_len000.L5X,0,,,,,,,,,,,
+udtmembercomment_len010,"UDT CommentH: DINT, 0 instance(s)",udt,samples/generated/udt/udtmembercomment_len010.L5X,0,,,,,,,,,,,
+udtmembercomment_len025,"UDT CommentH: DINT, 0 instance(s)",udt,samples/generated/udt/udtmembercomment_len025.L5X,0,,,,,,,,,,,
+udtmembercomment_len050,"UDT CommentH: DINT, 0 instance(s)",udt,samples/generated/udt/udtmembercomment_len050.L5X,0,,,,,,,,,,,
+udtmembercomment_len100,"UDT CommentH: DINT, 0 instance(s)",udt,samples/generated/udt/udtmembercomment_len100.L5X,0,,,,,,,,,,,
+udtmembercomment_len200,"UDT CommentH: DINT, 0 instance(s)",udt,samples/generated/udt/udtmembercomment_len200.L5X,0,,,,,,,,,,,
+udtmembers_n01_dint,"UDT SweepN01: DINT, 0 instance(s)",udt,samples/generated/udt/udtmembers_n01_dint.L5X,0,,,,,,,,,,,
+udtmembers_n02_dint,"UDT SweepN02: DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtmembers_n02_dint.L5X,0,,,,,,,,,,,
+udtmembers_n04_dint,"UDT SweepN04: DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtmembers_n04_dint.L5X,0,,,,,,,,,,,
+udtmembers_n08_dint,"UDT SweepN08: DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtmembers_n08_dint.L5X,0,,,,,,,,,,,
+udtmembers_n16_dint,"UDT SweepN16: DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtmembers_n16_dint.L5X,0,,,,,,,,,,,
+udtmembers_n32_dint,"UDT SweepN32: DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtmembers_n32_dint.L5X,0,,,,,,,,,,,
+udtname_len08,"UDT UDTNAMED: DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtname_len08.L5X,0,,,,,,,,,,,
+udtname_len13,"UDT UDTNAMEDTNAME: DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtname_len13.L5X,0,,,,,,,,,,,
+udtname_len20,"UDT UDTNAMEDTNAMEDTNAMED: DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtname_len20.L5X,0,,,,,,,,,,,
+udtname_len30,"UDT UDTNAMEDTNAMEDTNAMEDTNAMEDTNAM: DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udtname_len30.L5X,0,,,,,,,,,,,
+udttagcomment_len000,"UDT CommentJ: DINT, 1 instance(s)",udt,samples/generated/udt/udttagcomment_len000.L5X,4,,,,,,,,,,,
+udttagcomment_len010,"UDT CommentJ: DINT, 1 instance(s)",udt,samples/generated/udt/udttagcomment_len010.L5X,4,,,,,,,,,,,
+udttagcomment_len025,"UDT CommentJ: DINT, 1 instance(s)",udt,samples/generated/udt/udttagcomment_len025.L5X,4,,,,,,,,,,,
+udttagcomment_len050,"UDT CommentJ: DINT, 1 instance(s)",udt,samples/generated/udt/udttagcomment_len050.L5X,4,,,,,,,,,,,
+udttagcomment_len100,"UDT CommentJ: DINT, 1 instance(s)",udt,samples/generated/udt/udttagcomment_len100.L5X,4,,,,,,,,,,,
+udttagcomment_len200,"UDT CommentJ: DINT, 1 instance(s)",udt,samples/generated/udt/udttagcomment_len200.L5X,4,,,,,,,,,,,
+udttype_bool_n4,"UDT SweepTypeBOOL: BOOL, BOOL, BOOL, BOOL, 0 instance(s)",udt,samples/generated/udt/udttype_bool_n4.L5X,0,,,,,,,,,,,
+udttype_dint_n4,"UDT SweepTypeDINT: DINT, DINT, DINT, DINT, 0 instance(s)",udt,samples/generated/udt/udttype_dint_n4.L5X,0,,,,,,,,,,,
+udttype_int_n4,"UDT SweepTypeINT: INT, INT, INT, INT, 0 instance(s)",udt,samples/generated/udt/udttype_int_n4.L5X,0,,,,,,,,,,,
+udttype_lint_n4,"UDT SweepTypeLINT: LINT, LINT, LINT, LINT, 0 instance(s)",udt,samples/generated/udt/udttype_lint_n4.L5X,0,,,,,,,,,,,
+udttype_real_n4,"UDT SweepTypeREAL: REAL, REAL, REAL, REAL, 0 instance(s)",udt,samples/generated/udt/udttype_real_n4.L5X,0,,,,,,,,,,,
+udttype_sint_n4,"UDT SweepTypeSINT: SINT, SINT, SINT, SINT, 0 instance(s)",udt,samples/generated/udt/udttype_sint_n4.L5X,0,,,,,,,,,,,
+udttypecomment_len000,"UDT CommentI: DINT, 0 instance(s)",udt,samples/generated/udt/udttypecomment_len000.L5X,0,,,,,,,,,,,
+udttypecomment_len010,"UDT CommentI: DINT, 0 instance(s)",udt,samples/generated/udt/udttypecomment_len010.L5X,0,,,,,,,,,,,
+udttypecomment_len025,"UDT CommentI: DINT, 0 instance(s)",udt,samples/generated/udt/udttypecomment_len025.L5X,0,,,,,,,,,,,
+udttypecomment_len050,"UDT CommentI: DINT, 0 instance(s)",udt,samples/generated/udt/udttypecomment_len050.L5X,0,,,,,,,,,,,
+udttypecomment_len100,"UDT CommentI: DINT, 0 instance(s)",udt,samples/generated/udt/udttypecomment_len100.L5X,0,,,,,,,,,,,
+udttypecomment_len200,"UDT CommentI: DINT, 0 instance(s)",udt,samples/generated/udt/udttypecomment_len200.L5X,0,,,,,,,,,,,
