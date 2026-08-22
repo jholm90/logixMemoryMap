@@ -162,6 +162,17 @@ Status(msg) {
         Send "n"
         Sleep 250
 
+        ; Wait for the Controller Properties dialog itself instead of
+        ; guessing a fixed delay -- title is "Controller Properties - <name>"
+        ; (dynamic per file, confirmed via Window Spy: ahk_class #32770,
+        ; ahk_exe LogixDesigner.Exe), so match on the stable leading text.
+        Sleep 10
+        if !WinWait("Controller Properties", , 5) {
+            MsgBox "Controller Properties dialog didn't appear within 5s."
+            continue
+        }
+        Sleep 250
+
         Status("Selecting tab")
         Send "+{Tab}"
         Sleep 50
