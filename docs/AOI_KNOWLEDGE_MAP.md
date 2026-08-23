@@ -87,7 +87,11 @@ instruction table almost did.
      more param shapes exist), but this is the clearest signal yet on the
      AOI-vs-UDT structural difference James confirmed is real in the
      2026-08-25 Q&A (see below) — plausibly the ~1200 flat term IS that
-     extra bookkeeping.
+     extra bookkeeping. **Generated 2026-08-25, `gen_aoi_generalization.py`,
+     awaiting capture:** INT/BOOL/REAL Input params at n=2/4/8 (9 files)
+     and Output/InOut direction at n=4/8 (4 files), matching the confirmed
+     DINT/Input points exactly so the comparison isolates only type or
+     direction.
    - Does Required/Visible/Hidden affect DEFINITION cost, not just
      call-site syntax? **Yes, a little, unexplained.** Real data:
      `reqvis_allhidden_n4_def_only` = `reqvis_allrequired_n4_def_only` =
@@ -159,6 +163,13 @@ instruction table almost did.
    Untested. **This is now the single highest-value next AOI test**: repeat
    the same ratio sweep at a different total member count (e.g. 10 or 60
    members) to see if `124 - 4n` still holds or the coefficients shift.
+
+   **Generated 2026-08-25, `gen_aoi_generalization.py`, awaiting capture:**
+   the ratio sweep at member_count=10/20/60 (5 ratio points × 3 instance
+   counts each, 45 files) plus a layout variant (BOOL-first/BOOL-last/
+   interspersed at the confirmed 15/30 ratio, 6 files) to test whether the
+   formula holds at other member counts and whether BOOL position (not
+   just count) matters.
 
 3. **AOI array cost vs AOI definition cost — currently tangled
    together, can't be cleanly separated.** Because the definition-cost
