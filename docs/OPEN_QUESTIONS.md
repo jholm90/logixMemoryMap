@@ -557,3 +557,77 @@ generator already covers them, just waiting on the next capture batch.
     capability plus at least one more count point (e.g. n=2, n=3) to
     firm up the per-param constant before treating ~20/param as confirmed
     rather than approximate.
+
+16. **OQ-CAPTURERACE (new, 2026-08-25, James: "flag results that stand out
+    and might need retesting, I don't want to go forward with you assuming
+    10 bools is the same size as 100 bools").** Full manifest sweep for
+    count-invariant results (same `actual_bytes` across meaningfully
+    different counts/sizes within one file family). Two categories came
+    back:
+
+    **Legitimate, no retest needed:**
+    - `boolarray_n00008/n00016/n00032` all = 18224 — correct, real BOOL
+      array packing (32 bits/packed word means 8/16/32 elements all fit in
+      1 word). Already confirmed via `n00100`/`n01000`/`n05000` scaling
+      correctly from there (RESOLVED_QUESTIONS.md OQ-BOOLARRAY). Not what
+      James's "10 vs 100 bools" concern was — a *standalone* BOOL-array
+      tag genuinely doesn't grow until you cross a 32-bit boundary. (A
+      hidden 1000-element BOOL array, the actual memory-hog scenario the
+      tool exists to catch, is fully covered by the n01000/n05000 points.)
+    - `motioninstr_ma{m,j,s}_n00010` = `_n00100` (all = 42112, both counts)
+      — correct: `error_count == rung_count` for both (100% build
+      failure, see OQ-MAMFAMILY-BUILDFAIL/RESOLVED_QUESTIONS.md OQ-MAHMSO)
+      — none of the rungs compiled, so Capacity reflects only scaffolding
+      regardless of attempted rung count. Contrast MAH (same family,
+      works): 42712 → 48112 across the same 10→100 sweep, scales exactly
+      as expected. The flatness itself is evidence the build genuinely
+      failed, not a capture bug.
+
+    **Real capture-integrity problem, NEEDS RETEST — 6 rows, all
+    self-flagged by James's own AHK/PowerShell tooling's window-title
+    check (`notes` column, "WINDOW TITLE MISMATCH"):**
+    - `array_dint_00001`, `array_dint_00002`, `array_dint_00005` — all
+      three show identical `actual_bytes=18240` despite the L5X files on
+      disk correctly declaring `Dimensions="1"`, `"2"`, `"5"` respectively
+      (verified directly against the generated files — not a generator
+      bug). `array_dint_00005`'s own note shows the capture window
+      actually read was titled `array_dint_00002`'s project — a stale/
+      previous-window race. The clean part of the same sweep
+      (`n00010` through `n05000`) scales perfectly linearly at 4
+      bytes/element with 0 residual, so this is isolated to the n=1/2/5
+      tail, not a systemic array-sizing problem.
+    - `paramcount_n04_def_only` (=`paramcount_n02_def_only`'s value,
+      19360, note explicitly says the captured window was titled
+      "ParamCountN02") and `paramcount_n08_def_only` (note says the
+      window read was titled "ParamCountN04", though its own value,
+      19392, doesn't exactly match n04's 19360 either — ambiguous, still
+      needs a clean recapture rather than assuming it's fine). This is
+      the same AOI-definition-cost sweep already carrying a DATA QUALITY
+      WARNING for a different reason (OQ-AOIDEF's 7-way-identical-value
+      contamination) — this off-by-one window race looks like the same
+      underlying automation issue (the capture tool reading Capacity
+      before the newly-opened project's window has taken focus/finished
+      loading), not a new, separate bug.
+    - `udttagcomment_len000` — note says the window actually read was
+      titled "Snap Assist" (a Windows overlay, not Logix Designer at
+      all). Its `actual_bytes=18416` is almost certainly not a real
+      Capacity reading and should be treated as garbage, not just
+      suspect.
+
+    **Recommendation for James's capture tooling, not a code change here:**
+    all 6 rows share the same signature — the AHK/PowerShell pipeline
+    captured a value before the target project's window had actually
+    taken focus (previous window, in one case a Windows Snap Assist
+    overlay). Given this has now surfaced independently at least 3 times
+    across different sweeps (this batch, plus the earlier `*_def_only`
+    AOI contamination), a settle/focus-confirm delay before reading the
+    Capacity value in the capture script would likely prevent recurrence.
+
+    **Action:** these 6 sample_ids (plus, out of caution, `paramcount_
+    n08_def_only`'s neighbor `n16`/`n32` should be spot-checked too since
+    the race could plausibly cascade) need a clean recapture. Flagging for
+    inclusion in the next test batch rather than silently trusting the
+    current values — none of the derived constants in this repo currently
+    depend on these 6 rows specifically (array-of-DINT and AOI param-count
+    are both already confirmed from their clean data points), so this is
+    a data-integrity flag, not a currently-wrong wired constant.
