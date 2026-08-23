@@ -35,9 +35,18 @@ class MemberSpec:
     # with `dimension` for "array of nested UDT" (a member that's an array
     # of another UDT's instances -- OQ-TAGOVERHEAD "nested array udts").
     nested_members: tuple["MemberSpec", ...] | None = None
+    # An AOI instance nested as a UDT member (James, 2026-08-23, real
+    # hand-built trial files after this was one of 5 real bugs behind a
+    # batch of Build failures): renders differently from an ordinary
+    # nested UDT member -- needs Radix="NullType" ExternalAccess=
+    # "Read/Write" on the <Member> declaration, which a plain nested UDT
+    # member does NOT carry (confirmed: axis_composite_udt_* already
+    # passed real Build without them). See _udt_members_xml.
+    is_aoi_member: bool = False
 
 
 _FLOAT_TYPES = {"REAL"}
+_ATOMIC_TYPES = {"BOOL", "SINT", "INT", "DINT", "LINT", "REAL"}
 
 
 def _default_value(data_type: str) -> str:
@@ -200,9 +209,10 @@ def _udt_members_xml(members: list[MemberSpec]) -> str:
         m = members[i]
         if m.data_type != "BOOL":
             dim_attr = f' Dimension="{m.dimension}"' if m.dimension else ' Dimension="0"'
+            aoi_attrs = ' Radix="NullType" ExternalAccess="Read/Write"' if m.is_aoi_member else ""
             desc = _member_description_xml(m.description)
-            parts.append(f'      <Member Name="{m.name}" DataType="{m.data_type}"{dim_attr} Hidden="false">{desc}</Member>'
-                         if desc else f'      <Member Name="{m.name}" DataType="{m.data_type}"{dim_attr} Hidden="false"/>')
+            parts.append(f'      <Member Name="{m.name}" DataType="{m.data_type}"{dim_attr}{aoi_attrs} Hidden="false">{desc}</Member>'
+                         if desc else f'      <Member Name="{m.name}" DataType="{m.data_type}"{dim_attr}{aoi_attrs} Hidden="false"/>')
             i += 1
             continue
 
@@ -314,10 +324,21 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
         # Structure body only ever contains EnableIn/EnableOut, InOut is
         # completely absent -- so aoi_xml() already excludes inout_params
         # from the returned storage_members list, unchanged by this fix.
-        radix_attr = "" if m.data_type == "STRING" else f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
+        #
+        # 2026-08-23 fix (James's real hand-built trial files, after 5
+        # AXIS_CIP_DRIVE-InOut files all failed Build): STRING wasn't the
+        # only non-atomic case -- AXIS_CIP_DRIVE is a predefined
+        # STRUCTURE type too, and James's real, Studio-5000-confirmed
+        # parameter for it is bare: `Usage="InOut" Required="true"
+        # Visible="true"/>` -- no Radix, no Constant at all. The STRING
+        # special case generalizes to "no atomic type, no Radix/Constant,"
+        # not "no STRING specifically."
+        is_atomic = m.data_type in _ATOMIC_TYPES
+        radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"' if is_atomic else ""
+        constant_attr = ' Constant="false"' if is_atomic else ""
         return (
             f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{radix_attr} Usage="InOut" '
-            f'Required="true" Visible="true" Constant="false"/>'
+            f'Required="true" Visible="true"{constant_attr}/>'
         )
 
     dim_attr = f' Dimension="{m.dimension}"' if m.dimension else ""

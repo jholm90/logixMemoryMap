@@ -48,6 +48,19 @@ def write_sample(l5x_text: str, out_path: Path) -> int:
     return predicted_bytes(l5x_text)
 
 
+def write_sample_unmodeled(l5x_text: str, out_path: Path) -> None:
+    """Like write_sample(), for a file containing an AXIS_*/MOTION_GROUP tag
+    -- those are unmodeled predefined structures (OQ-AXISSTRUCT), so the
+    sizing engine can't compute predicted_bytes for them at all (confirmed:
+    explicit SizeError, not a crash). Still runs the lint pre-flight check;
+    just skips the strict predicted_bytes requirement. Caller logs its own
+    manifest row (predicted_bytes=0, category, description) since those
+    vary per generator -- this only writes the file."""
+    lint_or_raise(l5x_text, context=str(out_path))
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(l5x_text, encoding="utf-8")
+
+
 def append_manifest_row(sample_id: str, description: str, category: str, l5x_path: Path, bytes_predicted: int) -> None:
     """Upsert keyed on sample_id: regenerating a sample updates its existing
     row (description/category/predicted_bytes) in place rather than piling up

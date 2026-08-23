@@ -52,8 +52,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from sample_gen.builders import MemberSpec, aoi_xml, collect_nested_datatypes, rung_xml, tag_xml, udt_xml
-from sample_gen.lint import lint_or_raise
-from sample_gen.manifest import append_manifest_row, write_sample
+from sample_gen.manifest import append_manifest_row, write_sample, write_sample_unmodeled
 from sample_gen.wrapper import build_l5x
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "axis"
@@ -68,9 +67,7 @@ def _write_unmodeled(l5x: str, out_name: str, description: str) -> None:
     convention already used for axis_cip_drive_only.L5X etc. in
     manifest.csv."""
     out_path = OUT_ROOT / f"{out_name}.L5X"
-    lint_or_raise(l5x, context=str(out_path))
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(l5x, encoding="utf-8")
+    write_sample_unmodeled(l5x, out_path)
     append_manifest_row(out_name, f"{description} (unmodeled predefined structure)", "axis", out_path, 0)
     print(f"Wrote {out_path} (predicted N/A -- unmodeled axis structure)")
 
