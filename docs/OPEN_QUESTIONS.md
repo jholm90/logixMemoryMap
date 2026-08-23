@@ -418,6 +418,47 @@ generator already covers them, just waiting on the next capture batch.
    The operand-type-vs-operator interaction is a separate follow-up, not
    attempted in this batch to keep it focused on one question at a time.
 
+   **2026-08-25, James: "you need to put priority on getting this CPT
+   working... I expect the next batch of generated tests that you will
+   have this 100% solved. no exceptions. CPT is very important. confirm
+   you understand this." Understood — confirmed.** Built
+   `gen_cpt_comprehensive.py`, 24 files, all lint-clean, all reusing the
+   exact `_POOL_TAGS_XML` so every one subtracts cleanly against the
+   existing real data:
+   - **MOD operator, 3 count points (10/100/1000).** Found this turn via
+     `docs/CMP_CPT_REFERENCE.md`: MOD is used **146 times** in the real
+     corpus — a bigger real-usage gap than POW (13 uses, already tested)
+     and the single largest untested CPT operator. Real syntax confirmed
+     from corpus (`Wrk_Now.Yr MOD 100`, `(Wrk_Now.Mo+9)MOD 12`) — word
+     operator, used `L0 MOD L1` here. Gets 3 count points from the start
+     instead of being bolted on with only 1.
+   - **SUB/DIV n=100 completion** — `gen_cpt_confirm.py` only added n=100
+     for barecopy/ADD/MUL/POW, leaving the ADD=SUB and MUL=DIV tier-match
+     assumption unconfirmed at a 2nd point for SUB/DIV specifically. Added.
+   - **n=10 third count point** for barecopy + all 5 operators (6 files) —
+     every tier previously had at most 2 points (100, 1000); 2 points fit
+     a line trivially, 3 actually tests linearity.
+   - **Chain length sweep**, n=1000, operand counts 3/4/5/8/10 (5 files) —
+     the existing 6-operand-chain finding (+96,000 over 2-op ADD) was a
+     single data point with no way to separate a per-operand rate from
+     some other shape. Chains past the 8-tag pool (L7 reserved as dest)
+     recycle earlier tags — already confirmed harmless via the same-tag-
+     twice dedup finding above (costs identically to a distinct tag).
+   - **Literal-linearity**, int- and float-literal ADD at n=10/n=100 (4
+     files) — confirms whether the mined +264 flat int-literal delta and
+     the float-literal operator-(non-)independence are genuine per-rung-
+     independent effects or single-count-point artifacts.
+   - **Compound CMP n=100** for single/and/or/duplicate_cond (4 files) —
+     2nd count point matching the existing n=1000 set.
+
+   Still explicitly NOT attempted in this batch (flagged, not silently
+   dropped): ABS()/ATN()/TAN()/SQR() (single-digit real usage each, lowest
+   priority), nested/parenthesized mixed-operator expressions beyond the
+   flat chain (e.g. `(L0+L1)*L2`), and CMP-vs-CPT cost divergence beyond
+   what's already covered. Once this batch's captures land, CPT should
+   have real multi-point data for every operator that matters by real
+   usage frequency except those four near-zero-use functions.
+
 7. **OQ-AOIDEF (new, 2026-08-23, MAJOR — real cost currently modeled as
    zero; DATA QUALITY WARNING added same day, see below before trusting
    any number in this entry). See `docs/AOI_KNOWLEDGE_MAP.md` for the full

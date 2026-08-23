@@ -258,7 +258,16 @@ project's corpus grows.
    OQ-CMPCPTLAYOUT, but every one is anchored on a single rung count —
    nothing wireable yet. `gen_cpt_confirm.py` (4 files, 2nd count point
    for the 3 tiers) generated and awaiting capture to confirm linearity
-   before a real per-operand/operator cost model can be built.
+   before a real per-operand/operator cost model can be built. 2026-08-25,
+   per James's explicit priority directive: `gen_cpt_comprehensive.py` (24
+   files, lint-clean, all sharing the same tag pool) adds MOD (146 real
+   uses, was zero-coverage — the single biggest real-usage gap in the
+   whole operator set), a 3rd count point (n=10) for every established
+   tier, SUB/DIV n=100 completion, a 5-point chain-length sweep (3/4/5/8/
+   10 operands), int/float-literal linearity at n=10/100, and a compound-
+   CMP 2nd count point. Once captured, every operator CPT sees at
+   meaningful real frequency (all but ABS/ATN/TAN/SQR, single-digit real
+   uses each) will have multi-point real data instead of one anchor row.
 2. **MAPC (113 occurrences, 0.06%) — James: "100% needed instruction that
    needs 100% accuracy," active priority, not a defer item.** Real build
    failure on x10 capture (20 errors/10 rungs). James's direction: review
