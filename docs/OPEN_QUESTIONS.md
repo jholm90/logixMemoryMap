@@ -147,9 +147,15 @@ generator already covers them, just waiting on the next capture batch.
        (`Stacker.ForksUpDn.MAPC`) uses `EM304_ForksUpDn` (verified
        `DataType="AXIS_CIP_DRIVE"`, a real physical axis) for the slave
        position and `VM305_StackerVirtual` (verified
-       `DataType="AXIS_VIRTUAL"`) for the master position — two DIFFERENT
-       real axis tags of two DIFFERENT real DataTypes, not a
-       simplification detail, an actual structural requirement.
+       `DataType="AXIS_VIRTUAL"`) for the master position. **James,
+       2026-08-25, confirmed the real rule: "Mapc can use two axis of any
+       type (virtual master/virtual slave is ok)"** — the requirement is
+       just two DISTINCT tags, not a required CIP-Drive/Virtual pairing.
+       The 8 corpus examples happening to show that specific pairing was
+       real corpus data, not a wrong over-generalization, but James's
+       confirmation is the actual rule — virtual/virtual (and presumably
+       CIP-Drive/CIP-Drive) are equally valid, only same-tag-reused is
+       wrong.
 
     Every real MAPC call found (all 8) has the exact same **14-operand**
     shape: `MAPC(slave_axis, master_axis, motion_instruction_tag, 0,
@@ -544,6 +550,13 @@ generator already covers them, just waiting on the next capture batch.
    just the earlier MCCP citation). Needs a real count sweep (e.g.
    1/5/10/20/50 CAM elements) before any byte formula is wired.
 
+   **MESSAGE — James, 2026-08-25: "Message size is fine for the 90%
+   accuracy as it's not a common usage instruction." Deprioritized —
+   the research below stays as real, useful background, but no MESSAGE
+   byte-size sweep is planned. MSG's LOGIC weight (48/rung) is resolved
+   and wired; the operand's own MESSAGE structure cost stays unmodeled
+   deliberately, not pursued further right now.**
+
    **MESSAGE, read across the corpus more broadly (not just one file).**
    Real shape is confirmed as a single self-closed `<MessageParameters>`
    element (`Data Format="Message"`), no `Structure`/`DataValueMember`
@@ -571,12 +584,12 @@ generator already covers them, just waiting on the next capture batch.
    attribute-count range) before treating one MessageType's cost as
    representative of all MESSAGE tags.
 
-   **Not yet built:** the count/type sweeps described above for either
-   structure. This entry now reflects real mechanistic understanding
-   (verified field lists, verified L5K/Decorated hiding behavior for CAM,
-   verified real MessageType distribution for MESSAGE) rather than a
-   single n=1 capture, but still has zero real byte-size data for either
-   structure — that's the next concrete step, not done yet.
+   **Not yet built:** a CAM count sweep — that's the one remaining
+   concrete next step (MESSAGE's sweep is deprioritized per James above).
+   This entry now reflects real mechanistic understanding (verified field
+   lists, verified L5K/Decorated hiding behavior for CAM, verified real
+   MessageType distribution for MESSAGE) rather than a single n=1 capture,
+   even though CAM still has zero real byte-size data.
 
 9. **OQ-XPROGREF [test built, captured 2026-08-25, NEGATIVE GAP,
     UNEXPLAINED].** Real Logix has no direct cross-program tag-addressing

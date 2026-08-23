@@ -564,8 +564,10 @@ program using MCCP still throws a SizeError for that tag. MAPC did NOT
 resolve -- real build failure on its x10 capture (20 errors/10 rungs).
 Root-caused 2026-08-25 (see docs/OPEN_QUESTIONS.md OQ-MAPC-COMPAT): two
 real generator bugs, an undeclared Axis_Cip_Drive tag and the same axis
-tag wrongly reused for both slave/master positions (real corpus always
-uses two distinct axis tags of two different DataTypes). Both fixed,
+tag wrongly reused for both slave/master positions. James confirmed the
+real rule: MAPC's slave/master just need to be two DISTINCT axis tags --
+any combination of types works (virtual/virtual is fine), not a required
+CIP-Drive/Virtual pairing. Both fixed,
 corrected `instrfirst_mapc_v2`/`_v2_x10` files generated and awaiting
 capture -- James called this a 100%-accuracy priority, not a defer item.
 CROUT's build failure is NOT a generator bug -- James, 2026-08-25: "Crout

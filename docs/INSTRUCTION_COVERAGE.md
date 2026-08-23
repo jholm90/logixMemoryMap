@@ -267,17 +267,18 @@ project's corpus grows.
    2-operand-family call shape. CROUT (33 occurrences) is NOT in this
    category any more — James confirmed it's a Safety-only instruction
    (needs a GuardLogix CPU), moved to OUT OF SCOPE, nothing to fix.
-4. **MCCP/MSG's CAM/MESSAGE structure gap (228 occurrences, 0.11%)** —
-   MCCP and MSG's own LOGIC weights are resolved; what's left is purely
-   the CAM/MESSAGE predefined structure's own byte-size formula (real XML
-   shapes are known, sizes aren't). James, 2026-08-25: "You need to be
-   more familiar with cam and MSG... know how they work" — real corpus
-   research now underway, see `docs/OPEN_QUESTIONS.md` for the
-   mechanistic writeup (not just an n=1 byte capture). Needs a dedicated
-   CAM/MESSAGE-structure sweep once that understanding is solid (multiple
-   element counts for CAM, since it's used as an array; MESSAGE is likely
-   a flat one-time cost, needs at least 2 count points to confirm that
-   shape too).
+4. **MCCP's CAM structure gap (129 occurrences, 0.06%)** — MCCP's own
+   LOGIC weight is resolved; what's left is purely CAM's own byte-size
+   formula (real XML shape confirmed, size isn't — see
+   `docs/OPEN_QUESTIONS.md` for the mechanistic writeup: CAM's L5K matches
+   its Decorated shape exactly, no hidden fields like CAM_PROFILE has, a
+   real and encouraging structural difference). Needs a dedicated CAM
+   count sweep (e.g. 1/5/10/20/50 elements) to turn that into a formula.
+   **MSG (99 occurrences, 0.05%) downgraded from this list** — James,
+   2026-08-25: "Message size is fine for the 90% accuracy as it's not a
+   common usage instruction." Not pursuing a MESSAGE byte-size sweep
+   further; MSG's LOGIC weight (48/rung) stays resolved and wired, the
+   still-unmodeled MESSAGE operand cost is deliberately left as-is.
 5. **RET (237) / SBR (128)** — 365 combined, 0.18%. Can't be tested as
    bare instructions (always paired with JSR); `gen_jsr_sbr_ret.py`
    covers the JSR/SBR/RET combination — real data exists in the manifest
