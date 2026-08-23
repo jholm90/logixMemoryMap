@@ -96,6 +96,12 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         overhead = model.tag_overhead.bytes_for(tag.name)
         size += overhead
         basis = weakest(basis, model.tag_overhead.confidence)
+        # Built-in STRING tags cost 2 bytes less than the flat tag_overhead
+        # formula above predicts (RESOLVED_QUESTIONS.md OQ-STRINGTAGOVERHEAD)
+        # -- confirmed KNOWN, not yet extended to custom StringFamily types.
+        if tag.data_type == "STRING":
+            size += model.string.builtin_tag_overhead_correction
+            basis = weakest(basis, model.string.builtin_tag_overhead_correction_confidence)
         sized.append((tag.path, category, tag.data_type, size, basis))
         referenced_udts |= referenced_data_type_names(tag.data_type, udt_types)
 

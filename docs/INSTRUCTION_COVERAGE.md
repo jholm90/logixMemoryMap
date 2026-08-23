@@ -49,23 +49,20 @@ every time real capture data lands, not just when someone remembers to.
   currently still applies this wrong weight because removing it and
   implying 0 cost would be worse, not because it's trusted).
 - **BUILD FAILED** — real capture confirms the documented/assumed call
-  syntax doesn't actually work in Studio 5000 (MAM/MAJ/MAS/MRP, 2026-08-25:
-  every single rung of every real capture file errored). Contributes 0.
-  Do NOT retry with a guessed variant — needs a real corpus or Studio-
-  5000-verified reference for the correct call shape first.
-- **CAPTURED, blocked on unmodeled structure** — real n=1 data exists but
-  can't be turned into a weight yet because the instruction also needs a
-  brand-new predefined structure (CAM for MCCP/MAPC, MESSAGE for MSG) that
-  has no byte-size formula of its own yet. Contributes 0 until that
-  structure is resolved.
-- **CAPTURED (preliminary)** — real n=1 data exists and looks clean, but
-  per James's own explicit methodology ("let's do a 10-count test for
-  each... if something comes out of line then we can do more per
-  instruction testing as required") nothing gets wired into
-  `memory_model.yaml` off a single data point. `_x10` files exist for all
-  of these (`gen_instruction_firstpass.py`), awaiting capture. Contributes
-  0 to any estimate right now — this is a deliberate, temporary zero, not
-  an oversight.
+  syntax doesn't actually work in Studio 5000: MAM/MAJ/MAS/MRP (2026-08-25,
+  every single rung of every real capture file errored), plus CROUT and
+  MAPC (2026-08-25, same signature — errored on their x10 capture despite
+  looking clean at n=1). Contributes 0. Do NOT retry with a guessed
+  variant — needs a real corpus or Studio-5000-verified reference for the
+  correct call shape first.
+- **CAPTURED, blocked on unmodeled structure** — the instruction's own
+  LOGIC weight may be resolved (MCCP: 204/rung, MSG: 48/rung, both
+  2026-08-25), but the instruction also references a brand-new predefined
+  structure (CAM for MCCP, MESSAGE for MSG) with no byte-size formula of
+  its own yet — a real program using it still throws a partial SizeError
+  for that operand's own tag. MAPC moved out of this category (to BUILD
+  FAILED) once its x10 capture showed a real build failure, unrelated to
+  the CAM-structure gap.
 - **NO DATA** — never tested at all. Contributes 0 to any estimate.
 - **OUT OF SCOPE** — DCS is a GuardLogix Safety instruction; this project
   is explicitly out-of-scope for Safety programs (`CLAUDE.md` OQ-SAFETY).
@@ -74,24 +71,31 @@ every time real capture data lands, not just when someone remembers to.
 
 | Status | Occurrences | % of all native instruction usage |
 |---|---|---|
-| CONFIRMED | 198,259 | 98.44% |
-| CAPTURED (preliminary, x10 pending) | 919 | 0.46% |
+| CONFIRMED | 199,145 | 98.88% |
 | WRONG | 840 | 0.42% |
-| BUILD FAILED | 582 | 0.29% |
+| BUILD FAILED | 728 | 0.36% |
 | NO DATA | 387 | 0.19% |
-| CAPTURED, blocked on CAM structure | 242 | 0.12% |
+| CAPTURED, blocked on CAM structure | 129 | 0.06% |
 | CAPTURED, blocked on MESSAGE structure | 99 | 0.05% |
 | OUT OF SCOPE | 65 | 0.03% |
 
-**98.44% of every real instruction occurrence across the whole corpus is
-already an exact, confirmed fit** — up from 95.10% on 2026-08-23, after
-processing a backlog of already-captured real data (BTD/COP/CPS/FLL
-resolved, LBL/JMP corrected and fully decomposed, MAH/MSO wired). The
-remaining 1.56% is now almost entirely EITHER already-captured-and-
-awaiting-a-second-data-point (0.46% CAPTURED preliminary, 0.17% blocked
-on a new predefined structure) OR a real negative result that needs a
-better reference before retrying (0.29% BUILD FAILED) — genuinely
-never-tested instructions are down to 0.19% of all real usage.
+**98.88% of every real instruction occurrence across the whole corpus is
+already an exact, confirmed fit** — up from 98.44% two batches ago, after
+the `gen_instruction_firstpass.py` x10 captures landed: 32 of the 33
+CAPTURED-preliminary instructions resolved clean (INSERT/AVE/TND/MAFR/
+MASR/MDW/BSL/NEG/BSR/TRN/FFU/FFL/NOT/FAL/FSC/FIND/XOR/OSR/OSF/UID/UIE/
+SRT/SWPB/ATN/DEG/MASD/TAN/MGSD/MGSR/RAD/MCR/SQR), plus MCCP/MSG's LOGIC
+weight (204/48) resolved separately from their still-unmodeled CAM/
+MESSAGE operand cost. **The CAPTURED-preliminary category is now empty**
+— every instruction that had n=1 data and an x10 file waiting has been
+resolved one way or the other. The 33rd, CROUT, did NOT resolve clean —
+real build failure, moved to BUILD FAILED alongside MAPC (also a real
+build failure on this same capture round, not previously known). The
+remaining 1.12% is: 0.42% actively WRONG (CPT), 0.36% confirmed BUILD
+FAILED (MAM/MAJ/MAS/MRP/CROUT/MAPC — 6 real negative results, not
+untested gaps), 0.19% genuinely never tested, and 0.11% blocked on the
+still-unmodeled CAM/MESSAGE predefined structures (down from 0.17% now
+that MCCP's logic weight is resolved).
 
 **CAVEAT, 2026-08-25 — CONFIRMED here means "the mnemonic's weight is an
 exact fit for the operand type it was tested with," almost always
@@ -163,59 +167,59 @@ occurrences, 54 real corpus files (spans the original set and the
 | RET | 0.12% | 237 | NO DATA (0 contribution -- never tested; structurally tied to JSR/SBR, can't be isolated as a bare instruction) |
 | MID | 0.11% | 212 | CONFIRMED (exact fit, 0.00% residual) |
 | CMP | 0.10% | 203 | CONFIRMED (exact fit, 0.00% residual) |
-| INSERT | 0.10% | 192 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
+| INSERT | 0.10% | 192 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | MAM | 0.09% | 186 | BUILD FAILED (real capture 2026-08-25: documented syntax rejected by Studio 5000, every rung errored) |
-| MCCP | 0.06% | 129 | CAPTURED, blocked on unmodeled CAM structure (n=1 real data in hand) |
+| MCCP | 0.06% | 129 | CAPTURED, blocked on unmodeled CAM structure (LOGIC weight resolved/wired 2026-08-25 -- 204/rung -- but CAM operand's own tag data space still unmodeled) |
 | SBR | 0.06% | 128 | NO DATA (0 contribution -- never tested; structurally tied to JSR, can't be isolated as a bare instruction) |
-| MAPC | 0.06% | 113 | CAPTURED, blocked on unmodeled CAM structure (n=1 real data in hand) |
+| MAPC | 0.06% | 113 | BUILD FAILED (real capture 2026-08-25: 20 errors/10 rungs on x10 capture, same-axis-for-slave/master simplification likely wrong) |
 | MAJ | 0.05% | 106 | BUILD FAILED (real capture 2026-08-25: documented syntax rejected by Studio 5000, every rung errored) |
-| MSG | 0.05% | 99 | CAPTURED, blocked on unmodeled MESSAGE structure (n=1 real data in hand) |
+| MSG | 0.05% | 99 | CAPTURED, blocked on unmodeled MESSAGE structure (LOGIC weight resolved/wired 2026-08-25 -- 48/rung -- but MESSAGE operand's own tag data space still unmodeled) |
 | MEQ | 0.05% | 94 | CONFIRMED (exact fit, 0.00% residual) |
 | SIZE | 0.05% | 92 | CONFIRMED (exact fit, 0.00% residual) |
 | ABS | 0.05% | 91 | CONFIRMED (exact fit, 0.00% residual) |
 | MAH | 0.04% | 79 | CONFIRMED (exact fit, 0.00% residual) |
 | DELETE | 0.04% | 78 | CONFIRMED (exact fit, 0.00% residual) |
-| AVE | 0.03% | 69 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
+| AVE | 0.03% | 69 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | MVM | 0.03% | 68 | CONFIRMED (exact fit, 0.00% residual) |
 | MSO | 0.03% | 66 | CONFIRMED (exact fit, 0.00% residual) |
 | DCS | 0.03% | 65 | OUT OF SCOPE (Safety instruction, CLAUDE.md OQ-SAFETY) |
-| TND | 0.03% | 59 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| MAFR | 0.03% | 58 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| MASR | 0.03% | 57 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
+| TND | 0.03% | 59 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| MAFR | 0.03% | 58 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| MASR | 0.03% | 57 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | XPY | 0.02% | 42 | CONFIRMED (exact fit, 0.00% residual) |
 | MRP | 0.02% | 41 | BUILD FAILED (real capture 2026-08-25: documented syntax rejected by Studio 5000, every rung errored) |
-| MDW | 0.02% | 36 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| BSL | 0.02% | 34 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| CROUT | 0.02% | 33 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| NEG | 0.02% | 33 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
+| MDW | 0.02% | 36 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| BSL | 0.02% | 34 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| CROUT | 0.02% | 33 | BUILD FAILED (real capture 2026-08-25: 80 errors/10 rungs on x10 capture, NEAR_VERBATIM corpus transplant doesn't build clean) |
+| NEG | 0.02% | 33 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | STOD | 0.02% | 31 | CONFIRMED (exact fit, 0.00% residual) |
-| BSR | 0.01% | 29 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| TRN | 0.01% | 29 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| FFU | 0.01% | 28 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| FFL | 0.01% | 26 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| NOT | 0.01% | 24 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| FAL | 0.01% | 24 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| FSC | 0.01% | 21 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| FIND | 0.01% | 21 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| XOR | 0.01% | 21 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| OSR | 0.01% | 16 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| OSF | 0.01% | 13 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| UID | 0.01% | 12 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| UIE | 0.01% | 12 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| SRT | 0.01% | 12 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| SWPB | 0.00% | 9 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| ATN | 0.00% | 9 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| DEG | 0.00% | 9 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
+| BSR | 0.01% | 29 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| TRN | 0.01% | 29 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| FFU | 0.01% | 28 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| FFL | 0.01% | 26 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| NOT | 0.01% | 24 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| FAL | 0.01% | 24 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| FSC | 0.01% | 21 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| FIND | 0.01% | 21 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| XOR | 0.01% | 21 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| OSR | 0.01% | 16 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| OSF | 0.01% | 13 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| UID | 0.01% | 12 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| UIE | 0.01% | 12 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| SRT | 0.01% | 12 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| SWPB | 0.00% | 9 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| ATN | 0.00% | 9 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| DEG | 0.00% | 9 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | FBC | 0.00% | 8 | NO DATA (0 contribution -- never tested, deliberately skipped rather than guessed, see OQ-INSTRFIRSTPASS) |
-| MASD | 0.00% | 7 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| TAN | 0.00% | 7 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
+| MASD | 0.00% | 7 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| TAN | 0.00% | 7 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | MDR | 0.00% | 6 | NO DATA (0 contribution -- never tested) |
-| MGSD | 0.00% | 5 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| MGSR | 0.00% | 5 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| RAD | 0.00% | 5 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
+| MGSD | 0.00% | 5 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| MGSR | 0.00% | 5 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| RAD | 0.00% | 5 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | PID | 0.00% | 3 | NO DATA (0 contribution -- never tested, deliberately skipped rather than guessed, see OQ-INSTRFIRSTPASS) |
-| MCR | 0.00% | 2 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
-| SQR | 0.00% | 2 | CAPTURED (n=1 preliminary + x10 files generated, awaiting x10 capture before wiring) |
+| MCR | 0.00% | 2 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
+| SQR | 0.00% | 2 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | SCP | 0.00% | 2 | NO DATA (0 contribution -- never tested, deliberately skipped rather than guessed, see OQ-INSTRFIRSTPASS) |
 | LFU | 0.00% | 1 | NO DATA (0 contribution -- never tested) |
 | CTD | 0.00% | 1 | NO DATA (deliberately untested, ~0 real corpus usage) |
@@ -234,31 +238,35 @@ project's corpus grows.
 
 ## Where to focus next, by real impact
 
-1. **The 33 CAPTURED-preliminary instructions (919 occurrences, 0.46%)**
-   — real n=1 data already in hand for every one, `_x10` files already
-   generated and sitting in `samples/generated/logic/`
-   (`gen_instruction_firstpass.py`). Purely waiting on capture — the
-   single highest-leverage thing to close next, no analysis or generation
-   work left, just data.
-2. **MCCP/MAPC/MSG (341 occurrences, 0.17%)** — blocked on the CAM and
-   MESSAGE predefined structures, which have no byte-size formula at all
-   yet (real XML shapes are known, sizes aren't). Needs a dedicated CAM/
-   MESSAGE-structure sweep (multiple element counts for CAM, since it's
-   used as an array; MESSAGE is likely a flat one-time cost, needs at
-   least 2 count points to confirm that shape too).
-3. **MAM/MAJ/MAS/MRP (582 occurrences, 0.29%)** — confirmed BUILD FAILED,
-   the documented 2-operand signature is wrong for these 4 specifically
-   (works for MAH/MSO/MAFR/MASR). Needs a real corpus or Studio-5000-
-   verified reference for the correct call shape before retrying — do not
-   guess again.
-4. **CPT (840 occurrences, 0.42%)** — actively WRONG, not just untested.
-   Needs the per-operand/operator cost model described in
+1. **CPT (840 occurrences, 0.42%)** — actively WRONG, not just untested,
+   and now the single largest remaining non-CONFIRMED bucket in the whole
+   table. Needs the per-operand/operator cost model described in
    `docs/OPEN_QUESTIONS.md` OQ-CMPCPTLAYOUT — `gen_cmpcpt_complexity.py`
-   exists to gather the data for this, awaiting capture.
-5. **RET (237) / SBR (128)** — 365 combined, 0.18%. Can't be tested as
+   exists to gather the data for this; `cmpcpt_*` real capture data has
+   landed but hasn't been mined for a full CPT cost model yet.
+2. **MAM/MAJ/MAS/MRP/CROUT/MAPC (728 occurrences, 0.36%)** — confirmed
+   BUILD FAILED, 6 instructions now, not 4: CROUT and MAPC joined this
+   list 2026-08-25 (both looked clean at n=1 but failed on x10 capture).
+   MAM/MAJ/MAS/MRP need a real corpus or Studio-5000-verified reference
+   for the correct 2-operand-family call shape; CROUT/MAPC each need their
+   own fix (MAPC's description already flags a likely culprit — the
+   same-Axis-for-slave/master simplification). Do not guess again on any
+   of the 6.
+3. **MCCP/MAPC/MSG's CAM/MESSAGE structure gap (228 occurrences now that
+   MAPC moved to BUILD FAILED, 0.11%)** — MCCP and MSG's own LOGIC weights
+   are resolved; what's left is purely the CAM/MESSAGE predefined
+   structure's own byte-size formula (real XML shapes are known, sizes
+   aren't). Needs a dedicated CAM/MESSAGE-structure sweep (multiple
+   element counts for CAM, since it's used as an array; MESSAGE is likely
+   a flat one-time cost, needs at least 2 count points to confirm that
+   shape too).
+4. **RET (237) / SBR (128)** — 365 combined, 0.18%. Can't be tested as
    bare instructions (always paired with JSR); `gen_jsr_sbr_ret.py`
-   covers the JSR/SBR/RET combination, awaiting capture.
-6. Everything else (FBC/PID/SCP deliberately skipped rather than guessed,
+   covers the JSR/SBR/RET combination — real data exists in the manifest
+   (`jsr_paramcount_*`, `jsr_mixedio_*`, `jsr_multiret_*`) but hasn't been
+   turned into RET/SBR-specific weights yet (see OQ-JSRPARAMCOST, which
+   covers the JSR-side finding from this same data).
+5. Everything else (FBC/PID/SCP deliberately skipped rather than guessed,
    plus a long tail of <10-occurrence math/shift/search instructions) —
    diminishing returns, not worth a dedicated sweep until a specific real
    program shows heavy usage of one of them.

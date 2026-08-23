@@ -75,12 +75,56 @@ generator already covers them, just waiting on the next capture batch.
    be solved simultaneously: `weight = (gap_10 - gap_1) / 9`,
    `structure_cost = gap_1 - weight`.
 
-   Once these 36 (now 72, n=1 + n=10) are fully confirmed, the THIRD pass
-   (James: "once we have all valid data for all instructions then we can
-   do the 5/10 usage per file for each" — meaning per-file instance/call-
-   site multiplicity, not rung count, for whichever instructions still
-   need it) is the natural follow-up — not started yet, intentionally,
-   per James's explicit sequencing.
+   **2026-08-25, x10 captures landed, 34 of 36 RESOLVED and WIRED.** Every
+   `weight = (actual_x10 - actual_n1) / 9` for the 34 non-CROUT/MAPC
+   instructions came back an exact integer — same 0.00%-residual standard
+   as every other confirmed weight, nothing "came out of line" for any of
+   the 34. All 34 wired into `logic_instructions.weights`
+   (RESOLVED_QUESTIONS.md OQ-INSTRFIRSTPASS-X10 has the full derivation).
+   **CROUT and MAPC did NOT resolve — real build failures**, see
+   OQ-CROUT-MAPC-BUILDFAIL below, not guessed into the weight table.
+   MCCP/MSG resolved for their LOGIC weight specifically (204/48,
+   confirmed clean-build exact fits) but their CAM/MESSAGE tag operand's
+   own data-space cost remains unmodeled (item 8 below) — a real program
+   using MCCP/MSG will still show a partial SizeError for that tag until
+   that's resolved, the logic-side number is correct on its own now.
+
+   Once the THIRD pass (James: "once we have all valid data for all
+   instructions then we can do the 5/10 usage per file for each" —
+   per-file instance/call-site multiplicity, not rung count) is needed for
+   any instruction, it's the natural follow-up — not started, per James's
+   explicit sequencing (wait for a name reason to suspect the flat-rate
+   assumption before spending a batch on it).
+
+1b. **OQ-CROUT-MAPC-BUILDFAIL (new, 2026-08-25).** CROUT and MAPC were the
+    two NEAR_VERBATIM (near-literal corpus transplant, not independently
+    understood operand-by-operand) shapes flagged as needing extra
+    scrutiny in OQ-INSTRFIRSTPASS above — and that scrutiny paid off: both
+    real x10 captures show genuine build failures (`instrfirst_crout_x10`:
+    error_count=80 for 10 rungs, `instrfirst_mapc_x10`: error_count=20 for
+    10 rungs), and `actual_bytes` is flat between n=1 and x10 for both
+    (21160/21160 for CROUT, 20904/20904 for MAPC) — consistent with
+    nothing new actually compiling, the same signature as the MAM/MAJ/MAS/
+    MRP build failures elsewhere in this file. Not wired into
+    `logic_instructions.weights`. Needs either a corrected operand shape
+    (MAPC's description already flags "same Axis tag reused for both
+    slave/master operand positions... rather than declaring a second
+    axis" as a known simplification that may be the actual problem) or a
+    fresh real corpus/Studio-5000-verified reference before retrying —
+    same rule as MAM/MAJ/MAS/MRP, don't guess a fix.
+
+1c. **OQ-INSTRFIRSTPASS-FLATOFFSET (new, minor, 2026-08-25).** All 32
+    "clean" `instrfirst_*`/`instrfirst_*_x10` pairs (everything except
+    MCCP/MSG, which have their own separate known-unmodeled-structure gap)
+    show an identical flat **+6 byte** gap at BOTH n=1 and n=10 — meaning
+    it doesn't scale with rung count, so it didn't affect any of the 34
+    confirmed logic weights above (the marginal-delta derivation method is
+    immune to a fixed per-file offset). Real, consistent across all 32
+    independent files, but small (~0.03% of a ~20,800-byte total) and not
+    yet root-caused — likely something in the shared tag pool these files
+    declare (D0/D1, R0/R1, B0/B1, Str0/Str1, Arr0/Arr1, Ctrl0, etc.) that's
+    off by a flat 6 bytes. Low priority; flagged so it isn't silently
+    absorbed into some other constant later.
 
 2. **OQ-BASELINE-PROCFW (new, 2026-08-23, James).** `empty_project_baseline`
    (13,296, see RESOLVED_QUESTIONS.md OQ-BASELINE) is **not a universal AB
@@ -352,21 +396,55 @@ generator already covers them, just waiting on the next capture batch.
    unisolated array discount could UNDER-predict a real BOOL-free AOI
    array).
 
-   **2026-08-25 [test built], James: "generate as many files as needed to
-   resolve all possible scenarios for 100% accuracy."** `gen_aoi_array_
-   packing.py`, 18 files, 3 AOI shapes × 6 points each (def_only + array
-   counts 1/5/10/25/50): `aoipack_atomic_*` (10 DINT In/10 DINT Out/10
-   REAL Local, ZERO BOOL — if this shape's real per-element array rate
-   matches the engine's own already-confirmed UDT-style prediction
-   exactly, that CONFIRMS the ~50% discount above is BOOL-specific, not a
-   general array-of-AOI effect), `aoipack_bool_*` (10/10/10 BOOL, nothing
-   else — the cleanest possible read on the BOOL-array-packing question,
-   no DINT/REAL confounding the math), `aoipack_mixed_*` (same 5-DINT-5-
-   BOOL-per-section composition as the original RealisticAOI finding, but
-   with 5 count points instead of 2, to firm up the 64-bytes/element
-   reading with a real multi-point linear fit and catch a small-N anomaly
-   if one exists, matching this project's established pattern elsewhere).
-   Awaiting capture.
+   **2026-08-25, `gen_aoi_array_packing.py`'s 18 files captured — confirms
+   the BOOL-specific hypothesis, resolves nothing yet (still NOT wired,
+   need more data before committing to a formula).** Real per-array-
+   element marginal rate (computed from adjacent count points within each
+   shape, e.g. n=5→n=10, n=10→n=25):
+   - **`aoipack_atomic_*` (zero BOOL, pure DINT/REAL):** ~124/instance —
+     close to but consistently a little under the engine's own 128/
+     instance assumption (deltas across the 4 intervals: -4, -4.8, -3.7,
+     -4.2/instance — small, NOT perfectly linear, looks like ordinary
+     small-residual noise riding on top of the still-open OQ-AOIDEF
+     def-cost baseline error rather than a distinct new effect). Read as
+     "engine's 128/instance for pure-atomic AOI arrays is already close
+     to right" — no correction wired, the imprecision here is dominated
+     by OQ-AOIDEF's unresolved baseline, not a new packing effect.
+   - **`aoipack_bool_*` (all-BOOL, 30 members):** ~4/instance — dramatically
+     smaller than the engine's 128/instance, but NOT cleanly linear either
+     (4, 3.2, 4.27, 3.84/instance across the 4 intervals) — consistent
+     with a genuine BIT-packing effect (like a plain BOOL array's 32-bit
+     packed word) that only 5 count points (1/5/10/25/50, none crossing
+     an obvious 32-element packing boundary cleanly) can't yet resolve
+     into an exact formula. This clarifies — and partially CONTRADICTS —
+     the "~50% discount, maybe BOOL packs 8-per-byte in arrays" hypothesis
+     above: pure-BOOL AOI arrays cost far LESS than half, not roughly
+     half. That "half" number turns out to belong to the MIXED shape,
+     below, not the pure-BOOL one — conflating them earlier was itself an
+     example of exactly the "don't assume 10 bools = 100 bools" trap.
+   - **`aoipack_mixed_*` (15 BOOL + 15 non-BOOL, half and half):** exactly
+     **64 bytes/instance**, and this one IS clean — all 4 intervals
+     (n1→n5, n5→n10, n10→n25, n25→n50) independently compute to exactly
+     64.0/instance, no rounding, no noise. This is the real number behind
+     the original `RealisticAOI` 64-bytes/instance finding.
+
+   **Still NOT wired, deliberately, even though `aoipack_mixed`'s 64 looks
+   clean:** the underlying mechanism (does an array of AOI/UDT instances
+   bit-pack BOOL members ACROSS array elements, the way a plain BOOL array
+   packs 32 bits/word?) isn't understood well enough to write a general
+   rule from 3 shapes at one fixed member-count/BOOL-ratio (30 members,
+   50% BOOL) each. A real fix needs to model per-member packing across the
+   array dimension specifically, which is a genuine parser/sizing-engine
+   change (analogous in kind to OQ-OPERANDTYPE/OQ-JSRPARAMCOST — new
+   capability, not a constant tweak), not a one-line correction. Wiring
+   "64/instance whenever exactly half an AOI's members are BOOL" off this
+   one ratio would be exactly the kind of premature generalization James
+   flagged concern about. **Recommended follow-up data, when there's
+   budget:** a few more BOOL:non-BOOL ratios (e.g. 1:29, 5:25, 25:5) at a
+   couple of count points each, and — separately — count points that
+   cross the 32-element BOOL-packing boundary (e.g. n=31/32/33/64/65) on
+   the pure-BOOL shape specifically, to see if its marginal rate jumps at
+   those boundaries the way a plain packed BOOL array's would.
 
 8. **OQ-PREDEFINED, remaining piece [test built].** MOTION_INSTRUCTION,
    AXIS_CIP_DRIVE/AXIS_SERVO/AXIS_VIRTUAL/COORDINATE_SYSTEM, and
@@ -393,7 +471,7 @@ generator already covers them, just waiting on the next capture batch.
     program data point to confirm before touching code — do not wire
     anything off a single 2-program sample.
 
-10. **Motion instructions — MAH/MSO RESOLVED, MAM/MAJ/MAS/MRP BUILD
+10. **OQ-MAMFAMILY-BUILDFAIL — Motion instructions, MAH/MSO RESOLVED, MAM/MAJ/MAS/MRP BUILD
     FAILED (real capture 2026-08-25).** `gen_motion_instructions.py` —
     MAH/MSO's real per-rung logic weight (60 blocks/rung each) is now
     confirmed and wired, see RESOLVED_QUESTIONS.md OQ-MAHMSO. MAM/MAJ/MAS/
@@ -428,7 +506,7 @@ generator already covers them, just waiting on the next capture batch.
     (if small) architecture task, not a one-line constant fix. Left open
     deliberately rather than rush-wired.
 
-12. **Indirect addressing overhead [captured 2026-08-25, real findings,
+12. **OQ-INDIRECT — Indirect addressing overhead [captured 2026-08-25, real findings,
     NOT yet decomposed into weights].** `gen_indirect_addressing.py` —
     direct vs. tag-driven array index, plus (James: "Does tag[idx+1] take
     up the same space as tag[Idx]?") a third variant with an arithmetic
@@ -447,35 +525,35 @@ generator already covers them, just waiting on the next capture batch.
     `logic_instructions.weights`, to confirm linearity and rule out a
     fixed one-time cost being misread as a per-rung weight.
 
-13. **OQ-STRINGTAGOVERHEAD (new, 2026-08-24).** `tag_overhead`'s formula
-    (`84 + 8×floor(name_len/8)`) was confirmed type-independent using
-    SINT/INT/DINT/LINT/REAL/BOOL — STRING was never separately checked.
-    `string_builtin_x1000` (1000 built-in STRING tags) and `customstring_
-    250char_x1000` (1000 instances of a 250-char custom string type) both
-    now show the engine over-predicting by almost exactly **-2 bytes/tag**
-    (-2000/1000 and -1998/1000 respectively — same effect, both STRING
-    families, independent of DATA length). Real and consistent across two
-    independent large-count captures, but only ONE count point each
-    (n=1000) — can't yet tell whether it's a genuine flat -2/tag rate or
-    some other count-dependent shape that happens to look flat at this
-    scale (same caution as everywhere else in this file: one data point
-    isn't a confirmed formula). Small enough (~1% of the STRING-family
-    total) that it doesn't invalidate anything, but real enough to log.
-    Needs a proper STRING-tag-count sweep (n=1/10/100/1000) before wiring
-    a `-2` correction into `tag_overhead` for STRING types specifically.
+13. **OQ-STRINGTAGOVERHEAD — builtin RESOLVED 2026-08-25, custom STILL
+    OPEN with a real lead.** Builtin STRING's flat -2 bytes/tag correction
+    is now confirmed and wired (RESOLVED_QUESTIONS.md OQ-STRINGTAGOVERHEAD
+    -BUILTIN) via the dense 9-point `stringoverhead_builtin_n*` sweep plus
+    the 4-point namelen cross-check, all exact 0-gap now.
 
-    **2026-08-25 [test built], James: "generate as many files as needed to
-    resolve all possible scenarios for 100% accuracy."** `gen_string_
-    tagoverhead.py`, 22 files, 3 axes: `stringoverhead_builtin_n*` (9
-    points, n=1/2/5/10/25/50/100/500/1000, dense enough to catch a
-    non-linear shape, not just confirm a straight line between 2 points),
-    `stringoverhead_custom{50,500}_n*` (8 points, 2 max-lengths × 4 counts
-    — confirms the effect is a pure per-tag-declaration thing, not a
-    DATA-length effect in disguise), `stringoverhead_namelen*_n050` (5
-    points, name length 4/8/16/32/40 at fixed count — confirms whether the
-    existing `8×floor(len/8)` name-length term shape still holds for
-    STRING with only the flat base needing a correction, or something
-    structurally different is going on). Awaiting capture.
+    **Custom StringFamily types: real data, NOT clean enough to wire yet.**
+    `stringoverhead_custom50_n*`/`custom500_n*` (2 max-lengths × 4 counts
+    each) plus the pre-existing `customstring_250char_x1000` give 3
+    max-length data points total. Per-tag marginal rate isn't a flat -2
+    like builtin — it varies by max-length: maxlen=50 → -2/tag, maxlen=250
+    → -2/tag (from the pre-existing point), maxlen=500 → **-4/tag**, each
+    on top of a consistent +2 one-time offset (`gap(n) = 2 - k×n`, solving
+    both unknowns from any 2 of the n=1/10/100/1000 points in each sweep
+    reproduces every other point in that sweep exactly). **Working
+    hypothesis, UNCONFIRMED — do not wire off this alone:** `k` may depend
+    on `maxlen mod 4` (50 mod 4 = 2 → k=2; 250 mod 4 = 2 → k=2; 500 mod 4
+    = 0 → k=4) — consistent across all 3 points so far, but 3 points
+    matching a 2-bucket hypothesis isn't proof, and there's no mechanistic
+    explanation yet for why mod-4 alignment would flip the correction
+    magnitude rather than, say, add a fixed extra term. Needs at least 2
+    more maxlen points to actually confirm this before touching code: one
+    more `≡0 mod 4` value (e.g. 100 or 1000, to confirm k=4 replicates
+    rather than being a one-off) and one `≡1` or `≡3 mod 4` value (e.g. 51
+    or 501, to see whether k takes a third distinct value or the bucketing
+    really is just "aligned vs not"). James: "I don't want to go forward
+    with you assuming X" applies exactly here — 3 points fitting a 2-bucket
+    story is exactly the kind of thing that needs one more probe before
+    it's trusted, not a coincidence to build on yet.
 
 14. **OQ-OPERANDTYPE (new, MAJOR, found 2026-08-25 mining already-captured
     but never-analyzed `typesweep_*` data — NOT wired, needs parser

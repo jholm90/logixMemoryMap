@@ -356,31 +356,62 @@ that's the actual remaining Phase 4/4b implementation work.
       overwriting them") — added an explicit delete of the old `.ACD`
       before every reconversion, since it was never verified that
       `l5xgit` itself overwrites an existing destination file.
-- [ ] Timer instructions (TON/TOF/RTO) at scale — no CTU/CTD-heavy usage seen
-      but include CTU (25 real uses; CTD had zero, low priority)
+- [x] Timer instructions (TON/TOF/RTO) at scale — no CTU/CTD-heavy usage seen
+      but include CTU (25 real uses; CTD had zero, low priority) — all
+      CONFIRMED, 0.00% residual, see docs/INSTRUCTION_COVERAGE.md
 - [ ] Math/compare instructions (MOV/EQU/ADD/NEQ/GRT/MUL/GEQ/LES/SUB/LIM/LEQ/
       DIV/CPT with expression length variation) — by far the highest-volume
-      category after bit logic (5,000+ real uses combined)
-- [ ] **Motion instructions (MAM/MAS/MAJ/MAH/MSO/MSF/MDW/MAW/MASR/MAFR) and
+      category after bit logic (5,000+ real uses combined). **Everything
+      except CPT is CONFIRMED** (0.00% residual) — CPT alone is WRONG, see
+      OQ-CMPCPTLAYOUT, kept open until CPT gets a real per-operand model.
+      Also newly caveated 2026-08-25: all of these were only fit against
+      DINT/LINT/REAL operands — SINT/INT/STRING operands cost substantially
+      more (OQ-OPERANDTYPE), not yet wired.
+- [x] **Motion instructions (MAM/MAS/MAJ/MAH/MSO/MSF/MDW/MAW/MASR/MAFR) and
       cam/route (DCS/CROUT)** — NOT in original scope, added after real data
       showed ~90 real uses across 12 distinct instructions; James: "we use
       lots of motion instructions, camming." Also motion/axis structures
       (AXIS_CIP_DRIVE etc, OQ-PREDEFINED) are the single highest-frequency
       unsized structure category in real tag data, so this pairs with that.
-- [ ] **GSV/SSV instruction overhead** — NOT in original scope, added after
+      **2026-08-25: MAH/MSO/MAFR/MASR/MDW/MASD/MGSD/MGSR all CONFIRMED and
+      wired.** MAM/MAJ/MAS/MRP confirmed BUILD FAILED (real negative
+      result, not untested — see OQ-MAMFAMILY). CROUT also BUILD FAILED.
+      MCCP's logic weight resolved, MAPC BUILD FAILED, both still blocked
+      on the unmodeled CAM structure for their operand's own tag cost.
+      Treating this item as closed — every instruction in it now has a
+      real, definitive status (confirmed, wrong, or build-failed), even
+      though 2 sub-pieces (CAM structure, DCS out-of-scope) remain
+      separately tracked open questions.
+- [x] **GSV/SSV instruction overhead** — NOT in original scope, added after
       real data showed 101/47 real uses; James called these out explicitly.
       Different sizing question than tag-level GSV memory reads (that's a
       dead end, see OQ-MEMREADMETHOD) — this is about the *instruction's own*
-      compiled logic footprint in a rung, unrelated.
-- [ ] Array/file instructions (COP/CLR/FLL/BTD/MVM) at varying array size
-- [ ] String instructions (CONCAT/DTOS/SIZE/MID/TRUNC) — some real usage,
-      not ASCII-module instructions specifically (zero of those seen)
-- [ ] Indirect addressing overhead (compare direct vs indirect same logic)
+      compiled logic footprint in a rung, unrelated. CONFIRMED, wired.
+- [x] Array/file instructions (COP/CLR/FLL/BTD/MVM) at varying array size —
+      all CONFIRMED, 0.00% residual.
+- [x] String instructions (CONCAT/DTOS/SIZE/MID/TRUNC) — some real usage,
+      not ASCII-module instructions specifically (zero of those seen) — all
+      CONFIRMED. (TRUNC has 0 real corpus occurrences, never separately
+      tested — flagged, not a gap in practice.)
+- [ ] Indirect addressing overhead (compare direct vs indirect same logic) —
+      real data captured 2026-08-25 (direct-index: no separate cost needed;
+      tag-driven index: ~84/rung; arithmetic-offset tag-driven index:
+      ~108/rung) but not yet decomposed into a wired weight, see
+      OQ-INDIRECT in OPEN_QUESTIONS.md.
 - [ ] JSR/subroutine call overhead (call site cost vs routine body cost,
-      separate these two numbers) — 238 real JSR uses, matters
-- [ ] MSG instruction overhead — only 4 real uses total, low priority, don't
-      over-invest here relative to everything else on this list
-- [ ] Consolidate full instruction-weight table into MEMORY_MODEL.md
+      separate these two numbers) — 238 real JSR uses, matters. JSR's own
+      flat weight (72/rung) is CONFIRMED and wired, but real data shows a
+      real per-parameter cost (~20-21/param) not yet captured by that flat
+      number — see OQ-JSRPARAMCOST. RET/SBR (bare instructions, always
+      paired with JSR) still have real capture data sitting unmined.
+- [x] MSG instruction overhead — only 4 real uses total, low priority, don't
+      over-invest here relative to everything else on this list. LOGIC
+      weight resolved (48/rung), operand's own MESSAGE-structure tag cost
+      still unmodeled (separate, tracked item).
+- [ ] Consolidate full instruction-weight table into MEMORY_MODEL.md — table
+      exists and is kept current, but the OQ-OPERANDTYPE/OQ-JSRPARAMCOST
+      caveats mean it isn't a single clean flat-weight-per-instruction table
+      anymore; revisit once those land.
 - [ ] Hold out 3-5 samples, validate fitted model against them, log residual
 
 ## Phase 5 — UI v2 (logic browsing)

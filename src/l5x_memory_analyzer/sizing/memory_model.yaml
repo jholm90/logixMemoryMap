@@ -125,6 +125,24 @@ string:
   # flagged, not assumed independent.
   custom_definition_cost: 206
   custom_definition_confidence: FITTED
+  # Built-in STRING tags cost exactly 2 bytes LESS than the ordinary flat
+  # tag_overhead formula predicts -- resolves OQ-STRINGTAGOVERHEAD.
+  # Confirmed 2026-08-25 via the dense `stringoverhead_builtin_n*` sweep
+  # (9 count points, 1 to 1000): gap = actual - engine is EXACTLY -2*n at
+  # every single point (n=1:-2, n=2:-4, n=5:-10 ... n=1000:-2000), and the
+  # `stringoverhead_namelen*_n050` cross-check (name length 4/8/16/40,
+  # fixed count=50) shows the identical -100 (=-2*50) regardless of name
+  # length -- confirms this is a flat per-tag correction independent of
+  # both count and name length, not a name-length-bucket artifact.
+  # Deliberately NOT extended to custom StringFamily types: the
+  # `stringoverhead_custom{50,500}_n*` real data shows a per-tag rate that
+  # depends on the type's maxlen (-2/tag at maxlen=50, -4/tag at
+  # maxlen=500) plus a separate +2 one-time offset -- not yet a clean,
+  # confirmed formula off only 2 maxlen points (see docs/OPEN_QUESTIONS.md
+  # OQ-STRINGTAGOVERHEAD), so custom strings keep the un-corrected
+  # tag_overhead for now rather than guessing.
+  builtin_tag_overhead_correction: -2
+  builtin_tag_overhead_correction_confidence: KNOWN
 
 udt:
   # No alignment/padding between members -- tight packing, declared order.
@@ -333,3 +351,65 @@ logic_instructions:
     # 2026-08-23, wired in 2026-08-25 (was sitting derived-but-unwired).
     MAH: 60
     MSO: 60
+    # 2026-08-25: 34 of the 36 gen_instruction_firstpass.py instructions'
+    # x10 captures landed (docs/OPEN_QUESTIONS.md OQ-INSTRFIRSTPASS) -- each
+    # weight = (actual_x10 - actual_n1) / 9, an exact integer for every one
+    # of these 34 (0.00% residual, same standard as every other confirmed
+    # weight -- CROUT and MAPC are the only 2 of 36 NOT here, see below).
+    NOT: 40
+    TRN: 52
+    NEG: 40
+    OSR: 56
+    OSF: 56
+    UID: 40
+    UIE: 40
+    MCR: 16
+    TND: 24
+    ATN: 60
+    DEG: 64
+    RAD: 116
+    TAN: 60
+    SQR: 52
+    SWPB: 76
+    XOR: 40
+    FIND: 100
+    INSERT: 116
+    BSL: 60
+    BSR: 60
+    FFL: 72
+    FFU: 72
+    SRT: 116
+    AVE: 176
+    FAL: 104
+    FSC: 104
+    # MAFR/MASR/MDW/MASD: same (Axis,MotionInstruction) 2-operand shape as
+    # MAH/MSO, and land on the exact same real weight (60) -- consistent
+    # with the pattern that motion-instruction cost is governed by operand
+    # TYPE shape, not the specific mnemonic (same conclusion as MAH=MSO).
+    MAFR: 60
+    MASR: 60
+    MDW: 60
+    MASD: 60
+    # MGSD/MGSR: (MotionGroup,MotionInstruction) shape instead of
+    # (Axis,MotionInstruction) -- a different real weight (56, not 60),
+    # again identical to each other, consistent with the same
+    # operand-type-governs-cost pattern.
+    MGSD: 56
+    MGSR: 56
+    # MCCP/MSG: clean build (error_count=0 for both n=1 and x10), real
+    # exact linear weight derived the same way as every other instruction
+    # above -- this is the LOGIC weight only. The CAM/MESSAGE tag/operand
+    # data-space cost these instructions also reference is a SEPARATE,
+    # still-unmodeled predefined structure (OQ-PREDEFINED item 8) -- a
+    # real program using MCCP/MSG will still show a SizeError for that
+    # tag's own data space until that's resolved, but the logic-side
+    # weight below is correct and usable now.
+    MCCP: 204
+    MSG: 48
+    # CROUT and MAPC deliberately NOT included: both showed real build
+    # failures on their x10 capture (CROUT: 80 errors/10 rungs, MAPC: 20
+    # errors/10 rungs -- the documented corpus syntax used for the
+    # generator apparently isn't quite right for one or both). Flat actual
+    # bytes between n=1 and x10 for both confirms nothing new compiled.
+    # See docs/OPEN_QUESTIONS.md OQ-CROUT-MAPC-BUILDFAIL. Not guessing a
+    # weight off broken-build data.

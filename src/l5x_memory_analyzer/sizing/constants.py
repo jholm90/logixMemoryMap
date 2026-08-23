@@ -41,6 +41,8 @@ class StringModel:
     custom_confidence: str
     custom_definition_cost: int
     custom_definition_confidence: str
+    builtin_tag_overhead_correction: int
+    builtin_tag_overhead_correction_confidence: str
 
 
 @dataclass(frozen=True)
@@ -163,6 +165,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             custom_confidence=s["custom_confidence"],
             custom_definition_cost=s["custom_definition_cost"],
             custom_definition_confidence=s["custom_definition_confidence"],
+            builtin_tag_overhead_correction=s["builtin_tag_overhead_correction"],
+            builtin_tag_overhead_correction_confidence=s["builtin_tag_overhead_correction_confidence"],
         ),
         udt=UdtModel(alignment_confidence=raw["udt"]["alignment_confidence"]),
         array=ArrayModel(

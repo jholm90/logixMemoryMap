@@ -444,3 +444,46 @@ elsewhere (OQ-BOOLARRAY etc.), not a new systematic issue. No code change.
 The one bucket NOT in this category, 1264 (all `*_def_only` AOI files),
 is real and substantial — see OPEN_QUESTIONS.md OQ-AOIDEF, not resolved,
 the single biggest remaining known gap.
+
+**OQ-INSTRFIRSTPASS-X10, 34 of 36 resolved, 2026-08-25.** Real x10
+captures for `gen_instruction_firstpass.py`'s 36 single-instruction
+sweeps. `weight = (actual_x10 - actual_n1) / 9` for each of 34
+instructions (everything except CROUT/MAPC, which build-failed — see
+OPEN_QUESTIONS.md OQ-CROUT-MAPC-BUILDFAIL) came back an exact integer,
+0.00% residual, same standard as every other confirmed weight in this
+project: NOT=40, TRN=52, NEG=40, OSR=56, OSF=56, UID=40, UIE=40, MCR=16,
+TND=24, ATN=60, DEG=64, RAD=116, TAN=60, SQR=52, SWPB=76, XOR=40,
+FIND=100, INSERT=116, BSL=60, BSR=60, FFL=72, FFU=72, SRT=116, AVE=176,
+FAL=104, FSC=104. Motion instructions MAFR/MASR/MDW/MASD (same
+`(Axis,MotionInstruction)` shape as MAH/MSO) all land on the identical
+60 — confirms cost is governed by operand-type shape, not the specific
+mnemonic, same conclusion MAH=MSO already established. MGSD/MGSR (the
+`(MotionGroup,MotionInstruction)` shape instead) both land on 56, again
+identical to each other. MCCP=204 and MSG=48 also resolved for their pure
+LOGIC weight (clean build, error_count=0 for both) — their CAM/MESSAGE
+tag operand's own data-space cost is a SEPARATE, still-unmodeled
+predefined structure (OPEN_QUESTIONS.md OQ-PREDEFINED item 8), not
+entangled with the logic weight itself since the weight derivation uses
+only the marginal (n1→n10) delta. All wired into
+`logic_instructions.weights`. A flat, instruction-independent +6-byte gap
+appears on both n=1 and x10 for the 32 non-MCCP/MSG files (doesn't affect
+any weight above since it's a constant offset that cancels in the
+marginal calculation) — see OPEN_QUESTIONS.md OQ-INSTRFIRSTPASS-FLATOFFSET,
+minor, not root-caused, left open.
+
+**OQ-STRINGTAGOVERHEAD-BUILTIN, resolved 2026-08-25.** Built-in STRING
+tags cost exactly 2 bytes LESS than the ordinary flat tag_overhead
+formula (`84 + 8×floor(name_len/8)`) predicts. Confirmed via the dense
+9-point `stringoverhead_builtin_n*` sweep (n=1 through 1000): gap is
+EXACTLY `-2*n` at every single point, and the `stringoverhead_namelen*_
+n050` cross-check (name length 4/8/16/40, fixed count=50) shows the
+identical -100 (`=-2*50`) regardless of name length — confirms the
+correction is a flat per-tag thing, independent of both count and name
+length. Wired as `string.builtin_tag_overhead_correction = -2` in
+`memory_model.yaml`/`constants.py`, applied in `report.py` when
+`tag.data_type == "STRING"`. All 13 real data points (9 count sweep + 4
+namelen cross-check) now size at exactly 0 gap. Deliberately NOT extended
+to custom StringFamily types — that data shows a maxlen-dependent rate,
+not a clean flat -2, and needs more data before wiring (see
+OPEN_QUESTIONS.md OQ-STRINGTAGOVERHEAD for the still-open custom-string
+piece).

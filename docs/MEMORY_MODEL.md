@@ -34,6 +34,22 @@ Wired into `report.py`'s UDT-definition loop (string-family types get
 their own `udt_definition` entry using this constant instead of the
 ordinary UDT formula, which doesn't apply to them).
 
+**Built-in STRING tag-overhead correction (KNOWN, resolved 2026-08-25).**
+A built-in STRING tag costs 2 bytes LESS than the ordinary flat
+`tag_overhead` formula (below) predicts -- confirmed exact across a dense
+9-point count sweep (n=1 to 1000) plus a 4-point name-length cross-check,
+all landing on exactly `gap = -2 * count`, independent of both count and
+name length. Wired as `string.builtin_tag_overhead_correction = -2`,
+applied in `report.py` only when `tag.data_type == "STRING"`.
+
+**Custom StringFamily types: same correction does NOT apply cleanly --
+still open, not wired.** Real per-tag marginal rate is maxlen-dependent
+(-2/tag at maxlen=50 and maxlen=250, but -4/tag at maxlen=500), plus a
+consistent +2 one-time offset. A `maxlen mod 4` hypothesis fits all 3
+data points so far but isn't confirmed -- see OPEN_QUESTIONS.md
+OQ-STRINGTAGOVERHEAD. Custom string sizing keeps the un-corrected formula
+for now.
+
 ## Predefined structure types (KNOWN)
 
 Firmware-native structures referenced by name in L5X Tag/Member DataType
@@ -427,6 +443,40 @@ now contained.
 | BTD | 64 | 64 (solo rung, resolved 2026-08-25) | 4,816 | 5 | 0.00% |
 | MAH | 60 | 60 (solo rung, resolved/wired 2026-08-25) | 4,816 | 2 | 0.00% |
 | MSO | 60 | 60 (solo rung, resolved/wired 2026-08-25, identical real numbers to MAH) | 4,816 | 2 | 0.00% |
+| NOT | 40 | 40 (solo rung, `instr_firstpass` x10, resolved 2026-08-25) | 4,816 | 2 | 0.00% |
+| TRN | 52 | 52 (solo rung, `instr_firstpass` x10) | 4,816 | 2 | 0.00% |
+| NEG | 40 | 40 (solo rung, `instr_firstpass` x10, same as NOT/UID/UIE/XOR) | 4,816 | 2 | 0.00% |
+| OSR | 56 | 56 (solo rung, `instr_firstpass` x10, same as OSF) | 4,816 | 2 | 0.00% |
+| OSF | 56 | 56 (solo rung, `instr_firstpass` x10, same as OSR) | 4,816 | 2 | 0.00% |
+| UID | 40 | 40 (solo rung, `instr_firstpass` x10, bare 0-operand) | 4,816 | 2 | 0.00% |
+| UIE | 40 | 40 (solo rung, `instr_firstpass` x10, bare 0-operand) | 4,816 | 2 | 0.00% |
+| MCR | 16 | 16 (solo rung, `instr_firstpass` x10, bare 0-operand) | 4,816 | 2 | 0.00% |
+| TND | 24 | 24 (solo rung, `instr_firstpass` x10, bare 0-operand) | 4,816 | 2 | 0.00% |
+| ATN | 60 | 60 (solo rung, `instr_firstpass` x10, same as TAN) | 4,816 | 2 | 0.00% |
+| DEG | 64 | 64 (solo rung, `instr_firstpass` x10) | 4,816 | 2 | 0.00% |
+| RAD | 116 | 116 (solo rung, `instr_firstpass` x10, same as INSERT/SRT) | 4,816 | 2 | 0.00% |
+| TAN | 60 | 60 (solo rung, `instr_firstpass` x10, same as ATN, INFERRED shape) | 4,816 | 2 | 0.00% |
+| SQR | 52 | 52 (solo rung, `instr_firstpass` x10, same as TRN, INFERRED shape) | 4,816 | 2 | 0.00% |
+| SWPB | 76 | 76 (solo rung, `instr_firstpass` x10) | 4,816 | 2 | 0.00% |
+| XOR | 40 | 40 (solo rung, `instr_firstpass` x10, same as NOT/NEG/UID/UIE) | 4,816 | 2 | 0.00% |
+| FIND | 100 | 100 (solo rung, `instr_firstpass` x10) | 4,816 | 2 | 0.00% |
+| INSERT | 116 | 116 (solo rung, `instr_firstpass` x10, same as RAD/SRT) | 4,816 | 2 | 0.00% |
+| BSL | 60 | 60 (solo rung, `instr_firstpass` x10, same as BSR) | 4,816 | 2 | 0.00% |
+| BSR | 60 | 60 (solo rung, `instr_firstpass` x10, same as BSL) | 4,816 | 2 | 0.00% |
+| FFL | 72 | 72 (solo rung, `instr_firstpass` x10, same as FFU) | 4,816 | 2 | 0.00% |
+| FFU | 72 | 72 (solo rung, `instr_firstpass` x10, same as FFL) | 4,816 | 2 | 0.00% |
+| SRT | 116 | 116 (solo rung, `instr_firstpass` x10, same as RAD/INSERT) | 4,816 | 2 | 0.00% |
+| AVE | 176 | 176 (solo rung, `instr_firstpass` x10) | 4,816 | 2 | 0.00% |
+| FAL | 104 | 104 (solo rung, `instr_firstpass` x10, same as FSC) | 4,816 | 2 | 0.00% |
+| FSC | 104 | 104 (solo rung, `instr_firstpass` x10, same as FAL) | 4,816 | 2 | 0.00% |
+| MAFR | 60 | 60 (solo rung, `instr_firstpass` x10, same (Axis,MotionInstruction) shape as MAH/MSO) | 4,816 | 2 | 0.00% |
+| MASR | 60 | 60 (solo rung, `instr_firstpass` x10, same shape as MAH/MSO/MAFR) | 4,816 | 2 | 0.00% |
+| MDW | 60 | 60 (solo rung, `instr_firstpass` x10, same shape as MAH/MSO/MAFR) | 4,816 | 2 | 0.00% |
+| MASD | 60 | 60 (solo rung, `instr_firstpass` x10, same shape as MAH/MSO/MAFR) | 4,816 | 2 | 0.00% |
+| MGSD | 56 | 56 (solo rung, `instr_firstpass` x10, (MotionGroup,MotionInstruction) shape, same as MGSR) | 4,816 | 2 | 0.00% |
+| MGSR | 56 | 56 (solo rung, `instr_firstpass` x10, same shape as MGSD) | 4,816 | 2 | 0.00% |
+| MCCP | 204 | 204 (solo rung, `instr_firstpass` x10, LOGIC weight only -- CAM operand's own tag data space still unmodeled) | 4,816 | 2 | 0.00% |
+| MSG | 48 | 48 (solo rung, `instr_firstpass` x10, LOGIC weight only -- MESSAGE operand's own tag data space still unmodeled) | 4,816 | 2 | 0.00% |
 
 **JSR target routines are skipped entirely by the engine, not charged
 their own fixed_base.** Found the same day as the paired-instruction fix
@@ -507,9 +557,13 @@ MotionInstruction)` signature that works for MAH/MSO/MAFR/MASR does NOT
 work for these 4 — real, confirmed negative result, not just "untested."
 Do not retry with a guessed variant; needs a real corpus or Studio-5000-
 verified reference for the correct call shape before trying again.
-MAPC/MCCP camming: real syntax now corpus-confirmed and captured (see
-`gen_instruction_firstpass.py`'s n=1 pass), byte size still pending the
-new CAM predefined structure being resolved (OQ-INSTRFIRSTPASS). Per-Task
+MCCP camming: LOGIC weight now resolved and wired (204, see table above),
+but the CAM operand's own tag data-space cost is a separate, still-
+unmodeled predefined structure (OQ-PREDEFINED item below) -- a real
+program using MCCP still throws a SizeError for that tag. MAPC did NOT
+resolve -- real build failure on its x10 capture (20 errors/10 rungs),
+see docs/OPEN_QUESTIONS.md OQ-CROUT-MAPC-BUILDFAIL; CROUT failed the same
+way (80 errors/10 rungs). Neither guessed into the weight table. Per-Task
 overhead (`gen_task_overhead.py`) — real data now captured, see the
 dedicated write-up in `docs/OPEN_QUESTIONS.md` (a real, clean, exactly
 -1,472-per-extra-task finding, not yet wired pending a parser change to
