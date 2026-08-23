@@ -141,6 +141,15 @@ def group_namelen_custom() -> int:
             base = f"S{suffix}"
             pad_needed = max(0, length - len(base))
             filler = ("_LONGNAME" * (pad_needed // 9 + 1))[:pad_needed]
+            # Real Rockwell tag-naming rule (James, 2026-08-25): double
+            # underscores are forbidden -- see gen_string_tagoverhead.py's
+            # group_namelen for the real failure this guards against
+            # (length=32 there hit filler ending in "_" abutting suffix's
+            # leading "_"). None of this file's own lengths (4/16/40)
+            # happen to trigger it, but guard anyway rather than rely on
+            # that being permanent.
+            if filler.endswith("_"):
+                filler = filler[:-1] + "X"
             name = f"S{filler}{suffix}"
             tags.append(tag_xml(name, "CStrNameLen100", string_max_len=maxlen))
         l5x = build_l5x(target_name=f"CStrNameLen{length}", tags_xml="\n".join(tags), extra_datatypes_xml=datatype)

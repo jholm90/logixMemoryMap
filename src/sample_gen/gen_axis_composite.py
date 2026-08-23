@@ -177,7 +177,14 @@ def group_composite_udt() -> None:
 # ---------------------------------------------------------------------------
 
 def group_axis_aoi_inout() -> None:
-    fault_reset = MemberSpec("FaultReset", "BOOL")
+    # required=True: James, 2026-08-25, real bug -- FaultReset defaulted to
+    # Required=False/Visible=False (hidden, "nowhere to go on the calling
+    # rung"), but the rung text below wires FaultResetVal into it anyway.
+    # Real AOI semantics need as many call-site tags as there are Required/
+    # Visible parameters -- marking FaultReset Required=True (rather than
+    # dropping FaultResetVal from the call) keeps this file testing what it
+    # was meant to: a wired BOOL Input alongside the InOut axis param.
+    fault_reset = MemberSpec("FaultReset", "BOOL", required=True, visible=True)
     drive_axis = MemberSpec("Drive_Axis", "AXIS_CIP_DRIVE")
 
     definition, storage = aoi_xml("DriveAxisTest", input_params=[fault_reset], inout_params=[drive_axis])
@@ -191,7 +198,9 @@ def group_axis_aoi_inout() -> None:
     rung = rung_xml(0, "DriveAxisTest(DriveAxisInst,FaultResetVal,Axis_Cip_Drive);")
     l5x = build_l5x(target_name="AxisAoiInout", tags_xml=tags, extra_aoi_xml=definition, extra_rungs_xml=rung)
     _write_unmodeled(l5x, "axis_aoi_inout_1_instance",
-           "Real AXIS_CIP_DRIVE tag + AOI with BOOL Input + InOut AXIS_CIP_DRIVE param, called from a rung, 1 instance")
+           "Real AXIS_CIP_DRIVE tag + AOI with BOOL Input + InOut AXIS_CIP_DRIVE param, called from a rung, "
+           "1 instance -- FIXED 2026-08-25 (James: FaultReset now Required=True/Visible=True so the call-site "
+           "FaultResetVal arg has somewhere to go; the previous version's 2 build errors were exactly this)")
 
 
 # ---------------------------------------------------------------------------
@@ -204,7 +213,14 @@ def group_full_combo() -> None:
     datatypes = collect_nested_datatypes("ts_CIPAxis_Test", members)
     udt_tag = tag_xml("CompositeInst", "ts_CIPAxis_Test", udt_members=members)
 
-    fault_reset = MemberSpec("FaultReset", "BOOL")
+    # required=True: James, 2026-08-25, real bug -- FaultReset defaulted to
+    # Required=False/Visible=False (hidden, "nowhere to go on the calling
+    # rung"), but the rung text below wires FaultResetVal into it anyway.
+    # Real AOI semantics need as many call-site tags as there are Required/
+    # Visible parameters -- marking FaultReset Required=True (rather than
+    # dropping FaultResetVal from the call) keeps this file testing what it
+    # was meant to: a wired BOOL Input alongside the InOut axis param.
+    fault_reset = MemberSpec("FaultReset", "BOOL", required=True, visible=True)
     drive_axis = MemberSpec("Drive_Axis", "AXIS_CIP_DRIVE")
     definition, storage = aoi_xml("DriveAxisTest", input_params=[fault_reset], inout_params=[drive_axis])
     inst_tag = tag_xml("DriveAxisInst", "DriveAxisTest", udt_members=storage)
@@ -216,7 +232,8 @@ def group_full_combo() -> None:
                      extra_aoi_xml=definition, extra_rungs_xml=rung)
     _write_unmodeled(l5x, "axis_full_combo",
            "Real AXIS_CIP_DRIVE tag + ts_CIPAxis-shaped composite UDT (1 instance) + AOI-with-InOut-axis call, "
-           "all together -- additivity check against the individually-confirmed constants")
+           "all together -- additivity check against the individually-confirmed constants -- FIXED 2026-08-25 "
+           "(same FaultReset Required/Visible fix as axis_aoi_inout_1_instance)")
 
 
 def main() -> None:

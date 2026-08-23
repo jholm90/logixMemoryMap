@@ -81,6 +81,15 @@ def group_namelen() -> None:
             base = f"S{suffix}"
             pad_needed = max(0, length - len(base))
             filler = ("_LONGNAME" * (pad_needed // 9 + 1))[:pad_needed]
+            # Real Rockwell tag-naming rule (James, 2026-08-25): double
+            # underscores are forbidden. filler can end in "_" depending on
+            # pad_needed's remainder mod 9, which then abuts suffix's
+            # leading "_" -- this is exactly what broke length=32's real
+            # conversion (pad_needed=28, 28 mod 9 = 1). Swap the trailing
+            # "_" for a non-underscore char rather than dropping it, so the
+            # requested length is still hit exactly.
+            if filler.endswith("_"):
+                filler = filler[:-1] + "X"
             name = f"S{filler}{suffix}"
             tags.append(tag_xml(name, "STRING", string_max_len=82))
         l5x = build_l5x(target_name=f"StrNameLen{length}", tags_xml="\n".join(tags))

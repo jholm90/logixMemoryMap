@@ -97,6 +97,14 @@ def _padded_tag_name(prefix: str, i: int, count: int, length: int | None) -> str
         return base
     pad_needed = length - len(base)
     filler = ("_LONGTAGNAME" * (pad_needed // 12 + 1))[:pad_needed]
+    # Real Rockwell tag-naming rule (James, 2026-08-25): double underscores
+    # are forbidden. The filler's own leading "_" can land as its very last
+    # character depending on pad_needed's remainder, which then abuts
+    # suffix's leading "_" -- swap that one character for a non-underscore
+    # filler char rather than dropping it, so the requested length is still
+    # hit exactly.
+    if filler.endswith("_"):
+        filler = filler[:-1] + "X"
     return f"{prefix}{filler}{suffix}"
 
 

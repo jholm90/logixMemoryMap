@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="MAMN10" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sat Aug 22 15:50:48 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="MAMN10" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sat Aug 22 15:50:48 2026" LastModifiedDate="Sat Aug 22 15:50:48 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="MAMN10" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Aug 23 19:48:48 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="MAMN10" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Aug 23 19:48:48 2026" LastModifiedDate="Sun Aug 23 19:48:48 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -49,6 +49,39 @@
         <Data Format="L5K"><![CDATA[[0,0,0,0,0,0,0,0,0]]]></Data>
         <Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION"><DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/><DataValueMember Name="EN" DataType="BOOL" Value="0"/><DataValueMember Name="DN" DataType="BOOL" Value="0"/><DataValueMember Name="ER" DataType="BOOL" Value="0"/><DataValueMember Name="PC" DataType="BOOL" Value="0"/><DataValueMember Name="IP" DataType="BOOL" Value="0"/><DataValueMember Name="AC" DataType="BOOL" Value="0"/><DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/><DataValueMember Name="DECEL" DataType="BOOL" Value="0"/><DataValueMember Name="TrackingMaster" DataType="BOOL" Value="0"/><DataValueMember Name="CalculatedDataAvailable" DataType="BOOL" Value="0"/><DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/><DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/><DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/></Structure></Data>
       </Tag>
+      <Tag Name="MoveType" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Direction" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Position" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="Speed" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="AccelRate" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="DecelRate" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="AccelJerk" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="DecelJerk" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="LockPosn" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="EventDistance" TagType="Base" DataType="REAL" Dimensions="1" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Array DataType="REAL" Dimensions="1" Radix="Decimal"><Element Index="[0]" Value="0.0" /></Array></Data>
+      </Tag>
+      <Tag Name="CalculatedData" TagType="Base" DataType="REAL" Dimensions="1" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Array DataType="REAL" Dimensions="1" Radix="Decimal"><Element Index="[0]" Value="0.0" /></Array></Data>
+      </Tag>
 </Tags>
 <Programs>
 <Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
@@ -59,34 +92,34 @@
 <Routine Name="MainRoutine" Type="RLL">
 <RLLContent>
               <Rung Number="0" Type="N">
-                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1);]]></Text>
+                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1,MoveType,Position,Speed,Units per sec,AccelRate,Units per sec2,DecelRate,Units per sec2,S-Curve,AccelJerk,DecelJerk,% of Maximum,Enabled,Programmed,LockPosn,None,EventDistance[0],CalculatedData[0]);]]></Text>
               </Rung>
               <Rung Number="1" Type="N">
-                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1);]]></Text>
+                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1,MoveType,Position,Speed,Units per sec,AccelRate,Units per sec2,DecelRate,Units per sec2,S-Curve,AccelJerk,DecelJerk,% of Maximum,Enabled,Programmed,LockPosn,None,EventDistance[0],CalculatedData[0]);]]></Text>
               </Rung>
               <Rung Number="2" Type="N">
-                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1);]]></Text>
+                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1,MoveType,Position,Speed,Units per sec,AccelRate,Units per sec2,DecelRate,Units per sec2,S-Curve,AccelJerk,DecelJerk,% of Maximum,Enabled,Programmed,LockPosn,None,EventDistance[0],CalculatedData[0]);]]></Text>
               </Rung>
               <Rung Number="3" Type="N">
-                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1);]]></Text>
+                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1,MoveType,Position,Speed,Units per sec,AccelRate,Units per sec2,DecelRate,Units per sec2,S-Curve,AccelJerk,DecelJerk,% of Maximum,Enabled,Programmed,LockPosn,None,EventDistance[0],CalculatedData[0]);]]></Text>
               </Rung>
               <Rung Number="4" Type="N">
-                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1);]]></Text>
+                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1,MoveType,Position,Speed,Units per sec,AccelRate,Units per sec2,DecelRate,Units per sec2,S-Curve,AccelJerk,DecelJerk,% of Maximum,Enabled,Programmed,LockPosn,None,EventDistance[0],CalculatedData[0]);]]></Text>
               </Rung>
               <Rung Number="5" Type="N">
-                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1);]]></Text>
+                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1,MoveType,Position,Speed,Units per sec,AccelRate,Units per sec2,DecelRate,Units per sec2,S-Curve,AccelJerk,DecelJerk,% of Maximum,Enabled,Programmed,LockPosn,None,EventDistance[0],CalculatedData[0]);]]></Text>
               </Rung>
               <Rung Number="6" Type="N">
-                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1);]]></Text>
+                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1,MoveType,Position,Speed,Units per sec,AccelRate,Units per sec2,DecelRate,Units per sec2,S-Curve,AccelJerk,DecelJerk,% of Maximum,Enabled,Programmed,LockPosn,None,EventDistance[0],CalculatedData[0]);]]></Text>
               </Rung>
               <Rung Number="7" Type="N">
-                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1);]]></Text>
+                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1,MoveType,Position,Speed,Units per sec,AccelRate,Units per sec2,DecelRate,Units per sec2,S-Curve,AccelJerk,DecelJerk,% of Maximum,Enabled,Programmed,LockPosn,None,EventDistance[0],CalculatedData[0]);]]></Text>
               </Rung>
               <Rung Number="8" Type="N">
-                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1);]]></Text>
+                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1,MoveType,Position,Speed,Units per sec,AccelRate,Units per sec2,DecelRate,Units per sec2,S-Curve,AccelJerk,DecelJerk,% of Maximum,Enabled,Programmed,LockPosn,None,EventDistance[0],CalculatedData[0]);]]></Text>
               </Rung>
               <Rung Number="9" Type="N">
-                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1);]]></Text>
+                <Text><![CDATA[MAM(Axis_Cip_Drive,MotionInstr1,MoveType,Position,Speed,Units per sec,AccelRate,Units per sec2,DecelRate,Units per sec2,S-Curve,AccelJerk,DecelJerk,% of Maximum,Enabled,Programmed,LockPosn,None,EventDistance[0],CalculatedData[0]);]]></Text>
               </Rung>
 </RLLContent>
 </Routine>

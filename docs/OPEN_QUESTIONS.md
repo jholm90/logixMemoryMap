@@ -249,6 +249,35 @@ generator already covers them, just waiting on the next capture batch.
    numbers per file, do the actual 3-way comparison directly, then decide
    the right place to persist the per-(processor,firmware) baseline table.
 
+   **2026-08-25, James: "i did not see your results from the different
+   processor catalog/firmware numbers -- what were your determinations
+   on that... what other tests do you need me to generate for that
+   stuff?"** Status check confirmed: **no real Capacity data has come
+   back for any of the 29 staged files** — they're sitting in
+   `samples/local/fw_versions/` exactly as staged 2026-08-24, no capture
+   results attached anywhere (checked for a companion results file, none
+   exists). There's nothing to report a determination on yet because the
+   data was never captured, not because it was captured and sat
+   unanalyzed. **All 3 of James's specific questions are already directly
+   answerable from this same 29-file batch once captured, no new files
+   needed right now:**
+   - *"Does an M motion processor have more overhead?"* — the
+     `v35_l306er`/`l306erm`/`l306ers2`/`l306erms2`/`l306erms3` 5-way set
+     (base vs M vs S vs M+S vs M+S-rev3, same catalog/memory tier) is
+     built exactly for this.
+   - *"Does L81 vs L16 have different overhead?"* — confirmed all three
+     platform families in the batch share the identical firmware
+     `SoftwareRevision="35.05"` (`l81_v35`, `v35_l16er`,
+     `v35_l306er`) — a clean apples-to-apples cross-platform (1756
+     ControlLogix vs 1769 CompactLogix vs 5069 CompactLogix) comparison
+     is already possible from files already staged, not something that
+     needs a new generation batch.
+   - Firmware-revision sensitivity on one catalog (`l81_v30` through
+     `l81_v38`, 7 points) is also already staged.
+   **What's actually needed next is the capture itself**, not more
+   files: open each of the 29 in Studio 5000, record catalog/firmware/
+   Capacity-tab bytes the same way every other sample gets captured.
+
 3. **OQ-AXISDEEP — FULLY RESOLVED 2026-08-25.** CIP/virtual axis, used
    everywhere in real programs, 0.01%-tolerance target. **Partially
    resolved 2026-08-23** — the pure predefined-structure constants
@@ -609,21 +638,48 @@ generator already covers them, just waiting on the next capture batch.
     program data point to confirm before touching code — do not wire
     anything off a single 2-program sample.
 
-10. **OQ-MAMFAMILY-BUILDFAIL — Motion instructions, MAH/MSO RESOLVED, MAM/MAJ/MAS/MRP BUILD
-    FAILED (real capture 2026-08-25).** `gen_motion_instructions.py` —
-    MAH/MSO's real per-rung logic weight (60 blocks/rung each) is now
-    confirmed and wired, see RESOLVED_QUESTIONS.md OQ-MAHMSO. MAM/MAJ/MAS/
-    MRP were captured using the *same* documented 2-operand
-    `(Axis,MotionInstruction)` syntax already confirmed working for
-    MAH/MSO/MAFR/MASR — real result: 100% build failure, every rung in
-    every `motioninstr_mam*`/`motioninstr_maj*`/`motioninstr_mas*`/
-    `motioninstr_mrp*` file errored (`error_count == rung_count`). This is
-    a genuine negative result, not "untested" — the documented syntax is
-    wrong or incomplete for these 4 specific mnemonics and needs a real
-    Studio 5000-verified reference sample before another generator
-    attempt (no guessing syntax per CLAUDE.md). MAPC/MCCP camming still
-    blocked separately on the unmodeled CAM structure, see
-    OQ-PREDEFINED item 8 below.
+10. **OQ-MAMFAMILY-BUILDFAIL — root-caused and FIXED 2026-08-25, awaiting
+    recapture.** MAH/MSO's real per-rung logic weight (60 blocks/rung
+    each) is confirmed and wired, see RESOLVED_QUESTIONS.md OQ-MAHMSO.
+    MAM/MAJ/MAS/MRP's 100% build failure was NOT a wrong/incomplete
+    syntax question — James, 2026-08-25: "You need to put parameters in
+    for motion instructions. right now you are calling
+    MAM(Axis_Cip_Drive,MotionInstr1) but you need to have all of the
+    parameters populated." The bare 2-operand call these 4 used is
+    literally MAH/MSO's own real shape, not theirs — MAM/MAJ/MAS/MRP each
+    need their own full parameter list, and none of the 4 share the same
+    one. Reading the real corpus directly (`samples/local/L5X_Samples`)
+    confirms four genuinely different real operand counts: **MAM=20,
+    MAJ=17, MAS=9, MRP=5** — not one family, four distinct shapes.
+    - MAM: James gave the corrected template verbatim (his own synthetic
+      tag names, matching the real corpus's real MAM operand sequence and
+      keyword positions exactly): `MAM(Axis_Cip_Drive,MotionInstr1,
+      MoveType,Position,Speed,Units per sec,AccelRate,Units per sec2,
+      DecelRate,Units per sec2,S-Curve,AccelJerk,DecelJerk,% of Maximum,
+      Enabled,Programmed,LockPosn,None,EventDistance[0],
+      CalculatedData[0]);`
+    - MAJ/MAS/MRP: no explicit template given ("See samples for
+      details") — built the same way MAPC's fix was (OQ-MAPC-COMPAT
+      below): a position-for-position transplant from one real corpus
+      example each, real keywords/literals kept verbatim, only tag names
+      substituted. Real corpus references: `MAJ(Drive_Axis,Udt_Servo.MAJ,
+      MAJ_Direction,MAJ_Velocity,Units per sec,MAJ_Accel,Units per sec2,
+      MAJ_Decel,Units per sec2,Trapezoidal,Udt_Servo.MAJ_Jerk,
+      Udt_Servo.MAJ_Jerk,% of Maximum,Disabled,Programmed,0,None)`,
+      `MAS(Drive_Axis,MAS,All,No,Udt_Servo.MAJ_Decel,Units per sec2,No,
+      Udt_Servo.MAJ_Jerk,% of Time)`, `MRP(EM40_Stacker_Virtual,
+      Stacker.CycleReset.MRP_CarriageVirt,Absolute,Actual,0)`.
+    - Fixed in `gen_motion_instructions.py`: `_MOTION_RUNGS` now holds a
+      real full-parameter rung per instruction, `_MOTION_EXTRA_TAGS_XML`
+      declares the new tags each needs (MoveType, Direction, Position,
+      Speed, AccelRate, DecelRate, AccelJerk, DecelJerk, LockPosn,
+      EventDistance, CalculatedData). MAH/MSO's own bare 2-operand call is
+      untouched. All 12 files (4 instructions × 2 counts) regenerated,
+      lint-clean, stale error_count/actual_bytes cleared from the manifest
+      (the old broken-file readings no longer describe the current file
+      content) — awaiting recapture.
+    MAPC/MCCP camming still blocked separately on the unmodeled CAM
+    structure, see OQ-PREDEFINED item 8 below.
 
 11. **Per-Task overhead [captured 2026-08-25, real finding, NOT wired —
     needs parser architecture work first].** `gen_task_overhead.py` —
@@ -880,3 +936,41 @@ generator already covers them, just waiting on the next capture batch.
     depend on these 6 rows specifically (array-of-DINT and AOI param-count
     are both already confirmed from their clean data points), so this is
     a data-integrity flag, not a currently-wrong wired constant.
+
+17. **Two more real generator bugs, found and fixed 2026-08-25 from
+    James's `docs/OPEN_BUILD_ERRORS.md` review — both awaiting recapture.**
+    - **Double underscores are forbidden in Rockwell tag names** (James:
+      "looks like you have a double underscore and that is forbidden") —
+      `stringoverhead_namelen32_n050` failed L5X→ACD conversion
+      (`XMLSrv_E_IMPORT_ABORTED_NO_CHANGES`) because its name-length
+      padding filler (`"_LONGNAME" * k`, truncated to hit an exact target
+      length) happened to end in `_` right where it abuts the tag's own
+      `_NN` numeric suffix, at `pad_needed mod 9 == 1` (32 chars is the
+      only one of the 5 name lengths tested — 4/8/16/40 — where that
+      remainder occurs). The same filler-truncation pattern exists in 3
+      places (`cli.py`'s `_padded_tag_name`, `gen_string_tagoverhead.py`
+      and `gen_string_batch2.py`'s `group_namelen`/`group_namelen_custom`)
+      — all 3 now guard against a trailing `_` (swap it for a non-
+      underscore char, preserving the exact requested length) rather than
+      just fixing the one file that happened to hit it. Regenerated
+      `stringoverhead_namelen32_n050`, lint-clean, awaiting capture (never
+      had real data before — nothing to clear).
+    - **AOI call-site tag count must match the definition's Required/
+      Visible parameter count** (James: "your AOI has the tag name and
+      the inout as required/visible, but the calling routine has
+      tagName,FaultResetVal,Axis_Cip_Drive. the 3rd tag has no where to
+      go... change required for the faultReset -OR- remove FaultResetVal
+      from the calling routine"). `axis_aoi_inout_1_instance`/
+      `axis_full_combo` declared their BOOL Input param (`FaultReset`)
+      with the generator's default `required=False, visible=False`
+      (hidden — real semantics: "nowhere to appear on the calling rung at
+      all", per `MemberSpec`'s own docstring), but the rung text wired
+      `FaultResetVal` into it anyway — 2 build errors each. Fixed by
+      marking `FaultReset` `required=True, visible=True` in
+      `gen_axis_composite.py` (both `group_axis_aoi_inout` and
+      `group_full_combo` share the exact same bug, both fixed together),
+      keeping the call-site wiring as originally intended rather than
+      dropping the argument. Regenerated, lint-clean, stale `actual_bytes`
+      /`error_count` from the broken version cleared from the manifest
+      (43,680/44,792 with 2 errors each no longer describe the current
+      file), awaiting recapture.
