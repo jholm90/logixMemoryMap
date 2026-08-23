@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="InstrRadX10" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Aug 23 14:26:12 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="InstrRadX10" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Aug 23 14:26:12 2026" LastModifiedDate="Sun Aug 23 14:26:12 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+      <Tag Name="D0" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D1" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D2" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D3" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="R0" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R1" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R2" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R3" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="B0" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B1" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B2" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B3" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arr0" TagType="Base" DataType="DINT" Dimensions="20" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Array DataType="DINT" Dimensions="20" Radix="Decimal"><Element Index="[0]" Value="0" /><Element Index="[1]" Value="0" /><Element Index="[2]" Value="0" /><Element Index="[3]" Value="0" /><Element Index="[4]" Value="0" /><Element Index="[5]" Value="0" /><Element Index="[6]" Value="0" /><Element Index="[7]" Value="0" /><Element Index="[8]" Value="0" /><Element Index="[9]" Value="0" /><Element Index="[10]" Value="0" /><Element Index="[11]" Value="0" /><Element Index="[12]" Value="0" /><Element Index="[13]" Value="0" /><Element Index="[14]" Value="0" /><Element Index="[15]" Value="0" /><Element Index="[16]" Value="0" /><Element Index="[17]" Value="0" /><Element Index="[18]" Value="0" /><Element Index="[19]" Value="0" /></Array></Data>
+      </Tag>
+      <Tag Name="Arr1" TagType="Base" DataType="DINT" Dimensions="20" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Array DataType="DINT" Dimensions="20" Radix="Decimal"><Element Index="[0]" Value="0" /><Element Index="[1]" Value="0" /><Element Index="[2]" Value="0" /><Element Index="[3]" Value="0" /><Element Index="[4]" Value="0" /><Element Index="[5]" Value="0" /><Element Index="[6]" Value="0" /><Element Index="[7]" Value="0" /><Element Index="[8]" Value="0" /><Element Index="[9]" Value="0" /><Element Index="[10]" Value="0" /><Element Index="[11]" Value="0" /><Element Index="[12]" Value="0" /><Element Index="[13]" Value="0" /><Element Index="[14]" Value="0" /><Element Index="[15]" Value="0" /><Element Index="[16]" Value="0" /><Element Index="[17]" Value="0" /><Element Index="[18]" Value="0" /><Element Index="[19]" Value="0" /></Array></Data>
+      </Tag>
+      <Tag Name="Arr2" TagType="Base" DataType="DINT" Dimensions="20" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Array DataType="DINT" Dimensions="20" Radix="Decimal"><Element Index="[0]" Value="0" /><Element Index="[1]" Value="0" /><Element Index="[2]" Value="0" /><Element Index="[3]" Value="0" /><Element Index="[4]" Value="0" /><Element Index="[5]" Value="0" /><Element Index="[6]" Value="0" /><Element Index="[7]" Value="0" /><Element Index="[8]" Value="0" /><Element Index="[9]" Value="0" /><Element Index="[10]" Value="0" /><Element Index="[11]" Value="0" /><Element Index="[12]" Value="0" /><Element Index="[13]" Value="0" /><Element Index="[14]" Value="0" /><Element Index="[15]" Value="0" /><Element Index="[16]" Value="0" /><Element Index="[17]" Value="0" /><Element Index="[18]" Value="0" /><Element Index="[19]" Value="0" /></Array></Data>
+      </Tag>
+      <Tag Name="Str0" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str1" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="StrDest" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Ctrl0" TagType="Base" DataType="CONTROL" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K"><![CDATA[[-1610612736,10,9]]]></Data>
+        <Data Format="Decorated"><Structure DataType="CONTROL"><DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="10"/><DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="9"/><DataValueMember Name="EN" DataType="BOOL" Value="1"/><DataValueMember Name="EU" DataType="BOOL" Value="0"/><DataValueMember Name="DN" DataType="BOOL" Value="1"/><DataValueMember Name="EM" DataType="BOOL" Value="0"/><DataValueMember Name="ER" DataType="BOOL" Value="0"/><DataValueMember Name="UL" DataType="BOOL" Value="0"/><DataValueMember Name="IN" DataType="BOOL" Value="0"/><DataValueMember Name="FD" DataType="BOOL" Value="0"/></Structure></Data>
+      </Tag>
+      <Tag Name="MotionInstr1" TagType="Base" DataType="MOTION_INSTRUCTION" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K"><![CDATA[[0,0,0,0,0,0,0,0,0]]]></Data>
+        <Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION"><DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/><DataValueMember Name="EN" DataType="BOOL" Value="0"/><DataValueMember Name="DN" DataType="BOOL" Value="0"/><DataValueMember Name="ER" DataType="BOOL" Value="0"/><DataValueMember Name="PC" DataType="BOOL" Value="0"/><DataValueMember Name="IP" DataType="BOOL" Value="0"/><DataValueMember Name="AC" DataType="BOOL" Value="0"/><DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/><DataValueMember Name="DECEL" DataType="BOOL" Value="0"/><DataValueMember Name="TrackingMaster" DataType="BOOL" Value="0"/><DataValueMember Name="CalculatedDataAvailable" DataType="BOOL" Value="0"/><DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/><DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/><DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/></Structure></Data>
+      </Tag>
+      <Tag Name="CamProfile1" TagType="Base" DataType="CAM_PROFILE" Dimensions="5" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K"><![CDATA[[[2,0,0,0,0,1,0,0,1072693248,0,-1080956027,515396076,1059086925,-755914243],[2,1078198272,0,1077149696,0,1,0,0,1070176665,-1717986918,-1083933983,1202590845,1055091462,-418679770],[2,1079574528,0,1077477376,0,1,0,0,0,0,0,0,0,0],[0,1079574528,0,1077477376,0,1,0,0,0,0,0,0,0,0],[2,0,0,0,0,1,0,0,1072693248,0,-1080956027,515396076,1059086925,-755914243]]]]></Data>
+        <Data Format="Decorated"><Array DataType="CAM_PROFILE" Dimensions="5"><Element Index="[0]"><Structure DataType="CAM_PROFILE"><DataValueMember Name="Status" DataType="DINT" Radix="Decimal" Value="2"/></Structure></Element><Element Index="[1]"><Structure DataType="CAM_PROFILE"><DataValueMember Name="Status" DataType="DINT" Radix="Decimal" Value="2"/></Structure></Element><Element Index="[2]"><Structure DataType="CAM_PROFILE"><DataValueMember Name="Status" DataType="DINT" Radix="Decimal" Value="2"/></Structure></Element><Element Index="[3]"><Structure DataType="CAM_PROFILE"><DataValueMember Name="Status" DataType="DINT" Radix="Decimal" Value="0"/></Structure></Element><Element Index="[4]"><Structure DataType="CAM_PROFILE"><DataValueMember Name="Status" DataType="DINT" Radix="Decimal" Value="2"/></Structure></Element></Array></Data>
+      </Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+              <Rung Number="0" Type="N">
+                <Text><![CDATA[RAD(180,R0);]]></Text>
+              </Rung>
+              <Rung Number="1" Type="N">
+                <Text><![CDATA[RAD(180,R0);]]></Text>
+              </Rung>
+              <Rung Number="2" Type="N">
+                <Text><![CDATA[RAD(180,R0);]]></Text>
+              </Rung>
+              <Rung Number="3" Type="N">
+                <Text><![CDATA[RAD(180,R0);]]></Text>
+              </Rung>
+              <Rung Number="4" Type="N">
+                <Text><![CDATA[RAD(180,R0);]]></Text>
+              </Rung>
+              <Rung Number="5" Type="N">
+                <Text><![CDATA[RAD(180,R0);]]></Text>
+              </Rung>
+              <Rung Number="6" Type="N">
+                <Text><![CDATA[RAD(180,R0);]]></Text>
+              </Rung>
+              <Rung Number="7" Type="N">
+                <Text><![CDATA[RAD(180,R0);]]></Text>
+              </Rung>
+              <Rung Number="8" Type="N">
+                <Text><![CDATA[RAD(180,R0);]]></Text>
+              </Rung>
+              <Rung Number="9" Type="N">
+                <Text><![CDATA[RAD(180,R0);]]></Text>
+              </Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

@@ -227,8 +227,15 @@ every real program has AOI definitions, and each one is short by
     bytes — 32 bits packed per DINT-sized word. Implemented now since it's
     standard/documented AB behavior, but not yet validated by this project's
     own sample data.
-- Array of UDT: `dimension × udt_size`, formula pending OQ-ARRAYPACK (per-element
-  vs whole-block padding).
+- Array of UDT (KNOWN, resolved 2026-08-24): `dimension × ceil(udt_size / 4) × 4`
+  — each element rounds up to a 4-byte boundary, no padding beyond that.
+  Confirmed against real data across n=1/10/100/1000/5000 for a 3-byte-tight
+  UDT (rounds to 4 bytes/element, exact fit for n≥10, small-N anomaly at
+  n=1 matching the same pattern documented elsewhere) and an already-8-byte
+  UDT (already a multiple of 4, rounding is a no-op, confirmed unaffected).
+  See RESOLVED_QUESTIONS.md OQ-UDTARRAYALIGN/OQ-ARRAYPACK. Wired into
+  `sizing/udt.py`'s `compute_array_size`. Atomic-type arrays are NOT
+  affected by this rounding (untested at this question, left unchanged).
 - Multi-dimensional arrays: product of all dimensions × element size, no known
   special case, but not yet tested at scale >2D.
 

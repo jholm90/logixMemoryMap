@@ -323,15 +323,24 @@ already accurate, real data now confirms it. Was ASSUMED; treat as
 confirmed by real data going forward (no formula change, just a real
 data point behind a formula that was previously untested).
 
-**OQ-UDTARRAYALIGN, partial.** `udtarrayalign_tight8b_n00001/n00010/
-n00100` (array of an already-8-byte-tight UDT) shows a perfectly constant
-13,300 gap across all 3 counts — `dimension * udt_size` is exact for
-already-tight UDTs, zero per-element padding. Still open (see
-OPEN_QUESTIONS.md OQ-ARRAYPACK): `arraypack_odd3b_n00001/n00010/n00100`
-(array of a 3-byte/odd-sized UDT) shows a gap that grows slightly with
-count (13,305 / 13,310 / 13,400) — not a clean linear fit, roughly but not
-exactly ~1 byte/element extra. Real, but not resolved to a formula; not
-wired into code.
+**OQ-UDTARRAYALIGN / OQ-ARRAYPACK, fully resolved 2026-08-24.**
+`udtarrayalign_tight8b_n00001/n00010/n00100` (array of an already-8-byte-
+tight UDT) shows a perfectly constant gap across all 3 counts —
+`dimension * udt_size` is exact for already-tight UDTs, zero per-element
+padding. `arraypack_odd3b` (array of a 3-byte/odd-sized UDT) was extended
+2026-08-24 to n=1/10/100/1000/5000 and resolved cleanly: **each array
+element of a UDT rounds up to a 4-byte boundary.** Once that rounding is
+applied, every count n≥10 lands on exactly the same flat +4 residual as
+the tight8b case (the universal small-baseline noise seen everywhere in
+this project, not a per-element effect) — n=1 shows the same +8 small-N
+anomaly already documented elsewhere (UDT-definition formula, etc.), not
+a new mystery. This *sharpens* rather than contradicts the tight8b
+finding: there's no padding beyond the 4-byte boundary itself, but a
+sub-4-byte-boundary element genuinely does round up (3 bytes/element
+really is charged as 4). Wired into `sizing/udt.py`'s `compute_array_size`
+(the `data_type in data_types` branch rounds `element_bytes` up to the
+next multiple of 4 before multiplying by count) — atomic-type arrays are
+untouched, this only applies to array-of-UDT.
 
 **OQ-PREDEFINED, motion/axis/CAM_PROFILE piece.** Derived from real data
 via `residual = actual - sizeable_engine_total - empty_project_baseline`

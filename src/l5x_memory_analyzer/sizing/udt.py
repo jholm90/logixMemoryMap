@@ -77,11 +77,26 @@ def compute_array_size(
     element_bytes, element_confidence = compute_element_size(
         data_type, data_types, model, _stack
     )
-    array_confidence = (
-        model.array.udt_confidence
-        if data_type in data_types
-        else model.array.atomic_confidence
-    )
+    if data_type in data_types:
+        # Array-of-UDT: each element rounds up to a 4-byte boundary --
+        # confirmed 2026-08-24 (OQ-ARRAYPACK/OQ-UDTARRAYALIGN resolved,
+        # see RESOLVED_QUESTIONS.md) against real data for a 3-byte-tight
+        # UDT array (arraypack_odd3b_n*, n=10/100/1000/5000 all landed on
+        # exactly the same residual as the universal small-baseline noise
+        # once each element is rounded 3->4 bytes -- zero residual growth
+        # left once this rounding is applied) and confirmed as a genuine
+        # non-effect for an already-4-byte-aligned UDT (udtarrayalign_
+        # tight8b_n*, 8 bytes/element, flat +4 residual at every count,
+        # no growth -- rounding an already-aligned size is a no-op, so
+        # this doesn't contradict that earlier "no per-element padding"
+        # finding, it sharpens it: no padding beyond the 4-byte boundary
+        # itself). Does NOT apply to atomic-type arrays (untested at this
+        # rounding question, atomic array sizing stays dimension*element_size
+        # unchanged).
+        element_bytes = -(-element_bytes // 4) * 4
+        array_confidence = model.array.udt_confidence
+    else:
+        array_confidence = model.array.atomic_confidence
     return element_bytes * element_count, weakest(element_confidence, array_confidence)
 
 

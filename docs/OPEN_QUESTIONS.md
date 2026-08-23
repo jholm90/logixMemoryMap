@@ -44,10 +44,43 @@ generator already covers them, just waiting on the next capture batch.
    literal real shape doesn't transplant cleanly with substituted tag
    names), not just "try again."
 
-   Once these 36 build clean and capture real Capacity data, the SECOND
-   pass (James: "once we have all valid data for all instructions then we
-   can do the 5/10 usage per file for each") is the natural follow-up —
-   not started yet, intentionally, per James's explicit sequencing.
+   **2026-08-24, ALL 36 captured clean.** Every file converted "ok" and
+   returned real `actual_bytes`, including every NEAR_VERBATIM/unmodeled
+   one (MAPC, CROUT, MCCP, MSG) — the higher-risk shapes all held up.
+   n=1 marginal weight per instruction (`actual - engine_prediction`,
+   isolates each instruction's real per-rung cost since nothing here is
+   in `logic_instructions.weights` yet so the engine's own contribution is
+   always 0): NOT (46), TRN (58), NEG (46), OSR (62), OSF (62), UID (46),
+   UIE (46), MCR (22), TND (30), ATN (66), DEG (70), RAD (122), TAN (66),
+   SQR (58), SWPB (82), XOR (46), FIND (106), INSERT (122), BSL (66),
+   BSR (66), FFL (78), FFU (78), SRT (122), AVE (182), FAL (110),
+   FSC (110), MAFR/MASR/MDW/MASD (66 each), MGSD/MGSR (62 each),
+   CROUT (34). MCCP (362), MAPC (158), MSG (826) each entangle the new
+   unmodeled CAM/MESSAGE structure's own byte cost with the instruction's
+   weight — can't be split from n=1 alone. **These are all preliminary —
+   James: "let's to a 10-count test for each. If something comes out of
+   line then we can do more per instruction testing as required."**
+   `main()` now also emits a parallel `_x10` file per instruction (10
+   identical rungs, same shape/pool) specifically to check whether each
+   n=1 number really is a flat per-rung rate before anything gets wired
+   into `memory_model.yaml` — do NOT treat the numbers above as confirmed
+   weights yet, they're one data point each. Once `_x10` data lands: for
+   the 33 plain instructions, weight = gap_10 (since fixed costs are
+   already subtracted out by the engine's own baseline+routine-base
+   prediction, a truly flat per-rung weight means gap_1 == gap_10/10 ==
+   the per-rung rate — any instruction where gap_1 ≠ gap_10/10 is exactly
+   James's "something comes out of line," flag it here for a dedicated
+   deeper sweep same as CPT/LBL-JMP got). For MCCP/MAPC/MSG specifically,
+   the two count points let the structure cost and the instruction weight
+   be solved simultaneously: `weight = (gap_10 - gap_1) / 9`,
+   `structure_cost = gap_1 - weight`.
+
+   Once these 36 (now 72, n=1 + n=10) are fully confirmed, the THIRD pass
+   (James: "once we have all valid data for all instructions then we can
+   do the 5/10 usage per file for each" — meaning per-file instance/call-
+   site multiplicity, not rung count, for whichever instructions still
+   need it) is the natural follow-up — not started yet, intentionally,
+   per James's explicit sequencing.
 
 2. **OQ-BASELINE-PROCFW (new, 2026-08-23, James).** `empty_project_baseline`
    (13,296, see RESOLVED_QUESTIONS.md OQ-BASELINE) is **not a universal AB
@@ -117,15 +150,10 @@ generator already covers them, just waiting on the next capture batch.
    homogeneous arrays) — `gen_axis_composite.py`'s composite UDT covers
    this too. Awaiting capture.
 
-5. **OQ-ARRAYPACK [test built].** Does a UDT's total size round to a 32-bit
-   boundary? `gen_arraypack_boolarray.py` group C. Awaiting capture. See
-   also OQ-UDTARRAYALIGN below — the odd-byte-count case below is this
-   same question, partially answered.
-
-6. **OQ-ALIASSIZE [test built].** Alias tag cost at 1/10/1000 scale.
+5. **OQ-ALIASSIZE [test built].** Alias tag cost at 1/10/1000 scale.
    `gen_tagscope_alias.py` group B. Awaiting capture.
 
-7. **OQ-CMPCPTLAYOUT [test built, new 2026-08-22, extended same day,
+6. **OQ-CMPCPTLAYOUT [test built, new 2026-08-22, extended same day,
    MAJOR CORRECTION 2026-08-23].** Operator/layout/optimization sweep for
    CPT and CMP (`tag**tag` vs `tag*tag` vs `tag-tag`, a 6-operand chain,
    same-tag-vs-distinct-tag and redundant-literal dedup probes, compound
@@ -169,7 +197,7 @@ generator already covers them, just waiting on the next capture batch.
    better has replaced it and leaving it 0 would be worse. Flagged loudly
    here so this doesn't quietly stay believed "exact."
 
-8. **OQ-AOIDEF (new, 2026-08-23, MAJOR — real cost currently modeled as
+7. **OQ-AOIDEF (new, 2026-08-23, MAJOR — real cost currently modeled as
    zero; DATA QUALITY WARNING added same day, see below before trusting
    any number in this entry).**
 
@@ -289,14 +317,47 @@ generator already covers them, just waiting on the next capture batch.
    — base + per-param + per-local + name-length + bool-adjacency terms,
    each independently confirmed the way the UDT formula's terms were.
 
-9. **OQ-PREDEFINED, remaining piece [test built].** MOTION_INSTRUCTION,
+   **2026-08-24, NEW real finding — AOI instances inside an ARRAY may cost
+   roughly HALF what the engine currently predicts per element.** 4 clean
+   real data points now exist for the exact same AOI shape ("RealisticAOI"
+   /"RealisticAOI50", 5 DINT+5 BOOL In / 5 DINT+5 BOOL Out / 5 REAL+5 BOOL
+   Local — not contaminated, none of these 4 sample_ids are in the
+   7-way-identical list above): `aoi_realistic_composite_def_only` (n=0),
+   `_1_instance`/`aoi_realistic_50_instance_1` (n=1, two independent real
+   captures of the identical shape agreeing exactly at 20,040 — good cross-
+   validation), `_10_instance_array` (n=10), `aoi_realistic_50_instance_
+   array` (n=50). Solving the array points (n=10, n=50) as two equations:
+   real per-element cost inside the array = **64 bytes/instance**, flat
+   array-tag overhead ≈104 — but the engine's own (already-correct,
+   already-confirmed) per-instance AOI size for THIS shape is 128 bytes
+   (matches the n=1 standalone-tag case exactly: 220 = tag_overhead(~92)
+   + 128). **The array case is real-data-confirmed at roughly half that
+   per-element rate.** Leading hypothesis: BOOL Parameters/LocalTags
+   (OQ-AOIBOOLPACK, still open — currently implemented as unpacked/4-bytes
+   since the flat AOI XML shows no hidden-SINT/BIT-alias representation)
+   might actually pack 8-per-byte specifically once put into an ARRAY of
+   AOI instances, the same way a UDT's BOOL array-of-elements packs
+   differently than either a scalar BOOL tag or a UDT member — i.e. this
+   could be OQ-AOIBOOLPACK's real answer, but only surfacing in the array
+   context. **Not confirmed, only 2 array data points, both using the same
+   BOOL-heavy shape** — can't yet separate "AOI arrays pack BOOLs" from
+   "AOI arrays are cheaper per-element for some other reason entirely."
+   Needs a dedicated follow-up: an AOI-instance array with ZERO BOOL
+   members (pure DINT/REAL In/Out/Local) at 2+ array-count points, to
+   isolate whether the ~50% reduction is BOOL-specific or a general
+   array-of-AOI effect. Not wired into code — this is the opposite failure
+   mode risk from the paragraph above (wiring a real-looking-but-
+   unisolated array discount could UNDER-predict a real BOOL-free AOI
+   array).
+
+8. **OQ-PREDEFINED, remaining piece [test built].** MOTION_INSTRUCTION,
    AXIS_CIP_DRIVE/AXIS_SERVO/AXIS_VIRTUAL/COORDINATE_SYSTEM, and
    MOTION_GROUP are now derived and wired in (see RESOLVED_QUESTIONS.md
    OQ-PREDEFINED). What's still open: `CAM` (the drive/cam-instruction
    wrapper, not `CAM_PROFILE` the array structure, which IS resolved) is
    still untested. Awaiting capture.
 
-10. **OQ-XPROGREF [test built].** Real Logix has no direct cross-program
+9. **OQ-XPROGREF [test built].** Real Logix has no direct cross-program
     tag-addressing syntax in logic (confirmed: searched all 47 real corpus
     files, no `Program:Tag`-style reference exists anywhere in rung Text).
     The real mechanism is what you described earlier — a Controller-scoped
@@ -307,7 +368,7 @@ generator already covers them, just waiting on the next capture batch.
     `build_l5x(extra_programs_xml=...)` wrapper hook for a second Program.
     Awaiting capture.
 
-11. **Motion instructions [test built]** (MAM/MAJ/MAH/MAS/MSO/MRP).
+10. **Motion instructions [test built]** (MAM/MAJ/MAH/MAS/MSO/MRP).
     `gen_motion_instructions.py` — MAH/MSO's 2-operand call syntax is
     corpus-confirmed, the rest use the same documented signature but
     aren't independently confirmed for that exact mnemonic. MAPC/MCCP
@@ -318,14 +379,14 @@ generator already covers them, just waiting on the next capture batch.
     `logic_instructions.weights` in memory_model.yaml — still needs that
     one-line addition next session. MAM/MAJ/MAS/MRP remain untested.
 
-12. **Per-Task overhead [test built].** `gen_task_overhead.py` — 2nd/3rd
+11. **Per-Task overhead [test built].** `gen_task_overhead.py` — 2nd/3rd
     Task, isolating pure Task/Program scaffolding cost from logic content.
     Also the only way to disambiguate whether the logic-sizing engine's
     `fixed_base_per_routine` is really per-routine, per-program, or
     per-task (every calibration sample had exactly one of each). Awaiting
     capture.
 
-13. **Indirect addressing overhead [test built, extended 2026-08-22].**
+12. **Indirect addressing overhead [test built, extended 2026-08-22].**
     `gen_indirect_addressing.py` — direct vs. tag-driven array index, plus
     (James: "Does tag[idx+1] take up the same space as tag[Idx]?") a third
     variant with an arithmetic offset inside the index. Same
@@ -335,3 +396,20 @@ generator already covers them, just waiting on the next capture batch.
     the existing indexed-array-tag handling — no separate direct-vs-
     indirect cost found. The arithmetic-offset (`tag[idx+1]`) variant is
     still untested; leaving this open for that specifically.
+
+13. **OQ-STRINGTAGOVERHEAD (new, 2026-08-24).** `tag_overhead`'s formula
+    (`84 + 8×floor(name_len/8)`) was confirmed type-independent using
+    SINT/INT/DINT/LINT/REAL/BOOL — STRING was never separately checked.
+    `string_builtin_x1000` (1000 built-in STRING tags) and `customstring_
+    250char_x1000` (1000 instances of a 250-char custom string type) both
+    now show the engine over-predicting by almost exactly **-2 bytes/tag**
+    (-2000/1000 and -1998/1000 respectively — same effect, both STRING
+    families, independent of DATA length). Real and consistent across two
+    independent large-count captures, but only ONE count point each
+    (n=1000) — can't yet tell whether it's a genuine flat -2/tag rate or
+    some other count-dependent shape that happens to look flat at this
+    scale (same caution as everywhere else in this file: one data point
+    isn't a confirmed formula). Small enough (~1% of the STRING-family
+    total) that it doesn't invalidate anything, but real enough to log.
+    Needs a proper STRING-tag-count sweep (n=1/10/100/1000) before wiring
+    a `-2` correction into `tag_overhead` for STRING types specifically.

@@ -14,12 +14,25 @@ tied to JSR as a pair, can't be isolated as a bare single-rung instruction,
 covered by `gen_jsr_sbr_ret.py`).
 
 **Methodology, per James's explicit instruction:** exactly ONE file per
-instruction, ONE rung, no rung-count sweep (that comes later once this
-first pass proves every file actually compiles). Every operand shape below
-was checked against the real corpus BEFORE being used here -- see each
-instruction's own comment for the exact real citation. A short list of
-instructions were deliberately SKIPPED rather than guessed at (SCP, FBC,
-PID) -- see the bottom of this docstring.
+instruction, ONE rung, no rung-count sweep at first (that came later once
+this first pass proved every file actually compiles). Every operand shape
+below was checked against the real corpus BEFORE being used here -- see
+each instruction's own comment for the exact real citation. A short list
+of instructions were deliberately SKIPPED rather than guessed at (SCP,
+FBC, PID) -- see the bottom of this docstring.
+
+**2026-08-24, all 36 n=1 files captured clean (converted "ok," real
+actual_bytes, 0 errors) -- James: "let's to a 10-count test for each."**
+`main()` now also generates a parallel `_x10` file per instruction (same
+tag pool/operand shape, 10 identical rungs instead of 1) -- a basic
+linearity spot check before committing to a full rung-count sweep per
+instruction, matching this project's established pattern for every other
+instruction weight (never trust a single data point). MCCP/MAPC/MSG's
+n=1 gap entangles the unmodeled CAM/MESSAGE structure's own one-time cost
+with the instruction's per-rung weight (the structure tag is declared
+once regardless of rung count, the instruction repeats) -- the x10 point
+is what actually lets those two be decomposed (weight = (gap_10-gap_1)/9,
+structure_cost = gap_1 - weight).
 
 **New predefined structures discovered building this:** MESSAGE (used by
 MSG) and CAM (used by MCCP/MAPC, NOT the same as the already-modeled
@@ -75,6 +88,7 @@ from sample_gen.builders import (
     message_tag_xml,
     motion_instruction_tag_xml,
     rung_xml,
+    rungs_xml,
     tag_xml,
 )
 from sample_gen.gen_axis_composite import _AXIS_TAG_XML
@@ -134,27 +148,33 @@ def _write_unmodeled(l5x: str, out_name: str, description: str) -> None:
 
 
 def _one_rung_file(instr_text: str, target_name: str, out_name: str, description: str,
-                    extra_tags_xml: str = "", extra_datatypes_xml: str = "") -> None:
-    rung = rung_xml(0, instr_text)
+                    extra_tags_xml: str = "", extra_datatypes_xml: str = "", count: int = 1) -> None:
+    rung = rung_xml(0, instr_text) if count == 1 else rungs_xml(count, lambda i: instr_text)
     tags = _POOL_TAGS_XML + ("\n" + extra_tags_xml if extra_tags_xml else "")
-    l5x = build_l5x(target_name=target_name, tags_xml=tags, extra_rungs_xml=rung,
+    final_name = out_name if count == 1 else f"{out_name}_x{count:02d}"
+    final_target = target_name if count == 1 else f"{target_name}X{count}"
+    desc = description if count == 1 else f"{count} identical rungs of the same call -- {description}"
+    l5x = build_l5x(target_name=final_target, tags_xml=tags, extra_rungs_xml=rung,
                      extra_datatypes_xml=extra_datatypes_xml)
-    _write(l5x, out_name, description)
+    _write(l5x, final_name, desc)
 
 
 def _one_rung_file_unmodeled(instr_text: str, target_name: str, out_name: str, description: str,
-                              extra_tags_xml: str = "") -> None:
-    rung = rung_xml(0, instr_text)
+                              extra_tags_xml: str = "", count: int = 1) -> None:
+    rung = rung_xml(0, instr_text) if count == 1 else rungs_xml(count, lambda i: instr_text)
     tags = _POOL_TAGS_XML + "\n" + extra_tags_xml
-    l5x = build_l5x(target_name=target_name, tags_xml=tags, extra_rungs_xml=rung)
-    _write_unmodeled(l5x, out_name, description)
+    final_name = out_name if count == 1 else f"{out_name}_x{count:02d}"
+    final_target = target_name if count == 1 else f"{target_name}X{count}"
+    desc = description if count == 1 else f"{count} identical rungs of the same call -- {description}"
+    l5x = build_l5x(target_name=final_target, tags_xml=tags, extra_rungs_xml=rung)
+    _write_unmodeled(l5x, final_name, desc)
 
 
 # ---------------------------------------------------------------------------
 # A. Simple atomic-operand instructions -- CORPUS_CONFIRMED shape, low risk.
 # ---------------------------------------------------------------------------
 
-def group_simple_atomic() -> None:
+def group_simple_atomic(count: int = 1) -> None:
     cases = [
         # (instruction text, out_name, description, real citation)
         ("NOT(D0,D1);", "instrfirst_not",
@@ -199,7 +219,7 @@ def group_simple_atomic() -> None:
          "Write_Data_Out.Buffer)"),
     ]
     for instr, out_name, desc in cases:
-        _one_rung_file(instr, f"Instr{out_name[11:].capitalize()}", out_name, desc)
+        _one_rung_file(instr, f"Instr{out_name[11:].capitalize()}", out_name, desc, count=count)
 
 
 # ---------------------------------------------------------------------------
@@ -209,7 +229,7 @@ def group_simple_atomic() -> None:
 #    exactly as the real examples show them, not filled in with a guess.
 # ---------------------------------------------------------------------------
 
-def group_control_tag_instructions() -> None:
+def group_control_tag_instructions(count: int = 1) -> None:
     cases = [
         ("BSL(Arr0[0],Ctrl0,B0,?);", "instrfirst_bsl",
          "BSL(Arr0[0],Ctrl0,B0,?) -- CORPUS_CONFIRMED shape (NoSortBoardsCount[0],BSRNoSortBoards,No_Sort_Found,?)"),
@@ -236,7 +256,7 @@ def group_control_tag_instructions() -> None:
          "DINT array elements"),
     ]
     for instr, out_name, desc in cases:
-        _one_rung_file(instr, f"Instr{out_name[11:].capitalize()}", out_name, desc)
+        _one_rung_file(instr, f"Instr{out_name[11:].capitalize()}", out_name, desc, count=count)
 
 
 # ---------------------------------------------------------------------------
@@ -247,7 +267,7 @@ def group_control_tag_instructions() -> None:
 #    the same operand TYPES via real corpus DataType lookups (not guessed).
 # ---------------------------------------------------------------------------
 
-def group_motion_two_operand() -> None:
+def group_motion_two_operand(count: int = 1) -> None:
     axis_pair = [
         ("MAFR", "MAFR(Axis_Cip_Drive,MotionInstr1);",
          "MAFR(Axis_Cip_Drive,MotionInstr1) -- CORPUS_CONFIRMED shape (MAFR(Drive_Axis,Udt_Servo.MAFR)), "
@@ -262,7 +282,7 @@ def group_motion_two_operand() -> None:
     ]
     for instr, text, desc in axis_pair:
         _one_rung_file(text, f"Instr{instr.capitalize()}", f"instrfirst_{instr.lower()}", desc,
-                        extra_tags_xml=_AXIS_TAG_XML)
+                        extra_tags_xml=_AXIS_TAG_XML, count=count)
 
     group_pair = [
         ("MGSD", "MGSD(MotionGroup,MotionInstr1);",
@@ -273,7 +293,7 @@ def group_motion_two_operand() -> None:
     ]
     for instr, text, desc in group_pair:
         _one_rung_file(text, f"Instr{instr.capitalize()}", f"instrfirst_{instr.lower()}", desc,
-                        extra_tags_xml=_AXIS_TAG_XML)
+                        extra_tags_xml=_AXIS_TAG_XML, count=count)
 
 
 # ---------------------------------------------------------------------------
@@ -282,7 +302,7 @@ def group_motion_two_operand() -> None:
 #    tag so every member reference resolves to something real and sizeable.
 # ---------------------------------------------------------------------------
 
-def group_crout() -> None:
+def group_crout(count: int = 1) -> None:
     instr = ("CROUT(Zone1,NEGATIVE,250,Zone1.Actuate,Zone1.Feedback1,Zone1.Feedback2,"
              "Zone1.InputStatus,Zone1.OutputStatus,Zone1.Reset);")
     zone_tag = tag_xml("Zone1", "ZoneStatus", udt_members=_ZONE_MEMBERS)
@@ -291,7 +311,7 @@ def group_crout() -> None:
                     "corpus call (SJ_Gormley_20251112_r02.L5X, Zone1/Zone2 examples), using a synthetic "
                     "6-DINT-member ZoneStatus UDT in place of the real file's own Zone1 tag shape (unconfirmed "
                     "exactly, but structurally identical: 1 identifying tag + 2 literals + 6 member refs)",
-                    extra_tags_xml=zone_tag, extra_datatypes_xml=_ZONE_UDT_XML)
+                    extra_tags_xml=zone_tag, extra_datatypes_xml=_ZONE_UDT_XML, count=count)
 
 
 # ---------------------------------------------------------------------------
@@ -300,7 +320,7 @@ def group_crout() -> None:
 #    unmodeled since CAM has no byte-size formula yet.
 # ---------------------------------------------------------------------------
 
-def group_cam_family() -> None:
+def group_cam_family(count: int = 1) -> None:
     cam_tag = cam_tag_xml("Cam1", 5)
 
     mccp_instr = "MCCP(MotionInstr1,Cam1[0],2,1,1,CamProfile1[0]);"
@@ -309,7 +329,7 @@ def group_cam_family() -> None:
                               "(MCCP(MCCP_NewCi2,NewCI2Cam[0],2,1,1,newCi2CamProfile[0])), real operand "
                               "DataTypes confirmed via corpus lookup: MOTION_INSTRUCTION, CAM (new, unmodeled), "
                               "literal ints, CAM_PROFILE",
-                              extra_tags_xml=cam_tag)
+                              extra_tags_xml=cam_tag, count=count)
 
     mapc_instr = ("MAPC(Axis_Cip_Drive,Axis_Cip_Drive,MotionInstr1,0,CamProfile1[0],1,1,Once,Forward Only,"
                   "Cam1[0].Master,Cam1[0].Master,New Cam,Command,Bi-Directional);")
@@ -320,7 +340,7 @@ def group_cam_family() -> None:
                               "CAM[2].Master,Stacker.ForksUpDn.CAM[2].Master,New Cam,Command,Bi-Directional)) "
                               "-- same Axis tag reused for both slave/master operand positions here rather than "
                               "declaring a second axis",
-                              extra_tags_xml=cam_tag)
+                              extra_tags_xml=cam_tag, count=count)
 
 
 # ---------------------------------------------------------------------------
@@ -328,7 +348,7 @@ def group_cam_family() -> None:
 #    (unmodeled). write_sample_unmodeled.
 # ---------------------------------------------------------------------------
 
-def group_msg() -> None:
+def group_msg(count: int = 1) -> None:
     msg_tag = message_tag_xml("Msg1", local_element="Arr0", destination_tag="Arr1")
     instr = "MSG(Msg1);"
     _one_rung_file_unmodeled(instr, "InstrMsg", "instrfirst_msg",
@@ -337,18 +357,32 @@ def group_msg() -> None:
                               "(BaillieLeitchField_Edger_20260812_r00.L5X, MESSAGE_Alarms) except "
                               "LocalElement/DestinationTag, which point at this file's own Arr0/Arr1 tags "
                               "instead of the real file's array tags",
-                              extra_tags_xml=msg_tag)
+                              extra_tags_xml=msg_tag, count=count)
+
+
+def _run_all(count: int) -> int:
+    group_simple_atomic(count)
+    group_control_tag_instructions(count)
+    group_motion_two_operand(count)
+    group_crout(count)
+    group_cam_family(count)
+    group_msg(count)
+    return 18 + 8 + 6 + 1 + 2 + 1
 
 
 def main() -> None:
-    group_simple_atomic()
-    group_control_tag_instructions()
-    group_motion_two_operand()
-    group_crout()
-    group_cam_family()
-    group_msg()
-    total = 18 + 8 + 6 + 1 + 2 + 1
-    print(f"\nDone. {total} files.")
+    # James, 2026-08-24, after all 36 n=1 files built and captured clean:
+    # "let's to a 10-count test for each." Generates a second, parallel
+    # x10 file per instruction (same tag pool/operand shape, 10 identical
+    # rungs) alongside the original n=1 files -- a basic linearity check
+    # (does the n=1 marginal gap really represent the per-rung weight, or
+    # does it drift at n=10 the way a few other small-N cases in this
+    # project have) before committing to a full rung-count sweep per
+    # instruction. n=1 files are left untouched/regenerated identically
+    # (idempotent), not removed.
+    n1_total = _run_all(1)
+    n10_total = _run_all(10)
+    print(f"\nDone. {n1_total} n=1 files + {n10_total} n=10 files = {n1_total + n10_total} total.")
 
 
 if __name__ == "__main__":
