@@ -692,55 +692,6 @@ def module_1756_digital_input_xml(name: str, slot: int = 1, parent_port_id: int 
     )
 
 
-def module_point_io_xml(adapter_name: str, adapter_ip: str, block_names: list[str]) -> str:
-    """Real shape confirmed 2026-08-22 (samples/local/
-    BAI10048_TrimmerTally_20250704.L5X): a 1734-AENT/C Ethernet adapter
-    (Port 1 = PointIO bus to its own rack members, Port 2 = Ethernet
-    uplink, its own SlotStatusBits Input Connection) plus N 1734-IB8/C
-    blocks behind it, each with a real ConfigTag (36 bytes, 16 per-point
-    filter members) but NO independent Connection -- pattern 2 above,
-    <RackConnection><InAliasTag/></RackConnection> instead."""
-    blocks = []
-    for i, block_name in enumerate(block_names):
-        filter_members = "".join(
-            f'<DataValueMember Name="Pt{p}FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>'
-            f'<DataValueMember Name="Pt{p}FilterOnOff" DataType="INT" Radix="Decimal" Value="1000"/>'
-            for p in range(8)
-        )
-        blocks.append(
-            f'<Module Name="{block_name}" CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" '
-            f'Major="3" Minor="1" ParentModule="{adapter_name}" ParentModPortId="1" Inhibited="false" MajorFault="false">\n'
-            f'<EKey State="CompatibleModule"/>\n'
-            f'<Ports><Port Id="1" Address="{i + 1}" Type="PointIO" Upstream="true"/></Ports>\n'
-            f'<Communications CommMethod="1073741824">\n'
-            f'<ConfigTag ConfigSize="36" ExternalAccess="Read/Write">\n'
-            f'<Data Format="L5K"><![CDATA[[40,103,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]></Data>\n'
-            f'<Data Format="Decorated"><Structure DataType="AB:1734_DI8:C:0">{filter_members}</Structure></Data>\n'
-            f'</ConfigTag>\n'
-            f'<Connections><RackConnection><InAliasTag/></RackConnection></Connections>\n'
-            f'</Communications>\n'
-            f"</Module>"
-        )
-    adapter = (
-        f'<Module Name="{adapter_name}" CatalogNumber="1734-AENT/C" Vendor="1" ProductType="12" ProductCode="108" '
-        f'Major="7" Minor="11" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">\n'
-        f'<EKey State="CompatibleModule"/>\n'
-        f'<Ports>\n<Port Id="1" Address="0" Type="PointIO" Upstream="false"><Bus Size="{len(block_names)}"/></Port>\n'
-        f'<Port Id="2" Address="{adapter_ip}" Type="Ethernet" Upstream="true"/>\n</Ports>\n'
-        f'<Communications CommMethod="805306369">\n'
-        f'<Connections><Connection Name="Output" RPI="20000" Type="Output" EventID="0" '
-        f'ProgrammaticallySendEventTrigger="false" Unicast="true">\n'
-        f'<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1734_2SLOT:I:0">'
-        f'<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111"/>'
-        f'<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>'
-        f'</Structure></Data></InputTag>\n'
-        f'</Connection></Connections>\n'
-        f'</Communications>\n'
-        f"</Module>"
-    )
-    return "\n".join([adapter] + blocks)
-
-
 def module_generic_ethernet_xml(name: str, ip_address: str, input_bytes: int, output_bytes: int) -> str:
     """Real shape confirmed 2026-08-22 (samples/local/L5X_Samples/
     Emporium_2025_05_28r01.L5X, IFM_LugLoader1 -- a Balluff/IFM IO-Link
@@ -784,53 +735,6 @@ def module_generic_ethernet_xml(name: str, ip_address: str, input_bytes: int, ou
         f"</Module>"
     )
 
-
-def module_5069_digital_input_xml(slot: int = 1) -> str:
-    """Real shape confirmed 2026-08-22 (samples/local/DnR_Personal/
-    BT1XX_FFC_20240325.L5X): 5069-IB16/A, Compact 5000 I/O snapped directly
-    onto the 5069 local bus (Port Type="5069", no adapter needed -- unlike
-    1734/1794). No module Name attribute (identified by slot position, like
-    the Point I/O rack-member pattern). ConfigSize=64 (16 channels x 2-byte
-    filter pair, StructureMember-per-channel -- a deeper nesting style than
-    1756-IB16's flat member list). Real Connection carries explicit
-    InputSize="12" directly on <Connection> itself (a 4th distinct
-    size-declaration convention, on top of catalog-fixed/rack-alias/
-    PrimCxnInputSize already found) -- RunMode/ConnectionFaulted/
-    DiagnosticActive/Uncertain/DiagnosticSequenceCount + 16 Data BOOLs + 16
-    Fault BOOLs = 12 real bytes packed."""
-    config_channels = "".join(
-        f'<StructureMember Name="Pt{p:02d}" DataType="AB:5000_DI_Channel:C:0">'
-        f'<DataValueMember Name="InputOffOnFilter" DataType="SINT" Radix="Decimal" Value="13"/>'
-        f'<DataValueMember Name="InputOnOffFilter" DataType="SINT" Radix="Decimal" Value="13"/>'
-        f'</StructureMember>'
-        for p in range(16)
-    )
-    data_bits = "".join(f'<DataValueMember Name="Pt{p:02d}Data" DataType="BOOL" Value="0"/>' for p in range(16))
-    fault_bits = "".join(f'<DataValueMember Name="Pt{p:02d}Fault" DataType="BOOL" Value="0"/>' for p in range(16))
-    return (
-        f'<Module CatalogNumber="5069-IB16/A" Vendor="1" ProductType="7" ProductCode="390" Major="2" Minor="1" '
-        f'ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" SafetyEnabled="false" AutoDiagsEnabled="true">\n'
-        f'<EKey State="CompatibleModule"/>\n'
-        f'<Ports><Port Id="1" Address="{slot}" Type="5069" Upstream="true"/></Ports>\n'
-        f'<Communications>\n'
-        f'<ConfigTag ConfigSize="64" ExternalAccess="Read/Write">\n'
-        f'<Data Format="L5K"><![CDATA[[68,160,[13,13,0],[13,13,0]]]]></Data>\n'
-        f'<Data Format="Decorated"><Structure DataType="AB:5000_DI16:C:0">{config_channels}</Structure></Data>\n'
-        f'</ConfigTag>\n'
-        f'<Connections><Connection Name="InputData" RPI="5000" Type="StandardDataDriven" OutputSize="0" InputSize="12" '
-        f'EventID="0" ProgrammaticallySendEventTrigger="false" Priority="Scheduled" InputConnectionType="Multicast" '
-        f'InputProductionTrigger="Cyclic" ConnectionPath="20 04 24 a0 2c c7 2c 9c" InputTagSuffix="I">\n'
-        f'<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:5000_DI16_Packed:I:0">'
-        f'<DataValueMember Name="RunMode" DataType="BOOL" Value="1"/>'
-        f'<DataValueMember Name="ConnectionFaulted" DataType="BOOL" Value="0"/>'
-        f'<DataValueMember Name="DiagnosticActive" DataType="BOOL" Value="0"/>'
-        f'<DataValueMember Name="Uncertain" DataType="BOOL" Value="0"/>'
-        f'<DataValueMember Name="DiagnosticSequenceCount" DataType="SINT" Radix="Decimal" Value="0"/>'
-        f'{data_bits}{fault_bits}</Structure></Data></InputTag>\n'
-        f'</Connection></Connections>\n'
-        f'</Communications>\n'
-        f"</Module>"
-    )
 
 
 def task_xml(task_name: str, program_name: str, task_type: str = "CONTINUOUS",

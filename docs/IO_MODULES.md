@@ -146,24 +146,38 @@ flat catalog-number lookup table alone. It needs per-instance parsing of
 whichever of these four conventions applies, and pattern 2 needs
 rack-level (not module-level) grouping.
 
-## First batch — built 2026-08-22, `gen_io_modules.py`, awaiting capture
+## First batch — built 2026-08-22, `gen_io_modules.py`
 
-12 files in `samples/generated/modules/`, all real-shape (see
-`builders.py`'s `module_1756_digital_input_xml`/`module_point_io_xml`/
-`module_generic_ethernet_xml`/`module_5069_digital_input_xml`):
+7 files in `samples/generated/modules/`, real-shape (see `builders.py`'s
+`module_1756_digital_input_xml`/`module_generic_ethernet_xml`):
 
-- **1756 local** (pattern 1): 1/3/10 `1756-IB16` backplane modules.
-- **Point I/O** (pattern 2): `1734-AENT` adapter + 2/8 `1734-IB8` blocks.
+- **1756 local** (pattern 1): 1/3/10 `1756-IB16` backplane modules —
+  captured clean, real data in `manifest.csv`.
 - **Generic Ethernet / config-variance** (pattern 3) — the direct test of
-  James's caution: 5 files, all `CatalogNumber="ETHERNET-MODULE"`, at
-  input/output byte sizes 2/2, 8/8, 32/16, 450/8 (the real IFM value),
-  1000/1000. If real Capacity doesn't move differently across these, the
-  "config drives size, not catalog" read is wrong; if it does, confirmed.
-- **5069 local** (pattern 4): 1/3 `5069-IB16/A` modules, processor swapped
-  to `5069-L320ERMS2` (non-safety). Needed a real 5069-family Local-module
-  Ports shape in `wrapper.py` (`Type="5069"`, dual Ethernet, `Bus Size=32`)
-  — a naive processor-string swap on the old 1756 template would have been
-  structurally wrong.
+  James's caution: 4 files, all `CatalogNumber="ETHERNET-MODULE"`, at
+  input/output byte sizes 2/2, 8/8, 32/16, 450/8 (the real IFM value) —
+  captured clean. Real Capacity does move differently across these,
+  confirming "config drives size, not catalog."
+
+**2026-08-23, James: "purge the old shit... new stuff only."** Dropped
+from this batch entirely, never once converted successfully across
+several days of retries (`XMLSrv_E_IMPORT_ABORTED_NO_CHANGES` on every
+`l5xgit` attempt, no schema-level detail available to diagnose from here):
+- **Point I/O** (pattern 2): `1734-AENT` adapter + 2/8 `1734-IB8` blocks —
+  `module_point_io_xml` removed from `builders.py`.
+- **5069 local** (pattern 4): 1/3 `5069-IB16/A` modules — `module_
+  5069_digital_input_xml` removed from `builders.py`.
+- The 1000/1000 generic-Ethernet config-variance point.
+
+Best guess, unconfirmed: these reference module-specific predefined
+DataTypes (`AB:1734_DI8:C:0`, `AB:5000_DI16:C:0`, etc.) that only resolve
+if the exact module's EDS/AOP is registered in the target Designer
+install's catalog — which the XML shape being "real" (corpus-derived)
+doesn't guarantee on a machine that's never added that specific catalog
+entry. James is rebuilding these himself from a live Studio 5000 project
+rather than iterating blind on this theory. The real corpus catalog
+inventory above (sections A-D) stays accurate regardless — this is about
+generating fresh, importable L5X, not about what real fleets use.
 
 Drives (2198-*/PowerFlex) intentionally skipped this round per James.
 

@@ -93,18 +93,42 @@ if (Test-Path $logPath) {
     $canonicalHeader | Out-File -FilePath $logPath -Encoding utf8
 }
 
+Write-Host "Hashing $InputDir ..."
+$allFiles = Get-ChildItem -Path $InputDir -Filter *.L5X -Recurse
+$currentHash = @{}
+$currentPaths = @{}
+foreach ($f in $allFiles) {
+    $currentHash[$f.FullName] = (Get-FileHash -Path $f.FullName -Algorithm SHA256).Hash
+    $currentPaths[$f.FullName] = $true
+}
+
+# James, 2026-08-23: "this is your fault for making a separate csv file
+# outside the git repository" -- fair complaint. $logPath lives outside
+# the repo by design (it sits next to the .ACD binaries, which genuinely
+# shouldn't be in git), but that means any cleanup done on the repo's
+# mirrored copy (samples/convert_log.csv) is cosmetic -- the next run
+# just overwrites it from this file again. Self-heal instead of relying
+# on a one-off manual purge staying in sync: every run, drop any row
+# whose l5x_path no longer exists on disk (e.g. a removed instruction
+# like T_ADD) before doing anything else. A stale reference literally
+# cannot survive past the next run now, regardless of what either copy
+# currently has in it.
+$logRows = Import-Csv $logPath
+$prunedRows = $logRows | Where-Object { $currentPaths.ContainsKey($_.l5x_path) }
+$prunedCount = $logRows.Count - $prunedRows.Count
+if ($prunedCount -gt 0) {
+    Write-Host "Pruned $prunedCount log row(s) referencing L5X files that no longer exist."
+    $canonicalHeader | Out-File -FilePath $logPath -Encoding utf8
+    foreach ($r in $prunedRows) {
+        "$($r.l5x_path),$($r.acd_path),$($r.status),$($r.message),$($r.l5x_hash)" | Out-File -FilePath $logPath -Append -Encoding utf8
+    }
+}
+
 # Keyed by l5x_path -> the recorded content hash at last successful
 # conversion. Rows from before this version (no l5x_hash column) simply
 # won't have an entry here.
 $recordedHash = @{}
-Import-Csv $logPath | Where-Object { $_.status -eq "ok" -and $_.l5x_hash } | ForEach-Object { $recordedHash[$_.l5x_path] = $_.l5x_hash }
-
-Write-Host "Hashing $InputDir ..."
-$allFiles = Get-ChildItem -Path $InputDir -Filter *.L5X -Recurse
-$currentHash = @{}
-foreach ($f in $allFiles) {
-    $currentHash[$f.FullName] = (Get-FileHash -Path $f.FullName -Algorithm SHA256).Hash
-}
+$prunedRows | Where-Object { $_.status -eq "ok" -and $_.l5x_hash } | ForEach-Object { $recordedHash[$_.l5x_path] = $_.l5x_hash }
 
 # Files this pass actually needs to run through l5xgit for.
 $files = $allFiles | Where-Object {
