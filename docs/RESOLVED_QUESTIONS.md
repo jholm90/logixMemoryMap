@@ -264,3 +264,119 @@ question — archived here rather than carried forward as "open."
   AOI Parameter/LocalTag attributes, rung Text CDATA wrapping.
 - `batch_l5x_to_acd.ps1` / `batch_memory_capture.ps1` both resumable and
   self-auto-pushing straight to `main`, no branches/merges.
+
+## Sizing-rebase batch, 2026-08-23
+
+Full-corpus rebase: every clean manifest.csv row (546 of them) re-parsed
+fresh through the current engine and compared against real `actual_bytes`.
+Went from 0 exact matches / 16 engine errors to 77 exact matches / 0 engine
+errors. Everything below came out of that pass.
+
+**OQ-BASELINE (new discovery, not a prior open question).**
+`empty_project_baseline = 13,296 blocks`. A previously-completely-
+unmodeled, universal, exact-zero-variance gap between engine total and real
+Capacity data, confirmed across 200+ independent real data points spanning
+wildly different categories (tag_overhead sweeps, UDT-name sweeps,
+tagscope, boolarray, udtarrayalign, comment-length sweeps). Represents
+controller/module/task/program scaffolding cost that exists in every real
+program regardless of content — nothing in the L5X "causes" it, it's just
+always there. A few categories show a small ADDITIONAL amount on top of
+this floor (logic_instr sweep: +13 → 13,309; customstring: +206 → 13,502;
+`arraypack_odd3b` growing slightly with count) — each explained by its own
+constant below, not folded into the baseline itself. Wired in as
+`empty_project_baseline` in `memory_model.yaml`, emitted as a
+`project_baseline` SizeEntry on every report (`report.py`), confidence
+KNOWN (zero variance across 200+ points is about as confirmed as this
+project's data gets).
+
+**OQ-CUSTOMSTRINGDEF.** Custom STRING types (`Family="StringFamily"`) get
+their own one-time definition cost, `custom_definition_cost = 206`,
+confirmed flat/constant across all 7 real `customstring_len*` points
+(maxlen 10 to 2000) — the definition cost doesn't scale with the type's
+DATA length, only the per-instance cost does (already-modeled, unaffected
+by this). NOT yet tested for type-NAME-length sensitivity — don't assume
+it's independent of that. Wired into `report.py`'s UDT-definition loop
+(string-family types now get a real `udt_definition` entry using this
+constant instead of being silently skipped) and `StringModel` in
+`constants.py`.
+
+**OQ-TAGSCOPE.** No code change needed. `tagscope_public_n00010`/`n00100`
+show the exact same 13,296 baseline gap as `tagscope_local` — zero cost
+difference between `Usage="Local"` and `Usage="Public"` program tags. The
+existing generic tag_overhead formula already covers both correctly.
+
+**OQ-BOOLARRAY, confidence upgrade.** `boolarray_n00008` through `n05000`
+all show a small, ~constant residual (13,300-13,304, the same small-noise
+band documented for several other categories) once the baseline is
+subtracted — meaning the existing `ceil(dim/32)*4` BOOL-array formula was
+already accurate, real data now confirms it. Was ASSUMED; treat as
+confirmed by real data going forward (no formula change, just a real
+data point behind a formula that was previously untested).
+
+**OQ-UDTARRAYALIGN, partial.** `udtarrayalign_tight8b_n00001/n00010/
+n00100` (array of an already-8-byte-tight UDT) shows a perfectly constant
+13,300 gap across all 3 counts — `dimension * udt_size` is exact for
+already-tight UDTs, zero per-element padding. Still open (see
+OPEN_QUESTIONS.md OQ-ARRAYPACK): `arraypack_odd3b_n00001/n00010/n00100`
+(array of a 3-byte/odd-sized UDT) shows a gap that grows slightly with
+count (13,305 / 13,310 / 13,400) — not a clean linear fit, roughly but not
+exactly ~1 byte/element extra. Real, but not resolved to a formula; not
+wired into code.
+
+**OQ-PREDEFINED, motion/axis/CAM_PROFILE piece.** Derived from real data
+via `residual = actual - sizeable_engine_total - empty_project_baseline`
+(sizeable_engine_total = engine's total over only the tags it could
+already size, ignoring the axis/motion tags that were still `SizeError`ing
+at the time). All exact fits, all previously-`SizeError`ing files now
+size cleanly:
+  - `MOTION_GROUP = 1,076`
+  - `AXIS_CIP_DRIVE = 22,636`
+  - `COORDINATE_SYSTEM = 9,516`
+  - `AXIS_SERVO = 16,796`
+  - `AXIS_VIRTUAL = 16,796` (identical to AXIS_SERVO)
+  - `MOTION_INSTRUCTION = 12` (same 3-DINT-style layout as TIMER/COUNTER/
+    CONTROL, exact fit across a 1/5/50 tag-count sweep)
+  - `CAM_PROFILE`: `base=4, per_element=56` (exact linear fit across a
+    1/5/20/50-element real count sweep). `per_element=56` = 14 fields x
+    4 bytes, independently confirming an earlier corpus-based hypothesis
+    that CAM_PROFILE has 14 real per-element L5K fields, only 1 of which
+    is visible in the Decorated XML shape — this is Rockwell's own
+    "voodoo" internal layout, not derivable structurally, pure empirical
+    constant like axis.
+All wired into `memory_model.yaml` (`predefined_structures` for the first
+6, new top-level `predefined_array_structures` section for CAM_PROFILE)
+and `constants.py`/`udt.py` (`compute_array_size`'s new
+`predefined_array_structures` branch — array/dimensioned tags only,
+deliberate: CAM_PROFILE is never used scalar in real Logix, so a scalar
+CAM_PROFILE tag still correctly hits `UnknownDataTypeError` rather than
+silently returning a wrong number). 16 previously-`SizeError`ing real
+files across the axis/motion categories now size with 0 engine errors.
+Remaining piece (CAM the instruction wrapper, MAH/MSO's real per-rung
+logic weight) still open, see OPEN_QUESTIONS.md.
+
+**OQ-LBLJMP-STALE, fully resolved.** The `LBL(L{i})NOP();` syntax fix
+(2026-08-22) cleared the build errors as expected — all 5
+`instr_lbljmp_n*` real captures came back clean (`error_count=0`).
+Combined LBL+JMP weight is an exact linear fit at 104 blocks/pair across
+n=10/50/100/1000/5000 rungs, 0 residual. **Not independently decomposable**
+from this data (the generator always emits LBL:JMP 1:1 paired) — split
+52/52 as an unbiased placeholder that reconstructs the confirmed 104
+exactly for that pairing, explicitly flagged in `memory_model.yaml` as
+unvalidated for any other LBL:JMP ratio (e.g. one JMP targeting multiple
+LBLs, or vice versa). Wired into `logic_instructions.weights`. Separately,
+`SIZE`'s array-subscript syntax bug also cleared: SIZE is an exact linear
+fit at 128 blocks/rung across n=10/50/100/1000/5000, 0 residual, also
+wired in.
+
+**Small-residual buckets, spot-checked, no action needed.** After all of
+the above, most of the remaining ~469 non-exact rebase-check rows cluster
+into small buckets (-5, 4, 8, 13, ...) a handful of blocks off zero.
+Spot-checked one file from each of the -5/4/8 buckets
+(`typesweep_add_dint_n01000`, `indirect_direct_index_n01000`,
+`array_dint_00001`/`boolarray_n00008`): all are single-digit-block gaps
+against multi-thousand-block totals (e.g. -5 out of 61,592) — noise-level,
+consistent with the same small-residual pattern already documented
+elsewhere (OQ-BOOLARRAY etc.), not a new systematic issue. No code change.
+The one bucket NOT in this category, 1264 (all `*_def_only` AOI files),
+is real and substantial — see OPEN_QUESTIONS.md OQ-AOIDEF, not resolved,
+the single biggest remaining known gap.

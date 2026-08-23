@@ -25,6 +25,62 @@ predefined_structures:
   TIMER: { bytes: 12, confidence: KNOWN }
   COUNTER: { bytes: 12, confidence: KNOWN }
   CONTROL: { bytes: 12, confidence: KNOWN }
+  # Motion/axis predefined structures -- derived 2026-08-23 from the
+  # 2026-08-22 real-capture batch (gen_axis_composite.py/gen_motion_
+  # predefined.py "*_only" isolation files), which previously all failed
+  # to size at all (SizeError, OQ-PREDEFINED). Each file wraps exactly one
+  # unmodeled tag alongside the newly-confirmed empty_project_baseline
+  # below and the (also real, exact) per-tag overhead formula -- pure
+  # structure cost = actual_bytes - empty_project_baseline - tag_overhead
+  # (- MotionGroup's own cost too, for the 4 Axis/CoordinateSystem files,
+  # which always also declare a MotionGroup tag it depends on). FITTED,
+  # single-sample-each -- not a count sweep, so no independent
+  # cross-check the way TIMER/COUNTER/CONTROL's documented layout gets;
+  # treat as a solid real measurement, not yet KNOWN-grade.
+  MOTION_GROUP: { bytes: 1076, confidence: FITTED }
+  AXIS_CIP_DRIVE: { bytes: 22636, confidence: FITTED }
+  COORDINATE_SYSTEM: { bytes: 9516, confidence: FITTED }
+  AXIS_SERVO: { bytes: 16796, confidence: FITTED }
+  AXIS_VIRTUAL: { bytes: 16796, confidence: FITTED }
+  # MOTION_INSTRUCTION: exact match (0 residual) across 1/5/50-tag count
+  # sweep once empty_project_baseline + tag_overhead are subtracted --
+  # same 12-byte size as TIMER/COUNTER/CONTROL, plausibly the same
+  # 3-DINT-status-structure convention. FITTED pending a documented-layout
+  # citation to promote to KNOWN.
+  MOTION_INSTRUCTION: { bytes: 12, confidence: FITTED }
+
+# Predefined structures whose real cost is base + per_element*array_length
+# rather than a flat scalar -- CAM_PROFILE is always used as an array in
+# real Logix (a cam profile IS a point array). Derived 2026-08-23 from
+# gen_motion_predefined.py's 1/5/20/50-element real count sweep: exact
+# linear fit (0 residual) once empty_project_baseline + tag_overhead
+# subtracted. per_element=56 = 14 fields x 4 bytes, matching the earlier
+# corpus finding (OQ-PREDEFINED) that only 1 of 14 real per-element L5K
+# fields is visible in the Decorated XML -- this empirical fit independently
+# confirms that field count.
+predefined_array_structures:
+  CAM_PROFILE: { base: 4, per_element: 56, confidence: FITTED }
+
+# Fixed per-project overhead the sizing engine never modeled before
+# 2026-08-23 -- controller/module/task/program scaffolding that exists in
+# every real Capacity-tab reading regardless of tag/UDT/logic content, so
+# every engine total silently under-predicted real actual_bytes by this
+# exact amount. Derived by cross-checking this engine's own fresh
+# recomputation (not the possibly-stale predicted_bytes column already
+# sitting in manifest.csv) against actual_bytes for every clean real data
+# point in the 2026-08-22/23 capture batch: the gap is EXACTLY 13,296
+# across 200+ independent points spanning wildly different categories
+# (tag_overhead sweeps, UDT-name sweeps, tagscope, boolarray, udtarrayalign,
+# comment-length sweeps) with zero variance -- not a fitted average, a
+# literal constant. A handful of categories (the 244-file logic-instruction
+# sweep, customstring, array-of-odd-UDT) show a small +4 to +206 ADDITION on
+# top of this same 13,296 floor, each independently explained elsewhere in
+# this file (customstring_definition_cost, the logic-instruction weight
+# table's own fixed_base_per_routine) -- 13,296 is the true floor, not an
+# average across those.
+empty_project_baseline:
+  bytes: 13296
+  confidence: KNOWN
 
 bool:
   # Standalone BOOL controller/program tags: allocated as a full DINT, not
@@ -53,6 +109,22 @@ string:
   # Custom string types (user DataTypes with Family="StringFamily"): same
   # 4-byte LEN, DATA length taken from the type's own definition.
   custom_confidence: KNOWN
+  # One-time DataType-definition cost for a custom STRING type, separate
+  # from and additive with the instance cost above -- resolves
+  # OQ-CUSTOMSTRINGDEF. The ordinary udt_definition formula doesn't apply
+  # (excluded in report.py, is_string_family check); this project docs
+  # already estimated "~204-208 blocks" from a partial re-analysis.
+  # Derived 2026-08-23 from the real 7-point customstring_len* count sweep
+  # (maxlen 10 to 2000) against empty_project_baseline + tag_overhead:
+  # constant 206 (+/-2, consistent with the small per-file tag-name-length
+  # bucket rounding seen elsewhere, not real variation) across every
+  # maxlen tested -- confirms the type-definition cost doesn't scale with
+  # DATA length, only the instance does (as expected: LEN+DATA[N] is a
+  # fixed 2-member shape regardless of N). Not yet tested for type-NAME-
+  # length sensitivity (every sample used a similar-length type name) --
+  # flagged, not assumed independent.
+  custom_definition_cost: 206
+  custom_definition_confidence: FITTED
 
 udt:
   # No alignment/padding between members -- tight packing, declared order.
@@ -207,3 +279,25 @@ logic_instructions:
     OTL: 16      # solo -- unchanged
     OTU: 16      # solo -- unchanged
     NOP: 16      # solo -- unchanged
+    # SIZE: added 2026-08-23 -- excluded from the original 244-file sweep
+    # (real bracket-subscript bug, see docs/OPEN_QUESTIONS.md history) but
+    # now has clean real data (5-point rung-count sweep, bare array-tag
+    # syntax per James's real COP_Samples.L5X): exact linear fit, 0
+    # residual, once empty_project_baseline is subtracted -- no companion
+    # instruction in its rung ("SIZE(Arr,0,Dest);" closes legally alone).
+    SIZE: 128
+    # LBL/JMP: added 2026-08-23, same re-capture -- a real syntax bug (bare
+    # LBL needs a trailing instruction, James confirmed) is now fixed
+    # (every LBL rung is "LBL(Lx)NOP();"). Real data gives an exact
+    # COMBINED weight of 104 blocks per LBL+JMP pair (2 rungs: the LBL+NOP
+    # rung and JMP's own rung; NOP's own 16 is already counted separately
+    # by the NOP weight above, not part of this 104). NOT independently
+    # decomposed -- no solo-LBL-only or solo-JMP-only sample exists to
+    # split the 104 correctly. Split 52/52 below as the least-biased
+    # placeholder: reconstructs the confirmed 104 exactly for the common
+    # 1:1 LBL:JMP pairing this project's generator always uses, but is
+    # UNVALIDATED for any rung containing LBL/JMP at a different ratio
+    # (e.g. one LBL, several JMPs to it). Treat both as FITTED-but-uncertain,
+    # not KNOWN, until a decomposing sample exists.
+    LBL: 52
+    JMP: 52

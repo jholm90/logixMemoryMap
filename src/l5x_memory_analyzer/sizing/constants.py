@@ -39,6 +39,15 @@ class StringModel:
     default_data_bytes: int
     confidence: str
     custom_confidence: str
+    custom_definition_cost: int
+    custom_definition_confidence: str
+
+
+@dataclass(frozen=True)
+class PredefinedArrayStructure:
+    base: int
+    per_element: int
+    confidence: str
 
 
 @dataclass(frozen=True)
@@ -98,6 +107,7 @@ class LogicInstructionModel:
 class MemoryModel:
     atomic_types: dict[str, AtomicType]
     predefined_structures: dict[str, AtomicType]
+    predefined_array_structures: dict[str, PredefinedArrayStructure]
     bool: BoolModel
     string: StringModel
     udt: UdtModel
@@ -105,6 +115,8 @@ class MemoryModel:
     tag_overhead: TagOverheadModel
     udt_definition: UdtDefinitionModel
     logic_instructions: LogicInstructionModel
+    empty_project_baseline_bytes: int
+    empty_project_baseline_confidence: str
 
 
 def load_memory_model(path: str | Path | None = None) -> MemoryModel:
@@ -120,11 +132,19 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
         name: AtomicType(bytes=v["bytes"], confidence=v["confidence"])
         for name, v in raw.get("predefined_structures", {}).items()
     }
+    predefined_array_structures = {
+        name: PredefinedArrayStructure(base=v["base"], per_element=v["per_element"], confidence=v["confidence"])
+        for name, v in raw.get("predefined_array_structures", {}).items()
+    }
     b = raw["bool"]
     s = raw["string"]
+    baseline = raw["empty_project_baseline"]
     return MemoryModel(
         atomic_types=atomic_types,
         predefined_structures=predefined_structures,
+        predefined_array_structures=predefined_array_structures,
+        empty_project_baseline_bytes=baseline["bytes"],
+        empty_project_baseline_confidence=baseline["confidence"],
         bool=BoolModel(
             standalone_tag_bytes=b["standalone_tag_bytes"],
             standalone_confidence=b["standalone_confidence"],
@@ -140,6 +160,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             default_data_bytes=s["default_data_bytes"],
             confidence=s["confidence"],
             custom_confidence=s["custom_confidence"],
+            custom_definition_cost=s["custom_definition_cost"],
+            custom_definition_confidence=s["custom_definition_confidence"],
         ),
         udt=UdtModel(alignment_confidence=raw["udt"]["alignment_confidence"]),
         array=ArrayModel(

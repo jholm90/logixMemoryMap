@@ -78,7 +78,7 @@ def test_build_report_includes_estimated_logic_entries():
     # Exact-tier tag entries are untouched by the logic addition, still
     # their own tier, and total_bytes/pct_of_total now includes logic too.
     exact_entries = [e for e in entries if e.tier == EXACT]
-    assert len(exact_entries) == 2  # tags A, B
+    assert len(exact_entries) == 3  # tags A, B + project_baseline (2026-08-23)
     total = sum(e.bytes for e in entries)
     for e in entries:
         assert e.pct_of_total == (e.bytes / total) * 100

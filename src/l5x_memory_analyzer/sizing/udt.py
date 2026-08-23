@@ -66,6 +66,14 @@ def compute_array_size(
         words = -(-element_count // model.bool.array_bits_per_packed_word)  # ceil
         return words * model.bool.array_packed_word_bytes, model.bool.array_confidence
 
+    if data_type in model.predefined_array_structures:
+        # Predefined structures whose real cost is base + per_element*N
+        # rather than a flat scalar -- CAM_PROFILE etc, always used as an
+        # array in real Logix. See memory_model.yaml predefined_array_
+        # structures for the derivation.
+        struct = model.predefined_array_structures[data_type]
+        return struct.base + struct.per_element * element_count, struct.confidence
+
     element_bytes, element_confidence = compute_element_size(
         data_type, data_types, model, _stack
     )

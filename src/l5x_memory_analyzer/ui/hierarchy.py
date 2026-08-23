@@ -39,18 +39,36 @@ def build_hierarchy(
     groups: dict[str, list[dict]] = {}
     group_order: list[str] = []
 
+    # udt_definition (path "udt_definitions/<Name>") and project_baseline
+    # (path "project_baseline", no "/" at all) don't fit the <scope>/<name>
+    # tag-path convention every other category follows -- routing them
+    # through the Controller-Tags/Program-scope split below crashed with an
+    # IndexError (2026-08-23 fix: found while wiring in the new
+    # project_baseline entry, but udt_definition had the exact same latent
+    # bug already -- any real file with a UDT definition would have crashed
+    # the live UI). Both get their own dedicated top-level group instead,
+    # never drillable (has_children always false -- neither has a nested
+    # structure to descend into).
+    NON_TAG_GROUPS = {"udt_definition": "Type Definitions", "project_baseline": "Project Overhead"}
+
     for e in entries:
-        scope, name = _scope_and_name(e.path)
-        group_name = "Controller Tags" if scope == CONTROLLER_SCOPE else f"Program: {scope.split(':', 1)[1]}"
+        if e.category in NON_TAG_GROUPS:
+            group_name = NON_TAG_GROUPS[e.category]
+            name = e.data_type
+            kids = False
+        else:
+            scope, name = _scope_and_name(e.path)
+            group_name = "Controller Tags" if scope == CONTROLLER_SCOPE else f"Program: {scope.split(':', 1)[1]}"
+            dims = (tag_dimensions or {}).get(e.path, ())
+            kids = (
+                _has_children(e.data_type, dims, data_types, model)
+                if data_types is not None and model is not None
+                else False
+            )
+
         if group_name not in groups:
             groups[group_name] = []
             group_order.append(group_name)
-        dims = (tag_dimensions or {}).get(e.path, ())
-        kids = (
-            _has_children(e.data_type, dims, data_types, model)
-            if data_types is not None and model is not None
-            else False
-        )
         groups[group_name].append(
             {
                 "name": name,

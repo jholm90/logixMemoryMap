@@ -61,7 +61,13 @@ def test_alias_tags_size_zero_known_not_error():
     # weakest remaining link for this AOI instance.
     assert aoi_instance.basis == "ASSUMED"
 
-    assert real_dint.pct_of_total == (real_dint.bytes / (real_dint.bytes + timer.bytes + aoi_instance.bytes)) * 100
+    # total now also includes the project_baseline entry (2026-08-23,
+    # empty_project_baseline) -- present on every real report, not just
+    # this fixture's 3 sized tags.
+    baseline = by_path["project_baseline"]
+    assert baseline.bytes == MODEL.empty_project_baseline_bytes
+    grand_total = real_dint.bytes + timer.bytes + aoi_instance.bytes + baseline.bytes
+    assert real_dint.pct_of_total == (real_dint.bytes / grand_total) * 100
 
 
 def test_udt_definition_cost_appears_once_per_type_used_by_multiple_instances():

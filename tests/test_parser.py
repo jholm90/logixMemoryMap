@@ -8,7 +8,7 @@ from l5x_memory_analyzer.parser.datatypes import parse_data_types
 from l5x_memory_analyzer.parser.load import L5XFormatError, load_l5x
 from l5x_memory_analyzer.parser.tags import parse_tags
 
-FIXTURE = Path(__file__).parent.parent / "samples/generated/misc/sample_0000_minimal_baseline.L5X"
+FIXTURE = Path(__file__).parent.parent / "samples/generated/tags/count_0001_dint.L5X"
 
 # A UDT with a BOOL member -- exercises the hidden-SINT + BIT-alias shape
 # Logix Designer itself emits, per docs/MEMORY_MODEL.md UDT packing.

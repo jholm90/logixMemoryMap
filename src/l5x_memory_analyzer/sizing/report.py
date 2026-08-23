@@ -108,6 +108,15 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # caught 2026-08-22 (every customstring_* real data point was
         # over-predicted by a spurious ~224-228 blocks).
         if udt_types[name].is_string_family:
+            # Custom STRING types get their own one-time definition cost
+            # instead (OQ-CUSTOMSTRINGDEF, resolved 2026-08-23) -- the
+            # ordinary udt_definition formula was fit against ordinary
+            # UDTs and doesn't apply (confirmed: applying it over-predicted
+            # every real customstring_* data point by ~224-228 blocks).
+            definition_entries.append((
+                f"udt_definitions/{name}", "udt_definition", name,
+                model.string.custom_definition_cost, model.string.custom_definition_confidence,
+            ))
             continue
         def_bytes, def_basis = compute_udt_definition_cost(name, udt_types, model)
         definition_entries.append((f"udt_definitions/{name}", "udt_definition", name, def_bytes, def_basis))
@@ -129,7 +138,17 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         logic_bytes, logic_basis = compute_routine_logic_bytes(routine, model.logic_instructions)
         logic_entries.append((routine.path, "routine_logic", "RLL", logic_bytes, logic_basis))
 
-    all_exact = sized + definition_entries
+    # Fixed per-project overhead (controller/module/task/program scaffolding)
+    # confirmed 2026-08-23 -- see memory_model.yaml empty_project_baseline
+    # for the derivation (a literal, zero-variance 13,296-block gap between
+    # every clean real Capacity reading and this engine's own total, across
+    # 200+ independent real data points spanning wildly different
+    # categories). Every real program has this cost regardless of content,
+    # so it's emitted once per file, unconditionally.
+    baseline_entry = ("project_baseline", "project_baseline", "PROJECT_BASELINE",
+                       model.empty_project_baseline_bytes, model.empty_project_baseline_confidence)
+
+    all_exact = sized + definition_entries + [baseline_entry]
     exact_total = sum(size for _, _, _, size, _ in all_exact)
     logic_total = sum(size for _, _, _, size, _ in logic_entries)
     total_bytes = exact_total + logic_total

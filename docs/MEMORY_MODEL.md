@@ -25,21 +25,64 @@ Every entry is tagged with a confidence level:
 | STRING (built-in) | 4 + 82 = 86 | 4-byte LEN (DINT) + 82-byte DATA (SINT[82]) default |
 | Custom string type | 4 + N | 4-byte LEN + N-byte DATA, N = user-defined max length |
 
+**Custom string type-definition cost (FITTED, 2026-08-23):** separate from
+the per-instance `4 + N` above, a custom STRING type declaration itself
+costs a one-time `custom_definition_cost = 206` blocks, confirmed flat
+across all 7 real `customstring_len*` points (maxlen 10-2000) -- doesn't
+scale with DATA length. NOT yet tested for type-NAME-length sensitivity.
+Wired into `report.py`'s UDT-definition loop (string-family types get
+their own `udt_definition` entry using this constant instead of the
+ordinary UDT formula, which doesn't apply to them).
+
 ## Predefined structure types (KNOWN)
 
 Firmware-native structures referenced by name in L5X Tag/Member DataType
 attributes but never given a member list in `Controller/DataTypes` --
 Logix Designer resolves them internally, so there's nothing to recurse.
 Only types with a well-documented, version-stable layout are modeled here;
-everything else found in real samples (MESSAGE, PID, AXIS_CIP_DRIVE and
-other motion/safety structures) is deliberately left unsized rather than
-guessed -- see OQ-PREDEFINED.
+everything else found in real samples (MESSAGE, PID, and other
+safety/comms structures) is deliberately left unsized rather than guessed.
 
 | Type | Bytes | Notes |
 |---|---|---|
 | TIMER | 12 | 1 status DINT (EN/TT/DN bits) + PRE (DINT) + ACC (DINT) |
 | COUNTER | 12 | 1 status DINT (CU/CD/DN/OV/UN bits) + PRE (DINT) + ACC (DINT) |
 | CONTROL | 12 | 1 status DINT (EN/EU/DN/EM/ER/UL/IN/FD bits) + LEN/PRE-equivalent (DINT) + POS (DINT) |
+| MOTION_GROUP | 1,076 | FITTED, 2026-08-23. Pure empirical constant, same rationale as the axis types below -- Rockwell doesn't publish the layout. Exact residual fit, see RESOLVED_QUESTIONS.md OQ-PREDEFINED. |
+| AXIS_CIP_DRIVE | 22,636 | FITTED, 2026-08-23. Same. |
+| COORDINATE_SYSTEM | 9,516 | FITTED, 2026-08-23. Same. |
+| AXIS_SERVO | 16,796 | FITTED, 2026-08-23. Same. |
+| AXIS_VIRTUAL | 16,796 | FITTED, 2026-08-23. Identical to AXIS_SERVO -- confirmed independently, not assumed. |
+| MOTION_INSTRUCTION | 12 | FITTED, 2026-08-23. Same 3-DINT-style layout as TIMER/COUNTER/CONTROL; exact fit across a 1/5/50 tag-count sweep. |
+
+## Predefined array structures (FITTED, 2026-08-23)
+
+Structures that are always used dimensioned (array) in real Logix, never
+scalar, and whose real per-element cost is `base + per_element × N` rather
+than a single flat scalar size -- distinct enough from the table above to
+need their own formula shape and their own branch in `compute_array_size`
+(`udt.py`). A scalar tag of one of these types still correctly falls
+through to `UnknownDataTypeError` rather than silently returning a wrong
+number, since that shape realistically never happens.
+
+| Type | base | per_element | Notes |
+|---|---|---|---|
+| CAM_PROFILE | 4 | 56 | Exact linear fit, 1/5/20/50-element real count sweep. `per_element=56` = 14 fields x 4 bytes -- confirms an earlier corpus-based hypothesis that CAM_PROFILE has 14 real per-element L5K fields, only 1 of which is visible in the Decorated XML shape (Rockwell's own internal "voodoo" layout, not derivable structurally). |
+
+## Empty-project baseline (KNOWN, 2026-08-23)
+
+`empty_project_baseline = 13,296` blocks. A fixed, zero-variance cost that
+exists in every real program regardless of content -- controller/module/
+task/program scaffolding that the L5X format never directly represents as
+a sizeable element. Confirmed across 200+ independent real data points
+spanning wildly different test categories, all landing on exactly this
+same number once every other sizeable element in the file is accounted
+for. Emitted once per report as a `project_baseline` SizeEntry
+(`report.py`), confidence KNOWN. See RESOLVED_QUESTIONS.md OQ-BASELINE for
+the full derivation. A few categories carry a small amount on top of this
+floor from their own separately-modeled cost (custom string definitions,
+SIZE instruction, odd-byte UDT array packing) -- not folded into the
+baseline itself, each has its own constant.
 
 ## Alias tags (KNOWN)
 
@@ -110,17 +153,22 @@ comparing to actual Capacity data (not just unit tests):**
 
 Also caught the same day: custom STRING types (`Family="StringFamily"`)
 were incorrectly getting a udt_definition entry too (this formula was
-fit against ordinary UDTs, doesn't apply) — excluded now, but that leaves
-a real, still-unexplained gap: every real `customstring_*` data point now
-under-predicts by a fairly consistent ~204-208 blocks, meaning custom
-string types likely need their **own** one-time definition-cost constant,
-not yet derived. Flagged, not guessed at.
+fit against ordinary UDTs, doesn't apply) — excluded now, and resolved
+2026-08-23 with their own `custom_definition_cost = 206` constant, see
+the atomic-types table above.
 
 Applies only to true UDTs — an AOI-typed tag still sizes exactly like a
 UDT instance (see AOI sizing below), but AOI *definition* cost isn't a
-confirmed formula yet (an early type/param-count sweep suggested something
-like `1184 + 20×n` but was explicitly never formally logged as confirmed),
-so no AOI-definition line item is emitted until that lands.
+confirmed formula yet and is NOT emitted as a line item — see
+`docs/OPEN_QUESTIONS.md` OQ-AOIDEF (2026-08-23) for the substantial real
+data now gathered on this (local-tag-count term is a clean exact fit,
+`1,184 + 20×n`, but param-count/name-length/atomic-type/bool-adjacency
+terms are all still tangled — wiring only the clean piece would
+systematically underpredict param-heavy or BOOL-heavy AOIs while looking
+like a trustworthy EXACT number, so nothing is wired in yet). This is
+currently the single largest known unmodeled gap in the whole engine —
+every real program has AOI definitions, and each one is short by
+1,100-3,600+ blocks right now.
 
 ## UDT packing (KNOWN, OQ-ALIGN resolved 2026-08-22)
 
@@ -239,11 +287,28 @@ fix; real delta was 24,816 — the corrected engine now matches exactly, see
 instruction types sharing a rung is exactly what `gen_logic_random_mix.py`
 tests, not yet confirmed by real data at that composed level.
 
-5 instructions (CPS, COP, FLL, SIZE, BTD) are excluded below — flagged for
-re-capture, see `docs/OPEN_QUESTIONS.md`. The EQU n=100/CMP n=10 garbled-
-value glitch this used to also flag is long since fixed and re-captured.
-Do not backfill numbers for the still-excluded 5 from other sources; wait
-for the re-capture.
+**MAJOR CORRECTION, 2026-08-23: the CPT=452 row below is WRONG as a
+general constant.** That number is only valid for the one specific complex
+CPT expression shape used in the original 244-file sweep — it is that
+expression's cost, not CPT's. Real data (`cmpcpt_cpt_*`, simple 2-operand
+expressions against a different, smaller tag pool) shows the engine
+wildly over-predicting when 452/rung is applied to a simpler expression —
+e.g. one 1000-rung file over-predicted by 328,264 blocks. CPT's real
+per-rung cost is expression-complexity-dependent (operand/operator count)
+and cannot be modeled as a single flat rung-weight. **Not fixed here** —
+needs a genuine per-operand/per-operator cost model, a real architecture
+change to `sizing/logic.py`, not a constant edit. The `452` is left in the
+table/`memory_model.yaml` for now because removing it (implying 0) would
+be worse than a wrong-but-nonzero number, but treat any CPT-heavy
+estimated-tier logic number as unreliable until this is properly modeled.
+See `docs/OPEN_QUESTIONS.md` OQ-CMPCPTLAYOUT for full detail.
+
+4 instructions (CPS, COP, FLL, BTD) are excluded below — flagged for
+re-capture, see `docs/OPEN_QUESTIONS.md`. SIZE is resolved (see table) —
+its array-subscript bug is fixed and clean data confirms an exact fit.
+The EQU n=100/CMP n=10 garbled-value glitch this used to also flag is long
+since fixed and re-captured. Do not backfill numbers for the still-excluded
+4 from other sources; wait for the re-capture.
 
 **Root cause of the CPS/COP/FLL/SIZE/BTD glitch, found 2026-08-22 (James
 spot-checked and caught it):** these instructions take an array-typed
@@ -298,7 +363,8 @@ now contained.
 | MID | 100 | 100 (solo rung) | 4,816 | 5 | 0.00% |
 | DELETE | 100 | 100 (solo rung) | 4,816 | 5 | 0.00% |
 | CMP | 92 | **76** (CMP+OTE combined) | 4,816 | 4 | 0.00% |
-| LBL/JMP (pair) | 88 | *not decomposed — see note below* | 4,816 | 5 | 0.00% |
+| LBL+JMP (pair, combined) | 104 | **52/52** (unvalidated 1:1 split, see note below) | 4,816 | 5 | 0.00% |
+| SIZE | 128 | 128 (solo rung, resolved 2026-08-23) | 4,816 | 5 | 0.00% |
 | GSV | 84 | 84 (solo rung) | 4,816 | 5 | 0.00% |
 | SSV | 84 | 84 (solo rung) | 4,816 | 5 | 0.00% |
 | STOD | 80 | 80 (solo rung) | 4,816 | 5 | 0.00% |
@@ -349,25 +415,41 @@ confirmed for a trivial (1-NOP-rung) target — a JSR target with
 | OTU | 16 | 16 (solo rung) | 4,816 | 5 | 0.00% |
 | NOP | 16 | 16 (solo rung) | 4,816 | 5 | 0.00% |
 
-LBL/JMP not decomposed or wired into the engine: it's a *pair* measurement
-(a paired LBL rung + JMP rung, not one rung with two instructions), and the
-sweep doesn't separately isolate LBL's cost from JMP's — needs its own
-follow-up before it can be added as two proper per-instruction weights.
+**LBL/JMP, resolved 2026-08-23:** the `LBL(thisLabel)NOP();` syntax fix
+(see below) cleared the real build errors — all 5 `instr_lbljmp_n*`
+real captures came back clean. Combined LBL+JMP weight is an exact linear
+fit at 104 blocks/pair across n=10/50/100/1000/5000, 0 residual. Still
+**not independently decomposable** from this data (it's a *pair*
+measurement — a paired LBL rung + JMP rung, not one rung with two
+instructions, and the generator always emits them 1:1) — split 52/52 as
+an unbiased placeholder that reconstructs the confirmed 104 exactly for
+that pairing. Explicitly unvalidated for any other LBL:JMP ratio (e.g.
+one JMP targeting multiple LBLs). Wired into `logic_instructions.weights`
+as `LBL: 52, JMP: 52`.
 
 CTD intentionally not tested — zero real usage in the corpus (OQ-INSTRUCTIONSCOPE).
 
 **Known gaps, not yet in any sweep (generators built 2026-08-22, awaiting
-capture):** motion instructions MAM/MAJ/MAH/MAS/MSO/MRP against a real Axis
-tag (`gen_motion_instructions.py` — MAH/MSO's 2-operand call syntax is
-corpus-confirmed, the others use the same documented signature but aren't
-independently confirmed for that exact mnemonic; MAPC/MCCP camming
-skipped, no real call-syntax reference found), per-Task overhead
-(`gen_task_overhead.py`, 2nd/3rd Task — distinct from JSR call-site cost,
-and note this engine currently charges fixed_base per-*routine* without
-knowing whether the real cost is actually per-routine, per-program, or
-per-task, since every sweep file had exactly one of each), indirect
-addressing overhead (`gen_indirect_addressing.py`, direct vs. indirect
-same logic), CMP/CPT operator/layout variance (`gen_cmpcpt_layout.py`).
+capture):** motion instructions MAM/MAJ/MAS/MRP against a real Axis tag
+(`gen_motion_instructions.py` — MAPC/MCCP camming skipped, no real
+call-syntax reference found), per-Task overhead (`gen_task_overhead.py`,
+2nd/3rd Task — distinct from JSR call-site cost, and note this engine
+currently charges fixed_base per-*routine* without knowing whether the
+real cost is actually per-routine, per-program, or per-task, since every
+sweep file had exactly one of each), CMP/CPT operator/layout variance
+(`gen_cmpcpt_layout.py` — see the CPT MAJOR CORRECTION above, this is now
+confirmed a real, significant gap, not just an untested nice-to-have).
+
+**2026-08-23 updates:** MAH/MSO's real per-rung logic weight is now
+derivable — **60 blocks/rung**, from `motioninstr_mah_n00010`/`n00100`
+once AXIS_CIP_DRIVE+MOTION_GROUP+MOTION_INSTRUCTION were known to isolate
+the pure logic-rung cost — but NOT yet added to
+`logic_instructions.weights` (one-line addition, just not done tonight).
+Indirect addressing (`gen_indirect_addressing.py`'s direct-index variant)
+now shows only a 4-block gap against the current engine on real data —
+already effectively explained by existing indexed-array-tag handling, no
+separate cost found; the arithmetic-offset (`tag[idx+1]`) variant is
+still untested.
 
 ## Change log
 
@@ -419,3 +501,24 @@ there's a record of *why* a number is what it is, not just what it currently is.
   already-flagged known gap (array dimension surcharge, small-N count/
   member anomaly, atomic-type micro-variance, OQ-ARRAYPACK/UDTARRAYALIGN)
   or the newly-surfaced custom-string-definition-cost gap noted above.
+- **2026-08-23** — Full-corpus rebase batch: re-ran the current engine
+  against every clean manifest.csv row (546) and compared to real
+  `actual_bytes`. Went from 0 exact matches / 16 engine errors to 77 exact
+  matches / 0 engine errors. Landed: `empty_project_baseline` (13,296,
+  KNOWN, see OQ-BASELINE), 6 new `predefined_structures` (MOTION_GROUP,
+  AXIS_CIP_DRIVE, COORDINATE_SYSTEM, AXIS_SERVO, AXIS_VIRTUAL,
+  MOTION_INSTRUCTION), new `predefined_array_structures` section
+  (CAM_PROFILE), `custom_definition_cost` (206) for STRING-family UDT
+  definitions, SIZE (128/rung) and LBL+JMP (104/pair, unvalidated 52/52
+  split) logic weights. Also fixed a real pre-existing UI bug found while
+  testing the new baseline entry: `ui/hierarchy.py`'s `build_hierarchy()`
+  crashed with `IndexError` on any file with a `udt_definition` entry
+  (path has no `:` for the `<scope>/<name>` split it assumed) — would have
+  crashed the live UI on most real programs; fixed with a `NON_TAG_GROUPS`
+  special case. **Also found, not fixed:** the CPT=452/rung weight is
+  confirmed wrong as a general constant (see the MAJOR CORRECTION in the
+  logic-instruction-weights section above) — real per-rung CPT cost is
+  expression-complexity-dependent. **Also found, not fixed:** AOI
+  definition cost is a large (1,100-3,600+ block) unmodeled gap, real
+  sweep data now gathered (see OPEN_QUESTIONS.md OQ-AOIDEF) but not clean
+  enough across all axes to wire in yet.
