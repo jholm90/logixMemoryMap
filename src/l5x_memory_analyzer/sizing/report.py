@@ -28,6 +28,7 @@ from l5x_memory_analyzer.sizing.udt import (
     UnknownDataTypeError,
     compute_array_size,
     compute_udt_definition_cost,
+    custom_string_maxlen,
     referenced_data_type_names,
 )
 
@@ -102,6 +103,13 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         if tag.data_type == "STRING":
             size += model.string.builtin_tag_overhead_correction
             basis = weakest(basis, model.string.builtin_tag_overhead_correction_confidence)
+        # Custom StringFamily-typed tags: no separate per-tag correction
+        # needed -- compute_udt_size's nearest-8 DATA-padding rule (real
+        # bug fix 2026-08-25) already produces the exact real byte count.
+        # The mod4==1 bucket's own +8 one-time bonus is applied at the
+        # definition-cost line item below, not here.
+        elif tag.data_type in udt_types and udt_types[tag.data_type].is_string_family:
+            basis = weakest(basis, model.string.custom_data_padding_confidence)
         sized.append((tag.path, category, tag.data_type, size, basis))
         referenced_udts |= referenced_data_type_names(tag.data_type, udt_types)
 
@@ -120,9 +128,15 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             # ordinary udt_definition formula was fit against ordinary
             # UDTs and doesn't apply (confirmed: applying it over-predicted
             # every real customstring_* data point by ~224-228 blocks).
+            # maxlen mod 4 == 1 gets an extra +8 one-time definition-cost
+            # bonus, confirmed 2026-08-25 (3/3 real points exact: 49, 101,
+            # 501) -- paired with the "no per-tag correction" branch above.
+            def_cost = model.string.custom_definition_cost
+            if custom_string_maxlen(udt_types[name]) % 4 == 1:
+                def_cost += model.string.custom_mod4eq1_definition_bonus
             definition_entries.append((
                 f"udt_definitions/{name}", "udt_definition", name,
-                model.string.custom_definition_cost, model.string.custom_definition_confidence,
+                def_cost, model.string.custom_definition_confidence,
             ))
             continue
         def_bytes, def_basis = compute_udt_definition_cost(name, udt_types, model)

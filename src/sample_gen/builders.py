@@ -218,10 +218,11 @@ def string_array_tag_xml(name: str, count: int, max_len: int = 82, data_type: st
 def tag_xml(
     name: str, data_type: str, dimensions: tuple[int, ...] = (), radix: str = "Decimal",
     description: str | None = None, udt_members: list["MemberSpec"] | None = None,
-    string_max_len: int | None = None,
+    string_max_len: int | None = None, constant: bool = False,
 ) -> str:
     dims_attr = f' Dimensions="{" ".join(str(d) for d in dimensions)}"' if dimensions else ""
     desc_xml = f"\n        <Description><![CDATA[{description}]]></Description>" if description else ""
+    constant_attr = "true" if constant else "false"
 
     # Real exports (2026-08-20): a UDT-typed Tag element carries no Radix
     # attribute at all -- only atomic-rooted tags (scalar or array) do.
@@ -230,7 +231,7 @@ def tag_xml(
     if string_max_len is not None:
         return (
             f'      <Tag Name="{name}" TagType="Base" DataType="{data_type}"'
-            f' Constant="false" ExternalAccess="Read/Write">{desc_xml}\n'
+            f' Constant="{constant_attr}" ExternalAccess="Read/Write">{desc_xml}\n'
             f'        {_string_tag_data_xml(string_max_len)}\n'
             f"      </Tag>"
         )
@@ -248,7 +249,7 @@ def tag_xml(
 
     return (
         f'      <Tag Name="{name}" TagType="Base" DataType="{data_type}"{dims_attr}'
-        f'{radix_attr} Constant="false" ExternalAccess="Read/Write">{desc_xml}\n'
+        f'{radix_attr} Constant="{constant_attr}" ExternalAccess="Read/Write">{desc_xml}\n'
         f'        <Data Format="Decorated">{data_body}</Data>\n'
         f"      </Tag>"
     )

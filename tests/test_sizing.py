@@ -124,8 +124,30 @@ def test_custom_string_type_uses_len_plus_data_not_generic_udt_path():
         ],
     )
     data_types = {"STRING40": string40}
-    # 4-byte LEN + 40-byte DATA = 44, and NOT tainted by UDT alignment UNKNOWN
+    # 4-byte LEN + 40-byte DATA = 44 (40 is already a multiple of 8, so no
+    # rounding applies either way), and NOT tainted by UDT alignment
+    # UNKNOWN. KNOWN: the nearest-8 padding formula below is confirmed
+    # exact against 9 real data points, see memory_model.yaml.
     assert size("STRING40", data_types=data_types) == (44, "KNOWN")
+
+
+def test_custom_string_type_data_member_rounds_to_nearest_8_tie_down():
+    # Real-bug fix 2026-08-25: DATA[N] does not just pad up to 4 -- it
+    # rounds to the NEAREST multiple of 8, rounding DOWN at the exact tie
+    # (remainder 4). maxlen=51 is a real verified data point: pads to 4
+    # (52), which lands exactly on the 8-byte tie, so it drops back to 48.
+    string51 = DataTypeDef(
+        name="STRING51",
+        family="StringFamily",
+        members=[
+            Member(name="LEN", data_type="DINT", dimension=0),
+            Member(name="DATA", data_type="SINT", dimension=51),
+        ],
+    )
+    data_types = {"STRING51": string51}
+    # 4-byte LEN + 48-byte DATA (rounded DOWN from the 52-byte 4-pad) = 52,
+    # NOT the raw 4+51=55 or the naive 4-pad-only 4+52=56.
+    assert size("STRING51", data_types=data_types) == (52, "KNOWN")
 
 
 def test_bool_packing_run_broken_by_non_bool_member():

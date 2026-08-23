@@ -100,6 +100,15 @@ def compute_array_size(
     return element_bytes * element_count, weakest(element_confidence, array_confidence)
 
 
+def custom_string_maxlen(udt: DataTypeDef) -> int:
+    """The declared DATA[N] dimension of a StringFamily type -- shared by
+    compute_udt_size and report.py's per-tag/per-definition correction
+    logic, both of which need the same maxlen mod 4 to pick the right
+    real-data-confirmed bucket (see memory_model.yaml's string: block)."""
+    data_member = next((m for m in udt.members if m.name == "DATA"), None)
+    return data_member.dimension if data_member else 0
+
+
 def compute_udt_size(
     name: str,
     data_types: dict[str, DataTypeDef],
@@ -111,12 +120,22 @@ def compute_udt_size(
     udt = data_types[name]
 
     if udt.is_string_family:
-        # Custom string type: LEN + DATA[N], a fixed 2-member convention with
-        # no realistic alignment ambiguity -- doesn't inherit the generic
-        # UDT alignment taint below. See docs/MEMORY_MODEL.md Custom string type.
-        data_member = next((m for m in udt.members if m.name == "DATA"), None)
-        n = data_member.dimension if data_member else 0
-        return model.string.len_field_bytes + n, model.string.custom_confidence
+        # Custom string type: LEN + DATA[N]. Real-bug fix 2026-08-25: the
+        # DATA member (SINT[N]) does NOT round up to a plain 4-byte
+        # boundary -- it rounds to the NEAREST multiple of 8, rounding
+        # DOWN at the exact tie (remainder 4). Confirmed exact (0 residual)
+        # against 9 real maxlen points (49-1000) spanning every mod-4 and
+        # mod-8 remainder: pad to 4 first (n_padded), then if that lands
+        # exactly at the midpoint (n_padded % 8 == 4), drop back by 4 to
+        # the next-lower multiple of 8. See memory_model.yaml's
+        # custom_data_padding_multiple comment for the full derivation.
+        n = custom_string_maxlen(udt)
+        pad = model.string.custom_data_padding_multiple
+        n_padded = -(-n // pad) * pad if pad else n
+        if n_padded % (2 * pad) == pad:
+            n_padded -= pad
+        confidence = weakest(model.string.custom_confidence, model.string.custom_data_padding_confidence)
+        return model.string.len_field_bytes + n_padded, confidence
 
     stack = _stack | {name}
 

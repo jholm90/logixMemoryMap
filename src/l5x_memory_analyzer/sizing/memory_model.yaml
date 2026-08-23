@@ -123,8 +123,17 @@ string:
   # fixed 2-member shape regardless of N). Not yet tested for type-NAME-
   # length sensitivity (every sample used a similar-length type name) --
   # flagged, not assumed independent.
-  custom_definition_cost: 206
-  custom_definition_confidence: FITTED
+  # Re-derived 2026-08-25 alongside the nearest-8 padding fix above: the
+  # original 206 was fit against the OLD (unpadded) instance formula, so
+  # it silently absorbed part of the padding error into the "definition
+  # cost" bucket. With the instance formula now correct, real data shows
+  # a flat +2 one-time term the padding fix doesn't itself cover --
+  # consistently +2 at every count point (n=1/100/1000) for every maxlen
+  # NOT in the mod4==1 bucket (which gets its own separate +8 instead, see
+  # custom_mod4eq1_definition_bonus below), not growing with count.
+  # 206+2=208. KNOWN: confirmed exact across all 9 real maxlen points.
+  custom_definition_cost: 208
+  custom_definition_confidence: KNOWN
   # Built-in STRING tags cost exactly 2 bytes LESS than the ordinary flat
   # tag_overhead formula predicts -- resolves OQ-STRINGTAGOVERHEAD.
   # Confirmed 2026-08-25 via the dense `stringoverhead_builtin_n*` sweep
@@ -134,15 +143,45 @@ string:
   # fixed count=50) shows the identical -100 (=-2*50) regardless of name
   # length -- confirms this is a flat per-tag correction independent of
   # both count and name length, not a name-length-bucket artifact.
-  # Deliberately NOT extended to custom StringFamily types: the
-  # `stringoverhead_custom{50,500}_n*` real data shows a per-tag rate that
-  # depends on the type's maxlen (-2/tag at maxlen=50, -4/tag at
-  # maxlen=500) plus a separate +2 one-time offset -- not yet a clean,
-  # confirmed formula off only 2 maxlen points (see docs/OPEN_QUESTIONS.md
-  # OQ-STRINGTAGOVERHEAD), so custom strings keep the un-corrected
-  # tag_overhead for now rather than guessing.
+  # NOT extended to custom StringFamily types: those don't need a
+  # tag_overhead correction at all -- the apparent per-tag rate difference
+  # seen for custom strings turned out to be entirely explained by the
+  # nearest-8 DATA-padding rule below, not a separate STRING-vs-custom-
+  # string tag_overhead effect (see custom_data_padding_multiple).
   builtin_tag_overhead_correction: -2
   builtin_tag_overhead_correction_confidence: KNOWN
+  # Custom StringFamily instance size: 2026-08-25 real-bug fix + full
+  # derivation, found while chasing the "maxlen mod 4" residual James
+  # flagged as needing 100% closure -- CONFIRMED KNOWN now, not a guess.
+  # The DATA array member (SINT[maxlen]) was being sized RAW (maxlen
+  # bytes, no rounding at all). Real mechanism: DATA rounds to the
+  # NEAREST multiple of 8, rounding DOWN at the exact tie (remainder 4)
+  # -- implemented as "pad to 4, then if that lands exactly at the 8-byte
+  # midpoint, drop back by 4." Verified EXACT (0 residual) against all 9
+  # real maxlen points spanning every mod-4 and mod-8 remainder tested
+  # (49, 50, 51, 100, 101, 300, 500, 501, 1000) -- e.g. maxlen=50 and
+  # maxlen=51 measure BYTE-IDENTICAL real memory at every count tested
+  # (both round to the same 48-byte block), while maxlen=100 (pads to
+  # 100, a 4-mod-8 tie) drops to 96, and maxlen=101 (pads to 104, already
+  # 0-mod-8) stays at 104. No separate per-tag correction constant is
+  # needed at all -- this one rule fully explains the real per-tag rate
+  # at every tested maxlen from 49 to 1000.
+  custom_data_padding_multiple: 4
+  # maxlen mod 4 == 1 ALSO gets a separate, CONFIRMED +8 one-time
+  # DEFINITION-cost bonus (3/3 real points exact: 49, 101, 501) -- this is
+  # independent of the per-tag padding rule above (both act at the same
+  # time for a mod4==1 type: the padding rule gets the per-tag rate right,
+  # this bonus gets the one-time definition-level intercept right).
+  # Applied in report.py by checking the DATA member's own dimension mod
+  # 4, not a separate scalar here (needs per-type maxlen to decide).
+  custom_mod4eq1_definition_bonus: 8
+  # maxlen=1000 (the largest maxlen tested) fits the nearest-8 padding
+  # rule exactly with no anomaly: 1000 is already a multiple of 8, so no
+  # rounding adjustment applies, and (being mod4==0, not mod4==1) it
+  # correctly gets no definition bonus either -- resolved as part of the
+  # same derivation, not a separate open question. KNOWN, not FITTED:
+  # 9/9 real data points fit exactly with zero residual.
+  custom_data_padding_confidence: KNOWN
 
 udt:
   # No alignment/padding between members -- tight packing, declared order.

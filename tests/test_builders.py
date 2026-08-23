@@ -41,8 +41,8 @@ def test_custom_string_type_xml_sizes_len_plus_data():
     root = _wrap_datatypes(custom_string_type_xml("STRING40", 40))
     data_types = parse_data_types(root)
     size, confidence = compute_array_size("STRING40", (), data_types, MODEL)
-    assert size == 44  # 4-byte LEN + 40-byte DATA
-    assert confidence == "KNOWN"
+    assert size == 44  # 4-byte LEN + 40-byte DATA (40 already a multiple of 8, no rounding needed)
+    assert confidence == "KNOWN"  # nearest-8 padding formula confirmed exact against 9 real points
 
 
 def test_tag_xml_parses_with_dimensions():
