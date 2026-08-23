@@ -350,6 +350,22 @@ generator already covers them, just waiting on the next capture batch.
    unisolated array discount could UNDER-predict a real BOOL-free AOI
    array).
 
+   **2026-08-25 [test built], James: "generate as many files as needed to
+   resolve all possible scenarios for 100% accuracy."** `gen_aoi_array_
+   packing.py`, 18 files, 3 AOI shapes × 6 points each (def_only + array
+   counts 1/5/10/25/50): `aoipack_atomic_*` (10 DINT In/10 DINT Out/10
+   REAL Local, ZERO BOOL — if this shape's real per-element array rate
+   matches the engine's own already-confirmed UDT-style prediction
+   exactly, that CONFIRMS the ~50% discount above is BOOL-specific, not a
+   general array-of-AOI effect), `aoipack_bool_*` (10/10/10 BOOL, nothing
+   else — the cleanest possible read on the BOOL-array-packing question,
+   no DINT/REAL confounding the math), `aoipack_mixed_*` (same 5-DINT-5-
+   BOOL-per-section composition as the original RealisticAOI finding, but
+   with 5 count points instead of 2, to firm up the 64-bytes/element
+   reading with a real multi-point linear fit and catch a small-N anomaly
+   if one exists, matching this project's established pattern elsewhere).
+   Awaiting capture.
+
 8. **OQ-PREDEFINED, remaining piece [test built].** MOTION_INSTRUCTION,
    AXIS_CIP_DRIVE/AXIS_SERVO/AXIS_VIRTUAL/COORDINATE_SYSTEM, and
    MOTION_GROUP are now derived and wired in (see RESOLVED_QUESTIONS.md
@@ -413,3 +429,16 @@ generator already covers them, just waiting on the next capture batch.
     total) that it doesn't invalidate anything, but real enough to log.
     Needs a proper STRING-tag-count sweep (n=1/10/100/1000) before wiring
     a `-2` correction into `tag_overhead` for STRING types specifically.
+
+    **2026-08-25 [test built], James: "generate as many files as needed to
+    resolve all possible scenarios for 100% accuracy."** `gen_string_
+    tagoverhead.py`, 22 files, 3 axes: `stringoverhead_builtin_n*` (9
+    points, n=1/2/5/10/25/50/100/500/1000, dense enough to catch a
+    non-linear shape, not just confirm a straight line between 2 points),
+    `stringoverhead_custom{50,500}_n*` (8 points, 2 max-lengths × 4 counts
+    — confirms the effect is a pure per-tag-declaration thing, not a
+    DATA-length effect in disguise), `stringoverhead_namelen*_n050` (5
+    points, name length 4/8/16/32/40 at fixed count — confirms whether the
+    existing `8×floor(len/8)` name-length term shape still holds for
+    STRING with only the flat base needing a correction, or something
+    structurally different is going on). Awaiting capture.

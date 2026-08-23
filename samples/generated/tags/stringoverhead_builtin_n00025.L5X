@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="StrCountN25" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Aug 23 14:30:51 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="StrCountN25" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Aug 23 14:30:51 2026" LastModifiedDate="Sun Aug 23 14:30:51 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+      <Tag Name="Str0000" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0001" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0002" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0003" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0004" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0005" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0006" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0007" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0008" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0009" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0010" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0011" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0012" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0013" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0014" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0015" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0016" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0017" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0018" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0019" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0020" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0021" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0022" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0023" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="Str0024" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>
