@@ -39,7 +39,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from sample_gen.builders import custom_string_type_xml, rungs_xml, tag_xml
+from sample_gen.builders import custom_string_type_xml, rungs_xml, string_array_tag_xml, tag_xml
 from sample_gen.manifest import append_manifest_row, write_sample
 from sample_gen.wrapper import build_l5x
 
@@ -146,9 +146,46 @@ def group_cop_string_members() -> int:
     return n
 
 
+# ---------------------------------------------------------------------------
+# D. Array-of-STRING count sweep -- the existing 2-point data (n=5/50) for
+#    BOTH builtin and custom string arrays shows a real residual the
+#    scalar-tag padding fix (group A-C above / the 2026-08-25 udt.py fix)
+#    does NOT explain -- builtin shows a growing per-element gap (+2/
+#    element), custom100 shows an even bigger, ALSO-growing gap once the
+#    scalar padding fix is applied to its per-element size (was flat +6
+#    before the fix, is +24/+204 -- i.e. growing -- after). This is
+#    NOT the same mechanism as the scalar case; more count points needed
+#    to fit it rather than guessing from 2 points. See OQ-STRINGARRAYPAD.
+# ---------------------------------------------------------------------------
+
+def group_string_array_countsweep() -> int:
+    n = 0
+    for count in [1, 10, 25, 100]:
+        tag = string_array_tag_xml("StrArr", count, max_len=82)
+        l5x = build_l5x(target_name=f"StringArrayCsN{count}", tags_xml=tag)
+        n += _write(TAGS_OUT, l5x, f"stringarray_builtin_n{count:03d}",
+                     f"ONE array-of-STRING tag, {count} built-in STRING elements -- additional count-sweep "
+                     f"point (existing n5/n50 data shows a real +2/element residual, unexplained, needs "
+                     f"more points to fit)",
+                     "string_array")
+
+    custom_type = custom_string_type_xml("CStrArrCsTest", 100)
+    for count in [1, 10, 25, 100]:
+        tag = string_array_tag_xml("CStrArrCs", count, max_len=100, data_type="CStrArrCsTest")
+        l5x = build_l5x(target_name=f"CustomStringArrayCsN{count}", tags_xml=tag, extra_datatypes_xml=custom_type)
+        n += _write(TAGS_OUT, l5x, f"stringarray_custom100_cs_n{count:03d}",
+                     f"ONE array-of-custom-string tag, {count} elements of a 100-char custom string type -- "
+                     f"additional count-sweep point (existing n5/n50 data shows a real, growing residual "
+                     f"once the scalar nearest-8 padding fix is applied to the per-element size -- the "
+                     f"scalar fix does not transfer cleanly to the array context, needs its own fit)",
+                     "string_array")
+    return n
+
+
 def main() -> None:
     total = 0
-    for fn in [group_typename_length, group_constant_flag, group_cop_string_members]:
+    for fn in [group_typename_length, group_constant_flag, group_cop_string_members,
+               group_string_array_countsweep]:
         count = fn()
         print(f"{fn.__name__}: {count} file(s)")
         total += count
