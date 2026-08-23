@@ -124,10 +124,23 @@ def _udt_structure_body_xml(members: list["MemberSpec"]) -> str:
 def collect_nested_datatypes(name: str, members: list["MemberSpec"], family: str = "NoFamily") -> str:
     """Every nested UDT referenced (transitively) by `members` needs its own
     <DataType> definition alongside the top one -- returns all of them,
-    innermost-first, ready to concatenate into <DataTypes>."""
+    innermost-first, ready to concatenate into <DataTypes>.
+
+    2026-08-23 fix (James, real Studio 5000 error after a generated AOI-
+    nested-in-UDT file failed import): "Unable to create AOI definition
+    'DriveAxisNestTest' because it collides with a UDT of the same name."
+    An AOI member sets nested_members too (so the *instance/Structure*
+    side, _udt_structure_body_xml, renders its storage correctly), but
+    that used to also make this function emit a redundant plain <DataType>
+    for it -- on top of its real <AddOnInstructionDefinition> (passed
+    separately via build_l5x's extra_aoi_xml). AOI and UDT names share one
+    namespace in Logix; two definitions with the same name is a hard
+    import error, not a warning. Skip recursion for AOI members -- their
+    type definition comes from extra_aoi_xml only, never from here.
+    """
     parts = []
     for m in members:
-        if m.nested_members is not None:
+        if m.nested_members is not None and not m.is_aoi_member:
             parts.append(collect_nested_datatypes(m.data_type, list(m.nested_members), family))
     parts.append(udt_xml(name, members, family))
     return "\n".join(parts)
