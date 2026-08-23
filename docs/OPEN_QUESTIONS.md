@@ -904,8 +904,9 @@ generator already covers them, just waiting on the next capture batch.
       that's parser work, not a constant edit. The numbers are ready
       whenever that parser support lands.
 
-13. **OQ-STRINGTAGOVERHEAD — builtin RESOLVED 2026-08-25, custom STILL
-    OPEN with a real lead.** Builtin STRING's flat -2 bytes/tag correction
+13. **OQ-STRINGTAGOVERHEAD — SCALAR CASE FULLY RESOLVED 2026-08-25 (both
+    builtin and custom). Array-of-STRING split out as its own open
+    question, OQ-STRINGARRAYPAD, below.** Builtin STRING's flat -2 bytes/tag correction
     is now confirmed and wired (RESOLVED_QUESTIONS.md OQ-STRINGTAGOVERHEAD
     -BUILTIN) via the dense 9-point `stringoverhead_builtin_n*` sweep plus
     the 4-point namelen cross-check, all exact 0-gap now.
@@ -966,6 +967,70 @@ generator already covers them, just waiting on the next capture batch.
       (below anything tested so far) and 4000 (2× the largest previously-
       confirmed-working value; `customstring_len*` topped out at 2000,
       RESOLVED_QUESTIONS.md OQ-CUSTOMSTRINGDEF).
+
+    **RESOLVED 2026-08-25, James: "I want strings as a whole closed. No
+    more open questions or unknowns."** Chasing the mod-4 residual found
+    a real bug, not an unexplained Rockwell mechanism: the DATA member
+    was sized RAW with zero rounding. Real mechanism, verified EXACT (0
+    residual) against 9 real maxlen points spanning every mod-4/mod-8
+    remainder: DATA rounds to the NEAREST multiple of 8, rounding DOWN at
+    the exact tie (remainder 4 after a plain 4-byte pad) — e.g. maxlen=50
+    and 51 measure byte-identical real memory (both round to 48), while
+    maxlen=100 (a tie) drops to 96 and maxlen=101 (already 0-mod-8) stays
+    at 104. Separately, maxlen mod 4 == 1 gets its own confirmed +8
+    one-time definition-cost bonus (3/3 exact: 49, 101, 501). Wired in
+    `udt.py`/`report.py`, `custom_data_padding_confidence` upgraded
+    FITTED→KNOWN. See RESOLVED_QUESTIONS.md for the full derivation.
+
+    **Two threads found and reopened while verifying the fix end-to-end,
+    NOT yet closed:**
+    - **Type-name length**: `stringoverhead_customnamelen*` (maxlen=100,
+      a longer type name than the maxlen=100 case that fits exactly)
+      shows a flat, unexplained +8 the confirmed formula doesn't cover.
+      `gen_string_closure.py`'s `group_typename_length` (6 files, short/
+      medium/long type names at the same maxlen) isolates it directly —
+      generated 2026-08-25, awaiting capture.
+    - **Array-of-STRING** (both builtin and custom): see new
+      OQ-STRINGARRAYPAD below — split out as its own question since it's
+      a structurally different case (Decorated array, not the scalar
+      L5K+String pair) with its own, different real residual.
+
+14b. **OQ-STRINGARRAYPAD (new, 2026-08-25, found while verifying the
+    scalar custom-string padding fix end-to-end).** Array-of-STRING (one
+    tag, `Dimensions=N`, per OQ-STRINGARRAY/`string_array_tag_xml`) shows
+    a real residual that is NOT the same mechanism as the scalar case:
+    - **Builtin STRING array** (`stringarray_builtin_n005/n050`): real
+      marginal rate is 88/element vs. the plain-atomic 86/element the
+      engine assumes (+2/element, confirmed via 2 clean points, growing
+      not flat) — array elements apparently do NOT get the scalar tag's
+      -2/tag benefit and instead carry a small NET +2/element cost of
+      their own. Only 2 count points existed; not enough to also confirm
+      the one-time intercept.
+    - **Custom string array** (`stringarray_custom100_n005/n050`,
+      maxlen=100): looked like a flat +6 one-time offset BEFORE the
+      scalar nearest-8 padding fix landed. Recomputing live against the
+      NOW-correct scalar per-element formula (maxlen=100 → nearest-8
+      rounds DOWN to 96, per the fix above) makes the residual WORSE and
+      GROWING (+24 at n=5, +204 at n=50) — the scalar fix does not
+      transfer cleanly to the array context; array elements evidently pad
+      differently than a scalar instance of the same custom type.
+    - **Generated 2026-08-25, `gen_string_closure.py`'s
+      `group_string_array_countsweep`** (8 files: builtin + custom100 at
+      n=1/10/25/100, alongside the existing n=5/50): enough points for a
+      real multi-point fit once captured, instead of guessing off 2.
+      Do not treat array-of-STRING as closed until this lands — it is the
+      one piece of "strings as a whole" genuinely still open.
+
+14c. **OQ-STRINGUDTMEMBER (tracked separately, mostly a capture-queue
+    issue not a formula gap).** STRING (builtin and custom) as a UDT
+    member (`udtstring_builtin_n01/n10`, `udtstring_custom100_n01/n10`,
+    `gen_string_batch2.py`'s `group_string_udt_member`) — 3 of these 4
+    rows were flagged WINDOW TITLE MISMATCH in the 2026-08-25 capture
+    batch and will auto-retry per the fix in TESTING_PLAN.md's "Window-
+    title-mismatch retries are automatic" section, no new generation
+    needed. Only `udtstring_builtin_n10` has real usable data
+    (delta=-20, single point, unexplained) — too little to fit anything
+    yet. Revisit once the retried rows land.
 
 14. **OQ-OPERANDTYPE (new, MAJOR, found 2026-08-25 mining already-captured
     but never-analyzed `typesweep_*` data — NOT wired, needs parser

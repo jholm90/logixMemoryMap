@@ -23,16 +23,16 @@ Every entry is tagged with a confidence level:
 | LINT | 8 | |
 | REAL | 4 | |
 | STRING (built-in) | 4 + 82 = 86 | 4-byte LEN (DINT) + 82-byte DATA (SINT[82]) default |
-| Custom string type | 4 + N | 4-byte LEN + N-byte DATA, N = user-defined max length |
+| Custom string type (scalar) | 4 + nearest8(N) | 4-byte LEN + DATA rounded to the NEAREST multiple of 8 (round DOWN at the tie, remainder 4) -- see below, KNOWN 2026-08-25 |
 
-**Custom string type-definition cost (FITTED, 2026-08-23):** separate from
-the per-instance `4 + N` above, a custom STRING type declaration itself
-costs a one-time `custom_definition_cost = 206` blocks, confirmed flat
-across all 7 real `customstring_len*` points (maxlen 10-2000) -- doesn't
-scale with DATA length. NOT yet tested for type-NAME-length sensitivity.
-Wired into `report.py`'s UDT-definition loop (string-family types get
-their own `udt_definition` entry using this constant instead of the
-ordinary UDT formula, which doesn't apply to them).
+**Custom string type-definition cost (KNOWN, re-derived 2026-08-25).**
+Separate from the per-instance size above, a custom STRING type
+declaration itself costs a one-time `custom_definition_cost = 208` blocks
+(re-derived from 206 alongside the padding fix below -- the original
+value silently absorbed part of the old padding bug), plus a further
+`custom_mod4eq1_definition_bonus = 8` when the type's maxlen ≡ 1 mod 4
+(confirmed exact, 3/3 real points: 49, 101, 501). Doesn't scale with DATA
+length otherwise. Wired into `report.py`'s UDT-definition loop.
 
 **Built-in STRING tag-overhead correction (KNOWN, resolved 2026-08-25).**
 A built-in STRING tag costs 2 bytes LESS than the ordinary flat
@@ -42,13 +42,29 @@ all landing on exactly `gap = -2 * count`, independent of both count and
 name length. Wired as `string.builtin_tag_overhead_correction = -2`,
 applied in `report.py` only when `tag.data_type == "STRING"`.
 
-**Custom StringFamily types: same correction does NOT apply cleanly --
-still open, not wired.** Real per-tag marginal rate is maxlen-dependent
-(-2/tag at maxlen=50 and maxlen=250, but -4/tag at maxlen=500), plus a
-consistent +2 one-time offset. A `maxlen mod 4` hypothesis fits all 3
-data points so far but isn't confirmed -- see OPEN_QUESTIONS.md
-OQ-STRINGTAGOVERHEAD. Custom string sizing keeps the un-corrected formula
-for now.
+**Custom string DATA padding (KNOWN, real bug found and fixed
+2026-08-25).** Chasing James's "strings must be 100% closed" directive
+found a real bug: the DATA member (SINT[maxlen]) was sized RAW with no
+rounding at all. Real mechanism, verified EXACT (0 residual) against 9
+real maxlen points spanning every mod-4/mod-8 remainder (49, 50, 51, 100,
+101, 300, 500, 501, 1000): **DATA rounds to the nearest multiple of 8,
+rounding DOWN at the exact tie** (i.e. pad to 4 first, then if that lands
+exactly at the 8-byte midpoint, drop back by 4). Example: maxlen=50 and
+maxlen=51 measure byte-identical real memory (both round to 48); maxlen=
+100 (a 4-mod-8 tie) drops to 96; maxlen=101 (already 0-mod-8) stays at
+104. No separate per-tag correction constant is needed -- this one rule
+fully explains the real per-tag rate. Wired as
+`string.custom_data_padding_multiple = 4` (the 2-step rounding logic
+lives in `udt.py`'s `compute_udt_size`).
+
+**Still open (2026-08-25):** custom-string TYPE-NAME length may affect
+`custom_definition_cost` (a real residual was found isolated to one long
+type name, not yet explained -- disambiguation batch generated, see
+OPEN_QUESTIONS.md), and array-of-STRING (both builtin and custom) has its
+own, DIFFERENT real residual not covered by the scalar fix above -- see
+OPEN_QUESTIONS.md OQ-STRINGARRAYPAD. Both are still genuinely open;
+everything else about STRING sizing (scalar tags, custom-string padding,
+definition cost, all string instructions) is now KNOWN.
 
 ## Predefined structure types (KNOWN)
 
