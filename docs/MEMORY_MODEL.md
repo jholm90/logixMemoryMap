@@ -102,15 +102,25 @@ processor memory-budget table, not a bare scalar in this file. Until then,
 apply it to a report for any other processor without flagging that
 explicitly.
 
-## Alias tags (KNOWN)
+## Alias tags (KNOWN, corrected 2026-08-25)
 
 A Tag with `TagType="Alias"` carries no `DataType` of its own in the L5X
-(only an `AliasFor` pointing at another tag or a module I/O point) and
-consumes no memory beyond what that target already accounts for. Sized as
-0 bytes, tagged `data_type=ALIAS`, confidence KNOWN -- not an error, not a
-guess, just genuinely zero-cost. Confirmed against real production L5X data
-(2026-08-20): 294 of 3394 tags across 4 real files were Alias tags with no
-DataType, ~21% of everything that failed to size before this was handled.
+(only an `AliasFor` pointing at another tag or a module I/O point) and has
+no data space of its own -- but it DOES still occupy a real entry in the
+controller's tag table, and that entry has a real, nonzero cost.
+
+**Prior claim of "0 bytes, genuinely zero-cost" was wrong** -- it correctly
+identified that an Alias has no raw *data* size (still true), but
+incorrectly assumed that meant zero total cost. Real data
+(`aliassize_n00001`/`n00010`/`n01000`, captured 2026-08-25) proves an Alias
+tag costs `56 + 8 × floor(name_length / 8)` blocks -- the same per-8-char
+name-length-bucket shape as ordinary tag_overhead below, just with its own
+flat_base (56, vs ordinary tags' 84) and no separate raw-data term added on
+top. Exact match across all 3 name-length buckets tested (gaps 56/560/63200
+at n=1/10/1000). Wired as `alias_overhead` in `memory_model.yaml`.
+Confirmed against real production L5X data (2026-08-20) that ~21% of a
+typical program's tags are Alias tags with no DataType -- this is not an
+edge case, it's a large real share of most tag tables.
 
 ## Per-tag flat overhead (KNOWN, 2026-08-22)
 
@@ -126,8 +136,8 @@ is KNOWN rather than FITTED. Tag names are stored in 8-character-aligned
 chunks. Type barely affects it (SINT 95/INT 94/DINT 92/LINT 88/REAL 92/BOOL
 92 at name_length=8) — treated as type-independent.
 
-Does **not** yet apply to Alias tags — that's OQ-ALIASSIZE, still open
-(test built, awaiting capture); Alias tags stay at 0 total until confirmed.
+Does **not** apply to Alias tags, which use their own smaller `alias_overhead`
+flat_base (56, not 84) instead -- see above.
 
 ## UDT DataType-definition cost (KNOWN, landed 2026-08-22, corrected same day)
 
@@ -296,6 +306,23 @@ code 2026-08-22** — `memory_model.yaml`'s `logic_instructions`,
 "estimated"` entries, separate from the tag/UDT `tier="exact"` entries per
 CLAUDE.md's ground-truth constraint.
 
+**MAJOR CAVEAT, 2026-08-25: every weight in the table below assumes
+DINT/LINT/REAL operands.** Real data (`typesweep_*` sweep, see
+`docs/OPEN_QUESTIONS.md` OQ-OPERANDTYPE) proves operand data type changes
+the real cost substantially for ADD/SUB/MUL/DIV/MOD/EQU/GEQ/GRT/LEQ/LES/
+NEQ/MOV/LIM/CPT — SINT/INT operands cost dramatically more (+88 to +164
+blocks/rung depending on instruction), REAL costs somewhat more for some
+(+16 to +56/rung) and less for LIM (-8/rung), STRING costs +52/rung for
+EQU/NEQ. LINT behaves identically to DINT (no separate handling needed).
+This means every "CONFIRMED, 0.00% residual" status elsewhere in this repo
+(MEMORY_MODEL.md's own table below, `docs/INSTRUCTION_COVERAGE.md`) is
+only proven exact for DINT/LINT/REAL-typed operands — a real program doing
+SINT/INT math will be under-predicted, potentially by 100+ blocks/rung.
+NOT wired: requires the logic parser to resolve each instruction's operand
+tags back to their DataType, which it doesn't do today (occurrence-
+counting only). Flagged as the top priority for the next logic-parser
+architecture pass, ahead of further per-instruction weight capture.
+
 **Correction, same day as first landed:** several sweep files' rung text
 isn't just the named instruction — e.g. XIC's file is literally
 `"XIC(tag)OTE(tag);"`, not `"XIC(tag);"` alone, because a bare XIC can't
@@ -328,12 +355,11 @@ be worse than a wrong-but-nonzero number, but treat any CPT-heavy
 estimated-tier logic number as unreliable until this is properly modeled.
 See `docs/OPEN_QUESTIONS.md` OQ-CMPCPTLAYOUT for full detail.
 
-4 instructions (CPS, COP, FLL, BTD) are excluded below — flagged for
-re-capture, see `docs/OPEN_QUESTIONS.md`. SIZE is resolved (see table) —
-its array-subscript bug is fixed and clean data confirms an exact fit.
-The EQU n=100/CMP n=10 garbled-value glitch this used to also flag is long
-since fixed and re-captured. Do not backfill numbers for the still-excluded
-4 from other sources; wait for the re-capture.
+All originally-excluded instructions are now resolved. SIZE, BTD, COP,
+CPS, and FLL all had the same real array-subscript bug (see below);
+all five are now fixed, re-captured, and in the table with exact fits.
+The EQU n=100/CMP n=10 garbled-value glitch this used to also flag is
+long since fixed and re-captured.
 
 **Root cause of the CPS/COP/FLL/SIZE/BTD glitch, found 2026-08-22 (James
 spot-checked and caught it):** these instructions take an array-typed
@@ -388,13 +414,19 @@ now contained.
 | MID | 100 | 100 (solo rung) | 4,816 | 5 | 0.00% |
 | DELETE | 100 | 100 (solo rung) | 4,816 | 5 | 0.00% |
 | CMP | 92 | **76** (CMP+OTE combined) | 4,816 | 4 | 0.00% |
-| LBL+JMP (pair, combined) | 104 | **52/52** (unvalidated 1:1 split, see note below) | 4,816 | 5 | 0.00% |
+| LBL+JMP (pair, combined) | 120 | **64/40** (independently decomposed, KNOWN — see note below) | 4,816 | 5 | 0.00% |
 | SIZE | 128 | 128 (solo rung, resolved 2026-08-23) | 4,816 | 5 | 0.00% |
+| COP | 112 | 112 (solo rung, resolved 2026-08-25) | 4,816 | 5 | 0.00% |
+| CPS | 112 | 112 (solo rung, resolved 2026-08-25, identical real numbers to COP) | 4,816 | 5 | 0.00% |
 | GSV | 84 | 84 (solo rung) | 4,816 | 5 | 0.00% |
 | SSV | 84 | 84 (solo rung) | 4,816 | 5 | 0.00% |
 | STOD | 80 | 80 (solo rung) | 4,816 | 5 | 0.00% |
+| FLL | 68 | 68 (solo rung, resolved 2026-08-25) | 4,816 | 5 | 0.00% |
 | DTOS | 72 | 72 (solo rung) | 4,816 | 5 | 0.00% |
 | JSR | 72 | 72 (solo rung) | 5,096 | 5 | 0.00% |
+| BTD | 64 | 64 (solo rung, resolved 2026-08-25) | 4,816 | 5 | 0.00% |
+| MAH | 60 | 60 (solo rung, resolved/wired 2026-08-25) | 4,816 | 2 | 0.00% |
+| MSO | 60 | 60 (solo rung, resolved/wired 2026-08-25, identical real numbers to MAH) | 4,816 | 2 | 0.00% |
 
 **JSR target routines are skipped entirely by the engine, not charged
 their own fixed_base.** Found the same day as the paired-instruction fix
@@ -410,6 +442,13 @@ JSR; `report.py` skips those entirely when building logic entries.
 Verified against real data for all 5 JSR count points, exact match. Only
 confirmed for a trivial (1-NOP-rung) target — a JSR target with
 *substantial* content is untested territory, same caveat as OQ-JSRSHARED.
+
+**The 72/rung JSR weight above is also only confirmed for a small/fixed
+parameter count.** Real data (`jsr_paramcount_n01/n05/n10_r01000`, see
+`docs/OPEN_QUESTIONS.md` OQ-JSRPARAMCOST) shows a real additional cost of
+roughly 20-21 blocks/rung per JSR parameter, not captured by the flat
+72/rung weight. NOT wired: the parser doesn't currently parse a JSR call's
+own parameter-list length out of the rung text.
 | LIM | 68 | **52** (LIM+OTE combined) | 4,816 | 5 | 0.00% |
 | ONS | 56 | **36** (XIC+ONS+OTE combined) | 4,816 | 5 | 0.00% |
 | MUL | 56 | 56 (solo rung) | 4,816 | 5 | 0.00% |
@@ -440,41 +479,64 @@ confirmed for a trivial (1-NOP-rung) target — a JSR target with
 | OTU | 16 | 16 (solo rung) | 4,816 | 5 | 0.00% |
 | NOP | 16 | 16 (solo rung) | 4,816 | 5 | 0.00% |
 
-**LBL/JMP, resolved 2026-08-23:** the `LBL(thisLabel)NOP();` syntax fix
-(see below) cleared the real build errors — all 5 `instr_lbljmp_n*`
-real captures came back clean. Combined LBL+JMP weight is an exact linear
-fit at 104 blocks/pair across n=10/50/100/1000/5000, 0 residual. Still
-**not independently decomposable** from this data (it's a *pair*
-measurement — a paired LBL rung + JMP rung, not one rung with two
-instructions, and the generator always emits them 1:1) — split 52/52 as
-an unbiased placeholder that reconstructs the confirmed 104 exactly for
-that pairing. Explicitly unvalidated for any other LBL:JMP ratio (e.g.
-one JMP targeting multiple LBLs). Wired into `logic_instructions.weights`
-as `LBL: 52, JMP: 52`.
+**LBL/JMP, fully resolved 2026-08-25 (MAJOR CORRECTION to the earlier
+"104 combined, 52/52 unvalidated split" claim).** The `LBL(thisLabel)
+NOP();` syntax fix cleared the real build errors — all 5 `instr_lbljmp_
+n*` real captures came back clean. Re-deriving the combined weight from
+that same data: exact linear fit at **120** blocks/pair across
+n=10/50/100/1000/5000, 0 residual — the previously-documented "104" was
+a miscalculation, not a measurement error (the raw data was always 120).
+Two more real sweeps (`gen_lbljmp_rules.py`, 2026-08-24) then
+independently decomposed it: `lbljmp_lblonly_n01/05/10` (pure LBL+NOP
+rungs, zero JMP) isolates LBL+NOP at 80/rung — LBL alone = 80 - NOP's own
+confirmed 16 = **64**; `lbljmp_manytoone_n02/05/10` (1 fixed LBL, JMP
+count varying) isolates JMP alone at **40**/rung. Cross-check: LBL(64) +
+NOP(16) + JMP(40) = 120, exactly reproducing the original 1:1-pair
+sweep's combined number — three independent real captures agreeing
+exactly. **KNOWN, not FITTED-uncertain, and valid for any LBL:JMP ratio**
+(not just 1:1), since LBL and JMP were each isolated independently of the
+other. Wired into `logic_instructions.weights` as `LBL: 64, JMP: 40`.
 
 CTD intentionally not tested — zero real usage in the corpus (OQ-INSTRUCTIONSCOPE).
 
-**Known gaps, not yet in any sweep (generators built 2026-08-22, awaiting
-capture):** motion instructions MAM/MAJ/MAS/MRP against a real Axis tag
-(`gen_motion_instructions.py` — MAPC/MCCP camming skipped, no real
-call-syntax reference found), per-Task overhead (`gen_task_overhead.py`,
-2nd/3rd Task — distinct from JSR call-site cost, and note this engine
-currently charges fixed_base per-*routine* without knowing whether the
-real cost is actually per-routine, per-program, or per-task, since every
-sweep file had exactly one of each), CMP/CPT operator/layout variance
+**Known gaps, still open:** MAM/MAJ/MAS/MRP against a real Axis tag —
+**real capture 2026-08-25 shows all 4 FAIL to build** (`motioninstr_
+mam/maj/mas/mrp_n00010/n00100`, `error_count` exactly equals rung count —
+every single rung failed). The documented 2-operand `(Axis,
+MotionInstruction)` signature that works for MAH/MSO/MAFR/MASR does NOT
+work for these 4 — real, confirmed negative result, not just "untested."
+Do not retry with a guessed variant; needs a real corpus or Studio-5000-
+verified reference for the correct call shape before trying again.
+MAPC/MCCP camming: real syntax now corpus-confirmed and captured (see
+`gen_instruction_firstpass.py`'s n=1 pass), byte size still pending the
+new CAM predefined structure being resolved (OQ-INSTRFIRSTPASS). Per-Task
+overhead (`gen_task_overhead.py`) — real data now captured, see the
+dedicated write-up in `docs/OPEN_QUESTIONS.md` (a real, clean, exactly
+-1,472-per-extra-task finding, not yet wired pending a parser change to
+distinguish per-Task/Program overhead from per-routine-in-the-same-
+program, which doesn't exist yet). CMP/CPT operator/layout variance
 (`gen_cmpcpt_layout.py` — see the CPT MAJOR CORRECTION above, this is now
 confirmed a real, significant gap, not just an untested nice-to-have).
 
-**2026-08-23 updates:** MAH/MSO's real per-rung logic weight is now
-derivable — **60 blocks/rung**, from `motioninstr_mah_n00010`/`n00100`
-once AXIS_CIP_DRIVE+MOTION_GROUP+MOTION_INSTRUCTION were known to isolate
-the pure logic-rung cost — but NOT yet added to
-`logic_instructions.weights` (one-line addition, just not done tonight).
-Indirect addressing (`gen_indirect_addressing.py`'s direct-index variant)
-now shows only a 4-block gap against the current engine on real data —
-already effectively explained by existing indexed-array-tag handling, no
-separate cost found; the arithmetic-offset (`tag[idx+1]`) variant is
-still untested.
+**2026-08-25 updates:** MAH/MSO wired in (see table above). Indirect
+addressing (`gen_indirect_addressing.py`'s direct-index variant) shows
+only a 4-block gap against the current engine on real data — already
+effectively explained by existing indexed-array-tag handling, no separate
+cost found. The tag-driven and arithmetic-offset index variants, however,
+show large real costs NOT yet modeled — see `docs/OPEN_QUESTIONS.md` for
+the raw numbers (~84 blocks/rung for a tag-driven index, ~108 blocks/rung
+for an arithmetic-offset tag-driven index, vs. the direct-index case's
+~0). Not yet decomposed into a proper weight (needs the base direct-index
+rung's own instruction weight subtracted out first, and the instruction
+used in that sweep identified) — flagged, not guessed.
+
+Cross-program tag referencing (`gen_xprogref.py`) — real capture in hand,
+unexplained: a single-program alias baseline shows the expected small +64
+gap, but the two-program shared-alias case (`xprogref_twoprog_shared_
+alias_n01000`) shows a NEGATIVE gap (-3948, engine over-predicts) — the
+opposite direction from every other known gap in this document. Not
+root-caused; see `docs/OPEN_QUESTIONS.md` OQ-XPROGREF. Do not wire
+anything off this single 2-program data point.
 
 ## Change log
 

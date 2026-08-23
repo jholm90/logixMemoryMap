@@ -78,11 +78,12 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         category = "controller_tag" if tag.scope == CONTROLLER_SCOPE else "program_tag"
         if tag.is_alias:
             # An Alias tag is a pointer/rename onto another tag or module I/O
-            # point -- it has no DataType of its own in the L5X. Real total
-            # cost is OQ-ALIASSIZE, still open (test built, awaiting
-            # capture) -- stays at 0 until that's confirmed, not tag_overhead
-            # by assumption.
-            sized.append((tag.path, category, "ALIAS", 0, "KNOWN"))
+            # point -- it has no DataType/data space of its own in the L5X,
+            # only a tag-table entry. Real cost confirmed 2026-08-25
+            # (OQ-ALIASSIZE, RESOLVED_QUESTIONS.md): same shape as ordinary
+            # tag_overhead but with its own flat_base (56 vs 84).
+            alias_bytes = model.alias_overhead.bytes_for(tag.name)
+            sized.append((tag.path, category, "ALIAS", alias_bytes, model.alias_overhead.confidence))
             continue
         try:
             size, basis = compute_array_size(tag.data_type, tag.dimensions, data_types, model)

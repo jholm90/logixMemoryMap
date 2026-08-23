@@ -32,15 +32,17 @@ _XML = """
 """
 
 
-def test_alias_tags_size_zero_known_not_error():
+def test_alias_tags_size_not_error():
     root = ET.fromstring(_XML)
     entries, errors = build_report(root, MODEL)
 
     assert errors == []
     by_path = {e.path: e for e in entries}
 
+    # Alias tags carry their own overhead shape (RESOLVED_QUESTIONS.md
+    # OQ-ALIASSIZE): 56 + 8*(len(name)//8), no separate data-space term.
     alias = by_path["controller/AliasedIO"]
-    assert alias.bytes == 0
+    assert alias.bytes == 56 + 8  # "AliasedIO", 9 chars -> floor(9/8)=1
     assert alias.data_type == "ALIAS"
     assert alias.basis == "KNOWN"
 
@@ -50,7 +52,7 @@ def test_alias_tags_size_zero_known_not_error():
     assert timer.bytes == 12 + 84  # TIMER(12) + tag_overhead("RunTmr", 6 chars)
     assert timer.basis == "KNOWN"
 
-    # total_bytes / pct_of_total shouldn't be thrown off by the alias's 0 bytes
+    # total_bytes / pct_of_total shouldn't be thrown off by the alias entry
     real_dint = by_path["controller/RealDint"]
     assert real_dint.bytes == 4 + 92  # DINT(4) + tag_overhead("RealDint", 8 chars)
 
@@ -66,7 +68,7 @@ def test_alias_tags_size_zero_known_not_error():
     # this fixture's 3 sized tags.
     baseline = by_path["project_baseline"]
     assert baseline.bytes == MODEL.empty_project_baseline_bytes
-    grand_total = real_dint.bytes + timer.bytes + aoi_instance.bytes + baseline.bytes
+    grand_total = real_dint.bytes + timer.bytes + aoi_instance.bytes + alias.bytes + baseline.bytes
     assert real_dint.pct_of_total == (real_dint.bytes / grand_total) * 100
 
 

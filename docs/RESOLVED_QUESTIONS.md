@@ -373,19 +373,64 @@ files across the axis/motion categories now size with 0 engine errors.
 Remaining piece (CAM the instruction wrapper, MAH/MSO's real per-rung
 logic weight) still open, see OPEN_QUESTIONS.md.
 
-**OQ-LBLJMP-STALE, fully resolved.** The `LBL(L{i})NOP();` syntax fix
-(2026-08-22) cleared the build errors as expected — all 5
-`instr_lbljmp_n*` real captures came back clean (`error_count=0`).
-Combined LBL+JMP weight is an exact linear fit at 104 blocks/pair across
-n=10/50/100/1000/5000 rungs, 0 residual. **Not independently decomposable**
-from this data (the generator always emits LBL:JMP 1:1 paired) — split
-52/52 as an unbiased placeholder that reconstructs the confirmed 104
-exactly for that pairing, explicitly flagged in `memory_model.yaml` as
-unvalidated for any other LBL:JMP ratio (e.g. one JMP targeting multiple
-LBLs, or vice versa). Wired into `logic_instructions.weights`. Separately,
+**OQ-LBLJMP-STALE, fully resolved (SUPERSEDED 2026-08-25, see below).**
+The `LBL(L{i})NOP();` syntax fix (2026-08-22) cleared the build errors as
+expected — all 5 `instr_lbljmp_n*` real captures came back clean
+(`error_count=0`). Combined LBL+JMP weight was originally read off as an
+exact linear fit at "104 blocks/pair" across n=10/50/100/1000/5000 rungs —
+**this arithmetic was wrong**, see the 2026-08-25 correction entry below
+for the actual decomposed values (LBL=64, JMP=40, 120/pair). Separately,
 `SIZE`'s array-subscript syntax bug also cleared: SIZE is an exact linear
-fit at 128 blocks/rung across n=10/50/100/1000/5000, 0 residual, also
-wired in.
+fit at 128 blocks/rung across n=10/50/100/1000/5000, 0 residual, wired in
+(unaffected by the LBL/JMP correction).
+
+**OQ-LBLJMP, corrected decomposition, 2026-08-25.** Re-deriving from the
+same `instr_lbljmp_n*` real data plus two new independent sweeps
+(`lbljmp_lblonly` — LBL with 0 JMP targeting it, `lbljmp_manytoone` —
+multiple JMP to one LBL) gives an exact 120 blocks/pair, not 104 — the
+prior value was a miscalculation, not a data/measurement error. All 3
+sweeps cross-validate to the same decomposition: `LBL=64`, `NOP=16`
+(already known/separately confirmed elsewhere), `JMP=40`
+(`64+16+40=120`). Unlike the old 52/52 placeholder split, this decomposition
+is independently confirmed (LBL-only and many-JMP-to-one-LBL both isolate
+LBL's and JMP's contributions separately) rather than assumed evenly.
+Wired into `logic_instructions.weights` as `LBL: 64`, `JMP: 40`.
+
+**OQ-BTD/COP/CPS/FLL, resolved 2026-08-25.** 5-count real sweeps
+(`instr_btd_n*`, `instr_cop_n*`, `instr_cps_n*`, `instr_fll_n*`) each
+land on an exact linear fit, 0.00% residual: `BTD=64`, `COP=112`,
+`CPS=112`, `FLL=68` blocks/rung. Wired into `logic_instructions.weights`.
+
+**OQ-MAHMSO, resolved 2026-08-25.** 2-count real sweep
+(`instr_mah_n*`/`instr_mso_n*`, using the same 2-operand
+`(Axis,MotionInstruction)` syntax already confirmed for MAFR/MASR) lands
+on an exact linear fit: `MAH=60`, `MSO=60` blocks/rung. Wired into
+`logic_instructions.weights`. Contrast with MAM/MAJ/MAS/MRP, which use
+the *same* documented 2-operand syntax but 100% build-failed on real
+capture (`error_count == rung_count`) — see OPEN_QUESTIONS.md
+OQ-MAMFAMILY-BUILDFAIL for the negative result, not resolved.
+
+**OQ-ALIASSIZE, resolved 2026-08-25.** Real captures at 3 scales
+(`aliassize_n00001`/`n00010`/`n01000`) prove the prior "0 bytes, KNOWN"
+assumption wrong. Alias tags (`TagType="Alias"`) carry the same
+per-Tag-table-entry overhead shape as an ordinary tag —
+`flat_base + per_8_chars*floor(namelen/8)` — just with a different
+flat_base (56 vs the ordinary tag_overhead's 84), and no separate raw-data
+term (an Alias has no data space of its own). Exact match across all 3
+name-length buckets (gaps 56/560/63200). Wired as a new
+`alias_overhead` model in `memory_model.yaml`/`constants.py`,
+`report.py`'s alias branch now calls `model.alias_overhead.bytes_for(name)`
+instead of hardcoding 0.
+
+**OQ-AXISDEEP, composite case resolved 2026-08-25 (no code change
+needed).** `axis_composite_udt_def_only`/`_1_instance`/`_10_instance` real
+captures all show small, clean gaps (72/80/156) consistent with ordinary
+UDT-definition-cost + UDT-recursion noise, not a new interaction cost —
+an embedded axis member inside a composite UDT costs exactly what
+standalone-axis-constant + UDT-recursion already predicts. Confirms the
+existing model requires no change for the composite case; this was the
+one piece of OQ-AXISDEEP still open after the 2026-08-23 predefined-
+structure-constants resolution above.
 
 **Small-residual buckets, spot-checked, no action needed.** After all of
 the above, most of the remaining ~469 non-exact rebase-check rows cluster

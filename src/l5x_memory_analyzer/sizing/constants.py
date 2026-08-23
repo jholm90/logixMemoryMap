@@ -113,6 +113,7 @@ class MemoryModel:
     udt: UdtModel
     array: ArrayModel
     tag_overhead: TagOverheadModel
+    alias_overhead: TagOverheadModel
     udt_definition: UdtDefinitionModel
     logic_instructions: LogicInstructionModel
     empty_project_baseline_bytes: int
@@ -172,6 +173,11 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             flat_base=raw["tag_overhead"]["flat_base"],
             per_8_chars=raw["tag_overhead"]["per_8_chars"],
             confidence=raw["tag_overhead"]["confidence"],
+        ),
+        alias_overhead=TagOverheadModel(
+            flat_base=raw["alias_overhead"]["flat_base"],
+            per_8_chars=raw["alias_overhead"]["per_8_chars"],
+            confidence=raw["alias_overhead"]["confidence"],
         ),
         udt_definition=UdtDefinitionModel(
             base=raw["udt_definition"]["base"],

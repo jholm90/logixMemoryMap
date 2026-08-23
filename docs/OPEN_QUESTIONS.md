@@ -135,23 +135,25 @@ generator already covers them, just waiting on the next capture batch.
    numbers per file, do the actual 3-way comparison directly, then decide
    the right place to persist the per-(processor,firmware) baseline table.
 
-3. **OQ-AXISDEEP [test built].** CIP/virtual axis, used everywhere in real
-   programs, 0.01%-tolerance target. `gen_axis_composite.py` covers the
-   `ts_CIPAxis`-shaped composite UDT + AOI-with-InOut-axis call + full
-   combo. Awaiting capture. **Partially resolved 2026-08-23** — the pure
-   predefined-structure constants (AXIS_CIP_DRIVE, AXIS_SERVO, AXIS_VIRTUAL,
-   COORDINATE_SYSTEM, MOTION_GROUP) are now derived and wired in, see
-   RESOLVED_QUESTIONS.md OQ-PREDEFINED. What's still open here specifically
-   is the *composite* case — a UDT/AOI that embeds an axis as a member
-   alongside other stuff, not a standalone axis tag — still awaiting its
-   own capture to confirm no extra interaction cost.
+3. **OQ-AXISDEEP — FULLY RESOLVED 2026-08-25.** CIP/virtual axis, used
+   everywhere in real programs, 0.01%-tolerance target. **Partially
+   resolved 2026-08-23** — the pure predefined-structure constants
+   (AXIS_CIP_DRIVE, AXIS_SERVO, AXIS_VIRTUAL, COORDINATE_SYSTEM,
+   MOTION_GROUP) derived and wired in, see RESOLVED_QUESTIONS.md
+   OQ-PREDEFINED. The remaining composite case (a UDT/AOI that embeds an
+   axis as a member alongside other stuff) is now also resolved — see
+   RESOLVED_QUESTIONS.md OQ-AXISDEEP for the `axis_composite_udt_*` real
+   data. No open piece remains.
 
 4. **OQ-MIXEDUDT [test built].** Realistic messy/nested UDTs (not
-   homogeneous arrays) — `gen_axis_composite.py`'s composite UDT covers
-   this too. Awaiting capture.
+   homogeneous arrays) — `gen_axis_composite.py`'s composite UDT covered
+   the axis-embedding case specifically (now resolved, see OQ-AXISDEEP
+   above), but the broader "realistic messy/nested UDT, arbitrary member
+   mix" question is still open pending its own dedicated capture.
 
-5. **OQ-ALIASSIZE [test built].** Alias tag cost at 1/10/1000 scale.
-   `gen_tagscope_alias.py` group B. Awaiting capture.
+5. **OQ-ALIASSIZE — RESOLVED 2026-08-25.** See RESOLVED_QUESTIONS.md
+   OQ-ALIASSIZE. Real formula `56 + 8*floor(namelen/8)` derived and wired
+   into `memory_model.yaml`/`report.py`.
 
 6. **OQ-CMPCPTLAYOUT [test built, new 2026-08-22, extended same day,
    MAJOR CORRECTION 2026-08-23].** Operator/layout/optimization sweep for
@@ -373,45 +375,77 @@ generator already covers them, just waiting on the next capture batch.
    wrapper, not `CAM_PROFILE` the array structure, which IS resolved) is
    still untested. Awaiting capture.
 
-9. **OQ-XPROGREF [test built].** Real Logix has no direct cross-program
-    tag-addressing syntax in logic (confirmed: searched all 47 real corpus
-    files, no `Program:Tag`-style reference exists anywhere in rung Text).
-    The real mechanism is what you described earlier — a Controller-scoped
-    global with each program declaring its own Local alias to it. Built
-    `gen_xprogref.py`: single-program alias baseline vs two programs each
-    aliasing the same global, same 1000-rung XIC/OTE pattern, comparable
-    directly against the confirmed 20-blocks/rung XIC weight. Needed a new
-    `build_l5x(extra_programs_xml=...)` wrapper hook for a second Program.
-    Awaiting capture.
+9. **OQ-XPROGREF [test built, captured 2026-08-25, NEGATIVE GAP,
+    UNEXPLAINED].** Real Logix has no direct cross-program tag-addressing
+    syntax in logic (confirmed: searched all 47 real corpus files, no
+    `Program:Tag`-style reference exists anywhere in rung Text). The real
+    mechanism is what you described earlier — a Controller-scoped global
+    with each program declaring its own Local alias to it. `gen_xprogref.py`
+    single-program alias baseline vs two-program shared-alias real capture
+    now in hand: `xprogref_singleprog_alias_n01000` shows the expected
+    small +64 gap (consistent with ordinary alias_overhead once wired),
+    but `xprogref_twoprog_shared_alias_n01000` shows a NEGATIVE gap
+    (-3948, engine over-predicts) — the opposite direction from every
+    other open finding here. Not yet root-caused. Hypothesis (unconfirmed):
+    the second program's alias to the same Controller-scoped tag may not
+    carry its own full alias_overhead cost (some sharing/dedup at the
+    tag-table level for the second reference), but this needs a 3rd/4th
+    program data point to confirm before touching code — do not wire
+    anything off a single 2-program sample.
 
-10. **Motion instructions [test built]** (MAM/MAJ/MAH/MAS/MSO/MRP).
-    `gen_motion_instructions.py` — MAH/MSO's 2-operand call syntax is
-    corpus-confirmed, the rest use the same documented signature but
-    aren't independently confirmed for that exact mnemonic. MAPC/MCCP
-    camming skipped, no real call-syntax reference found. **2026-08-23:**
-    MAH/MSO's real per-rung logic weight is now derivable (60 blocks/rung,
-    from `motioninstr_mah_n00010`/`n00100` once AXIS_CIP_DRIVE+
-    MOTION_GROUP+MOTION_INSTRUCTION were known) but NOT yet wired into
-    `logic_instructions.weights` in memory_model.yaml — still needs that
-    one-line addition next session. MAM/MAJ/MAS/MRP remain untested.
+10. **Motion instructions — MAH/MSO RESOLVED, MAM/MAJ/MAS/MRP BUILD
+    FAILED (real capture 2026-08-25).** `gen_motion_instructions.py` —
+    MAH/MSO's real per-rung logic weight (60 blocks/rung each) is now
+    confirmed and wired, see RESOLVED_QUESTIONS.md OQ-MAHMSO. MAM/MAJ/MAS/
+    MRP were captured using the *same* documented 2-operand
+    `(Axis,MotionInstruction)` syntax already confirmed working for
+    MAH/MSO/MAFR/MASR — real result: 100% build failure, every rung in
+    every `motioninstr_mam*`/`motioninstr_maj*`/`motioninstr_mas*`/
+    `motioninstr_mrp*` file errored (`error_count == rung_count`). This is
+    a genuine negative result, not "untested" — the documented syntax is
+    wrong or incomplete for these 4 specific mnemonics and needs a real
+    Studio 5000-verified reference sample before another generator
+    attempt (no guessing syntax per CLAUDE.md). MAPC/MCCP camming still
+    blocked separately on the unmodeled CAM structure, see
+    OQ-PREDEFINED item 8 below.
 
-11. **Per-Task overhead [test built].** `gen_task_overhead.py` — 2nd/3rd
-    Task, isolating pure Task/Program scaffolding cost from logic content.
-    Also the only way to disambiguate whether the logic-sizing engine's
-    `fixed_base_per_routine` is really per-routine, per-program, or
-    per-task (every calibration sample had exactly one of each). Awaiting
-    capture.
+11. **Per-Task overhead [captured 2026-08-25, real finding, NOT wired —
+    needs parser architecture work first].** `gen_task_overhead.py` —
+    2nd/3rd Task, isolating pure Task/Program scaffolding cost from logic
+    content. `taskoverhead_n02tasks`/`n03tasks` real data gives an exact
+    linear marginal cost of **-1472 bytes per extra Task** (engine
+    currently over-predicts by that much per additional Task) relative to
+    the engine's current `fixed_base_per_routine` assumption. Exact
+    linear across the 2 available points, but wiring this correctly
+    requires the parser to distinguish per-Task, per-Program, and
+    per-routine-within-a-program overhead as three separate quantities —
+    that distinction doesn't exist in the current model (every
+    calibration sample to date had exactly one Task/one Program/one
+    routine, so the three were indistinguishable and got collapsed into
+    one `fixed_base_per_routine` constant). Do not patch this as a
+    per-routine correction; it needs its own model field and a parser
+    change to count Tasks/Programs/Routines separately, which is a real
+    (if small) architecture task, not a one-line constant fix. Left open
+    deliberately rather than rush-wired.
 
-12. **Indirect addressing overhead [test built, extended 2026-08-22].**
-    `gen_indirect_addressing.py` — direct vs. tag-driven array index, plus
-    (James: "Does tag[idx+1] take up the same space as tag[Idx]?") a third
-    variant with an arithmetic offset inside the index. Same
-    instruction/count throughout. **2026-08-23 rebase-check note:**
-    `indirect_direct_index_n01000` (1000 rungs) now shows only a 4-block
-    gap against the current engine, i.e. already effectively explained by
-    the existing indexed-array-tag handling — no separate direct-vs-
-    indirect cost found. The arithmetic-offset (`tag[idx+1]`) variant is
-    still untested; leaving this open for that specifically.
+12. **Indirect addressing overhead [captured 2026-08-25, real findings,
+    NOT yet decomposed into weights].** `gen_indirect_addressing.py` —
+    direct vs. tag-driven array index, plus (James: "Does tag[idx+1] take
+    up the same space as tag[Idx]?") a third variant with an arithmetic
+    offset inside the index. **2026-08-23 rebase-check note:**
+    `indirect_direct_index_n01000` (1000 rungs) showed only a 4-block gap
+    against the current engine — direct indexing needs no separate cost.
+    **2026-08-25, tag-driven variants now captured:**
+    `indirect_tag_index_n01000` shows ~84 blocks/rung above the direct-
+    index baseline, and `indirect_tag_offset_index_n01000` (the
+    arithmetic-offset `tag[idx+1]` variant) shows ~108 blocks/rung above
+    baseline — so an arithmetic offset inside a tag-driven index costs
+    more than a bare tag-driven index, as James's question anticipated.
+    Neither number is yet decomposed into a clean weight (both are a
+    single-instruction, single-count data point per variant) — needs at
+    least one more count point per variant (e.g. n=10) before wiring into
+    `logic_instructions.weights`, to confirm linearity and rule out a
+    fixed one-time cost being misread as a per-rung weight.
 
 13. **OQ-STRINGTAGOVERHEAD (new, 2026-08-24).** `tag_overhead`'s formula
     (`84 + 8×floor(name_len/8)`) was confirmed type-independent using
@@ -442,3 +476,84 @@ generator already covers them, just waiting on the next capture batch.
     existing `8×floor(len/8)` name-length term shape still holds for
     STRING with only the flat base needing a correction, or something
     structurally different is going on). Awaiting capture.
+
+14. **OQ-OPERANDTYPE (new, MAJOR, found 2026-08-25 mining already-captured
+    but never-analyzed `typesweep_*` data — NOT wired, needs parser
+    architecture work).** The entire `logic_instructions.weights` table
+    assumes a per-instruction weight is independent of the data type of
+    its operands (every existing confirmed weight was fit off DINT-operand
+    sweeps). Real data proves this false for a wide instruction set. 69
+    `typesweep_<instr>_<type>_n01000` real captures (1000 rungs each,
+    `error_count=0` throughout) across ADD/SUB/MUL/DIV/MOD/EQU/GEQ/GRT/
+    LEQ/LES/NEQ/MOV/LIM/CPT × DINT/LINT/SINT/INT/REAL/STRING give a
+    completely clean, exactly-linear-per-1000-rungs picture:
+    - **LINT behaves identically to DINT in every case** (exact byte-for-
+      byte match across all 14 instructions) — no separate LINT modeling
+      needed, can treat as DINT going forward.
+    - **REAL** costs the same as DINT for DIV/MOD/MUL/EQU/NEQ (0 delta),
+      but *more* for ADD/SUB (+16/rung), GEQ/GRT/LEQ/LES (+16/rung),
+      MOV (+24/rung), CPT (+56/rung) — and *less* for LIM (-8/rung,
+      REAL LIM is actually cheaper than DINT LIM).
+    - **SINT** costs substantially more than DINT for every instruction
+      tested: +132/rung for the arithmetic group (ADD/SUB/DIV/MOD/MUL,
+      identical delta across all 5), +88/rung for the comparison group
+      (EQU/GEQ/GRT/LEQ/LES/NEQ, identical delta across all 6), +92/rung
+      for MOV, +128/rung for LIM.
+    - **INT** costs even more than SINT (counter-intuitive — INT is the
+      *larger* of the two, 2 bytes vs SINT's 1): +156/rung arithmetic,
+      +112/rung comparison, +104/rung MOV, +164/rung LIM.
+    - **STRING** (only EQU/NEQ tested, the only two that accept it):
+      +52/rung for both.
+    Every delta above is a clean, exact multiple of the 1000-rung count
+    (e.g. ADD/SINT: 193592-61592=132000, exactly 132.000/rung, not
+    131.7ish) — this is not a fitted approximation, these are exact
+    per-instruction-type deltas sitting in the manifest right now,
+    completely unmined until this pass. Working hypothesis (unconfirmed,
+    needs corpus/Rockwell-doc verification before treating as fact): non-
+    DINT/LINT/REAL operands in these instructions trigger an implicit
+    type-conversion/promotion step at compile time that the L5X text
+    doesn't show, and that promotion is itself sized — consistent with
+    controls-engineer field knowledge that Logix's execution engine is
+    fundamentally DINT/REAL-native and other integer types are a display/
+    entry convenience over the same underlying math.
+    **Why this is NOT wired yet, deliberately:** every currently-CONFIRMED
+    instruction weight in the coverage table implicitly assumes DINT
+    operands, because that's what nearly every real sweep used. This
+    finding means those weights are only correct when a tag actually IS
+    DINT/LINT/REAL — a real program's SINT/INT-typed math tags (common:
+    legacy scaled values, small counters) will be systematically
+    UNDER-predicted by as much as 150+ blocks/rung today. Wiring this
+    correctly requires the logic parser to resolve each rung's operand
+    tag(s) back to their declared DataType (it currently only counts
+    instruction occurrences, it doesn't cross-reference operand tags
+    against the tag table) — a real parser capability that doesn't exist
+    yet, not a one-line constant change. This is very likely the single
+    largest unmodeled source of logic-size error in the current engine;
+    flagged here as the top priority for the next architecture pass on
+    the logic sizing engine, ahead of any more instruction-weight capture
+    work on the remaining CAPTURED-preliminary instructions.
+
+15. **OQ-JSRPARAMCOST (new, found 2026-08-25 mining already-captured data,
+    NOT wired — needs parser architecture work).** JSR is currently
+    CONFIRMED at a flat 72 blocks/rung, but that weight was fit against a
+    JSR call with a small/fixed parameter count. `jsr_paramcount_n01/n05/
+    n10_r01000` (1000-rung JSR calls passing 1/5/10 parameters each) show
+    a real, additional, roughly-linear-in-param-count cost NOT explained
+    by the flat 72/rung weight or by the separate tag-sizing pass (which
+    already correctly sizes the extra parameter tags themselves): n01 gap
+    +20044, n05 gap +104044, n10 gap +204044 over the flat-weight
+    baseline. Per-parameter marginal cost from n01→n05 (4 extra params):
+    (104044-20044)/4/1000 ≈ 21/param/rung; from n05→n10 (5 extra params):
+    (204044-104044)/5/1000 ≈ 20/param/rung — close to a consistent ~20-21
+    blocks/rung/parameter, though not yet confirmed clean-linear the way
+    OQ-OPERANDTYPE's deltas are (only 3 count points, not evenly spaced,
+    and the n01 intercept doesn't cleanly back out a 0-param baseline from
+    just these three). `jsr_mixedio_5in_2out_r01000` (real gap +143992,
+    i.e. ~144/rung above the flat weight for 7 total params) is roughly
+    consistent with the ~20/param estimate (7×20=140, close). **Why not
+    wired:** same root cause as OQ-OPERANDTYPE — the logic parser
+    currently counts JSR occurrences, it doesn't parse the JSR call's own
+    parameter list length out of the rung Text. Needs that parsing
+    capability plus at least one more count point (e.g. n=2, n=3) to
+    firm up the per-param constant before treating ~20/param as confirmed
+    rather than approximate.
