@@ -58,7 +58,14 @@ def group_udtarrayalign() -> None:
 def group_arraypack() -> None:
     members = [MemberSpec("A", "SINT"), MemberSpec("B", "SINT"), MemberSpec("C", "SINT")]  # 3 bytes, not 4-aligned
     datatype = udt_xml("Odd3B", members)
-    for n in [1, 10, 100]:
+    # n=1000/5000 added 2026-08-24 (Phase 3 closeout, James: "generate all
+    # files to make this happen") -- the existing 1/10/100 points show a
+    # gap that grows slightly with count (13305/13310/13400, not a clean
+    # linear fit, see docs/OPEN_QUESTIONS.md OQ-ARRAYPACK), still genuinely
+    # open. Two more, larger count points give more resolution on whether
+    # that residual keeps growing (real per-element rounding) or flattens
+    # out (was some other small n=1-100-specific effect).
+    for n in [1, 10, 100, 1000, 5000]:
         tag = tag_xml("OddArr", "Odd3B", dimensions=(n,), udt_members=members)
         l5x = build_l5x(target_name=f"OddArrN{n}", tags_xml=tag, extra_datatypes_xml=datatype)
         _write(l5x, f"arraypack_odd3b_n{n:05d}",
@@ -69,7 +76,7 @@ def main() -> None:
     group_boolarray()
     group_udtarrayalign()
     group_arraypack()
-    print("\nDone. 12 files.")
+    print("\nDone. 14 files.")
 
 
 if __name__ == "__main__":

@@ -5,7 +5,51 @@ Every unresolved question gets an ID (OQ-xxx). Resolved items move to
 Items marked **[test built]** don't need a decision from James — a
 generator already covers them, just waiting on the next capture batch.
 
-1. **OQ-BASELINE-PROCFW (new, 2026-08-23, James).** `empty_project_baseline`
+1. **OQ-INSTRFIRSTPASS [test built, 2026-08-24].** James: "Everything that
+   has more than one usage needs to be tested... one copy for all of the
+   outstanding instructions, one per file properly compiled." 36 new
+   single-rung files, one per instruction, `gen_instruction_firstpass.py`
+   — full list and real-corpus citation per instruction in that
+   generator's own docstring. All 36 lint-clean and valid XML. Two new
+   completely-unmodeled predefined structures discovered building this:
+   - **MESSAGE (used by MSG).** Real shape is a single self-closed
+     `<MessageParameters>` element (much simpler than TIMER/COUNTER),
+     copied verbatim from a real CIP Generic get-attribute message
+     (`BaillieLeitchField_Edger_20260812_r00.L5X`, `MESSAGE_Alarms`) —
+     `builders.py`'s new `message_tag_xml`. Byte size completely unknown,
+     `instrfirst_msg.L5X` uses `write_sample_unmodeled`.
+   - **CAM (used by MCCP/MAPC) — NOT the same as CAM_PROFILE.** Real shape
+     fully visible (unlike CAM_PROFILE's hidden fields): array of
+     `{Master:REAL, Slave:REAL, SegmentType:DINT}` structures, confirmed
+     against `samples/local/L5X_Samples/RobbinsGrn_2026_05_13r00.L5X`
+     (`NewCI2Cam`) — `builders.py`'s new `cam_tag_xml`. Byte size
+     completely unknown, `instrfirst_mccp.L5X`/`instrfirst_mapc.L5X` use
+     `write_sample_unmodeled`.
+
+   **Deliberately skipped, not guessed** (see the generator's own
+   docstring for full reasoning): **SCP** (2 real occurrences, one real
+   example shows 3 args but official Rockwell docs describe 6 — unresolved
+   without a second real example), **FBC** (8 occurrences, 0 real
+   examples, 6-operand signature too complex to risk), **PID** (3
+   occurrences, 0 real examples, needs a whole dedicated structure tag).
+   These 3 remain genuinely untested — flag if a real reference sample
+   ever turns up for any of them.
+
+   **NEAR_VERBATIM entries needing extra scrutiny before trusting their
+   build result:** CROUT and MAPC were reproduced as close to a literal
+   real corpus call as possible (only tag names substituted) rather than
+   independently understood operand-by-operand — see the generator
+   docstring's CORPUS_CONFIRMED/INFERRED/NEAR_VERBATIM tier definitions.
+   If either fails to Build, that's real information (means even the
+   literal real shape doesn't transplant cleanly with substituted tag
+   names), not just "try again."
+
+   Once these 36 build clean and capture real Capacity data, the SECOND
+   pass (James: "once we have all valid data for all instructions then we
+   can do the 5/10 usage per file for each") is the natural follow-up —
+   not started yet, intentionally, per James's explicit sequencing.
+
+2. **OQ-BASELINE-PROCFW (new, 2026-08-23, James).** `empty_project_baseline`
    (13,296, see RESOLVED_QUESTIONS.md OQ-BASELINE) is **not a universal AB
    constant** — James: "Keep in mind your empty project baseline is not a
    constant and will change based on processor and firmware. You need to
@@ -27,7 +71,7 @@ generator already covers them, just waiting on the next capture batch.
    projects; flag this prominently in the UI once the UI surfaces this
    number, not just in docs.
 
-2. **OQ-AXISDEEP [test built].** CIP/virtual axis, used everywhere in real
+3. **OQ-AXISDEEP [test built].** CIP/virtual axis, used everywhere in real
    programs, 0.01%-tolerance target. `gen_axis_composite.py` covers the
    `ts_CIPAxis`-shaped composite UDT + AOI-with-InOut-axis call + full
    combo. Awaiting capture. **Partially resolved 2026-08-23** — the pure
@@ -38,19 +82,19 @@ generator already covers them, just waiting on the next capture batch.
    alongside other stuff, not a standalone axis tag — still awaiting its
    own capture to confirm no extra interaction cost.
 
-3. **OQ-MIXEDUDT [test built].** Realistic messy/nested UDTs (not
+4. **OQ-MIXEDUDT [test built].** Realistic messy/nested UDTs (not
    homogeneous arrays) — `gen_axis_composite.py`'s composite UDT covers
    this too. Awaiting capture.
 
-4. **OQ-ARRAYPACK [test built].** Does a UDT's total size round to a 32-bit
+5. **OQ-ARRAYPACK [test built].** Does a UDT's total size round to a 32-bit
    boundary? `gen_arraypack_boolarray.py` group C. Awaiting capture. See
    also OQ-UDTARRAYALIGN below — the odd-byte-count case below is this
    same question, partially answered.
 
-5. **OQ-ALIASSIZE [test built].** Alias tag cost at 1/10/1000 scale.
+6. **OQ-ALIASSIZE [test built].** Alias tag cost at 1/10/1000 scale.
    `gen_tagscope_alias.py` group B. Awaiting capture.
 
-6. **OQ-CMPCPTLAYOUT [test built, new 2026-08-22, extended same day,
+7. **OQ-CMPCPTLAYOUT [test built, new 2026-08-22, extended same day,
    MAJOR CORRECTION 2026-08-23].** Operator/layout/optimization sweep for
    CPT and CMP (`tag**tag` vs `tag*tag` vs `tag-tag`, a 6-operand chain,
    same-tag-vs-distinct-tag and redundant-literal dedup probes, compound
@@ -94,7 +138,7 @@ generator already covers them, just waiting on the next capture batch.
    better has replaced it and leaving it 0 would be worse. Flagged loudly
    here so this doesn't quietly stay believed "exact."
 
-7. **OQ-AOIDEF (new, 2026-08-23, MAJOR — real cost currently modeled as
+8. **OQ-AOIDEF (new, 2026-08-23, MAJOR — real cost currently modeled as
    zero; DATA QUALITY WARNING added same day, see below before trusting
    any number in this entry).**
 
@@ -214,14 +258,14 @@ generator already covers them, just waiting on the next capture batch.
    — base + per-param + per-local + name-length + bool-adjacency terms,
    each independently confirmed the way the UDT formula's terms were.
 
-8. **OQ-PREDEFINED, remaining piece [test built].** MOTION_INSTRUCTION,
+9. **OQ-PREDEFINED, remaining piece [test built].** MOTION_INSTRUCTION,
    AXIS_CIP_DRIVE/AXIS_SERVO/AXIS_VIRTUAL/COORDINATE_SYSTEM, and
    MOTION_GROUP are now derived and wired in (see RESOLVED_QUESTIONS.md
    OQ-PREDEFINED). What's still open: `CAM` (the drive/cam-instruction
    wrapper, not `CAM_PROFILE` the array structure, which IS resolved) is
    still untested. Awaiting capture.
 
-9. **OQ-XPROGREF [test built].** Real Logix has no direct cross-program
+10. **OQ-XPROGREF [test built].** Real Logix has no direct cross-program
     tag-addressing syntax in logic (confirmed: searched all 47 real corpus
     files, no `Program:Tag`-style reference exists anywhere in rung Text).
     The real mechanism is what you described earlier — a Controller-scoped
@@ -232,7 +276,7 @@ generator already covers them, just waiting on the next capture batch.
     `build_l5x(extra_programs_xml=...)` wrapper hook for a second Program.
     Awaiting capture.
 
-10. **Motion instructions [test built]** (MAM/MAJ/MAH/MAS/MSO/MRP).
+11. **Motion instructions [test built]** (MAM/MAJ/MAH/MAS/MSO/MRP).
     `gen_motion_instructions.py` — MAH/MSO's 2-operand call syntax is
     corpus-confirmed, the rest use the same documented signature but
     aren't independently confirmed for that exact mnemonic. MAPC/MCCP
@@ -243,14 +287,14 @@ generator already covers them, just waiting on the next capture batch.
     `logic_instructions.weights` in memory_model.yaml — still needs that
     one-line addition next session. MAM/MAJ/MAS/MRP remain untested.
 
-11. **Per-Task overhead [test built].** `gen_task_overhead.py` — 2nd/3rd
+12. **Per-Task overhead [test built].** `gen_task_overhead.py` — 2nd/3rd
     Task, isolating pure Task/Program scaffolding cost from logic content.
     Also the only way to disambiguate whether the logic-sizing engine's
     `fixed_base_per_routine` is really per-routine, per-program, or
     per-task (every calibration sample had exactly one of each). Awaiting
     capture.
 
-12. **Indirect addressing overhead [test built, extended 2026-08-22].**
+13. **Indirect addressing overhead [test built, extended 2026-08-22].**
     `gen_indirect_addressing.py` — direct vs. tag-driven array index, plus
     (James: "Does tag[idx+1] take up the same space as tag[Idx]?") a third
     variant with an arithmetic offset inside the index. Same

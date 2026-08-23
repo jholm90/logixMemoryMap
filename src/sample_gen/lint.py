@@ -61,6 +61,14 @@ _KNOWN_NATIVE_INSTRUCTIONS = {
     # documentation though not independently corpus-confirmed for that
     # exact mnemonic (see that generator's own docstring caveat).
     "MAM", "MAJ", "MAH", "MAS", "MSO", "MRP", "MAPC", "MCCP", "MAFR", "MASR",
+    # First-pass instruction coverage sweep (gen_instruction_firstpass.py,
+    # 2026-08-24) -- every real corpus-confirmed or documented-family-
+    # inferred mnemonic added that batch. See that generator's own
+    # docstring for the CORPUS_CONFIRMED/INFERRED/NEAR_VERBATIM citation
+    # per instruction.
+    "NOT", "NEG", "UID", "UIE", "MCR", "TND", "ATN", "DEG", "RAD", "TAN",
+    "SWPB", "XOR", "FIND", "INSERT", "BSL", "BSR", "FFL", "FFU", "SRT",
+    "AVE", "FAL", "FSC", "MDW", "MASD", "MGSD", "MGSR", "CROUT",
 }
 
 _INSTRUCTION_CALL = re.compile(r"\b([A-Z][A-Z0-9_]*)\(")

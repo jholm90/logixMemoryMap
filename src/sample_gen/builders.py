@@ -545,6 +545,88 @@ def counter_tag_xml(name: str, preset: int = 100) -> str:
     )
 
 
+def control_tag_xml(name: str, length: int = 10, position: int = 9) -> str:
+    """CONTROL tag -- real shape confirmed 2026-08-24
+    (samples/local/BAI10048_TrimmerTally_20250704.L5X, srtControl): same
+    dual-format shape as TIMER/COUNTER, 10 real members (LEN/POS DINT,
+    EN/EU/DN/EM/ER/UL/IN/FD BOOL) -- matches the already-confirmed 12-byte
+    CONTROL predefined-structure constant. Needed for the file/array
+    instructions (FFL/FFU/BSL/BSR/SRT/AVE/FAL/FSC) that all take a CONTROL
+    tag as one of their operands, per real corpus examples."""
+    return (
+        f'      <Tag Name="{name}" TagType="Base" DataType="CONTROL" Constant="false" ExternalAccess="Read/Write">\n'
+        f'        <Data Format="L5K"><![CDATA[[-1610612736,{length},{position}]]]></Data>\n'
+        f'        <Data Format="Decorated"><Structure DataType="CONTROL">'
+        f'<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="{length}"/>'
+        f'<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="{position}"/>'
+        f'<DataValueMember Name="EN" DataType="BOOL" Value="1"/>'
+        f'<DataValueMember Name="EU" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="DN" DataType="BOOL" Value="1"/>'
+        f'<DataValueMember Name="EM" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="ER" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="UL" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="IN" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="FD" DataType="BOOL" Value="0"/>'
+        f'</Structure></Data>\n'
+        f"      </Tag>"
+    )
+
+
+def message_tag_xml(name: str, local_element: str, destination_tag: str) -> str:
+    """MESSAGE tag -- real shape confirmed 2026-08-24
+    (samples/local/BaillieLeitchField_Edger_20260812_r00.L5X,
+    MESSAGE_Alarms): a single self-closed <MessageParameters> element, no
+    Structure/DataValueMember body at all (much simpler than TIMER/COUNTER/
+    CONTROL) -- a "CIP Generic" get-attribute-list message, real attribute
+    set copied verbatim except LocalElement/DestinationTag, which point at
+    plain tags this generator declares itself rather than the real file's
+    own array tags. MESSAGE has no predefined_structures entry in
+    memory_model.yaml (completely unmodeled byte size) -- callers must use
+    write_sample_unmodeled, not write_sample, for any file containing this."""
+    return (
+        f'      <Tag Name="{name}" TagType="Base" DataType="MESSAGE" ExternalAccess="Read/Write">\n'
+        f'        <Data Format="Message">\n'
+        f'          <MessageParameters MessageType="CIP Generic" RequestedLength="4" ConnectedFlag="2" '
+        f'ConnectionPath="THIS" CommTypeCode="0" ServiceCode="16#0003" ObjectType="16#00b1" '
+        f'TargetObject="2" AttributeNumber="16#0000" LocalIndex="0" LocalElement="{local_element}" '
+        f'DestinationTag="{destination_tag}" LargePacketUsage="false"/>\n'
+        f'        </Data>\n'
+        f"      </Tag>"
+    )
+
+
+# Real CAM element rows -- distinct from CAM_PROFILE (see
+# _CAM_PROFILE_L5K_ROWS above). Confirmed 2026-08-24
+# (samples/local/L5X_Samples/RobbinsGrn_2026_05_13r00.L5X, NewCI2Cam): a
+# CAM array tag's Decorated shape is fully visible (no hidden fields the
+# way CAM_PROFILE has) -- just Master(REAL)/Slave(REAL)/SegmentType(DINT)
+# per element, matching every L5K row exactly. Genuinely unmodeled in
+# memory_model.yaml still (no real Capacity data captured yet) -- see
+# docs/OPEN_QUESTIONS.md for the new open question this creates.
+def cam_tag_xml(name: str, count: int) -> str:
+    l5k_rows = ["[0.0,0.0,1]"] + ["[200.0,100.0,0]"] * (count - 1) if count else []
+    l5k_body = "[" + ",".join(l5k_rows) + "]"
+    elements = []
+    for i in range(count):
+        master, slave, seg = ("0.0", "0.0", "1") if i == 0 else ("200.0", "100.0", "0")
+        elements.append(
+            f'<Element Index="[{i}]"><Structure DataType="CAM">'
+            f'<DataValueMember Name="Master" DataType="REAL" Radix="Float" Value="{master}"/>'
+            f'<DataValueMember Name="Slave" DataType="REAL" Radix="Float" Value="{slave}"/>'
+            f'<DataValueMember Name="SegmentType" DataType="DINT" Radix="Decimal" Value="{seg}"/>'
+            f"</Structure></Element>"
+        )
+    return (
+        f'      <Tag Name="{name}" TagType="Base" DataType="CAM" Dimensions="{count}" '
+        f'Constant="false" ExternalAccess="Read/Write">\n'
+        f'        <Data Format="L5K"><![CDATA[{l5k_body}]]></Data>\n'
+        f'        <Data Format="Decorated"><Array DataType="CAM" Dimensions="{count}">'
+        + "".join(elements) +
+        f"</Array></Data>\n"
+        f"      </Tag>"
+    )
+
+
 def program_tag_xml(name: str, data_type: str, usage: str | None = None) -> str:
     """Program-scoped (Program/Tags, not Controller/Tags) atomic tag. Real
     shape confirmed 2026-08-22 (samples/local/SJ_Gormley_20251112_r02.L5X,

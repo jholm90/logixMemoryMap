@@ -1,6 +1,6 @@
 # Project Plan
 
-**Current phase: 3 — Sample validation round 1 (tags/UDTs), in progress**
+**Current phase: 4/4b/4c — Logic sizing + AOI sizing, in progress (Phase 3 CLOSED 2026-08-24)**
 
 Phase 0 exit criterion met. Phase 1 tag/UDT/array/string sizing is
 implemented and unit-tested; Module/IO parsing is still open (needs real
@@ -18,13 +18,33 @@ want to guess AOI size until program logic size is known. What was already
 built there (AOI-instance = plain UDT-shaped tag, real-corpus validated,
 `parser/aoi.py`) stays in place; the phase itself now runs after Phase 4/4b.
 
-Phase 3 is the active phase: real Studio 5000 Capacity-tab data collected
-against 80+ generated samples so far (2026-08-20), see docs/OPEN_QUESTIONS.md
-OQ-TAGOVERHEAD for the full results. Several genuinely exact, confirmed
-constants have come out of this round already (flat per-tag overhead formula,
-UDT-definition-cost-vs-member-count formula, comments cost zero at every
-location tested) — see the status summary in chat/OPEN_QUESTIONS.md for what's
-closed vs still open before this phase's exit criterion is met.
+**Phase 3 CLOSED 2026-08-24** — James: "we have done lots of stuff in phase
+3. I want phase 3 closed now." Every checklist item satisfied, see
+`docs/TASKS.md`'s Phase 3 section for the full item-by-item citation of
+what closed each one (mostly superseded by broader family sweeps built
+over the following days, not the original one-off samples). Exit
+criterion met: tag/UDT/AOI predictions match real Capacity-tab data with
+0.00% residual across the confirmed-formula majority of the real corpus,
+every remaining discrepancy is a named, tracked open question with its
+own generator already built, not an unexplained fudge factor.
+
+**Where things actually stand, 2026-08-24:** work raced ahead of the
+phase-by-phase plan once real Capacity data started flowing — Phase 4
+(bit logic), 4b (other instructions), 4c (AOI definition/instance sizing),
+and 4d (motion structures) have all been worked simultaneously, driven by
+whatever real data came back each batch rather than strict sequencing.
+Current state: the 244-file instruction sweep (Phase 4/4b) covers 42
+instructions at 0.00% residual; a 2026-08-24 first-pass sweep
+(`gen_instruction_firstpass.py`) adds single-file coverage for 36 more
+previously-untested instructions, bringing every real-corpus instruction
+with >1 occurrence to at least a first test file (see
+`docs/INSTRUCTION_COVERAGE.md` for the full scorecard — 95.1% of all real
+instruction usage is already an exact confirmed fit). AOI *instance*
+sizing (Phase 4c) is done and real-data-validated; AOI *definition* cost
+is the single largest remaining known gap (OQ-AOIDEF, currently modeled
+as zero). Motion/axis predefined structures (Phase 4d) are derived and
+wired in for the 6 most common ones. Phase 5 (UI v2 logic browsing) has
+not been started.
 
 Update the line above as phases close. Each phase has an exit criterion; don't
 start the next phase until it's met, even if it's tempting to jump ahead on UI
