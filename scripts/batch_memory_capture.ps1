@@ -114,12 +114,27 @@ if (-not (Test-Path $ManifestPath)) {
 }
 $manifest = @(Import-Csv $ManifestPath)
 $alreadyLogged = @{}
-$manifest | Where-Object { $_.actual_bytes } | ForEach-Object { $alreadyLogged[$_.l5x_path] = $true }
+# James, 2026-08-25: "any test that fails for window title mismatch should
+# be rerun... make sure you can rerun those tests next time without me
+# prompting you." A row flagged WINDOW TITLE MISMATCH in notes still has
+# actual_bytes populated (with data that may belong to a different file --
+# see the cross-check below), so without this exclusion it would silently
+# count as "already logged" forever. Excluding it here means it's treated
+# as never-captured and gets picked back up automatically the very next
+# time this script runs against the same $ConvertLog -- no ACD rebuild
+# needed, since convert_log.csv already has status=ok for it (only the
+# capture READ was suspect, not the conversion).
+$manifest | Where-Object { $_.actual_bytes -and ($_.notes -notmatch 'WINDOW TITLE MISMATCH') } |
+    ForEach-Object { $alreadyLogged[$_.l5x_path] = $true }
+$mismatchFlagged = @{}
+$manifest | Where-Object { $_.notes -match 'WINDOW TITLE MISMATCH' } |
+    ForEach-Object { $mismatchFlagged[$_.l5x_path] = $true }
 
 $rows = Import-Csv $ConvertLog | Where-Object { $_.status -eq "ok" }
 $remaining = $rows | Where-Object { -not $alreadyLogged.ContainsKey((Get-RelPath $_.l5x_path)) }
 if ($Limit -gt 0) { $remaining = $remaining | Select-Object -First $Limit }
-Write-Host "$($rows.Count) converted sample(s) in log; $($alreadyLogged.Count) already logged; $($remaining.Count) remaining this pass."
+$retryCount = @($remaining | Where-Object { $mismatchFlagged.ContainsKey((Get-RelPath $_.l5x_path)) }).Count
+Write-Host "$($rows.Count) converted sample(s) in log; $($alreadyLogged.Count) already logged; $($remaining.Count) remaining this pass ($retryCount of those are window-title-mismatch retries)."
 Write-Host "Ctrl+C at any time -- already-logged rows are skipped on the next run."
 Write-Host "Make sure your AHK script is already running and waiting before this starts."
 

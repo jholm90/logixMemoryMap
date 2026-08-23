@@ -70,6 +70,36 @@ running memory) is still worth doing periodically to confirm compiled/
 offline-shown memory actually matches what the controller reports once
 running — not proven identical yet, just assumed for now.
 
+## Window-title-mismatch retries are automatic (James, 2026-08-25)
+
+"Any test that fails for window title mismatch should be rerun... make sure
+you can rerun those tests next time without me prompting you." The AHK/
+PowerShell capture loop cross-checks the Logix Designer window title against
+the file it just asked to be opened (`batch_memory_capture.ps1`) — a
+mismatch means the automation may have read stale data (a real confirmed
+case: a request for one file came back with the previous file's title still
+showing, the switch silently hadn't happened yet). That row's `actual_bytes`
+is untrustworthy and gets flagged `WINDOW TITLE MISMATCH` in `notes`, but
+until 2026-08-25 the script's own "already logged" check only looked at
+whether `actual_bytes` was non-empty — a mismatched row still has a (wrong)
+value there, so it silently counted as done forever and never got retried
+without someone manually blanking the row.
+
+**Fixed at the source, not by hand-editing rows each time:**
+`batch_memory_capture.ps1`'s already-logged filter now also excludes any row
+whose `notes` still says `WINDOW TITLE MISMATCH` — that row is treated as
+never-captured and gets picked back up automatically the very next time the
+script runs against the same `convert_log.csv`. No ACD rebuild needed:
+`convert_log.csv` already has `status=ok` for it (the L5X→ACD conversion
+succeeded; only the *capture read* was suspect), so a retry just re-opens
+the existing ACD and re-reads the Capacity tab. A successful retry naturally
+clears the flag (the row's `notes` gets overwritten with the fresh
+cross-check result), so this self-heals with no manual bookkeeping on
+either side. On this project's side: any manifest reconciliation (merging
+in a pushed capture batch) also blanks the capture columns for rows still
+carrying that flag rather than trusting the stale `actual_bytes`, so a
+retry is never skipped just because the row "looked" logged.
+
 ## Manifest columns (`samples/manifest.csv`)
 
 `sample_id, description, category (tag|udt|aoi|module|logic_bit|logic_other), l5x_path, predicted_bytes, actual_bytes, delta, delta_pct, controller_model, firmware_rev, date_tested, notes`

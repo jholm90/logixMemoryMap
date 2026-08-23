@@ -36,7 +36,15 @@ confidence levels exist here and the code/docs must never blur them:
 ## Every time James says a batch of tests has been pushed (no exceptions)
 Run this exact sequence, in order, every single time — do not skip steps, do not
 wait to be re-asked:
-1. Pull/read the new results into samples/manifest.csv.
+1. Pull/read the new results into samples/manifest.csv. Reconcile via
+   row-level CSV merge keyed on sample_id (never a blind git merge — our
+   predicted_bytes may have moved since the capture run started; recompute
+   delta/delta_pct against our current value, don't trust a stale one). Any
+   row flagged WINDOW TITLE MISMATCH in notes gets its capture columns
+   cleared, not trusted — see docs/TESTING_PLAN.md's "Window-title-mismatch
+   retries are automatic" section: batch_memory_capture.ps1 now retries
+   these on its own next run (fixed 2026-08-25, James), so don't hand-flag
+   individual rows for James to rerun manually.
 2. Recalculate/re-derive sizing formulas from the new data; wire in anything
    that's now confirmed exact.
 3. Review docs/TASKS.md and update checkboxes.
