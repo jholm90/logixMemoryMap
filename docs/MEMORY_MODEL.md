@@ -239,10 +239,11 @@ fix; real delta was 24,816 — the corrected engine now matches exactly, see
 instruction types sharing a rung is exactly what `gen_logic_random_mix.py`
 tests, not yet confirmed by real data at that composed level.
 
-5 instructions (CPS, COP, FLL, SIZE, BTD) plus 2 single data points (EQU
-n=100, CMP n=10) are excluded below — flagged for re-capture, see
-`docs/OPEN_QUESTIONS.md`/`scripts/reset_logic_sweep_glitches.ps1`. Do not
-backfill numbers for those from other sources; wait for the re-capture.
+5 instructions (CPS, COP, FLL, SIZE, BTD) are excluded below — flagged for
+re-capture, see `docs/OPEN_QUESTIONS.md`. The EQU n=100/CMP n=10 garbled-
+value glitch this used to also flag is long since fixed and re-captured.
+Do not backfill numbers for the still-excluded 5 from other sources; wait
+for the re-capture.
 
 **Root cause of the CPS/COP/FLL/SIZE/BTD glitch, found 2026-08-22 (James
 spot-checked and caught it):** these instructions take an array-typed

@@ -59,9 +59,11 @@ because it's more fun than writing another sizing table.
    found while chasing the SDK BuildAsync dead-end: his v38 Designer install
    has different instruction names than the v35.5 install the whole logic
    sizing sweep was fit against). The 41-instruction weight table in
-   `docs/MEMORY_MODEL.md` and `scripts/l5x_validator`'s SDK tooling both
-   currently assume one Designer/firmware version's behavior; real fleets
-   run mixed versions. Not in scope to chase today — revisit once the
+   `docs/MEMORY_MODEL.md` currently assumes one Designer/firmware
+   version's behavior (the SDK BuildAsync/`l5x_validator` exploration that
+   surfaced this was itself abandoned -- BuildAsync needs Designer v37+,
+   James is on v35.5 -- superseded by the AHK build/verify automation);
+   real fleets run mixed versions. Not in scope to chase today — revisit once the
    current-version sizing model is solid.
 
 ---
