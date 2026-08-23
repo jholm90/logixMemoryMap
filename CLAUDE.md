@@ -33,6 +33,22 @@ confidence levels exist here and the code/docs must never blur them:
 - Every unresolved sizing question goes in docs/OPEN_QUESTIONS.md, not buried in
   code comments. Check that file before assuming a behavior.
 
+## Every time James says a batch of tests has been pushed (no exceptions)
+Run this exact sequence, in order, every single time — do not skip steps, do not
+wait to be re-asked:
+1. Pull/read the new results into samples/manifest.csv.
+2. Recalculate/re-derive sizing formulas from the new data; wire in anything
+   that's now confirmed exact.
+3. Review docs/TASKS.md and update checkboxes.
+4. Review docs/INSTRUCTION_COVERAGE.md and update it.
+5. Review the task/progress list and decide the next batch of tests to generate.
+   Group them into one batch of at least 60 files — James does not want short
+   test runs.
+6. Send James a summary of what changed plus open questions from this run.
+7. Wait for his explicit acknowledgement before pushing (standing rule: never
+   push without being told it's okay, every time, no blanket authorization
+   carries forward).
+
 ## Repo map
 - `docs/PROJECT_PLAN.md` — phased roadmap, current phase, milestones
 - `docs/TASKS.md` — granular task checklist per phase
