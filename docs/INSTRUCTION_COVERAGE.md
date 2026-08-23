@@ -49,12 +49,13 @@ every time real capture data lands, not just when someone remembers to.
   currently still applies this wrong weight because removing it and
   implying 0 cost would be worse, not because it's trusted).
 - **BUILD FAILED** — real capture confirms the documented/assumed call
-  syntax doesn't actually work in Studio 5000: MAM/MAJ/MAS/MRP (2026-08-25,
-  every single rung of every real capture file errored), plus CROUT and
-  MAPC (2026-08-25, same signature — errored on their x10 capture despite
-  looking clean at n=1). Contributes 0. Do NOT retry with a guessed
-  variant — needs a real corpus or Studio-5000-verified reference for the
-  correct call shape first.
+  syntax doesn't actually work in Studio 5000 on a standard (non-Safety)
+  controller: MAM/MAJ/MAS/MRP (2026-08-25, every single rung of every real
+  capture file errored), plus MAPC (2026-08-25, same signature — errored
+  on its x10 capture despite looking clean at n=1). Contributes 0. Do NOT
+  retry with a guessed variant — needs a real corpus or Studio-5000-
+  verified reference for the correct call shape first. MAPC is an active
+  priority fix, not a defer item — see "Where to focus next" below.
 - **CAPTURED, blocked on unmodeled structure** — the instruction's own
   LOGIC weight may be resolved (MCCP: 204/rung, MSG: 48/rung, both
   2026-08-25), but the instruction also references a brand-new predefined
@@ -64,8 +65,14 @@ every time real capture data lands, not just when someone remembers to.
   FAILED) once its x10 capture showed a real build failure, unrelated to
   the CAM-structure gap.
 - **NO DATA** — never tested at all. Contributes 0 to any estimate.
-- **OUT OF SCOPE** — DCS is a GuardLogix Safety instruction; this project
-  is explicitly out-of-scope for Safety programs (`CLAUDE.md` OQ-SAFETY).
+- **OUT OF SCOPE (Safety)** — requires a GuardLogix/Safety PLC CPU; this
+  project is explicitly out-of-scope for Safety programs (`CLAUDE.md`
+  OQ-SAFETY). DCS is a Safety-only instruction by design. CROUT joined
+  this category 2026-08-25 (James: "Crout is safety... requires a safety
+  plc cpu") — its earlier 100% build-failure reading on a standard
+  5069-L306ER capture is now explained: not a bad corpus transplant, a
+  fundamentally wrong controller class. Retesting CROUT on a standard
+  controller will never succeed and isn't worth attempting again.
 
 ## Coverage summary (by real occurrence, not by distinct instruction count)
 
@@ -73,11 +80,11 @@ every time real capture data lands, not just when someone remembers to.
 |---|---|---|
 | CONFIRMED | 199,145 | 98.88% |
 | WRONG | 840 | 0.42% |
-| BUILD FAILED | 728 | 0.36% |
+| BUILD FAILED | 695 | 0.35% |
 | NO DATA | 387 | 0.19% |
 | CAPTURED, blocked on CAM structure | 129 | 0.06% |
 | CAPTURED, blocked on MESSAGE structure | 99 | 0.05% |
-| OUT OF SCOPE | 65 | 0.03% |
+| OUT OF SCOPE (Safety) | 98 | 0.05% |
 
 **98.88% of every real instruction occurrence across the whole corpus is
 already an exact, confirmed fit** — up from 98.44% two batches ago, after
@@ -88,14 +95,18 @@ SRT/SWPB/ATN/DEG/MASD/TAN/MGSD/MGSR/RAD/MCR/SQR), plus MCCP/MSG's LOGIC
 weight (204/48) resolved separately from their still-unmodeled CAM/
 MESSAGE operand cost. **The CAPTURED-preliminary category is now empty**
 — every instruction that had n=1 data and an x10 file waiting has been
-resolved one way or the other. The 33rd, CROUT, did NOT resolve clean —
-real build failure, moved to BUILD FAILED alongside MAPC (also a real
-build failure on this same capture round, not previously known). The
-remaining 1.12% is: 0.42% actively WRONG (CPT), 0.36% confirmed BUILD
-FAILED (MAM/MAJ/MAS/MRP/CROUT/MAPC — 6 real negative results, not
-untested gaps), 0.19% genuinely never tested, and 0.11% blocked on the
-still-unmodeled CAM/MESSAGE predefined structures (down from 0.17% now
-that MCCP's logic weight is resolved).
+resolved one way or the other. The 33rd, CROUT, did NOT resolve clean at
+first — but James, 2026-08-25: "Crout is safety... requires a safety plc
+cpu." That's the real explanation for its 100% build failure (not a bad
+corpus transplant) — CROUT moved to OUT OF SCOPE alongside DCS, not
+BUILD FAILED, since there is nothing to fix on a standard controller.
+MAPC's build failure is real and unrelated to Safety scope — it stays in
+BUILD FAILED, and per James is a 100%-priority fix (see the MAPC note
+below), not a defer-and-move-on item. The remaining 1.12% is: 0.42%
+actively WRONG (CPT), 0.35% confirmed BUILD FAILED (MAM/MAJ/MAS/MRP/MAPC
+— 5 real negative results, not untested gaps, MAPC actively being fixed),
+0.19% genuinely never tested, 0.11% blocked on the still-unmodeled CAM/
+MESSAGE predefined structures, and 0.05% out of scope (Safety: DCS+CROUT).
 
 **CAVEAT, 2026-08-25 — CONFIRMED here means "the mnemonic's weight is an
 exact fit for the operand type it was tested with," almost always
@@ -190,7 +201,7 @@ occurrences, 54 real corpus files (spans the original set and the
 | MRP | 0.02% | 41 | BUILD FAILED (real capture 2026-08-25: documented syntax rejected by Studio 5000, every rung errored) |
 | MDW | 0.02% | 36 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | BSL | 0.02% | 34 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| CROUT | 0.02% | 33 | BUILD FAILED (real capture 2026-08-25: 80 errors/10 rungs on x10 capture, NEAR_VERBATIM corpus transplant doesn't build clean) |
+| CROUT | 0.02% | 33 | OUT OF SCOPE (Safety instruction, requires a GuardLogix/Safety PLC CPU — James, 2026-08-25. Explains the 100% build failure on a standard 5069-L306ER capture: not a bad corpus transplant, a wrong controller class) |
 | NEG | 0.02% | 33 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | STOD | 0.02% | 31 | CONFIRMED (exact fit, 0.00% residual) |
 | BSR | 0.01% | 29 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
@@ -244,29 +255,36 @@ project's corpus grows.
    `docs/OPEN_QUESTIONS.md` OQ-CMPCPTLAYOUT — `gen_cmpcpt_complexity.py`
    exists to gather the data for this; `cmpcpt_*` real capture data has
    landed but hasn't been mined for a full CPT cost model yet.
-2. **MAM/MAJ/MAS/MRP/CROUT/MAPC (728 occurrences, 0.36%)** — confirmed
-   BUILD FAILED, 6 instructions now, not 4: CROUT and MAPC joined this
-   list 2026-08-25 (both looked clean at n=1 but failed on x10 capture).
-   MAM/MAJ/MAS/MRP need a real corpus or Studio-5000-verified reference
-   for the correct 2-operand-family call shape; CROUT/MAPC each need their
-   own fix (MAPC's description already flags a likely culprit — the
-   same-Axis-for-slave/master simplification). Do not guess again on any
-   of the 6.
-3. **MCCP/MAPC/MSG's CAM/MESSAGE structure gap (228 occurrences now that
-   MAPC moved to BUILD FAILED, 0.11%)** — MCCP and MSG's own LOGIC weights
-   are resolved; what's left is purely the CAM/MESSAGE predefined
-   structure's own byte-size formula (real XML shapes are known, sizes
-   aren't). Needs a dedicated CAM/MESSAGE-structure sweep (multiple
+2. **MAPC (113 occurrences, 0.06%) — James: "100% needed instruction that
+   needs 100% accuracy," active priority, not a defer item.** Real build
+   failure on x10 capture (20 errors/10 rungs). James's direction: review
+   existing real programs for accurate MAPC call syntax, paying attention
+   to data types/sizes used, rather than guessing again — see
+   `docs/OPEN_QUESTIONS.md` OQ-CROUT-MAPC-BUILDFAIL for the corpus
+   research in progress.
+3. **MAM/MAJ/MAS/MRP (582 occurrences, 0.29%)** — confirmed BUILD FAILED,
+   needs a real corpus or Studio-5000-verified reference for the correct
+   2-operand-family call shape. CROUT (33 occurrences) is NOT in this
+   category any more — James confirmed it's a Safety-only instruction
+   (needs a GuardLogix CPU), moved to OUT OF SCOPE, nothing to fix.
+4. **MCCP/MSG's CAM/MESSAGE structure gap (228 occurrences, 0.11%)** —
+   MCCP and MSG's own LOGIC weights are resolved; what's left is purely
+   the CAM/MESSAGE predefined structure's own byte-size formula (real XML
+   shapes are known, sizes aren't). James, 2026-08-25: "You need to be
+   more familiar with cam and MSG... know how they work" — real corpus
+   research now underway, see `docs/OPEN_QUESTIONS.md` for the
+   mechanistic writeup (not just an n=1 byte capture). Needs a dedicated
+   CAM/MESSAGE-structure sweep once that understanding is solid (multiple
    element counts for CAM, since it's used as an array; MESSAGE is likely
    a flat one-time cost, needs at least 2 count points to confirm that
    shape too).
-4. **RET (237) / SBR (128)** — 365 combined, 0.18%. Can't be tested as
+5. **RET (237) / SBR (128)** — 365 combined, 0.18%. Can't be tested as
    bare instructions (always paired with JSR); `gen_jsr_sbr_ret.py`
    covers the JSR/SBR/RET combination — real data exists in the manifest
    (`jsr_paramcount_*`, `jsr_mixedio_*`, `jsr_multiret_*`) but hasn't been
    turned into RET/SBR-specific weights yet (see OQ-JSRPARAMCOST, which
    covers the JSR-side finding from this same data).
-5. Everything else (FBC/PID/SCP deliberately skipped rather than guessed,
+6. Everything else (FBC/PID/SCP deliberately skipped rather than guessed,
    plus a long tail of <10-occurrence math/shift/search instructions) —
    diminishing returns, not worth a dedicated sweep until a specific real
    program shows heavy usage of one of them.

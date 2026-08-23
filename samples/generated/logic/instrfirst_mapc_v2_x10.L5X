@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="InstrOsfX10" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Aug 23 19:00:12 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="InstrOsfX10" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Aug 23 19:00:12 2026" LastModifiedDate="Sun Aug 23 19:00:12 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="InstrMapcV2X10" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Aug 23 19:00:13 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="InstrMapcV2X10" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Aug 23 19:00:13 2026" LastModifiedDate="Sun Aug 23 19:00:13 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -109,6 +109,37 @@
         <Data Format="L5K"><![CDATA[[[2,0,0,0,0,1,0,0,1072693248,0,-1080956027,515396076,1059086925,-755914243],[2,1078198272,0,1077149696,0,1,0,0,1070176665,-1717986918,-1083933983,1202590845,1055091462,-418679770],[2,1079574528,0,1077477376,0,1,0,0,0,0,0,0,0,0],[0,1079574528,0,1077477376,0,1,0,0,0,0,0,0,0,0],[2,0,0,0,0,1,0,0,1072693248,0,-1080956027,515396076,1059086925,-755914243]]]]></Data>
         <Data Format="Decorated"><Array DataType="CAM_PROFILE" Dimensions="5"><Element Index="[0]"><Structure DataType="CAM_PROFILE"><DataValueMember Name="Status" DataType="DINT" Radix="Decimal" Value="2"/></Structure></Element><Element Index="[1]"><Structure DataType="CAM_PROFILE"><DataValueMember Name="Status" DataType="DINT" Radix="Decimal" Value="2"/></Structure></Element><Element Index="[2]"><Structure DataType="CAM_PROFILE"><DataValueMember Name="Status" DataType="DINT" Radix="Decimal" Value="2"/></Structure></Element><Element Index="[3]"><Structure DataType="CAM_PROFILE"><DataValueMember Name="Status" DataType="DINT" Radix="Decimal" Value="0"/></Structure></Element><Element Index="[4]"><Structure DataType="CAM_PROFILE"><DataValueMember Name="Status" DataType="DINT" Radix="Decimal" Value="2"/></Structure></Element></Array></Data>
       </Tag>
+      <Tag Name="Axis_Cip_Drive" TagType="Base" DataType="AXIS_CIP_DRIVE" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="MotionGroup" MotionModule="&lt;NA>" ApplicationCatalogNumberInstance="0" ApplicationCatalogNumberVersion="0" AxisConfiguration="Position Loop" FeedbackConfiguration="Motor Feedback" MotorDataSource="Nameplate Datasheet" MotorCatalogNumber="&lt;none>" Feedback1Type="Not Specified" MotorType="Not Specified" MotionScalingConfiguration="Control Scaling"
+ ConversionConstant="1000000.0" OutputCamExecutionTargets="0" PositionUnits="Position Units" AverageVelocityTimebase="0.25" PositionUnwind="1000000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0"
+ HomeSpeed="0.0" HomeReturnSpeed="0.0" MaximumSpeed="0.0" MaximumAcceleration="0.0" MaximumDeceleration="0.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" VelocityFeedforwardGain="0.0" AccelerationFeedforwardGain="0.0" PositionErrorTolerance="0.0"
+ PositionLockTolerance="0.01" VelocityOffset="0.0" TorqueOffset="0.0" BacklashReversalOffset="0.0" TuningTravelLimit="0.0" TuningSpeed="0.0" TuningTorque="100.0" DampingFactor="1.0" DriveModelTimeConstant="0.0015" PositionServoBandwidth="16.0" VelocityServoBandwidth="40.0"
+ VelocityStandstillWindow="1.0" TorqueLimitPositive="0.0" TorqueLimitNegative="0.0" StoppingTorque="0.0" LoadInertiaRatio="0.0" RegistrationInputs="1" MaximumAccelerationJerk="0.0" MaximumDecelerationJerk="0.0" DynamicsConfigurationBits="7" PositionIntegratorBandwidth="0.0" PositionIntegratorControl="0"
+ VelocityIntegratorControl="0" SystemInertia="0.0" StoppingAction="Current Decel Disable" InverterCapacity="0.0" CIPAxisExceptionAction="Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported" CIPAxisExceptionActionRA="Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported" MotorUnit="Rev" Feedback1Unit="Rev" ScalingSource="From Calculator" LoadType="Direct Coupled Rotary" ActuatorType="&lt;none>"
+ TravelMode="Unlimited" PositionScalingNumerator="1.0" PositionScalingDenominator="1.0" PositionUnwindNumerator="1.0" PositionUnwindDenominator="1.0" TravelRange="1000.0" MotionResolution="1000000" MotionPolarity="Normal" MotorTestResistance="0.0" MotorTestInductance="0.0" TuneFriction="0.0"
+ TuneLoadOffset="0.0" TuningSelect="Total Inertia" TuningDirection="Uni-directional Forward" ApplicationType="Basic" LoopResponse="Medium" PositionLoopBandwidth="0.0" VelocityLoopBandwidth="0.0" VelocityIntegratorBandwidth="0.0" MotionExceptionAction="Unsupported Disable Disable Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported" SoftTravelLimitChecking="false" LoadRatio="0.0"
+ TuneInertiaMass="0.0" SoftTravelLimitPositive="0.0" SoftTravelLimitNegative="0.0" GainTuningConfigurationBits="16#0141" SystemBandwidth="0.0" TransmissionRatioInput="1" TransmissionRatioOutput="1" ActuatorLead="1.0" ActuatorLeadUnit="Millimeter/Rev" ActuatorDiameter="1.0" ActuatorDiameterUnit="Millimeter"
+ SystemAccelerationBase="0.0" DriveModelTimeConstantBase="0.0015" DriveRatedPeakCurrent="0.0" HookupTestDistance="1.0" HookupTestFeedbackChannel="Feedback 1" LoadCoupling="Rigid" SystemDamping="1.0" AxisID="510977205" InterpolatedPositionConfiguration="16#0000_0002" AxisUpdateSchedule="Base" BusOvervoltageOperationalLimit="0.0"
+ CurrentLoopBandwidthScalingFactor="0.0" CurrentLoopBandwidth="0.0" DriveRatedVoltage="0.0" MaxOutputFrequency="0.0" MotorTestDataValid="False" HookupTestSpeed="0.0" TestModeConfiguration="Controller Loop Back" TestModeEnable="Disabled"/>
+        </Data>
+      </Tag>
+      <Tag Name="MotionGroup" TagType="Base" DataType="MOTION_GROUP" ExternalAccess="Read/Write">
+        <Data Format="MotionGroup">
+<MotionGroupParameters CoarseUpdatePeriod="2000" PhaseShift="0" GeneralFaultType="Non Major Fault" AutoTagUpdate="Enabled" Alternate1UpdateMultiplier="1" Alternate2UpdateMultiplier="1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Axis_Virtual" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="MotionGroup" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"
+ HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"
+ InterpolatedPositionConfiguration="16#0000_0002" AxisUpdateSchedule="Alternate 1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Cam1" TagType="Base" DataType="CAM" Dimensions="5" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K"><![CDATA[[[0.0,0.0,1],[200.0,100.0,0],[200.0,100.0,0],[200.0,100.0,0],[200.0,100.0,0]]]]></Data>
+        <Data Format="Decorated"><Array DataType="CAM" Dimensions="5"><Element Index="[0]"><Structure DataType="CAM"><DataValueMember Name="Master" DataType="REAL" Radix="Float" Value="0.0"/><DataValueMember Name="Slave" DataType="REAL" Radix="Float" Value="0.0"/><DataValueMember Name="SegmentType" DataType="DINT" Radix="Decimal" Value="1"/></Structure></Element><Element Index="[1]"><Structure DataType="CAM"><DataValueMember Name="Master" DataType="REAL" Radix="Float" Value="200.0"/><DataValueMember Name="Slave" DataType="REAL" Radix="Float" Value="100.0"/><DataValueMember Name="SegmentType" DataType="DINT" Radix="Decimal" Value="0"/></Structure></Element><Element Index="[2]"><Structure DataType="CAM"><DataValueMember Name="Master" DataType="REAL" Radix="Float" Value="200.0"/><DataValueMember Name="Slave" DataType="REAL" Radix="Float" Value="100.0"/><DataValueMember Name="SegmentType" DataType="DINT" Radix="Decimal" Value="0"/></Structure></Element><Element Index="[3]"><Structure DataType="CAM"><DataValueMember Name="Master" DataType="REAL" Radix="Float" Value="200.0"/><DataValueMember Name="Slave" DataType="REAL" Radix="Float" Value="100.0"/><DataValueMember Name="SegmentType" DataType="DINT" Radix="Decimal" Value="0"/></Structure></Element><Element Index="[4]"><Structure DataType="CAM"><DataValueMember Name="Master" DataType="REAL" Radix="Float" Value="200.0"/><DataValueMember Name="Slave" DataType="REAL" Radix="Float" Value="100.0"/><DataValueMember Name="SegmentType" DataType="DINT" Radix="Decimal" Value="0"/></Structure></Element></Array></Data>
+      </Tag>
 </Tags>
 <Programs>
 <Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
@@ -119,34 +150,34 @@
 <Routine Name="MainRoutine" Type="RLL">
 <RLLContent>
               <Rung Number="0" Type="N">
-                <Text><![CDATA[OSF(B0,B1);]]></Text>
+                <Text><![CDATA[MAPC(Axis_Cip_Drive,Axis_Virtual,MotionInstr1,0,CamProfile1[0],1,1,Once,Forward Only,Cam1[0].Master,Cam1[0].Master,New Cam,Command,Bi-Directional);]]></Text>
               </Rung>
               <Rung Number="1" Type="N">
-                <Text><![CDATA[OSF(B0,B1);]]></Text>
+                <Text><![CDATA[MAPC(Axis_Cip_Drive,Axis_Virtual,MotionInstr1,0,CamProfile1[0],1,1,Once,Forward Only,Cam1[0].Master,Cam1[0].Master,New Cam,Command,Bi-Directional);]]></Text>
               </Rung>
               <Rung Number="2" Type="N">
-                <Text><![CDATA[OSF(B0,B1);]]></Text>
+                <Text><![CDATA[MAPC(Axis_Cip_Drive,Axis_Virtual,MotionInstr1,0,CamProfile1[0],1,1,Once,Forward Only,Cam1[0].Master,Cam1[0].Master,New Cam,Command,Bi-Directional);]]></Text>
               </Rung>
               <Rung Number="3" Type="N">
-                <Text><![CDATA[OSF(B0,B1);]]></Text>
+                <Text><![CDATA[MAPC(Axis_Cip_Drive,Axis_Virtual,MotionInstr1,0,CamProfile1[0],1,1,Once,Forward Only,Cam1[0].Master,Cam1[0].Master,New Cam,Command,Bi-Directional);]]></Text>
               </Rung>
               <Rung Number="4" Type="N">
-                <Text><![CDATA[OSF(B0,B1);]]></Text>
+                <Text><![CDATA[MAPC(Axis_Cip_Drive,Axis_Virtual,MotionInstr1,0,CamProfile1[0],1,1,Once,Forward Only,Cam1[0].Master,Cam1[0].Master,New Cam,Command,Bi-Directional);]]></Text>
               </Rung>
               <Rung Number="5" Type="N">
-                <Text><![CDATA[OSF(B0,B1);]]></Text>
+                <Text><![CDATA[MAPC(Axis_Cip_Drive,Axis_Virtual,MotionInstr1,0,CamProfile1[0],1,1,Once,Forward Only,Cam1[0].Master,Cam1[0].Master,New Cam,Command,Bi-Directional);]]></Text>
               </Rung>
               <Rung Number="6" Type="N">
-                <Text><![CDATA[OSF(B0,B1);]]></Text>
+                <Text><![CDATA[MAPC(Axis_Cip_Drive,Axis_Virtual,MotionInstr1,0,CamProfile1[0],1,1,Once,Forward Only,Cam1[0].Master,Cam1[0].Master,New Cam,Command,Bi-Directional);]]></Text>
               </Rung>
               <Rung Number="7" Type="N">
-                <Text><![CDATA[OSF(B0,B1);]]></Text>
+                <Text><![CDATA[MAPC(Axis_Cip_Drive,Axis_Virtual,MotionInstr1,0,CamProfile1[0],1,1,Once,Forward Only,Cam1[0].Master,Cam1[0].Master,New Cam,Command,Bi-Directional);]]></Text>
               </Rung>
               <Rung Number="8" Type="N">
-                <Text><![CDATA[OSF(B0,B1);]]></Text>
+                <Text><![CDATA[MAPC(Axis_Cip_Drive,Axis_Virtual,MotionInstr1,0,CamProfile1[0],1,1,Once,Forward Only,Cam1[0].Master,Cam1[0].Master,New Cam,Command,Bi-Directional);]]></Text>
               </Rung>
               <Rung Number="9" Type="N">
-                <Text><![CDATA[OSF(B0,B1);]]></Text>
+                <Text><![CDATA[MAPC(Axis_Cip_Drive,Axis_Virtual,MotionInstr1,0,CamProfile1[0],1,1,Once,Forward Only,Cam1[0].Master,Cam1[0].Master,New Cam,Command,Bi-Directional);]]></Text>
               </Rung>
 </RLLContent>
 </Routine>

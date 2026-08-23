@@ -375,11 +375,18 @@ that's the actual remaining Phase 4/4b implementation work.
       unsized structure category in real tag data, so this pairs with that.
       **2026-08-25: MAH/MSO/MAFR/MASR/MDW/MASD/MGSD/MGSR all CONFIRMED and
       wired.** MAM/MAJ/MAS/MRP confirmed BUILD FAILED (real negative
-      result, not untested — see OQ-MAMFAMILY). CROUT also BUILD FAILED.
-      MCCP's logic weight resolved, MAPC BUILD FAILED, both still blocked
-      on the unmodeled CAM structure for their operand's own tag cost.
+      result, not untested — see OQ-MAMFAMILY). CROUT's build failure
+      turned out to be a scope issue, not a bug — James: "Crout is
+      safety... requires a safety plc cpu," reclassified OUT OF SCOPE
+      alongside DCS. MCCP's logic weight resolved. MAPC's build failure
+      WAS a real generator bug (undeclared tag + wrong axis reuse), root-
+      caused and fixed 2026-08-25 (OQ-MAPC-COMPAT) — corrected files
+      awaiting capture, James flagged this as a 100%-accuracy priority.
+      Both MCCP and MAPC still blocked on the unmodeled CAM structure for
+      their operand's own tag cost regardless of the logic-weight fix.
       Treating this item as closed — every instruction in it now has a
-      real, definitive status (confirmed, wrong, or build-failed), even
+      real, definitive status (confirmed, wrong, build-failed, or out of
+      scope), even
       though 2 sub-pieces (CAM structure, DCS out-of-scope) remain
       separately tracked open questions.
 - [x] **GSV/SSV instruction overhead** — NOT in original scope, added after

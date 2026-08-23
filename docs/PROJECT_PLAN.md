@@ -238,7 +238,10 @@ product validation, not just isolated-variable sweeps.
 numbers clearly marked as estimated, tag numbers clearly marked as exact.
 
 ## Phase 6 — Polish / edge cases
-- Safety task handling (separate memory pool — scope decision needed, OQ-SAFETY)
+- Safety task handling (separate memory pool — scope decision needed, OQ-SAFETY).
+  Known Safety-only instructions found so far, out of scope until this phase:
+  DCS, CROUT (James, 2026-08-25: "Crout is safety... requires a safety plc
+  cpu" — explains its 100% build failure on a standard 5069-L306ER capture).
 - Extended tag properties / alarm instance overhead (OQ-ALARM)
 - Multiple controller memory sizes (750KB / 1MB / 2MB / 4MB / 8MB CompactLogix
   variants) as selectable budget targets

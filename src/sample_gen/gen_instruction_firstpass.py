@@ -91,7 +91,7 @@ from sample_gen.builders import (
     rungs_xml,
     tag_xml,
 )
-from sample_gen.gen_axis_composite import _AXIS_TAG_XML
+from sample_gen.gen_axis_composite import _AXIS_TAG_XML, _AXIS_VIRTUAL_TAG_XML
 from sample_gen.manifest import append_manifest_row, write_sample, write_sample_unmodeled
 from sample_gen.wrapper import build_l5x
 
@@ -331,6 +331,26 @@ def group_cam_family(count: int = 1) -> None:
                               "literal ints, CAM_PROFILE",
                               extra_tags_xml=cam_tag, count=count)
 
+    # ORIGINAL mapc_instr (kept here only as a documented record of the bug,
+    # not called): "MAPC(Axis_Cip_Drive,Axis_Cip_Drive,MotionInstr1,0,
+    # CamProfile1[0],1,1,Once,Forward Only,Cam1[0].Master,Cam1[0].Master,
+    # New Cam,Command,Bi-Directional);" -- TWO real bugs found investigating
+    # the resulting build failure (James, 2026-08-25, "review existing
+    # programs to get accurate logic programming"):
+    #   1. Axis_Cip_Drive was never declared as a tag in this file at all
+    #      (only `cam_tag` was passed as extra_tags_xml, not _AXIS_TAG_XML)
+    #      -- an undeclared-tag reference, real and sufficient on its own
+    #      to explain every rung erroring.
+    #   2. Even if declared, real corpus MAPC calls (8 independent examples
+    #      found in Griffin_StackerLine_1Mar25_r00.L5X) ALWAYS use two
+    #      DISTINCT axis tags for the slave/master positions, never the
+    #      same tag twice -- and in the specific ForksUpDn example this
+    #      was transplanted from, of two DIFFERENT DataTypes:
+    #      AXIS_CIP_DRIVE (EM304_ForksUpDn, real physical slave axis) and
+    #      AXIS_VIRTUAL (VM305_StackerVirtual, master/reference axis).
+    #      Verified directly against the real tag declarations in that
+    #      file, not inferred.
+    # See group_mapc_v2 below for the corrected reproduction.
     mapc_instr = ("MAPC(Axis_Cip_Drive,Axis_Cip_Drive,MotionInstr1,0,CamProfile1[0],1,1,Once,Forward Only,"
                   "Cam1[0].Master,Cam1[0].Master,New Cam,Command,Bi-Directional);")
     _one_rung_file_unmodeled(mapc_instr, "InstrMapc", "instrfirst_mapc",
@@ -338,9 +358,37 @@ def group_cam_family(count: int = 1) -> None:
                               "1Mar25_r00.L5X, MAPC(EM304_ForksUpDn,VM305_StackerVirtual,Stacker.ForksUpDn."
                               "MAPC,0,Stacker.ForksUpDn.CAMPROFILE[0],1,1,Once,Forward Only,Stacker.ForksUpDn."
                               "CAM[2].Master,Stacker.ForksUpDn.CAM[2].Master,New Cam,Command,Bi-Directional)) "
-                              "-- same Axis tag reused for both slave/master operand positions here rather than "
-                              "declaring a second axis",
+                              "-- BUGGY VERSION, kept for the audit trail: Axis_Cip_Drive was never declared "
+                              "as a tag in this file, AND the same Axis tag was wrongly reused for both "
+                              "slave/master operand positions -- see instrfirst_mapc_v2 for the corrected file",
                               extra_tags_xml=cam_tag, count=count)
+
+
+def group_mapc_v2(count: int = 1) -> None:
+    """Corrected MAPC reproduction -- fixes both real bugs found in the
+    original group_cam_family MAPC call (see the comment above it):
+    Axis_Cip_Drive now actually declared (_AXIS_TAG_XML), and slave/master
+    are two distinct real tags of the two DIFFERENT real DataTypes the
+    exact corpus example uses (AXIS_CIP_DRIVE + AXIS_VIRTUAL), not the
+    same tag twice. Operand sequence otherwise unchanged -- still a
+    position-for-position transplant of the real
+    Stacker.ForksUpDn.MAPC(...) call, only tag names substituted."""
+    cam_tag = cam_tag_xml("Cam1", 5)
+    axis_tags = "\n".join([_AXIS_TAG_XML, _AXIS_VIRTUAL_TAG_XML, cam_tag])
+
+    mapc_instr = ("MAPC(Axis_Cip_Drive,Axis_Virtual,MotionInstr1,0,CamProfile1[0],1,1,Once,Forward Only,"
+                  "Cam1[0].Master,Cam1[0].Master,New Cam,Command,Bi-Directional);")
+    _one_rung_file_unmodeled(mapc_instr, "InstrMapcV2", "instrfirst_mapc_v2",
+                              "MAPC(Axis_Cip_Drive,Axis_Virtual,MotionInstr1,0,CamProfile1[0],1,1,Once,Forward "
+                              "Only,Cam1[0].Master,Cam1[0].Master,New Cam,Command,Bi-Directional) -- CORRECTED "
+                              "2026-08-25 reproduction of the real Griffin_StackerLine_1Mar25_r00.L5X call "
+                              "MAPC(EM304_ForksUpDn,VM305_StackerVirtual,Stacker.ForksUpDn.MAPC,0,Stacker."
+                              "ForksUpDn.CAMPROFILE[0],1,1,Once,Forward Only,Stacker.ForksUpDn.CAM[2].Master,"
+                              "Stacker.ForksUpDn.CAM[2].Master,New Cam,Command,Bi-Directional) -- fixes the "
+                              "original instrfirst_mapc's undeclared-Axis_Cip_Drive-tag bug and its same-axis-"
+                              "reused-for-both-positions bug (real corpus always uses two distinct axis tags "
+                              "of two different DataTypes: AXIS_CIP_DRIVE slave, AXIS_VIRTUAL master)",
+                              extra_tags_xml=axis_tags, count=count)
 
 
 # ---------------------------------------------------------------------------
@@ -366,8 +414,9 @@ def _run_all(count: int) -> int:
     group_motion_two_operand(count)
     group_crout(count)
     group_cam_family(count)
+    group_mapc_v2(count)
     group_msg(count)
-    return 18 + 8 + 6 + 1 + 2 + 1
+    return 18 + 8 + 6 + 1 + 2 + 1 + 1
 
 
 def main() -> None:

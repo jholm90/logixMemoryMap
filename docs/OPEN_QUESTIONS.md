@@ -96,22 +96,86 @@ generator already covers them, just waiting on the next capture batch.
    explicit sequencing (wait for a name reason to suspect the flat-rate
    assumption before spending a batch on it).
 
-1b. **OQ-CROUT-MAPC-BUILDFAIL (new, 2026-08-25).** CROUT and MAPC were the
-    two NEAR_VERBATIM (near-literal corpus transplant, not independently
+1b. **OQ-CROUT-MAPC-BUILDFAIL — CROUT RESOLVED (out of scope), MAPC still
+    open, ACTIVE PRIORITY per James.** CROUT and MAPC were the two
+    NEAR_VERBATIM (near-literal corpus transplant, not independently
     understood operand-by-operand) shapes flagged as needing extra
     scrutiny in OQ-INSTRFIRSTPASS above — and that scrutiny paid off: both
     real x10 captures show genuine build failures (`instrfirst_crout_x10`:
     error_count=80 for 10 rungs, `instrfirst_mapc_x10`: error_count=20 for
     10 rungs), and `actual_bytes` is flat between n=1 and x10 for both
     (21160/21160 for CROUT, 20904/20904 for MAPC) — consistent with
-    nothing new actually compiling, the same signature as the MAM/MAJ/MAS/
-    MRP build failures elsewhere in this file. Not wired into
-    `logic_instructions.weights`. Needs either a corrected operand shape
-    (MAPC's description already flags "same Axis tag reused for both
-    slave/master operand positions... rather than declaring a second
-    axis" as a known simplification that may be the actual problem) or a
-    fresh real corpus/Studio-5000-verified reference before retrying —
-    same rule as MAM/MAJ/MAS/MRP, don't guess a fix.
+    nothing new actually compiling.
+
+    **CROUT — resolved 2026-08-25, James: "Crout is safety... requires a
+    safety plc cpu."** The build failure isn't a bad corpus transplant —
+    it's a Safety-only instruction, and this project's test corpus is all
+    standard (non-GuardLogix) controllers. Moved to OUT OF SCOPE alongside
+    DCS (`docs/INSTRUCTION_COVERAGE.md`), same as `docs/PROJECT_PLAN.md`
+    Phase 6's existing Safety-scope-decision item. Nothing to fix, nothing
+    to retest on a standard controller.
+
+    **MAPC — James: "100% needed instruction that needs 100% accuracy...
+    Review existing programs to get accurate logic programming, paying
+    attention to data types and sizes used."** Not a defer item. Real
+    corpus review in progress (`samples/local/L5X_Samples/
+    Griffin_StackerLine_1Mar25_r00.L5X`, the source of the original
+    `instrfirst_mapc` operand shape) — see the dedicated write-up below
+    for what that review found and what's still needed before another
+    generation attempt. Do not guess a fix; needs a corrected operand
+    shape verified against the real file, not another simplification.
+
+1b-i. **OQ-MAPC-COMPAT — MAPC real corpus research, 2026-08-25 [test built,
+    awaiting capture].** Read `samples/local/L5X_Samples/Griffin_
+    StackerLine_1Mar25_r00.L5X` directly (8 independent real MAPC calls
+    found, not just the one already cited) instead of trusting the
+    original transplant. Two real, verified bugs found in
+    `instrfirst_mapc`/`instrfirst_mapc_x10` (not guessed — both confirmed
+    by reading the generator source and the real corpus tag declarations):
+
+    1. **Axis_Cip_Drive was never declared as a tag in that file at all.**
+       `group_cam_family`'s MAPC call passed `extra_tags_xml=cam_tag`
+       only — never `_AXIS_TAG_XML` (the constant that actually declares
+       the `Axis_Cip_Drive` tag). Every rung referencing an undeclared tag
+       is a real, sufficient-on-its-own explanation for the 20 errors/10
+       rungs seen — no need to look further than this for the *fact* of a
+       build failure, though the second bug is also real and independently
+       wrong.
+    2. **Real corpus MAPC calls never reuse the same axis tag for both
+       slave/master.** All 8 real calls found use two DISTINCT axis tags.
+       The specific example this file was transplanted from
+       (`Stacker.ForksUpDn.MAPC`) uses `EM304_ForksUpDn` (verified
+       `DataType="AXIS_CIP_DRIVE"`, a real physical axis) for the slave
+       position and `VM305_StackerVirtual` (verified
+       `DataType="AXIS_VIRTUAL"`) for the master position — two DIFFERENT
+       real axis tags of two DIFFERENT real DataTypes, not a
+       simplification detail, an actual structural requirement.
+
+    Every real MAPC call found (all 8) has the exact same **14-operand**
+    shape: `MAPC(slave_axis, master_axis, motion_instruction_tag, 0,
+    cam_profile_array[0], 1, 1, <execution_keyword>, <direction_keyword>,
+    <master_ref_1>, <master_ref_2>, "New Cam", <keyword>, <keyword>)` —
+    operand count is invariant across all 8 real examples despite
+    different Execution/Direction keyword combinations (Persistent/
+    Immediate, Continuous/Immediate, Once/Forward Only all seen), which is
+    itself useful confirmation that 14 is the real fixed arity, not
+    dependent on which keywords are chosen.
+
+    **Fix built and wired 2026-08-25:** `gen_axis_composite.py` gained a
+    new `_AXIS_VIRTUAL_TAG_XML` constant (near-verbatim from the real
+    corpus's `VM305_StackerVirtual`/`VM308_PeelersVirtual` tags, sharing
+    the existing `MotionGroup` tag rather than duplicating it).
+    `gen_instruction_firstpass.py` gained `group_mapc_v2`, a
+    position-for-position transplant of the exact real
+    `Stacker.ForksUpDn.MAPC(...)` call (same operand sequence, same
+    keywords) with both bugs fixed — `Axis_Cip_Drive` now actually
+    declared, and slave/master are genuinely distinct
+    `Axis_Cip_Drive`/`Axis_Virtual` tags. Original buggy
+    `instrfirst_mapc`/`_x10` files kept (not deleted) as the audit trail,
+    now explicitly labeled BUGGY in their manifest description.
+    `instrfirst_mapc_v2`/`_v2_x10` generated, lint-clean, awaiting
+    capture. Given James's "100% accuracy" priority on MAPC specifically,
+    this should go in the very next capture batch, not wait.
 
 1c. **OQ-INSTRFIRSTPASS-FLATOFFSET (new, minor, 2026-08-25).** All 32
     "clean" `instrfirst_*`/`instrfirst_*_x10` pairs (everything except
@@ -446,12 +510,71 @@ generator already covers them, just waiting on the next capture batch.
    the pure-BOOL shape specifically, to see if its marginal rate jumps at
    those boundaries the way a plain packed BOOL array's would.
 
-8. **OQ-PREDEFINED, remaining piece [test built].** MOTION_INSTRUCTION,
+8. **OQ-PREDEFINED, remaining piece — CAM/MESSAGE, mechanistic research
+   done 2026-08-25, byte-size sweep still needed.** MOTION_INSTRUCTION,
    AXIS_CIP_DRIVE/AXIS_SERVO/AXIS_VIRTUAL/COORDINATE_SYSTEM, and
    MOTION_GROUP are now derived and wired in (see RESOLVED_QUESTIONS.md
-   OQ-PREDEFINED). What's still open: `CAM` (the drive/cam-instruction
-   wrapper, not `CAM_PROFILE` the array structure, which IS resolved) is
-   still untested. Awaiting capture.
+   OQ-PREDEFINED). What's still open is `CAM` (the drive/cam-instruction
+   wrapper struct, not `CAM_PROFILE` the array structure, which IS
+   resolved) and `MESSAGE`. James, 2026-08-25: "You need to be more
+   familiar with cam and MSG... know how they work, if more research is
+   required." Neither had gotten more than a single real example read
+   before now — actual research pass below, not just an n=1 byte capture.
+
+   **CAM, read directly from `samples/local/L5X_Samples/
+   RobbinsGrn_2026_05_13r00.L5X`.** Real shape (Decorated format) is
+   exactly 3 fields per array element: `Master:REAL`, `Slave:REAL`,
+   `SegmentType:DINT` — 12 raw bytes/element if nothing is hidden.
+   **Important structural finding: unlike CAM_PROFILE, CAM's L5K format
+   shows the SAME 3 numbers per element as the Decorated format** (`[0.0,
+   0.0, 1], [200.0, 100.0, 0], ...`) — no extra hidden values. CAM_PROFILE,
+   by contrast, has 14 real L5K values per element behind only 1 visible
+   Decorated field (RESOLVED_QUESTIONS.md OQ-PREDEFINED's CAM_PROFILE
+   entry) — a real, verified case of Rockwell hiding internal fields from
+   the Decorated view. CAM shows no sign of that same hiding, which is a
+   meaningfully different (and more encouraging) starting hypothesis for
+   its byte cost: plausibly a clean `base + 12×count` rather than
+   CAM_PROFILE's `base + 56×count`, though — consistent with this
+   project's own rule — that's a hypothesis to test with a real count
+   sweep, not something to wire from structural inspection alone. `cam_
+   tag_xml()` in `builders.py` already reproduces this exact real 3-field
+   shape (verified against RobbinsGrn's real Decorated AND L5K data, not
+   just the earlier MCCP citation). Needs a real count sweep (e.g.
+   1/5/10/20/50 CAM elements) before any byte formula is wired.
+
+   **MESSAGE, read across the corpus more broadly (not just one file).**
+   Real shape is confirmed as a single self-closed `<MessageParameters>`
+   element (`Data Format="Message"`), no `Structure`/`DataValueMember`
+   body, no separate L5K block — genuinely simpler than TIMER/COUNTER/
+   CONTROL. **New finding: the MessageParameters attribute SET is not
+   fixed — it depends on `MessageType`.** Corpus-wide count across the
+   real files: `CIP Generic` (21 uses, 12 attributes: MessageType,
+   RequestedLength, ConnectedFlag, ConnectionPath, CommTypeCode,
+   ServiceCode, ObjectType, TargetObject, AttributeNumber, LocalIndex,
+   LocalElement, DestinationTag, LargePacketUsage — this is the type
+   `message_tag_xml()` currently reproduces), `Unconfigured` (9, likely an
+   MSG instruction whose message hasn't been set up yet — probably the
+   smallest/default case), `PLC5 Typed Write` (8), `PLC5 Word Range Write`
+   (4), `CIP Data Table Read` (3), `PLC5 Typed Read` (1, 7 attributes:
+   MessageType, RemoteElement, RequestedLength, ConnectionPath,
+   CommTypeCode, LocalIndex, LocalElement — genuinely fewer attributes
+   than CIP Generic, real evidence the attribute count varies by type).
+   **Testing only CIP Generic (the current `instrfirst_msg` shape) risks
+   badly generalizing MESSAGE's byte cost to the other 5 real MessageTypes
+   in this corpus** — if the real storage size depends on which
+   attributes are present (plausible, unconfirmed), CIP Generic being the
+   most attribute-heavy type could make it a poor stand-in for the whole
+   MESSAGE-typed-tag population. Needs a byte-size sweep across at least
+   CIP Generic and one PLC5-family type (the two ends of the observed
+   attribute-count range) before treating one MessageType's cost as
+   representative of all MESSAGE tags.
+
+   **Not yet built:** the count/type sweeps described above for either
+   structure. This entry now reflects real mechanistic understanding
+   (verified field lists, verified L5K/Decorated hiding behavior for CAM,
+   verified real MessageType distribution for MESSAGE) rather than a
+   single n=1 capture, but still has zero real byte-size data for either
+   structure — that's the next concrete step, not done yet.
 
 9. **OQ-XPROGREF [test built, captured 2026-08-25, NEGATIVE GAP,
     UNEXPLAINED].** Real Logix has no direct cross-program tag-addressing

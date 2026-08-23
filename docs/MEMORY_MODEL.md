@@ -561,9 +561,16 @@ MCCP camming: LOGIC weight now resolved and wired (204, see table above),
 but the CAM operand's own tag data-space cost is a separate, still-
 unmodeled predefined structure (OQ-PREDEFINED item below) -- a real
 program using MCCP still throws a SizeError for that tag. MAPC did NOT
-resolve -- real build failure on its x10 capture (20 errors/10 rungs),
-see docs/OPEN_QUESTIONS.md OQ-CROUT-MAPC-BUILDFAIL; CROUT failed the same
-way (80 errors/10 rungs). Neither guessed into the weight table. Per-Task
+resolve -- real build failure on its x10 capture (20 errors/10 rungs).
+Root-caused 2026-08-25 (see docs/OPEN_QUESTIONS.md OQ-MAPC-COMPAT): two
+real generator bugs, an undeclared Axis_Cip_Drive tag and the same axis
+tag wrongly reused for both slave/master positions (real corpus always
+uses two distinct axis tags of two different DataTypes). Both fixed,
+corrected `instrfirst_mapc_v2`/`_v2_x10` files generated and awaiting
+capture -- James called this a 100%-accuracy priority, not a defer item.
+CROUT's build failure is NOT a generator bug -- James, 2026-08-25: "Crout
+is safety... requires a safety plc cpu." Reclassified OUT OF SCOPE
+alongside DCS, not a weight-table gap. Per-Task
 overhead (`gen_task_overhead.py`) — real data now captured, see the
 dedicated write-up in `docs/OPEN_QUESTIONS.md` (a real, clean, exactly
 -1,472-per-extra-task finding, not yet wired pending a parser change to

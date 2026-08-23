@@ -97,6 +97,28 @@ _AXIS_TAG_XML = (
     '      </Tag>'
 )
 
+# Real AXIS_VIRTUAL tag shape (near-verbatim from samples/local/L5X_Samples/
+# Griffin_StackerLine_1Mar25_r00.L5X's VM305_StackerVirtual/VM308_PeelersVirtual,
+# only the tag name changed) -- confirmed 2026-08-25 while investigating
+# OQ-CROUT-MAPC-BUILDFAIL: real MAPC calls in that corpus ALWAYS use two
+# DISTINCT axis tags for the slave/master operand positions, and in every
+# example found, of two DIFFERENT DataTypes (AXIS_CIP_DRIVE for the real
+# physical slave axis, AXIS_VIRTUAL for the master/reference axis) -- the
+# original gen_instruction_firstpass.py MAPC reproduction reused the SAME
+# Axis_Cip_Drive tag for both positions, which real Logix never does and is
+# the leading suspect for that file's build failure. Shares the MotionGroup
+# tag already declared in _AXIS_TAG_XML above -- only include one of the two
+# constants per file's tags_xml, not both MotionGroup declarations.
+_AXIS_VIRTUAL_TAG_XML = (
+    '      <Tag Name="Axis_Virtual" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">\n'
+    '        <Data Format="Axis">\n'
+    '<AxisParameters MotionGroup="MotionGroup" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"\n'
+    ' HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"\n'
+    ' InterpolatedPositionConfiguration="16#0000_0002" AxisUpdateSchedule="Alternate 1"/>\n'
+    '        </Data>\n'
+    '      </Tag>'
+)
+
 
 def _write(l5x: str, out_name: str, description: str) -> None:
     out_path = OUT_ROOT / f"{out_name}.L5X"
