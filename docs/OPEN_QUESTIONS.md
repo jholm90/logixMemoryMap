@@ -678,6 +678,39 @@ generator already covers them, just waiting on the next capture batch.
     story is exactly the kind of thing that needs one more probe before
     it's trusted, not a coincidence to build on yet.
 
+    **2026-08-25, James: "Sounds like you still don't know what is going
+    on with strings... make another 20 tests... 100% accuracy for strings
+    and custom length strings." `gen_string_batch2.py`, 21 files, 5
+    groups, all lint-clean, all awaiting capture:**
+    - `group_mod4_bucket1` (6 files) — fills the completely-untested
+      `maxlen mod 4 = 1` bucket (49/101/501, at n=1/n=100 each), the third
+      possible remainder alongside the 0 and 2 buckets already probed.
+    - `group_string_array` (4 files) — a genuinely new structural context:
+      ONE array-of-STRING tag (`Dimensions=N`), never tested before (every
+      prior STRING test used N separate scalar tags). Real XML shape
+      confirmed against 2 independent corpus examples (built-in:
+      `CMU_2025_10_14r00.L5X`'s `CMU_PackNames`; custom type:
+      `Gutchess_GreenLine_2026_06_04r00.L5X`'s `PrintStrings`, DataType=
+      `SortString`) — structurally different from a scalar STRING tag
+      (L5K+Decorated-Array, not the scalar's L5K+String pair), so the
+      per-element cost inside an array is a real open question, not an
+      assumed-same-as-scalar extrapolation. New `string_array_tag_xml()`
+      builder added to `builders.py`.
+    - `group_string_udt_member` (4 files) — STRING (built-in and custom)
+      as a UDT member. The XML shape already existed in code
+      (`_string_structure_member_xml`) but no real Capacity byte-size data
+      had ever been captured for this context — the shape being coded
+      doesn't mean the cost was known.
+    - `group_namelen_custom` (3 files) — name-length × custom-maxlen
+      interaction at maxlen=100, name lengths 4/16/40. The existing
+      namelen cross-check only ever used built-in STRING; never confirmed
+      the `8×floor(len/8)` name-length term holds unchanged for a custom
+      string type specifically.
+    - `group_extreme_maxlen` (4 files) — boundary/stress maxlens: 1/2/4
+      (below anything tested so far) and 4000 (2× the largest previously-
+      confirmed-working value; `customstring_len*` topped out at 2000,
+      RESOLVED_QUESTIONS.md OQ-CUSTOMSTRINGDEF).
+
 14. **OQ-OPERANDTYPE (new, MAJOR, found 2026-08-25 mining already-captured
     but never-analyzed `typesweep_*` data — NOT wired, needs parser
     architecture work).** The entire `logic_instructions.weights` table

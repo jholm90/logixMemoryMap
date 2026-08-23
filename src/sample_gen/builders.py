@@ -178,6 +178,43 @@ def _string_tag_data_xml(max_len: int) -> str:
     )
 
 
+def string_array_tag_xml(name: str, count: int, max_len: int = 82, data_type: str = "STRING") -> str:
+    """An ARRAY of STRING-typed elements (built-in, `data_type="STRING"`,
+    or a custom string type by name) -- a genuinely different real shape
+    from a scalar STRING tag, confirmed 2026-08-25 against two independent
+    real corpus examples: samples/local/L5X_Samples/CMU_2025_10_14r00.L5X's
+    CMU_PackNames tag (built-in, `DataType="STRING" Dimensions="5"`) and
+    Gutchess_GreenLine_2026_06_04r00.L5X's PrintStrings tag (custom type,
+    `DataType="SortString" Dimensions="160"`) -- both follow the identical
+    shape, only the DataType name differs. Unlike a scalar STRING tag's
+    L5K+String Data pair (`_string_tag_data_xml`), a STRING ARRAY exports
+    as L5K+Decorated -- Decorated being an `<Array><Element><Structure
+    DataType=X><DataValueMember Name="LEN".../><DataValueMember Name=
+    "DATA".../></Structure></Element>...</Array>`, the same Decorated-
+    array convention every other array type in this project already uses,
+    NOT the scalar STRING's special pair. Real per-element data content
+    varies (this generator emits empty/zero-length strings, matching a
+    freshly-created array before any runtime value is written) --
+    OQ-STRINGARRAY, never previously tested."""
+    l5k_padding = "$00" * max_len
+    l5k_elements = ",".join([f"[0,'{l5k_padding}'\n\t\t]"] * count)
+    decorated_elements = "".join(
+        f'<Element Index="[{i}]"><Structure DataType="{data_type}">'
+        f'<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>'
+        f'<DataValueMember Name="DATA" DataType="{data_type}" Radix="ASCII"><![CDATA[]]></DataValueMember>'
+        f"</Structure></Element>"
+        for i in range(count)
+    )
+    return (
+        f'      <Tag Name="{name}" TagType="Base" DataType="{data_type}" Dimensions="{count}"'
+        f' Constant="false" ExternalAccess="Read/Write">\n'
+        f'        <Data Format="L5K">\n<![CDATA[[{l5k_elements}]]]>\n</Data>\n'
+        f'        <Data Format="Decorated"><Array DataType="{data_type}" Dimensions="{count}">'
+        f"{decorated_elements}</Array></Data>\n"
+        f"      </Tag>"
+    )
+
+
 def tag_xml(
     name: str, data_type: str, dimensions: tuple[int, ...] = (), radix: str = "Decimal",
     description: str | None = None, udt_members: list["MemberSpec"] | None = None,
