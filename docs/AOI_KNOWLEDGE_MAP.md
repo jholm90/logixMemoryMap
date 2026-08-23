@@ -69,11 +69,25 @@ instruction table almost did.
      recapture (`paramcount_n04_def_only_v2`/`n08_def_only_v2`) is
      generated and sitting in the manifest, awaiting a real capture.
    - Does the ordinary UDT-definition formula (`168 + 16×member_count`,
-     name-length term, BOOL-run bonus) apply unchanged to AOIs? **No good
-     reason to assume yes** — UDTs and AOIs are different real Rockwell
-     objects even though their instance-storage shape is identical; the
-     gap sizes seen so far don't obviously match that formula scaled to
-     AOI parameter counts, but nothing's been fit yet.
+     name-length term, BOOL-run bonus) apply unchanged to AOIs? **No —
+     confirmed different, and now a real shape exists.** The contaminated
+     `paramcount_n04/n08_def_only` retest (`_v2` files, OQ-CAPTURERACE)
+     landed clean 2026-08-25 (`error_count=0` both). Real gap vs. the
+     currently-predicted value: n04=1272, n08=1344 → linear at exactly
+     **18/param**, extrapolating to a flat **~1200** at param_count=0. The
+     3rd point (`paramcount_n02_def_only`, real actual=19360) — generated
+     under an older code path with a different predicted_bytes baseline,
+     not directly comparable on the gap number — still checks out: the
+     fitted formula (baseline + 1200 + 18×2) predicts 19364 against a real
+     19360, a 4-byte miss. **`aoi_def_cost ≈ 1200 + 18×param_count`,
+     DINT/Input-only, 0-instance shape, 3 points, essentially zero
+     residual.** Not wired (needs more param TYPES — INT/BOOL/REAL/Output/
+     InOut all untested — before trusting `18/param` as universal, and the
+     UDT-definition formula comparison above is still worth running once
+     more param shapes exist), but this is the clearest signal yet on the
+     AOI-vs-UDT structural difference James confirmed is real in the
+     2026-08-25 Q&A (see below) — plausibly the ~1200 flat term IS that
+     extra bookkeeping.
    - Does Required/Visible/Hidden affect DEFINITION cost, not just
      call-site syntax? **Yes, a little, unexplained.** Real data:
      `reqvis_allhidden_n4_def_only` = `reqvis_allrequired_n4_def_only` =
@@ -95,35 +109,56 @@ instruction table almost did.
      effect holds the same way when an InOut param is also present, not
      assumed to generalize from the DINT-only case. Awaiting capture.
 
-2. **AOI array-of-instances, BOOL-heavy members — real numbers, no
-   mechanism.** Real per-element array cost depends dramatically on how
-   many members are BOOL, and not in a way that's currently explained:
-   - Zero BOOL (pure atomic): ~124/instance (close to the plain formula,
-     see KNOWN #2 above).
-   - ALL BOOL (30/30 members): ~4/instance — dramatically cheaper, looks
-     like genuine bit-packing across array elements (the way a plain
-     BOOL *array* packs 32 elements/word), but the 5 count points tested
-     so far (1/5/10/25/50) don't cleanly cross a 32-element boundary, so
-     this can't be told apart from some other quantized effect yet. A
-     boundary-crossing sweep (n=16/31/32/33/48/64/65/96) is generated and
-     awaiting capture.
-   - HALF BOOL (15/30 members): exactly **64/instance**, suspiciously
-     exactly half of the pure-atomic 128/instance assumption, and this
-     one IS cleanly linear (not noisy like the all-BOOL case) — but
-     tested at only ONE ratio. Don't know if 64 is special to a 50/50
-     split, or if it's some other real rule (e.g. per-BOOL-member
-     packing that happens to land on 64 at this specific member count/
-     ratio). Six more ratios (1:29 through 29:1) are generated and
-     awaiting capture, specifically to answer this.
-   - **The honest state of understanding:** I do not know the actual
-     Rockwell packing mechanism here. My best current guess is "BOOL
-     members inside an AOI, when the AOI is put into an array, pack
-     across array elements the way a top-level BOOL array does" — but
-     that's a hypothesis built to explain 3 shapes at 1 fixed member
-     count (30) each, not a confirmed mechanism. It could just as
-     plausibly be wrong in a way that only shows up at a different
-     member count, a different total-BOOL-count, or past a 32-element
-     boundary.
+2. **AOI array-of-instances, BOOL-heavy members — 2026-08-25: SOLVED for
+   the tested shape, formula found, not yet wired (see confidence caveat
+   below).** Real per-element array cost depends on how many of the AOI's
+   30 members are BOOL, and it turns out to be exactly linear:
+
+   **`marginal_bytes_per_instance = 124 - 4 × bool_member_count`**
+   (bool_member_count out of 30 total members in every AOI tested here)
+
+   Confirmed against 8 real data points, computed by direct subtraction
+   between consecutive instance counts within each ratio (same tag pool,
+   only instance count varies — this project's standard methodology), and
+   every single one lands on the formula exactly:
+
+   | BOOL members (of 30) | formula (124-4n) | real marginal/instance |
+   |---|---|---|
+   | 0  | 124 | ~124 (KNOWN #2 above) |
+   | 1  | 120 | 120 |
+   | 5  | 104 | 104 |
+   | 10 | 84  | 84 |
+   | 15 | 64  | 64 (the original single ratio point) |
+   | 20 | 44  | 44 |
+   | 25 | 24  | 24 |
+   | 29 | 8   | 8 |
+   | 30 | 4   | ~4 (boundary sweep below) |
+
+   Zero residual at every point — this is about as clean a fit as this
+   project has ever produced.
+
+   **The 32-element-boundary hypothesis is REFUTED.** The original guess
+   was "BOOL members inside an AOI pack across array elements the way a
+   top-level BOOL array does" (32-per-word), which predicts a step
+   discontinuity at 32 instances. The boundary-crossing sweep
+   (n=16/31/32/33/48/64/65/96, all-BOOL 30/30) shows NO such step — real
+   marginal cost is a flat ~4/instance across the entire range (31→32:
+   +0, 32→33: +8, 48→64: +4.0/instance, 65→96: +3.87/instance — noisy at
+   the byte level but flat, no boundary feature). Whatever the real
+   Rockwell mechanism is, it is NOT simple 32-per-word cross-element bit
+   packing. James, in the 2026-08-25 quick-fire Q&A: never seen this
+   documented anywhere — this formula is purely empirical, no known
+   mechanism behind the `124 - 4n` shape.
+
+   **Confidence caveat — why this isn't wired into memory_model.yaml
+   yet:** every single data point above comes from AOIs with the SAME
+   total member count (30). The formula could genuinely be universal
+   (some per-BOOL-member packing effect independent of how many other
+   members exist) or could be specific to 30-member AOIs (e.g. if the
+   real mechanism depends on total member count, not just BOOL count).
+   Untested. **This is now the single highest-value next AOI test**: repeat
+   the same ratio sweep at a different total member count (e.g. 10 or 60
+   members) to see if `124 - 4n` still holds or the coefficients shift.
 
 3. **AOI array cost vs AOI definition cost — currently tangled
    together, can't be cleanly separated.** Because the definition-cost
@@ -181,10 +216,20 @@ answers below.**
 
 ## Where this leaves the "100% accuracy" goal
 
-Not there yet, and the gap is now itemized rather than vague: definition
-cost (biggest, unresolved, contaminated retest already re-issued, and as
-of 2026-08-25 confirmed by James to be a real structural AOI-vs-UDT
-difference, not test noise — raises this item's priority),
+**2026-08-25 update: real progress, not there yet.** BOOL-array-packing
+(unknown #2) now has a clean, zero-residual formula (`124 - 4×bool_count`)
+confirmed at 8 real data points and a refuted competing hypothesis — the
+single biggest jump in AOI understanding this project has made. Definition
+cost (unknown #1) now has a real linear shape too (`~1200 + 18×param_count`,
+3 clean points) instead of a bare list of unexplained gaps. Neither is
+wired yet — both are confirmed at only one AOI shape (30 members / DINT-
+Input-only respectively) and need a second shape to confirm the
+coefficients generalize before memory_model.yaml gets touched. That's now
+a concrete, narrow, two-item next-batch target instead of an open-ended
+unknown.
+
+Below is the pre-2026-08-25 state for what's still genuinely unresolved:
+definition cost (formula found, still needs a 2nd shape to confirm),
 BOOL-array-packing mechanism (partially characterized, 3 more shapes
 generated awaiting capture), and the two are currently tangled together in
 every array data point. Nothing above is guessed into `memory_model.yaml`

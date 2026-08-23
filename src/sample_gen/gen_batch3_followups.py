@@ -182,7 +182,13 @@ def group_e_jsr_paramcounts() -> int:
     for param_count in [2, 3, 4, 6, 8, 12]:
         caller_args = [f"JIn{i}" for i in range(param_count)]
         callee_locals = [f"LIn{i}" for i in range(param_count)]
-        caller_tags = "\n".join(tag_xml(t, "DINT") for t in caller_args)
+        # SBR's own param names and the JSR's input-arg names are unrelated,
+        # positionally-mapped tags (gen_jsr_sbr_ret.py's module docstring) --
+        # BOTH sides need a real tag declaration. Missing the callee side
+        # was a real bug (2026-08-25 fix, found via real capture data
+        # showing error_count == param_count on every file in this sweep):
+        # every callee local was an undeclared-tag reference.
+        caller_tags = "\n".join(tag_xml(t, "DINT") for t in caller_args + callee_locals)
         routine_name = f"JsrParamTargetN{param_count}"
         sub_xml = _sub_routine_xml(routine_name, callee_locals)
 

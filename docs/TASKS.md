@@ -382,9 +382,10 @@ that's the actual remaining Phase 4/4b implementation work.
       safety... requires a safety plc cpu," reclassified OUT OF SCOPE
       alongside DCS. MCCP's logic weight resolved. MAPC's build failure
       WAS a real generator bug (undeclared tag + wrong axis reuse), root-
-      caused and fixed 2026-08-25 (OQ-MAPC-COMPAT) — corrected files
-      awaiting capture, James flagged this as a 100%-accuracy priority.
-      Both MCCP and MAPC still blocked on the unmodeled CAM structure for
+      caused and fixed 2026-08-25 (OQ-MAPC-COMPAT), James flagged this as
+      a 100%-accuracy priority — **CONFIRMED same day, real capture
+      landed: error_count=0, logic weight 260/rung, wired.** Both MCCP and
+      MAPC still blocked on the unmodeled CAM structure for
       their operand's own tag cost regardless of the logic-weight fix.
       Treating this item as closed — every instruction in it now has a
       real, definitive status (confirmed, wrong, build-failed, or out of
@@ -403,16 +404,22 @@ that's the actual remaining Phase 4/4b implementation work.
       CONFIRMED. (TRUNC has 0 real corpus occurrences, never separately
       tested — flagged, not a gap in practice.)
 - 🔴 Indirect addressing overhead (compare direct vs indirect same logic) —
-      real data captured 2026-08-25 (direct-index: no separate cost needed;
-      tag-driven index: ~84/rung; arithmetic-offset tag-driven index:
-      ~108/rung) but not yet decomposed into a wired weight, see
-      OQ-INDIRECT in OPEN_QUESTIONS.md.
+      real data captured and RE-CONFIRMED 2026-08-25 with 4 count points
+      each (tag-driven index: exactly 84/rung, arithmetic-offset tag-driven
+      index: exactly 108/rung, both perfectly linear at every interval
+      tested) but still not wired — needs the logic parser to detect
+      indirect-addressing syntax in operand text, real architecture work,
+      not a constant edit. See OQ-INDIRECT in OPEN_QUESTIONS.md.
 - 🔴 JSR/subroutine call overhead (call site cost vs routine body cost,
       separate these two numbers) — 238 real JSR uses, matters. JSR's own
-      flat weight (72/rung) is CONFIRMED and wired, but real data shows a
-      real per-parameter cost (~20-21/param) not yet captured by that flat
-      number — see OQ-JSRPARAMCOST. RET/SBR (bare instructions, always
-      paired with JSR) still have real capture data sitting unmined.
+      flat weight (72/rung) is CONFIRMED and wired. The ~20-21/param
+      estimate is DOWNGRADED 2026-08-25 to unconfirmed: found and fixed a
+      real generator bug (SBR/RET callee-side local tags were never
+      declared, causing error_count==param_count build failures on the
+      newer count-sweep batch; the older data this estimate came from
+      predates error tracking entirely, so its build validity is unknown
+      too). All 11 affected files regenerated, stale data cleared, awaiting
+      clean re-capture. See OQ-JSRPARAMCOST.
 - ✅ MSG instruction overhead — only 4 real uses total, low priority, don't
       over-invest here relative to everything else on this list. LOGIC
       weight resolved (48/rung), operand's own MESSAGE-structure tag cost

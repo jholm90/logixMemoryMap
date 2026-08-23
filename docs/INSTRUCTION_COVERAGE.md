@@ -100,13 +100,14 @@ first — but James, 2026-08-25: "Crout is safety... requires a safety plc
 cpu." That's the real explanation for its 100% build failure (not a bad
 corpus transplant) — CROUT moved to OUT OF SCOPE alongside DCS, not
 BUILD FAILED, since there is nothing to fix on a standard controller.
-MAPC's build failure is real and unrelated to Safety scope — it stays in
-BUILD FAILED, and per James is a 100%-priority fix (see the MAPC note
-below), not a defer-and-move-on item. The remaining 1.12% is: 0.42%
-actively WRONG (CPT), 0.35% confirmed BUILD FAILED (MAM/MAJ/MAS/MRP/MAPC
-— 5 real negative results, not untested gaps, MAPC actively being fixed),
-0.19% genuinely never tested, 0.11% blocked on the still-unmodeled CAM/
-MESSAGE predefined structures, and 0.05% out of scope (Safety: DCS+CROUT).
+MAPC's build failure was real and unrelated to Safety scope — root-caused
+(undeclared axis tag + reused axis for slave/master) and **CONFIRMED FIXED
+2026-08-25**, real capture landed error_count=0, logic weight 260/rung,
+wired. MAPC moved from BUILD FAILED to CONFIRMED. The remaining ~1.06% is:
+0.42% actively WRONG (CPT), 0.29% confirmed BUILD FAILED (MAM/MAJ/MAS/MRP
+— 4 real negative results, not untested gaps), 0.19% genuinely never
+tested, 0.11% blocked on the still-unmodeled CAM/MESSAGE predefined
+structures, and 0.05% out of scope (Safety: DCS+CROUT).
 
 **CAVEAT, 2026-08-25 — CONFIRMED here means "the mnemonic's weight is an
 exact fit for the operand type it was tested with," almost always
@@ -182,7 +183,7 @@ occurrences, 54 real corpus files (spans the original set and the
 | MAM | 0.09% | 186 | BUILD FAILED (real capture 2026-08-25: documented syntax rejected by Studio 5000, every rung errored) |
 | MCCP | 0.06% | 129 | CAPTURED, blocked on unmodeled CAM structure (LOGIC weight resolved/wired 2026-08-25 -- 204/rung -- but CAM operand's own tag data space still unmodeled) |
 | SBR | 0.06% | 128 | NO DATA (0 contribution -- never tested; structurally tied to JSR, can't be isolated as a bare instruction) |
-| MAPC | 0.06% | 113 | BUILD FAILED (real capture 2026-08-25: 20 errors/10 rungs on x10 capture, same-axis-for-slave/master simplification likely wrong) |
+| MAPC | 0.06% | 113 | CONFIRMED (real capture 2026-08-25: bug fixed — undeclared axis tag + same-axis reuse — corrected call built error_count=0, logic weight 260/rung, wired) |
 | MAJ | 0.05% | 106 | BUILD FAILED (real capture 2026-08-25: documented syntax rejected by Studio 5000, every rung errored) |
 | MSG | 0.05% | 99 | CAPTURED, blocked on unmodeled MESSAGE structure (LOGIC weight resolved/wired 2026-08-25 -- 48/rung -- but MESSAGE operand's own tag data space still unmodeled) |
 | MEQ | 0.05% | 94 | CONFIRMED (exact fit, 0.00% residual) |
@@ -268,18 +269,20 @@ project's corpus grows.
    CMP 2nd count point. Once captured, every operator CPT sees at
    meaningful real frequency (all but ABS/ATN/TAN/SQR, single-digit real
    uses each) will have multi-point real data instead of one anchor row.
-2. **MAPC (113 occurrences, 0.06%) — James: "100% needed instruction that
-   needs 100% accuracy," active priority, not a defer item.** Real build
-   failure on x10 capture (20 errors/10 rungs). James's direction: review
-   existing real programs for accurate MAPC call syntax, paying attention
-   to data types/sizes used, rather than guessing again — see
-   `docs/OPEN_QUESTIONS.md` OQ-CROUT-MAPC-BUILDFAIL for the corpus
-   research in progress.
-3. **MAM/MAJ/MAS/MRP (582 occurrences, 0.29%)** — confirmed BUILD FAILED,
-   needs a real corpus or Studio-5000-verified reference for the correct
-   2-operand-family call shape. CROUT (33 occurrences) is NOT in this
-   category any more — James confirmed it's a Safety-only instruction
-   (needs a GuardLogix CPU), moved to OUT OF SCOPE, nothing to fix.
+2. **MAPC (113 occurrences, 0.06%) — RESOLVED 2026-08-25.** James: "100%
+   needed instruction that needs 100% accuracy" — bug root-caused
+   (undeclared axis tag + reused axis for slave/master), fixed, corrected
+   call built error_count=0 on real capture same day, logic weight
+   260/rung wired. No longer a focus item.
+3. **MAM/MAJ/MAS/MRP (582 occurrences, 0.29%)** — confirmed BUILD FAILED
+   on the original bare 2-operand call shape. The full-parameter-list fix
+   (real per-instruction templates, not a guessed shape) has already been
+   built and regenerated (`gen_motion_instructions.py`); the corrected
+   files are awaiting a clean capture (their L5X changed since the last
+   successful ACD conversion, so this needs a full reconversion, not just
+   an auto-retry). CROUT (33 occurrences) is NOT in this category any
+   more — James confirmed it's a Safety-only instruction (needs a
+   GuardLogix CPU), moved to OUT OF SCOPE, nothing to fix.
 4. **MCCP's CAM structure gap (129 occurrences, 0.06%)** — MCCP's own
    LOGIC weight is resolved; what's left is purely CAM's own byte-size
    formula (real XML shape confirmed, size isn't — see

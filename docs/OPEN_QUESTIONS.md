@@ -183,6 +183,17 @@ generator already covers them, just waiting on the next capture batch.
     capture. Given James's "100% accuracy" priority on MAPC specifically,
     this should go in the very next capture batch, not wait.
 
+    **RESOLVED 2026-08-25, real capture landed same day: both fixes
+    confirmed correct.** `instrfirst_mapc_v2` (n=1) and `_v2_x10` (n=10)
+    both built `error_count=0` — the corrected 14-operand two-distinct-
+    axis-tags shape is real and clean. Marginal logic weight: (64288-
+    61948)/9 = exactly **260/rung**, a clean 2-point linear fit, same
+    confidence tier as MAH/MSO's confirmation. **Wired in
+    memory_model.yaml: `MAPC: 260`.** The AXIS_CIP_DRIVE/AXIS_VIRTUAL
+    tags' own data-space cost is still separately unmodeled
+    (OQ-PREDEFINED) — this is the LOGIC weight only, but it closes the
+    "100% needed instruction" gap for the instruction's own compiled cost.
+
 1c. **OQ-INSTRFIRSTPASS-FLATOFFSET (new, minor, 2026-08-25).** All 32
     "clean" `instrfirst_*`/`instrfirst_*_x10` pairs (everything except
     MCCP/MSG, which have their own separate known-unmodeled-structure gap)
@@ -865,6 +876,34 @@ generator already covers them, just waiting on the next capture batch.
     `logic_instructions.weights`, to confirm linearity and rule out a
     fixed one-time cost being misread as a per-rung weight.
 
+    **RESOLVED-ISH 2026-08-25: linearity confirmed, both numbers
+    re-derived cleanly, still not wired (parser gap, not a data gap).**
+    New count points (n=10/50/100, alongside the existing n=1000) landed
+    for both variants:
+    - `indirect_tag_index_*`: n10=19656, n50=24456, n100=30456,
+      n1000=138456 — marginal is **exactly 120/rung** at every interval
+      (n10→n50, n50→n100, n100→n1000 all compute to 120.0, zero
+      variance). Perfectly linear.
+    - `indirect_tag_offset_index_*`: n10=19896, n50=25656, n100=32856,
+      n1000=162456 — marginal is **exactly 144/rung** at every interval.
+      Also perfectly linear.
+    - Direct subtraction against `indirect_direct_index_n01000`
+      (act=54456) at the same n=1000 re-derives the earlier informal
+      numbers exactly: tag-index overhead = (138456-54456)/1000 =
+      **84/rung**, offset-index overhead = (162456-54456)/1000 =
+      **108/rung** — matches the 2026-08-25 note above precisely, now
+      backed by 4 points per variant instead of 1.
+    - Cross-check: 120/rung (tag-index total) − 84/rung (indirect
+      overhead) = 36/rung, and 144/rung (offset-index total) − 108/rung
+      (indirect overhead) = 36/rung — the SAME implied base MOV(direct-
+      index) marginal both ways. Internally consistent.
+    - **Still not wired**, but now for a real architectural reason, not a
+      data-confidence one: applying this requires the sizing engine to
+      inspect a MOV/CPT/etc. operand's *text* for indirect-addressing
+      syntax (a tag-valued or arithmetic-expression array subscript) —
+      that's parser work, not a constant edit. The numbers are ready
+      whenever that parser support lands.
+
 13. **OQ-STRINGTAGOVERHEAD — builtin RESOLVED 2026-08-25, custom STILL
     OPEN with a real lead.** Builtin STRING's flat -2 bytes/tag correction
     is now confirmed and wired (RESOLVED_QUESTIONS.md OQ-STRINGTAGOVERHEAD
@@ -1008,6 +1047,42 @@ generator already covers them, just waiting on the next capture batch.
     capability plus at least one more count point (e.g. n=2, n=3) to
     firm up the per-param constant before treating ~20/param as confirmed
     rather than approximate.
+
+    **MAJOR CORRECTION 2026-08-25 (same day, later): the ~20/param finding
+    above was standing on data of UNKNOWN build validity, and a real
+    generator bug was found and fixed.** The new n=2/3/4/6/8/12 count-sweep
+    batch (`gen_batch3_followups.py`'s `group_e_jsr_paramcounts`) came back
+    with `error_count` EXACTLY EQUAL to `param_count` on every single file
+    (n02→2 errors, n03→3, n04→4, n06→6, n08→8, n12→12) — not noise, a
+    perfect 1:1 pattern. Root cause, confirmed by reading the generator:
+    `_sub_routine_xml`'s callee-side locals (`LIn0..LInN`, referenced in
+    `SBR(LIn0,LIn1,...)`) were **never declared as tags anywhere** — only
+    the caller-side `JIn0..JInN` args got a `tag_xml` declaration. Per the
+    module's own real-corpus research (SJ_Gormley routines), SBR's param
+    names and JSR's input-arg names are unrelated, positionally-mapped
+    tags — BOTH sides need their own declaration, not just the caller's.
+    One undeclared-tag build error per missing local, exactly matching the
+    observed pattern.
+
+    **This bug was in `gen_jsr_sbr_ret.py` too** (`group_param_count`,
+    `group_mixed_io`, `group_multiple_ret` — the ORIGINAL n=1/5/10/r01000
+    files this whole ~20/param finding was built from), and those files'
+    `error_count` was never recorded at all (blank, not `0` — they predate
+    error-count tracking) — so whether the "confirmed" ~20/param number
+    was fit against clean or silently-broken builds is **genuinely
+    unknown, not confirmed either way**. Downgrading that earlier estimate
+    from "roughly-linear, ~20-21/param" to **unconfirmed, pending clean
+    retest** — it may still turn out to be close, but it was never
+    actually verified against `error_count=0` data.
+
+    **Fixed 2026-08-25:** both generator files now declare every callee-
+    side local (`LIn*`/`LOut*`) as a real DINT tag alongside the caller-
+    side args, in the same Program-scope tags block. All 11 affected files
+    regenerated under their original sample_ids (lint-clean), stale
+    pre-fix capture data cleared from manifest.csv (this was a real build-
+    breaking bug, not a window-title-mismatch — needs a full ACD
+    reconversion, not just an auto-retry of the capture step). Awaiting
+    a clean re-capture before the per-param cost can be trusted at all.
 
 16. **OQ-CAPTURERACE (new, 2026-08-25, James: "flag results that stand out
     and might need retesting, I don't want to go forward with you assuming

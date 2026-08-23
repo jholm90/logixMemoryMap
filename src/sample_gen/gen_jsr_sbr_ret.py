@@ -95,7 +95,12 @@ def group_param_count() -> None:
     for n in [1, 5, 10]:
         caller_args = [f"JIn{i}" for i in range(n)]
         callee_locals = [f"LIn{i}" for i in range(n)]
-        caller_tags = "\n".join(tag_xml(t, "DINT") for t in caller_args)
+        # SBR's own param names and the JSR's input-arg names are unrelated,
+        # positionally-mapped tags (see module docstring) -- BOTH sides need
+        # a real tag declaration, not just the caller side. Missing this
+        # was a real bug (2026-08-25 fix): every callee local was an
+        # undeclared-tag reference, one build error per param.
+        caller_tags = "\n".join(tag_xml(t, "DINT") for t in caller_args + callee_locals)
         sub_xml = _sub_routine_xml("JsrParamTarget", callee_locals, [])
 
         call_args = ",".join([f"{n}"] + caller_args)
@@ -116,7 +121,8 @@ def group_mixed_io() -> None:
     in_locals = [f"LIn{i}" for i in range(n_in)]
     out_locals = [f"LOut{i}" for i in range(n_out)]
 
-    caller_tags = "\n".join(tag_xml(t, "DINT") for t in in_args + out_args)
+    # See group_param_count -- callee locals need their own declarations too.
+    caller_tags = "\n".join(tag_xml(t, "DINT") for t in in_args + out_args + in_locals + out_locals)
     sub_xml = _sub_routine_xml("JsrMixedTarget", in_locals, out_locals)
 
     call_args = ",".join([f"{n_in}"] + in_args + out_args)
@@ -141,9 +147,12 @@ def group_multiple_ret() -> None:
     in_arg = "JIn0"
     in_local = "LIn0"
 
+    # See group_param_count -- callee locals (in_local, out_locals) need
+    # their own declarations too, not just the caller-side tags.
     tags_xml_body = "\n".join(
         [tag_xml(in_arg, "DINT")] + [tag_xml(a, "DINT") for a in caller_out_args]
         + [tag_xml(c, "BOOL") for c in cond_tags]
+        + [tag_xml(in_local, "DINT")] + [tag_xml(t, "DINT") for t in out_locals]
     )
 
     sub_rungs = [rung_xml(0, f"SBR({in_local})NOP();")]

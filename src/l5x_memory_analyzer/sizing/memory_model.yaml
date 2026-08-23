@@ -413,10 +413,19 @@ logic_instructions:
     # weight below is correct and usable now.
     MCCP: 204
     MSG: 48
-    # CROUT and MAPC deliberately NOT included: both showed real build
-    # failures on their x10 capture (CROUT: 80 errors/10 rungs, MAPC: 20
-    # errors/10 rungs -- the documented corpus syntax used for the
-    # generator apparently isn't quite right for one or both). Flat actual
-    # bytes between n=1 and x10 for both confirms nothing new compiled.
-    # See docs/OPEN_QUESTIONS.md OQ-CROUT-MAPC-BUILDFAIL. Not guessing a
-    # weight off broken-build data.
+    # MAPC: FIXED 2026-08-25 (see OQ-MAPC-COMPAT) -- the original generator
+    # had two real bugs (undeclared Axis_Cip_Drive tag, same axis reused for
+    # both slave/master positions instead of two distinct axis tags).
+    # James: "100% needed instruction that needs 100% accuracy" -- corrected
+    # call (instrfirst_mapc_v2/_v2_x10) built error_count=0 on both n=1 and
+    # n=10, real capture 2026-08-25: n=1 actual=61948, n=10 actual=64288 --
+    # marginal (64288-61948)/9 = exactly 260/rung. Clean 2-point linear fit,
+    # same confidence tier as MAH/MSO's confirmation. The AXIS_CIP_DRIVE/
+    # AXIS_VIRTUAL tags' own data-space cost is still separately unmodeled
+    # (OQ-PREDEFINED) -- this is the LOGIC weight only.
+    MAPC: 260
+    # CROUT deliberately NOT included: real build failure on its x10
+    # capture (80 errors/10 rungs) -- reclassified out of scope, requires a
+    # Safety-task processor (James, 2026-08-24). See
+    # docs/OPEN_QUESTIONS.md OQ-CROUT-MAPC-BUILDFAIL. Not guessing a weight
+    # off broken-build data, and not in scope regardless.
