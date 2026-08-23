@@ -50,8 +50,13 @@ wait to be re-asked:
 3. Review docs/TASKS.md and update checkboxes.
 4. Review docs/INSTRUCTION_COVERAGE.md and update it.
 5. Review the task/progress list and decide the next batch of tests to generate.
-   Group them into one batch of at least 60 files — James does not want short
-   test runs.
+   James, 2026-08-25: "Don't just fill up the minimum 60 test roster with
+   filler work. I always ask for more before tests start anyway." The
+   60-file floor is not a quota to pad toward — every file in a batch must
+   answer a real, currently-open question. If genuine necessary work comes
+   in under 60, ship it at that size; James will ask for a bigger batch
+   himself if he wants one. Don't manufacture variations just to hit a
+   number.
 6. Send James a summary of what changed plus open questions from this run.
 7. Wait for his explicit acknowledgement before pushing (standing rule: never
    push without being told it's okay, every time, no blanket authorization
