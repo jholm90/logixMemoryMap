@@ -11,16 +11,25 @@
   currently converting finishes; nothing is lost, just re-run the same
   command later to continue.
 
-  Staleness-aware (2026-08-22 fix, James: found real Build errors that
-  turned out to be against pre-fix .ACD binaries -- the L5X source for
-  BTD/COP/SIZE etc had already been fixed, but convert_log.csv's "already
-  converted" cache had no way to know that and kept skipping reconversion
-  forever). Every "ok" row now also records the L5X's LastWriteTimeUtc at
-  conversion time; on the next run, a file is only treated as already-done
-  if that timestamp still matches -- if the L5X has been touched since
-  (regenerated, hand-edited, whatever), it's reconverted automatically.
-  Old-format log rows (no l5x_mtime column) are always treated as stale,
-  so upgrading to this version forces one fresh pass over everything.
+  Staleness-aware (2026-08-22, rewritten same day after the first version
+  backfired). Originally tracked each L5X's LastWriteTimeUtc in
+  convert_log.csv and compared against that on the next run -- fixed the
+  original bug (real Build errors against pre-fix .ACD binaries, because
+  the old "already converted" cache had no time info at all) but had its
+  own flaw: old-format log rows (from before this column existed) were
+  always treated as stale, forcing a full reconversion of the entire
+  corpus on upgrade. James: "this is not fast 50s per file.. 500 minutes
+  is a very long time" -- 586 files all being reconverted because of a
+  log-format migration, when maybe 15 actually needed it.
+
+  Now compares timestamps directly off disk instead, no log dependency:
+  a file is stale (needs reconversion) only if its .L5X is newer than its
+  own already-existing .ACD at $OutputDir. No .ACD yet -> never
+  converted, needs it. .ACD newer than or equal to the .L5X -> still
+  good, skipped. This is ground truth (doesn't care what convert_log.csv
+  says or whether it's in an old format) and self-heals: nothing forces a
+  full pass ever again, each file's real staleness is just re-checked
+  fresh every run.
 
   Auto-pushes a copy of the log to samples/convert_log.csv in the repo on
   every run (success or early-stop) so conversion failures are visible
@@ -43,21 +52,15 @@ param(
 
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 $logPath = Join-Path $OutputDir "convert_log.csv"
-
-# Keyed by l5x_path -> the recorded L5X mtime at conversion time (empty
-# string for old-format rows, which always counts as stale below).
-$alreadyDone = @{}
-if (Test-Path $logPath) {
-    Import-Csv $logPath | Where-Object { $_.status -eq "ok" } | ForEach-Object { $alreadyDone[$_.l5x_path] = $_.l5x_mtime }
-} else {
+if (-not (Test-Path $logPath)) {
     "l5x_path,acd_path,status,message,l5x_mtime" | Out-File -FilePath $logPath -Encoding utf8
 }
 
 $allFiles = Get-ChildItem -Path $InputDir -Filter *.L5X -Recurse
 $files = $allFiles | Where-Object {
-    $recorded = $alreadyDone[$_.FullName]
-    if (-not $recorded) { return $true }  # never converted, or old-format row -- needs (re)conversion
-    return $recorded -ne $_.LastWriteTimeUtc.ToString("o")  # true if the L5X changed since it was last converted
+    $acdPath = Join-Path $OutputDir ($_.BaseName + ".ACD")
+    if (-not (Test-Path $acdPath)) { return $true }  # never converted -- needs it
+    return $_.LastWriteTimeUtc -gt (Get-Item $acdPath).LastWriteTimeUtc  # true if the L5X is newer than its own .ACD
 }
 $upToDateCount = $allFiles.Count - $files.Count
 Write-Host "Found $($allFiles.Count) L5X file(s) under $InputDir; $upToDateCount already converted and up to date; $($files.Count) to convert this pass."
@@ -79,14 +82,16 @@ foreach ($f in $files) {
 
     # James, 2026-08-22: "you will need to append V2 onto the ACD files
     # you are regenerating as youre probably not overwriting them" -- the
-    # l5x_mtime staleness fix above correctly decides a file needs
-    # reconverting, but that's worthless if l5xgit itself silently
-    # refuses to overwrite an existing .ACD at the destination path
-    # (unverified either way from here -- l5xgit is Windows-only, not
-    # runnable in this environment). Deleting the old file first removes
-    # the question: whatever l5xgit does with a missing destination,
-    # "stale content still on disk after a successful reconversion" can't
-    # happen.
+    # staleness check above correctly decides a file needs reconverting,
+    # but that's worthless if l5xgit itself silently refuses to overwrite
+    # an existing .ACD at the destination path (unverified either way
+    # from here -- l5xgit is Windows-only, not runnable in this
+    # environment). Deleting the old file first removes the question:
+    # whatever l5xgit does with a missing destination, "stale content
+    # still on disk after a successful reconversion" can't happen. Also
+    # means the staleness check's own .ACD-mtime comparison always sees a
+    # genuinely fresh write, never a stale file l5xgit silently declined
+    # to touch.
     if (Test-Path $acdPath) { Remove-Item $acdPath -Force }
 
     $argList = @("l5x2acd", "--l5x", $f.FullName, "--acd", $acdPath)
