@@ -54,6 +54,9 @@ wait to be re-asked:
 - `docs/TASKS.md` — granular task checklist per phase
 - `docs/OPEN_QUESTIONS.md` — every unresolved sizing/behavior question
 - `docs/MEMORY_MODEL.md` — sizing constants, formulas, packing rules (living doc)
+- `docs/AOI_KNOWLEDGE_MAP.md` — what's known/unknown about AOI sizing specifically
+  (definition cost, BOOL-array-packing mechanism) — keep current, this is the
+  gameplan doc James asked for
 - `docs/TESTING_PLAN.md` — validation methodology against real controller memory
 - `docs/SAMPLE_GENERATION.md` — how test L5X files get built and the file→bytes
   feedback loop

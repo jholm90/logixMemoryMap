@@ -309,7 +309,9 @@ generator already covers them, just waiting on the next capture batch.
 
 7. **OQ-AOIDEF (new, 2026-08-23, MAJOR — real cost currently modeled as
    zero; DATA QUALITY WARNING added same day, see below before trusting
-   any number in this entry).**
+   any number in this entry). See `docs/AOI_KNOWLEDGE_MAP.md` for the full
+   known/unknown breakdown across all AOI sizing questions, not just this
+   one — built 2026-08-25 per James's request for a clear gameplan.**
 
    **Data quality warning, James 2026-08-23:** "I think the sample I gave
    as def_only I accidentally added the controller tag and added it to a
