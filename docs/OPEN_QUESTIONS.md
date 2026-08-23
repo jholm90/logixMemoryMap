@@ -278,6 +278,22 @@ generator already covers them, just waiting on the next capture batch.
    files: open each of the 29 in Studio 5000, record catalog/firmware/
    Capacity-tab bytes the same way every other sample gets captured.
 
+   **2026-08-25, James (annoyed, rightly): "i expect you to generate
+   those processor/firmware files for the next batch of testing. the
+   purpose of me giving you those files was for you to update your
+   reserved overhead sizing based on the processor and firmware."**
+   Corrected: all 29 files are now real rows in `samples/manifest.csv`
+   (category `fw_baseline`, `l5x_path` pointing at their real
+   `samples/local/fw_versions/` location, `controller_model`/
+   `firmware_rev` pre-filled from each file's own XML, `predicted_bytes`
+   =13,296 confirming the engine currently predicts the same flat number
+   for all 29 regardless of processor/firmware — exactly the gap this
+   question is about). Previously these were sitting in `samples/local/`
+   with no manifest entry at all — outside the normal batch-tracking flow
+   every other real capture goes through, which is why they read as
+   invisible/forgotten. `actual_bytes` for all 29 stays blank, ready for
+   capture, same as every other pending row in the manifest.
+
 3. **OQ-AXISDEEP — FULLY RESOLVED 2026-08-25.** CIP/virtual axis, used
    everywhere in real programs, 0.01%-tolerance target. **Partially
    resolved 2026-08-23** — the pure predefined-structure constants
