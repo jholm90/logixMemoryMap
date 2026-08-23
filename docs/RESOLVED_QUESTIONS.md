@@ -289,6 +289,16 @@ constant below, not folded into the baseline itself. Wired in as
 KNOWN (zero variance across 200+ points is about as confirmed as this
 project's data gets).
 
+**Scope correction, 2026-08-23 (James):** "not a constant... will change
+based on processor and firmware." The "universal" framing above overstated
+it -- every one of those 200+ points was generated on the same processor/
+firmware (`wrapper.py`'s 1756-L81E/35.05 default), so what's actually
+confirmed is 13,296 for THAT combo, not for any CompactLogix/ControlLogix
+generally. See `docs/OPEN_QUESTIONS.md` OQ-BASELINE-PROCFW for the
+follow-up test batch (per-processor and per-firmware blank-project sweeps)
+needed to turn this into the (processor_type, firmware_rev)-keyed lookup
+it actually needs to be.
+
 **OQ-CUSTOMSTRINGDEF.** Custom STRING types (`Family="StringFamily"`) get
 their own one-time definition cost, `custom_definition_cost = 206`,
 confirmed flat/constant across all 7 real `customstring_len*` points

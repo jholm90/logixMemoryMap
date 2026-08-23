@@ -5,7 +5,29 @@ Every unresolved question gets an ID (OQ-xxx). Resolved items move to
 Items marked **[test built]** don't need a decision from James — a
 generator already covers them, just waiting on the next capture batch.
 
-1. **OQ-AXISDEEP [test built].** CIP/virtual axis, used everywhere in real
+1. **OQ-BASELINE-PROCFW (new, 2026-08-23, James).** `empty_project_baseline`
+   (13,296, see RESOLVED_QUESTIONS.md OQ-BASELINE) is **not a universal AB
+   constant** — James: "Keep in mind your empty project baseline is not a
+   constant and will change based on processor and firmware. You need to
+   be aware of this." Confirmed by inspection: virtually every sample this
+   project has generated uses `wrapper.py`'s single default processor
+   (1756-L81E, SoftwareRevision 35.05) — the 200+ "independent" data points
+   behind the 13,296 confirmation are independent in test CONTENT, not in
+   processor/firmware, so what's actually confirmed is "13,296 for
+   1756-L81E rev 35.05," not "13,296 for any CompactLogix/ControlLogix."
+   James: another test batch is coming — roughly 30 blank (no tags/logic)
+   files, one per processor model, to isolate the per-processor baseline,
+   plus a same-processor/different-firmware-revision set to isolate the
+   per-firmware component separately. **Action needed once that data
+   lands:** `empty_project_baseline` needs to become a lookup keyed on
+   (processor_type, firmware_rev) rather than a single scalar — likely
+   sourced from `controller_budgets.yaml` alongside the existing per-
+   processor memory-budget table, not a bare constant in memory_model.yaml.
+   Until then, treat 13,296 as valid ONLY for 1756-L81E/35.05-class
+   projects; flag this prominently in the UI once the UI surfaces this
+   number, not just in docs.
+
+2. **OQ-AXISDEEP [test built].** CIP/virtual axis, used everywhere in real
    programs, 0.01%-tolerance target. `gen_axis_composite.py` covers the
    `ts_CIPAxis`-shaped composite UDT + AOI-with-InOut-axis call + full
    combo. Awaiting capture. **Partially resolved 2026-08-23** — the pure
@@ -16,19 +38,19 @@ generator already covers them, just waiting on the next capture batch.
    alongside other stuff, not a standalone axis tag — still awaiting its
    own capture to confirm no extra interaction cost.
 
-2. **OQ-MIXEDUDT [test built].** Realistic messy/nested UDTs (not
+3. **OQ-MIXEDUDT [test built].** Realistic messy/nested UDTs (not
    homogeneous arrays) — `gen_axis_composite.py`'s composite UDT covers
    this too. Awaiting capture.
 
-3. **OQ-ARRAYPACK [test built].** Does a UDT's total size round to a 32-bit
+4. **OQ-ARRAYPACK [test built].** Does a UDT's total size round to a 32-bit
    boundary? `gen_arraypack_boolarray.py` group C. Awaiting capture. See
    also OQ-UDTARRAYALIGN below — the odd-byte-count case below is this
    same question, partially answered.
 
-4. **OQ-ALIASSIZE [test built].** Alias tag cost at 1/10/1000 scale.
+5. **OQ-ALIASSIZE [test built].** Alias tag cost at 1/10/1000 scale.
    `gen_tagscope_alias.py` group B. Awaiting capture.
 
-5. **OQ-CMPCPTLAYOUT [test built, new 2026-08-22, extended same day,
+6. **OQ-CMPCPTLAYOUT [test built, new 2026-08-22, extended same day,
    MAJOR CORRECTION 2026-08-23].** Operator/layout/optimization sweep for
    CPT and CMP (`tag**tag` vs `tag*tag` vs `tag-tag`, a 6-operand chain,
    same-tag-vs-distinct-tag and redundant-literal dedup probes, compound
@@ -72,8 +94,35 @@ generator already covers them, just waiting on the next capture batch.
    better has replaced it and leaving it 0 would be worse. Flagged loudly
    here so this doesn't quietly stay believed "exact."
 
-6. **OQ-AOIDEF (new, 2026-08-23, MAJOR — real cost currently modeled as
-   zero).** AOI *definition* cost (the AOI's own Parameters/LocalTags
+7. **OQ-AOIDEF (new, 2026-08-23, MAJOR — real cost currently modeled as
+   zero; DATA QUALITY WARNING added same day, see below before trusting
+   any number in this entry).**
+
+   **Data quality warning, James 2026-08-23:** "I think the sample I gave
+   as def_only I accidentally added the controller tag and added it to a
+   rung as well." Confirmed in manifest.csv: **7 structurally different
+   `*_def_only` AOI files show byte-for-byte identical `actual_bytes`
+   (19392)** — `aoiname_len13_def_only`, `localcount_n04_def_only`,
+   `localtype_dint_n4_def_only`, `localtype_real_n4_def_only`,
+   `paramcount_n08_def_only`, `paramtype_dint_n4_def_only`,
+   `paramtype_real_n4_def_only`. These have genuinely different member
+   counts/types/name lengths — 7-way exact agreement is not plausible as a
+   real coincidence, consistent with James's own explanation: a modified
+   (controller-tag-added, rung-referenced) file got captured under
+   multiple sample_ids instead of the clean 0-instance definition.
+   Generator code itself is NOT the bug — re-read `gen_aoi_sweep.py`'s
+   `_def_and_instance`/direct `_write` calls for the def_only case:
+   `tags_xml=""` (no controller tag), default single-NOP rung (no
+   reference to the AOI at all) — confirmed clean. This is a capture/
+   labeling mixup on the capture side, not a generation bug.
+   **Consequence: every number derived from this batch of `*_def_only`
+   data below is now suspect, including the "clean, confident" local-tag-
+   count fit** (its n=4 point, `localcount_n04_def_only`, is one of the 7
+   contaminated rows). **These 7 sample_ids need a clean re-capture before
+   any of this data is trusted again** — don't backfill or re-derive
+   anything from the current values. Keeping the raw numbers and the
+   original (now-suspect) sub-findings below for reference/context only,
+   not as confirmed real data. AOI *definition* cost (the AOI's own Parameters/LocalTags
    declaration — separate from any tag that instantiates it) is not
    modeled at all right now; `report.py` only emits `udt_definition`
    entries for true UDTs, explicitly skipping AOI definitions pending a
@@ -165,14 +214,14 @@ generator already covers them, just waiting on the next capture batch.
    — base + per-param + per-local + name-length + bool-adjacency terms,
    each independently confirmed the way the UDT formula's terms were.
 
-7. **OQ-PREDEFINED, remaining piece [test built].** MOTION_INSTRUCTION,
+8. **OQ-PREDEFINED, remaining piece [test built].** MOTION_INSTRUCTION,
    AXIS_CIP_DRIVE/AXIS_SERVO/AXIS_VIRTUAL/COORDINATE_SYSTEM, and
    MOTION_GROUP are now derived and wired in (see RESOLVED_QUESTIONS.md
    OQ-PREDEFINED). What's still open: `CAM` (the drive/cam-instruction
    wrapper, not `CAM_PROFILE` the array structure, which IS resolved) is
    still untested. Awaiting capture.
 
-8. **OQ-XPROGREF [test built].** Real Logix has no direct cross-program
+9. **OQ-XPROGREF [test built].** Real Logix has no direct cross-program
     tag-addressing syntax in logic (confirmed: searched all 47 real corpus
     files, no `Program:Tag`-style reference exists anywhere in rung Text).
     The real mechanism is what you described earlier — a Controller-scoped
@@ -183,7 +232,7 @@ generator already covers them, just waiting on the next capture batch.
     `build_l5x(extra_programs_xml=...)` wrapper hook for a second Program.
     Awaiting capture.
 
-9. **Motion instructions [test built]** (MAM/MAJ/MAH/MAS/MSO/MRP).
+10. **Motion instructions [test built]** (MAM/MAJ/MAH/MAS/MSO/MRP).
     `gen_motion_instructions.py` — MAH/MSO's 2-operand call syntax is
     corpus-confirmed, the rest use the same documented signature but
     aren't independently confirmed for that exact mnemonic. MAPC/MCCP
@@ -194,14 +243,14 @@ generator already covers them, just waiting on the next capture batch.
     `logic_instructions.weights` in memory_model.yaml — still needs that
     one-line addition next session. MAM/MAJ/MAS/MRP remain untested.
 
-10. **Per-Task overhead [test built].** `gen_task_overhead.py` — 2nd/3rd
+11. **Per-Task overhead [test built].** `gen_task_overhead.py` — 2nd/3rd
     Task, isolating pure Task/Program scaffolding cost from logic content.
     Also the only way to disambiguate whether the logic-sizing engine's
     `fixed_base_per_routine` is really per-routine, per-program, or
     per-task (every calibration sample had exactly one of each). Awaiting
     capture.
 
-11. **Indirect addressing overhead [test built, extended 2026-08-22].**
+12. **Indirect addressing overhead [test built, extended 2026-08-22].**
     `gen_indirect_addressing.py` — direct vs. tag-driven array index, plus
     (James: "Does tag[idx+1] take up the same space as tag[Idx]?") a third
     variant with an arithmetic offset inside the index. Same

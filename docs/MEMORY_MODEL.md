@@ -69,20 +69,38 @@ number, since that shape realistically never happens.
 |---|---|---|---|
 | CAM_PROFILE | 4 | 56 | Exact linear fit, 1/5/20/50-element real count sweep. `per_element=56` = 14 fields x 4 bytes -- confirms an earlier corpus-based hypothesis that CAM_PROFILE has 14 real per-element L5K fields, only 1 of which is visible in the Decorated XML shape (Rockwell's own internal "voodoo" layout, not derivable structurally). |
 
-## Empty-project baseline (KNOWN, 2026-08-23)
+## Empty-project baseline (KNOWN, but processor/firmware-SCOPED -- not a universal constant, see caveat below)
 
-`empty_project_baseline = 13,296` blocks. A fixed, zero-variance cost that
-exists in every real program regardless of content -- controller/module/
-task/program scaffolding that the L5X format never directly represents as
-a sizeable element. Confirmed across 200+ independent real data points
-spanning wildly different test categories, all landing on exactly this
-same number once every other sizeable element in the file is accounted
-for. Emitted once per report as a `project_baseline` SizeEntry
-(`report.py`), confidence KNOWN. See RESOLVED_QUESTIONS.md OQ-BASELINE for
-the full derivation. A few categories carry a small amount on top of this
-floor from their own separately-modeled cost (custom string definitions,
-SIZE instruction, odd-byte UDT array packing) -- not folded into the
-baseline itself, each has its own constant.
+`empty_project_baseline = 13,296` blocks, confirmed **for 1756-L81E /
+SoftwareRevision 35.05 specifically** -- `wrapper.py`'s single default
+processor, which is what virtually every sample this project has ever
+generated uses. A fixed, zero-variance cost within that one processor/
+firmware combination that exists in every real program regardless of
+content -- controller/module/task/program scaffolding that the L5X format
+never directly represents as a sizeable element. Confirmed across 200+
+independent real data points spanning wildly different test categories,
+all landing on exactly this same number once every other sizeable element
+in the file is accounted for -- independent in test CONTENT, not in
+processor/firmware. Emitted once per report as a `project_baseline`
+SizeEntry (`report.py`), confidence KNOWN *for that one processor/firmware
+combo*. See RESOLVED_QUESTIONS.md OQ-BASELINE for the full derivation. A
+few categories carry a small amount on top of this floor from their own
+separately-modeled cost (custom string definitions, SIZE instruction,
+odd-byte UDT array packing) -- not folded into the baseline itself, each
+has its own constant.
+
+**CAVEAT, James 2026-08-23: "your empty project baseline is not a constant
+and will change based on processor and firmware. You need to be aware of
+this."** Not yet tested against any other processor or firmware revision
+-- see `docs/OPEN_QUESTIONS.md` OQ-BASELINE-PROCFW. A ~30-file per-
+processor blank-project batch and a same-processor/different-firmware
+batch are coming to isolate both components separately. Once that lands,
+this needs to become a lookup keyed on (processor_type, firmware_rev),
+likely living in `controller_budgets.yaml` next to the existing per-
+processor memory-budget table, not a bare scalar in this file. Until then,
+**13,296 is only valid for 1756-L81E/35.05-class projects** -- do not
+apply it to a report for any other processor without flagging that
+explicitly.
 
 ## Alias tags (KNOWN)
 

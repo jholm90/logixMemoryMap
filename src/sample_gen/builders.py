@@ -43,6 +43,22 @@ class MemberSpec:
     # member does NOT carry (confirmed: axis_composite_udt_* already
     # passed real Build without them). See _udt_members_xml.
     is_aoi_member: bool = False
+    # AOI Parameter Required/Visible flags (James, 2026-08-23: real calling-
+    # instance semantics, not just cosmetic -- Required="true" means the
+    # calling rung MUST have a tag wired to that parameter; Required="false"
+    # + Visible="true" means the calling rung must have SOME value present
+    # (tag or literal) but it's optional whether to wire one at all (real
+    # corpus evidence, SJ_Gormley_20251112_r02.L5X's PTimer call omits 2 of
+    # its 4 non-hidden Input params entirely); Required="false" +
+    # Visible="false" means the parameter has nowhere to appear on the
+    # calling rung at all -- storage-only, tag-browser-visible only. Only
+    # meaningful for Input/Output params (_aoi_parameter_xml), ignored for
+    # InOut (whose Required/Visible are always "true"/"true", not author-
+    # chosen, per real corpus) and EnableIn/EnableOut (always "false"/
+    # "false"). Defaults match this generator's own prior behavior (safe
+    # hidden default) so existing callers are unaffected.
+    required: bool = False
+    visible: bool = False
 
 
 _FLOAT_TYPES = {"REAL"}
@@ -358,9 +374,12 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
     radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
     external_access = "Read Only" if usage == "Output" else "Read/Write"
     default = "" if m.dimension else _aoi_default_data_xml(m)
+    required_attr = "true" if m.required else "false"
+    visible_attr = "true" if (m.required or m.visible) else "false"
     return (
         f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{dim_attr} Usage="{usage}"'
-        f'{radix_attr} Required="false" Visible="false" ExternalAccess="{external_access}">{default}</Parameter>'
+        f'{radix_attr} Required="{required_attr}" Visible="{visible_attr}" '
+        f'ExternalAccess="{external_access}">{default}</Parameter>'
     )
 
 
