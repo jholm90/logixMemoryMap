@@ -71,6 +71,37 @@ generator already covers them, just waiting on the next capture batch.
    projects; flag this prominently in the UI once the UI surfaces this
    number, not just in docs.
 
+   **2026-08-24, batch received and staged, awaiting real capture.** 29
+   blank L5X files (`samples/local/fw_versions/`, gitignored, real James
+   exports) — confirmed clean (0 tags, 0 DataTypes, 0 errors through the
+   current engine, every one currently predicts the flat 13,296 regardless
+   of processor/firmware, exactly the gap this question is about). **L5X
+   itself carries no memory-usage/Capacity-tab data at all** — confirmed
+   by inspecting every file's raw XML; the real numbers can only come from
+   Studio 5000 (Controller Properties → Memory tab / the existing AHK
+   capture pipeline), same workflow as every other sample. Organized into
+   James's own 3 comparison axes, ready for real capture:
+   - **Same catalog, different firmware:** `l81_v30` through `l81_v38` (7
+     files, 1756-L81E, SoftwareRevision 30.02→38.02, otherwise identical).
+   - **Same series, different memory capacity:** three separate families —
+     `v35_l82e`/`l83e`/`l84e`/`l85e` (1756-L8xE, ControlLogix 5580);
+     `v35_l16er`/`l18er`/`l19er` (1769-L1xER, CompactLogix 5370);
+     `v35_l306er`/`l320er`/`l330er`/`l340er`/`l3100erm` (5069-LxxxER,
+     Compact 5000) — each family same firmware (35.05), same base
+     hardware line, escalating memory tier only.
+   - **Same catalog family, M(otion)/S(afety) feature suffix:**
+     `v35_l306er` (base) / `l306erm` (M) / `l306ers2` (S) / `l306erms2`
+     (M+S) / `l306erms3` (M+S, rev 3) — a clean 5-way isolation of M vs S
+     vs both, same base catalog/memory tier throughout. Also
+     `v35_l18er`/`l18erm` (base vs M) and `v35_l24er`/`l24er_qbfc1b`/
+     `l27erm_qbfc1b` (base vs a QBFC1B I/O variant vs M+QBFC1B) as smaller
+     secondary examples.
+   Not yet in `samples/manifest.csv` (that CSV only ever tracks
+   `samples/generated/` files per existing convention, real `samples/
+   local/` files never have been) — once James reports real Capacity
+   numbers per file, do the actual 3-way comparison directly, then decide
+   the right place to persist the per-(processor,firmware) baseline table.
+
 3. **OQ-AXISDEEP [test built].** CIP/virtual axis, used everywhere in real
    programs, 0.01%-tolerance target. `gen_axis_composite.py` covers the
    `ts_CIPAxis`-shaped composite UDT + AOI-with-InOut-axis call + full
