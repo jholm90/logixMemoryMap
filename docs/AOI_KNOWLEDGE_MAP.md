@@ -147,26 +147,44 @@ instruction table almost did.
 
 These are the places where "how does Logix actually compile this" is a
 real Rockwell-internals question, not something more test files alone can
-answer cleanly:
+answer cleanly. **Quick-fire Q&A run 2026-08-25 (James's request) —
+answers below.**
 
 - Is there a real, known reason an AOI's own compiled definition would
   cost differently than an ordinary UDT's, structurally? (e.g. does an
   AOI carry extra internal bookkeeping — a signature/revision hash, an
   edit-in-progress flag, something visible in Logix Designer's own
   compare/verify tooling — that a plain UDT doesn't?)
+  **James: yes, AOIs carry real extra metadata.** Confirms the
+  definition-cost gap (unknown #1 above) is a genuine structural AOI-vs-
+  UDT difference, not measurement noise or an artifact of test shape —
+  raises the priority of actually fitting that gap's formula, since it's
+  now confirmed to be a real, permanent line item every AOI-using program
+  pays, not something that might wash out with more data.
 - Is BOOL-parameter packing inside an array of AOI instances something
   you've seen discussed/documented anywhere (Rockwell KB, AB forums), or
   is this genuinely undocumented territory that only shows up empirically?
+  **James: never seen it documented.** Stays purely empirical — no
+  shortcut to a known mechanism, the boundary-crossing (n=16/31/32/33/
+  48/64/65/96) and ratio sweeps already generated/awaiting capture are
+  the only path to a mechanism here.
 - Does the Required/Visible/Hidden flag combination have any known
   real-world effect on compiled size, or is the small ±16 swing seen
   above more likely something else entirely (e.g. an artifact of exactly
   which parameters got marked Hidden vs Visible, not the flag pattern
   itself)?
+  **James: no idea, need more data.** Stays open — the
+  `group_axis_aoi_inout_reqvis_sweep` files (BOOL Input + InOut
+  AXIS_CIP_DRIVE, hidden/visible-optional/required) already generated and
+  awaiting capture are the next data point; no reason yet to expect the
+  DINT-only ±16 result to hold or not hold on this shape.
 
 ## Where this leaves the "100% accuracy" goal
 
 Not there yet, and the gap is now itemized rather than vague: definition
-cost (biggest, unresolved, contaminated retest already re-issued),
+cost (biggest, unresolved, contaminated retest already re-issued, and as
+of 2026-08-25 confirmed by James to be a real structural AOI-vs-UDT
+difference, not test noise — raises this item's priority),
 BOOL-array-packing mechanism (partially characterized, 3 more shapes
 generated awaiting capture), and the two are currently tangled together in
 every array data point. Nothing above is guessed into `memory_model.yaml`
