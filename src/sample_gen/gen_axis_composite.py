@@ -204,6 +204,34 @@ def group_axis_aoi_inout() -> None:
 
 
 # ---------------------------------------------------------------------------
+# 2b. James, 2026-08-25: "check if size is different when marking them as
+#     not visible vs visible vs required" -- a def_only (0 instances)
+#     Required/Visible sweep on the SAME BOOL Input + InOut AXIS_CIP_DRIVE
+#     shape as group_axis_aoi_inout, isolating the reqvis effect on
+#     DEFINITION cost specifically, paired with an InOut axis param for
+#     the first time (the earlier reqvis_* sweep only ever used plain
+#     DINT Input params, no InOut).
+# ---------------------------------------------------------------------------
+
+def group_axis_aoi_inout_reqvis_sweep() -> None:
+    variants = [
+        ("hidden", False, False),
+        ("visibleoptional", False, True),
+        ("required", True, True),
+    ]
+    drive_axis = MemberSpec("Drive_Axis", "AXIS_CIP_DRIVE")
+    for label, required, visible in variants:
+        fault_reset = MemberSpec("FaultReset", "BOOL", required=required, visible=visible)
+        definition, _ = aoi_xml(f"DriveAxisReqVis{label.capitalize()}", input_params=[fault_reset],
+                                 inout_params=[drive_axis])
+        l5x = build_l5x(target_name=f"DriveAxisReqVis{label.capitalize()}", tags_xml=_AXIS_TAG_XML,
+                         extra_aoi_xml=definition)
+        _write_unmodeled(l5x, f"axis_aoi_inout_reqvis_{label}_def_only",
+               f"AOI with BOOL Input (FaultReset, Required={required}/Visible={visible}) + InOut "
+               f"AXIS_CIP_DRIVE param, 0 instances -- reqvis-vs-InOut interaction sweep, James 2026-08-25")
+
+
+# ---------------------------------------------------------------------------
 # 3. Full combo: axis + composite UDT (1 instance) + AOI-with-InOut-axis
 #    call, all in one file -- the additivity test.
 # ---------------------------------------------------------------------------
@@ -239,6 +267,7 @@ def group_full_combo() -> None:
 def main() -> None:
     group_composite_udt()
     group_axis_aoi_inout()
+    group_axis_aoi_inout_reqvis_sweep()
     group_full_combo()
     print("\nDone. 5 files.")
 

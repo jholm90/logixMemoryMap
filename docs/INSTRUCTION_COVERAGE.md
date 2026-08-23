@@ -78,10 +78,10 @@ every time real capture data lands, not just when someone remembers to.
 
 | Status | Occurrences | % of all native instruction usage |
 |---|---|---|
-| CONFIRMED | 199,145 | 98.88% |
+| CONFIRMED | 199,146 | 98.88% |
 | WRONG | 840 | 0.42% |
 | BUILD FAILED | 695 | 0.35% |
-| NO DATA | 387 | 0.19% |
+| NO DATA | 386 | 0.19% |
 | CAPTURED, blocked on CAM structure | 129 | 0.06% |
 | CAPTURED, blocked on MESSAGE structure | 99 | 0.05% |
 | OUT OF SCOPE (Safety) | 98 | 0.05% |
@@ -233,7 +233,7 @@ occurrences, 54 real corpus files (spans the original set and the
 | SQR | 0.00% | 2 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | SCP | 0.00% | 2 | NO DATA (0 contribution -- never tested, deliberately skipped rather than guessed, see OQ-INSTRFIRSTPASS) |
 | LFU | 0.00% | 1 | NO DATA (0 contribution -- never tested) |
-| CTD | 0.00% | 1 | NO DATA (deliberately untested, ~0 real corpus usage) |
+| CTD | 0.00% | 1 | CONFIRMED (James, 2026-08-25, direct confirmation: "100% the same as a CTU," no test needed) |
 | ALMD | 0.00% | 1 | NO DATA (0 contribution -- never tested) |
 | PIDE | 0.00% | 0 | NO DATA (0 contribution -- never tested) |
 | SQO | 0.00% | 0 | NO DATA (0 contribution -- never tested) |
@@ -250,11 +250,15 @@ project's corpus grows.
 ## Where to focus next, by real impact
 
 1. **CPT (840 occurrences, 0.42%)** — actively WRONG, not just untested,
-   and now the single largest remaining non-CONFIRMED bucket in the whole
-   table. Needs the per-operand/operator cost model described in
-   `docs/OPEN_QUESTIONS.md` OQ-CMPCPTLAYOUT — `gen_cmpcpt_complexity.py`
-   exists to gather the data for this; `cmpcpt_*` real capture data has
-   landed but hasn't been mined for a full CPT cost model yet.
+   and the single largest remaining non-CONFIRMED bucket in the whole
+   table. 2026-08-25: mined the 27 already-captured `cmpcpt_*` rows —
+   real operator-tier deltas found (ADD/SUB, MUL/DIV, POW each a distinct
+   tier) plus real operand-type effects (literal vs tag operands don't
+   cost the same), all documented in `docs/OPEN_QUESTIONS.md`
+   OQ-CMPCPTLAYOUT, but every one is anchored on a single rung count —
+   nothing wireable yet. `gen_cpt_confirm.py` (4 files, 2nd count point
+   for the 3 tiers) generated and awaiting capture to confirm linearity
+   before a real per-operand/operator cost model can be built.
 2. **MAPC (113 occurrences, 0.06%) — James: "100% needed instruction that
    needs 100% accuracy," active priority, not a defer item.** Real build
    failure on x10 capture (20 errors/10 rungs). James's direction: review

@@ -342,6 +342,66 @@ generator already covers them, just waiting on the next capture batch.
    better has replaced it and leaving it 0 would be worse. Flagged loudly
    here so this doesn't quietly stay believed "exact."
 
+   **2026-08-25, James: "whats your CPT confidence? why is it not 100%
+   yet? you need to generate tests to satisfy this."** Mined the 27
+   already-captured `cmpcpt_*` rows (all real, all `error_count=0`,
+   nothing sitting unanalyzed) via direct subtraction between file
+   variants sharing the exact same tag pool — real, clean findings, but
+   every one is anchored on a SINGLE rung count (1000), so none of them
+   are confirmed linear yet:
+   - **Operator tiers, computed relative to a `CPT(L2,L0)` bare-copy
+     baseline (106,904 @ n=1000), tag operands throughout:** ADD and SUB
+     cost the same (+36,000 = +36/rung if linear), MUL and DIV cost the
+     same (+52,000 = +52/rung if linear), POW is its own, more expensive
+     tier (+116,000 = +116/rung if linear). All 3 tiers land on clean
+     multiples of 4, internally consistent (ADD==SUB exactly, MUL==DIV
+     exactly) — a real signal, not noise, but still just one count point
+     each.
+   - **6-operand chain** (`CPT(L7,L0+L1+L2+L3+L4+L5)`, 238,904 @ n=1000)
+     costs +96,000 over the 2-operand ADD baseline — a real per-extra-
+     operand signal, but only one chain length tested, can't separate a
+     per-operand rate from some other shape yet.
+   - **No redundant-expression optimization found:** `CPT(L2,L0+0)`
+     (mathematically redundant +0) and `CPT(L2,L0+L0)` (same tag used
+     twice) both cost EXACTLY the same as the plain 2-distinct-tag ADD
+     case (142,904 each) — Rockwell's compiler doesn't special-case
+     either of these, real negative result, not untested.
+   - **Operand TYPE (tag vs int-literal vs float-literal) interacts with
+     CPT's cost in a way that is NOT simply additive with the operator
+     tiers above, and is itself under-tested:** every int-literal variant
+     (`CPT(L2,L0+5)` etc.) costs exactly **+264** more than its tag-
+     operand counterpart, identically across all 5 operators — looks like
+     a one-time cost (e.g. a per-distinct-literal-value table entry) sitting
+     underneath the per-rung rate, not another per-rung addition, but
+     that's a hypothesis from a single count point, not confirmed. Float-
+     literal variants are stranger still: ADD/SUB/MUL/DIV-with-a-float-
+     literal all land on the exact same 187,168, independent of which
+     operator is used, but POW-with-a-float-literal doesn't (195,168) —
+     operand type appears to partially or fully override the operator-tier
+     effect for float literals specifically. Not understood mechanistically
+     yet, flagged rather than guessed at.
+   - **Compound CMP conditions build clean now** (`cmp_and_compound`/
+     `_or_compound`/`_duplicate_cond`, all `error_count=0`) — the earlier
+     2026-08-22 100%-build-failure note above is stale, superseded by this
+     later, corrected batch. All 3 compound shapes land on the exact same
+     175,168, suggesting AND vs OR vs a duplicated condition cost the same
+     real amount — again only one count point.
+
+   **Honest confidence: moderate on the numbers being real, low on having
+   a complete formula.** CPT is a general expression evaluator (arbitrary
+   operand count/type/operator/nesting) — "100% accuracy" here means
+   covering a genuinely combinatorial space, not a single fix. What's
+   missing before any of this can be wired: a second rung-count point for
+   each tier (to confirm +36/+52/+116 are truly linear, not just flat-
+   looking at n=1000) and a dedicated operand-type sweep (to actually
+   separate the literal-vs-tag effect from the operator-tier effect
+   instead of eyeballing it from 10 rows). **Generated 2026-08-25,
+   `gen_cpt_confirm.py`:** a second count point (n=100) for barecopy/ADD/
+   MUL/POW, same tag pool as the original sweep, isolates exactly the
+   rung-count-linearity question — 4 files, lint-clean, awaiting capture.
+   The operand-type-vs-operator interaction is a separate follow-up, not
+   attempted in this batch to keep it focused on one question at a time.
+
 7. **OQ-AOIDEF (new, 2026-08-23, MAJOR — real cost currently modeled as
    zero; DATA QUALITY WARNING added same day, see below before trusting
    any number in this entry). See `docs/AOI_KNOWLEDGE_MAP.md` for the full
@@ -680,6 +740,35 @@ generator already covers them, just waiting on the next capture batch.
       content) — awaiting recapture.
     MAPC/MCCP camming still blocked separately on the unmodeled CAM
     structure, see OQ-PREDEFINED item 8 below.
+
+    **2026-08-25, James, sequencing correction: "your next motion
+    instruction test should be one L5X file per instruction with one
+    instruction each - after validating these results then we can do a
+    10-pass for confirmation... make sure you can handle ANY
+    combination."** The n=10/n=100 files above are a single fixed
+    template per instruction (one real corpus transplant each) — real,
+    but not yet validated as a solo n=1 rung, and not covering the real
+    keyword-VALUE variation each instruction's real corpus usage actually
+    shows. `gen_motion_syntax_combos.py` (new, 14 files, all n=1, all
+    lint-clean, awaiting capture) fills both gaps at once:
+    - **MAM Merge field, Enabled vs Disabled** (both real corpus values)
+      — James: does a merged move cost more than a disabled merge? Direct
+      test, 2 files.
+    - **MAJ Profile field, Trapezoidal vs S-Curve** (both real corpus
+      values for MAJ specifically) — 2 files.
+    - **MAS full combination coverage**, 2×2×2 = 8 files: Stop Type
+      (All/Jog) × the two Yes/No fields James's "use existing values
+      compared to using new values" maps to (both real corpus values seen
+      for all three axes, no guessed keyword values).
+    - **MRP's two real operand-4/5 patterns** (`Absolute,Actual,0` vs
+      `Absolute,0,<position>`) — 2 files. MRP's own "Absolute" field was
+      NOT varied — only one real value for it was ever found in the
+      corpus, no confirmed alternate to test.
+    Not a claim of exhaustive "ANY combination" coverage — every keyword
+    tested is one a real corpus example actually uses, not a guess, but
+    Rockwell's real documented value sets for these fields may be larger
+    than what 3-8 real files happened to exercise. Flagged as a real
+    limitation, not silently treated as complete.
 
 11. **Per-Task overhead [captured 2026-08-25, real finding, NOT wired —
     needs parser architecture work first].** `gen_task_overhead.py` —

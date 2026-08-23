@@ -305,6 +305,13 @@ logic_instructions:
     TOF: 20      # solo -- unchanged
     RTO: 20      # solo -- unchanged
     CTU: 20      # solo -- unchanged
+    # CTD -- James, 2026-08-25, direct field-experience confirmation:
+    # "i am 100% telling you the CTD is 100% the same as a CTU. this is
+    # final and does not need to be tested." Real corpus usage of CTD is
+    # ~0 (OQ-INSTRUCTIONSCOPE), so no real capture data exists or is
+    # needed -- same trust level as OQ-ALIGN/OQ-BOOLPACK's direct-
+    # confirmation resolutions elsewhere in this project.
+    CTD: 20
     RES: 20      # solo -- unchanged
     OTE: 16      # solo, the decomposition anchor -- unchanged
     OTL: 16      # solo -- unchanged

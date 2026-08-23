@@ -85,6 +85,15 @@ instruction table almost did.
      all-Required land on the exact same value while all-Visible-optional
      is +16 and one specific mix is -16. Four data points, one real
      small effect, zero mechanistic understanding.
+     **2026-08-25, James: "check if size is different when marking them
+     as not visible vs visible vs required."** That earlier sweep only
+     ever used plain DINT Input params, no InOut param in the mix.
+     `gen_axis_composite.py`'s new `group_axis_aoi_inout_reqvis_sweep`
+     (3 files, hidden/visible-optional/required, all def_only, all
+     lint-clean) tests the same 3-way flag split on the BOOL Input +
+     InOut AXIS_CIP_DRIVE shape instead — the first check of whether this
+     effect holds the same way when an InOut param is also present, not
+     assumed to generalize from the DINT-only case. Awaiting capture.
 
 2. **AOI array-of-instances, BOOL-heavy members — real numbers, no
    mechanism.** Real per-element array cost depends dramatically on how
