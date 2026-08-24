@@ -204,6 +204,39 @@ def group_three_tier_mix() -> int:
 
 
 # ---------------------------------------------------------------------------
+# I. All-3-tier scaling extension, up to 15 operands (2026-08-27 follow-up,
+# James: "run all available tests on 4b at this time").
+#
+# group_three_tier_mix above only went to 10 operands -- every OTHER
+# tier-pair scaling sweep in this file (Groups B and H) went all the way
+# to 15, per James's original "mix up to 15 operands per expression"
+# instruction. The all-3-tier case was the one left short. Real captured
+# data at n=3/5/8/10 already showed "doesn't fit any simple model tried"
+# (see OQ-CMPCPTLAYOUT) -- these 2 extra points (11, 15) extend the same
+# alternating (+,*,**) pattern already used for the first 4, giving 6
+# total count points instead of 4 for whatever formula search comes next,
+# and directly closes the "up to 15" gap for this one remaining tier
+# combination.
+# ---------------------------------------------------------------------------
+
+def group_three_tier_scaling_extended() -> int:
+    n = 0
+    for count in [11, 15]:
+        operands = [f"L{i}" for i in range(count)]
+        tiers = ["+", "*", "**"]
+        ops = [tiers[i % 3] for i in range(count - 1)]
+        expr = _join_expr(operands, ops)
+        _one_rung_file(
+            expr, f"CptMix3TierN{count:02d}", f"cptmix_threetier_n{count:02d}",
+            f"{count}-operand all-3-tier (+,*,**) alternating mix -- extends group_three_tier_mix's "
+            f"n=3/5/8/10 points to the full 15-operand range every other tier-pair scaling sweep in "
+            f"this file already covers",
+        )
+        n += 1
+    return n
+
+
+# ---------------------------------------------------------------------------
 # D. Literal position within a fixed 3-operand 2-tier mixed expression.
 # ---------------------------------------------------------------------------
 
