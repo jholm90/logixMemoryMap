@@ -1988,3 +1988,51 @@ generator already covers them, just waiting on the next capture batch.
     already-exact raw sizes — a much smaller fitting problem than usual.
     Produced/consumed tags (OQ-PRODCONS) remain completely untouched,
     same as before this pass.
+
+18. **OQ-EMPTYROUTINE (new, 2026-08-24, found while investigating the
+    `l81_v35` fw_baseline manual entry).** `l81_v35` (1756-L81E, firmware
+    35.05 — the SAME firmware every other confirmed file in the corpus
+    uses) showed a real +4,816 gap against the engine's flat 13,296
+    prediction, even though this file has zero tags/UDTs/logic content —
+    at first glance a firmware effect, but the gap being EXACTLY equal to
+    `fixed_base_per_routine` (4,816) was too clean to be that. Root
+    cause, confirmed by inspecting the actual XML: this file's
+    `MainRoutine` is a self-closing `<Routine Name="MainRoutine"
+    Type="RLL"/>` with NO `RLLContent` child element at all — different
+    from every other test file in this project, whose default routine
+    always has an `RLLContent` (even if just one NOP rung).
+    `parse_rll_routines` (parser/logic.py) currently does `rll_content =
+    routine_el.find("RLLContent"); if rll_content is None: continue` —
+    silently skipping such a routine entirely, charging it 0 bytes,
+    exactly as if it didn't exist in the program at all.
+
+    **This is NOT a rare synthetic-file quirk — real corpus check found
+    the self-closing-Routine shape in 15 of James's real production
+    files**, from 1 up to 10 such routines in a single file
+    (`SJ_Gormley_20251112_r02.L5X` has 10) — presumably real
+    unused/placeholder routines left in place, a completely normal real-
+    world pattern. If real Studio 5000 genuinely charges something for a
+    routine with no RLLContent (this one data point says ~4,816, the same
+    as an ordinary 1-rung routine's fixed base), every one of those 15
+    real files' predictions is currently under-counting by roughly
+    4,816 × (however many empty routines it has) — potentially a
+    significant, previously invisible source of error across a large
+    fraction of the real corpus.
+
+    **Only 1 clean data point (l81_v35) isolates this specifically** —
+    not enough to wire a fix. Two real open questions before touching
+    code: (1) is the true cost really identical to an ordinary 1-rung
+    routine's `fixed_base_per_routine`, or did this just coincidentally
+    match at n=1 (need a 2+ empty-routine file to check whether it scales
+    linearly the same way ordinary routines do); (2) does JSR's
+    `is_jsr_target` skip-logic need to change too if a self-closing
+    routine is ever a JSR target (untested — every JSR-target routine
+    tested so far has real RLLContent). `l81_v30`'s own +15,976 gap
+    (OQ-BASELINE-PROCFW above) almost certainly includes this same
+    +4,816-ish component on top of whatever real firmware-specific
+    residual exists, since it has the identical self-closing-`MainRoutine`
+    shape — flagged there too, not double-counted as a separate finding.
+    **Next step:** a small, cheap, purely synthetic batch (1/2/3 self-
+    closing routines in one program, no firmware variable involved this
+    time) would isolate this cleanly without needing more real-firmware
+    captures at all — can be generated without anything from James.
