@@ -330,24 +330,54 @@ aoi_array:
 # reference-not-storage convention as udt.py's own AOI-array member count)
 # plus every LocalTag, EXCLUDING the always-present EnableIn/EnableOut.
 #
-# CONFIDENCE IS FITTED, NOT KNOWN, DELIBERATELY -- both confirmed sweeps
-# used DINT-typed params/locals only. A separate real sweep (localtype_*/
-# paramtype_* in docs/OPEN_QUESTIONS.md OQ-AOIDEF) shows the per-item rate
-# genuinely varies by type -- BOOL/SINT tie below DINT's rate, LINT sits
-# above it -- not yet characterized into its own per-type table. This
-# formula will UNDER-predict a BOOL-heavy AOI and OVER-predict nothing
-# (DINT's rate is the confirmed middle of the observed range), so treat any
-# BOOL-Parameter-heavy AOI's definition cost as a floor, not a ceiling.
-# Also not yet folded in: AOI name length (real but non-uniform stepping,
-# not the clean 8*ceil(len/8) the UDT/tag_overhead formulas use) and BOOL
-# run/pack adjacency (real, sizable, position-sensitive effect -- see
-# OQ-AOIDEF's aoi_boolpack_* findings). Both stay real, open, unmodeled
-# gaps on top of this FITTED base -- don't read FITTED here as "close
-# enough for every AOI," it's specifically "confirmed exact for a
-# DINT/INT/REAL-parameter AOI, a real-but-partial floor for anything else."
+# CONFIDENCE IS FITTED, NOT KNOWN, DELIBERATELY.
+#
+# 2026-08-27: per-type rate table wired (was flat 20/item for every type).
+# The full localtype_*/paramtype_*/aoidefcost_type* def_only batch landed
+# captured (85/85 AOI rows in manifest.csv) -- this had been sitting
+# captured but unprocessed. Live-recomputed against the current engine (see
+# docs/OPEN_QUESTIONS.md OQ-AOIDEF for the derivation): holding
+# declared_item_count fixed and varying only the item TYPE, per-item rate is
+# clean and near-exact (base=1184 held constant, only the per-item rate
+# moves) for AOIs where every declared item is the SAME type:
+#   BOOL=16, SINT=18, INT=18, DINT=20 (unchanged), REAL=20, LINT=24
+# per_type_rate below overrides per_declared_item for exactly that case
+# (single-type-only AOI defs) -- see AoiDefinitionModel.bytes_for.
+#
+# MIXED-type AOI defs (the realistic case: some DINT + some BOOL + some
+# REAL, etc) deliberately still use the flat per_declared_item=20 rate, NOT
+# a per-type sum. Real data proves the per-type rates do NOT compose
+# additively once BOOL sits alongside another type: aoi_boolpack_
+# interspersed20_def_only (20 BOOL + 20 DINT) matches the flat-20 formula
+# EXACTLY (0 residual) but a per-type sum (16*20+20*20) UNDER-predicts by
+# 80. aoi_boolpack_clean_alternating/grouped_def_only (10 BOOL + 10 DINT,
+# same total count, different BOOL/DINT arrangement) land on a DIFFERENT
+# actual value from each other despite identical composition -- position/
+# packing-order-sensitive, not a simple type-count effect. This is a real,
+# confirmed, currently-unmodeled interaction (not a data gap -- more
+# samples of the same shape won't resolve it, it needs a genuinely
+# different formula), so mixed-type AOI defs deliberately keep the old
+# uniform rate rather than risk a worse prediction from a naive per-type
+# sum. BasicAOI/RealisticAOI50 (realistic mixed shapes) already sit within
+# 1-2% under the flat rate -- leaving mixed-type alone is not a regression.
+#
+# Still NOT folded in (real, open, both small: <2% of total file bytes at
+# the extremes tested):
+# - AOI name length: aoiname_len08/13/20/30_def_only (identical DINT:4
+#   composition, only the AOI's own type name varies) shows a real but
+#   non-uniform stepping (+0/+8/+16/+32 blocks, not the clean 8*ceil(len/8)
+#   the UDT/tag_overhead formulas use) -- not force-fit, flagged as residual.
+# - Required/Visible/Hidden flag combination's small +-16 definition-cost
+#   swing (see OQ-AOIDEF) -- recapture batch (reqvis_*_def_only against a
+#   BOOL+InOut AXIS shape) still awaiting capture, not yet re-confirmed.
 aoi_definition:
   base: 1184
   per_declared_item: 20
+  per_type_rate:
+    BOOL: 16
+    SINT: 18
+    INT: 18
+    LINT: 24
   confidence: FITTED
 
 # Per-tag flat overhead: every top-level <Tag> entry (Controller/Tags or
@@ -653,6 +683,61 @@ cmp_surcharge:
   compound_cost: 64
   float_literal_confidence: FITTED
   float_literal_cost: 72
+
+# Task/Program/Routine SHELL decomposition (WIRED 2026-08-27, OQ item "Per-
+# Task overhead" in docs/OPEN_QUESTIONS.md). fixed_base_per_routine (4816,
+# above) is a real, KNOWN, hundreds-of-times-confirmed constant for the
+# BASELINE case (1 Task, 1 Program, 1 plain routine, 0 rungs) -- but it was
+# being applied ONCE PER EMITTED ROUTINE regardless of Task/Program
+# structure, which over-predicts any file with more than one plain routine
+# (a 2-plain-routine/1-program/1-task file doesn't cost 2x4816 of shell, it
+# costs 4816 + a much smaller marginal routine cost). This block is that
+# marginal cost, split into three independent axes and applied ONCE per
+# file total (see report.py) as: fixed_base_per_routine (once, whenever the
+# file has >=1 plain routine) + task_extra*(n_tasks-1) +
+# program_extra*(n_programs-1) + routine_extra*(n_plain_routines-1).
+#
+# Derivation -- solved from 5 real files, all exact or near-exact, no
+# theoretical/assumed baseline used anywhere in the solve:
+# `programoverhead_n02progs_1task` (1 task/2 programs/2 routines, actual
+# 18,900) minus `taskoverhead_n02routines_1program_1task` (1 task/1
+# program/2 routines, actual 18,416) holds task AND routine count IDENTICAL
+# between the two files, varying ONLY program count -- a real, isolated
+# **program_extra = +484**, no assumptions. `taskoverhead_n02tasks` (2
+# tasks/2 programs/2 routines, actual 19,600) minus the program-overhead
+# file above holds program AND routine count IDENTICAL, varying ONLY task
+# count -- **task_extra = +700**, same isolation. routine_extra solved
+# directly against `taskoverhead_n02routines_1program_1task` itself (1
+# task, 1 program, 2 routines, 2 NOP rungs): actual(18,416) = project_
+# baseline(13,296) + fixed_base_per_routine(4,816, ONCE) + routine_extra*
+# (2-1) + 2*NOP(16 each, unrelated rung-content cost, unchanged/separate
+# mechanism) => **routine_extra = 272**. This is the fix the 2026-08-26
+# "why am I having to push you" note called for: earlier attempts anchored
+# the routine-shell subtraction on a THEORETICAL 0-rung reference and
+# risked conflating real NOP rung content with routine-shell cost; this
+# derivation instead anchors on the already-KNOWN, real fixed_base_per_
+# routine and handles rung content via the existing, unchanged, separate
+# per-rung mechanism -- no double-counting.
+#
+# Verified against all 3 real disentangle-batch files exactly (0 residual)
+# AND against the original taskoverhead_n02/n03/n04tasks sweep (each Task
+# gets its own Program+Routine+1 rung): n=2 exact, n=3 exact, n=4 off by
+# only +48 (0.21%) -- a small, already-flagged, unexplained periodic-task
+# residual, not chased further.
+#
+# Deliberately does NOT touch the separately-validated JSR pathway: a
+# JSR-caller routine keeps charging jsr_fixed_base_per_routine exactly as
+# before (report.py only applies this new decomposition when the file has
+# at least one PLAIN, non-JSR-involved routine to anchor the once-per-file
+# shell on -- a file whose only routines are JSR callers/targets is
+# untouched, same as before this fix). A file mixing JSR-caller routines
+# WITH plain routines across a multi-Task/multi-Program structure is
+# untested territory -- flagged, not guessed at.
+task_program_overhead:
+  routine_extra: 272
+  program_extra: 484
+  task_extra: 700
+  confidence: FITTED
 
 logic_instructions:
   fixed_base_per_routine: 4816

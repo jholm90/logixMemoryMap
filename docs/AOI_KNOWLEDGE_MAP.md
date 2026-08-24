@@ -56,12 +56,38 @@ instruction table almost did.
 
 ## UNKNOWN — real, open, no formula yet (this is the actual gap)
 
-1. **AOI DEFINITION cost — the single biggest unknown, unresolved.** The
-   AOI's own type declaration (independent of any instance) has a real,
-   substantial cost the engine currently doesn't model at all (charges
-   0). Real `*_def_only` captures show gaps in the 1,256–1,808 range
-   depending on shape — not the same number twice, so it's shape-
-   dependent, but the shape of that dependence isn't known:
+1. **AOI DEFINITION cost — WIRED 2026-08-27, close but not total closure.**
+   The full `localtype_*`/`paramtype_*`/`aoidefcost_type*` def_only batch
+   (85/85 AOI manifest rows) had landed captured but sat unprocessed —
+   closed this pass. `aoi_definition` (memory_model.yaml) now uses a
+   per-type declared-item rate (BOOL=16, SINT=18, INT=18, DINT=20, REAL=20,
+   LINT=24 per item, base=1184 unchanged) whenever an AOI declares items of
+   a SINGLE type — this directly fixes the previously-flagged "BOOL/LINT-
+   heavy AOIs under-predicted" gap (LINT-heavy: was -32/item, now exact;
+   BOOL-run: was -5-6%, now ~1.1%). Live-recomputed against all 85 captured
+   AOI rows: 32 exact, 52 within 1%, 1 at 2.10% (`aoi_array_localtag_1_
+   instance` — that's the separate array-vs-definition-cost tangle, item 3
+   below, not a def-cost miss). Deliberately did NOT extend per-type rates
+   to MIXED-type AOI defs (some DINT + some BOOL together) — real data
+   proves the rates don't compose additively once BOOL sits alongside
+   another type (`aoi_boolpack_interspersed20_def_only`, 20 BOOL + 20 DINT,
+   matches the OLD flat-20 formula exactly; a naive per-type sum
+   under-predicts it by 80). Mixed-type AOI defs keep the flat
+   per_declared_item=20 rate, which real realistic-shape data
+   (`BasicAOI`/`RealisticAOI50`) already sits within 1-2% of. See
+   memory_model.yaml's `aoi_definition` comment for the full derivation.
+
+   Still genuinely open, both small (<2% of a file's total predicted
+   bytes at the tested extremes):
+   - AOI name length has a real but non-uniform stepping effect
+     (`aoiname_len08/13/20/30_def_only`: +0/+8/+16/+32 vs a fixed
+     DINT:4 baseline) — not the clean `8*ceil(len/8)` bucket the UDT/
+     tag_overhead formulas use, not force-fit into a guess.
+   - Required/Visible/Hidden's small +-16 definition-cost swing —
+     recapture batch (BOOL+InOut AXIS shape) still awaiting capture.
+
+   Original per-item-count/type-scaling questions this item used to track
+   (now folded into the wired formula above), kept for history:
    - Does it scale with parameter count? **The one dataset built to
      answer this (`paramcount_n02/n04/n08_def_only`) is contaminated** —
      a stale-capture-window bug (OQ-CAPTURERACE) means `n04` accidentally

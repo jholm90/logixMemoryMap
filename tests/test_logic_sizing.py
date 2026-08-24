@@ -67,13 +67,22 @@ def test_build_report_includes_estimated_logic_entries():
     entries, errors = build_report(root, MODEL)
     assert errors == []
 
+    # 2026-08-27, Task/Program/Routine shell decomposition: a single plain
+    # routine's fixed_base_per_routine is now a separate "SHELL" entry
+    # (charged once per file, see report.py/memory_model.yaml
+    # task_program_overhead) rather than baked into the routine's own
+    # entry -- same total, two entries instead of one.
     logic_entries = [e for e in entries if e.tier == ESTIMATED]
-    assert len(logic_entries) == 1
-    logic_entry = logic_entries[0]
-    assert logic_entry.path == "program:MainProgram/MainRoutine"
-    assert logic_entry.category == "routine_logic"
-    assert logic_entry.bytes == 4816 + 4 * 3 + 16 * 2
-    assert logic_entry.basis == "FITTED"
+    assert len(logic_entries) == 2
+    routine_entry = next(e for e in logic_entries if e.data_type == "RLL")
+    shell_entry = next(e for e in logic_entries if e.data_type == "SHELL")
+    assert routine_entry.path == "program:MainProgram/MainRoutine"
+    assert routine_entry.category == "routine_logic"
+    assert routine_entry.bytes == 4 * 3 + 16 * 2
+    assert routine_entry.basis == "FITTED"
+    assert shell_entry.bytes == 4816
+    assert shell_entry.basis == "FITTED"
+    assert routine_entry.bytes + shell_entry.bytes == 4816 + 4 * 3 + 16 * 2
 
     # Exact-tier tag entries are untouched by the logic addition, still
     # their own tier, and total_bytes/pct_of_total now includes logic too.

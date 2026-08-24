@@ -235,19 +235,23 @@ def compute_aoi_definition_cost(
     LocalTags declaration) -- separate from and additive with any tag
     instance's own tag_overhead + member size, same relationship
     compute_udt_definition_cost has to a plain UDT. See memory_model.yaml
-    aoi_definition for the formula's derivation and its FITTED (not KNOWN)
-    confidence -- confirmed exact for DINT-typed declared items only, a
-    real-but-partial floor for BOOL/LINT-heavy AOIs.
+    aoi_definition for the formula's derivation (per-type rate for a
+    single-type AOI def, flat rate for a mixed-type one) and its FITTED
+    (not KNOWN) confidence.
 
-    declared_item_count excludes EnableIn/EnableOut (always present,
-    not something a user declares) -- parse_aoi_definitions already
-    excludes InOut params from `members` entirely (reference, not
-    storage), so every remaining member here is a real declared
-    Input/Output Parameter or LocalTag.
+    type_counts excludes EnableIn/EnableOut (always present, not something
+    a user declares) -- parse_aoi_definitions already excludes InOut params
+    from `members` entirely (reference, not storage), so every remaining
+    member here is a real declared Input/Output Parameter or LocalTag,
+    grouped by its own data_type so bytes_for can apply a per-type rate.
     """
     aoi = data_types[name]
-    declared_item_count = sum(1 for m in aoi.members if m.name not in ("EnableIn", "EnableOut"))
-    return model.aoi_definition.bytes_for(declared_item_count), model.aoi_definition.confidence
+    type_counts: dict[str, int] = {}
+    for m in aoi.members:
+        if m.name in ("EnableIn", "EnableOut"):
+            continue
+        type_counts[m.data_type] = type_counts.get(m.data_type, 0) + 1
+    return model.aoi_definition.bytes_for(type_counts), model.aoi_definition.confidence
 
 
 def referenced_data_type_names(

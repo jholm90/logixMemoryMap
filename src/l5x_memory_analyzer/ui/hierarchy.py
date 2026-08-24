@@ -63,7 +63,14 @@ def build_hierarchy(
     # the live UI). Both get their own dedicated top-level group instead,
     # never drillable (has_children always false -- neither has a nested
     # structure to descend into).
-    NON_TAG_GROUPS = {"udt_definition": "Type Definitions", "project_baseline": "Project Overhead"}
+    NON_TAG_GROUPS = {
+        "udt_definition": "Type Definitions",
+        "project_baseline": "Project Overhead",
+        # task_program_shell (2026-08-27, OQ-TASKOVERHEAD wiring): a single
+        # once-per-file entry, path "task_program_shell" with no "/" --
+        # same non-tag-path shape as project_baseline above, same fix.
+        "task_program_shell": "Project Overhead",
+    }
 
     for e in entries:
         if e.category in NON_TAG_GROUPS:

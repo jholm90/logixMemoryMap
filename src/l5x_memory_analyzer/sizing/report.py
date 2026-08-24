@@ -21,6 +21,7 @@ from l5x_memory_analyzer.parser.datatypes import parse_data_types
 from l5x_memory_analyzer.parser.logic import parse_rll_routines
 from l5x_memory_analyzer.parser.modules import parse_modules
 from l5x_memory_analyzer.parser.tags import CONTROLLER_SCOPE, parse_tags
+from l5x_memory_analyzer.parser.tasks import parse_tasks
 from l5x_memory_analyzer.sizing.confidence import weakest
 from l5x_memory_analyzer.sizing.constants import MemoryModel
 from l5x_memory_analyzer.sizing.logic import compute_routine_logic_bytes
@@ -184,6 +185,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     tag_types = {t.name: t.data_type for t in tags if t.data_type}
 
     logic_entries: list[tuple[str, str, str, int, str]] = []
+    n_plain_routines = 0
     for routine in parse_rll_routines(root):
         if routine.is_jsr_target:
             # Confirmed 2026-08-22 against real data: a JSR target routine's
@@ -192,8 +194,50 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             # is_jsr_target's docstring. Emitting a separate entry here
             # would double-count it.
             continue
-        logic_bytes, logic_basis = compute_routine_logic_bytes(routine, model.logic_instructions, tag_types)
+        # 2026-08-27, Task/Program/Routine shell decomposition (OQ-
+        # TASKOVERHEAD, see memory_model.yaml task_program_overhead): a
+        # JSR-caller routine keeps paying its own jsr_fixed_base_per_routine
+        # here, unchanged from before this fix -- that pathway is
+        # separately validated and untouched. A PLAIN routine (no JSR
+        # involvement at all) no longer pays fixed_base_per_routine per
+        # routine; the shell entry built below charges it once for the
+        # whole file plus the real per-extra-Task/Program/routine marginal
+        # costs instead.
+        is_plain = "JSR" not in routine.instruction_counts
+        if is_plain:
+            n_plain_routines += 1
+        logic_bytes, logic_basis = compute_routine_logic_bytes(
+            routine, model.logic_instructions, tag_types, charge_shell=not is_plain
+        )
         logic_entries.append((routine.path, "routine_logic", "RLL", logic_bytes, logic_basis))
+
+    if n_plain_routines > 0:
+        # See memory_model.yaml task_program_overhead for the full
+        # derivation (5 real files, exact/near-exact). Untouched when
+        # n_plain_routines == 0 -- a file whose only routines are JSR
+        # callers/targets already has its shell fully accounted for by
+        # jsr_fixed_base_per_routine above, adding this would double it.
+        n_tasks = max(len(parse_tasks(root)), 1)
+        programs_el = root.find("Controller/Programs")
+        n_programs = max(len(programs_el.findall("Program")), 1) if programs_el is not None else 1
+        overhead = model.logic_instructions.task_program_overhead
+        shell_bytes = (
+            model.logic_instructions.fixed_base_per_routine
+            + overhead.task_extra * (n_tasks - 1)
+            + overhead.program_extra * (n_programs - 1)
+            + overhead.routine_extra * (n_plain_routines - 1)
+        )
+        shell_basis = weakest(model.logic_instructions.confidence, overhead.confidence)
+        # Own category, NOT "routine_logic" -- this entry's path is
+        # "task_program_shell", not a "program:X/Y" routine path, so it
+        # can't go through hierarchy.py's per-program routine grouping (same
+        # class of bug already fixed once for project_baseline/udt_definition,
+        # see hierarchy.py's NON_TAG_GROUPS comment). Still ESTIMATED tier
+        # (it's part of the same fitted structural-logic estimate as every
+        # other routine_logic entry, just not attributable to one routine).
+        logic_entries.append(
+            ("task_program_shell", "task_program_shell", "SHELL", shell_bytes, shell_basis)
+        )
 
     # Fixed per-project overhead (controller/module/task/program scaffolding)
     # confirmed 2026-08-23 -- see memory_model.yaml empty_project_baseline

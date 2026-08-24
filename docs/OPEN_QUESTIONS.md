@@ -768,10 +768,25 @@ generator already covers them, just waiting on the next capture batch.
    anomaly (not a formula defect). New tests in `tests/test_logic_sizing.py`
    cover the parser extraction and the cost formula directly.
 
-7. **OQ-AOIDEF (new, 2026-08-23, MAJOR — real cost currently modeled as
-   zero; DATA QUALITY WARNING added same day, see below before trusting
-   any number in this entry). See `docs/AOI_KNOWLEDGE_MAP.md` for the full
-   known/unknown breakdown across all AOI sizing questions, not just this
+7. **OQ-AOIDEF — WIRED 2026-08-27.** Per-type declared-item rate table
+   (BOOL=16, SINT/INT=18, DINT/REAL=20, LINT=24 per item, base=1184) now
+   wired for single-type AOI defs; mixed-type AOI defs keep the flat rate
+   deliberately (real data shows per-type rates don't compose additively
+   once BOOL sits next to another type — see memory_model.yaml
+   `aoi_definition` for the evidence). Live-recomputed against all 85
+   captured AOI manifest rows: 32 exact, 52 within 1%, 1 at 2.10%
+   (`aoi_array_localtag_1_instance`, the separate array-vs-def-cost tangle
+   in `docs/AOI_KNOWLEDGE_MAP.md` item 3, not a def-cost formula miss).
+   Remaining open (both small, <2% of file total): AOI name-length's
+   non-uniform stepping, and the Required/Visible/Hidden ±16 swing (recap
+   batch still awaiting capture). Full derivation and history below and in
+   `docs/AOI_KNOWLEDGE_MAP.md`.
+
+   **Original entry below, kept for history (2026-08-23, MAJOR — real cost
+   was modeled as zero at the time; DATA QUALITY WARNING added same day,
+   see below before trusting any number in this entry).** See
+   `docs/AOI_KNOWLEDGE_MAP.md` for the full known/unknown breakdown across
+   all AOI sizing questions, not just this
    one — built 2026-08-25 per James's request for a clear gameplan.**
 
    **Data quality warning, James 2026-08-23:** "I think the sample I gave
@@ -1197,8 +1212,35 @@ generator already covers them, just waiting on the next capture batch.
     single flat MRP weight used). This entry can move to
     RESOLVED_QUESTIONS.md on the next docs pass.
 
-11. **Per-Task overhead [captured 2026-08-25, real finding, NOT wired —
-    needs parser architecture work first].** `gen_task_overhead.py` —
+11. **OQ-TASKOVERHEAD — WIRED 2026-08-27.** Solved and wired without
+    needing the NOP-isolation sweep this entry was blocked on below —
+    anchored the routine-shell subtraction on the already-KNOWN
+    fixed_base_per_routine (real, hundreds-of-times-confirmed) instead of
+    a theoretical 0-rung construct, which was the actual source of the
+    NOP-vs-shell conflation risk flagged in the 2026-08-26 notes below, not
+    a genuine missing data point. `task_program_overhead` (memory_model.yaml):
+    `routine_extra=272, program_extra=484, task_extra=700`, applied once
+    per file on top of the existing (unchanged) fixed_base_per_routine and
+    per-rung content costs. Solved from 3 real disentangle-batch files via
+    real A/B pairs (program_extra, task_extra) plus one direct solve
+    against the already-KNOWN shell constant (routine_extra) — verified
+    exact against those 3 files AND the original n02/n03tasks sweep, off by
+    only 0.21% at n04tasks. Full derivation in memory_model.yaml's
+    `task_program_overhead` block. Deliberately does NOT touch the
+    separately-validated JSR pathway (a JSR-caller routine keeps its own
+    `jsr_fixed_base_per_routine`, unchanged) — see report.py for the exact
+    split. Broad regression check against all 1,059 captured/non-excluded
+    manifest rows: exact-match count 279->292, over-3%-residual count
+    50->43, zero regressions (every file that got worse moved by single-
+    digit-to-low-double-digit bytes, all from the unrelated same-session
+    AOI-definition-cost fix, none crossing out of the "within 1%" band).
+    Real non-task-overhead-named files also benefited (structurally
+    identical multi-program over-counting bug): `xprogref_twoprog_shared_
+    alias_n01000` 4076->16, `lbljmp_samename_diffroutines` 4049->-11.
+
+    **Original entry below, kept for history (2026-08-25, real finding, NOT
+    wired at the time — needs parser architecture work first).**
+    `gen_task_overhead.py` —
     2nd/3rd Task, isolating pure Task/Program scaffolding cost from logic
     content. `taskoverhead_n02tasks`/`n03tasks` real data gives an exact
     linear marginal cost of **-1472 bytes per extra Task** (engine

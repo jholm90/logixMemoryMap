@@ -1,15 +1,17 @@
 """Parses Controller/Tasks out of an L5X document (2026-08-27, Phase 5
 Task-level UI grouping).
 
-Distinct from the separate, still-open per-Task BYTE-COST question
-(docs/OPEN_QUESTIONS.md OQ item on Task/Program/Routine overhead, blocked
-on real capture data to disentangle NOP content cost from routine-shell
-cost) -- this module only extracts which Programs are scheduled under
-which Task, a real, directly-stated L5X relationship (no fitting needed,
-same category as parser/modules.py's Connection/ConfigTag sizes), purely
-to let the UI nest "Program: X" groups under their owning "Task: Y" group.
-No new byte formula involved: a Task's displayed total is just the sum of
-its already-correctly-computed Programs' bytes.
+This module extracts which Programs are scheduled under which Task, a
+real, directly-stated L5X relationship (no fitting needed, same category
+as parser/modules.py's Connection/ConfigTag sizes), purely to let the UI
+nest "Program: X" groups under their owning "Task: Y" group. No new byte
+formula involved here: a Task's displayed total is just the sum of its
+already-correctly-computed Programs' bytes.
+
+parse_tasks is also reused by sizing/report.py for the separate Task/
+Program/Routine BYTE-COST question (docs/OPEN_QUESTIONS.md OQ-TASKOVERHEAD,
+wired 2026-08-27, see memory_model.yaml task_program_overhead) -- that one
+just needs this module's task COUNT, not the scheduling detail below.
 """
 
 from __future__ import annotations

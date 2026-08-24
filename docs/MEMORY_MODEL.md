@@ -320,6 +320,27 @@ Logix always require one, or can it be anonymous/inline?) allocates memory
 per call site the same way. Needs call-site counting from logic parsing,
 which is a genuine Phase 1/4 dependency and stays deferred.
 
+**AOI definition cost (FITTED, wired 2026-08-27, OQ-AOIDEF):** an AOI's own
+Parameters/LocalTags declaration (independent of any instance tag) has a
+real, separate one-time cost — `base + rate * declared_item_count`, same
+relationship a UDT definition has to a UDT-typed tag. `base = 1184`.
+`declared_item_count` excludes `EnableIn`/`EnableOut`; `InOut` params are
+already excluded upstream (reference, not storage). Rate is per-type when
+every declared item shares the SAME type — `BOOL=16, SINT=18, INT=18,
+DINT=20, REAL=20, LINT=24` bytes/item — falling back to the flat `20`
+rate for a mixed-type AOI definition. That fallback is deliberate, not a
+placeholder: real data (`aoi_boolpack_interspersed20_def_only`, 20 BOOL +
+20 DINT) shows the per-type rates do NOT compose additively once BOOL sits
+alongside another type — a naive per-type sum under-predicts that file by
+80 bytes, while the flat rate matches it exactly. Live-recomputed against
+all 85 captured AOI manifest rows: 32 exact, 52 within 1%, 1 at 2.10%
+(a separate array-vs-definition-cost interaction, not a def-cost miss —
+see AOI_KNOWLEDGE_MAP.md item 3). Still open, both small (<2% of a file's
+total bytes at the tested extremes): AOI name length's non-uniform
+stepping effect, and Required/Visible/Hidden's small ±16 swing (recapture
+batch awaiting capture). See `memory_model.yaml`'s `aoi_definition` block
+for the full derivation and `docs/AOI_KNOWLEDGE_MAP.md` for history.
+
 ## Module / I/O tag sizing
 
 - Local (backplane) I/O: **UNKNOWN**, not yet modeled. Depends on module type
@@ -694,3 +715,17 @@ there's a record of *why* a number is what it is, not just what it currently is.
   definition cost is a large (1,100-3,600+ block) unmodeled gap, real
   sweep data now gathered (see OPEN_QUESTIONS.md OQ-AOIDEF) but not clean
   enough across all axes to wire in yet.
+- **2026-08-27** — Two more real gaps closed same day, both flagged above
+  as "not clean enough yet" / "blocked": (1) AOI definition cost
+  (OQ-AOIDEF) — the full real sweep batch had actually landed captured,
+  just sat unprocessed; wired a per-type declared-item rate (see "AOI
+  sizing" above). (2) Task/Program/Routine shell overhead (OQ-TASKOVERHEAD)
+  — `fixed_base_per_routine` was being charged once per emitted routine
+  regardless of Task/Program structure, over-predicting any multi-routine
+  file; now charged once per file plus real per-extra-Task/Program/routine
+  marginal costs (`task_program_overhead`: routine_extra=272,
+  program_extra=484, task_extra=700). Verified exact/near-exact against
+  the 3-file disentangle batch and the original n02-n04tasks sweep; broad
+  regression across all 1,059 captured manifest rows went from 279 to 292
+  exact matches with zero real regressions (see OPEN_QUESTIONS.md
+  OQ-TASKOVERHEAD for the full derivation and regression numbers).

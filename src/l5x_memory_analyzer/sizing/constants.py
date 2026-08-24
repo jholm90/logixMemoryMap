@@ -103,10 +103,22 @@ class AoiArrayModel:
 class AoiDefinitionModel:
     base: int
     per_declared_item: int
+    per_type_rate: dict[str, int]
     confidence: str
 
-    def bytes_for(self, declared_item_count: int) -> int:
-        return self.base + self.per_declared_item * declared_item_count
+    def bytes_for(self, type_counts: dict[str, int]) -> int:
+        # per_type_rate only applies when every declared item shares the
+        # SAME type -- confirmed real that per-type rates do NOT compose
+        # additively once BOOL sits alongside another type (see
+        # memory_model.yaml aoi_definition for the mixed-type evidence), so
+        # a mixed-type AOI definition falls back to the flat per_declared_item
+        # rate for every item rather than risk a worse per-type sum.
+        total_items = sum(type_counts.values())
+        if len(type_counts) == 1:
+            (only_type,) = type_counts
+            rate = self.per_type_rate.get(only_type, self.per_declared_item)
+            return self.base + rate * total_items
+        return self.base + self.per_declared_item * total_items
 
 
 @dataclass(frozen=True)
@@ -222,6 +234,14 @@ class CmpSurchargeModel:
 
 
 @dataclass(frozen=True)
+class TaskProgramOverheadModel:
+    routine_extra: int
+    program_extra: int
+    task_extra: int
+    confidence: str
+
+
+@dataclass(frozen=True)
 class LogicInstructionModel:
     fixed_base_per_routine: int
     jsr_fixed_base_per_routine: int
@@ -231,6 +251,7 @@ class LogicInstructionModel:
     operand_type_surcharge: OperandTypeSurchargeModel
     indirect_index: IndirectIndexModel
     cmp_surcharge: CmpSurchargeModel
+    task_program_overhead: TaskProgramOverheadModel
 
 
 @dataclass(frozen=True)
@@ -326,6 +347,7 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
         aoi_definition=AoiDefinitionModel(
             base=raw["aoi_definition"]["base"],
             per_declared_item=raw["aoi_definition"]["per_declared_item"],
+            per_type_rate=raw["aoi_definition"].get("per_type_rate", {}),
             confidence=raw["aoi_definition"]["confidence"],
         ),
         tag_overhead=TagOverheadModel(
@@ -374,6 +396,12 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 compound_cost=raw["cmp_surcharge"]["compound_cost"],
                 float_literal_confidence=raw["cmp_surcharge"]["float_literal_confidence"],
                 float_literal_cost=raw["cmp_surcharge"]["float_literal_cost"],
+            ),
+            task_program_overhead=TaskProgramOverheadModel(
+                routine_extra=raw["task_program_overhead"]["routine_extra"],
+                program_extra=raw["task_program_overhead"]["program_extra"],
+                task_extra=raw["task_program_overhead"]["task_extra"],
+                confidence=raw["task_program_overhead"]["confidence"],
             ),
         ),
     )
