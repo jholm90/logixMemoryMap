@@ -80,6 +80,11 @@ class ModuleInfo:
     # that Module-Defined UDT the normal way.
     module_defined_bytes: int = 0
     unknown_member_types: tuple[str, ...] = field(default_factory=tuple)
+    # A VFD's real parameter-database blob (2026-08-27, PowerFlex 525/755
+    # corpus) -- L5K only, its own stated Size attribute, already folded
+    # into module_defined_bytes above but kept visible separately too
+    # since it's the single biggest real contributor for a drive module.
+    config_script_bytes: int = 0
     # True when this module's I/O is aliased into a parent bridge's own
     # Slot array (<RackConnection><InAliasTag/></RackConnection>) instead
     # of having its own real Connection -- module_overhead (memory_model.
@@ -185,6 +190,7 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
         output_profile: str | None = None
         config_bytes = 0
         config_profile: str | None = None
+        config_script_bytes = 0
         module_defined_bytes = 0
         unknown_types: list[str] = []
 
@@ -237,12 +243,22 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
                     config_bytes = _int_attr(config_data_el, "ConfigSize")
                     module_defined_bytes += config_bytes
 
+            # ConfigScript (2026-08-27, found in real VFD corpus -- PowerFlex
+            # 525/755 both carry one ALONGSIDE their own ConfigData, not
+            # instead of it): a real, stated `Size` attribute (not
+            # `ConfigSize`) on the drive's full parameter-database blob, L5K
+            # only, no Decorated form. Same floor treatment as ConfigData.
+            config_script_el = comm_el.find("ConfigScript")
+            if config_script_el is not None:
+                config_script_bytes = _int_attr(config_script_el, "Size")
+                module_defined_bytes += config_script_bytes
+
         result.append(ModuleInfo(
             name=name, catalog_number=catalog, slot=slot,
             connection_input_bytes=input_bytes, connection_output_bytes=output_bytes,
             config_bytes=config_bytes,
             input_profile=input_profile, output_profile=output_profile, config_profile=config_profile,
             module_defined_bytes=module_defined_bytes, unknown_member_types=tuple(unknown_types),
-            uses_rack_connection=uses_rack_connection,
+            uses_rack_connection=uses_rack_connection, config_script_bytes=config_script_bytes,
         ))
     return result
