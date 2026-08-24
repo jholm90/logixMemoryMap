@@ -15,33 +15,41 @@ Motion RMC150E (generic Ethernet-Module profile), and the full real
 (same real modules/axis wiring as gen_module_kinetix_bus.py, kept
 name-consistent with that file).
 
-**5 of the real file's 69 non-CPU modules are deliberately EXCLUDED,
-found and fixed 2026-08-27 from James's real Studio 5000 L5X->ACD import
-attempt on the first version of this file:**
-  - `BENDER:Partner` (1756-L8SP GuardLogix Safety Partner): real error
-    "Invalid module type for import. Module type cannot be created
-    independently." -- a Safety Partner is a companion object Studio 5000
-    auto-pairs with specific safety-capable primary processor catalog
-    numbers, not something addable as a standalone <Module> element. This
-    also explains the file's OTHER real errors from that attempt (a
-    broken "Local1" module missing its Ports, and several unrelated
-    modules failing with a bare "Module import failed") -- once the
-    SafetyPartner's invalid standalone import corrupts the sequence,
-    everything downstream in the same import batch cascades.
-  - `LH_CART_ENC`/`RH_CART_ENC` (2 generic-EDS encoders) and `Datalogic`
-    (a barcode reader) -- all 3 have NO CatalogNumber attribute at all in
-    the real file (confirmed real, not a data-loss artifact): real error
-    "Module profile could not be found. This could indicate the module
-    profile is not installed." These resolve only via an EDS file
-    registered on the specific machine that originally built the real
-    program -- not guaranteed present anywhere else Studio 5000 runs,
-    James's included.
-  - `E35_Robot1` (FANUC Robot R30iB Plus/A, a generic-Ethernet-device
-    profile): same generic-profile-registration issue as the two devices
-    above -- "Module import failed."
-  64 of 69 real modules remain. If James has the matching EDS/AOP files
-  installed and wants these back in for a closer real-accuracy match,
-  they can be re-added -- flagged here rather than silently dropped.
+**Only 1 of the real file's 69 non-CPU modules is excluded outright:**
+`BENDER:Partner` (1756-L8SP GuardLogix Safety Partner) -- confirmed by
+James himself: "I stripped the safety partner." A Safety Partner is a
+companion object Studio 5000 auto-pairs with specific safety-capable
+primary processor catalog numbers, not something addable as a standalone
+<Module> element (real import error confirmed earlier: "Invalid module
+type for import. Module type cannot be created independently.").
+
+**4 real modules with no installed profile are represented via Generic
+Ethernet Module instead of being dropped** -- James, 2026-08-27: "You
+will need to accommodate missing eds files. This is a 100% requirement
+that you will need to account for." `LH_CART_ENC`/`RH_CART_ENC` (2 real
+TR-Electronic GmbH encoders, no CatalogNumber at all), `Datalogic` (a
+barcode reader, also no CatalogNumber), and `E35_Robot1` (FANUC Robot
+R30iB Plus/A, a generic-Ethernet-device profile) all real-error "Module
+profile could not be found" on import -- each needs an EDS/AOP registered
+on the specific machine that built the real program, not guaranteed
+present anywhere else. The real, standard Rockwell accommodation for
+exactly this situation: Studio 5000's own built-in "Generic Ethernet
+Module" (`CatalogNumber="ETHERNET-MODULE"`, `Vendor="1"`) needs no EDS at
+all -- this exact real file's own RMC150E module already uses it
+(confirmed real, imports clean per James's own report). Substituted all
+4 onto that mechanism, preserving their REAL stated Connection sizes
+exactly (`GenericEncoder1`/`GenericEncoder2`: 12-byte Input Only, matching
+real LH_CART_ENC/RH_CART_ENC `InputSize="12"` `OutputSize="0"`;
+`GenericBarcodeReader1`: 476/468-byte bidirectional, matching real
+Datalogic exactly; `RobotController1`: 16/16-byte bidirectional, matching
+E35_Robot1's real `Standard_Slot_01` connection). **One real, honest
+gap**: E35_Robot1's real file ALSO carries 2 CIP Safety connections
+(`A_Safety_Output` 8 bytes, `B_Safety_Input` 12 bytes) that a Generic
+Ethernet Module fundamentally cannot represent -- CIP Safety requires a
+certified safety device profile with a real safety network number, not
+achievable via the generic mechanism. Those 20 bytes of real safety I/O
+are NOT included in `RobotController1` -- flagged here rather than
+silently modeled as if present.
 
 Genericized the same way as every other real extraction in this project:
 every real module Name replaced with a generic Name (adapter children
@@ -51,6 +59,16 @@ stripped throughout (including nested Comments on I/O tag operands, which
 carried real process-descriptive text in a few Safety modules). Sanity-
 checked before writing: 0 duplicate Names, 0 dangling ParentModule
 references, 0 lint findings, 0 sizing crashes.
+
+**Cross-checked 2026-08-27 against James's own "stripped" export**
+(samples/local/bender_stripped/Bender134053_stripper.L5X -- the real
+program with logic/UDTs/most Controller Tags removed but the Modules
+section left intact, gitignored real corpus): module catalog inventory
+matches this file's extraction exactly, module-for-module. James
+confirmed directly that the 2 ANA_IN_FIL Controller tags that export
+still carried (`BNDAccPressure`/`BNDPumpPressure`) were leftover cruft he
+forgot to strip, NOT intended reference content -- an earlier version of
+this file picked them up and included them; removed per his correction.
 
 Sizing this file returns real SizeErrors -- one per rack-aliased
 (RackConnection/InAliasTag) Point I/O child module, all already-
@@ -69,19 +87,6 @@ NOT included in extra_modules_xml -- build_l5x's own wrapper already
 synthesizes it; processor_type="1756-L81ES" is passed through to match
 the real program's exact processor exactly rather than the project
 default (1756-L81E).
-
-**Cross-checked 2026-08-27 against James's own "stripped" export**
-(samples/local/bender_stripped/Bender134053_stripper.L5X -- the real
-program with logic/UDTs/most Controller Tags removed but the Modules
-section left intact, gitignored real corpus): the module catalog
-inventory matches this file's extraction exactly, module-for-module.
-Independently confirms 1756-L8SP (the Safety Partner excluded above)
-really is absent from a normal module list, not something specific to
-the earlier full export. Also picked up 2 real Controller-scope AOI
-instance tags that export kept (`Bus2AccPressure`/`Bus2PumpPressure`,
-both `ANA_IN_FIL` -- a real analog-input-filter AOI, its definition
-included here too) that weren't part of the original module-only
-extraction -- genuine real program content this file was still missing.
 
 Run: python -m sample_gen.gen_module_bender_full
 """
@@ -4187,347 +4192,1103 @@ _ALL_MODULES_XML = """\
 </Communications>
 </Module>
 
-"""
-
-
-_ANA_IN_FIL_AOI_XML = """\
-<AddOnInstructionDefinition Name="ANA_IN_FIL" Class="Standard" Revision="1.0" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2008-06-16T17:27:24.062Z" CreatedBy="dnrt\\nvesovic" EditedDate="2020-09-24T15:32:03.955Z" EditedBy="James-PC\\James" SoftwareRevision="v32.00">
-<RevisionNote>
-Analoge Input Scale to Eng Units and Filtered
-Zero Filter Value Disables Filtering
-</RevisionNote>
-<Parameters>
-<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Usage="Input" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read Only">
-
-</Parameter>
-<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read Only">
-
-</Parameter>
-<Parameter Name="ORange" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="false" Visible="true" ExternalAccess="Read Only">
-
-<DefaultData Format="L5K">
-0
-</DefaultData>
-<DefaultData Format="Decorated">
-<DataValue DataType="BOOL" Radix="Decimal" Value="0" />
-</DefaultData>
-</Parameter>
-<Parameter Name="URange" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="false" Visible="true" ExternalAccess="Read Only">
-
-<DefaultData Format="L5K">
-0
-</DefaultData>
-<DefaultData Format="Decorated">
-<DataValue DataType="BOOL" Radix="Decimal" Value="0" />
-</DefaultData>
-</Parameter>
-<Parameter Name="PVMax" TagType="Base" DataType="REAL" Usage="Input" Radix="Float" Required="false" Visible="true" ExternalAccess="Read/Write">
-
-<DefaultData Format="L5K">
-0.00000000e+000
-</DefaultData>
-<DefaultData Format="Decorated">
-<DataValue DataType="REAL" Radix="Float" Value="0.0" />
-</DefaultData>
-</Parameter>
-<Parameter Name="PVMin" TagType="Base" DataType="REAL" Usage="Input" Radix="Float" Required="false" Visible="true" ExternalAccess="Read/Write">
-
-<DefaultData Format="L5K">
-0.00000000e+000
-</DefaultData>
-<DefaultData Format="Decorated">
-<DataValue DataType="REAL" Radix="Float" Value="0.0" />
-</DefaultData>
-</Parameter>
-<Parameter Name="RawMax" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="false" Visible="true" ExternalAccess="Read/Write">
-
-<DefaultData Format="L5K">
-0
-</DefaultData>
-<DefaultData Format="Decorated">
-<DataValue DataType="DINT" Radix="Decimal" Value="0" />
-</DefaultData>
-</Parameter>
-<Parameter Name="RawMin" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="false" Visible="true" ExternalAccess="Read/Write">
-
-<DefaultData Format="L5K">
-0
-</DefaultData>
-<DefaultData Format="Decorated">
-<DataValue DataType="DINT" Radix="Decimal" Value="0" />
-</DefaultData>
-</Parameter>
-<Parameter Name="FiIterFreq" TagType="Base" DataType="REAL" Usage="Input" Radix="Float" Required="false" Visible="true" ExternalAccess="Read/Write">
-
-<DefaultData Format="L5K">
-0.00000000e+000
-</DefaultData>
-<DefaultData Format="Decorated">
-<DataValue DataType="REAL" Radix="Float" Value="0.0" />
-</DefaultData>
-</Parameter>
-<Parameter Name="Raw" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write">
-
-<DefaultData Format="L5K">
-0
-</DefaultData>
-<DefaultData Format="Decorated">
-<DataValue DataType="DINT" Radix="Decimal" Value="0" />
-</DefaultData>
-</Parameter>
-<Parameter Name="Limiting" TagType="Base" DataType="BOOL" Usage="Input" Radix="Decimal" Required="false" Visible="true" ExternalAccess="Read/Write">
-<DefaultData Format="L5K">
-0
-</DefaultData>
-<DefaultData Format="Decorated">
-<DataValue DataType="BOOL" Radix="Decimal" Value="0" />
-</DefaultData>
-</Parameter>
-<Parameter Name="PV" TagType="Base" DataType="REAL" Usage="Output" Radix="Float" Required="false" Visible="true" ExternalAccess="Read Only">
-
-<DefaultData Format="L5K">
-0.00000000e+000
-</DefaultData>
-<DefaultData Format="Decorated">
-<DataValue DataType="REAL" Radix="Float" Value="0.0" />
-</DefaultData>
-</Parameter>
-<Parameter Name="PVF" TagType="Base" DataType="REAL" Usage="Output" Radix="Float" Required="false" Visible="true" ExternalAccess="Read Only">
-
-<DefaultData Format="L5K">
-0.00000000e+000
-</DefaultData>
-<DefaultData Format="Decorated">
-<DataValue DataType="REAL" Radix="Float" Value="0.0" />
-</DefaultData>
-</Parameter>
-<Parameter Name="FilterFault" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="false" Visible="true" ExternalAccess="Read Only">
-
-<DefaultData Format="L5K">
-0
-</DefaultData>
-<DefaultData Format="Decorated">
-<DataValue DataType="BOOL" Radix="Decimal" Value="0" />
-</DefaultData>
-</Parameter>
-<Parameter Name="ScaleFault" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="false" Visible="true" ExternalAccess="Read Only">
-
-<DefaultData Format="L5K">
-0
-</DefaultData>
-<DefaultData Format="Decorated">
-<DataValue DataType="BOOL" Radix="Decimal" Value="0" />
-</DefaultData>
-</Parameter>
-</Parameters>
-<LocalTags>
-<LocalTag Name="SCL" DataType="SCALE" ExternalAccess="Read/Write">
-<DefaultData Format="L5K">
-[1,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0,0.00000000e+000,0,5.60519386e-045,0.00000000e+000,0.00000000e+000,0.00000000e+000]
-</DefaultData>
-<DefaultData Format="Decorated">
-<Structure DataType="SCALE">
-<DataValueMember Name="EnableIn" DataType="BOOL" Value="1" />
-<DataValueMember Name="In" DataType="REAL" Radix="Float" Value="0.0" />
-<DataValueMember Name="InRawMax" DataType="REAL" Radix="Float" Value="0.0" />
-<DataValueMember Name="InRawMin" DataType="REAL" Radix="Float" Value="0.0" />
-<DataValueMember Name="InEUMax" DataType="REAL" Radix="Float" Value="0.0" />
-<DataValueMember Name="InEUMin" DataType="REAL" Radix="Float" Value="0.0" />
-<DataValueMember Name="Limiting" DataType="BOOL" Value="0" />
-<DataValueMember Name="EnableOut" DataType="BOOL" Value="0" />
-<DataValueMember Name="Out" DataType="REAL" Radix="Float" Value="0.0" />
-<DataValueMember Name="MaxAlarm" DataType="BOOL" Value="0" />
-<DataValueMember Name="MinAlarm" DataType="BOOL" Value="0" />
-<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000" />
-<DataValueMember Name="InstructFault" DataType="BOOL" Value="0" />
-<DataValueMember Name="InRawRangeInv" DataType="BOOL" Value="0" />
-</Structure>
-</DefaultData>
-</LocalTag>
-<LocalTag Name="LPF" DataType="FILTER_LOW_PASS" ExternalAccess="Read/Write">
-<DefaultData Format="L5K">
-[1,0.00000000e+000,3.40282347e+038,1,0,0.00000000e+000,1,0,0,0.00000000e+000,0.00000000e+000,0,5.60519386e-045,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000]
-</DefaultData>
-<DefaultData Format="Decorated">
-<Structure DataType="FILTER_LOW_PASS">
-<DataValueMember Name="EnableIn" DataType="BOOL" Value="1" />
-<DataValueMember Name="In" DataType="REAL" Radix="Float" Value="0.0" />
-<DataValueMember Name="Initialize" DataType="BOOL" Value="0" />
-<DataValueMember Name="WLag" DataType="REAL" Radix="Float" Value="3.40282347e+038" />
-<DataValueMember Name="Order" DataType="DINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="TimingMode" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="OversampleDT" DataType="REAL" Radix="Float" Value="0.0" />
-<DataValueMember Name="RTSTime" DataType="DINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="RTSTimeStamp" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="EnableOut" DataType="BOOL" Value="0" />
-<DataValueMember Name="Out" DataType="REAL" Radix="Float" Value="0.0" />
-<DataValueMember Name="DeltaT" DataType="REAL" Radix="Float" Value="0.0" />
-<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000" />
-<DataValueMember Name="InstructFault" DataType="BOOL" Value="0" />
-<DataValueMember Name="WLagInv" DataType="BOOL" Value="0" />
-<DataValueMember Name="OrderInv" DataType="BOOL" Value="0" />
-<DataValueMember Name="TimingModeInv" DataType="BOOL" Value="0" />
-<DataValueMember Name="RTSMissed" DataType="BOOL" Value="0" />
-<DataValueMember Name="RTSTimeInv" DataType="BOOL" Value="0" />
-<DataValueMember Name="RTSTimeStampInv" DataType="BOOL" Value="0" />
-<DataValueMember Name="DeltaTInv" DataType="BOOL" Value="0" />
-</Structure>
-</DefaultData>
-</LocalTag>
-<LocalTag Name="MUL" DataType="FBD_MATH" ExternalAccess="Read/Write">
-
-<DefaultData Format="L5K">
-[1,0.00000000e+000,0.00000000e+000,0.00000000e+000]
-</DefaultData>
-<DefaultData Format="Decorated">
-<Structure DataType="FBD_MATH">
-<DataValueMember Name="EnableIn" DataType="BOOL" Value="1" />
-<DataValueMember Name="SourceA" DataType="REAL" Radix="Float" Value="0.0" />
-<DataValueMember Name="SourceB" DataType="REAL" Radix="Float" Value="0.0" />
-<DataValueMember Name="EnableOut" DataType="BOOL" Value="0" />
-<DataValueMember Name="Dest" DataType="REAL" Radix="Float" Value="0.0" />
-</Structure>
-</DefaultData>
-</LocalTag>
-<LocalTag Name="NEQ" DataType="FBD_COMPARE" ExternalAccess="Read/Write">
-<DefaultData Format="L5K">
-[1,0.00000000e+000,0.00000000e+000]
-</DefaultData>
-<DefaultData Format="Decorated">
-<Structure DataType="FBD_COMPARE">
-<DataValueMember Name="EnableIn" DataType="BOOL" Value="1" />
-<DataValueMember Name="SourceA" DataType="REAL" Radix="Float" Value="0.0" />
-<DataValueMember Name="SourceB" DataType="REAL" Radix="Float" Value="0.0" />
-<DataValueMember Name="EnableOut" DataType="BOOL" Value="0" />
-<DataValueMember Name="Dest" DataType="BOOL" Value="0" />
-</Structure>
-</DefaultData>
-</LocalTag>
-</LocalTags>
-<Routines>
-<Routine Name="Logic" Type="FBD">
-<FBDContent SheetSize="Tabloid - 11 x 17 in" SheetOrientation="Landscape">
-<Sheet Number="1">
-<IRef ID="0" X="440" Y="640" Operand="0" HideDesc="false" />
-<IRef ID="1" X="120" Y="580" Operand="6.28" HideDesc="false" />
-<IRef ID="2" X="120" Y="480" Operand="FiIterFreq" HideDesc="false" />
-<IRef ID="3" X="280" Y="360" Operand="Limiting" HideDesc="false" />
-<IRef ID="4" X="100" Y="300" Operand="PVMax" HideDesc="false" />
-<IRef ID="5" X="140" Y="380" Operand="PVMin" HideDesc="false" />
-<IRef ID="6" X="240" Y="60" Operand="Raw" HideDesc="false" />
-<IRef ID="7" X="200" Y="120" Operand="RawMax" HideDesc="false" />
-<IRef ID="8" X="140" Y="180" Operand="RawMin" HideDesc="false" />
-<ORef ID="9" X="1070" Y="360" Operand="FilterFault" HideDesc="false" />
-<ORef ID="10" X="640" Y="180" Operand="ORange" HideDesc="false" />
-<ORef ID="11" X="1160" Y="120" Operand="PV" HideDesc="false" />
-<ORef ID="12" X="1150" Y="240" Operand="PVF" HideDesc="false" />
-<ORef ID="13" X="620" Y="300" Operand="ScaleFault" HideDesc="false" />
-<ORef ID="14" X="640" Y="240" Operand="URange" HideDesc="false" />
-<Block Type="LPF" ID="15" X="840" Y="280" Operand="LPF" VisiblePins="EnableIn In WLag Out InstructFault" HideDesc="false" />
-<Block Type="MUL" ID="16" X="280" Y="500" Operand="MUL" VisiblePins="SourceA SourceB Dest" HideDesc="false" />
-<Block Type="NEQ" ID="17" X="520" Y="560" Operand="NEQ" VisiblePins="SourceA SourceB Dest" HideDesc="false" />
-<Block Type="SCL" ID="18" X="340" Y="180" Operand="SCL" VisiblePins="In InRawMax InRawMin InEUMax InEUMin Limiting Out MaxAlarm MinAlarm InstructFault" HideDesc="false" />
-<Wire FromID="0" ToID="17" ToParam="SourceB" />
-<Wire FromID="1" ToID="16" ToParam="SourceB" />
-<Wire FromID="2" ToID="16" ToParam="SourceA" />
-<Wire FromID="3" ToID="18" ToParam="Limiting" />
-<Wire FromID="4" ToID="18" ToParam="InEUMax" />
-<Wire FromID="5" ToID="18" ToParam="InEUMin" />
-<Wire FromID="6" ToID="18" ToParam="In" />
-<Wire FromID="7" ToID="18" ToParam="InRawMax" />
-<Wire FromID="8" ToID="18" ToParam="InRawMin" />
-<Wire FromID="15" FromParam="InstructFault" ToID="9" />
-<Wire FromID="15" FromParam="Out" ToID="12" />
-<Wire FromID="16" FromParam="Dest" ToID="15" ToParam="WLag" />
-<Wire FromID="16" FromParam="Dest" ToID="17" ToParam="SourceA" />
-<Wire FromID="17" FromParam="Dest" ToID="15" ToParam="EnableIn" />
-<Wire FromID="18" FromParam="MaxAlarm" ToID="10" />
-<Wire FromID="18" FromParam="Out" ToID="11" />
-<Wire FromID="18" FromParam="InstructFault" ToID="13" />
-<Wire FromID="18" FromParam="MinAlarm" ToID="14" />
-<Wire FromID="18" FromParam="Out" ToID="15" ToParam="In" />
-</Sheet>
-</FBDContent>
-</Routine>
-</Routines>
-</AddOnInstructionDefinition>
-
-"""
-
-_BUS2_ACC_PRESSURE_TAG_XML = """\
-<Tag Name="Bus2AccPressure" Class="Standard" TagType="Base" DataType="ANA_IN_FIL" Constant="false" ExternalAccess="Read/Write">
-<Data Format="L5K">
-[3,3.62500000e+003,0.00000000e+000,16383,3100,1.00000000e-001,6401,9.00860046e+002,9.00645874e+002
-		,[1,6.40100000e+003,1.63830000e+004,3.10000000e+003,3.62500000e+003,0.00000000e+000,1,9.00860046e+002
-		,0,0.00000000e+000,1.32830000e+004,7.52841952e-005,9.00860046e+002],[1,9.00860046e+002,6.28000021e-001
-		,1,0,0.00000000e+000,1,0,1,9.00645874e+002,2.00000000e-003,0,0.00000000e+000,2.80259693e-045
-		,5.89888987e-036,0.00000000e+000,7.89211295e-042,2.00000000e-003,6.28000021e-001,1.40129846e-045
-		,6.28000021e-001,2.00000000e-003,1.40129846e-045,6.27606000e-004,1.59335632e+003,9.00860046e+002
-		,9.00645874e+002,6.27606000e-004,-9.98744786e-001,9.00860046e+002,9.00645874e+002,0.00000000e+000
-		,0.00000000e+000,9.00860046e+002,9.00645569e+002,0.00000000e+000,0.00000000e+000,9.00860046e+002
-		,9.00645200e+002],[3,1.00000000e-001,6.28000021e+000,6.28000021e-001],[15,6.28000021e-001,0.00000000e+000
-		]]
-</Data>
+<Module Name="GenericEncoder1" CatalogNumber="ETHERNET-MODULE" Vendor="1" ProductType="0" ProductCode="18" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="Disabled" />
+<Ports>
+<Port Id="2" Address="192.168.1.70" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications CommMethod="536870914" PrimCxnInputSize="12" PrimCxnOutputSize="0">
+<Connections>
+<Connection Name="Standard" RPI="20000" Type="Input" InputCxnPoint="1" InputSize="12" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="ANA_IN_FIL">
-<DataValueMember Name="EnableIn" DataType="BOOL" Value="1" />
-<DataValueMember Name="EnableOut" DataType="BOOL" Value="1" />
-<DataValueMember Name="ORange" DataType="BOOL" Value="0" />
-<DataValueMember Name="URange" DataType="BOOL" Value="0" />
-<DataValueMember Name="PVMax" DataType="REAL" Radix="Float" Value="3625.0" />
-<DataValueMember Name="PVMin" DataType="REAL" Radix="Float" Value="0.0" />
-<DataValueMember Name="RawMax" DataType="DINT" Radix="Decimal" Value="16383" />
-<DataValueMember Name="RawMin" DataType="DINT" Radix="Decimal" Value="3100" />
-<DataValueMember Name="FiIterFreq" DataType="REAL" Radix="Float" Value="0.1" />
-<DataValueMember Name="Raw" DataType="DINT" Radix="Decimal" Value="6401" />
-<DataValueMember Name="Limiting" DataType="BOOL" Value="0" />
-<DataValueMember Name="PV" DataType="REAL" Radix="Float" Value="900.86005" />
-<DataValueMember Name="PVF" DataType="REAL" Radix="Float" Value="900.6459" />
-<DataValueMember Name="FilterFault" DataType="BOOL" Value="0" />
-<DataValueMember Name="ScaleFault" DataType="BOOL" Value="0" />
+<Structure DataType="AB:ETHERNET_MODULE_REAL_12Bytes:I:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="12" Radix="Decimal">
+<Element Index="[0]" Value="0" />
+<Element Index="[1]" Value="0" />
+<Element Index="[2]" Value="0" />
+<Element Index="[3]" Value="0" />
+<Element Index="[4]" Value="0" />
+<Element Index="[5]" Value="0" />
+<Element Index="[6]" Value="0" />
+<Element Index="[7]" Value="0" />
+<Element Index="[8]" Value="0" />
+<Element Index="[9]" Value="0" />
+<Element Index="[10]" Value="0" />
+<Element Index="[11]" Value="0" />
+</ArrayMember>
 </Structure>
 </Data>
-</Tag>
-
-"""
-
-_BUS2_PUMP_PRESSURE_TAG_XML = """\
-<Tag Name="Bus2PumpPressure" Class="Standard" TagType="Base" DataType="ANA_IN_FIL" Constant="false" ExternalAccess="Read/Write">
-<Data Format="L5K">
-[3,3.62500000e+003,0.00000000e+000,16383,3100,1.00000000e-001,3289,5.15790825e+001,5.15546722e+001
-		,[1,3.28900000e+003,1.63830000e+004,3.10000000e+003,3.62500000e+003,0.00000000e+000,1,5.15790825e+001
-		,0,0.00000000e+000,1.32830000e+004,7.52841952e-005,5.15790825e+001],[1,5.15790825e+001,6.28000021e-001
-		,1,0,0.00000000e+000,1,0,1,5.15546722e+001,2.00000000e-003,0,0.00000000e+000,2.80259693e-045
-		,5.89932215e-036,0.00000000e+000,7.89211295e-042,2.00000000e-003,6.28000021e-001,1.40129846e-045
-		,6.28000021e-001,2.00000000e-003,1.40129846e-045,6.27606000e-004,1.59335632e+003,5.15790825e+001
-		,5.15546722e+001,6.27606000e-004,-9.98744786e-001,5.15790825e+001,5.15546722e+001,0.00000000e+000
-		,0.00000000e+000,5.15790825e+001,5.15546417e+001,0.00000000e+000,0.00000000e+000,5.15790825e+001
-		,5.15545959e+001],[3,1.00000000e-001,6.28000021e+000,6.28000021e-001],[15,6.28000021e-001,0.00000000e+000
-		]]
-</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="GenericEncoder2" CatalogNumber="ETHERNET-MODULE" Vendor="1" ProductType="0" ProductCode="18" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="Disabled" />
+<Ports>
+<Port Id="2" Address="192.168.1.71" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications CommMethod="536870914" PrimCxnInputSize="12" PrimCxnOutputSize="0">
+<Connections>
+<Connection Name="Standard" RPI="20000" Type="Input" InputCxnPoint="1" InputSize="12" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="ANA_IN_FIL">
-<DataValueMember Name="EnableIn" DataType="BOOL" Value="1" />
-<DataValueMember Name="EnableOut" DataType="BOOL" Value="1" />
-<DataValueMember Name="ORange" DataType="BOOL" Value="0" />
-<DataValueMember Name="URange" DataType="BOOL" Value="0" />
-<DataValueMember Name="PVMax" DataType="REAL" Radix="Float" Value="3625.0" />
-<DataValueMember Name="PVMin" DataType="REAL" Radix="Float" Value="0.0" />
-<DataValueMember Name="RawMax" DataType="DINT" Radix="Decimal" Value="16383" />
-<DataValueMember Name="RawMin" DataType="DINT" Radix="Decimal" Value="3100" />
-<DataValueMember Name="FiIterFreq" DataType="REAL" Radix="Float" Value="0.1" />
-<DataValueMember Name="Raw" DataType="DINT" Radix="Decimal" Value="3289" />
-<DataValueMember Name="Limiting" DataType="BOOL" Value="0" />
-<DataValueMember Name="PV" DataType="REAL" Radix="Float" Value="51.579082" />
-<DataValueMember Name="PVF" DataType="REAL" Radix="Float" Value="51.554672" />
-<DataValueMember Name="FilterFault" DataType="BOOL" Value="0" />
-<DataValueMember Name="ScaleFault" DataType="BOOL" Value="0" />
+<Structure DataType="AB:ETHERNET_MODULE_REAL_12Bytes:I:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="12" Radix="Decimal">
+<Element Index="[0]" Value="0" />
+<Element Index="[1]" Value="0" />
+<Element Index="[2]" Value="0" />
+<Element Index="[3]" Value="0" />
+<Element Index="[4]" Value="0" />
+<Element Index="[5]" Value="0" />
+<Element Index="[6]" Value="0" />
+<Element Index="[7]" Value="0" />
+<Element Index="[8]" Value="0" />
+<Element Index="[9]" Value="0" />
+<Element Index="[10]" Value="0" />
+<Element Index="[11]" Value="0" />
+</ArrayMember>
 </Structure>
 </Data>
-</Tag>
-
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="GenericBarcodeReader1" CatalogNumber="ETHERNET-MODULE" Vendor="1" ProductType="0" ProductCode="18" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="Disabled" />
+<Ports>
+<Port Id="2" Address="192.168.1.72" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications CommMethod="536870914" PrimCxnInputSize="476" PrimCxnOutputSize="468">
+<Connections>
+<Connection Name="Standard" RPI="20000" Type="Output" InputCxnPoint="1" OutputCxnPoint="2" OutputSize="468" InputSize="476" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:ETHERNET_MODULE_REAL_476Bytes:I:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="476" Radix="Decimal">
+<Element Index="[0]" Value="0" />
+<Element Index="[1]" Value="0" />
+<Element Index="[2]" Value="0" />
+<Element Index="[3]" Value="0" />
+<Element Index="[4]" Value="0" />
+<Element Index="[5]" Value="0" />
+<Element Index="[6]" Value="0" />
+<Element Index="[7]" Value="0" />
+<Element Index="[8]" Value="0" />
+<Element Index="[9]" Value="0" />
+<Element Index="[10]" Value="0" />
+<Element Index="[11]" Value="0" />
+<Element Index="[12]" Value="0" />
+<Element Index="[13]" Value="0" />
+<Element Index="[14]" Value="0" />
+<Element Index="[15]" Value="0" />
+<Element Index="[16]" Value="0" />
+<Element Index="[17]" Value="0" />
+<Element Index="[18]" Value="0" />
+<Element Index="[19]" Value="0" />
+<Element Index="[20]" Value="0" />
+<Element Index="[21]" Value="0" />
+<Element Index="[22]" Value="0" />
+<Element Index="[23]" Value="0" />
+<Element Index="[24]" Value="0" />
+<Element Index="[25]" Value="0" />
+<Element Index="[26]" Value="0" />
+<Element Index="[27]" Value="0" />
+<Element Index="[28]" Value="0" />
+<Element Index="[29]" Value="0" />
+<Element Index="[30]" Value="0" />
+<Element Index="[31]" Value="0" />
+<Element Index="[32]" Value="0" />
+<Element Index="[33]" Value="0" />
+<Element Index="[34]" Value="0" />
+<Element Index="[35]" Value="0" />
+<Element Index="[36]" Value="0" />
+<Element Index="[37]" Value="0" />
+<Element Index="[38]" Value="0" />
+<Element Index="[39]" Value="0" />
+<Element Index="[40]" Value="0" />
+<Element Index="[41]" Value="0" />
+<Element Index="[42]" Value="0" />
+<Element Index="[43]" Value="0" />
+<Element Index="[44]" Value="0" />
+<Element Index="[45]" Value="0" />
+<Element Index="[46]" Value="0" />
+<Element Index="[47]" Value="0" />
+<Element Index="[48]" Value="0" />
+<Element Index="[49]" Value="0" />
+<Element Index="[50]" Value="0" />
+<Element Index="[51]" Value="0" />
+<Element Index="[52]" Value="0" />
+<Element Index="[53]" Value="0" />
+<Element Index="[54]" Value="0" />
+<Element Index="[55]" Value="0" />
+<Element Index="[56]" Value="0" />
+<Element Index="[57]" Value="0" />
+<Element Index="[58]" Value="0" />
+<Element Index="[59]" Value="0" />
+<Element Index="[60]" Value="0" />
+<Element Index="[61]" Value="0" />
+<Element Index="[62]" Value="0" />
+<Element Index="[63]" Value="0" />
+<Element Index="[64]" Value="0" />
+<Element Index="[65]" Value="0" />
+<Element Index="[66]" Value="0" />
+<Element Index="[67]" Value="0" />
+<Element Index="[68]" Value="0" />
+<Element Index="[69]" Value="0" />
+<Element Index="[70]" Value="0" />
+<Element Index="[71]" Value="0" />
+<Element Index="[72]" Value="0" />
+<Element Index="[73]" Value="0" />
+<Element Index="[74]" Value="0" />
+<Element Index="[75]" Value="0" />
+<Element Index="[76]" Value="0" />
+<Element Index="[77]" Value="0" />
+<Element Index="[78]" Value="0" />
+<Element Index="[79]" Value="0" />
+<Element Index="[80]" Value="0" />
+<Element Index="[81]" Value="0" />
+<Element Index="[82]" Value="0" />
+<Element Index="[83]" Value="0" />
+<Element Index="[84]" Value="0" />
+<Element Index="[85]" Value="0" />
+<Element Index="[86]" Value="0" />
+<Element Index="[87]" Value="0" />
+<Element Index="[88]" Value="0" />
+<Element Index="[89]" Value="0" />
+<Element Index="[90]" Value="0" />
+<Element Index="[91]" Value="0" />
+<Element Index="[92]" Value="0" />
+<Element Index="[93]" Value="0" />
+<Element Index="[94]" Value="0" />
+<Element Index="[95]" Value="0" />
+<Element Index="[96]" Value="0" />
+<Element Index="[97]" Value="0" />
+<Element Index="[98]" Value="0" />
+<Element Index="[99]" Value="0" />
+<Element Index="[100]" Value="0" />
+<Element Index="[101]" Value="0" />
+<Element Index="[102]" Value="0" />
+<Element Index="[103]" Value="0" />
+<Element Index="[104]" Value="0" />
+<Element Index="[105]" Value="0" />
+<Element Index="[106]" Value="0" />
+<Element Index="[107]" Value="0" />
+<Element Index="[108]" Value="0" />
+<Element Index="[109]" Value="0" />
+<Element Index="[110]" Value="0" />
+<Element Index="[111]" Value="0" />
+<Element Index="[112]" Value="0" />
+<Element Index="[113]" Value="0" />
+<Element Index="[114]" Value="0" />
+<Element Index="[115]" Value="0" />
+<Element Index="[116]" Value="0" />
+<Element Index="[117]" Value="0" />
+<Element Index="[118]" Value="0" />
+<Element Index="[119]" Value="0" />
+<Element Index="[120]" Value="0" />
+<Element Index="[121]" Value="0" />
+<Element Index="[122]" Value="0" />
+<Element Index="[123]" Value="0" />
+<Element Index="[124]" Value="0" />
+<Element Index="[125]" Value="0" />
+<Element Index="[126]" Value="0" />
+<Element Index="[127]" Value="0" />
+<Element Index="[128]" Value="0" />
+<Element Index="[129]" Value="0" />
+<Element Index="[130]" Value="0" />
+<Element Index="[131]" Value="0" />
+<Element Index="[132]" Value="0" />
+<Element Index="[133]" Value="0" />
+<Element Index="[134]" Value="0" />
+<Element Index="[135]" Value="0" />
+<Element Index="[136]" Value="0" />
+<Element Index="[137]" Value="0" />
+<Element Index="[138]" Value="0" />
+<Element Index="[139]" Value="0" />
+<Element Index="[140]" Value="0" />
+<Element Index="[141]" Value="0" />
+<Element Index="[142]" Value="0" />
+<Element Index="[143]" Value="0" />
+<Element Index="[144]" Value="0" />
+<Element Index="[145]" Value="0" />
+<Element Index="[146]" Value="0" />
+<Element Index="[147]" Value="0" />
+<Element Index="[148]" Value="0" />
+<Element Index="[149]" Value="0" />
+<Element Index="[150]" Value="0" />
+<Element Index="[151]" Value="0" />
+<Element Index="[152]" Value="0" />
+<Element Index="[153]" Value="0" />
+<Element Index="[154]" Value="0" />
+<Element Index="[155]" Value="0" />
+<Element Index="[156]" Value="0" />
+<Element Index="[157]" Value="0" />
+<Element Index="[158]" Value="0" />
+<Element Index="[159]" Value="0" />
+<Element Index="[160]" Value="0" />
+<Element Index="[161]" Value="0" />
+<Element Index="[162]" Value="0" />
+<Element Index="[163]" Value="0" />
+<Element Index="[164]" Value="0" />
+<Element Index="[165]" Value="0" />
+<Element Index="[166]" Value="0" />
+<Element Index="[167]" Value="0" />
+<Element Index="[168]" Value="0" />
+<Element Index="[169]" Value="0" />
+<Element Index="[170]" Value="0" />
+<Element Index="[171]" Value="0" />
+<Element Index="[172]" Value="0" />
+<Element Index="[173]" Value="0" />
+<Element Index="[174]" Value="0" />
+<Element Index="[175]" Value="0" />
+<Element Index="[176]" Value="0" />
+<Element Index="[177]" Value="0" />
+<Element Index="[178]" Value="0" />
+<Element Index="[179]" Value="0" />
+<Element Index="[180]" Value="0" />
+<Element Index="[181]" Value="0" />
+<Element Index="[182]" Value="0" />
+<Element Index="[183]" Value="0" />
+<Element Index="[184]" Value="0" />
+<Element Index="[185]" Value="0" />
+<Element Index="[186]" Value="0" />
+<Element Index="[187]" Value="0" />
+<Element Index="[188]" Value="0" />
+<Element Index="[189]" Value="0" />
+<Element Index="[190]" Value="0" />
+<Element Index="[191]" Value="0" />
+<Element Index="[192]" Value="0" />
+<Element Index="[193]" Value="0" />
+<Element Index="[194]" Value="0" />
+<Element Index="[195]" Value="0" />
+<Element Index="[196]" Value="0" />
+<Element Index="[197]" Value="0" />
+<Element Index="[198]" Value="0" />
+<Element Index="[199]" Value="0" />
+<Element Index="[200]" Value="0" />
+<Element Index="[201]" Value="0" />
+<Element Index="[202]" Value="0" />
+<Element Index="[203]" Value="0" />
+<Element Index="[204]" Value="0" />
+<Element Index="[205]" Value="0" />
+<Element Index="[206]" Value="0" />
+<Element Index="[207]" Value="0" />
+<Element Index="[208]" Value="0" />
+<Element Index="[209]" Value="0" />
+<Element Index="[210]" Value="0" />
+<Element Index="[211]" Value="0" />
+<Element Index="[212]" Value="0" />
+<Element Index="[213]" Value="0" />
+<Element Index="[214]" Value="0" />
+<Element Index="[215]" Value="0" />
+<Element Index="[216]" Value="0" />
+<Element Index="[217]" Value="0" />
+<Element Index="[218]" Value="0" />
+<Element Index="[219]" Value="0" />
+<Element Index="[220]" Value="0" />
+<Element Index="[221]" Value="0" />
+<Element Index="[222]" Value="0" />
+<Element Index="[223]" Value="0" />
+<Element Index="[224]" Value="0" />
+<Element Index="[225]" Value="0" />
+<Element Index="[226]" Value="0" />
+<Element Index="[227]" Value="0" />
+<Element Index="[228]" Value="0" />
+<Element Index="[229]" Value="0" />
+<Element Index="[230]" Value="0" />
+<Element Index="[231]" Value="0" />
+<Element Index="[232]" Value="0" />
+<Element Index="[233]" Value="0" />
+<Element Index="[234]" Value="0" />
+<Element Index="[235]" Value="0" />
+<Element Index="[236]" Value="0" />
+<Element Index="[237]" Value="0" />
+<Element Index="[238]" Value="0" />
+<Element Index="[239]" Value="0" />
+<Element Index="[240]" Value="0" />
+<Element Index="[241]" Value="0" />
+<Element Index="[242]" Value="0" />
+<Element Index="[243]" Value="0" />
+<Element Index="[244]" Value="0" />
+<Element Index="[245]" Value="0" />
+<Element Index="[246]" Value="0" />
+<Element Index="[247]" Value="0" />
+<Element Index="[248]" Value="0" />
+<Element Index="[249]" Value="0" />
+<Element Index="[250]" Value="0" />
+<Element Index="[251]" Value="0" />
+<Element Index="[252]" Value="0" />
+<Element Index="[253]" Value="0" />
+<Element Index="[254]" Value="0" />
+<Element Index="[255]" Value="0" />
+<Element Index="[256]" Value="0" />
+<Element Index="[257]" Value="0" />
+<Element Index="[258]" Value="0" />
+<Element Index="[259]" Value="0" />
+<Element Index="[260]" Value="0" />
+<Element Index="[261]" Value="0" />
+<Element Index="[262]" Value="0" />
+<Element Index="[263]" Value="0" />
+<Element Index="[264]" Value="0" />
+<Element Index="[265]" Value="0" />
+<Element Index="[266]" Value="0" />
+<Element Index="[267]" Value="0" />
+<Element Index="[268]" Value="0" />
+<Element Index="[269]" Value="0" />
+<Element Index="[270]" Value="0" />
+<Element Index="[271]" Value="0" />
+<Element Index="[272]" Value="0" />
+<Element Index="[273]" Value="0" />
+<Element Index="[274]" Value="0" />
+<Element Index="[275]" Value="0" />
+<Element Index="[276]" Value="0" />
+<Element Index="[277]" Value="0" />
+<Element Index="[278]" Value="0" />
+<Element Index="[279]" Value="0" />
+<Element Index="[280]" Value="0" />
+<Element Index="[281]" Value="0" />
+<Element Index="[282]" Value="0" />
+<Element Index="[283]" Value="0" />
+<Element Index="[284]" Value="0" />
+<Element Index="[285]" Value="0" />
+<Element Index="[286]" Value="0" />
+<Element Index="[287]" Value="0" />
+<Element Index="[288]" Value="0" />
+<Element Index="[289]" Value="0" />
+<Element Index="[290]" Value="0" />
+<Element Index="[291]" Value="0" />
+<Element Index="[292]" Value="0" />
+<Element Index="[293]" Value="0" />
+<Element Index="[294]" Value="0" />
+<Element Index="[295]" Value="0" />
+<Element Index="[296]" Value="0" />
+<Element Index="[297]" Value="0" />
+<Element Index="[298]" Value="0" />
+<Element Index="[299]" Value="0" />
+<Element Index="[300]" Value="0" />
+<Element Index="[301]" Value="0" />
+<Element Index="[302]" Value="0" />
+<Element Index="[303]" Value="0" />
+<Element Index="[304]" Value="0" />
+<Element Index="[305]" Value="0" />
+<Element Index="[306]" Value="0" />
+<Element Index="[307]" Value="0" />
+<Element Index="[308]" Value="0" />
+<Element Index="[309]" Value="0" />
+<Element Index="[310]" Value="0" />
+<Element Index="[311]" Value="0" />
+<Element Index="[312]" Value="0" />
+<Element Index="[313]" Value="0" />
+<Element Index="[314]" Value="0" />
+<Element Index="[315]" Value="0" />
+<Element Index="[316]" Value="0" />
+<Element Index="[317]" Value="0" />
+<Element Index="[318]" Value="0" />
+<Element Index="[319]" Value="0" />
+<Element Index="[320]" Value="0" />
+<Element Index="[321]" Value="0" />
+<Element Index="[322]" Value="0" />
+<Element Index="[323]" Value="0" />
+<Element Index="[324]" Value="0" />
+<Element Index="[325]" Value="0" />
+<Element Index="[326]" Value="0" />
+<Element Index="[327]" Value="0" />
+<Element Index="[328]" Value="0" />
+<Element Index="[329]" Value="0" />
+<Element Index="[330]" Value="0" />
+<Element Index="[331]" Value="0" />
+<Element Index="[332]" Value="0" />
+<Element Index="[333]" Value="0" />
+<Element Index="[334]" Value="0" />
+<Element Index="[335]" Value="0" />
+<Element Index="[336]" Value="0" />
+<Element Index="[337]" Value="0" />
+<Element Index="[338]" Value="0" />
+<Element Index="[339]" Value="0" />
+<Element Index="[340]" Value="0" />
+<Element Index="[341]" Value="0" />
+<Element Index="[342]" Value="0" />
+<Element Index="[343]" Value="0" />
+<Element Index="[344]" Value="0" />
+<Element Index="[345]" Value="0" />
+<Element Index="[346]" Value="0" />
+<Element Index="[347]" Value="0" />
+<Element Index="[348]" Value="0" />
+<Element Index="[349]" Value="0" />
+<Element Index="[350]" Value="0" />
+<Element Index="[351]" Value="0" />
+<Element Index="[352]" Value="0" />
+<Element Index="[353]" Value="0" />
+<Element Index="[354]" Value="0" />
+<Element Index="[355]" Value="0" />
+<Element Index="[356]" Value="0" />
+<Element Index="[357]" Value="0" />
+<Element Index="[358]" Value="0" />
+<Element Index="[359]" Value="0" />
+<Element Index="[360]" Value="0" />
+<Element Index="[361]" Value="0" />
+<Element Index="[362]" Value="0" />
+<Element Index="[363]" Value="0" />
+<Element Index="[364]" Value="0" />
+<Element Index="[365]" Value="0" />
+<Element Index="[366]" Value="0" />
+<Element Index="[367]" Value="0" />
+<Element Index="[368]" Value="0" />
+<Element Index="[369]" Value="0" />
+<Element Index="[370]" Value="0" />
+<Element Index="[371]" Value="0" />
+<Element Index="[372]" Value="0" />
+<Element Index="[373]" Value="0" />
+<Element Index="[374]" Value="0" />
+<Element Index="[375]" Value="0" />
+<Element Index="[376]" Value="0" />
+<Element Index="[377]" Value="0" />
+<Element Index="[378]" Value="0" />
+<Element Index="[379]" Value="0" />
+<Element Index="[380]" Value="0" />
+<Element Index="[381]" Value="0" />
+<Element Index="[382]" Value="0" />
+<Element Index="[383]" Value="0" />
+<Element Index="[384]" Value="0" />
+<Element Index="[385]" Value="0" />
+<Element Index="[386]" Value="0" />
+<Element Index="[387]" Value="0" />
+<Element Index="[388]" Value="0" />
+<Element Index="[389]" Value="0" />
+<Element Index="[390]" Value="0" />
+<Element Index="[391]" Value="0" />
+<Element Index="[392]" Value="0" />
+<Element Index="[393]" Value="0" />
+<Element Index="[394]" Value="0" />
+<Element Index="[395]" Value="0" />
+<Element Index="[396]" Value="0" />
+<Element Index="[397]" Value="0" />
+<Element Index="[398]" Value="0" />
+<Element Index="[399]" Value="0" />
+<Element Index="[400]" Value="0" />
+<Element Index="[401]" Value="0" />
+<Element Index="[402]" Value="0" />
+<Element Index="[403]" Value="0" />
+<Element Index="[404]" Value="0" />
+<Element Index="[405]" Value="0" />
+<Element Index="[406]" Value="0" />
+<Element Index="[407]" Value="0" />
+<Element Index="[408]" Value="0" />
+<Element Index="[409]" Value="0" />
+<Element Index="[410]" Value="0" />
+<Element Index="[411]" Value="0" />
+<Element Index="[412]" Value="0" />
+<Element Index="[413]" Value="0" />
+<Element Index="[414]" Value="0" />
+<Element Index="[415]" Value="0" />
+<Element Index="[416]" Value="0" />
+<Element Index="[417]" Value="0" />
+<Element Index="[418]" Value="0" />
+<Element Index="[419]" Value="0" />
+<Element Index="[420]" Value="0" />
+<Element Index="[421]" Value="0" />
+<Element Index="[422]" Value="0" />
+<Element Index="[423]" Value="0" />
+<Element Index="[424]" Value="0" />
+<Element Index="[425]" Value="0" />
+<Element Index="[426]" Value="0" />
+<Element Index="[427]" Value="0" />
+<Element Index="[428]" Value="0" />
+<Element Index="[429]" Value="0" />
+<Element Index="[430]" Value="0" />
+<Element Index="[431]" Value="0" />
+<Element Index="[432]" Value="0" />
+<Element Index="[433]" Value="0" />
+<Element Index="[434]" Value="0" />
+<Element Index="[435]" Value="0" />
+<Element Index="[436]" Value="0" />
+<Element Index="[437]" Value="0" />
+<Element Index="[438]" Value="0" />
+<Element Index="[439]" Value="0" />
+<Element Index="[440]" Value="0" />
+<Element Index="[441]" Value="0" />
+<Element Index="[442]" Value="0" />
+<Element Index="[443]" Value="0" />
+<Element Index="[444]" Value="0" />
+<Element Index="[445]" Value="0" />
+<Element Index="[446]" Value="0" />
+<Element Index="[447]" Value="0" />
+<Element Index="[448]" Value="0" />
+<Element Index="[449]" Value="0" />
+<Element Index="[450]" Value="0" />
+<Element Index="[451]" Value="0" />
+<Element Index="[452]" Value="0" />
+<Element Index="[453]" Value="0" />
+<Element Index="[454]" Value="0" />
+<Element Index="[455]" Value="0" />
+<Element Index="[456]" Value="0" />
+<Element Index="[457]" Value="0" />
+<Element Index="[458]" Value="0" />
+<Element Index="[459]" Value="0" />
+<Element Index="[460]" Value="0" />
+<Element Index="[461]" Value="0" />
+<Element Index="[462]" Value="0" />
+<Element Index="[463]" Value="0" />
+<Element Index="[464]" Value="0" />
+<Element Index="[465]" Value="0" />
+<Element Index="[466]" Value="0" />
+<Element Index="[467]" Value="0" />
+<Element Index="[468]" Value="0" />
+<Element Index="[469]" Value="0" />
+<Element Index="[470]" Value="0" />
+<Element Index="[471]" Value="0" />
+<Element Index="[472]" Value="0" />
+<Element Index="[473]" Value="0" />
+<Element Index="[474]" Value="0" />
+<Element Index="[475]" Value="0" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:ETHERNET_MODULE_REAL_468Bytes:O:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="468" Radix="Decimal">
+<Element Index="[0]" Value="0" />
+<Element Index="[1]" Value="0" />
+<Element Index="[2]" Value="0" />
+<Element Index="[3]" Value="0" />
+<Element Index="[4]" Value="0" />
+<Element Index="[5]" Value="0" />
+<Element Index="[6]" Value="0" />
+<Element Index="[7]" Value="0" />
+<Element Index="[8]" Value="0" />
+<Element Index="[9]" Value="0" />
+<Element Index="[10]" Value="0" />
+<Element Index="[11]" Value="0" />
+<Element Index="[12]" Value="0" />
+<Element Index="[13]" Value="0" />
+<Element Index="[14]" Value="0" />
+<Element Index="[15]" Value="0" />
+<Element Index="[16]" Value="0" />
+<Element Index="[17]" Value="0" />
+<Element Index="[18]" Value="0" />
+<Element Index="[19]" Value="0" />
+<Element Index="[20]" Value="0" />
+<Element Index="[21]" Value="0" />
+<Element Index="[22]" Value="0" />
+<Element Index="[23]" Value="0" />
+<Element Index="[24]" Value="0" />
+<Element Index="[25]" Value="0" />
+<Element Index="[26]" Value="0" />
+<Element Index="[27]" Value="0" />
+<Element Index="[28]" Value="0" />
+<Element Index="[29]" Value="0" />
+<Element Index="[30]" Value="0" />
+<Element Index="[31]" Value="0" />
+<Element Index="[32]" Value="0" />
+<Element Index="[33]" Value="0" />
+<Element Index="[34]" Value="0" />
+<Element Index="[35]" Value="0" />
+<Element Index="[36]" Value="0" />
+<Element Index="[37]" Value="0" />
+<Element Index="[38]" Value="0" />
+<Element Index="[39]" Value="0" />
+<Element Index="[40]" Value="0" />
+<Element Index="[41]" Value="0" />
+<Element Index="[42]" Value="0" />
+<Element Index="[43]" Value="0" />
+<Element Index="[44]" Value="0" />
+<Element Index="[45]" Value="0" />
+<Element Index="[46]" Value="0" />
+<Element Index="[47]" Value="0" />
+<Element Index="[48]" Value="0" />
+<Element Index="[49]" Value="0" />
+<Element Index="[50]" Value="0" />
+<Element Index="[51]" Value="0" />
+<Element Index="[52]" Value="0" />
+<Element Index="[53]" Value="0" />
+<Element Index="[54]" Value="0" />
+<Element Index="[55]" Value="0" />
+<Element Index="[56]" Value="0" />
+<Element Index="[57]" Value="0" />
+<Element Index="[58]" Value="0" />
+<Element Index="[59]" Value="0" />
+<Element Index="[60]" Value="0" />
+<Element Index="[61]" Value="0" />
+<Element Index="[62]" Value="0" />
+<Element Index="[63]" Value="0" />
+<Element Index="[64]" Value="0" />
+<Element Index="[65]" Value="0" />
+<Element Index="[66]" Value="0" />
+<Element Index="[67]" Value="0" />
+<Element Index="[68]" Value="0" />
+<Element Index="[69]" Value="0" />
+<Element Index="[70]" Value="0" />
+<Element Index="[71]" Value="0" />
+<Element Index="[72]" Value="0" />
+<Element Index="[73]" Value="0" />
+<Element Index="[74]" Value="0" />
+<Element Index="[75]" Value="0" />
+<Element Index="[76]" Value="0" />
+<Element Index="[77]" Value="0" />
+<Element Index="[78]" Value="0" />
+<Element Index="[79]" Value="0" />
+<Element Index="[80]" Value="0" />
+<Element Index="[81]" Value="0" />
+<Element Index="[82]" Value="0" />
+<Element Index="[83]" Value="0" />
+<Element Index="[84]" Value="0" />
+<Element Index="[85]" Value="0" />
+<Element Index="[86]" Value="0" />
+<Element Index="[87]" Value="0" />
+<Element Index="[88]" Value="0" />
+<Element Index="[89]" Value="0" />
+<Element Index="[90]" Value="0" />
+<Element Index="[91]" Value="0" />
+<Element Index="[92]" Value="0" />
+<Element Index="[93]" Value="0" />
+<Element Index="[94]" Value="0" />
+<Element Index="[95]" Value="0" />
+<Element Index="[96]" Value="0" />
+<Element Index="[97]" Value="0" />
+<Element Index="[98]" Value="0" />
+<Element Index="[99]" Value="0" />
+<Element Index="[100]" Value="0" />
+<Element Index="[101]" Value="0" />
+<Element Index="[102]" Value="0" />
+<Element Index="[103]" Value="0" />
+<Element Index="[104]" Value="0" />
+<Element Index="[105]" Value="0" />
+<Element Index="[106]" Value="0" />
+<Element Index="[107]" Value="0" />
+<Element Index="[108]" Value="0" />
+<Element Index="[109]" Value="0" />
+<Element Index="[110]" Value="0" />
+<Element Index="[111]" Value="0" />
+<Element Index="[112]" Value="0" />
+<Element Index="[113]" Value="0" />
+<Element Index="[114]" Value="0" />
+<Element Index="[115]" Value="0" />
+<Element Index="[116]" Value="0" />
+<Element Index="[117]" Value="0" />
+<Element Index="[118]" Value="0" />
+<Element Index="[119]" Value="0" />
+<Element Index="[120]" Value="0" />
+<Element Index="[121]" Value="0" />
+<Element Index="[122]" Value="0" />
+<Element Index="[123]" Value="0" />
+<Element Index="[124]" Value="0" />
+<Element Index="[125]" Value="0" />
+<Element Index="[126]" Value="0" />
+<Element Index="[127]" Value="0" />
+<Element Index="[128]" Value="0" />
+<Element Index="[129]" Value="0" />
+<Element Index="[130]" Value="0" />
+<Element Index="[131]" Value="0" />
+<Element Index="[132]" Value="0" />
+<Element Index="[133]" Value="0" />
+<Element Index="[134]" Value="0" />
+<Element Index="[135]" Value="0" />
+<Element Index="[136]" Value="0" />
+<Element Index="[137]" Value="0" />
+<Element Index="[138]" Value="0" />
+<Element Index="[139]" Value="0" />
+<Element Index="[140]" Value="0" />
+<Element Index="[141]" Value="0" />
+<Element Index="[142]" Value="0" />
+<Element Index="[143]" Value="0" />
+<Element Index="[144]" Value="0" />
+<Element Index="[145]" Value="0" />
+<Element Index="[146]" Value="0" />
+<Element Index="[147]" Value="0" />
+<Element Index="[148]" Value="0" />
+<Element Index="[149]" Value="0" />
+<Element Index="[150]" Value="0" />
+<Element Index="[151]" Value="0" />
+<Element Index="[152]" Value="0" />
+<Element Index="[153]" Value="0" />
+<Element Index="[154]" Value="0" />
+<Element Index="[155]" Value="0" />
+<Element Index="[156]" Value="0" />
+<Element Index="[157]" Value="0" />
+<Element Index="[158]" Value="0" />
+<Element Index="[159]" Value="0" />
+<Element Index="[160]" Value="0" />
+<Element Index="[161]" Value="0" />
+<Element Index="[162]" Value="0" />
+<Element Index="[163]" Value="0" />
+<Element Index="[164]" Value="0" />
+<Element Index="[165]" Value="0" />
+<Element Index="[166]" Value="0" />
+<Element Index="[167]" Value="0" />
+<Element Index="[168]" Value="0" />
+<Element Index="[169]" Value="0" />
+<Element Index="[170]" Value="0" />
+<Element Index="[171]" Value="0" />
+<Element Index="[172]" Value="0" />
+<Element Index="[173]" Value="0" />
+<Element Index="[174]" Value="0" />
+<Element Index="[175]" Value="0" />
+<Element Index="[176]" Value="0" />
+<Element Index="[177]" Value="0" />
+<Element Index="[178]" Value="0" />
+<Element Index="[179]" Value="0" />
+<Element Index="[180]" Value="0" />
+<Element Index="[181]" Value="0" />
+<Element Index="[182]" Value="0" />
+<Element Index="[183]" Value="0" />
+<Element Index="[184]" Value="0" />
+<Element Index="[185]" Value="0" />
+<Element Index="[186]" Value="0" />
+<Element Index="[187]" Value="0" />
+<Element Index="[188]" Value="0" />
+<Element Index="[189]" Value="0" />
+<Element Index="[190]" Value="0" />
+<Element Index="[191]" Value="0" />
+<Element Index="[192]" Value="0" />
+<Element Index="[193]" Value="0" />
+<Element Index="[194]" Value="0" />
+<Element Index="[195]" Value="0" />
+<Element Index="[196]" Value="0" />
+<Element Index="[197]" Value="0" />
+<Element Index="[198]" Value="0" />
+<Element Index="[199]" Value="0" />
+<Element Index="[200]" Value="0" />
+<Element Index="[201]" Value="0" />
+<Element Index="[202]" Value="0" />
+<Element Index="[203]" Value="0" />
+<Element Index="[204]" Value="0" />
+<Element Index="[205]" Value="0" />
+<Element Index="[206]" Value="0" />
+<Element Index="[207]" Value="0" />
+<Element Index="[208]" Value="0" />
+<Element Index="[209]" Value="0" />
+<Element Index="[210]" Value="0" />
+<Element Index="[211]" Value="0" />
+<Element Index="[212]" Value="0" />
+<Element Index="[213]" Value="0" />
+<Element Index="[214]" Value="0" />
+<Element Index="[215]" Value="0" />
+<Element Index="[216]" Value="0" />
+<Element Index="[217]" Value="0" />
+<Element Index="[218]" Value="0" />
+<Element Index="[219]" Value="0" />
+<Element Index="[220]" Value="0" />
+<Element Index="[221]" Value="0" />
+<Element Index="[222]" Value="0" />
+<Element Index="[223]" Value="0" />
+<Element Index="[224]" Value="0" />
+<Element Index="[225]" Value="0" />
+<Element Index="[226]" Value="0" />
+<Element Index="[227]" Value="0" />
+<Element Index="[228]" Value="0" />
+<Element Index="[229]" Value="0" />
+<Element Index="[230]" Value="0" />
+<Element Index="[231]" Value="0" />
+<Element Index="[232]" Value="0" />
+<Element Index="[233]" Value="0" />
+<Element Index="[234]" Value="0" />
+<Element Index="[235]" Value="0" />
+<Element Index="[236]" Value="0" />
+<Element Index="[237]" Value="0" />
+<Element Index="[238]" Value="0" />
+<Element Index="[239]" Value="0" />
+<Element Index="[240]" Value="0" />
+<Element Index="[241]" Value="0" />
+<Element Index="[242]" Value="0" />
+<Element Index="[243]" Value="0" />
+<Element Index="[244]" Value="0" />
+<Element Index="[245]" Value="0" />
+<Element Index="[246]" Value="0" />
+<Element Index="[247]" Value="0" />
+<Element Index="[248]" Value="0" />
+<Element Index="[249]" Value="0" />
+<Element Index="[250]" Value="0" />
+<Element Index="[251]" Value="0" />
+<Element Index="[252]" Value="0" />
+<Element Index="[253]" Value="0" />
+<Element Index="[254]" Value="0" />
+<Element Index="[255]" Value="0" />
+<Element Index="[256]" Value="0" />
+<Element Index="[257]" Value="0" />
+<Element Index="[258]" Value="0" />
+<Element Index="[259]" Value="0" />
+<Element Index="[260]" Value="0" />
+<Element Index="[261]" Value="0" />
+<Element Index="[262]" Value="0" />
+<Element Index="[263]" Value="0" />
+<Element Index="[264]" Value="0" />
+<Element Index="[265]" Value="0" />
+<Element Index="[266]" Value="0" />
+<Element Index="[267]" Value="0" />
+<Element Index="[268]" Value="0" />
+<Element Index="[269]" Value="0" />
+<Element Index="[270]" Value="0" />
+<Element Index="[271]" Value="0" />
+<Element Index="[272]" Value="0" />
+<Element Index="[273]" Value="0" />
+<Element Index="[274]" Value="0" />
+<Element Index="[275]" Value="0" />
+<Element Index="[276]" Value="0" />
+<Element Index="[277]" Value="0" />
+<Element Index="[278]" Value="0" />
+<Element Index="[279]" Value="0" />
+<Element Index="[280]" Value="0" />
+<Element Index="[281]" Value="0" />
+<Element Index="[282]" Value="0" />
+<Element Index="[283]" Value="0" />
+<Element Index="[284]" Value="0" />
+<Element Index="[285]" Value="0" />
+<Element Index="[286]" Value="0" />
+<Element Index="[287]" Value="0" />
+<Element Index="[288]" Value="0" />
+<Element Index="[289]" Value="0" />
+<Element Index="[290]" Value="0" />
+<Element Index="[291]" Value="0" />
+<Element Index="[292]" Value="0" />
+<Element Index="[293]" Value="0" />
+<Element Index="[294]" Value="0" />
+<Element Index="[295]" Value="0" />
+<Element Index="[296]" Value="0" />
+<Element Index="[297]" Value="0" />
+<Element Index="[298]" Value="0" />
+<Element Index="[299]" Value="0" />
+<Element Index="[300]" Value="0" />
+<Element Index="[301]" Value="0" />
+<Element Index="[302]" Value="0" />
+<Element Index="[303]" Value="0" />
+<Element Index="[304]" Value="0" />
+<Element Index="[305]" Value="0" />
+<Element Index="[306]" Value="0" />
+<Element Index="[307]" Value="0" />
+<Element Index="[308]" Value="0" />
+<Element Index="[309]" Value="0" />
+<Element Index="[310]" Value="0" />
+<Element Index="[311]" Value="0" />
+<Element Index="[312]" Value="0" />
+<Element Index="[313]" Value="0" />
+<Element Index="[314]" Value="0" />
+<Element Index="[315]" Value="0" />
+<Element Index="[316]" Value="0" />
+<Element Index="[317]" Value="0" />
+<Element Index="[318]" Value="0" />
+<Element Index="[319]" Value="0" />
+<Element Index="[320]" Value="0" />
+<Element Index="[321]" Value="0" />
+<Element Index="[322]" Value="0" />
+<Element Index="[323]" Value="0" />
+<Element Index="[324]" Value="0" />
+<Element Index="[325]" Value="0" />
+<Element Index="[326]" Value="0" />
+<Element Index="[327]" Value="0" />
+<Element Index="[328]" Value="0" />
+<Element Index="[329]" Value="0" />
+<Element Index="[330]" Value="0" />
+<Element Index="[331]" Value="0" />
+<Element Index="[332]" Value="0" />
+<Element Index="[333]" Value="0" />
+<Element Index="[334]" Value="0" />
+<Element Index="[335]" Value="0" />
+<Element Index="[336]" Value="0" />
+<Element Index="[337]" Value="0" />
+<Element Index="[338]" Value="0" />
+<Element Index="[339]" Value="0" />
+<Element Index="[340]" Value="0" />
+<Element Index="[341]" Value="0" />
+<Element Index="[342]" Value="0" />
+<Element Index="[343]" Value="0" />
+<Element Index="[344]" Value="0" />
+<Element Index="[345]" Value="0" />
+<Element Index="[346]" Value="0" />
+<Element Index="[347]" Value="0" />
+<Element Index="[348]" Value="0" />
+<Element Index="[349]" Value="0" />
+<Element Index="[350]" Value="0" />
+<Element Index="[351]" Value="0" />
+<Element Index="[352]" Value="0" />
+<Element Index="[353]" Value="0" />
+<Element Index="[354]" Value="0" />
+<Element Index="[355]" Value="0" />
+<Element Index="[356]" Value="0" />
+<Element Index="[357]" Value="0" />
+<Element Index="[358]" Value="0" />
+<Element Index="[359]" Value="0" />
+<Element Index="[360]" Value="0" />
+<Element Index="[361]" Value="0" />
+<Element Index="[362]" Value="0" />
+<Element Index="[363]" Value="0" />
+<Element Index="[364]" Value="0" />
+<Element Index="[365]" Value="0" />
+<Element Index="[366]" Value="0" />
+<Element Index="[367]" Value="0" />
+<Element Index="[368]" Value="0" />
+<Element Index="[369]" Value="0" />
+<Element Index="[370]" Value="0" />
+<Element Index="[371]" Value="0" />
+<Element Index="[372]" Value="0" />
+<Element Index="[373]" Value="0" />
+<Element Index="[374]" Value="0" />
+<Element Index="[375]" Value="0" />
+<Element Index="[376]" Value="0" />
+<Element Index="[377]" Value="0" />
+<Element Index="[378]" Value="0" />
+<Element Index="[379]" Value="0" />
+<Element Index="[380]" Value="0" />
+<Element Index="[381]" Value="0" />
+<Element Index="[382]" Value="0" />
+<Element Index="[383]" Value="0" />
+<Element Index="[384]" Value="0" />
+<Element Index="[385]" Value="0" />
+<Element Index="[386]" Value="0" />
+<Element Index="[387]" Value="0" />
+<Element Index="[388]" Value="0" />
+<Element Index="[389]" Value="0" />
+<Element Index="[390]" Value="0" />
+<Element Index="[391]" Value="0" />
+<Element Index="[392]" Value="0" />
+<Element Index="[393]" Value="0" />
+<Element Index="[394]" Value="0" />
+<Element Index="[395]" Value="0" />
+<Element Index="[396]" Value="0" />
+<Element Index="[397]" Value="0" />
+<Element Index="[398]" Value="0" />
+<Element Index="[399]" Value="0" />
+<Element Index="[400]" Value="0" />
+<Element Index="[401]" Value="0" />
+<Element Index="[402]" Value="0" />
+<Element Index="[403]" Value="0" />
+<Element Index="[404]" Value="0" />
+<Element Index="[405]" Value="0" />
+<Element Index="[406]" Value="0" />
+<Element Index="[407]" Value="0" />
+<Element Index="[408]" Value="0" />
+<Element Index="[409]" Value="0" />
+<Element Index="[410]" Value="0" />
+<Element Index="[411]" Value="0" />
+<Element Index="[412]" Value="0" />
+<Element Index="[413]" Value="0" />
+<Element Index="[414]" Value="0" />
+<Element Index="[415]" Value="0" />
+<Element Index="[416]" Value="0" />
+<Element Index="[417]" Value="0" />
+<Element Index="[418]" Value="0" />
+<Element Index="[419]" Value="0" />
+<Element Index="[420]" Value="0" />
+<Element Index="[421]" Value="0" />
+<Element Index="[422]" Value="0" />
+<Element Index="[423]" Value="0" />
+<Element Index="[424]" Value="0" />
+<Element Index="[425]" Value="0" />
+<Element Index="[426]" Value="0" />
+<Element Index="[427]" Value="0" />
+<Element Index="[428]" Value="0" />
+<Element Index="[429]" Value="0" />
+<Element Index="[430]" Value="0" />
+<Element Index="[431]" Value="0" />
+<Element Index="[432]" Value="0" />
+<Element Index="[433]" Value="0" />
+<Element Index="[434]" Value="0" />
+<Element Index="[435]" Value="0" />
+<Element Index="[436]" Value="0" />
+<Element Index="[437]" Value="0" />
+<Element Index="[438]" Value="0" />
+<Element Index="[439]" Value="0" />
+<Element Index="[440]" Value="0" />
+<Element Index="[441]" Value="0" />
+<Element Index="[442]" Value="0" />
+<Element Index="[443]" Value="0" />
+<Element Index="[444]" Value="0" />
+<Element Index="[445]" Value="0" />
+<Element Index="[446]" Value="0" />
+<Element Index="[447]" Value="0" />
+<Element Index="[448]" Value="0" />
+<Element Index="[449]" Value="0" />
+<Element Index="[450]" Value="0" />
+<Element Index="[451]" Value="0" />
+<Element Index="[452]" Value="0" />
+<Element Index="[453]" Value="0" />
+<Element Index="[454]" Value="0" />
+<Element Index="[455]" Value="0" />
+<Element Index="[456]" Value="0" />
+<Element Index="[457]" Value="0" />
+<Element Index="[458]" Value="0" />
+<Element Index="[459]" Value="0" />
+<Element Index="[460]" Value="0" />
+<Element Index="[461]" Value="0" />
+<Element Index="[462]" Value="0" />
+<Element Index="[463]" Value="0" />
+<Element Index="[464]" Value="0" />
+<Element Index="[465]" Value="0" />
+<Element Index="[466]" Value="0" />
+<Element Index="[467]" Value="0" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="RobotController1" CatalogNumber="ETHERNET-MODULE" Vendor="1" ProductType="0" ProductCode="18" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="Disabled" />
+<Ports>
+<Port Id="2" Address="192.168.1.73" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications CommMethod="536870914" PrimCxnInputSize="16" PrimCxnOutputSize="16">
+<Connections>
+<Connection Name="Standard" RPI="20000" Type="Output" InputCxnPoint="1" OutputCxnPoint="2" OutputSize="16" InputSize="16" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:ETHERNET_MODULE_REAL_16Bytes:I:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="16" Radix="Decimal">
+<Element Index="[0]" Value="0" />
+<Element Index="[1]" Value="0" />
+<Element Index="[2]" Value="0" />
+<Element Index="[3]" Value="0" />
+<Element Index="[4]" Value="0" />
+<Element Index="[5]" Value="0" />
+<Element Index="[6]" Value="0" />
+<Element Index="[7]" Value="0" />
+<Element Index="[8]" Value="0" />
+<Element Index="[9]" Value="0" />
+<Element Index="[10]" Value="0" />
+<Element Index="[11]" Value="0" />
+<Element Index="[12]" Value="0" />
+<Element Index="[13]" Value="0" />
+<Element Index="[14]" Value="0" />
+<Element Index="[15]" Value="0" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:ETHERNET_MODULE_REAL_16Bytes:O:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="16" Radix="Decimal">
+<Element Index="[0]" Value="0" />
+<Element Index="[1]" Value="0" />
+<Element Index="[2]" Value="0" />
+<Element Index="[3]" Value="0" />
+<Element Index="[4]" Value="0" />
+<Element Index="[5]" Value="0" />
+<Element Index="[6]" Value="0" />
+<Element Index="[7]" Value="0" />
+<Element Index="[8]" Value="0" />
+<Element Index="[9]" Value="0" />
+<Element Index="[10]" Value="0" />
+<Element Index="[11]" Value="0" />
+<Element Index="[12]" Value="0" />
+<Element Index="[13]" Value="0" />
+<Element Index="[14]" Value="0" />
+<Element Index="[15]" Value="0" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
 """
-
 
 
 def main() -> None:
@@ -4541,40 +5302,33 @@ def main() -> None:
         _axis_tag("Bus2_Drive057_Xfer_Axis", "Bus2_Drive_D057:Ch3"),
         _axis_tag("Bus2_Drive020_Chuck_Axis", "Bus2_Drive_D020:Ch1"),
         _axis_tag("Bus2_Drive020_Sf_Axis", "Bus2_Drive_D020:Ch3"),
-        _BUS2_ACC_PRESSURE_TAG_XML,
-        _BUS2_PUMP_PRESSURE_TAG_XML,
     ])
     l5x = build_l5x(
         target_name="BenderFullProgram", tags_xml=tags_xml,
-        extra_modules_xml=_ALL_MODULES_XML, extra_aoi_xml=_ANA_IN_FIL_AOI_XML,
-        processor_type="1756-L81ES",
+        extra_modules_xml=_ALL_MODULES_XML, processor_type="1756-L81ES",
     )
     out_path = OUT_ROOT / "modulerack_bender_full_program.L5X"
     write_sample_unmodeled(l5x, out_path)
     append_manifest_row(
         "modulerack_bender_full_program",
-        "Full real-program replica: 64 of the 69 non-CPU modules in James's real "
+        "Full real-program replica: 68 of the 69 non-CPU modules in James's real "
         "DnR_Personal/Bender134053_201104.L5X (5 Point I/O adapters with all 44 real "
         "children, 5 ArmorBlock I/O, 2 PowerFlex 527-STO safety drives, 2 EX260 valve "
         "manifolds, RMC150E, full 2-bus/5-module Kinetix 5700 subgraph with 8 real axis "
-        "tags), genericized but structurally verbatim, not deduplicated. Cross-verified "
-        "against James's own real 'stripped' export of this program (Bender134053_"
-        "stripper.L5X, logic/UDTs/most tags removed but Modules section intact) -- exact "
-        "module-catalog match, confirmed the Safety Partner really is absent from a normal "
-        "module export (independent confirmation of the earlier exclusion). Added 2 real "
-        "Controller-scope AOI instance tags from that stripped export (Bus2AccPressure/"
-        "Bus2PumpPressure, both ANA_IN_FIL -- real analog-input-filter AOI, its own "
-        "definition included) that weren't in the original module-only extraction -- "
-        "built to be captured against the real program's actual controller memory for "
-        "accuracy validation. 5 modules excluded (GuardLogix Safety Partner -- not "
-        "independently importable; 2 generic-EDS encoders + 1 barcode reader + 1 FANUC "
-        "robot profile -- real Studio 5000 'module profile not found' errors, need an EDS "
-        "not guaranteed present) -- see this generator's own docstring for the full "
-        "real error-driven rationale. 0 lint findings, 0 duplicate names, 0 dangling "
-        "parent refs.",
+        "tags, plus 4 real EDS-dependent devices represented via Generic Ethernet Module "
+        "since their real profile isn't guaranteed installed -- 2 encoders, 1 barcode "
+        "reader, 1 robot controller, real stated Connection sizes preserved exactly), "
+        "genericized but structurally verbatim, not deduplicated -- built to be captured "
+        "against the real program's actual controller memory for accuracy validation. "
+        "Only 1 module excluded (GuardLogix Safety Partner -- not independently "
+        "importable, confirmed by James himself). See this generator's own docstring for "
+        "the full real error-driven rationale, including the one honest gap (a FANUC "
+        "robot's 20 bytes of real CIP Safety I/O can't be represented via Generic "
+        "Ethernet Module and is not included). 0 lint findings, 0 duplicate names, 0 "
+        "dangling parent refs.",
         "modules", out_path, 0,
     )
-    print("Done. 1 full-program replica file written (64 modules, 8 axes, 2 AOI tags).")
+    print("Done. 1 full-program replica file written (68 modules, 8 axes).")
 
 
 if __name__ == "__main__":

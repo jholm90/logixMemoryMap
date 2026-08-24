@@ -2675,3 +2675,50 @@ generator already covers them, just waiting on the next capture batch.
     ran real Studio 5000 imports against it. Underscores why his QA ask
     mattered: automated lint + sizing-engine checks alone would never
     have caught any of these six.
+
+22. **OQ-MODULEIO EDS accommodation — WIRED 2026-08-27.** James corrected
+    2 things about the Bender full-program replica: "For reference I
+    stripped the safety partner and forgot to delete the analog filter
+    tags, this was meant to be a reference for the required io. You will
+    need to accommodate missing eds files. This is a 100% requirement
+    that you will need to account for." Two changes:
+    - Removed the 2 `ANA_IN_FIL` Controller tags (`Bus2AccPressure`/
+      `Bus2PumpPressure`) and their AOI definition that a prior pass
+      picked up from James's stripped export -- confirmed leftover
+      cruft he forgot to delete, not intended reference content.
+    - **The 4 EDS/generic-profile devices previously excluded
+      (`GenericEncoder1`/`GenericEncoder2`/`GenericBarcodeReader1`/
+      `RobotController1`) are back in, represented via Rockwell's own
+      built-in Generic Ethernet Module mechanism instead of being
+      dropped** -- `CatalogNumber="ETHERNET-MODULE"`, `Vendor="1"`, no
+      EDS required at all, confirmed real via this exact file's own
+      RMC150E module (which already uses it and imports clean per
+      James's report). Real stated Connection sizes preserved exactly
+      (12-byte Input Only x2 for the encoders, 476/468-byte and
+      16/16-byte bidirectional for the barcode reader and robot) --
+      only the named-member Decorated Structure detail is lost (Generic
+      Ethernet Module always represents I/O as a flat opaque array), not
+      the byte total. **One honest, documented gap**: the real FANUC
+      robot module also carries 2 real CIP Safety connections (8+12=20
+      bytes) that Generic Ethernet Module cannot represent at all (CIP
+      Safety needs a certified device profile with a real safety network
+      number) -- those 20 bytes are NOT included in `RobotController1`,
+      flagged in the generator's own docstring rather than silently
+      modeled as present.
+    - Only 1 real module now excluded outright: `BENDER:Partner`
+      (1756-L8SP GuardLogix Safety Partner) -- confirmed correct by
+      James himself ("I stripped the safety partner"), not independently
+      importable regardless of EDS availability (a structural Studio
+      5000 constraint, not a missing-profile issue).
+    - **General accommodation, not just this one file**: the Generic
+      Ethernet Module substitution pattern used here is the real,
+      standard Rockwell answer for "a real customer L5X references a
+      3rd-party device whose EDS/AOP isn't installed" in general, not
+      specific to Bender -- any future real-corpus extraction hitting
+      this same class of module (no CatalogNumber, or a Vendor/
+      ProductType/ProductCode combo Studio 5000 can't resolve) should
+      use this same accommodation rather than dropping the module.
+    68 of 69 real non-CPU modules now represented (up from 64). Verified:
+    0 duplicate names, 0 dangling parent refs, 0 duplicate IPs, 0 lint
+    findings, 0 sizing crashes, 0 regressions across the full 1,251-file
+    corpus, 112/112 tests pass.
