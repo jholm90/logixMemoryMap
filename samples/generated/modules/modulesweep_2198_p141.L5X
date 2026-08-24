@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="ModSweep_2198P141" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 24 19:52:45 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="ModSweep_2198P141" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 24 19:52:45 2026" LastModifiedDate="Mon Aug 24 19:52:45 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="TestMod1_2198P141" CatalogNumber="2198-P141" Vendor="1" ProductType="48" ProductCode="3" Major="14" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications>
+<ConfigData ConfigSize="376">
+<Data Format="L5K">
+[380,3,257,3,294257767,2,2565904,131588,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,460,-64768,0,0,0,0,0,1120403456
+		,0,0,1120403456,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+</Data>
+</ConfigData>
+<Connections>
+<Connection Name="A_MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:MotionDevice_Diagnostics:S:0">
+<DataValueMember Name="LostControllerToDeviceTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateControllerToDeviceTransmissions" DataType="INT" Radix="Decimal" Value="4" />
+<DataValueMember Name="LostDeviceToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateDeviceToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ControllerToDeviceConnectionSize" DataType="INT" Radix="Decimal" Value="40" />
+<DataValueMember Name="DeviceToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="44" />
+<DataValueMember Name="NominalControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="NominalDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="2000" />
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+<Connection Name="B_MotionSync" RPI="4000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
+</Connections>
+</Communications>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

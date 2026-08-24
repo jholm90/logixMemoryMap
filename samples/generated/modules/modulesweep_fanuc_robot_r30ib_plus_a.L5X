@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="ModSweep_FANUCRobotR30iBPlusA" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 24 19:52:45 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="ModSweep_FANUCRobotR30iBPlusA" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 24 19:52:45 2026" LastModifiedDate="Mon Aug 24 19:52:45 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="TestMod1_FANUCRobotR30iBPlusA" CatalogNumber="FANUC Robot R30iB Plus/A" Vendor="356" ProductType="12" ProductCode="4" Major="3" Minor="1" UserDefinedVendor="356" UserDefinedProductType="140" UserDefinedProductCode="40" UserDefinedMajor="3" UserDefinedMinor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_44c9_02ec_6f66" SafetyEnabled="true">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications>
+<ConfigData ConfigSize="0">
+<Data Format="L5K">
+[4,100]
+</Data>
+</ConfigData>
+<SafetyScript Size="57">
+<Data Format="L5K">
+[53,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,37,0,0,0,0,0,0,0,0,3,0,0,0,23,0,0,0,0,0,0,16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+</Data>
+</SafetyScript>
+<Connections>
+<Connection Name="A_Safety_Output" RPI="20000" Type="SafetyOutputDataDriven" OutputSize="8" EventID="0" ProgrammaticallySendEventTrigger="false" TimeoutMultiplier="2" NetworkDelayMultiplier="200" ReactionTimeLimit="60" MaxObservedNetworkDelay="0" Priority="High" InputConnectionType="Unicast" InputProductionTrigger="Application" ConnectionPath="20 04 25 00 00 04 20 04 25 00 88 03 20 04 25 00 00 04" OutputTagSuffix="SO">
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[[12,0,0,0,65,0,0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="FR:Safety_RobotPlus_8Bytes:SO:0">
+<ArrayMember Name="Output" DataType="SINT" Dimensions="8" Radix="Hex">
+<Element Index="[0]" Value="16#0c" />
+<Element Index="[1]" Value="16#00" />
+<Element Index="[2]" Value="16#00" />
+<Element Index="[3]" Value="16#00" />
+<Element Index="[4]" Value="16#41" />
+<Element Index="[5]" Value="16#00" />
+<Element Index="[6]" Value="16#00" />
+<Element Index="[7]" Value="16#00" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+<Connection Name="B_Safety_Input" RPI="10000" Type="SafetyInputDataDriven" InputSize="12" EventID="0" ProgrammaticallySendEventTrigger="false" TimeoutMultiplier="2" NetworkDelayMultiplier="200" ReactionTimeLimit="40.064" MaxObservedNetworkDelay="0" Priority="High" InputConnectionType="Unicast" InputProductionTrigger="Application" ConnectionPath="20 04 25 00 00 04 20 04 25 00 00 04 20 04 25 00 08 03" InputTagSuffix="SI">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="FR:Safety_RobotPlus_8Bytes:SI:0">
+<DataValueMember Name="RunMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="ConnectionFaulted" DataType="BOOL" Value="1" />
+<ArrayMember Name="Input" DataType="SINT" Dimensions="8" Radix="Hex">
+<Element Index="[0]" Value="16#00" />
+<Element Index="[1]" Value="16#00" />
+<Element Index="[2]" Value="16#00" />
+<Element Index="[3]" Value="16#00" />
+<Element Index="[4]" Value="16#00" />
+<Element Index="[5]" Value="16#00" />
+<Element Index="[6]" Value="16#00" />
+<Element Index="[7]" Value="16#00" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+<Connection Name="Standard_Slot_01" RPI="32000" Type="StandardDataDriven" OutputSize="16" InputSize="16" EventID="0" ProgrammaticallySendEventTrigger="false" Priority="Scheduled" InputConnectionType="Unicast" InputProductionTrigger="Cyclic" ConnectionPath="20 04 24 64 2c 97 2c 65" InputTagSuffix="I1" OutputTagSuffix="O1">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="FR:Standard_RobotPlus_16Bytes:I1:0">
+<ArrayMember Name="Input" DataType="SINT" Dimensions="16" Radix="Hex">
+<Element Index="[0]" Value="16#70" />
+<Element Index="[1]" Value="16#04" />
+<Element Index="[2]" Value="16#00" />
+<Element Index="[3]" Value="16#04" />
+<Element Index="[4]" Value="16#ff" />
+<Element Index="[5]" Value="16#00" />
+<Element Index="[6]" Value="16#00" />
+<Element Index="[7]" Value="16#00" />
+<Element Index="[8]" Value="16#00" />
+<Element Index="[9]" Value="16#02" />
+<Element Index="[10]" Value="16#00" />
+<Element Index="[11]" Value="16#e0" />
+<Element Index="[12]" Value="16#1f" />
+<Element Index="[13]" Value="16#00" />
+<Element Index="[14]" Value="16#00" />
+<Element Index="[15]" Value="16#80" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[[0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,-64]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="FR:Standard_RobotPlus_16Bytes:O1:0">
+<ArrayMember Name="Output" DataType="SINT" Dimensions="16" Radix="Hex">
+<Element Index="[0]" Value="16#00" />
+<Element Index="[1]" Value="16#00" />
+<Element Index="[2]" Value="16#00" />
+<Element Index="[3]" Value="16#00" />
+<Element Index="[4]" Value="16#00" />
+<Element Index="[5]" Value="16#00" />
+<Element Index="[6]" Value="16#00" />
+<Element Index="[7]" Value="16#00" />
+<Element Index="[8]" Value="16#00" />
+<Element Index="[9]" Value="16#02" />
+<Element Index="[10]" Value="16#00" />
+<Element Index="[11]" Value="16#00" />
+<Element Index="[12]" Value="16#00" />
+<Element Index="[13]" Value="16#00" />
+<Element Index="[14]" Value="16#00" />
+<Element Index="[15]" Value="16#c0" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

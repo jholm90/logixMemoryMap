@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="ModSweep_RHINOBPDRIVEPERIPHER" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 24 19:52:45 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="ModSweep_RHINOBPDRIVEPERIPHER" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 24 19:52:45 2026" LastModifiedDate="Mon Aug 24 19:52:45 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="TestMod1_RHINOBPDRIVEPERIPHER" CatalogNumber="PowerFlex 755-EENET" Vendor="1" ProductType="143" ProductCode="2192" Major="14" Minor="5" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" DrivesADCMode="true" DrivesADCEnabled="false" SafetyEnabled="false">
+<EKey State="Disabled" />
+<Ports>
+<Port Id="1" Address="0" Type="RhinoBP" Upstream="false">
+<Bus />
+</Port>
+<Port Id="13" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigData ConfigSize="356">
+<Data Format="L5K">
+[360,0,6,0,1,0,340,17152,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+</Data>
+</ConfigData>
+<ConfigScript Size="2204">
+<Data Format="L5K">
+[-104,8,0,0,4,0,0,0,0,0,0,0,0,0,0,0,25,0,0,0,8,-106,0,0,0,1,0,0,0,1,0,0,0,8,0,0,0,75,2,32,-110,36,0,-1,-1,0,0,0,-53,7,0,0,8,30,0,0,0,1,0,0,0,1,0
+		,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,2,0,3,0,0,2,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+		,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,3,0,3,44,1,9,4,0,0,0,0,4,0,0,0,0,4,1,0,0,0,0,3,49,1,9,4,1,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,4,0,47,0,0,5,1,1,0,3,0,0,1,2,0,0,0,1,0,0,2,1,0,0,2,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0
+		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,5,0,3,0,0,2,1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,6,0,1,0,0,31,36,2,0,16,0,80,0,111,0,119,0
+		,101,0,114,0,70,0,108,0,101,0,120,0,32,0,55,0,53,0,53,0,32,0,32,0,32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32
+		,-98,36,1,48,5,7,0,6,1,0,6,24,7,0,100,0,2,0,8,0,65,0,109,0,112,0,115,0,32,0,32,0,32,0,32,0,0,6,2,0,6,24,11,0,100,0,2,0,8,0,66,0,117,0,115
+		,0,32,0,86,0,68,0,67,0,32,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,8,0,6,3,0,6,24,8,0,100,0,2,0,8,0,79,0,117,0,116,0,32,0,86,0,108
+		,0,116,0,115,0,0,6,4,0,6,24,9,0,100,0,2,0,8,0,79,0,117,0,116,0,32,0,80,0,119,0,114,0,32,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48
+		,5,9,0,6,5,0,6,24,14,0,100,0,2,0,8,0,69,0,108,0,112,0,32,0,107,0,87,0,72,0,114,0,0,6,6,0,6,24,5,0,100,0,2,0,8,0,84,0,114,0,113,0,32,0,67
+		,0,117,0,114,0,32,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,10,0,3,70,0,9,4,1,0,0,0,0,3,25,0,9,4,0,0,-26,67,4,0,0,-128,64,4,0,0,112
+		,66,4,0,0,-36,68,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,11,0,3,30,0,9,4,0,0,64,64,0,3,71
+		,0,9,4,0,0,72,66,0,3,73,0,9,4,0,0,-32,64,4,0,0,0,0,4,-92,112,17,65,4,0,0,0,64,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98
+		,36,1,48,5,12,0,3,77,0,9,4,0,0,0,0,4,0,0,0,0,4,0,0,-32,64,0,3,81,0,9,4,0,0,0,0,4,0,0,0,0,0,3,86,0,9,4,102,102,-8,65,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+		,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,13,0,3,87,0,9,4,0,0,-32,64,4,123,20,-96,65,4,123,20,-96,65,0,3,93,0,9,4,-123,-21,65
+		,64,0,3,110,0,9,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,14,0,3,120,0,9,4,123,20,-96,65
+		,0,3,109,2,9,4,0,0,-16,65,0,3,36,0,9,4,0,0,-26,67,4,0,0,2,67,4,0,0,-128,64,0,3,43,0,9,4,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16
+		,3,32,-98,36,1,48,5,15,0,3,44,0,9,4,-57,41,58,62,0,3,60,0,9,4,0,0,-32,64,4,0,0,-32,64,4,0,0,-26,66,4,0,0,112,65,0,3,8,2,9,4,0,0,112,66
+		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,16,0,3,9,2,9,4,0,0,112,-62,0,3,73,1,9,4,0,0,112,66,0,3,119,1,9,4
+		,-35,-124,59,68,0,3,127,1,9,4,0,0,-8,65,0,3,-118,1,9,4,0,0,8,66,0,3,-90,1,9,4,0,0,76,66,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5
+		,17,0,3,-89,1,9,4,0,0,76,66,0,3,-76,1,9,4,0,0,8,66,0,3,-73,1,9,4,0,0,8,66,0,3,-61,1,9,4,0,0,52,67,0,3,-58,1,9,4,0,0,52,67,0,3,-51,1,9,4,0,0,-106
+		,67,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,18,0,3,-45,1,9,4,0,0,-128,64,0,3,12,2,9,4,0,0,32,65,4,-113,-62,117,61,0,3,35,2,9,4
+		,0,0,112,66,0,3,40,2,9,4,0,0,112,66,0,3,44,2,9,4,0,0,32,65,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,19,0,3,45,2,9,4,0,0,32,65
+		,0,3,52,2,9,4,0,0,112,66,0,3,59,2,9,4,0,0,-96,64,4,0,0,32,65,4,0,0,-96,65,4,0,0,-16,65,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16
+		,3,32,-98,36,1,48,5,20,0,3,63,2,9,4,0,0,32,66,4,0,0,72,66,4,0,0,112,66,0,3,90,2,9,4,0,0,112,66,0,3,94,2,9,4,0,0,112,66,0,3,125,0,9,4,-119
+		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,21,0,3,126,0,9,4,3,0,0,0,0,3,124,2,9,4,0,0,32,65,0,3,-122,2,9,4,0,-128
+		,59,69,0,3,-128,0,9,4,-119,0,0,0,4,3,0,0,0,0,3,-120,2,9,4,0,0,32,65,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,22,0,3,-33,2
+		,9,4,0,0,-64,64,0,3,17,3,9,4,0,0,-16,65,4,0,0,-16,-63,0,3,56,3,9,4,-102,-103,-103,62,0,3,81,4,9,4,-119,65,0,64,0,3,87,4,9,4,-119,65
+		,0,64,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,23,0,3,3,6,9,4,0,0,0,64,4,0,0,32,65,0,3,7,6,9,4,-51,-52,76,63,4,0,0,0,63,4,0,0
+		,-120,65,0,3,25,6,9,4,-102,-103,25,62,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,24,0,3,26,6,9,4,-113
+		,-62,117,61,0,3,57,6,9,4,0,0,-16,65,4,0,0,-16,-63,0,3,93,6,9,4,0,0,112,66,0,3,105,6,9,4,0,0,112,66,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
+		,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,25,0,3,23,2,9,4,0,0,-64,63,0,3,25,2,9,4,0,0,-64,63,0,3,33,2,9,4,109,3,0,0,0,3,-110,6,9,4,0,0,-64,64
+		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,10,0,0,0,16,3,32,-101,36,0,48,7,71,0,0,45,0,0,0,8,100,0,0,0,1,0,0,0,6,0,0,0,24,0,0,0,16,3
+		,32,-110,36,0,48,38,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,34,0,0,0,8,61,0,0,0,1,0,0,0,1,0,0,0,9,0,0,0,16,3,32,-105,36,0,48,3,3,3,0,0,0,-120
+		,19,0,0,0,0,23,0,0,0,8,62,0,0,0,1,0,0,0,1,0,0,0,6,0,0,0,75,2,32,-105,36,0,0,29,0,0,0,0,100,0,0,0,2,0,0,0,-128,0,0,0,122,-34,8,-21,-76,-46
+		,-17,17,-70,-98,-84,116,-79,12,-70,106,0,0,0]
+</Data>
+</ConfigScript>
+<Connections>
+<Connection Name="Output" RPI="20000" Type="Output" InputCxnPoint="1" OutputCxnPoint="2" OutputSize="8" InputSize="12" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:PowerFlex755_EENET_Drive:I:0">
+<DataValueMember Name="DriveStatus" DataType="DINT" Radix="Binary" Value="2#0010_0001_0000_0000_0000_0100_0000_1100" />
+<DataValueMember Name="DriveStatus_Ready" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Active" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_CommandDir" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_ActualDir" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_Accelerating" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Decelerating" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Alarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Faulted" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_AtSpeed" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Manual" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpdRefBit0" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_SpdRefBit1" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpdRefBit2" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpdRefBit3" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpdRefBit4" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Running" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Jogging" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Stopping" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_DCBraking" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_DBActive" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpeedMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_PositionMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_TorqueMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_AtZeroSpeed" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_AtHome" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_AtLimit" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_CurrLimit" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_BusFrqReg" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_EnableOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_MotorOL" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Regen" DataType="BOOL" Value="0" />
+<DataValueMember Name="Feedback" DataType="REAL" Radix="Float" Value="0.0" />
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[1,7.50000000e+001]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:PowerFlex755_EENET_Drive:O:0">
+<DataValueMember Name="LogicCommand" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0001" />
+<DataValueMember Name="LogicCommand_Stop" DataType="BOOL" Value="1" />
+<DataValueMember Name="LogicCommand_Start" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Jog1" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_ClearFaults" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Forward" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Reverse" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Manual" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_AccelTime1" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_AccelTime2" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_DecelTime1" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_DecelTime2" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_SpdRefSel0" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_SpdRefSel1" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_SpdRefSel2" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_CoastStop" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_CLimitStop" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Run" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Jog2" DataType="BOOL" Value="0" />
+<DataValueMember Name="Reference" DataType="REAL" Radix="Float" Value="75.0" />
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+<Module CatalogNumber="RHINOBP-DRIVE-PERIPHERAL-MODULE" Vendor="1" ProductType="0" ProductCode="28" Major="1" Minor="1" UserDefinedVendor="1" UserDefinedProductType="143" UserDefinedProductCode="32928" UserDefinedMajor="1" UserDefinedMinor="1" ParentModule="TestMod1_RHINOBPDRIVEPERIPHER" ParentModPortId="1" Inhibited="false" MajorFault="false" ShutdownParentOnFault="false" DrivesADCMode="true" DrivesADCEnabled="false" UserDefinedCatalogNumber="EtherNet/IP">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="2" Address="13" Type="RhinoBP" Upstream="true" />
+</Ports>
+<Communications>
+<ConfigData ConfigSize="4">
+<Data Format="L5K">
+[8,6,1]
+</Data>
+</ConfigData>
+<ConfigScript Size="628">
+<Data Format="L5K">
+[112,2,0,0,4,0,0,0,0,0,0,0,0,0,0,0,25,0,0,0,8,-106,0,0,0,1,0,0,0,1,0,0,0,8,0,0,0,75,2,32,-110,36,0,-1,-1,0,0,0,-93,1,0,0,8,31,0,0,0,1,0,0,0,1,0,0
+		,0,74,0,0,0,16,3,32,-96,36,1,48,5,2,0,3,0,0,2,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+		,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-96,36,1,48,5,3,0,1,0,0,31,36,2,0,16,0,32,0,32,0,32,0,32,0,32,0,32,0,32,0,32,0,32,0,32,0,32,0,32,0,32,0
+		,32,0,32,0,32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-96,36,1,48,5,4,0,3,36,0,9,4,0,0,0,0,0,3,38,0,9,4,-64,0,0,0,4
+		,-88,0,0,0,4,60,0,0,0,4,114,0,0,0,4,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-96,36,1,48,5,5,0,3,43,0,9,4
+		,-1,0,0,0,4,-1,0,0,0,4,0,0,0,0,4,0,0,0,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-96,36,1
+		,48,5,6,0,3,49,0,9,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,45,0,0,0,8,100,0
+		,0,0,1,0,0,0,6,0,0,0,24,0,0,0,16,3,32,-110,36,0,48,38,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,34,0,0,0,8,61,0,0,0,1,0,0,0,1,0,0,0,9,0,0,0,16,3
+		,32,-105,36,0,48,3,3,3,0,0,0,-120,19,0,0,0,0,23,0,0,0,8,62,0,0,0,1,0,0,0,1,0,0,0,6,0,0,0,75,2,32,-105,36,0,0,29,0,0,0,0,100,0,0,0,2,0,0,0,-128
+		,0,0,0,-49,125,-79,92,-113,-46,-17,17,-124,-18,24,38,73,109,58,37,0,0,0]
+</Data>
+</ConfigScript>
+<Connections />
+</Communications>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

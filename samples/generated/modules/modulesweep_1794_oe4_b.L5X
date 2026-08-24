@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="ModSweep_1794OE4B" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 24 19:52:45 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="ModSweep_1794OE4B" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 24 19:52:45 2026" LastModifiedDate="Mon Aug 24 19:52:45 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="TestMod1_1794OE4B" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="50" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" ControlNetSignature="16#bb2b_890b">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="3" Type="ICP" Upstream="true" />
+<Port Id="2" Address="1" Type="ControlNet" Upstream="false">
+<Bus />
+</Port>
+</Ports>
+</Module>
+
+<Module Name="TestMod2_1794OE4B" CatalogNumber="1794-ACN15/C" Vendor="1" ProductType="12" ProductCode="36" Major="4" Minor="1" ParentModule="TestMod1_1794OE4B" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Type="Flex" Upstream="false">
+<Bus Size="8" />
+</Port>
+<Port Id="2" Address="16" Type="ControlNet" Upstream="true" />
+</Ports>
+<Communications CommMethod="805306369">
+<Connections>
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="false">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1794_ACN15_8SLOT:I:0">
+<DataValueMember Name="SlotStatusBits" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000_0000_0000" />
+<Element Index="[1]" Value="2#0000_0000_0000_0000" />
+<Element Index="[2]" Value="2#0000_0000_0000_0000" />
+<Element Index="[3]" Value="2#0000_0000_0000_0000" />
+<Element Index="[4]" Value="2#0000_0000_0000_0000" />
+<Element Index="[5]" Value="2#0000_0000_0000_0000" />
+<Element Index="[6]" Value="2#0000_0000_0000_0000" />
+<Element Index="[7]" Value="2#0000_0000_0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[[0,0,2,65,0,0,0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1794_ACN15_8SLOT:O:0">
+<ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000_0000_0000" />
+<Element Index="[1]" Value="2#0000_0000_0000_0000" />
+<Element Index="[2]" Value="2#0000_0000_0000_0010" />
+<Element Index="[3]" Value="2#0000_0000_0100_0001" />
+<Element Index="[4]" Value="2#0000_0000_0000_0000" />
+<Element Index="[5]" Value="2#0000_0000_0000_0000" />
+<Element Index="[6]" Value="2#0000_0000_0000_0000" />
+<Element Index="[7]" Value="2#0000_0000_0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod3_1794OE4B" CatalogNumber="1794-OE4/B" Vendor="1" ProductType="10" ProductCode="26" Major="2" Minor="1" ParentModule="TestMod2_1794OE4B" ParentModPortId="1" Inhibited="false" MajorFault="false" AutoDiagsEnabled="true">
+<EKey State="Disabled" />
+<Ports>
+<Port Id="1" Address="0" Type="Flex" Upstream="true" />
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="44" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[48,3,1,2,64,125,12,4,0,125,10,16,125,11,12,8191,0,0,1,4,2,15,15,0,0,0,0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1794_OE4:C:0">
+<DataValueMember Name="Config1" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_1111" />
+<DataValueMember Name="Ch0SafeStateConfig" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch1SafeStateConfig" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch2SafeStateConfig" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch3SafeStateConfig" DataType="BOOL" Value="1" />
+<DataValueMember Name="Config2" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_1111" />
+<DataValueMember Name="Ch0FullRange" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch1FullRange" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch2FullRange" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch3FullRange" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch0ConfigSelect" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1ConfigSelect" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch2ConfigSelect" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch3ConfigSelect" DataType="BOOL" Value="0" />
+<DataValueMember Name="SSCh0OutputData" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="SSCh1OutputData" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="SSCh2OutputData" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="SSCh3OutputData" DataType="INT" Radix="Decimal" Value="0" />
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="OutputData" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="false">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1794_OE4:I:1">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Status" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000" />
+<DataValueMember Name="Ch0OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch2OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch3OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="PowerUp" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[0,0,10,10]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1794_OE4:O:0">
+<DataValueMember Name="Ch0Data" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1Data" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch2Data" DataType="INT" Radix="Decimal" Value="10" />
+<DataValueMember Name="Ch3Data" DataType="INT" Radix="Decimal" Value="10" />
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

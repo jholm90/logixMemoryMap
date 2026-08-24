@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="ModSweep_PowerFlex527STOCIPSa" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 24 19:52:45 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="ModSweep_PowerFlex527STOCIPSa" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 24 19:52:45 2026" LastModifiedDate="Mon Aug 24 19:52:45 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="TestMod1_PowerFlex527STOCIPSa" CatalogNumber="PowerFlex 527-STO CIP Safety" Vendor="1" ProductType="45" ProductCode="15" Major="2" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_44c9_02ec_6f66" SafetyEnabled="true">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications>
+<ConfigData ConfigSize="292">
+<Data Format="L5K">
+[296,2,257,18,94420071,0,2565904,16908804,1,0,0,0,0,0,0,0,0,262148000,262148000,262148000,262148000,0,0,32768
+		,230,-65536,1120403456,1045220557,1073741824,0,1114636288,0,1120403456,1120403456,0,1120403456
+		,1124859904,1115815936,0,1120403456,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,32768004,16384500,0,0,0,0,0,0,0,0]
+</Data>
+</ConfigData>
+<SafetyScript Size="59">
+<Data Format="L5K">
+[55,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,39,0,0,0,0,0,0,0,0,3,0,0,0,25,0,0,0,0,0,0,18,0,0,0,0,0,0,0,-41,-20,58,-48,-19,44,105,3,-56,68,0,0,1,1,0]
+</Data>
+</SafetyScript>
+<Connections>
+<Connection Name="AMotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:Motion_Diagnostics:S:1">
+<DataValueMember Name="LostControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LostDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ControllerToDriveConnectionSize" DataType="INT" Radix="Decimal" Value="48" />
+<DataValueMember Name="DriveToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="56" />
+<DataValueMember Name="NominalControllerToDriveTime" DataType="INT" Radix="Decimal" Value="2000" />
+<DataValueMember Name="NominalDriveToControllerTime" DataType="INT" Radix="Decimal" Value="2000" />
+<DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="4000" />
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+<Connection Name="BMotionSync" RPI="4000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
+<Connection Name="CSafety_Output" RPI="20000" Type="SafetyOutputDataDriven" OutputSize="1" EventID="0" ProgrammaticallySendEventTrigger="false" TimeoutMultiplier="2" NetworkDelayMultiplier="200" ReactionTimeLimit="60" MaxObservedNetworkDelay="0" Priority="High" InputConnectionType="Unicast" InputProductionTrigger="Application" ConnectionPath="20 04 25 00 60 03 20 04 25 00 80 01 20 04 24 c7" OutputTagSuffix="SO">
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:CIP_Drive_Safety1:SO:0">
+<DataValueMember Name="Command" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="SafeTorqueOff" DataType="BOOL" Value="0" />
+<DataValueMember Name="Reset" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+<Connection Name="DSafety_Input" RPI="10000" Type="SafetyInputDataDriven" InputSize="5" EventID="0" ProgrammaticallySendEventTrigger="false" TimeoutMultiplier="2" NetworkDelayMultiplier="200" ReactionTimeLimit="40.064" MaxObservedNetworkDelay="0" Priority="High" InputConnectionType="Unicast" InputProductionTrigger="Application" ConnectionPath="20 04 25 00 60 03 20 04 24 c7 20 04 25 00 a0 01" InputTagSuffix="SI">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:CIP_Drive_Safety1:SI:0">
+<DataValueMember Name="ConnectionStatus" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0010" />
+<DataValueMember Name="RunMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="ConnectionFaulted" DataType="BOOL" Value="1" />
+<DataValueMember Name="Status" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="TorqueDisabled" DataType="BOOL" Value="0" />
+<DataValueMember Name="SafetyFault" DataType="BOOL" Value="0" />
+<DataValueMember Name="ResetRequired" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

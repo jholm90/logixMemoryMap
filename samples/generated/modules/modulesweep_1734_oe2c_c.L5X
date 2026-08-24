@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="ModSweep_1734OE2CC" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 24 19:52:45 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="ModSweep_1734OE2CC" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 24 19:52:45 2026" LastModifiedDate="Mon Aug 24 19:52:45 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="TestMod1_1734OE2CC" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="0" Type="PointIO" Upstream="false">
+<Bus Size="14" />
+</Port>
+<Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications CommMethod="805306369">
+<Connections>
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1734_14SLOT:I:0">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1100_0000_1000_1111" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="14" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000" />
+<Element Index="[1]" Value="2#0000_0000" />
+<Element Index="[2]" Value="2#0000_0000" />
+<Element Index="[3]" Value="2#0000_0000" />
+<Element Index="[4]" Value="2#0000_0100" />
+<Element Index="[5]" Value="2#0001_1010" />
+<Element Index="[6]" Value="2#0000_0011" />
+<Element Index="[7]" Value="2#0000_0000" />
+<Element Index="[8]" Value="2#0000_0000" />
+<Element Index="[9]" Value="2#0000_0000" />
+<Element Index="[10]" Value="2#0000_0000" />
+<Element Index="[11]" Value="2#0000_0000" />
+<Element Index="[12]" Value="2#0110_0011" />
+<Element Index="[13]" Value="2#0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[-16241,-1,[0,0,0,0,0,0,0,0,0,16,6,6,0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_14SLOT:O:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="14" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000" />
+<Element Index="[1]" Value="2#0000_0000" />
+<Element Index="[2]" Value="2#0000_0000" />
+<Element Index="[3]" Value="2#0000_0000" />
+<Element Index="[4]" Value="2#0000_0000" />
+<Element Index="[5]" Value="2#0000_0000" />
+<Element Index="[6]" Value="2#0000_0000" />
+<Element Index="[7]" Value="2#0000_0000" />
+<Element Index="[8]" Value="2#0000_0000" />
+<Element Index="[9]" Value="2#0001_0000" />
+<Element Index="[10]" Value="2#0000_0110" />
+<Element Index="[11]" Value="2#0000_0110" />
+<Element Index="[12]" Value="2#0000_0000" />
+<Element Index="[13]" Value="2#0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod2_1734OE2CC" CatalogNumber="1734-OE2C/C" Vendor="1" ProductType="115" ProductCode="25" Major="3" Minor="1" ParentModule="TestMod1_1734OE2CC" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="7" Type="PointIO" Upstream="true" />
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="40" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[44,123,1,0,0,3277,16383,-32768,32767,0,1,1,0,0,0,0,0,1638,8191,-32768,32767,0,1,1,0,0,0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_OE2:C:0">
+<DataValueMember Name="Ch0FaultValue" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0ProgValue" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0LowEngineering" DataType="INT" Radix="Decimal" Value="3277" />
+<DataValueMember Name="Ch0HighEngineering" DataType="INT" Radix="Decimal" Value="16383" />
+<DataValueMember Name="Ch0LowLimit" DataType="INT" Radix="Decimal" Value="-32768" />
+<DataValueMember Name="Ch0HighLimit" DataType="INT" Radix="Decimal" Value="32767" />
+<DataValueMember Name="Ch0RangeType" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0FaultMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Ch0ProgMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Ch0LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0AlarmDisable" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1FaultValue" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1ProgValue" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1LowEngineering" DataType="INT" Radix="Decimal" Value="1638" />
+<DataValueMember Name="Ch1HighEngineering" DataType="INT" Radix="Decimal" Value="8191" />
+<DataValueMember Name="Ch1LowLimit" DataType="INT" Radix="Decimal" Value="-32768" />
+<DataValueMember Name="Ch1HighLimit" DataType="INT" Radix="Decimal" Value="32767" />
+<DataValueMember Name="Ch1RangeType" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1FaultMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Ch1ProgMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Ch1LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1AlarmDisable" DataType="SINT" Radix="Decimal" Value="0" />
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="OutputData" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1734_OE2:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Ch0Status" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Ch0Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0Calibration" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0LAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0HAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1Status" DataType="SINT" Radix="Binary" Value="2#0000_1001" />
+<DataValueMember Name="Ch1Fault" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch1Calibration" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1LAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1HAlarm" DataType="BOOL" Value="1" />
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[5000,32767]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_OE2:O:0">
+<DataValueMember Name="Ch0Data" DataType="INT" Radix="Decimal" Value="5000" />
+<DataValueMember Name="Ch1Data" DataType="INT" Radix="Decimal" Value="32767" />
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

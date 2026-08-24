@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="ModSweep_1756DNB" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 24 19:52:45 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="ModSweep_1756DNB" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 24 19:52:45 2026" LastModifiedDate="Mon Aug 24 19:52:45 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="TestMod1_1756DNB" CatalogNumber="1756-DNB" Vendor="1" ProductType="12" ProductCode="14" Major="6" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="4" Type="ICP" Upstream="true" />
+<Port Id="2" Address="0" Type="DeviceNet" Upstream="false">
+<Bus />
+</Port>
+</Ports>
+<Communications CommMethod="536870913" PrimCxnInputSize="500" PrimCxnOutputSize="496" SecCxnInputSize="128">
+<Connections>
+<Connection Name="Standard" RPI="10000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="false">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1756_DNB_500Bytes:I:0">
+<StructureMember Name="StatusRegister" DataType="AB:1756_DNB_StatusRegister:I:0">
+<DataValueMember Name="Run" DataType="BOOL" Value="1" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="DisableNetwork" DataType="BOOL" Value="0" />
+<DataValueMember Name="DeviceFailure" DataType="BOOL" Value="1" />
+<DataValueMember Name="Autoverify" DataType="BOOL" Value="0" />
+<DataValueMember Name="CommFailure" DataType="BOOL" Value="0" />
+<DataValueMember Name="DupNodeFail" DataType="BOOL" Value="0" />
+<DataValueMember Name="DnetPowerDetect" DataType="BOOL" Value="0" />
+</StructureMember>
+<ArrayMember Name="Data" DataType="DINT" Dimensions="124" Radix="Decimal">
+<Element Index="[0]" Value="743181071" />
+<Element Index="[1]" Value="0" />
+<Element Index="[2]" Value="0" />
+<Element Index="[3]" Value="0" />
+<Element Index="[4]" Value="2572" />
+<Element Index="[5]" Value="0" />
+<Element Index="[6]" Value="24775439" />
+<Element Index="[7]" Value="0" />
+<Element Index="[8]" Value="4" />
+<Element Index="[9]" Value="655294464" />
+<Element Index="[10]" Value="2572" />
+<Element Index="[11]" Value="0" />
+<Element Index="[12]" Value="467143439" />
+<Element Index="[13]" Value="0" />
+<Element Index="[14]" Value="2572" />
+<Element Index="[15]" Value="0" />
+<Element Index="[16]" Value="2572" />
+<Element Index="[17]" Value="0" />
+<Element Index="[18]" Value="2572" />
+<Element Index="[19]" Value="0" />
+<Element Index="[20]" Value="2572" />
+<Element Index="[21]" Value="0" />
+<Element Index="[22]" Value="2572" />
+<Element Index="[23]" Value="0" />
+<Element Index="[24]" Value="192" />
+<Element Index="[25]" Value="655294464" />
+<Element Index="[26]" Value="128" />
+<Element Index="[27]" Value="655294464" />
+<Element Index="[28]" Value="637012751" />
+<Element Index="[29]" Value="0" />
+<Element Index="[30]" Value="690096911" />
+<Element Index="[31]" Value="8" ForceValue="2#...._...._...._...._...._...._...._1..." />
+<Element Index="[32]" Value="1" />
+<Element Index="[33]" Value="655294464" />
+<Element Index="[34]" Value="4" />
+<Element Index="[35]" Value="655294464" />
+<Element Index="[36]" Value="0" />
+<Element Index="[37]" Value="0" />
+<Element Index="[38]" Value="0" />
+<Element Index="[39]" Value="655294464" />
+<Element Index="[40]" Value="0" />
+<Element Index="[41]" Value="655294464" />
+<Element Index="[42]" Value="0" />
+<Element Index="[43]" Value="0" />
+<Element Index="[44]" Value="40108500" />
+<Element Index="[45]" Value="655294494" />
+<Element Index="[46]" Value="35783124" />
+<Element Index="[47]" Value="655294520" />
+<Element Index="[48]" Value="0" />
+<Element Index="[49]" Value="0" />
+<Element Index="[50]" Value="23069140" />
+<Element Index="[51]" Value="655294489" />
+<Element Index="[52]" Value="2572" />
+<Element Index="[53]" Value="0" />
+<Element Index="[54]" Value="0" />
+<Element Index="[55]" Value="0" />
+<Element Index="[56]" Value="0" />
+<Element Index="[57]" Value="0" />
+<Element Index="[58]" Value="0" />
+<Element Index="[59]" Value="0" />
+<Element Index="[60]" Value="0" />
+<Element Index="[61]" Value="0" />
+<Element Index="[62]" Value="0" />
+<Element Index="[63]" Value="0" />
+<Element Index="[64]" Value="0" />
+<Element Index="[65]" Value="0" />
+<Element Index="[66]" Value="0" />
+<Element Index="[67]" Value="0" />
+<Element Index="[68]" Value="0" />
+<Element Index="[69]" Value="0" />
+<Element Index="[70]" Value="0" />
+<Element Index="[71]" Value="0" />
+<Element Index="[72]" Value="0" />
+<Element Index="[73]" Value="0" />
+<Element Index="[74]" Value="0" />
+<Element Index="[75]" Value="0" />
+<Element Index="[76]" Value="0" />
+<Element Index="[77]" Value="0" />
+<Element Index="[78]" Value="0" />
+<Element Index="[79]" Value="0" />
+<Element Index="[80]" Value="0" />
+<Element Index="[81]" Value="0" />
+<Element Index="[82]" Value="0" />
+<Element Index="[83]" Value="0" />
+<Element Index="[84]" Value="0" />
+<Element Index="[85]" Value="0" />
+<Element Index="[86]" Value="0" />
+<Element Index="[87]" Value="0" />
+<Element Index="[88]" Value="0" />
+<Element Index="[89]" Value="0" />
+<Element Index="[90]" Value="0" />
+<Element Index="[91]" Value="0" />
+<Element Index="[92]" Value="0" />
+<Element Index="[93]" Value="0" />
+<Element Index="[94]" Value="0" />
+<Element Index="[95]" Value="0" />
+<Element Index="[96]" Value="0" />
+<Element Index="[97]" Value="0" />
+<Element Index="[98]" Value="0" />
+<Element Index="[99]" Value="0" />
+<Element Index="[100]" Value="0" />
+<Element Index="[101]" Value="0" />
+<Element Index="[102]" Value="0" />
+<Element Index="[103]" Value="0" />
+<Element Index="[104]" Value="0" />
+<Element Index="[105]" Value="0" />
+<Element Index="[106]" Value="0" />
+<Element Index="[107]" Value="0" />
+<Element Index="[108]" Value="0" />
+<Element Index="[109]" Value="0" />
+<Element Index="[110]" Value="0" />
+<Element Index="[111]" Value="0" />
+<Element Index="[112]" Value="0" />
+<Element Index="[113]" Value="0" />
+<Element Index="[114]" Value="0" />
+<Element Index="[115]" Value="0" />
+<Element Index="[116]" Value="0" />
+<Element Index="[117]" Value="0" />
+<Element Index="[118]" Value="0" />
+<Element Index="[119]" Value="0" />
+<Element Index="[120]" Value="0" />
+<Element Index="[121]" Value="0" />
+<Element Index="[122]" Value="0" />
+<Element Index="[123]" Value="0" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[[1],[743182418,97,0,97,4161,97,98,0,97,97,4161,97,467144786,96,1376522305,97,1651834945,97,1651834945,97
+		,1651834977,97,94769217,96,96,97,96,97,637014098,0,690098258,0,97,0,97,0,96,0,96,0,96,0,96,0,97,0,97,0,96,0,97,0,4161
+		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1756_DNB_496Bytes:O:0">
+<StructureMember Name="CommandRegister" DataType="AB:1756_DNB_CommandRegister:O:0">
+<DataValueMember Name="Run" DataType="BOOL" Value="1" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="DisableNetwork" DataType="BOOL" Value="0" />
+<DataValueMember Name="HaltScanner" DataType="BOOL" Value="0" />
+<DataValueMember Name="Reset" DataType="BOOL" Value="0" />
+</StructureMember>
+<ArrayMember Name="Data" DataType="DINT" Dimensions="123" Radix="Decimal">
+<Element Index="[0]" Value="743182418" />
+<Element Index="[1]" Value="97" />
+<Element Index="[2]" Value="0" />
+<Element Index="[3]" Value="97" />
+<Element Index="[4]" Value="4161" />
+<Element Index="[5]" Value="97" />
+<Element Index="[6]" Value="98" />
+<Element Index="[7]" Value="0" />
+<Element Index="[8]" Value="97" />
+<Element Index="[9]" Value="97" />
+<Element Index="[10]" Value="4161" />
+<Element Index="[11]" Value="97" />
+<Element Index="[12]" Value="467144786" />
+<Element Index="[13]" Value="96" />
+<Element Index="[14]" Value="1376522305" />
+<Element Index="[15]" Value="97" />
+<Element Index="[16]" Value="1651834945" />
+<Element Index="[17]" Value="97" />
+<Element Index="[18]" Value="1651834945" />
+<Element Index="[19]" Value="97" />
+<Element Index="[20]" Value="1651834977" />
+<Element Index="[21]" Value="97" />
+<Element Index="[22]" Value="94769217" />
+<Element Index="[23]" Value="96" />
+<Element Index="[24]" Value="96" />
+<Element Index="[25]" Value="97" />
+<Element Index="[26]" Value="96" />
+<Element Index="[27]" Value="97" />
+<Element Index="[28]" Value="637014098" />
+<Element Index="[29]" Value="0" />
+<Element Index="[30]" Value="690098258" />
+<Element Index="[31]" Value="0" />
+<Element Index="[32]" Value="97" />
+<Element Index="[33]" Value="0" />
+<Element Index="[34]" Value="97" />
+<Element Index="[35]" Value="0" />
+<Element Index="[36]" Value="96" />
+<Element Index="[37]" Value="0" />
+<Element Index="[38]" Value="96" />
+<Element Index="[39]" Value="0" />
+<Element Index="[40]" Value="96" />
+<Element Index="[41]" Value="0" />
+<Element Index="[42]" Value="96" />
+<Element Index="[43]" Value="0" />
+<Element Index="[44]" Value="97" />
+<Element Index="[45]" Value="0" />
+<Element Index="[46]" Value="97" />
+<Element Index="[47]" Value="0" />
+<Element Index="[48]" Value="96" />
+<Element Index="[49]" Value="0" />
+<Element Index="[50]" Value="97" />
+<Element Index="[51]" Value="0" />
+<Element Index="[52]" Value="4161" />
+<Element Index="[53]" Value="0" />
+<Element Index="[54]" Value="0" />
+<Element Index="[55]" Value="0" />
+<Element Index="[56]" Value="0" />
+<Element Index="[57]" Value="0" />
+<Element Index="[58]" Value="0" />
+<Element Index="[59]" Value="0" />
+<Element Index="[60]" Value="0" />
+<Element Index="[61]" Value="0" />
+<Element Index="[62]" Value="0" />
+<Element Index="[63]" Value="0" />
+<Element Index="[64]" Value="0" />
+<Element Index="[65]" Value="0" />
+<Element Index="[66]" Value="0" />
+<Element Index="[67]" Value="0" />
+<Element Index="[68]" Value="0" />
+<Element Index="[69]" Value="0" />
+<Element Index="[70]" Value="0" />
+<Element Index="[71]" Value="0" />
+<Element Index="[72]" Value="0" />
+<Element Index="[73]" Value="0" />
+<Element Index="[74]" Value="0" />
+<Element Index="[75]" Value="0" />
+<Element Index="[76]" Value="0" />
+<Element Index="[77]" Value="0" />
+<Element Index="[78]" Value="0" />
+<Element Index="[79]" Value="0" />
+<Element Index="[80]" Value="0" />
+<Element Index="[81]" Value="0" />
+<Element Index="[82]" Value="0" />
+<Element Index="[83]" Value="0" />
+<Element Index="[84]" Value="0" />
+<Element Index="[85]" Value="0" />
+<Element Index="[86]" Value="0" />
+<Element Index="[87]" Value="0" />
+<Element Index="[88]" Value="0" />
+<Element Index="[89]" Value="0" />
+<Element Index="[90]" Value="0" />
+<Element Index="[91]" Value="0" />
+<Element Index="[92]" Value="0" />
+<Element Index="[93]" Value="0" />
+<Element Index="[94]" Value="0" />
+<Element Index="[95]" Value="0" />
+<Element Index="[96]" Value="0" />
+<Element Index="[97]" Value="0" />
+<Element Index="[98]" Value="0" />
+<Element Index="[99]" Value="0" />
+<Element Index="[100]" Value="0" />
+<Element Index="[101]" Value="0" />
+<Element Index="[102]" Value="0" />
+<Element Index="[103]" Value="0" />
+<Element Index="[104]" Value="0" />
+<Element Index="[105]" Value="0" />
+<Element Index="[106]" Value="0" />
+<Element Index="[107]" Value="0" />
+<Element Index="[108]" Value="0" />
+<Element Index="[109]" Value="0" />
+<Element Index="[110]" Value="0" />
+<Element Index="[111]" Value="0" />
+<Element Index="[112]" Value="0" />
+<Element Index="[113]" Value="0" />
+<Element Index="[114]" Value="0" />
+<Element Index="[115]" Value="0" />
+<Element Index="[116]" Value="0" />
+<Element Index="[117]" Value="0" />
+<Element Index="[118]" Value="0" />
+<Element Index="[119]" Value="0" />
+<Element Index="[120]" Value="0" />
+<Element Index="[121]" Value="0" />
+<Element Index="[122]" Value="0" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+<Connection Name="Status" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="false">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1756_DNB_Status_128Bytes:S:0">
+<DataValueMember Name="ScanCounter" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_1111_0011_0011" />
+<ArrayMember Name="DeviceFailureRegister" DataType="SINT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0100" />
+<Element Index="[1]" Value="2#0000_0000" />
+<Element Index="[2]" Value="2#0100_1000" />
+<Element Index="[3]" Value="2#0000_0010" />
+<Element Index="[4]" Value="2#0000_0000" />
+<Element Index="[5]" Value="2#0000_0000" />
+<Element Index="[6]" Value="2#0000_0000" />
+<Element Index="[7]" Value="2#0000_0000" />
+</ArrayMember>
+<ArrayMember Name="AutoverifyFailureRegister" DataType="SINT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000" />
+<Element Index="[1]" Value="2#0000_0000" />
+<Element Index="[2]" Value="2#0000_0000" />
+<Element Index="[3]" Value="2#0000_0000" />
+<Element Index="[4]" Value="2#0000_0000" />
+<Element Index="[5]" Value="2#0000_0000" />
+<Element Index="[6]" Value="2#0000_0000" />
+<Element Index="[7]" Value="2#0000_0000" />
+</ArrayMember>
+<ArrayMember Name="DeviceIdleRegister" DataType="SINT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000" />
+<Element Index="[1]" Value="2#0000_0000" />
+<Element Index="[2]" Value="2#0000_0000" />
+<Element Index="[3]" Value="2#0000_0000" />
+<Element Index="[4]" Value="2#0000_0000" />
+<Element Index="[5]" Value="2#0000_0000" />
+<Element Index="[6]" Value="2#0000_0000" />
+<Element Index="[7]" Value="2#0000_0000" />
+</ArrayMember>
+<ArrayMember Name="ActiveNodeRegister" DataType="SINT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#1111_1110" />
+<Element Index="[1]" Value="2#1111_1111" />
+<Element Index="[2]" Value="2#1111_1111" />
+<Element Index="[3]" Value="2#0000_1111" />
+<Element Index="[4]" Value="2#0000_0000" />
+<Element Index="[5]" Value="2#0000_0000" />
+<Element Index="[6]" Value="2#0000_0000" />
+<Element Index="[7]" Value="2#0000_0000" />
+</ArrayMember>
+<ArrayMember Name="StatusDisplay" DataType="SINT" Dimensions="4" Radix="Binary">
+<Element Index="[0]" Value="2#0100_1110" />
+<Element Index="[1]" Value="2#0010_0011" />
+<Element Index="[2]" Value="2#0011_0010" />
+<Element Index="[3]" Value="2#0011_0010" />
+</ArrayMember>
+<DataValueMember Name="ScannerAddress" DataType="SINT" Radix="Hex" Value="16#00" />
+<DataValueMember Name="ScannerStatus" DataType="SINT" Radix="Hex" Value="16#00" />
+<DataValueMember Name="ScrollingDeviceAddress" DataType="SINT" Radix="Hex" Value="16#13" />
+<DataValueMember Name="ScrollingDeviceStatus" DataType="SINT" Radix="Hex" Value="16#4e" />
+<ArrayMember Name="DeviceStatus" DataType="SINT" Dimensions="64" Radix="Hex">
+<Element Index="[0]" Value="16#00" />
+<Element Index="[1]" Value="16#00" />
+<Element Index="[2]" Value="16#4e" />
+<Element Index="[3]" Value="16#00" />
+<Element Index="[4]" Value="16#00" />
+<Element Index="[5]" Value="16#00" />
+<Element Index="[6]" Value="16#00" />
+<Element Index="[7]" Value="16#00" />
+<Element Index="[8]" Value="16#00" />
+<Element Index="[9]" Value="16#00" />
+<Element Index="[10]" Value="16#00" />
+<Element Index="[11]" Value="16#00" />
+<Element Index="[12]" Value="16#00" />
+<Element Index="[13]" Value="16#00" />
+<Element Index="[14]" Value="16#00" />
+<Element Index="[15]" Value="16#00" />
+<Element Index="[16]" Value="16#00" />
+<Element Index="[17]" Value="16#00" />
+<Element Index="[18]" Value="16#00" />
+<Element Index="[19]" Value="16#4e" />
+<Element Index="[20]" Value="16#00" />
+<Element Index="[21]" Value="16#00" />
+<Element Index="[22]" Value="16#4e" />
+<Element Index="[23]" Value="16#00" />
+<Element Index="[24]" Value="16#00" />
+<Element Index="[25]" Value="16#4e" />
+<Element Index="[26]" Value="16#00" />
+<Element Index="[27]" Value="16#00" />
+<Element Index="[28]" Value="16#00" />
+<Element Index="[29]" Value="16#00" />
+<Element Index="[30]" Value="16#00" />
+<Element Index="[31]" Value="16#00" />
+<Element Index="[32]" Value="16#00" />
+<Element Index="[33]" Value="16#00" />
+<Element Index="[34]" Value="16#00" />
+<Element Index="[35]" Value="16#00" />
+<Element Index="[36]" Value="16#00" />
+<Element Index="[37]" Value="16#00" />
+<Element Index="[38]" Value="16#00" />
+<Element Index="[39]" Value="16#00" />
+<Element Index="[40]" Value="16#00" />
+<Element Index="[41]" Value="16#00" />
+<Element Index="[42]" Value="16#00" />
+<Element Index="[43]" Value="16#00" />
+<Element Index="[44]" Value="16#00" />
+<Element Index="[45]" Value="16#00" />
+<Element Index="[46]" Value="16#00" />
+<Element Index="[47]" Value="16#00" />
+<Element Index="[48]" Value="16#00" />
+<Element Index="[49]" Value="16#00" />
+<Element Index="[50]" Value="16#00" />
+<Element Index="[51]" Value="16#00" />
+<Element Index="[52]" Value="16#00" />
+<Element Index="[53]" Value="16#00" />
+<Element Index="[54]" Value="16#00" />
+<Element Index="[55]" Value="16#00" />
+<Element Index="[56]" Value="16#00" />
+<Element Index="[57]" Value="16#00" />
+<Element Index="[58]" Value="16#00" />
+<Element Index="[59]" Value="16#00" />
+<Element Index="[60]" Value="16#00" />
+<Element Index="[61]" Value="16#00" />
+<Element Index="[62]" Value="16#00" />
+<Element Index="[63]" Value="16#00" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

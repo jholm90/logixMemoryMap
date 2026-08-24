@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="ModSweep_1734232ASCC" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 24 19:52:44 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="ModSweep_1734232ASCC" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 24 19:52:44 2026" LastModifiedDate="Mon Aug 24 19:52:44 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="TestMod1_1734232ASCC" CatalogNumber="1734-AENT/C" Vendor="1" ProductType="12" ProductCode="108" Major="7" Minor="11" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="0" Type="PointIO" Upstream="false">
+<Bus Size="2" />
+</Port>
+<Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications CommMethod="805306369">
+<Connections>
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1734_2SLOT:I:0">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="2" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000" />
+<Element Index="[1]" Value="2#0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[-1,-1,[0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_2SLOT:O:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="2" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000" />
+<Element Index="[1]" Value="2#0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod2_1734232ASCC" CatalogNumber="1734-232ASC/C" Vendor="1" ProductType="115" ProductCode="110" Major="4" Minor="4" ParentModule="TestMod1_1734232ASCC" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="1" Type="PointIO" Upstream="true" />
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="22" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[26,103,1,3,0,80,0,58,2,13,1,1,0,0,1,80,0,13,1,0,0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_232ASC:C:0">
+<DataValueMember Name="SerialCharacterFormat" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="SerialCommSpeed" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaxReceiveCharacters" DataType="SINT" Radix="Decimal" Value="80" />
+<DataValueMember Name="ReceiveStartDelimiterMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ReceiveStartDelimiterCharacter" DataType="SINT" Radix="Decimal" Value="58" />
+<DataValueMember Name="ReceiveRecordEndMode" DataType="SINT" Radix="Decimal" Value="2" />
+<DataValueMember Name="ReceiveEndDelimiter" DataType="SINT" Radix="Decimal" Value="13" />
+<DataValueMember Name="ReceiveStringDataType" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="PadMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="PadCharacter" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ReceiveSwapMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="DeviceNetHandshakeMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="MaxTransmitCharacters" DataType="SINT" Radix="Decimal" Value="80" />
+<DataValueMember Name="TransmitEndDelimiterMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TransmitEndDelimiterCharacter" DataType="SINT" Radix="Decimal" Value="13" />
+<DataValueMember Name="ConsumeStringDataType" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="TransmitSwapMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="DeviceNetRecordHeaderMode" DataType="SINT" Radix="Decimal" Value="0" />
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="OutputData" RPI="80000" Type="Output" InputCxnPoint="101" OutputCxnPoint="102" OutputSize="84" InputSize="88" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1734_232ASC_80Bytes:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="ReceiveRecordNumber" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Status" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Length" DataType="SINT" Radix="Decimal" Value="0" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="80" Radix="Decimal">
+<Element Index="[0]" Value="0" />
+<Element Index="[1]" Value="0" />
+<Element Index="[2]" Value="0" />
+<Element Index="[3]" Value="0" />
+<Element Index="[4]" Value="0" />
+<Element Index="[5]" Value="0" />
+<Element Index="[6]" Value="0" />
+<Element Index="[7]" Value="0" />
+<Element Index="[8]" Value="0" />
+<Element Index="[9]" Value="0" />
+<Element Index="[10]" Value="0" />
+<Element Index="[11]" Value="0" />
+<Element Index="[12]" Value="0" />
+<Element Index="[13]" Value="0" />
+<Element Index="[14]" Value="0" />
+<Element Index="[15]" Value="0" />
+<Element Index="[16]" Value="0" />
+<Element Index="[17]" Value="0" />
+<Element Index="[18]" Value="0" />
+<Element Index="[19]" Value="0" />
+<Element Index="[20]" Value="0" />
+<Element Index="[21]" Value="0" />
+<Element Index="[22]" Value="0" />
+<Element Index="[23]" Value="0" />
+<Element Index="[24]" Value="0" />
+<Element Index="[25]" Value="0" />
+<Element Index="[26]" Value="0" />
+<Element Index="[27]" Value="0" />
+<Element Index="[28]" Value="0" />
+<Element Index="[29]" Value="0" />
+<Element Index="[30]" Value="0" />
+<Element Index="[31]" Value="0" />
+<Element Index="[32]" Value="0" />
+<Element Index="[33]" Value="0" />
+<Element Index="[34]" Value="0" />
+<Element Index="[35]" Value="0" />
+<Element Index="[36]" Value="0" />
+<Element Index="[37]" Value="0" />
+<Element Index="[38]" Value="0" />
+<Element Index="[39]" Value="0" />
+<Element Index="[40]" Value="0" />
+<Element Index="[41]" Value="0" />
+<Element Index="[42]" Value="0" />
+<Element Index="[43]" Value="0" />
+<Element Index="[44]" Value="0" />
+<Element Index="[45]" Value="0" />
+<Element Index="[46]" Value="0" />
+<Element Index="[47]" Value="0" />
+<Element Index="[48]" Value="0" />
+<Element Index="[49]" Value="0" />
+<Element Index="[50]" Value="0" />
+<Element Index="[51]" Value="0" />
+<Element Index="[52]" Value="0" />
+<Element Index="[53]" Value="0" />
+<Element Index="[54]" Value="0" />
+<Element Index="[55]" Value="0" />
+<Element Index="[56]" Value="0" />
+<Element Index="[57]" Value="0" />
+<Element Index="[58]" Value="0" />
+<Element Index="[59]" Value="0" />
+<Element Index="[60]" Value="0" />
+<Element Index="[61]" Value="0" />
+<Element Index="[62]" Value="0" />
+<Element Index="[63]" Value="0" />
+<Element Index="[64]" Value="0" />
+<Element Index="[65]" Value="0" />
+<Element Index="[66]" Value="0" />
+<Element Index="[67]" Value="0" />
+<Element Index="[68]" Value="0" />
+<Element Index="[69]" Value="0" />
+<Element Index="[70]" Value="0" />
+<Element Index="[71]" Value="0" />
+<Element Index="[72]" Value="0" />
+<Element Index="[73]" Value="0" />
+<Element Index="[74]" Value="0" />
+<Element Index="[75]" Value="0" />
+<Element Index="[76]" Value="0" />
+<Element Index="[77]" Value="0" />
+<Element Index="[78]" Value="0" />
+<Element Index="[79]" Value="0" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[0,-19,0,41,[0,1,0,3,-62,-8,-49,-112,28,69,77,83,71,58,32,80,76,65,78,78,69,82,32,84,82,70,32,32,78,79,84,32,82,85,78,78,73
+		,78,71,4,97,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_232ASC_80Bytes:O:0">
+<DataValueMember Name="NextTransmitRecordNumber" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TransmitRecordNumber" DataType="SINT" Radix="Decimal" Value="-19" />
+<DataValueMember Name="Length" DataType="SINT" Radix="Decimal" Value="41" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="80" Radix="Decimal">
+<Element Index="[0]" Value="0" />
+<Element Index="[1]" Value="1" />
+<Element Index="[2]" Value="0" />
+<Element Index="[3]" Value="3" />
+<Element Index="[4]" Value="-62" />
+<Element Index="[5]" Value="-8" />
+<Element Index="[6]" Value="-49" />
+<Element Index="[7]" Value="-112" />
+<Element Index="[8]" Value="28" />
+<Element Index="[9]" Value="69" />
+<Element Index="[10]" Value="77" />
+<Element Index="[11]" Value="83" />
+<Element Index="[12]" Value="71" />
+<Element Index="[13]" Value="58" />
+<Element Index="[14]" Value="32" />
+<Element Index="[15]" Value="80" />
+<Element Index="[16]" Value="76" />
+<Element Index="[17]" Value="65" />
+<Element Index="[18]" Value="78" />
+<Element Index="[19]" Value="78" />
+<Element Index="[20]" Value="69" />
+<Element Index="[21]" Value="82" />
+<Element Index="[22]" Value="32" />
+<Element Index="[23]" Value="84" />
+<Element Index="[24]" Value="82" />
+<Element Index="[25]" Value="70" />
+<Element Index="[26]" Value="32" />
+<Element Index="[27]" Value="32" />
+<Element Index="[28]" Value="78" />
+<Element Index="[29]" Value="79" />
+<Element Index="[30]" Value="84" />
+<Element Index="[31]" Value="32" />
+<Element Index="[32]" Value="82" />
+<Element Index="[33]" Value="85" />
+<Element Index="[34]" Value="78" />
+<Element Index="[35]" Value="78" />
+<Element Index="[36]" Value="73" />
+<Element Index="[37]" Value="78" />
+<Element Index="[38]" Value="71" />
+<Element Index="[39]" Value="4" />
+<Element Index="[40]" Value="97" />
+<Element Index="[41]" Value="0" />
+<Element Index="[42]" Value="0" />
+<Element Index="[43]" Value="0" />
+<Element Index="[44]" Value="0" />
+<Element Index="[45]" Value="0" />
+<Element Index="[46]" Value="0" />
+<Element Index="[47]" Value="0" />
+<Element Index="[48]" Value="0" />
+<Element Index="[49]" Value="0" />
+<Element Index="[50]" Value="0" />
+<Element Index="[51]" Value="0" />
+<Element Index="[52]" Value="0" />
+<Element Index="[53]" Value="0" />
+<Element Index="[54]" Value="0" />
+<Element Index="[55]" Value="0" />
+<Element Index="[56]" Value="0" />
+<Element Index="[57]" Value="0" />
+<Element Index="[58]" Value="0" />
+<Element Index="[59]" Value="0" />
+<Element Index="[60]" Value="0" />
+<Element Index="[61]" Value="0" />
+<Element Index="[62]" Value="0" />
+<Element Index="[63]" Value="0" />
+<Element Index="[64]" Value="0" />
+<Element Index="[65]" Value="0" />
+<Element Index="[66]" Value="0" />
+<Element Index="[67]" Value="0" />
+<Element Index="[68]" Value="0" />
+<Element Index="[69]" Value="0" />
+<Element Index="[70]" Value="0" />
+<Element Index="[71]" Value="0" />
+<Element Index="[72]" Value="0" />
+<Element Index="[73]" Value="0" />
+<Element Index="[74]" Value="0" />
+<Element Index="[75]" Value="0" />
+<Element Index="[76]" Value="0" />
+<Element Index="[77]" Value="0" />
+<Element Index="[78]" Value="0" />
+<Element Index="[79]" Value="0" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>
