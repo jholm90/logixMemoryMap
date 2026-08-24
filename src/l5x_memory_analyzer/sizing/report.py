@@ -278,34 +278,88 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         for path, category, data_type, size, basis in logic_entries
     ]
 
-    # Module I/O connection/config data (2026-08-27, first pass -- see
-    # parser/modules.py docstring). Real corpus inspection confirmed L5X
-    # itself states each Connection's InputSize/OutputSize and each
-    # ConfigTag's ConfigSize in bytes directly -- unlike every other
-    # category here, the RAW size isn't fitted, it's read straight off the
-    # export. But whether that raw byte count maps 1:1 onto controller
-    # Capacity-tab memory, or (like every other category in this project)
-    # carries its own real per-module/per-connection overhead on top, is
-    # not yet confirmed against real capture data -- so these are
-    # deliberately NOT summed into total_bytes/entries, only surfaced as
-    # informational SizeErrors (same non-summed treatment AXIS_CIP_DRIVE/
-    # MOTION_GROUP got before their own real formulas were derived), so a
-    # user can see modules exist and their stated raw sizes without this
-    # engine silently claiming a controller-memory number it hasn't earned.
+    # Module I/O (2026-08-27, WIRED -- see parser/modules.py docstring for
+    # the full derivation). module_defined_bytes is the real raw member-sum
+    # of the module's own auto-generated "Module-Defined" data type
+    # (InputTag/OutputTag/ConfigTag Structure content, computed the same
+    # way any UDT sizes) -- module_overhead (memory_model.yaml, FITTED from
+    # only 2 real points so far) is added on top, matching what those 2
+    # real captures showed: ~98% of a module's real cost is NOT its I/O
+    # data, it's a large near-flat per-module allocation. ESTIMATED tier,
+    # not EXACT -- unlike tag/UDT/AOI sizing this is NOT yet backed by
+    # enough real data to trust at the same confidence level (n=2), so it
+    # gets the same "flagged as estimated" treatment as compiled logic
+    # rather than silently living in the exact-tier total (CLAUDE.md's
+    # ground-truth constraint: never blur what's actually confirmed with
+    # what's still a fitted guess). A rack-aliased module (RackConnection/
+    # InAliasTag) does NOT get module_overhead charged -- zero real data
+    # exists for that shape's own incremental cost, it would be a pure
+    # guess; only its own module_defined_bytes (typically just a ConfigTag)
+    # is included, unmodeled-overhead noted via a SizeError instead so it's
+    # visible, not silently dropped.
+    module_entries: list[tuple[str, str, str, int, str]] = []
     for module in parse_modules(root):
-        if module.stated_total_bytes == 0:
+        if module.module_defined_bytes == 0 and module.stated_total_bytes == 0:
             continue
         label = module.name or module.catalog_number
         display = f"{module.name} ({module.catalog_number})" if module.name else module.catalog_number
-        errors.append(SizeError(
-            path=f"modules/{label}",
-            message=(
-                f"Module {display}: L5X states "
-                f"{module.connection_input_bytes} input + {module.connection_output_bytes} "
-                f"output connection bytes + {module.config_bytes} config bytes = "
-                f"{module.stated_total_bytes} stated total -- controller-memory cost not yet "
-                f"confirmed against real Capacity data, not included in the total above"
-            ),
-        ))
+        # 2026-08-27, found live-checking this wiring against the 1769-
+        # series fw_baseline corpus: CompactLogix 5370 "ER" processors
+        # carry a real CatalogNumber="Embedded" module for their built-in
+        # discrete I/O points (no separate physical module). module_
+        # overhead was fitted from 2 real discrete ADD-ON modules
+        # (1756-IB16, 1734-AENTR/C) -- zero real data confirms an embedded
+        # processor-integrated I/O block costs the same, so it stays fully
+        # unmodeled (same treatment as a rack-aliased module below) rather
+        # than guessing module_overhead applies unchanged.
+        if module.uses_rack_connection or module.catalog_number == "Embedded":
+            reason = (
+                "rack-aliased (RackConnection/InAliasTag)" if module.uses_rack_connection
+                else "processor-embedded I/O (CatalogNumber=\"Embedded\")"
+            )
+            errors.append(SizeError(
+                path=f"modules/{label}",
+                message=(
+                    f"Module {display}: {reason} -- module_overhead (fitted from 2 real discrete "
+                    f"add-on modules) is NOT charged here, zero real data confirms it applies the "
+                    f"same way to this shape; module_defined_bytes ({module.module_defined_bytes}) "
+                    f"not summed into the total either, controller-memory cost unmodeled for now"
+                ),
+            ))
+            continue
+        module_bytes = module.module_defined_bytes + model.module_overhead_bytes
+        module_entries.append((f"modules/{label}", "module_io", module.catalog_number,
+                                module_bytes, model.module_overhead_confidence))
+        if module.unknown_member_types:
+            errors.append(SizeError(
+                path=f"modules/{label}",
+                message=(
+                    f"Module {display}: {len(module.unknown_member_types)} member(s) with an "
+                    f"unrecognized/nested type not summed into module_defined_bytes "
+                    f"({', '.join(module.unknown_member_types)}) -- included total is a floor, "
+                    f"not complete"
+                ),
+            ))
+
+    module_total = sum(size for _, _, _, size, _ in module_entries)
+    total_bytes += module_total
+    entries += [
+        SizeEntry(
+            path=path, category=category, data_type=data_type, bytes=size,
+            pct_of_total=(size / total_bytes * 100) if total_bytes else 0.0,
+            tier=ESTIMATED, basis=basis,
+        )
+        for path, category, data_type, size, basis in module_entries
+    ]
+    # Every earlier pct_of_total was computed against the pre-module total;
+    # recompute now that module bytes are folded in, same as any other
+    # category would need if inserted after the fact.
+    if module_total and total_bytes:
+        entries = [
+            e if e.path.startswith("modules/") else
+            SizeEntry(path=e.path, category=e.category, data_type=e.data_type, bytes=e.bytes,
+                      pct_of_total=(e.bytes / total_bytes * 100), tier=e.tier, basis=e.basis)
+            for e in entries
+        ]
 
     return entries, errors

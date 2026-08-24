@@ -94,6 +94,26 @@ empty_project_baseline:
   bytes: 13296
   confidence: KNOWN
 
+# Per-module overhead (2026-08-27, OQ-MODULEIO, James's own methodology:
+# compare a module's auto-generated "Module-Defined" data type -- the raw
+# member-sum of its InputTag/OutputTag/ConfigTag Structure content, exactly
+# like sizing any other UDT -- against its real captured Capacity delta).
+# FITTED from only 2 real points so far, flagged LOW CONFIDENCE deliberately
+# -- see docs/OPEN_QUESTIONS.md OQ-MODULEIO for the full derivation and why
+# more points are needed before trusting this as a real formula:
+#   1756-IB16: module_defined_bytes=28, real actual=1712 -> overhead=1684
+#   1734-AENTR/C: module_defined_bytes=36, real actual=1696 -> overhead=1660
+# Both land within 24 bytes of each other despite very different module
+# types (a 16-pt digital backplane module vs a 14-slot Point I/O Ethernet
+# adapter) and very different module_defined_bytes (28 vs 36) -- the
+# overhead doesn't obviously track the module's own I/O content size, so a
+# flat constant (the mean of the 2 points) is the current best estimate,
+# NOT a confirmed per-connection or per-point rate. Applied ONCE per
+# module (not per Connection) until more data says otherwise.
+module_overhead:
+  bytes: 1672
+  confidence: FITTED
+
 bool:
   # Standalone BOOL controller/program tags: allocated as a full DINT, not
   # bit-packed. See OQ-BOOLPACK -- ASSUMED, pending Phase 3 confirmation.

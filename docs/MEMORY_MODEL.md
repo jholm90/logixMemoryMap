@@ -343,11 +343,22 @@ for the full derivation and `docs/AOI_KNOWLEDGE_MAP.md` for history.
 
 ## Module / I/O tag sizing
 
-- Local (backplane) I/O: **UNKNOWN**, not yet modeled. Depends on module type
-  (input/output point count, analog vs digital) — needs its own type table,
-  likely sourced from module EDS/catalog data rather than computed generically.
+**Wired 2026-08-27 (n=2, FITTED, LOW CONFIDENCE — see OQ-MODULEIO for the
+full derivation).** `module_defined_bytes` (real, computed from the
+module's own auto-generated "Module-Defined" data type — InputTag/
+OutputTag/ConfigTag Structure content, sized the same way as any UDT) +
+`module_overhead` (1,672 bytes/module flat, the mean of 2 real captured
+deltas: 1756-IB16=1,684, 1734-AENTR/C=1,660 — ~98% of a module's real cost
+either way). Wired as ESTIMATED tier, not EXACT — 2 real points doesn't
+earn tag/UDT/AOI-level confidence yet. NOT charged to a rack-aliased
+module (`RackConnection`/`InAliasTag`) or a `CatalogNumber="Embedded"`
+processor-integrated I/O block (CompactLogix 5370 "ER" family) — zero real
+data for either shape, stays fully unmodeled rather than guessed.
 - Produced/Consumed: **UNKNOWN — OQ-PRODCONS**. Overhead formula not yet
   isolated from base connection cost vs. payload cost vs. consumer count.
+- Motion/Kinetix (2198-series) and VFD (PowerFlex) module shapes:
+  **UNKNOWN**, deliberately untouched — need their own real-shape
+  research, not a safe reuse of the backplane/Point-I/O shapes above.
 
 ## Logic instruction weights (FITTED, 2026-08-22 — not yet wired into the engine)
 

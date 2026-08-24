@@ -272,6 +272,8 @@ class MemoryModel:
     logic_instructions: LogicInstructionModel
     empty_project_baseline_bytes: int
     empty_project_baseline_confidence: str
+    module_overhead_bytes: int
+    module_overhead_confidence: str
 
 
 def load_memory_model(path: str | Path | None = None) -> MemoryModel:
@@ -294,12 +296,15 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
     b = raw["bool"]
     s = raw["string"]
     baseline = raw["empty_project_baseline"]
+    module_overhead = raw["module_overhead"]
     return MemoryModel(
         atomic_types=atomic_types,
         predefined_structures=predefined_structures,
         predefined_array_structures=predefined_array_structures,
         empty_project_baseline_bytes=baseline["bytes"],
         empty_project_baseline_confidence=baseline["confidence"],
+        module_overhead_bytes=module_overhead["bytes"],
+        module_overhead_confidence=module_overhead["confidence"],
         bool=BoolModel(
             standalone_tag_bytes=b["standalone_tag_bytes"],
             standalone_confidence=b["standalone_confidence"],

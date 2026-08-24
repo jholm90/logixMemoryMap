@@ -2126,7 +2126,48 @@ generator already covers them, just waiting on the next capture batch.
       (43,680/44,792 with 2 errors each no longer describe the current
       file), awaiting recapture.
 
-17. **OQ-MODULEIO (new, 2026-08-27, James: "what is holding us back from
+17. **OQ-MODULEIO — WIRED 2026-08-27 (n=2, LOW CONFIDENCE, real gap
+    remains).** James's own methodology, applied directly: compare a
+    module's auto-generated "Module-Defined" data type (raw member-sum of
+    its InputTag/OutputTag/ConfigTag Structure content, same math as any
+    UDT) against its real captured cost. `parser/modules.py` now computes
+    that real number (`module_defined_bytes`) instead of the old attribute-
+    only read (which was usually 0 -- most real modules don't state
+    InputSize/OutputSize at all, a real bug fixed same day: InputTag/
+    OutputTag live INSIDE their owning `<Connection>`, not as a
+    `<Communications>` sibling, which the original version also got
+    wrong). `module_overhead` (memory_model.yaml): flat 1,672 bytes/module,
+    the mean of the 2 real deltas (1756-IB16: 1,684; 1734-AENTR/C: 1,660 --
+    ~98% of a module's real cost either way, strikingly close between two
+    very different module types). Wired into `report.py` as ESTIMATED tier
+    (not EXACT -- n=2 doesn't earn the same confidence as tag/UDT/AOI
+    sizing yet). Both real files land within 1% (`moduleproto_1756ib16_
+    slot1`: 0.06%; `moduleproto_1734aentr_cpu_ethernet`: 0.06%).
+
+    **Deliberately NOT charged module_overhead, flagged instead of
+    guessed:** a rack-aliased module (`RackConnection`/`InAliasTag`) --
+    zero real data for whether its incremental cost looks anything like a
+    module with its own real Connection; and a `CatalogNumber="Embedded"`
+    module (CompactLogix 5370 "ER" processors' built-in discrete I/O) --
+    found live-checking this wiring against the 1769-series fw_baseline
+    corpus, charging the same overhead there would have been a pure guess
+    at an untested shape, not a calculation. Both stay fully unmodeled,
+    surfaced via `SizeError` so they're visible rather than silently
+    dropped or silently wrong. Broad regression across all 1,111 captured
+    manifest rows: exact-match unchanged (301), within-1% count 729->732,
+    over-3%-residual count 51->49 -- verified via before/after diff that
+    every file outside the module category is byte-identical, zero
+    collateral changes.
+
+    **Still genuinely open:** only 2 real points. Whether module_overhead
+    is really flat, or scales with connection count/point count/module
+    family, is unconfirmed -- next real deltas (the 3 still-pending module
+    files: `moduleproto_en2t_downstream_ia16`, `moduleproto_pointio_bus_
+    mixed`, `moduleproto_pointio_safety_input`) will start answering that.
+    Motion/Kinetix and VFD module shapes are untouched entirely.
+
+    **Original entry below, kept for history (2026-08-27, James: "what is
+    holding us back from
     project completion").** Module/IO parsing has been an open Phase 1 gap
     the whole project, never started. First-pass parser now built
     (`parser/modules.py`) and unusually promising: real corpus inspection

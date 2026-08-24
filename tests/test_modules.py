@@ -27,15 +27,17 @@ _MODULES_XML = """
               </Structure>
             </Data>
           </ConfigTag>
-          <InputTag ExternalAccess="Read/Write">
-            <Data Format="Decorated">
-              <Structure DataType="AB:5000_DI16:I:0">
-                <DataValueMember Name="RunMode" DataType="BOOL" Value="0"/>
-              </Structure>
-            </Data>
-          </InputTag>
           <Connections>
-            <Connection Name="Standard" RPI="10000" Type="Input" InputSize="4" OutputSize="0"/>
+            <Connection Name="Standard" RPI="10000" Type="Input" InputSize="4" OutputSize="0">
+              <InputTag ExternalAccess="Read/Write">
+                <Data Format="Decorated">
+                  <Structure DataType="AB:5000_DI16:I:0">
+                    <DataValueMember Name="RunMode" DataType="BOOL" Value="0"/>
+                    <DataValueMember Name="Fault" DataType="DINT" Value="0"/>
+                  </Structure>
+                </Data>
+              </InputTag>
+            </Connection>
           </Connections>
         </Communications>
       </Module>
@@ -75,6 +77,18 @@ def test_module_config_and_connection_sizes_parsed_from_real_attributes():
     assert ib16.connection_output_bytes == 0
     assert ib16.stated_total_bytes == 68
     assert ib16.slot == 1
+
+
+def test_module_defined_bytes_computed_from_structure_content():
+    # 2026-08-27, James: the real number is the auto-generated
+    # "Module-Defined" data type's own member-sum size, not the (often
+    # absent) InputSize/OutputSize attribute -- InputTag's Structure here
+    # has BOOL(4) + DINT(4) = 8, ConfigTag's has SINT(1) = 1, total 9,
+    # regardless of what the stated ConfigSize=64/InputSize=4 attributes say.
+    modules = parse_modules(_root(_MODULES_XML))
+    ib16 = next(m for m in modules if m.name == "IB16_1")
+    assert ib16.module_defined_bytes == 9
+    assert ib16.unknown_member_types == ()
 
 
 def test_module_profiles_kept_separate_per_io_direction():

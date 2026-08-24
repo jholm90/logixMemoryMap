@@ -70,6 +70,12 @@ def build_hierarchy(
         # once-per-file entry, path "task_program_shell" with no "/" --
         # same non-tag-path shape as project_baseline above, same fix.
         "task_program_shell": "Project Overhead",
+        # module_io (2026-08-27, OQ-MODULEIO wiring): path is "modules/
+        # <name>", which DOES contain "/" -- but "modules" isn't a real
+        # Program/Controller-Tags scope, so the split below would still
+        # try scope.split(':', 1)[1] and crash the same way. Own top-level
+        # group instead, same fix shape as the others above.
+        "module_io": "I/O Modules",
     }
 
     for e in entries:
