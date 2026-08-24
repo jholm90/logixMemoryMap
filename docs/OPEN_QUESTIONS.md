@@ -2043,20 +2043,38 @@ generator already covers them, just waiting on the next capture batch.
     significant, previously invisible source of error across a large
     fraction of the real corpus.
 
-    **Only 1 clean data point (l81_v35) isolates this specifically** —
-    not enough to wire a fix. Two real open questions before touching
-    code: (1) is the true cost really identical to an ordinary 1-rung
-    routine's `fixed_base_per_routine`, or did this just coincidentally
-    match at n=1 (need a 2+ empty-routine file to check whether it scales
-    linearly the same way ordinary routines do); (2) does JSR's
-    `is_jsr_target` skip-logic need to change too if a self-closing
-    routine is ever a JSR target (untested — every JSR-target routine
-    tested so far has real RLLContent). `l81_v30`'s own +15,976 gap
-    (OQ-BASELINE-PROCFW above) almost certainly includes this same
-    +4,816-ish component on top of whatever real firmware-specific
-    residual exists, since it has the identical self-closing-`MainRoutine`
-    shape — flagged there too, not double-counted as a separate finding.
-    **Next step:** a small, cheap, purely synthetic batch (1/2/3 self-
-    closing routines in one program, no firmware variable involved this
-    time) would isolate this cleanly without needing more real-firmware
-    captures at all — can be generated without anything from James.
+    **2026-08-27, 2nd real data point confirms it's not a fluke.**
+    `l81_v38` (1756-L81E, firmware 38.02) manually reported by James
+    (AHK missed it — different Capacity-label window title, same known
+    risk already flagged in OPEN_QUESTIONS.md for this whole batch):
+    real value **18,112 — identical to `l81_v35`'s value, down to the
+    exact same +4,816 delta**, despite the two files using different
+    firmware (38.02 vs 35.05). Since both files share the identical
+    self-closing-`MainRoutine` shape, this exact match across two
+    firmware revisions is real, direct evidence pointing at the empty-
+    routine effect as the true driver — NOT firmware variance — at least
+    across the 35.05→38.02 span on the L81E catalog. James, both times:
+    "youre allowed to have a SBR with no rungs" — confirming this is a
+    legitimate, common real construct (also found in 15 of his own
+    production files, up to 10 in one), not an edge case to dismiss.
+
+    **Still only 2 data points, both at n=1 empty routine** — enough to
+    rule out firmware as the driver for this specific pair, not yet
+    enough to confirm the exact +4,816 rate generalizes or scales
+    linearly with routine count. Two real open questions before touching
+    code: (1) does a 2nd/3rd empty routine in the same program add
+    another full `fixed_base_per_routine` each, or something different
+    (the `emptyroutine_n01/n02/n03` synthetic batch below already exists
+    to answer this, no firmware variable involved, awaiting capture);
+    (2) does JSR's `is_jsr_target` skip-logic need to change too if a
+    self-closing routine is ever a JSR target (untested — every JSR-
+    target routine tested so far has real RLLContent). `l81_v30`'s own
+    +15,976 gap (OQ-BASELINE-PROCFW above) almost certainly includes this
+    same +4,816-ish component on top of whatever real firmware-specific
+    residual exists for v30 specifically, since it has the identical
+    self-closing-`MainRoutine` shape — flagged there too, not double-
+    counted as a separate finding.
+    **Next step:** `emptyroutine_n01/n02/n03` (1/2/3 self-closing
+    routines, no firmware variable, generated 2026-08-24) is already
+    built and awaiting capture — the cheapest way to confirm or refute
+    linear scaling before wiring anything.
