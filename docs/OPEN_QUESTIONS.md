@@ -2127,7 +2127,37 @@ generator already covers them, just waiting on the next capture batch.
       file), awaiting recapture.
 
 17. **OQ-MODULEIO — WIRED 2026-08-27 (n=2, LOW CONFIDENCE, real gap
-    remains).** James's own methodology, applied directly: compare a
+    remains). Test coverage EXPANDED same day to 122 new files (134 total
+    module-category manifest rows), 125 still awaiting capture.** James:
+    "you need to generate a l5x for every io module. I want your table to
+    be complete and valid with 100% filled out information." Built:
+    `gen_module_motion.py` (5 files, from James's own uploaded real
+    power-supply/single-axis/dual-axis/safety-drive corpus), `gen_module_
+    vfd.py` (2 files, PowerFlex 525 + 755 -- the real modern successor to
+    the discontinued PowerFlex 700 line, no literal "PowerFlex 700"
+    catalog exists in the corpus), `gen_module_sweep.py` (86 files, every
+    real catalog number in the corpus with a single consistent real
+    shape), `gen_module_sweep_variants.py` (29 files, covering all real
+    variants for the 14 catalogs that showed 2+ DIFFERENT real shapes --
+    e.g. the same Kinetix drive catalog shows either 2 or 4 Connections
+    depending on whether Integrated Safety is actually enabled, a real
+    config-dependent difference, not guessed). Every module block is a
+    REAL chain (target module + its actual real parent adapter/bridge)
+    extracted directly from `samples/local/`'s 63 real files, genericized
+    (Name/IP only), never invented. All 122 files lint-clean, zero
+    crashes through the sizing engine, zero regressions on the existing
+    captured corpus. Two real parser gaps found and fixed building these:
+    `ConfigData` (L5K-only, no Decorated structure -- motion/drive/some
+    I/O modules) and `ConfigScript` (VFD parameter-database blob, its own
+    `Size` attribute) weren't parsed at all before, only `ConfigTag` was.
+
+    **Deliberately NOT covered, not guessed:** legacy chassis/remote-I/O
+    platforms (SLC/PLC-5/RIO/DH+/ControlNet port types -- architecturally
+    different addressing from a modern Logix5000 module) and placeholder
+    profile labels (ETHERNET-MODULE-as-a-name, CIP-MODULE, etc. -- not
+    real catalog numbers).
+
+    **Original entry below, kept for history.** James's own methodology, applied directly: compare a
     module's auto-generated "Module-Defined" data type (raw member-sum of
     its InputTag/OutputTag/ConfigTag Structure content, same math as any
     UDT) against its real captured cost. `parser/modules.py` now computes
