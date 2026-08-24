@@ -67,6 +67,14 @@ class ArrayModel:
 
 
 @dataclass(frozen=True)
+class AoiArrayModel:
+    flat_discount: int
+    bool_word_size: int
+    bool_word_extra: int
+    confidence: str
+
+
+@dataclass(frozen=True)
 class TagOverheadModel:
     flat_base: int
     per_8_chars: int
@@ -117,6 +125,7 @@ class MemoryModel:
     string: StringModel
     udt: UdtModel
     array: ArrayModel
+    aoi_array: AoiArrayModel
     tag_overhead: TagOverheadModel
     alias_overhead: TagOverheadModel
     udt_definition: UdtDefinitionModel
@@ -178,6 +187,12 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
         array=ArrayModel(
             atomic_confidence=raw["array"]["atomic_confidence"],
             udt_confidence=raw["array"]["udt_confidence"],
+        ),
+        aoi_array=AoiArrayModel(
+            flat_discount=raw["aoi_array"]["flat_discount"],
+            bool_word_size=raw["aoi_array"]["bool_word_size"],
+            bool_word_extra=raw["aoi_array"]["bool_word_extra"],
+            confidence=raw["aoi_array"]["confidence"],
         ),
         tag_overhead=TagOverheadModel(
             flat_base=raw["tag_overhead"]["flat_base"],

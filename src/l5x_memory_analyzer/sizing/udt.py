@@ -77,6 +77,26 @@ def compute_array_size(
     element_bytes, element_confidence = compute_element_size(
         data_type, data_types, model, _stack
     )
+    if data_type in data_types and data_types[data_type].is_aoi:
+        # Array-of-AOI-instances: a real, DIFFERENT formula from plain
+        # array-of-UDT below -- confirmed 2026-08-26, see memory_model.yaml
+        # aoi_array for the full derivation. Per-instance cost is the
+        # scalar instance size minus a flat discount, minus 4 bytes per
+        # declared BOOL member (EnableIn/EnableOut excluded -- they aren't
+        # part of the declared member list this counts), with a further
+        # +4 correction each time the BOOL member count crosses a
+        # 32-member packed-word boundary.
+        bool_count = sum(
+            1 for m in data_types[data_type].members
+            if m.data_type == "BOOL" and m.name not in ("EnableIn", "EnableOut")
+        )
+        per_instance = element_bytes - model.aoi_array.flat_discount
+        if bool_count > 0:
+            word_size = model.aoi_array.bool_word_size
+            words = -(-bool_count // word_size)  # ceil
+            per_instance -= bool_count * 4
+            per_instance += model.aoi_array.bool_word_extra * max(0, words - 1)
+        return per_instance * element_count, weakest(element_confidence, model.aoi_array.confidence)
     if data_type in data_types:
         # Array-of-UDT: each element rounds up to a 4-byte boundary --
         # confirmed 2026-08-24 (OQ-ARRAYPACK/OQ-UDTARRAYALIGN resolved,

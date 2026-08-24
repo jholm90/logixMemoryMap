@@ -131,7 +131,25 @@ string:
   # consistently +2 at every count point (n=1/100/1000) for every maxlen
   # NOT in the mod4==1 bucket (which gets its own separate +8 instead, see
   # custom_mod4eq1_definition_bonus below), not growing with count.
-  # 206+2=208. KNOWN: confirmed exact across all 9 real maxlen points.
+  # 206+2=208. KNOWN: confirmed exact across all 9 real maxlen points,
+  # spanning type names of 6/7/10/14 characters, all landing on this exact
+  # flat value with zero residual -- 208 is correct and NOT dependent on
+  # type-name length across that range.
+  #
+  # 2026-08-26, real effect found at the EXTREMES, NOT wired (see
+  # OQ-CUSTOMSTRINGTYPENAME): `gen_string_closure.py`'s
+  # group_typename_length (short=1 char/medium=9 char/long=32 char, same
+  # maxlen=100, all error_count=0) shows delta-from-208 of -8/0/+24. A
+  # simple ceil(name_len/8) or floor(name_len/8) step function was tried
+  # and REJECTED -- it predicts a nonzero delta for the already-confirmed
+  # 6/7/14-char names too (all of which are genuinely flat 0), which is
+  # directly contradicted by real data. The true relationship isn't a
+  # clean function of the 6 points collected so far: real name lengths
+  # 6-14 chars all sit on a flat plateau (0), while 1 char is cheaper
+  # (-8) and 32 chars is more expensive (+24) -- looks like a real effect
+  # only at the extremes, but nothing here should be wired off 6 points
+  # with no clean pattern. Needs more lengths (2/3/4, 16/20/24) to
+  # characterize properly before touching code again.
   custom_definition_cost: 208
   custom_definition_confidence: KNOWN
   # Built-in STRING tags cost exactly 2 bytes LESS than the ordinary flat
@@ -198,6 +216,40 @@ array:
   # not yet resolved. See OQ-ARRAYPACK (test built 2026-08-22, awaiting
   # capture) -- still genuinely open, do not flip this without real data.
   udt_confidence: UNKNOWN
+
+# Array-of-AOI-instances: a real, DIFFERENT formula from plain array-of-UDT
+# above -- confirmed 2026-08-26 across 4 total member counts (10/20/30/60),
+# 15 real data points, exact fit throughout. Per-instance marginal cost
+# is NOT simply (scalar instance size, 4-byte rounded) -- it's the scalar
+# size minus a flat 4-byte "array" discount, minus 4 bytes for every BOOL
+# member (a real cross-member packing benefit -- an AOI array element's
+# BOOL params pack together the way a plain BOOL array packs 32-per-word),
+# with a further +4 correction every time the BOOL member count within
+# ONE instance crosses a 32-member boundary. Formula (per instance, on top
+# of compute_udt_size's own already-correct SCALAR AOI-instance size):
+#   let scalar = compute_udt_size(aoi_type)  [already includes EnableIn/
+#     EnableOut + every Input/Output/LocalTag member, BOOL counted as a
+#     flat 4 bytes each -- the existing, separately-confirmed KNOWN #1
+#     scalar formula, unchanged]
+#   bool_count = number of declared members (Input/Output/LocalTags,
+#     NOT counting EnableIn/EnableOut) with DataType="BOOL"
+#   if bool_count == 0: per_instance = scalar - array_flat_discount
+#   else: per_instance = scalar - array_flat_discount - bool_count*4
+#         + 4*max(0, ceil(bool_count/32) - 1)
+# Verified exact against all 15 real points across mc=10/20/30/60 and the
+# original 6-ratio/4-count mc=30 sweep this was first found on. Also
+# confirmed 2026-08-26: BOOL member LAYOUT (grouped-first, grouped-last,
+# interspersed with non-BOOL) does NOT change this per-instance rate --
+# boolfirst and boollast measure byte-identical, interspersed measures the
+# identical marginal rate too. Layout DOES add a flat +16 one-time
+# (definition-level, not per-instance) cost for interspersed vs grouped --
+# separate finding, not yet wired (small, definition-cost-bucket effect,
+# same undecided architecture question as OQ-AOIDEF).
+aoi_array:
+  flat_discount: 4
+  bool_word_size: 32
+  bool_word_extra: 4
+  confidence: KNOWN
 
 # Per-tag flat overhead: every top-level <Tag> entry (Controller/Tags or
 # Program/Tags) costs this ON TOP OF its own raw data size (from

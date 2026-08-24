@@ -53,6 +53,6 @@ def parse_aoi_definitions(root: ET.Element) -> dict[str, DataTypeDef]:
             for lt_el in local_tags_el.findall("LocalTag"):
                 members.append(_member_from_element(lt_el))
 
-        result[name] = DataTypeDef(name=name, family="NoFamily", members=members)
+        result[name] = DataTypeDef(name=name, family="NoFamily", members=members, is_aoi=True)
 
     return result

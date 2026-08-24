@@ -30,6 +30,13 @@ class DataTypeDef:
     name: str
     family: str = "NoFamily"  # "StringFamily" marks a user-defined string type
     members: list[Member] = field(default_factory=list)
+    # True for AddOnInstructionDefinitions (parser/aoi.py), False for plain
+    # Controller/DataTypes UDTs -- both produce a DataTypeDef with the same
+    # shape (instance storage sizes identically), but ARRAY-of-instances
+    # sizing genuinely differs between the two (see sizing/udt.py's
+    # AOI-array BOOL-packing formula, memory_model.yaml aoi_array section)
+    # -- confirmed real, not the same as a plain array-of-UDT.
+    is_aoi: bool = False
 
     @property
     def is_string_family(self) -> bool:
