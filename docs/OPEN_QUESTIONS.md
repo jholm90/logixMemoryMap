@@ -2256,3 +2256,26 @@ generator already covers them, just waiting on the next capture batch.
     routines, no firmware variable, generated 2026-08-24) is already
     built and awaiting capture — the cheapest way to confirm or refute
     linear scaling before wiring anything.
+
+19. **OQ-BRANCHDEPTH (new, 2026-08-27, found reconciling James's local
+    capture branch).** `branchdepth_legs01/03/05_n01000` — 1000 rungs of a
+    plain series rung (legs01, control) vs. a 3-leg vs. a 5-leg PARALLEL
+    branch converging to a single OTE, isolating whether branch-bracket
+    structure costs anything beyond the sum of each leg's own already-
+    confirmed per-instruction weight. **Answer: yes, real, sizeable, not
+    modeled at all today.** legs01 (no branch) is an exact match (0
+    residual) — the baseline per-instruction weights are right. legs03 is
+    under-predicted by exactly 16,000 over 1000 rungs (**16/rung**);
+    legs05 by exactly 24,000 (**24/rung**). Real, not noise (both exact
+    round numbers over 1000 rungs) — a parallel branch bracket has its own
+    real structural cost on top of summing its legs' instruction weights,
+    and it's not simply proportional to leg count either (legs01->03 is
+    +2 legs for +16/rung = 8/leg; legs03->05 is +2 legs for +8/rung =
+    4/leg — the per-leg rate itself is dropping, not flat). Only 2 non-
+    trivial points, not enough to fit a real formula (linear-in-leg-count
+    is already ruled out by the above) — needs at least one more leg-count
+    point (e.g. legs02, legs04, or legs07/legs10) to see whether this is a
+    log-ish/diminishing-marginal-cost shape or something else. Not wired.
+    Same real-corpus caveat as everywhere else in this project: branching
+    rungs are extremely common in real ladder logic, so this is a genuine
+    gap worth prioritizing, not an edge case.
