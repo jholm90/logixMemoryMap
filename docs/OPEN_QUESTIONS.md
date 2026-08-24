@@ -1922,3 +1922,44 @@ generator already covers them, just waiting on the next capture batch.
       /`error_count` from the broken version cleared from the manifest
       (43,680/44,792 with 2 errors each no longer describe the current
       file), awaiting recapture.
+
+17. **OQ-MODULEIO (new, 2026-08-27, James: "what is holding us back from
+    project completion").** Module/IO parsing has been an open Phase 1 gap
+    the whole project, never started. First-pass parser now built
+    (`parser/modules.py`) and unusually promising: real corpus inspection
+    (`samples/local/DnR_Personal/*.L5X`, not committed, gitignored per
+    normal policy) found that, unlike every other sizing category here,
+    Logix Designer's own L5X export states the real byte sizes directly —
+    each `<Connection>` carries `InputSize`/`OutputSize` attributes, each
+    `<ConfigTag>` carries `ConfigSize` — no empirical fitting needed to
+    get the RAW size right. Verified against 23 real modules (Local I/O,
+    a multi-Connection safety module correctly summed) plus 5 new unit
+    tests (`tests/test_modules.py`), all passing.
+
+    **What's still open:** whether these L5X-stated bytes map 1:1 onto
+    real controller Capacity-tab consumption, or (like tag_overhead,
+    alias_overhead, udt_definition, and literally every other category
+    in this project's history) carry their own real per-module and/or
+    per-connection overhead on top. Given this project's track record,
+    assuming 1:1 without verification would be a real risk — so
+    `report.py` deliberately does NOT sum module bytes into any
+    prediction yet; it surfaces each module as a non-summed `SizeError`
+    (path `modules/<name>`) stating its raw L5X sizes, same treatment
+    AXIS_CIP_DRIVE/MOTION_GROUP got before their own real formulas
+    landed. **Next step, needs James, not more generation:** since a
+    synthetic module can't be authored from scratch the way tag/UDT
+    tests can (module Catalog/Connection/EKey XML is hardware-specific
+    and this project has zero confirmed template for inventing a NEW one
+    safely — every module example is a real corpus file, not something
+    this project's generators know how to build), the fastest real path
+    is a small, targeted real-world test: capture the exact Capacity-tab
+    delta between two of James's own real project variants that differ
+    ONLY in one added/removed I/O module (or, if he wants a controlled
+    synthetic version, he'd need to add one module to an otherwise-blank
+    test project in Studio 5000 himself and export it, since only Logix
+    Designer itself can generate valid module/Connection XML for a real
+    catalog number). Once even 2-3 such deltas exist, the per-module/
+    per-connection overhead constant can be fit directly against these
+    already-exact raw sizes — a much smaller fitting problem than usual.
+    Produced/consumed tags (OQ-PRODCONS) remain completely untouched,
+    same as before this pass.

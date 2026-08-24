@@ -19,6 +19,7 @@ from dataclasses import dataclass
 from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
 from l5x_memory_analyzer.parser.datatypes import parse_data_types
 from l5x_memory_analyzer.parser.logic import parse_rll_routines
+from l5x_memory_analyzer.parser.modules import parse_modules
 from l5x_memory_analyzer.parser.tags import CONTROLLER_SCOPE, parse_tags
 from l5x_memory_analyzer.sizing.confidence import weakest
 from l5x_memory_analyzer.sizing.constants import MemoryModel
@@ -232,4 +233,35 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         )
         for path, category, data_type, size, basis in logic_entries
     ]
+
+    # Module I/O connection/config data (2026-08-27, first pass -- see
+    # parser/modules.py docstring). Real corpus inspection confirmed L5X
+    # itself states each Connection's InputSize/OutputSize and each
+    # ConfigTag's ConfigSize in bytes directly -- unlike every other
+    # category here, the RAW size isn't fitted, it's read straight off the
+    # export. But whether that raw byte count maps 1:1 onto controller
+    # Capacity-tab memory, or (like every other category in this project)
+    # carries its own real per-module/per-connection overhead on top, is
+    # not yet confirmed against real capture data -- so these are
+    # deliberately NOT summed into total_bytes/entries, only surfaced as
+    # informational SizeErrors (same non-summed treatment AXIS_CIP_DRIVE/
+    # MOTION_GROUP got before their own real formulas were derived), so a
+    # user can see modules exist and their stated raw sizes without this
+    # engine silently claiming a controller-memory number it hasn't earned.
+    for module in parse_modules(root):
+        if module.stated_total_bytes == 0:
+            continue
+        label = module.name or module.catalog_number
+        display = f"{module.name} ({module.catalog_number})" if module.name else module.catalog_number
+        errors.append(SizeError(
+            path=f"modules/{label}",
+            message=(
+                f"Module {display}: L5X states "
+                f"{module.connection_input_bytes} input + {module.connection_output_bytes} "
+                f"output connection bytes + {module.config_bytes} config bytes = "
+                f"{module.stated_total_bytes} stated total -- controller-memory cost not yet "
+                f"confirmed against real Capacity data, not included in the total above"
+            ),
+        ))
+
     return entries, errors

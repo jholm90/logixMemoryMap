@@ -46,8 +46,24 @@ genuinely separate remaining piece stays open, not just paperwork) — 🔴 open
 - ✅ Custom STRING type sizing (user-defined max length UDTs) — separate path
       from generic UDT recursion — `Family="StringFamily"` special-cased so it
       doesn't inherit the UDT-alignment UNKNOWN taint
-- 🔴 Module/IO parser: `Controller/Modules` → connection tag sizing (Local I/O
-      first, produced/consumed second — OQ-PRODCONS)
+- 🟡 **Module/IO parser — first pass built 2026-08-27 (James: "what is
+      holding us back from project completion").** `parser/modules.py`
+      parses `Controller/Modules/Module`, real corpus inspection
+      (`samples/local/DnR_Personal/*.L5X`) found Logix Designer's own L5X
+      export states each Connection's `InputSize`/`OutputSize` and each
+      ConfigTag's `ConfigSize` directly, in bytes — unlike every other
+      category in this project, the RAW size doesn't need empirical
+      fitting, it's read straight off the export. Verified against real
+      corpus (23 modules across Local I/O + a safety module with 2
+      Connections summed correctly) and 5 new unit tests, all passing.
+      **Not yet a controller-memory formula** — whether these stated
+      bytes map 1:1 onto Capacity-tab usage or carry their own real
+      per-module/per-connection overhead (every other category in this
+      project turned out to need one) isn't confirmed against real
+      capture data yet, so `report.py` surfaces module info as
+      non-summed `SizeError` entries (visible, not silently claimed) —
+      same treatment AXIS_CIP_DRIVE got before its real formula landed.
+      Produced/consumed tags (OQ-PRODCONS) still untouched.
 - ✅ Controller-scope vs program-scope tag separation in output
 - ✅ Flat output contract finalized: `{path, category, bytes, pct_of_total,
       confidence: exact|estimated}` — `sizing/report.py`'s `SizeEntry`
