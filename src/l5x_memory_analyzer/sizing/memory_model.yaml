@@ -449,6 +449,23 @@ logic_instructions:
     # 2026-08-23, wired in 2026-08-25 (was sitting derived-but-unwired).
     MAH: 60
     MSO: 60
+    # MAM/MAJ/MAS/MRP: RESOLVED 2026-08-26 (was BUILD FAILED, OQ-MAMFAMILY).
+    # Original generator used MAH/MSO's own bare 2-operand shape for these
+    # 4 -- a real generator bug, not a Rockwell syntax question. Fixed with
+    # real full-parameter-list templates (James's own MAM template;
+    # MAJ/MAS/MRP transplanted position-for-position from real corpus
+    # calls). All 4 now build error_count=0 at both n=10 and n=100 --
+    # clean 2-point linear fit, exact. A separate n=1 keyword-combination
+    # sweep (gen_motion_syntax_combos.py) confirms MAM's Merge flag,
+    # MAJ's Profile choice, and MAS's full StopType x Decel x Jerk 2x2x2
+    # combination do NOT change size (all keyword variants land on the
+    # identical byte count) -- MRP is the one exception, its two real
+    # operand-4/5 patterns (`Absolute,Actual,0` vs `Absolute,0,Position`)
+    # differ by 52 bytes, a real difference between those two call shapes.
+    MAM: 224
+    MAJ: 236
+    MAS: 100
+    MRP: 128
     # 2026-08-25: 34 of the 36 gen_instruction_firstpass.py instructions'
     # x10 captures landed (docs/OPEN_QUESTIONS.md OQ-INSTRFIRSTPASS) -- each
     # weight = (actual_x10 - actual_n1) / 9, an exact integer for every one
