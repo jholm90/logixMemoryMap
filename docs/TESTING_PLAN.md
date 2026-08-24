@@ -100,6 +100,34 @@ in a pushed capture batch) also blanks the capture columns for rows still
 carrying that flag rather than trusting the stale `actual_bytes`, so a
 retry is never skipped just because the row "looked" logged.
 
+## Zero-Capacity retries are automatic too (James, 2026-08-27)
+
+"if memory size is 0 it needs to be flagged and not counted." A real
+controller's Capacity-tab reading is never actually 0 (every project carries
+the `empty_project_baseline` floor at minimum), so a literal `"0"`
+`ocd_value` from AHK is a bad-read symptom (wrong dialog/field focused, a
+timing glitch), not real data. Same fix, same mechanism as the window-title
+case above: `batch_memory_capture.ps1` flags it `ZERO CAPACITY` in `notes`
+and excludes that row from "already logged," so it's automatically retried
+next run with no manual re-flagging needed.
+
+## 1769-series (CompactLogix 5370) requires clicking "Estimate" first (James, 2026-08-27)
+
+"the 1769 processors require 'estimate' button before giving memory sizes."
+Real Studio 5000 UI behavior, confirmed against real capture attempts:
+1756/5069-family processors show a real Capacity number in Controller
+Properties immediately, but 1769-series (`v35_l16er`/`l18er`/`l18erm`/`l19er`/
+`l24er`/`l24er_qbfc1b`/`l27erm_qbfc1b`/`l33er`/`l30erm`, all real 1769-L1xER/
+L2xER/L3xER catalog numbers) don't — the "Estimate" button has to be clicked
+first before the tab shows anything meaningful. **The AHK loop does not do
+this today** and would silently read a stale/blank/wrong value for any
+1769-series file without it. All 9 of the currently-staged 1769 points were
+manually reported by James for this reason (see `manifest.csv` notes,
+`MANUAL ENTRY`), not captured automatically. **Before building or capturing
+any FUTURE 1769-series test file**, `logix_build_capture.ahk` needs an extra
+click-Estimate step added for that processor family specifically, or every
+such row needs to keep going through manual reporting.
+
 ## Manifest columns (`samples/manifest.csv`)
 
 `sample_id, description, category (tag|udt|aoi|module|logic_bit|logic_other), l5x_path, predicted_bytes, actual_bytes, delta, delta_pct, controller_model, firmware_rev, date_tested, notes`

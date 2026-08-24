@@ -388,6 +388,46 @@ generator already covers them, just waiting on the next capture batch.
    catalog would be the fastest way to see whether the gap trends with
    firmware version or is specific to v30).
 
+   **2026-08-27, 9 more real points landed — a whole new real tooling
+   quirk found in the process.** James: "the 1769 processors require
+   'estimate' button before giving memory sizes -.- i am manually
+   reporting." Real UI behavior, not an automation bug: 1769-series
+   (CompactLogix 5370) processors don't show a real Capacity number in
+   Controller Properties at all until the "Estimate" button is clicked
+   first — every prior capture in this project's history (1756/5069
+   families) apparently shows Capacity without that extra step, so this
+   never surfaced before. **Flagging this for any FUTURE 1769-series
+   capture work, not just this batch** — `TESTING_PLAN.md` should note
+   it if/when more 1769 tests get built, since the AHK pipeline almost
+   certainly doesn't click Estimate today and would silently read a
+   stale/blank value otherwise. All 9 manually reported, real, clean
+   (checked: same self-closing-`MainRoutine` shape as the L81E points,
+   none show the SafetyTask contamination flagged above):
+   - `v35_l16er`/`l18er`/`l18erm`/`l19er` (1769-L1xER family): **69,600**
+     each — 4 different catalog numbers, IDENTICAL real value, a clean
+     confirmation this sub-family shares one baseline regardless of the
+     M-suffix (motion) feature.
+   - `v35_l24er` (base): **85,272**. `v35_l24er_qbfc1b`/`l27erm_qbfc1b`
+     (QBFC1B I/O variant, base and M+QBFC1B): **98,944** each — identical
+     to each other, and +13,672 over the plain L24ER, real evidence the
+     QBFC1B I/O variant itself carries its own baseline cost.
+   - `v35_l33er`/`l30erm`: **82,848** each.
+   All 9 land far above both the flat 13,296 prediction AND the L81E
+   family's own 18,112 (self-closing-routine) baseline — the 1769 family
+   clearly has a real, large, DIFFERENT baseline from 1756-L81E, not yet
+   decomposed into firmware/processor-family/memory-tier components
+   (would need more same-family same-firmware points at different memory
+   tiers, or same-tier different-firmware points, to separate them —
+   none of that decomposition attempted here, these 9 points alone can't
+   support it). Also confirmed: `l81_v38`'s existing manual-entry note
+   (from earlier this session) does NOT contain the literal phrase
+   "WINDOW TITLE MISMATCH" or "ZERO CAPACITY", so `batch_memory_capture.
+   ps1`'s existing already-logged exclusion (see the ZERO CAPACITY note
+   above) already correctly treats it as done and won't re-attempt it —
+   no manifest change was needed for v38 specifically, James's "remove
+   it from the required list" ask was already satisfied by how the
+   original entry was worded.
+
 3. **OQ-AXISDEEP — FULLY RESOLVED 2026-08-25.** CIP/virtual axis, used
    everywhere in real programs, 0.01%-tolerance target. **Partially
    resolved 2026-08-23** — the pure predefined-structure constants
