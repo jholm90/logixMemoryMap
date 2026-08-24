@@ -53,8 +53,49 @@ _ICP_BUS_SIZE = "17"
 # modules" -- a naive processor_type string swap on the old ICP/single-
 # Ethernet template would still be structurally wrong, so this is a real
 # separate shape, not just a catalog-string substitution.
-_5069_PRODUCT_CODE = "223"
 _5069_BUS_SIZE = "32"
+
+# Real per-catalog ProductCode, 2026-08-26 (James's own real fw_baseline
+# exports, samples/local/fw_versions/) -- found while investigating why
+# every stringconst_*_l8 file (Constant-flag x processor batch) failed to
+# convert. ProductCode is NOT just "164 for 1756, 223 for 5069" as this
+# file assumed before today -- it's a distinct per-catalog identifier, and
+# the DEFAULT 5069 processor this whole project has used throughout
+# (5069-L306ER) was carrying the WRONG code (223, which is really
+# 5069-L330ERMS2's -- see the comment above) instead of its own real 196.
+# That mismatch evidently did NOT block import (hundreds of prior
+# 5069-L306ER conversions succeeded with the wrong code), so it's very
+# unlikely to be the actual cause of the stringconst failures -- but it's
+# a real inaccuracy either way, now fixed with ground truth instead of a
+# guessed bucket value. Falls back to the old bucket guess (164 non-5069 /
+# 223 5069) for any catalog not in this table -- still unconfirmed for
+# those, not claiming completeness beyond what's actually been verified.
+_PRODUCT_CODES = {
+    "1756-L81E": "164",
+    "1756-L82E": "165",
+    "1756-L83E": "166",
+    "1756-L84E": "167",
+    "1756-L85E": "168",
+    "1769-L16ER-BB1B": "153",
+    "1769-L18ER-BB1B": "154",
+    "1769-L18ERM-BB1B": "155",
+    "1769-L19ER-BB1B": "152",
+    "1769-L24ER-QB1B": "149",
+    "1769-L24ER-QBFC1B": "150",
+    "1769-L27ERM-QBFC1B": "151",
+    "1769-L30ERM": "156",
+    "1769-L33ERM": "110",
+    "5069-L306ER": "196",
+    "5069-L306ERM": "189",
+    "5069-L306ERMS2": "226",
+    "5069-L306ERMS3": "243",
+    "5069-L306ERS2": "235",
+    "5069-L320ER": "217",
+    "5069-L330ER": "218",
+    "5069-L330ERMS2": "223",
+    "5069-L340ER": "219",
+    "5069-L3100ERM": "230",
+}
 
 
 def build_l5x(
@@ -86,7 +127,7 @@ def build_l5x(
             f'<Port Id="3" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>\n'
             f'<Port Id="4" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
         )
-        local_product_code = _5069_PRODUCT_CODE
+        local_product_code = _PRODUCT_CODES.get(processor_type, "223")
     else:
         local_ports_xml = (
             f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n'
@@ -94,7 +135,7 @@ def build_l5x(
             f'</Port>\n'
             f'<Port Id="2" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
         )
-        local_product_code = _PRODUCT_CODE
+        local_product_code = _PRODUCT_CODES.get(processor_type, _PRODUCT_CODE)
     # Format matches the real reference export exactly (Python's ctime-style
     # strftime): "Thu Aug 20 11:19:00 2026".
     now = datetime.now().strftime("%a %b %d %H:%M:%S %Y")
