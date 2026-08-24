@@ -119,25 +119,22 @@ instruction table almost did.
      DINT/Input points exactly so the comparison isolates only type or
      direction.
    - Does Required/Visible/Hidden affect DEFINITION cost, not just
-     call-site syntax? **Yes, a little, unexplained.** Real data:
-     `reqvis_allhidden_n4_def_only` = `reqvis_allrequired_n4_def_only` =
-     1,272 gap (identical), `reqvis_allvisibleoptional_n4_def_only` =
-     1,288 (+16 vs the other two), `reqvis_mixed_n4_def_only` (2
-     required + 1 visible-optional + 1 hidden) = 1,256 (-16 vs
-     allhidden/allrequired). So the flag combination genuinely moves the
-     number by ±16, but there's no theory yet for why all-Hidden and
-     all-Required land on the exact same value while all-Visible-optional
-     is +16 and one specific mix is -16. Four data points, one real
-     small effect, zero mechanistic understanding.
-     **2026-08-25, James: "check if size is different when marking them
-     as not visible vs visible vs required."** That earlier sweep only
-     ever used plain DINT Input params, no InOut param in the mix.
-     `gen_axis_composite.py`'s new `group_axis_aoi_inout_reqvis_sweep`
-     (3 files, hidden/visible-optional/required, all def_only, all
-     lint-clean) tests the same 3-way flag split on the BOOL Input +
-     InOut AXIS_CIP_DRIVE shape instead — the first check of whether this
-     effect holds the same way when an InOut param is also present, not
-     assumed to generalize from the DINT-only case. Awaiting capture.
+     call-site syntax? **RESOLVED 2026-08-27 — no, not materially.**
+     Live-recomputed against the current (post-per-type-rate-fix) engine:
+     `reqvis_allhidden/allrequired_n4_def_only` = 19,400 (gap +8, 0.04%),
+     `reqvis_allvisibleoptional_n4_def_only` = 19,416 (gap +24, 0.12%),
+     `reqvis_mixed_n4_def_only` = 19,384 (gap -8, 0.04%) — the ±16 swing
+     originally flagged (2026-08-25) as "real but unexplained" is well
+     within the same small universal noise band already seen throughout
+     this project, not a distinct step pattern. **2026-08-25, James:
+     "check if size is different when marking them as not visible vs
+     visible vs required"** — extended to the BOOL Input + InOut
+     AXIS_CIP_DRIVE shape via `group_axis_aoi_inout_reqvis_sweep`
+     (`axis_aoi_inout_reqvis_hidden/visibleoptional/required_def_only`,
+     captured, landed at 43,256 / 43,272 / 43,256): same tiny ±16 pattern,
+     confirming this holds even with an InOut param in the mix, not just
+     the DINT-only case. No formula change needed — the existing per-type
+     rate already predicts all 7 of these within 1.5%, most within 0.15%.
 
 2. **AOI array-of-instances, BOOL-heavy members — 2026-08-25: SOLVED for
    the tested shape, formula found, not yet wired (see confidence caveat
