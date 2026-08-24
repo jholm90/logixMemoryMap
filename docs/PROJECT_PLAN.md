@@ -1,6 +1,16 @@
 # Project Plan
 
-**Current phase: 4/4b/4c — Logic sizing + AOI sizing, in progress (Phase 3 CLOSED 2026-08-24)**
+**Current phase: 4/4b/4c — Logic sizing + AOI sizing, in progress (Phase 3
+CLOSED 2026-08-24). Phase 5 (UI v2) CLOSED 2026-08-27** — done ahead of
+4/4b finishing, James: "do phase 5 now while we are waiting for testing,
+you dont need anything from me." Correct: Phase 5's checklist was pure
+UI/data-contract work on top of already-wired sizing, no real capture data
+or 4/4b-completion dependency. All 5 checklist items ✅ in docs/TASKS.md:
+Task→Program→Routine treemap drill (new `parser/tasks.py`, real L5X-stated
+Task/Program scheduling, no fitted formula involved), "estimated" tier
+badge, JSR call-tree annotation, combined tags+logic root view, data
+contract. Module overhead correctly stays excluded from the byte map
+pending OQ-MODULEIO's real formula.
 
 Phase 0 exit criterion met. Phase 1 tag/UDT/array/string sizing is
 implemented and unit-tested; Module/IO parsing is still open (needs real
