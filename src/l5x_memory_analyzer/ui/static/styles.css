@@ -13,6 +13,15 @@
   --basis-assumed: #d9a531;
   --basis-fitted: #e07b2c;
   --basis-unknown: #c0392b;
+
+  /* CLAUDE.md ground-truth constraint: compiled logic size is a fitted
+     heuristic, never derived from L5X directly like tag/UDT/AOI data
+     space -- every logic-derived number must be visually flagged as
+     "estimated". Deliberately a DIFFERENT visual channel (dashed stroke +
+     its own badge color) from the basis-chip colors above -- tier
+     (exact/estimated) and basis (KNOWN/ASSUMED/FITTED/UNKNOWN) are two
+     separate confidence concepts and must never be blurred together. */
+  --tier-estimated: #9b59b6;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -203,6 +212,16 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
 .basis-ASSUMED { background: var(--basis-assumed); }
 .basis-FITTED { background: var(--basis-fitted); }
 .basis-UNKNOWN { background: var(--basis-unknown); }
+
+.tier-chip {
+  display: inline-block;
+  padding: 0.05rem 0.45rem;
+  border-radius: 3px;
+  font-size: 0.72rem;
+  color: #fff;
+  background: var(--tier-estimated);
+  margin-right: 0.35rem;
+}
 
 #type-summary { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem; }
 .type-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.3rem 0; font-size: 0.85rem; }

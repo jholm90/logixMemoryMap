@@ -429,6 +429,26 @@ function renderTreemap() {
       g.appendChild(hatch);
     }
 
+    // "Estimated" flag (CLAUDE.md ground-truth constraint) -- a dashed
+    // outline, deliberately a DIFFERENT visual channel from the basis
+    // hatch fill above so the two confidence concepts (tier vs basis)
+    // never blur together. Only leaf nodes carry a tier at all (group
+    // nodes mix tiers, so they're left unmarked, same convention the
+    // basis hatch above already uses).
+    if (!isGroup(node) && node.tier === "estimated") {
+      const outline = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      outline.setAttribute("x", r.x + 1);
+      outline.setAttribute("y", r.y + 1);
+      outline.setAttribute("width", Math.max(r.w - 2, 0));
+      outline.setAttribute("height", Math.max(r.h - 2, 0));
+      outline.setAttribute("fill", "none");
+      outline.setAttribute("stroke", "var(--tier-estimated)");
+      outline.setAttribute("stroke-width", "2");
+      outline.setAttribute("stroke-dasharray", "4,3");
+      outline.style.pointerEvents = "none";
+      g.appendChild(outline);
+    }
+
     if (r.w > 40 && r.h > 14) {
       const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
       label.setAttribute("x", r.x + 4);
@@ -478,6 +498,7 @@ function showTooltip(ev, node) {
       `<strong>${node.name}</strong><br>` +
       `${node.data_type}<br>` +
       `${fmtBytes(node.value)}<br>` +
+      (node.tier === "estimated" ? `<span class="tier-chip">ESTIMATED</span>` : "") +
       `<span class="basis-chip basis-${node.basis}">${node.basis}</span>` +
       (isDrillable(node) ? " (click to drill in)" : "");
   }
@@ -504,6 +525,7 @@ function currentLevelRows() {
       bytes,
       pct_of_total: total ? (bytes / total) * 100 : 0,
       basis: c.basis || "",
+      tier: c.tier || "",
     };
   });
 }
@@ -524,7 +546,8 @@ function renderList() {
       `<td>${e.data_type}</td>` +
       `<td class="num">${Math.round(e.bytes).toLocaleString()}</td>` +
       `<td class="num">${e.pct_of_total.toFixed(2)}%</td>` +
-      `<td>${e.basis ? `<span class="basis-chip basis-${e.basis}">${e.basis}</span>` : ""}</td>`;
+      `<td>${e.tier === "estimated" ? `<span class="tier-chip">ESTIMATED</span>` : ""}` +
+      `${e.basis ? `<span class="basis-chip basis-${e.basis}">${e.basis}</span>` : ""}</td>`;
     tbody.appendChild(tr);
   }
 

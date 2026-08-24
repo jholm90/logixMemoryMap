@@ -79,6 +79,31 @@ def test_has_children_true_for_udt_typed_tag():
     assert tree["children"][0]["children"][0]["has_children"] is True
 
 
+def test_routine_logic_nests_under_a_routines_subgroup_not_flat_with_tags():
+    # Phase 5 (2026-08-27): a program's routine_logic entries must NOT sit
+    # as flat siblings next to that program's tags -- they get their own
+    # "Routines" subgroup within the program's group.
+    entries = ENTRIES + [
+        SizeEntry(
+            path="program:MainProgram/MainRoutine", category="routine_logic",
+            data_type="RLL", bytes=500, pct_of_total=50.0, tier="estimated", basis="FITTED",
+        ),
+        SizeEntry(
+            path="program:MainProgram/SecondRoutine", category="routine_logic",
+            data_type="RLL", bytes=300, pct_of_total=30.0, tier="estimated", basis="FITTED",
+        ),
+    ]
+    tree = build_hierarchy(entries)
+    program_group = next(c for c in tree["children"] if c["name"] == "Program: MainProgram")
+    tag_names = {c["name"] for c in program_group["children"] if "children" not in c}
+    assert tag_names == {"LocalFlag", "LocalDint"}  # tags stay flat, routines excluded
+
+    routines_group = next(c for c in program_group["children"] if c["name"] == "Routines")
+    assert {c["name"] for c in routines_group["children"]} == {"MainRoutine", "SecondRoutine"}
+    assert routines_group["value"] == 800
+    assert all(c["tier"] == "estimated" for c in routines_group["children"])
+
+
 def test_type_utilization_rolls_up_across_scopes():
     rows = type_utilization(ENTRIES)
     by_type = {r["data_type"]: r for r in rows}

@@ -537,15 +537,55 @@ that's the actual remaining Phase 4/4b implementation work.
 - 🔴 Hold out 3-5 samples, validate fitted model against them, log residual
 
 ## Phase 5 — UI v2 (logic browsing)
-- 🔴 Extend data contract: routines/rungs feed the same
-      `{path, bytes, confidence}` shape as tags
-- 🔴 Treemap drill: Task → Program → Routine → (rung-level list, not
-      individual-rung treemap nodes — too granular to be useful visually)
+**2026-08-27, James: "do phase 5 now while we are waiting for testing. you
+dont need anything from me or the tests to make this happen."** Correct —
+none of this needed real capture data, it was purely UI/data-contract work
+on top of already-wired logic sizing.
+
+- ✅ Extend data contract: routines/rungs feed the same
+      `{path, bytes, confidence}` shape as tags — already true (routine_logic
+      SizeEntry rows always carried the identical shape), confirmed and
+      smoke-tested this pass. Rung-level entries deliberately don't exist
+      (too granular to be useful visually, per this item's own parenthetical
+      — not a gap).
+- 🟡 **Treemap drill: Task → Program → Routine — Program→Routine DONE,
+      Task level NOT.** `hierarchy.py` now nests each program's
+      `routine_logic` entries under their own "Routines" subgroup instead
+      of sitting as flat siblings next to that program's tags (previously
+      they were flattened together with no visual distinction at all).
+      Smoke-tested live via headless Chromium against a real 2-routine
+      file: breadcrumb `All > Program: MainProgram > Routines >
+      MainRoutine/SecondRoutine`, correct nesting and byte totals. Task
+      level is NOT done — same real blocker as the per-Task-overhead item
+      above: the parser has zero awareness of `Controller/Tasks/Task`, so
+      there's no real task→program mapping to group by yet, not an
+      oversight. Rung-level lists remain out of scope (too granular).
 - 🔴 Subroutine call-tree rollup (JSR chains sum correctly, no double-counting
-      shared subroutines called from multiple places — OQ-JSRSHARED)
-- 🔴 "Estimated" badge/color on every logic-derived number in both treemap and
-      list views
-- 🔴 Combined root view merging tags + logic + module overhead into one map
+      shared subroutines called from multiple places — OQ-JSRSHARED). Note:
+      the DOUBLE-COUNTING PREVENTION itself is already correct at the engine
+      level (`RoutineLogic.is_jsr_target` already skips separate emission,
+      confirmed 2026-08-22) — what's still missing is the VISUAL call-tree
+      (which routine calls which), a real, separate UI feature not started.
+- ✅ **"Estimated" badge/color on every logic-derived number in both treemap
+      and list views — DONE 2026-08-27.** New `.tier-chip` (distinct purple,
+      `--tier-estimated`) shown alongside (never merged with) the existing
+      basis-chip — tier and basis are deliberately different confidence
+      axes per CLAUDE.md and must never blur. Treemap also gets a dashed
+      outline on every `tier=="estimated"` rect (separate visual channel
+      from the existing basis hatch-fill overlay, same reasoning). Smoke-
+      tested live: tooltip and list view both show `ESTIMATED` (purple) +
+      `FITTED` (orange) as two distinct chips on a real routine_logic node.
+- 🟡 **Combined root view merging tags + logic + module overhead into one
+      map — tags+logic already were merged (confirmed, not new this pass);
+      module overhead deliberately still excluded.** Program-scope tags and
+      that program's Routines have always rendered under the same
+      "Program: X" root group (shared grouping logic, not something this
+      pass added). Module I/O (OQ-MODULEIO, first-pass parser built
+      2026-08-27) is surfaced as informational, non-summed `SizeError`
+      entries, NOT merged into the byte map — correctly so, since its
+      controller-memory formula isn't confirmed yet and summing an
+      unconfirmed number into the total would be a real regression, not
+      progress.
 
 ## Phase 6 — Polish
 - 🔴 Safety task scope decision implemented (OQ-SAFETY)

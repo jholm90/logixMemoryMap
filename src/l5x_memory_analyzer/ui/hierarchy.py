@@ -38,6 +38,19 @@ def build_hierarchy(
     """
     groups: dict[str, list[dict]] = {}
     group_order: list[str] = []
+    # routine_logic entries (2026-08-27, Phase 5 "Program -> Routine"
+    # nesting) are kept OUT of a program's flat tag list and collected
+    # here instead, keyed by that program's own group_name -- each
+    # program's Routines get their own "Routines" subgroup rather than
+    # sitting as flat siblings next to that program's tags, so a program
+    # with both tags and logic doesn't visually conflate "data I own" with
+    # "logic that runs in me". Task-level grouping (Task -> Program) is
+    # NOT done here -- the parser has zero awareness of Controller/Tasks
+    # (see docs/OPEN_QUESTIONS.md's per-Task-overhead item), so there is
+    # no real task->program mapping to group by yet, not an oversight.
+    # Rung-level lists are deliberately never built -- too granular to be
+    # visually useful (see docs/TASKS.md Phase 5's own parenthetical).
+    routine_groups: dict[str, list[dict]] = {}
 
     # udt_definition (path "udt_definitions/<Name>") and project_baseline
     # (path "project_baseline", no "/" at all) don't fit the <scope>/<name>
@@ -74,22 +87,32 @@ def build_hierarchy(
         if group_name not in groups:
             groups[group_name] = []
             group_order.append(group_name)
-        groups[group_name].append(
-            {
-                "name": name,
-                "path": e.path,
-                "value": e.bytes,
-                "data_type": e.data_type,
-                "tier": e.tier,
-                "basis": e.basis,
-                "has_children": kids,
-            }
-        )
 
-    children = [
-        {"name": g, "path": g, "children": groups[g]}
-        for g in group_order
-    ]
+        leaf = {
+            "name": name,
+            "path": e.path,
+            "value": e.bytes,
+            "data_type": e.data_type,
+            "tier": e.tier,
+            "basis": e.basis,
+            "has_children": kids,
+        }
+        if e.category == "routine_logic":
+            routine_groups.setdefault(group_name, []).append(leaf)
+        else:
+            groups[group_name].append(leaf)
+
+    children = []
+    for g in group_order:
+        kids = list(groups[g])
+        routines = routine_groups.get(g)
+        if routines:
+            routines_total = sum(r["value"] for r in routines)
+            kids.append({
+                "name": "Routines", "path": f"{g}/Routines", "value": routines_total,
+                "children": routines,
+            })
+        children.append({"name": g, "path": g, "children": kids})
     total_bytes = sum(e.bytes for e in entries)
     return {"name": "root", "path": "", "value": total_bytes, "children": children}
 
