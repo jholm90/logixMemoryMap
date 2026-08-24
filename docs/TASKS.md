@@ -376,8 +376,12 @@ that's the actual remaining Phase 4/4b implementation work.
       (AXIS_CIP_DRIVE etc, OQ-PREDEFINED) are the single highest-frequency
       unsized structure category in real tag data, so this pairs with that.
       **2026-08-25: MAH/MSO/MAFR/MASR/MDW/MASD/MGSD/MGSR all CONFIRMED and
-      wired.** MAM/MAJ/MAS/MRP confirmed BUILD FAILED (real negative
-      result, not untested — see OQ-MAMFAMILY). CROUT's build failure
+      wired.** MAM/MAJ/MAS/MRP were BUILD FAILED (real negative result,
+      not untested — see OQ-MAMFAMILY) — **RESOLVED 2026-08-26: root cause
+      was a generator bug (bare 2-operand MAH/MSO-shaped calls used for
+      instructions needing their own full parameter list), fixed with real
+      corpus-transplanted templates. All 4 now CONFIRMED and wired: MAM=224,
+      MAJ=236, MAS=100, MRP=128 blocks/rung.** CROUT's build failure
       turned out to be a scope issue, not a bug — James: "Crout is
       safety... requires a safety plc cpu," reclassified OUT OF SCOPE
       alongside DCS. MCCP's logic weight resolved. MAPC's build failure
@@ -412,14 +416,15 @@ that's the actual remaining Phase 4/4b implementation work.
       not a constant edit. See OQ-INDIRECT in OPEN_QUESTIONS.md.
 - 🔴 JSR/subroutine call overhead (call site cost vs routine body cost,
       separate these two numbers) — 238 real JSR uses, matters. JSR's own
-      flat weight (72/rung) is CONFIRMED and wired. The ~20-21/param
-      estimate is DOWNGRADED 2026-08-25 to unconfirmed: found and fixed a
-      real generator bug (SBR/RET callee-side local tags were never
-      declared, causing error_count==param_count build failures on the
-      newer count-sweep batch; the older data this estimate came from
-      predates error tracking entirely, so its build validity is unknown
-      too). All 11 affected files regenerated, stale data cleared, awaiting
-      clean re-capture. See OQ-JSRPARAMCOST.
+      flat weight (72/rung) is CONFIRMED and wired. The SBR/RET generator
+      bug (callee-side local tags never declared) is FIXED, and the clean
+      retest landed 2026-08-26: all 11 regenerated files build
+      error_count=0. Per-param cost is clean and fittable at rung_count=100
+      (`512 + 2020*n_params`, exact for n=3/4/6/8/12) but does NOT
+      decompose against the rung_count=1000 group (no overlapping param
+      counts between the two rung-count batches to solve fixed-vs-per-rung
+      cost separately) — still NOT wired, needs one more targeted batch.
+      See OQ-JSRPARAMCOST.
 - ✅ MSG instruction overhead — only 4 real uses total, low priority, don't
       over-invest here relative to everything else on this list. LOGIC
       weight resolved (48/rung), operand's own MESSAGE-structure tag cost

@@ -545,14 +545,43 @@ generator already covers them, just waiting on the next capture batch.
      mystery. So: base AOI-def cost ≈ 1,184 blocks above the
      baseline+empty-routine floor, plus ≈20 blocks/local tag (at DINT
      size) once n≥4. NOT yet wired into code — see below for why.
-   - **Param count — NOT clean.** `paramcount_n01/02/04/08/16/32`: 19336,
-     19360, 19360, 19392, 19632, 19952. n02 and n04 are identical (19360),
-     which doesn't happen anywhere in the local-tag sweep — either a real
-     structural difference (e.g. Rockwell always allocates a minimum
-     param-block size that n02 and n04 both fit inside) or a generator
-     quirk in how "paramcount" counts the always-present EnableIn/
-     EnableOut params. Needs the actual generated XML inspected before
-     trusting any fit here.
+   - **Param count — RE-CAPTURED CLEAN 2026-08-26, the n02==n04 collision
+     is gone.** Live re-derived (recomputing against current code, not the
+     stale `predicted_bytes` frozen in manifest.csv at old capture time):
+     `paramcount_n01/02/04/08/16/32_def_only` now read 19336, 19360,
+     19392, 19472, 19632, 19952 — six DISTINCT values, no more n02/n04 tie.
+     Fits `1184 + 20*n` exactly for n=4/8/16/32 (n=1,2 sit slightly under,
+     same small-N pattern as the local-tag sweep). **This is the identical
+     formula as the local-tag-count fit above** (`19312+20n` there =
+     `1184+20n` above baseline here) — param count and local-tag count
+     now agree exactly, DINT-only, which is stronger evidence for that
+     base+20/declared-item term than either axis alone gave. `_v2` retest
+     (`paramcount_n04_def_only_v2`=19400, `paramcount_n08_def_only_v2`=
+     19472) roughly confirms n04/n08 within the same few-block noise band.
+     Still NOT wired — see the "deliberately not wired" reasoning below,
+     which still holds: name-length, atomic-type-sensitivity, and BOOL-
+     run/pack adjacency are all still open, and most real AOIs mix param
+     types, so wiring only the now-doubly-confirmed DINT-count term would
+     systematically underpredict any BOOL- or mixed-type-heavy AOI while
+     looking EXACT-tier trustworthy.
+   - **Required/Visible/Hidden flags — no effect beyond existing noise
+     band, 2026-08-26.** `reqvis_allhidden/allrequired/allvisibleoptional/
+     mixed_n4_def_only` (all 4 DINT Input params, same count, only the
+     Required/Visible/Hidden flag combination varies): live deltas 1272,
+     1272, 1288, 1256 vs the clean n=4 formula prediction of 1264 — all
+     within ±24 blocks, the same order as the existing n=1/n=2 small-N
+     noise already documented above, not a distinct step pattern. Read as
+     "Required/Visible/Hidden doesn't materially change AOI definition
+     cost" (consistent with the same flags' already-confirmed no-effect
+     finding elsewhere in this doc for other contexts). The matching
+     `_call_full` rows (same reqvis sweep but with a real instance + call,
+     not `_def_only`) run 1516-1556 — roughly +260 over their `_def_only`
+     counterparts, presumably the instance tag + call-site cost, not
+     analyzed further here (new, small, flagged for later — the
+     omitted-vs-wired optional-param call-site pair `reqvis_2req2optional_
+     call_allwired` vs `_optomitted`, both 1516, at least confirms omitting
+     an optional param at the call site doesn't change size, matching the
+     AOI array-of-instances precedent for "unwired optional stuff is free").
    - **AOI name length — NOT clean.** `aoiname_len08/13/20/30`: 19384,
      19392, 19408, 19424. Diffs are +8, +16, +16 — not the uniform
      `8*ceil(len/8)` step pattern the UDT-name-length and tag_overhead
@@ -854,6 +883,20 @@ generator already covers them, just waiting on the next capture batch.
     Rockwell's real documented value sets for these fields may be larger
     than what 3-8 real files happened to exercise. Flagged as a real
     limitation, not silently treated as complete.
+
+    **RESOLVED 2026-08-26.** All 12 fixed-template files (n=10/n=100 ×
+    4 instructions) and all 14 `gen_motion_syntax_combos.py` files came
+    back `error_count=0` — the 100% build failure is fully closed, no
+    remaining build risk for this instruction family. Clean 2-point
+    linear fit wired into `memory_model.yaml`: **MAM=224, MAJ=236,
+    MAS=100, MRP=128 blocks/rung.** The n=1 keyword-combination sweep
+    confirms MAM's Merge flag, MAJ's Profile choice, and MAS's full
+    StopType×Decel×Jerk 2×2×2 combination do NOT change size (every
+    keyword variant lands on the identical byte count) — MRP is the one
+    exception, its two real operand-4/5 patterns differ by 52 bytes (a
+    real difference between those two call shapes, not modeled per-shape,
+    single flat MRP weight used). This entry can move to
+    RESOLVED_QUESTIONS.md on the next docs pass.
 
 11. **Per-Task overhead [captured 2026-08-25, real finding, NOT wired —
     needs parser architecture work first].** `gen_task_overhead.py` —
@@ -1242,6 +1285,45 @@ generator already covers them, just waiting on the next capture batch.
     reconversion, not just an auto-retry of the capture step). Awaiting
     a clean re-capture before the per-param cost can be trusted at all.
 
+    **2026-08-26, clean retest landed — bug fix confirmed, build failures
+    fully resolved.** Every JSR-family row (`instr_jsr_n*`, all 6
+    `jsr_paramcount_n*_r00100`, all 5 `*_r01000` incl. `jsr_mixedio_*` and
+    `jsr_multiret_*`) now shows `error_count=0`. Note: recomputing deltas
+    against the CURRENT live engine (not the stale `predicted_bytes`
+    frozen in manifest.csv at old capture time) matters here — the
+    0-param `instr_jsr_n*` rows' stored `predicted_bytes` predate several
+    since-fixed model bugs and falsely implied a flat +13,309 gap; live
+    recompute shows that's actually a flat **+23** across n=10/50/100/
+    1000/5000 — i.e. the existing `jsr_fixed_base_per_routine`/JSR-weight
+    combo is already essentially correct for the 0-param case, nothing to
+    fix there.
+
+    Per-param cost, live-recomputed: the **r=100 group is clean and fits
+    exactly**: `delta = 512 + 2020*n_params` for n=3,4,6,8,12 (all exact,
+    0 residual); n=2 is the lone outlier (-4). This is consistent with
+    (and sharpens) the pre-bugfix rough ~20-21/param/rung estimate
+    (2020/100 rung = 20.2/param/rung). **The r=1000 group (n=1,5,10) does
+    NOT fit the same formula** when the r=100 fit is scaled by rung count
+    (tried both "pure per-rung" and "flat one-time + per-rung" scalings,
+    both leave 1,800-5,200-block residuals) — and critically, **the two
+    rung-count groups share zero overlapping param counts** (r=100 tested
+    n=2/3/4/6/8/12, r=1000 tested n=1/5/10), so there's no way to solve
+    for a fixed-vs-per-rung decomposition from current data alone. Two
+    live hypotheses, neither confirmed: (a) the r=1000 group is riding the
+    same unexplained large-file "+264-family" anomaly flagged elsewhere in
+    this doc for other n=1000-rung-count files, just scaled up by param
+    count; (b) the per-param cost genuinely has both a rung-count-independent
+    one-time term (subroutine Parameters-block cost) and a per-call term,
+    and 512+2020n at r=100 doesn't isolate them cleanly on its own.
+    **Not wired** — the r=100 fit is trustworthy standalone but wiring it
+    as a flat per-rung rate would be a guess at rung counts other than 100
+    given the r=1000 mismatch. **Needs**: a small param-count sweep
+    (e.g. n=2,5,10) re-run at a rung count that overlaps the existing
+    r=100 or r=1000 data, to solve the two-term decomposition properly.
+    `jsr_mixedio_5in_2out_r01000` (delta 144244) and `jsr_multiret_n04_
+    r01000` (delta 64456) sit alongside as extra r=1000 data points for
+    whenever that decomposition work happens, not analyzed further here.
+
 16. **OQ-CAPTURERACE (new, 2026-08-25, James: "flag results that stand out
     and might need retesting, I don't want to go forward with you assuming
     10 bools is the same size as 100 bools").** Full manifest sweep for
@@ -1307,7 +1389,34 @@ generator already covers them, just waiting on the next capture batch.
     AOI contamination), a settle/focus-confirm delay before reading the
     Capacity value in the capture script would likely prevent recurrence.
 
-    **Action:** these 6 sample_ids (plus, out of caution, `paramcount_
+    **RESOLVED 2026-08-26, retest landed, originals confirmed correct —
+    not a race after all.** `_v2` retests for 3 of these rows reproduced
+    values matching (or within a few blocks of) the originally-flagged
+    readings: `array_dint_00001_v2`=18240 (matches `_00001` exactly),
+    `array_dint_00002_v2`=18240 (matches `_00002` exactly),
+    `array_dint_00005_v2`=18256 (matches the CORRECTED, non-contaminated
+    `_00005` reading, confirming n=5 really is distinct from n=1/n=2 —
+    the pre-retest 18240-for-all-three was the actual bug, now gone),
+    `paramcount_n04_def_only_v2`=19400 (within 8 of original 19392),
+    `paramcount_n08_def_only_v2`=19472 (exact match), `udttagcomment_
+    len000_v2`=18416 (exact match — and see OQ-AOIDEF-adjacent finding
+    below, comment length has zero effect on size regardless, so this
+    row's exact value was never in question). n=1 and n=2 DINT arrays
+    genuinely DO report the identical `actual_bytes` (18240 both, in both
+    the original and retest) — real, reproducible, not a race: the 4-byte
+    real difference between a 1- and 2-element DINT array evidently
+    doesn't cross whatever granularity Logix Designer's Capacity display
+    rounds to at this size. No further recapture needed for this list.
+
+    **Also resolved in passing:** `udttagcomment_len000/010/025/050/100/
+    200_def_only` (tag comment length 0/10/25/50/100/200 chars, same UDT
+    otherwise) all read the same `actual_bytes=18416` — tag comments have
+    ZERO effect on stored size, confirmed clean across 6 real length
+    points, consistent with comments being IDE-only metadata that isn't
+    part of compiled controller memory. No formula needed (already
+    correctly unmodeled, i.e. correctly contributes 0).
+
+    **Action (historical, now moot for the list above):** these 6 sample_ids (plus, out of caution, `paramcount_
     n08_def_only`'s neighbor `n16`/`n32` should be spot-checked too since
     the race could plausibly cascade) need a clean recapture. Flagging for
     inclusion in the next test batch rather than silently trusting the

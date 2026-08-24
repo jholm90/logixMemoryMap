@@ -78,13 +78,20 @@ every time real capture data lands, not just when someone remembers to.
 
 | Status | Occurrences | % of all native instruction usage |
 |---|---|---|
-| CONFIRMED | 199,146 | 98.88% |
+| CONFIRMED | 199,728 | 99.17% |
 | WRONG | 840 | 0.42% |
-| BUILD FAILED | 695 | 0.35% |
+| BUILD FAILED | 0 | 0.00% |
 | NO DATA | 386 | 0.19% |
 | CAPTURED, blocked on CAM structure | 129 | 0.06% |
 | CAPTURED, blocked on MESSAGE structure | 99 | 0.05% |
 | OUT OF SCOPE (Safety) | 98 | 0.05% |
+
+Note, 2026-08-26: the pre-fix BUILD FAILED total here (695) never matched
+the sum of the individual BUILD FAILED rows in the per-instruction table
+below (582, all MAM/MAJ/MAS/MRP) — a stale rollup left over from before
+MAPC/CROUT were reclassified out of this bucket, not something introduced
+by today's edit. Corrected to match the per-row data directly rather than
+guess at the missing 113.
 
 **98.88% of every real instruction occurrence across the whole corpus is
 already an exact, confirmed fit** — up from 98.44% two batches ago, after
@@ -103,11 +110,15 @@ BUILD FAILED, since there is nothing to fix on a standard controller.
 MAPC's build failure was real and unrelated to Safety scope — root-caused
 (undeclared axis tag + reused axis for slave/master) and **CONFIRMED FIXED
 2026-08-25**, real capture landed error_count=0, logic weight 260/rung,
-wired. MAPC moved from BUILD FAILED to CONFIRMED. The remaining ~1.06% is:
-0.42% actively WRONG (CPT), 0.29% confirmed BUILD FAILED (MAM/MAJ/MAS/MRP
-— 4 real negative results, not untested gaps), 0.19% genuinely never
-tested, 0.11% blocked on the still-unmodeled CAM/MESSAGE predefined
-structures, and 0.05% out of scope (Safety: DCS+CROUT).
+wired. MAPC moved from BUILD FAILED to CONFIRMED. MAM/MAJ/MAS/MRP's build
+failure was ALSO a real generator bug, **root-caused and FIXED 2026-08-26**
+(bare 2-operand MAH/MSO-shaped calls used for 4 instructions that each need
+their own full parameter list — fixed with real corpus-transplanted
+templates): all 4 now CONFIRMED, wired at MAM=224/MAJ=236/MAS=100/MRP=128
+blocks/rung. **The BUILD FAILED category is now empty.** The remaining
+~0.82% is: 0.42% actively WRONG (CPT), 0.19% genuinely never tested, 0.11%
+blocked on the still-unmodeled CAM/MESSAGE predefined structures, and 0.05%
+out of scope (Safety: DCS+CROUT).
 
 **CAVEAT, 2026-08-25 — CONFIRMED here means "the mnemonic's weight is an
 exact fit for the operand type it was tested with," almost always
@@ -175,16 +186,16 @@ occurrences, 54 real corpus files (spans the original set and the
 | SSV | 0.16% | 318 | CONFIRMED (exact fit, 0.00% residual) |
 | TOF | 0.14% | 292 | CONFIRMED (exact fit, 0.00% residual) |
 | RTO | 0.13% | 262 | CONFIRMED (exact fit, 0.00% residual) |
-| MAS | 0.12% | 249 | BUILD FAILED (real capture 2026-08-25: documented syntax rejected by Studio 5000, every rung errored) |
+| MAS | 0.12% | 249 | CONFIRMED (real capture 2026-08-26: generator bug fixed with real full-parameter template, exact fit, 100 blocks/rung) |
 | RET | 0.12% | 237 | NO DATA (0 contribution -- never tested; structurally tied to JSR/SBR, can't be isolated as a bare instruction) |
 | MID | 0.11% | 212 | CONFIRMED (exact fit, 0.00% residual) |
 | CMP | 0.10% | 203 | CONFIRMED (exact fit, 0.00% residual) |
 | INSERT | 0.10% | 192 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| MAM | 0.09% | 186 | BUILD FAILED (real capture 2026-08-25: documented syntax rejected by Studio 5000, every rung errored) |
+| MAM | 0.09% | 186 | CONFIRMED (real capture 2026-08-26: generator bug fixed with real full-parameter template, exact fit, 224 blocks/rung) |
 | MCCP | 0.06% | 129 | CAPTURED, blocked on unmodeled CAM structure (LOGIC weight resolved/wired 2026-08-25 -- 204/rung -- but CAM operand's own tag data space still unmodeled) |
 | SBR | 0.06% | 128 | NO DATA (0 contribution -- never tested; structurally tied to JSR, can't be isolated as a bare instruction) |
 | MAPC | 0.06% | 113 | CONFIRMED (real capture 2026-08-25: bug fixed — undeclared axis tag + same-axis reuse — corrected call built error_count=0, logic weight 260/rung, wired) |
-| MAJ | 0.05% | 106 | BUILD FAILED (real capture 2026-08-25: documented syntax rejected by Studio 5000, every rung errored) |
+| MAJ | 0.05% | 106 | CONFIRMED (real capture 2026-08-26: generator bug fixed with real full-parameter template, exact fit, 236 blocks/rung) |
 | MSG | 0.05% | 99 | CAPTURED, blocked on unmodeled MESSAGE structure (LOGIC weight resolved/wired 2026-08-25 -- 48/rung -- but MESSAGE operand's own tag data space still unmodeled) |
 | MEQ | 0.05% | 94 | CONFIRMED (exact fit, 0.00% residual) |
 | SIZE | 0.05% | 92 | CONFIRMED (exact fit, 0.00% residual) |
@@ -199,7 +210,7 @@ occurrences, 54 real corpus files (spans the original set and the
 | MAFR | 0.03% | 58 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | MASR | 0.03% | 57 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | XPY | 0.02% | 42 | CONFIRMED (exact fit, 0.00% residual) |
-| MRP | 0.02% | 41 | BUILD FAILED (real capture 2026-08-25: documented syntax rejected by Studio 5000, every rung errored) |
+| MRP | 0.02% | 41 | CONFIRMED (real capture 2026-08-26: generator bug fixed with real full-parameter template, exact fit, 128 blocks/rung) |
 | MDW | 0.02% | 36 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | BSL | 0.02% | 34 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | CROUT | 0.02% | 33 | OUT OF SCOPE (Safety instruction, requires a GuardLogix/Safety PLC CPU — James, 2026-08-25. Explains the 100% build failure on a standard 5069-L306ER capture: not a bad corpus transplant, a wrong controller class) |
@@ -274,13 +285,13 @@ project's corpus grows.
    (undeclared axis tag + reused axis for slave/master), fixed, corrected
    call built error_count=0 on real capture same day, logic weight
    260/rung wired. No longer a focus item.
-3. **MAM/MAJ/MAS/MRP (582 occurrences, 0.29%)** — confirmed BUILD FAILED
-   on the original bare 2-operand call shape. The full-parameter-list fix
-   (real per-instruction templates, not a guessed shape) has already been
-   built and regenerated (`gen_motion_instructions.py`); the corrected
-   files are awaiting a clean capture (their L5X changed since the last
-   successful ACD conversion, so this needs a full reconversion, not just
-   an auto-retry). CROUT (33 occurrences) is NOT in this category any
+3. **MAM/MAJ/MAS/MRP (582 occurrences, 0.29%) — RESOLVED 2026-08-26.** Was
+   confirmed BUILD FAILED on the original bare 2-operand call shape. The
+   full-parameter-list fix (real per-instruction templates, not a guessed
+   shape, built in `gen_motion_instructions.py`) is now capture-confirmed:
+   all files build error_count=0, clean 2-point linear fit wired
+   (MAM=224, MAJ=236, MAS=100, MRP=128 blocks/rung). No longer a focus
+   item. CROUT (33 occurrences) is NOT in this category any
    more — James confirmed it's a Safety-only instruction (needs a
    GuardLogix CPU), moved to OUT OF SCOPE, nothing to fix.
 4. **MCCP's CAM structure gap (129 occurrences, 0.06%)** — MCCP's own
