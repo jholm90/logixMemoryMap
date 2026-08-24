@@ -444,6 +444,38 @@ generator already covers them, just waiting on the next capture batch.
    independent confirmation of the same thing at a different tier —
    2/2 real comparisons now agree, not just 1.
 
+   **2026-08-27, the requested L81E v31-v34 + 5069 l306er-family batch
+   landed (9 points, MANUAL ENTRY per James).** All live-recomputed
+   against the current (post-empty-routine-fix) engine:
+   - **l81_v34 = 18,112** — exact match to the L81E rev 35.05/38.02 value
+     (project_baseline 13,296 + fixed_base_per_routine 4,816, i.e. v34 also
+     has the self-closing-routine shape). 3rd independent firmware
+     confirming this baseline, not just 2.
+   - **l81_v31 = l81_v32 = 29,368** — after removing the 4,816 self-closing-
+     routine cost, residual = 24,552, close to v30's own residual (24,456,
+     established earlier this session) — same firmware-family neighborhood,
+     small (+96) variance between v30/v31/v32.
+   - **l81_v33 = 32,376 — a real, distinct jump.** Residual (minus 4,816) =
+     27,560, a genuine +3,000-ish step above v30/v31/v32's ~24,500
+     neighborhood, not noise — firmware 33.01 carries real extra baseline
+     overhead the earlier v30-v32 points didn't show. Not decomposed
+     further (would need more same-family points around v33 to isolate
+     what changed).
+   - **5069 family — the M-suffix finding holds a 3rd time, AND a new,
+     clean SafetyTask-overhead finding:** `v35_l306er` = `v35_l306erm` =
+     18,144 (residual 13,328, ~exact empty_project_baseline match, and a
+     3rd real base-vs-M pair confirming zero M-suffix overhead). But
+     `v35_l306erms2` = `v35_l306erms3` = `v35_l306ers2` = 18,440 (residual
+     13,624) — **+296 higher than l306er/erm.** These 3 catalog numbers are
+     the ones already confirmed (2026-08-25 SafetyTask audit) to
+     LEGITIMATELY carry a real `<Task Name="SafetyTask">`/SafetyProgram
+     (real S/MS-suffix safety-rated hardware, not contamination like the 8
+     excluded fw_baseline files). A real SafetyTask costing real extra
+     bytes is exactly what you'd expect — clean, sensible, not yet wired
+     as its own constant (only 1 data point at this delta), but a strong
+     first signal for a future `safety_task_overhead` constant if more
+     safety-vs-non-safety pairs land.
+
 3. **OQ-AXISDEEP — FULLY RESOLVED 2026-08-25.** CIP/virtual axis, used
    everywhere in real programs, 0.01%-tolerance target. **Partially
    resolved 2026-08-23** — the pure predefined-structure constants
@@ -454,11 +486,18 @@ generator already covers them, just waiting on the next capture batch.
    RESOLVED_QUESTIONS.md OQ-AXISDEEP for the `axis_composite_udt_*` real
    data. No open piece remains.
 
-4. **OQ-MIXEDUDT [test built].** Realistic messy/nested UDTs (not
-   homogeneous arrays) — `gen_axis_composite.py`'s composite UDT covered
-   the axis-embedding case specifically (now resolved, see OQ-AXISDEEP
-   above), but the broader "realistic messy/nested UDT, arbitrary member
-   mix" question is still open pending its own dedicated capture.
+4. **OQ-MIXEDUDT — RESOLVED 2026-08-27, current formula holds, small
+   acceptable residual.** `mixedudt_messy_def_only/1_instance/25_instance`
+   captured (MANUAL ENTRY, James): 19,384 / 19,704 / 25,472. Live-recomputed
+   against the current engine: gaps of +72 (0.37%), +93 (0.47%), +676
+   (2.65%) — all within the project's own "acceptable" band (<3%), the
+   def_only and 1_instance points comfortably inside "good" (<1%). No
+   formula change needed; the existing UDT-definition + per-tag formulas
+   already generalize to a realistic messy/nested member mix, not just the
+   clean single-axis case OQ-AXISDEEP resolved. The 25_instance point's
+   larger (still-acceptable) residual is consistent with ordinary small
+   per-instance noise seen elsewhere in this project (e.g. AOI array
+   packing), not flagged as a new distinct effect from a single data point.
 
 5. **OQ-ALIASSIZE — RESOLVED 2026-08-25.** See RESOLVED_QUESTIONS.md
    OQ-ALIASSIZE. Real formula `56 + 8*floor(namelen/8)` derived and wired
