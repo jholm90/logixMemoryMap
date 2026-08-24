@@ -44,6 +44,7 @@ Run: python -m sample_gen.gen_module_motion
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 
 from sample_gen.gen_axis_composite import _AXIS_TAG_XML
@@ -108,15 +109,27 @@ _P208_MODULE_XML = """\
 </Module>"""
 
 
-def _drive_module_xml(name: str, catalog: str, safety_enabled: str) -> str:
+def _drive_module_xml(name: str, catalog: str, safety_enabled: str, address: str = "192.168.1.2") -> str:
     """D012 (single/dual-axis, non-safety) and S086 (safety-rated) share
     this exact shape -- only Name/CatalogNumber/SafetyEnabled differ,
-    confirmed by direct comparison of both real files."""
+    confirmed by direct comparison of both real files.
+
+    `address` defaults to a DIFFERENT IP than _P208_MODULE_XML's hardcoded
+    192.168.1.1 (2026-08-27, real Studio 5000 import bug found by James:
+    every drive module built from this function used to hard-code the
+    SAME 192.168.1.1 as the P208 power supply it's always paired with in
+    this file, a real "Duplicate IP Address" error the moment both are
+    imported together -- which every single_axis/dual_axis/safety_axis
+    file here does. That duplicate-IP failure was also silently sinking
+    the axis tags: when a module fails Ethernet import, nothing else in
+    the file can resolve a MotionModule reference against it, so the
+    'axis tags never got made' symptom James reported was a downstream
+    consequence of this one root cause, not a second bug)."""
     return f"""\
 <Module Name="{name}" CatalogNumber="{catalog}" Vendor="1" ProductType="45" ProductCode="11" Major="14" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="{safety_enabled}">
 <EKey State="CompatibleModule"/>
 <Ports>
-<Port Id="2" Address="192.168.1.1" Type="Ethernet" Upstream="true"/>
+<Port Id="2" Address="{address}" Type="Ethernet" Upstream="true"/>
 </Ports>
 <Communications>
 <ConfigData ConfigSize="468">
@@ -161,11 +174,24 @@ def _axis_tag(name: str, motion_module: str) -> str:
     gen_axis_composite.py, retargeted at a specific drive module/channel
     (MotionModule) and given its own tag name -- MOTION_GROUP is shared
     (built separately, once per file) since only one Motion Group exists
-    per real file here, matching every real corpus example found."""
+    per real file here, matching every real corpus example found.
+
+    AxisID is also given a unique value here (2026-08-27, real Studio 5000
+    import bug found by James: every axis tag from this helper carried the
+    SAME literal AxisID="510977205" from _AXIS_TAG_XML's single real
+    reference value -- harmless with exactly one axis in a file, but a
+    real "Duplicate Axis ID" import error the moment 2+ axis tags coexist,
+    which every dual-axis/safety/Kinetix-bus file here does. AxisID is an
+    opaque per-axis discriminator (no documented semantic meaning beyond
+    uniqueness), so a stable hash of the tag name is a safe way to make
+    every axis tag's ID distinct without touching any other real value."""
     body = _AXIS_TAG_XML.split('<Tag Name="MotionGroup"')[0]
     body = body.replace('Name="Axis_Cip_Drive"', f'Name="{name}"')
     body = body.replace('MotionModule="&lt;NA>"', f'MotionModule="{motion_module}"')
     body = body.replace('MotionGroup="MotionGroup"', 'MotionGroup="Motion"')
+    digest = int(hashlib.sha256(name.encode()).hexdigest(), 16)
+    unique_axis_id = str(digest % 900_000_000 + 100_000_000)
+    body = body.replace('AxisID="510977205"', f'AxisID="{unique_axis_id}"')
     return body
 
 

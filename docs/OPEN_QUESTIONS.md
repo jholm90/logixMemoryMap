@@ -2594,3 +2594,84 @@ generator already covers them, just waiting on the next capture batch.
     is the open question, to be replaced once real RIO/DH+/ControlNet
     capture data comes in. Not wired, not scheduled — logged here so it
     isn't lost before that data exists.
+
+21. **OQ-MODULEIO real import bugs, found and fixed 2026-08-27, James's own
+    Studio 5000 L5X→ACD conversion attempts on the module batch.** James:
+    "please see these errors so far." Six distinct real generator bugs,
+    all fixed:
+    - **Duplicate Ethernet IP** (`gen_module_motion.py`): every drive
+      module built via `_drive_module_xml()` hard-coded the SAME
+      `192.168.1.1` as the P208 power supply it's always paired with —
+      real "Duplicate IP Address" error the moment both import together
+      (every single/dual/safety-axis file). This ALSO explained the
+      seemingly-separate "axis tags never got made" symptom: once a
+      module fails Ethernet import, nothing downstream can resolve a
+      MotionModule reference against it — one root cause, two symptoms.
+      Fixed: `_drive_module_xml()` now takes its own `address` param,
+      defaulting to a distinct IP.
+    - **Duplicate AxisID** (`gen_module_motion.py`'s `_axis_tag()`, via
+      `gen_axis_composite.py`'s `_AXIS_TAG_XML`): every axis tag carried
+      the literal `AxisID="510977205"` from the one real reference value
+      the template was built from — harmless with 1 axis, a real
+      "Duplicate Axis ID" error the moment 2+ coexist (dual-axis, safety,
+      the whole Kinetix bus, Bender full program). Fixed: `_axis_tag()`
+      now derives a unique AxisID per call from a stable SHA-256 hash of
+      the axis name (deterministic across regenerations, no semantic
+      meaning documented for this field beyond uniqueness).
+    - **Real slot collision** (`gen_module_prototype.py`,
+      `moduleproto_en2t_downstream_ia16.L5X`): the remote EN2T bridge's
+      own real Port Id="1" Address="1" (its position on its OWN
+      4-slot remote chassis) collided with its downstream child
+      Remote_AC_Input, ALSO at Address="1" on that same bus. Missed by
+      every earlier verification pass because those only covered
+      `modulesweep_*`/`modulemotion_*`/`modulevfd_*` — this older
+      `moduleproto_*` prototype file was never in scope. Fixed: bridge
+      moved to slot 0 (matches the CPU-at-slot-0 convention used
+      everywhere else).
+    - **Invalid ParentModPortId** (`gen_module_sweep.py` +
+      `gen_module_sweep_variants.py`, 9 catalogs: 1734-IJ/C, 1783-NATR,
+      2198-C4004-ERS, 2198-H008-ERS, 442G-MABLB-UR-E0JP4679/A,
+      EX260-SEN1/A, EX260-SEN3/A, ETHERNET-MODULE noconn,
+      ETHERNET-PANELVIEW 1conn): each left `ParentModPortId="4"` verbatim
+      from the real source file's own local processor (which genuinely
+      had 4 embedded Ethernet ports on that real hardware) — re-parented
+      onto `build_l5x`'s synthesized Local (which only ever has Ports
+      Id 1/2), Studio 5000 correctly rejected the reference ("No port was
+      found with the given port number"). Fixed: corrected to the
+      project's standard `ParentModPortId="2"` for all 9.
+    - **ExtendedProperties stripped from a schema-bearing module**
+      (`gen_module_sweep_gap.py`, 150 SMC Flex-E): this is a
+      User-Defined-Catalog (UDC) device, not a standard built-in AB
+      catalog module — its `ExtendedProperties` carries the actual
+      `InputDataTag`/`OutputDataTag` type schema Studio 5000 needs to
+      validate its Decorated Data against, unlike every other module in
+      this project where ExtendedProperties is pure boilerplate. Stripping
+      it (per the project's usual genericization convention) caused a
+      real "Data type mismatch" import error. Fixed: restored verbatim
+      (confirmed it carries no site/customer-identifying text).
+    - **Non-importable/unresolvable modules in the Bender full-program
+      replica** (`gen_module_bender_full.py`): `BENDER:Partner`
+      (1756-L8SP GuardLogix Safety Partner) is a companion object Studio
+      5000 auto-pairs with specific safety-capable primary processors,
+      not independently addable — real error "Invalid module type for
+      import" — and (per James's own report) appears to have cascaded
+      into the file's other vague "Module import failed"/broken-"Local1"
+      errors too. `LH_CART_ENC`/`RH_CART_ENC`/`Datalogic` (no
+      CatalogNumber at all, real) and `E35_Robot1` (FANUC robot,
+      generic-Ethernet-device profile) all need an EDS/AOP registered on
+      the specific machine that built the real program, not guaranteed
+      present elsewhere — real "Module profile could not be found."
+      Fixed: excluded all 5 (64 of 69 real modules remain) — flagged
+      rather than silently dropped, can be re-added if James has the
+      matching EDS/AOP files installed and wants a closer real-accuracy
+      match.
+
+    All fixes verified: 0 duplicate Ethernet IPs, 0 duplicate AxisIDs, 0
+    invalid ParentModPortId references, 0 lint findings, 0 sizing
+    crashes, 0 regressions across the full 1,251-file generated corpus,
+    112/112 tests pass. None of these bugs affected the SIZING ENGINE's
+    own correctness (parser/sizing code never touched) — every one was in
+    generator-authored L5X content, caught only because James actually
+    ran real Studio 5000 imports against it. Underscores why his QA ask
+    mattered: automated lint + sizing-engine checks alone would never
+    have caught any of these six.

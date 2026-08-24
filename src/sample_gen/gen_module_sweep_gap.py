@@ -14,6 +14,20 @@ is the exact same shape already handled for PowerFlex VFDs.
 
 With this file, individual per-catalog coverage is 119/119.
 
+**Fixed 2026-08-27, real Studio 5000 import bug found by James: "Data
+type mismatch."** This module is a User-Defined-Catalog (UDC) device --
+its `UdcAopVersion` attribute means Studio 5000 has no BUILT-IN profile
+for it the way it does for a standard Rockwell catalog module; the
+module's own `ExtendedProperties` carries an embedded `InputDataTag`/
+`OutputDataTag` schema (the real Decorated Structure's own type
+definition) that Studio 5000 needs to validate its Decorated Data against
+on import. Every OTHER module in this project strips `ExtendedProperties`
+freely since for a standard AB catalog module it's just vendor/cat-num
+boilerplate with no functional content -- but for this ONE UDC module
+that same content IS functionally required, not decorative. Restored
+verbatim (confirmed it carries no site/customer-identifying text, only
+Vendor/CatNum/the embedded generic type schema).
+
 Run: python -m sample_gen.gen_module_sweep_gap
 """
 
@@ -104,6 +118,9 @@ _SMC_FLEX_E_XML = """\
 </Connection>
 </Connections>
 </Communications>
+<ExtendedProperties>
+<public><Vendor>Rockwell Automation/Allen-Bradley</Vendor><CatNum>150 SMC Flex-E</CatNum><LgxVersion>32</LgxVersion><CustomizationCode>0</CustomizationCode><CustomizationVersion>0.0</CustomizationVersion><ConnectedCommModule>5</ConnectedCommModule><PrimaryModulePort>0</PrimaryModulePort><ConfigID>115</ConfigID><ConfigCode>6</ConfigCode><UdcAopVersion>5.8.0.00</UdcAopVersion><InputDataTag>&lt;DataTypes&gt;&lt;DataType Name="AB:150SMCFlex_B0DF532F:I:0" Class="IO"&gt;&lt;Members&gt;&lt;Member Name="pad" DataType="DINT" Hidden="1" /&gt;&lt;Member Name="LogicStatus" DataType="INT" Radix="Binary" /&gt;&lt;Member Name="LogicStatus_Enabled" DataType="BIT" BitNumber="0" Target="LogicStatus"&gt;&lt;/Member&gt;&lt;Member Name="LogicStatus_Running" DataType="BIT" BitNumber="1" Target="LogicStatus"&gt;&lt;/Member&gt;&lt;Member Name="LogicStatus_Phasing" DataType="BIT" BitNumber="2" Target="LogicStatus"&gt;&lt;/Member&gt;&lt;Member Name="LogicStatus_PhasingActive" DataType="BIT" BitNumber="3" Target="LogicStatus"&gt;&lt;/Member&gt;&lt;Member Name="LogicStatus_Starting" DataType="BIT" BitNumber="4" Target="LogicStatus"&gt;&lt;/Member&gt;&lt;Member Name="LogicStatus_Stopping" DataType="BIT" BitNumber="5" Target="LogicStatus"&gt;&lt;/Member&gt;&lt;Member Name="LogicStatus_Alarm" DataType="BIT" BitNumber="6" Target="LogicStatus"&gt;&lt;/Member&gt;&lt;Member Name="LogicStatus_Fault" DataType="BIT" BitNumber="7" Target="LogicStatus"&gt;&lt;/Member&gt;&lt;Member Name="LogicStatus_AtSpeed" DataType="BIT" BitNumber="8" Target="LogicStatus"&gt;&lt;/Member&gt;&lt;Member Name="LogicStatus_Start" DataType="BIT" BitNumber="9" Target="LogicStatus"&gt;&lt;/Member&gt;&lt;Member Name="LogicStatus_Bypass" DataType="BIT" BitNumber="10" Target="LogicStatus"&gt;&lt;/Member&gt;&lt;Member Name="LogicStatus_Ready" DataType="BIT" BitNumber="11" Target="LogicStatus"&gt;&lt;/Member&gt;&lt;Member Name="LogicStatus_Option1Input" DataType="BIT" BitNumber="12" Target="LogicStatus"&gt;&lt;/Member&gt;&lt;Member Name="LogicStatus_Option2Input" DataType="BIT" BitNumber="13" Target="LogicStatus"&gt;&lt;/Member&gt;&lt;Member Name="PhaseACurrent" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="MtrThermUsage" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="MotorSpeed" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="WattMeter" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="MegawattHours" DataType="INT" Radix="Decimal" /&gt;&lt;/Members&gt;&lt;/DataType&gt;&lt;/DataTypes&gt;</InputDataTag><OutputDataTag>&lt;DataTypes&gt;&lt;DataType Name="AB:150SMCFlex_A9D06D0C:O:0" Class="IO"&gt;&lt;Members&gt;&lt;Member Name="LogicCommand" DataType="INT" Radix="Binary" /&gt;&lt;Member Name="LogicCommand_Stop" DataType="BIT" BitNumber="0" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="LogicCommand_Start" DataType="BIT" BitNumber="1" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="LogicCommand_Option1Command" DataType="BIT" BitNumber="2" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="LogicCommand_ClearFault" DataType="BIT" BitNumber="3" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="LogicCommand_Option2Command" DataType="BIT" BitNumber="4" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="LogicCommand_AuxEnable" DataType="BIT" BitNumber="11" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="LogicCommand_Aux1" DataType="BIT" BitNumber="12" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="LogicCommand_Aux2" DataType="BIT" BitNumber="13" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="LogicCommand_Aux3" DataType="BIT" BitNumber="14" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="LogicCommand_Aux4" DataType="BIT" BitNumber="15" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="NotUsed" DataType="INT" Hidden="1" /&gt;&lt;Member Name="Undefined_A1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="Undefined_A2" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="Undefined_B1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="Undefined_B2" DataType="INT" Radix="Decimal" /&gt;&lt;/Members&gt;&lt;/DataType&gt;&lt;/DataTypes&gt;</OutputDataTag></public>
+</ExtendedProperties>
 </Module>
 """
 

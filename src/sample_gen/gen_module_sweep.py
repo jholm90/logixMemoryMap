@@ -13,6 +13,18 @@ structurally VERBATIM otherwise. Nothing here is invented -- every
 Port/Connection/ConfigTag/ConfigData/ConfigScript shape is copied straight
 from a real file that successfully compiled in Studio 5000.
 
+**Fixed 2026-08-27, real Studio 5000 import bug found by James:** 9 of
+these chains had their adapter/bridge module's `ParentModPortId="4"` left
+over VERBATIM from the real source file's own local processor (which
+genuinely had 4 embedded Ethernet ports on that real hardware) --
+re-parented onto `Local`, `build_l5x`'s wrapper only ever synthesizes
+Ports Id="1" (ICP) and Id="2" (Ethernet), so importing referenced a port
+that doesn't exist ("No port was found with the given port number").
+Corrected to the project's standard `ParentModPortId="2"` for every
+Local-Ethernet-attached module (1734-IJ/C, 1783-NATR, 2198-C4004-ERS,
+2198-H008-ERS, 442G-MABLB-UR-E0JP4679/A, EX260-SEN1/A, EX260-SEN3/A,
+ETHERNET-MODULE noconn variant, ETHERNET-PANELVIEW 1conn variant).
+
 86 catalogs covered -- every real, non-processor, non-legacy-platform
 catalog number in the corpus with a single consistent real shape. NOT
 covered, deliberately, not guessed:
@@ -1442,7 +1454,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Module>
 """, 'L5X_Samples/Sorter1_20260722r00.L5X', 2),
     '1734-IJ/C': ("""\
-<Module Name="TestMod1_1734IJC" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="7" Minor="1" ParentModule="Local" ParentModPortId="4" Inhibited="false" MajorFault="false">
+<Module Name="TestMod1_1734IJC" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="7" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="1" Address="0" Type="PointIO" Upstream="false">
@@ -5268,7 +5280,7 @@ mPo
 </Module>
 """, 'BAI10048_TrimmerTally_20250704.L5X', 2),
     '1783-NATR': ("""\
-<Module Name="TestMod1_1783NATR" CatalogNumber="1783-NATR" Vendor="1" ProductType="12" ProductCode="309" Major="1" Minor="1" ParentModule="Local" ParentModPortId="4" Inhibited="false" MajorFault="false" SafetyEnabled="false">
+<Module Name="TestMod1_1783NATR" CatalogNumber="1783-NATR" Vendor="1" ProductType="12" ProductCode="309" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false">
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
@@ -8840,7 +8852,7 @@ mPo
 </Module>
 """, 'BAI10048_TrimmerTally_20250704.L5X', 1),
     '2198-C4004-ERS': ("""\
-<Module Name="TestMod1_2198C4004ERS" CatalogNumber="2198-C4004-ERS" Vendor="1" ProductType="37" ProductCode="78" Major="13" Minor="1" ParentModule="Local" ParentModPortId="4" Inhibited="false" MajorFault="false">
+<Module Name="TestMod1_2198C4004ERS" CatalogNumber="2198-C4004-ERS" Vendor="1" ProductType="37" ProductCode="78" Major="13" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
@@ -8888,7 +8900,7 @@ mPo
 </Module>
 """, 'DnR_Personal/Fisher_Synergy_Bead_20240725.L5X', 1),
     '2198-H008-ERS': ("""\
-<Module Name="TestMod1_2198H008ERS" CatalogNumber="2198-H008-ERS" Vendor="1" ProductType="37" ProductCode="47" Major="7" Minor="1" ParentModule="Local" ParentModPortId="4" Inhibited="false" MajorFault="false">
+<Module Name="TestMod1_2198H008ERS" CatalogNumber="2198-H008-ERS" Vendor="1" ProductType="37" ProductCode="47" Major="7" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
@@ -9423,7 +9435,7 @@ mPo
 </Module>
 """, 'L5X_Samples/K3M16_Edgers_20220808r00.L5X', 1),
     '442G-MABLB-UR-E0JP4679/A': ("""\
-<Module Name="TestMod1_442GMABLBURE0JP4679A" CatalogNumber="442G-MABLB-UR-E0JP4679/A" Vendor="1" ProductType="157" ProductCode="10" Major="1" Minor="6" ParentModule="Local" ParentModPortId="4" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_4abf_0367_fe7c">
+<Module Name="TestMod1_442GMABLBURE0JP4679A" CatalogNumber="442G-MABLB-UR-E0JP4679/A" Vendor="1" ProductType="157" ProductCode="10" Major="1" Minor="6" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_4abf_0367_fe7c">
 <EKey State="ExactMatch" />
 <Ports>
 <Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
@@ -12397,7 +12409,7 @@ mPo
 </Module>
 """, 'L5X_Samples/Sorter1_20260722r00.L5X', 2),
     'EX260-SEN1/A': ("""\
-<Module Name="TestMod1_EX260SEN1A" CatalogNumber="EX260-SEN1/A" Vendor="7" ProductType="27" ProductCode="156" Major="2" Minor="3" ParentModule="Local" ParentModPortId="4" Inhibited="false" MajorFault="false">
+<Module Name="TestMod1_EX260SEN1A" CatalogNumber="EX260-SEN1/A" Vendor="7" ProductType="27" ProductCode="156" Major="2" Minor="3" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="1" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
@@ -12437,7 +12449,7 @@ mPo
 </Module>
 """, 'DnR_Personal/Fisher_Synergy_Bead_20240725.L5X', 1),
     'EX260-SEN3/A': ("""\
-<Module Name="TestMod1_EX260SEN3A" CatalogNumber="EX260-SEN3/A" Vendor="7" ProductType="27" ProductCode="158" Major="2" Minor="3" ParentModule="Local" ParentModPortId="4" Inhibited="false" MajorFault="false">
+<Module Name="TestMod1_EX260SEN3A" CatalogNumber="EX260-SEN3/A" Vendor="7" ProductType="27" ProductCode="158" Major="2" Minor="3" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="1" Address="192.168.1.63" Type="Ethernet" Upstream="true" />

@@ -3908,7 +3908,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Module>
 """, 'BaillieLeitchField_Edger_20260812_r00.L5X', 1),
         ('noconn', """\
-<Module Name="TestMod1_ETHERNETMODULE" CatalogNumber="ETHERNET-MODULE" Vendor="1" ProductType="0" ProductCode="18" Major="1" Minor="1" ParentModule="Local" ParentModPortId="4" Inhibited="true" MajorFault="false">
+<Module Name="TestMod1_ETHERNETMODULE" CatalogNumber="ETHERNET-MODULE" Vendor="1" ProductType="0" ProductCode="18" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="true" MajorFault="false">
 <EKey State="Disabled" />
 <Ports>
 <Port Id="2" Address="192.168.1.73" Type="Ethernet" Upstream="true" />
@@ -3921,7 +3921,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
     ],
     'ETHERNET-PANELVIEW': [
         ('1conn', """\
-<Module Name="TestMod1_ETHERNETPANELVIEW" CatalogNumber="ETHERNET-PANELVIEW" Vendor="1" ProductType="24" ProductCode="11" Major="1" Minor="1" ParentModule="Local" ParentModPortId="4" Inhibited="true" MajorFault="false">
+<Module Name="TestMod1_ETHERNETPANELVIEW" CatalogNumber="ETHERNET-PANELVIEW" Vendor="1" ProductType="24" ProductCode="11" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="true" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="2" Address="192.168.1.73" Type="Ethernet" Upstream="true" />

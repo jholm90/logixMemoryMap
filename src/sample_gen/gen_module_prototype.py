@@ -266,7 +266,7 @@ _EN2T_WITH_DOWNSTREAM_MODULE_XML = """\
 <Module Name="Remote_EN2T" CatalogNumber="1756-EN2T" Vendor="1" ProductType="12" ProductCode="166" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="Disabled"/>
 <Ports>
-<Port Id="1" Address="1" Type="ICP" Upstream="false">
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
 <Bus Size="4"/>
 </Port>
 <Port Id="2" Address="192.168.2.10" Type="Ethernet" Upstream="true"/>
