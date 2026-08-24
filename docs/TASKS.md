@@ -294,16 +294,30 @@ compiled-size characteristics vs. equivalent RLL are completely unknown —
 worth its own explicit sample set once RLL bit logic is fitted, don't just
 assume ST scales the same way rung-based logic does.
 
-- 🔴 Generate: N rungs (10/100/1000) of single XIC + single OTE, empty branches
-- 🔴 Generate: same counts for XIO, OTL, OTU
-- 🔴 Generate: branch depth variations (1, 3, 5 parallel branches) at fixed
-      rung count
-- 🔴 Generate: rung comment presence vs absence, sample pair specified by
-      James (2026-08-20) — 10k rungs of XIC/OTE with no comments vs. 10k
-      rungs of XIC/OTE with a 100-char comment per rung (OQ-COMMENTS)
-- 🔴 Generate: empty rungs (comment-only, no instructions) at scale
-- 🔴 Record actual memory delta per sample
-- 🔴 Fit initial per-instruction weight, log residuals
+**2026-08-26 audit (James: "should be 100% complete by now").** This
+checklist had gone stale — most of it WAS actually done, just never
+updated here (superseded by the broader 244-file instruction sweep, same
+pattern as Phase 3's own stale-checklist finding). Two real, genuine gaps
+found and closed with new generation this pass (`gen_branch_empty_rungs.py`,
+6 files, awaiting capture) — not yet ✅ since real data hasn't landed:
+
+- ✅ Generate: N rungs (10/100/1000+) of single XIC + single OTE, empty
+      branches — CONFIRMED, 0.00% residual (`docs/INSTRUCTION_COVERAGE.md`)
+- ✅ Generate: same counts for XIO, OTL, OTU — CONFIRMED, 0.00% residual
+- 🟡 Generate: branch depth variations (1, 3, 5 parallel branches) at fixed
+      rung count — genuinely never tested before this pass; real bracket
+      syntax confirmed from `samples/local/311DGeneratedProgram.L5X`, 3
+      files generated (`branchdepth_legs01/03/05_n01000`), awaiting capture
+- ✅ Generate: rung comment presence vs absence — RESOLVED, comments/
+      descriptions cost ZERO blocks at all tested combinations and lengths
+      0-200 chars (`docs/RESOLVED_QUESTIONS.md`, OQ-COMMENTS)
+- 🟡 Generate: empty (content-free) rungs at scale — genuinely never
+      tested as its own count sweep before this pass (NOP's weight was
+      only ever inferred singly, from 1 occurrence elsewhere); 3 files
+      generated (`emptyrungs_n00010/00100/01000`), awaiting capture
+- ✅ Record actual memory delta per sample — done for every ✅ item above
+- ✅ Fit initial per-instruction weight, log residuals — done for every ✅
+      item above; the 2 🟡 items above will fold into this once captured
 
 ## Phase 4b — Logic sizing round 2 (other instructions)
 Scope set from real instruction-frequency data (OQ-INSTRUCTIONSCOPE,

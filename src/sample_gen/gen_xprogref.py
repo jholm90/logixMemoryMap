@@ -1,4 +1,26 @@
-"""OQ-XPROGREF (James, 2026-08-22: "add it to the next batch"). Real Logix
+"""OQ-XPROGREF round 2 (2026-08-26, self-initiated per CLAUDE.md step 5 --
+this project's standing rule is to decide and generate the next batch of
+tests automatically once an open item is identified, not wait to be asked).
+
+xprogref_twoprog_shared_alias showed a real, unexplained NEGATIVE gap
+(-3948, engine over-predicts) -- the only finding in the whole project
+running that direction. Hypothesis (unconfirmed): the second program's
+alias to the same Controller-scoped global doesn't carry its own full
+alias_overhead cost (some sharing/dedup at the tag-table level for repeat
+references to the same underlying global). A single 2-program data point
+can't distinguish "each additional program's alias costs less than the
+first" from "there's a one-time discount that only applies once, at the
+second reference." 3- and 4-program versions of the exact same pattern
+(same 1000-rung XIC/OTE body, same global, one more program's own Local
+alias to it each time) give the two more points needed: if the per-
+program marginal gap keeps shrinking, it's linear-in-program-count; if it
+plateaus after program 2, it's a one-time discount.
+
+Original round 1 docs below, unchanged.
+
+---
+
+OQ-XPROGREF (James, 2026-08-22: "add it to the next batch"). Real Logix
 has no direct cross-program tag-addressing syntax in ladder logic --
 confirmed by searching the entire real corpus (47 files, including several
 with real `Usage="Public"` program tags) for any `Program:Tag`-style
@@ -75,10 +97,58 @@ def group_twoprog_shared_alias() -> None:
            f"global -- the real cross-program-sharing pattern, vs xprogref_singleprog_alias baseline")
 
 
+def _group_nprog_shared_alias(program_letters: list[str]) -> None:
+    # program_letters e.g. ["A", "B", "C"] -> 3 programs total, A is the
+    # "primary" program (its rungs/tags go in the top-level Controller
+    # Program block, matching group_twoprog_shared_alias's ProgA shape),
+    # B/C/... are extra <Program> blocks.
+    global_tag = tag_xml("gGlobalFlag", "BOOL")
+
+    a_tags = alias_tag_xml("LocalAliasA", "gGlobalFlag") + "\n" + program_tag_xml("OutA", "BOOL")
+    fn_a = lambda i: "XIC(LocalAliasA)OTE(OutA);"
+    rungs_a = rungs_xml(RUNG_COUNT, fn_a)
+
+    extra_programs = []
+    extra_scheduled = []
+    for letter in program_letters[1:]:
+        tags = alias_tag_xml(f"LocalAlias{letter}", "gGlobalFlag") + "\n" + program_tag_xml(f"Out{letter}", "BOOL")
+        fn = lambda i, letter=letter: f"XIC(LocalAlias{letter})OTE(Out{letter});"
+        rungs = rungs_xml(RUNG_COUNT, fn)
+        extra_programs.append(program_xml(f"Prog{letter}", tags_xml=tags, rungs_xml_body=rungs))
+        extra_scheduled.append(f'<ScheduledProgram Name="Prog{letter}"/>')
+
+    n = len(program_letters)
+    l5x = build_l5x(
+        target_name=f"XProgRef{n}",
+        tags_xml=global_tag,
+        extra_program_tags_xml=a_tags,
+        extra_rungs_xml=rungs_a,
+        extra_programs_xml="\n".join(extra_programs),
+        extra_scheduled_programs_xml="\n".join(extra_scheduled),
+    )
+    _write(
+        l5x, f"xprogref_{n}prog_shared_alias_n{RUNG_COUNT:05d}",
+        f"{n} programs, each {RUNG_COUNT} rungs of XIC/OTE via its own Local alias to the SAME "
+        f"Controller-scoped global -- disentangles xprogref_twoprog_shared_alias's unexplained -3948 "
+        f"negative gap: is the per-program marginal discount linear-in-count, or a one-time thing that "
+        f"only applies once?",
+    )
+
+
+def group_threeprog_shared_alias() -> None:
+    _group_nprog_shared_alias(["A", "B", "C"])
+
+
+def group_fourprog_shared_alias() -> None:
+    _group_nprog_shared_alias(["A", "B", "C", "D"])
+
+
 def main() -> None:
     group_singleprog_alias()
     group_twoprog_shared_alias()
-    print("\nDone. 2 files.")
+    group_threeprog_shared_alias()
+    group_fourprog_shared_alias()
+    print("\nDone. 4 files.")
 
 
 if __name__ == "__main__":
