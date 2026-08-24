@@ -21,6 +21,7 @@ from l5x_memory_analyzer.sizing.udt import (
     RecursiveUdtError,
     compute_array_size,
     compute_element_size,
+    custom_string_maxlen,
 )
 
 
@@ -159,6 +160,73 @@ def _expand_predefined_structure(data_type: str, model: MemoryModel) -> list[Chi
         Child("PRE", ".PRE", "DINT", (), each, struct.confidence, False),
         Child(third_name, f".{third_name}", "DINT", (), each, struct.confidence, False),
     ]
+
+
+def expand_definition_children(
+    name: str, data_types: dict[str, DataTypeDef], model: MemoryModel
+) -> list[Child]:
+    """Breakdown of a UDT/AOI/custom-string *definition*'s own one-time
+    cost into its contributing pieces (James, 2026-08-26: "click-to-drill
+    into a defs pool node -> locals+params breakdown").
+
+    NOT the same drill as expand_children/_expand_udt above, which breaks
+    an INSTANCE's data size into its members' own byte sizes. A
+    definition's cost formula (base + per-member/per-item flat rate +
+    name-length [+ bool-run bonus]) isn't naturally member-size-
+    attributable -- per_member/per_declared_item are flat rates per
+    declared thing, independent of that thing's own data size -- so each
+    declared member/param/local gets an even share of that flat rate,
+    labeled by its real name, alongside separate rows for the parts that
+    aren't per-member (base, name length, BOOL-run packing bonus). Always
+    exactly one level deep (every child here has_children=False) -- this
+    is a cost-attribution breakdown, not a further-drillable structure.
+    """
+    dtdef = data_types[name]
+    if dtdef.is_string_family:
+        return _expand_string_definition(dtdef, model)
+    if dtdef.is_aoi:
+        return _expand_aoi_definition(dtdef, model)
+    return _expand_plain_udt_definition(name, dtdef, model)
+
+
+def _expand_plain_udt_definition(name: str, udt: DataTypeDef, model: MemoryModel) -> list[Child]:
+    declared_members = [m for m in udt.members if not m.hidden]
+    bool_runs = [m for m in udt.members if m.hidden]
+    conf = model.udt_definition.confidence
+    name_cost = model.udt_definition.name_per_8_chars * math.ceil(len(name) / 8)
+    children = [
+        Child("Base + type name", ".base", "OVERHEAD", (), model.udt_definition.base + name_cost, conf, False)
+    ]
+    for m in declared_members:
+        children.append(Child(m.name, f".{m.name}", m.data_type, (), model.udt_definition.per_member, conf, False))
+    for i, _ in enumerate(bool_runs, start=1):
+        children.append(
+            Child(f"BOOL packing (run {i})", f".boolrun{i}", "OVERHEAD", (),
+                  model.udt_definition.bool_run_bonus, conf, False)
+        )
+    return children
+
+
+def _expand_aoi_definition(aoi: DataTypeDef, model: MemoryModel) -> list[Child]:
+    conf = model.aoi_definition.confidence
+    declared_items = [m for m in aoi.members if m.name not in ("EnableIn", "EnableOut")]
+    children = [Child("Base", ".base", "OVERHEAD", (), model.aoi_definition.base, conf, False)]
+    for m in declared_items:
+        children.append(Child(m.name, f".{m.name}", m.data_type, (), model.aoi_definition.per_declared_item, conf, False))
+    return children
+
+
+def _expand_string_definition(udt: DataTypeDef, model: MemoryModel) -> list[Child]:
+    conf = model.string.custom_definition_confidence
+    children = [
+        Child("Base definition cost", ".base", "OVERHEAD", (), model.string.custom_definition_cost, conf, False)
+    ]
+    if custom_string_maxlen(udt) % 4 == 1:
+        children.append(
+            Child("mod-4 alignment bonus", ".mod4bonus", "OVERHEAD", (),
+                  model.string.custom_mod4eq1_definition_bonus, conf, False)
+        )
+    return children
 
 
 def resolve_type_at_path(

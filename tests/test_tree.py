@@ -5,10 +5,15 @@ from l5x_memory_analyzer.sizing.constants import load_memory_model
 from l5x_memory_analyzer.sizing.tree import (
     NotDrillableError,
     expand_children,
+    expand_definition_children,
     has_children,
     resolve_type_at_path,
 )
-from l5x_memory_analyzer.sizing.udt import RecursiveUdtError
+from l5x_memory_analyzer.sizing.udt import (
+    RecursiveUdtError,
+    compute_aoi_definition_cost,
+    compute_udt_definition_cost,
+)
 
 MODEL = load_memory_model()
 
@@ -132,3 +137,76 @@ def test_resolve_path_bit_alias_member_is_a_leaf():
     dt, dims = resolve_type_at_path("Motor", (), [".Running"], DATA_TYPES, MODEL)
     assert (dt, dims) == ("BIT", ())
     assert has_children("BIT", (), DATA_TYPES, MODEL) is False
+
+
+# ---------------------------------------------------------------------------
+# expand_definition_children -- 2026-08-26, James's Phase 2/2b "defs pool
+# drill-down" fix. Breaks a definition's own one-time cost into its
+# contributing pieces; must always sum back exactly to what udt.py's own
+# compute_*_definition_cost would report for the same type, or the treemap
+# would show a defs-pool node whose children don't add up to its own value.
+# ---------------------------------------------------------------------------
+
+BOOLRUN_UDT = DataTypeDef(
+    name="WithBoolRun",
+    members=[
+        Member(name="ZZZZZZZZZZBoolMember01", data_type="SINT", dimension=0, hidden=True),
+        Member(name="FlagA", data_type="BIT", dimension=0),
+        Member(name="FlagB", data_type="BIT", dimension=0),
+        Member(name="Count", data_type="DINT", dimension=0),
+    ],
+)
+AOI_FIXTURE = DataTypeDef(
+    name="fbDebounce",
+    is_aoi=True,
+    members=[
+        Member(name="EnableIn", data_type="BOOL", dimension=0),
+        Member(name="RawInput", data_type="BOOL", dimension=0),
+        Member(name="DebTmr", data_type="TIMER", dimension=0),
+    ],
+)
+DEF_DATA_TYPES = {**DATA_TYPES, "WithBoolRun": BOOLRUN_UDT, "fbDebounce": AOI_FIXTURE}
+
+
+def test_expand_udt_definition_sums_to_compute_udt_definition_cost():
+    children = expand_definition_children("Motor", DEF_DATA_TYPES, MODEL)
+    expected_total, _ = compute_udt_definition_cost("Motor", DEF_DATA_TYPES, MODEL)
+    assert sum(c.bytes for c in children) == expected_total
+    # One row per declared member (Speed, Readings, ZZZZZZZZZZBoolMember01,
+    # Running, Nested -- all 5 are not `hidden`, Motor has no bool run of
+    # its own) plus one "Base + type name" row.
+    assert len(children) == 6
+    names = {c.name for c in children}
+    assert {"Speed", "Readings", "ZZZZZZZZZZBoolMember01", "Running", "Nested"} <= names
+
+
+def test_expand_udt_definition_bool_run_gets_its_own_row():
+    children = expand_definition_children("WithBoolRun", DEF_DATA_TYPES, MODEL)
+    expected_total, _ = compute_udt_definition_cost("WithBoolRun", DEF_DATA_TYPES, MODEL)
+    assert sum(c.bytes for c in children) == expected_total
+    boolrun_rows = [c for c in children if c.name.startswith("BOOL packing")]
+    assert len(boolrun_rows) == 1
+    assert boolrun_rows[0].bytes == MODEL.udt_definition.bool_run_bonus
+    # Declared members exclude the hidden backing SINT: FlagA, FlagB, Count.
+    declared_names = {"FlagA", "FlagB", "Count"}
+    assert declared_names <= {c.name for c in children}
+    assert "ZZZZZZZZZZBoolMember01" not in {c.name for c in children}
+
+
+def test_expand_string_definition_sums_to_report_formula():
+    children = expand_definition_children("STRING40", DEF_DATA_TYPES, MODEL)
+    # maxlen=40, 40 % 4 == 0 -- no mod-4 bonus row, just the flat base.
+    assert sum(c.bytes for c in children) == MODEL.string.custom_definition_cost
+    assert len(children) == 1
+    assert children[0].basis == MODEL.string.custom_definition_confidence
+
+
+def test_expand_aoi_definition_sums_to_compute_aoi_definition_cost_and_excludes_enablein():
+    children = expand_definition_children("fbDebounce", DEF_DATA_TYPES, MODEL)
+    expected_total, expected_basis = compute_aoi_definition_cost("fbDebounce", DEF_DATA_TYPES, MODEL)
+    assert sum(c.bytes for c in children) == expected_total
+    assert all(c.basis == expected_basis == "FITTED" for c in children)
+    names = {c.name for c in children}
+    assert "RawInput" in names and "DebTmr" in names
+    assert "EnableIn" not in names
+    assert all(c.has_children is False for c in children)

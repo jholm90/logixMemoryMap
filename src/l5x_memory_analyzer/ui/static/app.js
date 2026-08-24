@@ -101,15 +101,19 @@ function renderCurrentLevel() {
 }
 
 // The initial /api/report hierarchy is always exactly 3 levels: root ->
-// scope group ("Controller Tags" / "Program: X") -> tag leaf. Only the tag
-// leaves need a _tagPath/_subPath for lazy /api/node fetches -- anything
-// deeper than that is fetched on demand (see ensureChildren), which sets
-// _tagPath/_subPath directly on the freshly created child nodes itself.
+// scope group ("Controller Tags" / "Program: X" / "Type Definitions" /
+// "Project Overhead") -> leaf. Only the leaves need a _tagPath/_subPath for
+// lazy /api/node fetches -- anything deeper than that is fetched on demand
+// (see ensureChildren), which sets _tagPath/_subPath directly on the
+// freshly created child nodes itself. Applies uniformly to every group,
+// not just the tag-scope ones -- a "Type Definitions" leaf's `path` is
+// already "udt_definitions/<Name>" (see hierarchy.py), which /api/node's
+// dedicated branch resolves the same way (2026-08-26, defs-pool drill-down).
 function annotateTagPaths(root) {
   for (const group of root.children || []) {
-    for (const tagLeaf of group.children || []) {
-      tagLeaf._tagPath = tagLeaf.path;
-      tagLeaf._subPath = "";
+    for (const leaf of group.children || []) {
+      leaf._tagPath = leaf.path;
+      leaf._subPath = "";
     }
   }
 }

@@ -203,6 +203,28 @@ def compute_udt_definition_cost(
     )
 
 
+def compute_aoi_definition_cost(
+    name: str, data_types: dict[str, DataTypeDef], model: MemoryModel
+) -> tuple[int, str]:
+    """One-time cost of an AOI *definition* itself (its own Parameters/
+    LocalTags declaration) -- separate from and additive with any tag
+    instance's own tag_overhead + member size, same relationship
+    compute_udt_definition_cost has to a plain UDT. See memory_model.yaml
+    aoi_definition for the formula's derivation and its FITTED (not KNOWN)
+    confidence -- confirmed exact for DINT-typed declared items only, a
+    real-but-partial floor for BOOL/LINT-heavy AOIs.
+
+    declared_item_count excludes EnableIn/EnableOut (always present,
+    not something a user declares) -- parse_aoi_definitions already
+    excludes InOut params from `members` entirely (reference, not
+    storage), so every remaining member here is a real declared
+    Input/Output Parameter or LocalTag.
+    """
+    aoi = data_types[name]
+    declared_item_count = sum(1 for m in aoi.members if m.name not in ("EnableIn", "EnableOut"))
+    return model.aoi_definition.bytes_for(declared_item_count), model.aoi_definition.confidence
+
+
 def referenced_data_type_names(
     data_type: str, data_types: dict[str, DataTypeDef], _seen: set[str] | None = None
 ) -> set[str]:

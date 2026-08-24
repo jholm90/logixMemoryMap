@@ -23,6 +23,63 @@ _INSTRUCTION_CALL = re.compile(r"\b([A-Z][A-Z0-9_]*)\(")
 # below for why this needs its own extraction, not just an instruction count.
 _JSR_TARGET = re.compile(r"\bJSR\(\s*([A-Za-z_][A-Za-z0-9_]*)")
 
+# CPT's own expression argument needs real parsing, not a flat per-call
+# weight (OQ-CMPCPTLAYOUT, wired 2026-08-26) -- real capture data shows
+# CPT's cost is expression-complexity-dependent (operator count/type), not
+# a constant. "**" must be tried before the single "*"/"/" alternatives or
+# it would match as two separate "*" tokens. MOD is a word operator in real
+# Logix syntax ("L0 MOD L1"), not a symbol, hence \b...\b. Unary +/- (e.g.
+# leading "-L0") is NOT distinguished from a binary operator -- no real
+# corpus example of unary sign inside a CPT expression has turned up, and
+# guessing its cost would violate this project's "never guess Rockwell
+# syntax" rule; flagged as a known limitation, not silently handled.
+_CPT_OPERATOR_TOKEN = re.compile(r"\*\*|[+\-*/]|\bMOD\b")
+
+
+def _extract_cpt_expr(text: str, start: int) -> str | None:
+    """text[start] is the character right after a matched 'CPT('. Returns
+    the expression argument (CPT's 2nd argument, after the first top-level
+    comma) by scanning for the call's real balanced-paren close -- a naive
+    "up to the next ')'" regex would stop early on a nested-parens
+    expression like 'CPT(Dest,(A+B)*(C-D))'. Returns None if the text runs
+    out before the parens balance (malformed/truncated, don't guess)."""
+    depth = 1
+    first_comma = None
+    i = start
+    while i < len(text):
+        c = text[i]
+        if c == "(":
+            depth += 1
+        elif c == ")":
+            depth -= 1
+            if depth == 0:
+                return text[first_comma + 1:i] if first_comma is not None else None
+        elif c == "," and depth == 1 and first_comma is None:
+            first_comma = i
+        i += 1
+    return None
+
+
+_CPT_CALL_START = re.compile(r"\bCPT\(")
+
+
+def _cpt_calls(rung_texts: list[str]) -> list[list[str]]:
+    """One entry per real CPT(...) call found across every rung, each the
+    ordered list of top-level operator tokens in that call's expression --
+    e.g. 'CPT(Dest,L0+L1*L2)' -> ['+', '*']. Nesting/parenthesization
+    doesn't change which operators are present (confirmed real 2026-08-25:
+    'CPT(Dest,L0+L1-L2*L3)' and 'CPT(Dest,(L0+L1)*(L2-L3))' cost
+    identically), so this deliberately ignores grouping and just collects
+    the flat operator-token stream."""
+    calls: list[list[str]] = []
+    for text in rung_texts:
+        for m in _CPT_CALL_START.finditer(text):
+            expr = _extract_cpt_expr(text, m.end())
+            if expr is None:
+                continue
+            calls.append(_CPT_OPERATOR_TOKEN.findall(expr))
+    return calls
+
 
 @dataclass(frozen=True)
 class RoutineLogic:
@@ -43,6 +100,12 @@ class RoutineLogic:
     # trivial (1-NOP-rung) target; a substantial JSR target routine's real
     # behavior is unconfirmed, see docs/MEMORY_MODEL.md.
     is_jsr_target: bool = False
+    # One entry per real CPT(...) call in this routine, each the ordered
+    # list of top-level operator tokens found in that call's expression --
+    # see _cpt_calls above. sizing/logic.py costs these individually
+    # instead of via the flat instruction_counts["CPT"] path (real data:
+    # CPT's cost is expression-complexity-dependent, OQ-CMPCPTLAYOUT).
+    cpt_calls: list[list[str]] = field(default_factory=list)
 
     @property
     def path(self) -> str:
@@ -105,6 +168,7 @@ def parse_rll_routines(root: ET.Element) -> list[RoutineLogic]:
                 rung_count=len(rung_texts),
                 instruction_counts=_count_instructions(rung_texts),
                 is_jsr_target=routine_name in program_jsr_targets,
+                cpt_calls=_cpt_calls(rung_texts),
             ))
 
     return routines

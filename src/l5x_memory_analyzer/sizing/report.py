@@ -26,6 +26,7 @@ from l5x_memory_analyzer.sizing.logic import compute_routine_logic_bytes
 from l5x_memory_analyzer.sizing.udt import (
     RecursiveUdtError,
     UnknownDataTypeError,
+    compute_aoi_definition_cost,
     compute_array_size,
     compute_udt_definition_cost,
     custom_string_maxlen,
@@ -74,7 +75,12 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # just ones reachable from a tag, was a real gap caught 2026-08-22 by
     # cross-checking predictions against every real udt-category manifest
     # row -- every *_def_only row was silently predicting 0.
-    referenced_udts: set[str] = set(udt_types)
+    # AOI definitions seeded in too, 2026-08-26 (OQ-AOIDEF wiring) -- every
+    # declared AOI, like every declared UDT, gets a definition-cost line
+    # even with 0 tag instances (same real "def_only, 0 instances still
+    # shows a nonzero Capacity delta" finding this seeding already exists
+    # for UDTs above).
+    referenced_udts: set[str] = set(udt_types) | set(aoi_types)
     for tag in tags:
         category = "controller_tag" if tag.scope == CONTROLLER_SCOPE else "program_tag"
         if tag.is_alias:
@@ -111,7 +117,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         elif tag.data_type in udt_types and udt_types[tag.data_type].is_string_family:
             basis = weakest(basis, model.string.custom_data_padding_confidence)
         sized.append((tag.path, category, tag.data_type, size, basis))
-        referenced_udts |= referenced_data_type_names(tag.data_type, udt_types)
+        referenced_udts |= referenced_data_type_names(tag.data_type, data_types)
 
     definition_entries: list[tuple[str, str, str, int, str]] = []
     for name in sorted(referenced_udts):
@@ -122,6 +128,17 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # ordinary UDTs and doesn't apply. Applying it here was a real bug
         # caught 2026-08-22 (every customstring_* real data point was
         # over-predicted by a spurious ~224-228 blocks).
+        if name in aoi_types:
+            # AOI definition cost, wired 2026-08-26 (OQ-AOIDEF) -- FITTED,
+            # not KNOWN, see memory_model.yaml aoi_definition for the real
+            # limitation (DINT-rate confirmed exact, BOOL/LINT-heavy AOIs
+            # under-predicted). Checked before the udt_types string-family
+            # branch below since an AOI name is never also a udt_types key.
+            def_bytes, def_basis = compute_aoi_definition_cost(name, data_types, model)
+            definition_entries.append((
+                f"udt_definitions/{name}", "udt_definition", name, def_bytes, def_basis,
+            ))
+            continue
         if udt_types[name].is_string_family:
             # Custom STRING types get their own one-time definition cost
             # instead (OQ-CUSTOMSTRINGDEF, resolved 2026-08-23) -- the

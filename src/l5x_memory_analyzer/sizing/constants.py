@@ -75,6 +75,16 @@ class AoiArrayModel:
 
 
 @dataclass(frozen=True)
+class AoiDefinitionModel:
+    base: int
+    per_declared_item: int
+    confidence: str
+
+    def bytes_for(self, declared_item_count: int) -> int:
+        return self.base + self.per_declared_item * declared_item_count
+
+
+@dataclass(frozen=True)
 class TagOverheadModel:
     flat_base: int
     per_8_chars: int
@@ -109,11 +119,43 @@ class UdtDefinitionModel:
 
 
 @dataclass(frozen=True)
+class CptExpressionModel:
+    base_read: int
+    operator_tier_costs: dict[str, int]
+    per_extra_same_tier_operand: int
+
+    def cost_for(self, operators: list[str]) -> int:
+        """Real per-call CPT cost from its expression's operator tokens
+        (OQ-CMPCPTLAYOUT, wired 2026-08-26) -- see memory_model.yaml
+        cpt_expression for the full derivation. A UNIFORM expression (every
+        operator the same tier -- covers plain chains like A+B+C+D, the
+        dominant real usage pattern) is exact: confirmed 0 residual across
+        the n=1 operand-count sweep (1-10 operands) AND the n=1000
+        chain-length sweep (3/4/5/6/8/10 operands), independently. A MIXED
+        expression (more than one distinct operator tier present, e.g.
+        A+B*C) falls back to a simple per-operator-tier sum -- a WEAK
+        approximation, not a confirmed one: off by only ~20 bytes/call on
+        2 simple 3-operator test points, but off by ~150 bytes/call on a
+        real 5-operator/3-tier/mixed-literal corpus expression. See
+        memory_model.yaml cpt_expression for the full derivation and why
+        this isn't patched further tonight (too few points to isolate
+        which factor drives the larger gap).
+        """
+        if not operators:
+            return self.base_read
+        tiers = [self.operator_tier_costs[op] for op in operators]
+        if len(set(tiers)) == 1:
+            return self.base_read + tiers[0] + self.per_extra_same_tier_operand * (len(operators) - 1)
+        return self.base_read + sum(tiers)
+
+
+@dataclass(frozen=True)
 class LogicInstructionModel:
     fixed_base_per_routine: int
     jsr_fixed_base_per_routine: int
     confidence: str
     weights: dict[str, int]
+    cpt_expression: CptExpressionModel
 
 
 @dataclass(frozen=True)
@@ -126,6 +168,7 @@ class MemoryModel:
     udt: UdtModel
     array: ArrayModel
     aoi_array: AoiArrayModel
+    aoi_definition: AoiDefinitionModel
     tag_overhead: TagOverheadModel
     alias_overhead: TagOverheadModel
     udt_definition: UdtDefinitionModel
@@ -194,6 +237,11 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             bool_word_extra=raw["aoi_array"]["bool_word_extra"],
             confidence=raw["aoi_array"]["confidence"],
         ),
+        aoi_definition=AoiDefinitionModel(
+            base=raw["aoi_definition"]["base"],
+            per_declared_item=raw["aoi_definition"]["per_declared_item"],
+            confidence=raw["aoi_definition"]["confidence"],
+        ),
         tag_overhead=TagOverheadModel(
             flat_base=raw["tag_overhead"]["flat_base"],
             per_8_chars=raw["tag_overhead"]["per_8_chars"],
@@ -216,5 +264,10 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             jsr_fixed_base_per_routine=raw["logic_instructions"]["jsr_fixed_base_per_routine"],
             confidence=raw["logic_instructions"]["confidence"],
             weights=dict(raw["logic_instructions"]["weights"]),
+            cpt_expression=CptExpressionModel(
+                base_read=raw["cpt_expression"]["base_read"],
+                operator_tier_costs=dict(raw["cpt_expression"]["operator_tier_costs"]),
+                per_extra_same_tier_operand=raw["cpt_expression"]["per_extra_same_tier_operand"],
+            ),
         ),
     )

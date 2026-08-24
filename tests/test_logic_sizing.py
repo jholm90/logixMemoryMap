@@ -176,3 +176,91 @@ def test_jsr_target_routine_not_double_counted():
     assert logic_entries[0].path == "program:MainProgram/MainRoutine"
     # jsr_fixed_base_per_routine(5096) + JSR's own weight(72)*1 = 5168
     assert logic_entries[0].bytes == 5096 + 72
+
+
+# ---------------------------------------------------------------------------
+# CPT expression-aware cost -- 2026-08-26, OQ-CMPCPTLAYOUT. CPT is
+# deliberately absent from the flat `weights` table now (real data: its
+# cost is expression-complexity-dependent, not a flat per-call constant);
+# these confirm the dedicated parser+cost_for path replaces it exactly.
+# ---------------------------------------------------------------------------
+
+def _one_rung_routine(rung_text: str):
+    xml = f"""
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test">
+        <DataTypes/>
+        <AddOnInstructionDefinitions/>
+        <Tags/>
+        <Programs>
+          <Program Name="MainProgram">
+            <Tags/>
+            <Routines>
+              <Routine Name="MainRoutine" Type="RLL">
+                <RLLContent>
+                  <Rung Number="0" Type="N"><Text><![CDATA[{rung_text}]]></Text></Rung>
+                </RLLContent>
+              </Routine>
+            </Routines>
+          </Program>
+        </Programs>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    root = ET.fromstring(xml)
+    return parse_rll_routines(root)[0]
+
+
+def test_cpt_parser_extracts_flat_operator_tokens():
+    routine = _one_rung_routine("CPT(Dest,L0+L1*L2);")
+    assert routine.cpt_calls == [["+", "*"]]
+
+
+def test_cpt_parser_handles_nested_parens_and_multiple_calls():
+    routine = _one_rung_routine("CPT(D1,(L0+L1)*(L2-L3))CPT(D2,L4);")
+    assert routine.cpt_calls == [["+", "*", "-"], []]
+
+
+def test_cpt_parser_recognizes_pow_and_word_mod():
+    routine = _one_rung_routine("CPT(Dest,L0**L1 MOD L2);")
+    assert routine.cpt_calls == [["**", "MOD"]]
+
+
+def test_cpt_bare_copy_costs_base_read_only():
+    routine = _one_rung_routine("CPT(Dest,L0);")
+    bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions)
+    assert bytes_ == MODEL.logic_instructions.fixed_base_per_routine + MODEL.logic_instructions.cpt_expression.base_read
+
+
+def test_cpt_uniform_chain_matches_confirmed_real_formula():
+    # cptcx_operandcount real data (n=1 rung, single ADD chain): confirmed
+    # exact base(88) + 36 (1st operator) + 24/extra operator thereafter.
+    model = MODEL.logic_instructions
+    cases = {
+        1: 0,        # bare copy, no operator -- handled by the base_read branch
+        2: 36,
+        3: 36 + 24,
+        4: 36 + 24 * 2,
+        6: 36 + 24 * 4,
+        10: 36 + 24 * 8,
+    }
+    for operand_count, expected_operator_cost in cases.items():
+        operators = ["+"] * (operand_count - 1)
+        assert model.cpt_expression.cost_for(operators) == 88 + expected_operator_cost
+
+
+def test_cpt_mixed_tier_falls_back_to_additive_sum():
+    model = MODEL.logic_instructions
+    # cptcx_operatormix_mixedops: L0+L1-L2*L3 -- real actual delta was 104,
+    # not the 88+36+36+52=212 (or 124 op-only) additive sum below; this
+    # documents the KNOWN, flagged-approximate behavior, not a claim it's
+    # exact (see memory_model.yaml cpt_expression's "Mixed-tier" note).
+    assert model.cpt_expression.cost_for(["+", "-", "*"]) == 88 + 36 + 36 + 52
+
+
+def test_cpt_costed_per_call_not_via_flat_weights_table():
+    assert "CPT" not in MODEL.logic_instructions.weights
+    routine = _one_rung_routine("CPT(Dest,L0+L1+L2);")
+    bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions)
+    # fixed_base_per_routine + base_read(88) + ADD tier(36) + 1 extra operand(24)
+    assert bytes_ == MODEL.logic_instructions.fixed_base_per_routine + 88 + 36 + 24

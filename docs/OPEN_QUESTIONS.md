@@ -487,6 +487,72 @@ generator already covers them, just waiting on the next capture batch.
    have real multi-point data for every operator that matters by real
    usage frequency except those four near-zero-use functions.
 
+   **RESOLVED (uniform case) / STILL OPEN (mixed case), 2026-08-26 — real
+   expression parser built and wired, per James's explicit top priority.**
+   `parser/logic.py` now extracts every real `CPT(...)` call's operator
+   tokens (a real balanced-paren scan, handles nested parens correctly —
+   not a naive regex to the first `)`); `sizing/logic.py`/
+   `CptExpressionModel` costs each call individually. The old flat-wrong
+   `CPT: 452` weight is REMOVED from `logic_instructions.weights` entirely.
+
+   Derivation, all via the clean n=10/n=100 method (see the large-file
+   anomaly note below for why NOT n=1000):
+   - `base_read` = 88 (bare `CPT(dest,tag)`, no operator).
+   - `operator_tier_costs`: ADD/SUB=36, MUL/DIV/MOD=52, POW=116 — each
+     confirmed flat at both n=10 and n=100, zero residual.
+   - `per_extra_same_tier_operand` = 24 — from the n=1
+     `cptcx_operandcount_n01..n10` sweep (single ADD chain, 1-10
+     operands): the 2nd operand costs the full tier rate (36), every
+     operand after that costs a flat 24. Cross-checked against the
+     SEPARATE n=1000 chain-length sweep (chain3/4/5/6/8/10): predicts
+     chain3/4/5/8/10 with ZERO residual; chain6 alone shows the -264
+     anomaly below, not a formula error.
+   - **Literal operands cost the SAME as tag operands** for integer
+     literals — confirmed byte-identical at n=10 and n=100
+     (`op_add_intliteral` vs `op_add`). The earlier "+264 for a literal
+     operand" note higher up in this same entry was a MISDIAGNOSIS of the
+     large-file anomaly below, not a real literal-operand effect —
+     corrected here.
+   - **The 264-block large-file anomaly recurs at n=1000** across
+     barecopy/ADD/SUB/MUL/DIV/POW (NOT MOD, and NOT chain3/4/5/8/10, only
+     chain6) — confirmed as exactly the gap between the clean
+     n=10/n=100-implied linear rate and the real n=1000 value, every
+     time. Still mechanistically unexplained, still small relative to
+     file size, not chased further — same unexplained family already
+     flagged elsewhere in this doc for other n=1000 file shapes.
+   - **Mixed-tier expressions are NOT well-modeled** by the additive-sum
+     fallback `cost_for()` uses when it sees more than one operator tier:
+     off by only ~20 bytes/call on 2 simple 3-operator real test points
+     (`cptcx_operatormix_mixedops`/`_nested`/`_powermix`), but off by
+     ~150 bytes/call on a real, more complex corpus expression
+     (`instr_cpt_n*`'s `(D0+D1)*R1-R2/2+1.5` — 5 operators across 3
+     tiers, a literal divisor, a float literal, REAL-typed operands, all
+     at once). That expression's real rate converges to ~452/rung at
+     large n — almost certainly the exact expression the OLD flat-452
+     constant was originally fit against, which is why the number just
+     proven wrong as a GENERAL constant is still suspiciously close to
+     correct for that one specific shape. Root cause not isolated (too
+     many stacked unknowns in 3 data points) — deliberately NOT patched
+     further tonight, to avoid repeating this session's earlier type-
+     name-length overfitting mistake (fit-then-revert). **Needs a
+     dedicated mixed-operator test batch**: a tier-pair sweep, a literal-
+     position isolation, and a REAL-vs-DINT operand cross-check, before
+     this branch earns the same trust the uniform case now has.
+   - **CMP's own compound-boolean-condition formula was NOT touched** —
+     while deriving this, `cmpcpt_cmp_single`'s real rate (~91.7/rung from
+     n=100→n=1000) doesn't match the existing wired standalone `CMP: 76`
+     weight. Whether these are the same real quantity measured two
+     inconsistent ways, or genuinely different CMP usage shapes, is
+     unresolved — its own follow-up, not rushed into tonight's fix.
+
+   Verified against 24 real manifest rows (bare copy + all 6 operators at
+   n=10/n=100/n=1000, all 6 chain lengths at n=1000, the n=1 operand-count
+   sweep, the int-literal check) via a live end-to-end `build_report()`
+   run against the actual generated `.L5X` files, not just unit-level
+   formula checks — 22/24 exact, 2/24 showing the already-understood -264
+   anomaly (not a formula defect). New tests in `tests/test_logic_sizing.py`
+   cover the parser extraction and the cost formula directly.
+
 7. **OQ-AOIDEF (new, 2026-08-23, MAJOR — real cost currently modeled as
    zero; DATA QUALITY WARNING added same day, see below before trusting
    any number in this entry). See `docs/AOI_KNOWLEDGE_MAP.md` for the full

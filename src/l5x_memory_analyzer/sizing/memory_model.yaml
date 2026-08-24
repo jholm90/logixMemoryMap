@@ -251,6 +251,41 @@ aoi_array:
   bool_word_extra: 4
   confidence: KNOWN
 
+# AOI *definition* cost (the AOI's own Parameters/LocalTags declaration,
+# separate from any tag that instantiates it) -- OQ-AOIDEF, wired 2026-08-26
+# after James's "fix this" push on Phase 2/2b's UI drill-down items. Real
+# data: the local-tag-count sweep (localcount_n01/02/04/08/16/32_def_only)
+# and the param-count sweep (paramcount_n01/02/04/08/16/32_def_only) each
+# landed on the IDENTICAL formula independently -- base+20*n, exact at
+# n=4/8/16/32 (n=1/2 sit a few blocks under, same small-N noise pattern
+# documented elsewhere in this project) -- strong agreement across two
+# independent axes for a single flat per-declared-item rate. base=1184
+# is relative to this engine's existing empty_project_baseline+fixed_base_
+# per_routine floor (18128 in both sweeps' own real Capacity readings).
+# declared_item_count = every Input/Output Parameter (InOut excluded, same
+# reference-not-storage convention as udt.py's own AOI-array member count)
+# plus every LocalTag, EXCLUDING the always-present EnableIn/EnableOut.
+#
+# CONFIDENCE IS FITTED, NOT KNOWN, DELIBERATELY -- both confirmed sweeps
+# used DINT-typed params/locals only. A separate real sweep (localtype_*/
+# paramtype_* in docs/OPEN_QUESTIONS.md OQ-AOIDEF) shows the per-item rate
+# genuinely varies by type -- BOOL/SINT tie below DINT's rate, LINT sits
+# above it -- not yet characterized into its own per-type table. This
+# formula will UNDER-predict a BOOL-heavy AOI and OVER-predict nothing
+# (DINT's rate is the confirmed middle of the observed range), so treat any
+# BOOL-Parameter-heavy AOI's definition cost as a floor, not a ceiling.
+# Also not yet folded in: AOI name length (real but non-uniform stepping,
+# not the clean 8*ceil(len/8) the UDT/tag_overhead formulas use) and BOOL
+# run/pack adjacency (real, sizable, position-sensitive effect -- see
+# OQ-AOIDEF's aoi_boolpack_* findings). Both stay real, open, unmodeled
+# gaps on top of this FITTED base -- don't read FITTED here as "close
+# enough for every AOI," it's specifically "confirmed exact for a
+# DINT/INT/REAL-parameter AOI, a real-but-partial floor for anything else."
+aoi_definition:
+  base: 1184
+  per_declared_item: 20
+  confidence: FITTED
+
 # Per-tag flat overhead: every top-level <Tag> entry (Controller/Tags or
 # Program/Tags) costs this ON TOP OF its own raw data size (from
 # atomic_types/predefined_structures/udt/array above) -- confirmed
@@ -355,12 +390,105 @@ udt_definition:
 # right total instead of over- or under-counting shared companions. Not
 # yet independently confirmed by real data at the composed level -- that's
 # exactly what gen_logic_random_mix.py's random-combination batch tests.
+# CPT's real cost, wired 2026-08-26 (OQ-CMPCPTLAYOUT, James's explicit
+# top priority) -- REPLACES the old flat "CPT: 452" weight, which was
+# proven wrong 2026-08-23 (fit against exactly one complex expression
+# shape from the original calibration sweep, not CPT's actual cost --
+# real data shows CPT's per-call cost is expression-complexity-dependent).
+# parser/logic.py now extracts each real CPT(...) call's operator tokens;
+# sizing/logic.py costs each call via CptExpressionModel.cost_for below
+# instead of the flat per-mnemonic weights table CPT used to sit in.
+#
+# Derivation, all from samples/manifest.csv cmpcpt_*/cptcx_* real data,
+# error_count=0 throughout:
+# - base_read (a bare "CPT(dest,tag)", no operator at all): 88/call.
+#   Solved from cmpcpt_cpt_barecopy's n=10/n=100 points (88.0/rung exact,
+#   both give the same fixed-baseline intercept) -- NOT from the n=1000
+#   point, which sits exactly 264 blocks below the n=10/n=100-implied
+#   linear extrapolation. That -264 gap recurs identically (same
+#   magnitude, only at n=1000) across several unrelated file shapes in
+#   this sweep -- a real, separate, still-unexplained large-file-size
+#   threshold effect (not a CPT-specific mechanism), NOT the true per-rung
+#   rate. n=10/n=100 are the clean, uncontaminated points.
+# - operator_tier_costs: ADD/SUB=36, MUL/DIV/MOD=52, POW=116 -- each
+#   confirmed via the SAME n=10/n=100 method on cmpcpt_cpt_op_{add,sub,
+#   mul,div,mod,pow}, all landing on a clean flat rate with zero residual
+#   at both count points (e.g. ADD: 124/rung both n=10->n=100 and matches
+#   88+36 exactly).
+# - per_extra_same_tier_operand: 24 -- from cptcx_operandcount_n01..n10
+#   (single-rung files, operand count 1-10, same ADD operator throughout):
+#   1st extra operand (1->2 operands) costs the full tier rate (36), EVERY
+#   operand after that costs a flat 24 (confirmed exact at every step
+#   2->3->4->5->6->8->10). Cross-checked against the n=1000 chain-length
+#   sweep (chain3/4/5/6/8/10): this formula predicts chain3/4/5/8/10 with
+#   ZERO residual; chain6 alone shows the same -264 large-file anomaly
+#   described above (not a formula error -- every OTHER chain length at
+#   the same n=1000 matches exactly).
+# - Literal operands (int): CONFIRMED to cost the SAME as a tag operand --
+#   op_add_intliteral vs op_add is byte-IDENTICAL at n=10 and n=100 (the
+#   apparent "+264 for a literal operand" in this project's older notes
+#   was a misdiagnosis of the same n=1000 large-file anomaly above, not a
+#   real literal-operand cost; corrected here).
+# - Float literals: NOT confirmed, deliberately excluded from this model.
+#   The only real float-literal data uses REAL-typed tag operands, not
+#   DINT, confounding "float literal cost" with "REAL operand-type cost"
+#   (OQ-OPERANDTYPE, separately real and separately unwired) -- no clean
+#   DINT-vs-DINT+float-literal comparison exists yet.
+# - Mixed-tier expressions (e.g. A+B*C, more than one distinct operator
+#   tier present): cost_for() falls back to a plain additive sum of each
+#   operator's own tier cost -- confirmed a WEAK approximation, not a
+#   trustworthy one, by 3 real data points spanning a wide complexity
+#   range:
+#     * cptcx_operatormix_mixedops/_nested (L0+L1-L2*L3, 3 operators,
+#       2 tiers): additive sum over-predicts by 20 bytes/call (small).
+#     * cptcx_operatormix_powermix (L0**L1+L2**L3, 3 operators, 2 tiers):
+#       additive sum over-predicts by 20 bytes/call too (same magnitude,
+#       consistent at least with itself).
+#     * instr_cpt_n* real corpus expression ((D0+D1)*R1-R2/2+1.5, 5
+#       operators across 3 tiers, REAL-typed operands, a literal divisor,
+#       and a float literal all at once): additive sum (300/call) UNDER-
+#       predicts the real ~452/call rate by ~150 bytes/call -- this is
+#       almost certainly the exact expression the OLD flat-452 constant
+#       was originally fit against (explains the suspicious near-exact
+#       match to the very number this whole rewrite replaced). A 150-byte
+#       miss on a 5-operator/3-tier/mixed-literal/REAL-operand expression
+#       is a real, large gap, not noise.
+#   Root cause not isolated: this one expression stacks several untested
+#   interactions at once (multi-tier mixing, a literal in a non-leading
+#   position, REAL-typed operands per the separate open OQ-OPERANDTYPE,
+#   and a float literal) -- no way from 3 data points to tell which
+#   factor(s) drive the 150-byte gap. Deliberately NOT patched by fitting
+#   a 4th constant to this one point -- that would repeat the exact
+#   mistake this project already caught and reverted once this session
+#   (a formula fit to too few points that broke on the fuller dataset).
+#   Needs a dedicated mixed-operator test batch (tier-pair sweep, isolate
+#   literal position, isolate REAL-vs-DINT) before this branch can be
+#   trusted the way the uniform case now is. Treat any CPT-heavy real
+#   program with genuinely mixed-tier expressions as still ESTIMATED in
+#   the loosest sense -- the uniform case is the one that earned "exact."
+# - CMP's own compound-condition cost (AND/OR/duplicate boolean
+#   conditions) is a DIFFERENT token set (comparison + boolean operators,
+#   not arithmetic) and is deliberately NOT touched by this change --
+#   CMP's existing flat weight below has its own unresolved inconsistency
+#   found while deriving this (the compound-condition real rate doesn't
+#   match the existing flat CMP weight), flagged separately in
+#   OPEN_QUESTIONS.md rather than rushed into this fix.
+cpt_expression:
+  base_read: 88
+  operator_tier_costs:
+    "+": 36
+    "-": 36
+    "*": 52
+    "/": 52
+    MOD: 52
+    "**": 116
+  per_extra_same_tier_operand: 24
+
 logic_instructions:
   fixed_base_per_routine: 4816
   jsr_fixed_base_per_routine: 5096  # JSR's routine also declares the target subroutine
   confidence: FITTED
   weights:
-    CPT: 452
     ABS: 120
     XPY: 116
     CONCAT: 104

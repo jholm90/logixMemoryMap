@@ -227,6 +227,24 @@ answers below.**
 
 ## Where this leaves the "100% accuracy" goal
 
+**2026-08-26 update: both unknown #1 (definition cost) and the BOOL-array-
+packing mechanism are now WIRED into `memory_model.yaml`, closing the
+"nothing wired yet" gap the 2026-08-25 update below still had.**
+BOOL-array-packing: `aoi_array` (flat_discount=4, bool_word_size=32,
+bool_word_extra=4), confidence KNOWN — confirmed across 4 member counts,
+see RESOLVED (this doc's own earlier sections). Definition cost:
+`aoi_definition` (base=1184, per_declared_item=20), confidence FITTED, NOT
+KNOWN — confirmed exact on 2 independent axes (local-tag count, param
+count) but DINT-rate only; a real localtype/paramtype sweep already shows
+BOOL/LINT cost differently (unmodeled), so every AOI's definition-cost
+number is now a real, non-zero, DINT-confirmed FLOOR rather than the
+previous silent zero — an honest improvement, not a claim of exactness for
+every AOI. Both are also now drillable in the UI (`sizing/tree.py`'s
+`expand_definition_children`, James's Phase 2/2b "locals+params breakdown"
+ask). Still tangled/unresolved: AOI name length, BOOL run/pack adjacency at
+the definition level, and non-DINT parameter types — see OPEN_QUESTIONS.md
+OQ-AOIDEF for the live detail, this doc stays the high-level map.
+
 **2026-08-25 update: real progress, not there yet.** BOOL-array-packing
 (unknown #2) now has a clean, zero-residual formula (`124 - 4×bool_count`)
 confirmed at 8 real data points and a refuted competing hypothesis — the

@@ -27,6 +27,7 @@ from l5x_memory_analyzer.sizing.report import build_report
 from l5x_memory_analyzer.sizing.tree import (
     NotDrillableError,
     expand_children,
+    expand_definition_children,
     resolve_type_at_path,
 )
 from l5x_memory_analyzer.sizing.udt import RecursiveUdtError, UnknownDataTypeError
@@ -126,6 +127,32 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
 
         tag_path = request.args.get("tag", "")
         subpath = request.args.get("path", "")
+
+        # A "Type Definitions" pool node (path "udt_definitions/<Name>") is
+        # not a tag instance -- drill into its own cost breakdown instead
+        # (James, 2026-08-26: locals+params breakdown for a defs-pool node).
+        # Always exactly one level deep, no further subpath to resolve.
+        if tag_path.startswith("udt_definitions/"):
+            def_name = tag_path[len("udt_definitions/"):]
+            if def_name not in state.data_types:
+                return jsonify({"error": f"unknown type definition {def_name!r}"}), 404
+            if subpath:
+                return jsonify({"error": "type definition breakdown has no further nested path"}), 400
+            children = expand_definition_children(def_name, state.data_types, state.model)
+            return jsonify({
+                "children": [
+                    {
+                        "name": c.name,
+                        "segment": c.segment,
+                        "data_type": c.data_type,
+                        "value": c.bytes,
+                        "basis": c.basis,
+                        "has_children": c.has_children,
+                    }
+                    for c in children
+                ]
+            })
+
         if tag_path not in state.tag_index:
             return jsonify({"error": f"unknown tag path {tag_path!r}"}), 404
 

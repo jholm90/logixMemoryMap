@@ -3,7 +3,8 @@
 Checkbox per phase from PROJECT_PLAN.md. Keep granular enough that each item is
 a single commit-sized unit of work.
 
-Legend: ✅ done — 🔴 open
+Legend: ✅ done — 🟡 partially resolved (real, confirmed piece landed; a
+genuinely separate remaining piece stays open, not just paperwork) — 🔴 open
 
 ## Phase 0 — Setup
 - ✅ Decide stack (OQ-STACK) — parser language, UI framework
@@ -80,11 +81,15 @@ just "code compiles," actually rendered and clicked through.
 - ✅ Treemap component (squarified algorithm, hand-rolled in
       `ui/static/app.js` — no D3/external lib)
 - ✅ Root view: controller tags / program tags (per program), sized by bytes
-- 🔴 UDT defs pool / module overhead as their own root-level groups — not
-      built. A UDT still only appears sized-in-place at each tag that uses
-      it, no separate "all UDT definitions" browsable pool. Module overhead
-      has nothing to show yet regardless (Module/IO parser still
-      unimplemented, see Phase 1).
+- ✅ **UDT/AOI defs pool as its own root-level group.** Was already built
+      (`hierarchy.py`'s `NON_TAG_GROUPS`, 2026-08-23) but stale-flagged
+      here as "not built" -- verified live via `build_hierarchy()` against
+      a real generated file, group renders correctly. AOI definitions
+      weren't appearing in it (report.py never emitted a definition entry
+      for them) until 2026-08-26's OQ-AOIDEF wiring, now fixed alongside
+      the drill-down item below. Module overhead still has nothing to
+      show (Module/IO parser still unimplemented, Phase 1) -- genuinely
+      unrelated to this item, stays 🔴, tracked separately.
 - ✅ Click-to-drill: program → its tags (drilling into a "Program: X" group
       node shows that program's tags)
 - ✅ **Click-to-drill: infinite depth, down to individual BOOL bits and
@@ -157,15 +162,40 @@ just "code compiles," actually rendered and clicked through.
       excluded (reference, not storage). Nested AOI-in-AOI recurses with the
       same cycle detection as nested UDTs. Dropped sizing-engine error rate
       on the real corpus from 29.5% → 8.8%.
-- 🔴 UI: click-to-drill into an AOI defs pool node → locals+params breakdown
-      — still not built, same report-contract gap as the UDT-member-drill
-      item in Phase 2 (no member-level entries in the flat SizeEntry list yet)
-- 🔴 AOI instance multiplication for inline/anonymous instances with no
-      backing tag (if Logix even permits that) — still needs call-site count
-      from logic parse, still a Phase 1/4 dependency (OQ-AOIINSTANCE,
-      narrowed 2026-08-20 — real sample data didn't turn up an example of
-      this actually happening, worth checking whether it's even possible
-      before investing more here)
+- ✅ **UI: click-to-drill into a UDT/AOI defs pool node → locals+params
+      breakdown — BUILT 2026-08-26.** `sizing/tree.py`'s new
+      `expand_definition_children()` breaks a definition's flat cost
+      formula (base + per-member/per-item + name-length [+ bool-run
+      bonus]) into one row per declared member/param/local plus flat
+      overhead rows, wired through a new `/api/node` branch keyed on the
+      `udt_definitions/<Name>` path (not a tag instance) and `app.js`'s
+      `annotateTagPaths` generalized to every root group, not just the two
+      tag-scope ones. Verified end-to-end via the real Flask app
+      (`test_client`) against 2 real generated files (a plain UDT and an
+      AOI) — children sum back exactly to the parent defs-pool node's own
+      value in both cases. AOI definitions needed OQ-AOIDEF actually wired
+      first (below) to have anything real to drill into.
+- ✅ **AOI definition cost — WIRED 2026-08-26 (OQ-AOIDEF), FITTED not
+      KNOWN.** `sizing/udt.py`'s `compute_aoi_definition_cost()`: base
+      1184 + 20/declared Input-Output-param-or-LocalTag (InOut and
+      EnableIn/EnableOut excluded). Confirmed exact against 2 independent
+      real sweeps (local-tag count, param count) that land on the
+      identical formula — but DINT-rate only; real data shows BOOL/LINT
+      cost differently (unmodeled), so this is a confirmed floor for
+      those, not an exact number. See memory_model.yaml `aoi_definition`
+      for the full derivation and limitation.
+- ✅ **AOI instance multiplication for inline/anonymous instances —
+      RESOLVED 2026-08-26, real corpus evidence, not built (correctly).**
+      Scripted a check across all 83 real files in `samples/local/`: 6,075
+      real AOI call sites found across 191 distinct AOI definitions, and
+      6,075/6,075 (100%) have a plain tag-like first argument (including
+      cross-program `\Program.Tag`-style references) — zero anonymous/
+      inline instances with no backing tag. Confirms OQ-AOIINSTANCE's
+      2026-08-20 narrowing: this scenario doesn't occur in practice (and
+      is very likely not legal Logix syntax at all — an AOI instance
+      always needs a declared backing Tag, same as a UDT instance). Not
+      worth building speculative call-site-count logic for something with
+      zero real occurrences in a real, sizeable corpus.
 
 ## Phase 3 — Sample validation round 1 — **CLOSED 2026-08-24**
 
@@ -361,11 +391,29 @@ that's the actual remaining Phase 4/4b implementation work.
 - ✅ Timer instructions (TON/TOF/RTO) at scale — no CTU/CTD-heavy usage seen
       but include CTU (25 real uses; CTD had zero, low priority) — all
       CONFIRMED, 0.00% residual, see docs/INSTRUCTION_COVERAGE.md
-- 🔴 Math/compare instructions (MOV/EQU/ADD/NEQ/GRT/MUL/GEQ/LES/SUB/LIM/LEQ/
+- 🟡 Math/compare instructions (MOV/EQU/ADD/NEQ/GRT/MUL/GEQ/LES/SUB/LIM/LEQ/
       DIV/CPT with expression length variation) — by far the highest-volume
       category after bit logic (5,000+ real uses combined). **Everything
-      except CPT is CONFIRMED** (0.00% residual) — CPT alone is WRONG, see
-      OQ-CMPCPTLAYOUT, kept open until CPT gets a real per-operand model.
+      except CPT is CONFIRMED** (0.00% residual). **CPT: real per-operand
+      expression parser BUILT AND WIRED 2026-08-26** (parser/logic.py
+      extracts each CPT call's operator tokens, sizing/logic.py costs them
+      via `CptExpressionModel`, replacing the old flat-wrong 452/rung).
+      The UNIFORM case (every operator in one expression the same tier --
+      plain chains like A+B+C+D, the dominant real usage pattern) is
+      CONFIRMED exact: 0 residual verified live against 24 real manifest
+      rows spanning bare-copy/ADD/SUB/MUL/DIV/MOD/POW at n=10/100/1000 and
+      chain lengths 3/4/5/6/8/10. The MIXED case (more than one operator
+      tier in one expression, e.g. A+B*C) still falls back to a real-but-
+      approximate additive sum — off by only ~20 bytes/call on 2 simple
+      test points but off by ~150 bytes/call on a real 5-operator/3-tier
+      corpus expression (likely the exact expression the old flat-452 was
+      originally fit against). Not patched further — 3 data points can't
+      isolate which of several stacked factors (tier mixing, literal
+      position, REAL vs DINT operands) drives that gap; needs a dedicated
+      mixed-operator test batch. See OQ-CMPCPTLAYOUT for the full
+      derivation. CMP's own compound-boolean-condition cost is untouched,
+      separately flagged (a real inconsistency was found against CMP's
+      existing flat weight while deriving this, not yet investigated).
       Also newly caveated 2026-08-25: all of these were only fit against
       DINT/LINT/REAL operands — SINT/INT/STRING operands cost substantially
       more (OQ-OPERANDTYPE), not yet wired.

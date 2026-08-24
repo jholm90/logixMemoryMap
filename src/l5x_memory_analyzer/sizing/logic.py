@@ -23,4 +23,12 @@ def compute_routine_logic_bytes(routine: RoutineLogic, model: LogicInstructionMo
         if weight is not None:
             total += weight * count
 
+    # CPT costed per-call from its own expression's operators, not the flat
+    # per-mnemonic weights table above (OQ-CMPCPTLAYOUT, real data: CPT's
+    # cost is expression-complexity-dependent) -- see memory_model.yaml
+    # cpt_expression for the derivation. "CPT" is deliberately absent from
+    # `weights` now, so the loop above never double-counts it.
+    for operators in routine.cpt_calls:
+        total += model.cpt_expression.cost_for(operators)
+
     return total, model.confidence

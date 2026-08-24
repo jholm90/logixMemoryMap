@@ -55,7 +55,12 @@ def build_hierarchy(
         if e.category in NON_TAG_GROUPS:
             group_name = NON_TAG_GROUPS[e.category]
             name = e.data_type
-            kids = False
+            # udt_definition entries ARE drillable now (2026-08-26, /api/node's
+            # "udt_definitions/<Name>" branch) -- locals+params/members
+            # breakdown of the definition's own cost, see sizing/tree.py's
+            # expand_definition_children. project_baseline has no breakdown
+            # (data_types lookup would miss it entirely, correctly false).
+            kids = e.category == "udt_definition" and data_types is not None and name in data_types
         else:
             scope, name = _scope_and_name(e.path)
             group_name = "Controller Tags" if scope == CONTROLLER_SCOPE else f"Program: {scope.split(':', 1)[1]}"

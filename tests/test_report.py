@@ -63,12 +63,23 @@ def test_alias_tags_size_not_error():
     # weakest remaining link for this AOI instance.
     assert aoi_instance.basis == "ASSUMED"
 
+    # AOI *definition* cost (2026-08-26, OQ-AOIDEF wiring) -- separate line
+    # item from the instance above, one per declared AOI regardless of
+    # instance count. fbDebounce's only counted declared item is DebTmr
+    # (EnableIn excluded by name, RawTag excluded already at parse time
+    # since it's InOut): base(1184) + 20*1.
+    aoi_def = by_path["udt_definitions/fbDebounce"]
+    assert aoi_def.bytes == 1184 + 20
+    assert aoi_def.basis == "FITTED"
+
     # total now also includes the project_baseline entry (2026-08-23,
     # empty_project_baseline) -- present on every real report, not just
     # this fixture's 3 sized tags.
     baseline = by_path["project_baseline"]
     assert baseline.bytes == MODEL.empty_project_baseline_bytes
-    grand_total = real_dint.bytes + timer.bytes + aoi_instance.bytes + alias.bytes + baseline.bytes
+    grand_total = (
+        real_dint.bytes + timer.bytes + aoi_instance.bytes + alias.bytes + aoi_def.bytes + baseline.bytes
+    )
     assert real_dint.pct_of_total == (real_dint.bytes / grand_total) * 100
 
 
