@@ -382,26 +382,21 @@ that's the actual remaining Phase 4/4b implementation work.
       zero.** Every real error class from this batch is now either fixed
       in the generator or explained by the stale-ACD-cache bug pending
       James's reconversion — nothing needs a brand new hand-built sample.
-- 🔴 **Re-capture genuine title-bar mismatch rows from the same batch.**
-      6 rows still flagged in manifest.csv `notes` as `WINDOW TITLE
-      MISMATCH` (real ones, not the false-positive extension-matching bug
-      already fixed): `paramcount_n04_def_only`, `paramcount_n08_def_only`,
-      `array_dint_00001`, `array_dint_00002`, `array_dint_00005`,
-      `udttagcomment_len000` (this last one's captured title was literally
-      "Snap Assist" — a Windows OS element, so focus was fully off Logix
-      Designer for that capture). Confirm this is the complete/correct
-      list with James, then wipe just those rows for re-capture, not the
-      whole batch.
-- 🔴 **Re-run `batch_l5x_to_acd.ps1` + `batch_memory_capture.ps1` for
-      CPS/COP/FLL/BTD (21 rows), SIZE (5 rows), xic_ote_1000 (2 rows),
-      LBL-JMP (5 rows), and CMP compound (3 rows)** — all 36 rows had
-      their manifest actual_bytes/error data cleared pending re-capture
-      against the now-fixed L5X sources. Also picks up a second fix in
-      `batch_l5x_to_acd.ps1` (James, 2026-08-22: "you will need to append
-      V2 onto the ACD files you are regenerating as youre probably not
-      overwriting them") — added an explicit delete of the old `.ACD`
-      before every reconversion, since it was never verified that
-      `l5xgit` itself overwrites an existing destination file.
+- ✅ **Re-capture genuine title-bar mismatch rows from the same batch —
+      DONE, stale marker (2026-08-26 audit).** All 6 flagged rows
+      (`paramcount_n04_def_only`, `paramcount_n08_def_only`,
+      `array_dint_00001/00002/00005`, `udttagcomment_len000`) now have
+      real `actual_bytes` in manifest.csv with clean (empty) `notes` —
+      the auto-retry fix in `batch_memory_capture.ps1` (CLAUDE.md's
+      "Window-title-mismatch retries are automatic" section) picked
+      these up on a later run.
+- ✅ **Re-run `batch_l5x_to_acd.ps1` + `batch_memory_capture.ps1` for
+      CPS/COP/FLL/BTD/SIZE/xic_ote_1000/LBL-JMP/CMP compound — DONE,
+      stale marker (2026-08-26 audit).** All 39 matched manifest rows
+      (`instr_cps*`, `instr_cop*`, `instr_fll*`, `instr_btd*`,
+      `instr_size*`, `xic_ote_1000*`, `lbljmp*`/`instr_lbl*`/`instr_jmp*`,
+      `cmp_compound*`) now carry real `actual_bytes` — 0 rows still
+      missing capture data.
 - ✅ Timer instructions (TON/TOF/RTO) at scale — no CTU/CTD-heavy usage seen
       but include CTU (25 real uses; CTD had zero, low priority) — all
       CONFIRMED, 0.00% residual, see docs/INSTRUCTION_COVERAGE.md

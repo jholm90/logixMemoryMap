@@ -1172,6 +1172,36 @@ generator already covers them, just waiting on the next capture batch.
     rushed in during this pass given the interaction risk with JSR
     routines.
 
+    **2026-08-26, James: "why am i having to push you to generate up
+    these open things" — attempted the actual wiring this pass, not just
+    re-deferred.** Live-recomputed the current (unmodified) engine
+    against `taskoverhead_n02routines_1program_1task` directly: it
+    predicts 22,960 (project_baseline + 2×fixed_base_per_routine +
+    2×NOP's own 16/rung, since BOTH of that file's routines carry their
+    own default NOP rung) against real actual 18,416 — a −4,544 gap. But
+    the "18,112" 1-routine reference this whole decomposition subtracts
+    against (see the RESOLVED analysis above) is NOT a real captured row
+    — grepped `manifest.csv` for `actual_bytes=18112`, no match — it's a
+    pure arithmetic construct (`project_baseline+fixed_base_per_routine`,
+    a theoretical ZERO-rung single routine). Subtracting a 0-rung
+    reference from a real file whose BOTH routines carry their own NOP
+    rung conflates two different things inside the same "+304": genuine
+    routine-shell structural cost, and 2×NOP's own real content cost —
+    and NOP's rate has itself only ever been backed out from a single
+    occurrence (see item 2's `group_empty_rungs` note below), not
+    confirmed independently. Wiring a formula on top of an ambiguous
+    split would risk shipping something subtly wrong across every multi-
+    routine file's prediction from then on — worse than leaving it
+    undocumented. **Not a re-deferral for its own sake: the real missing
+    piece is a clean NOP-rate data point**, and `gen_branch_empty_rungs.py`
+    (generated this same pass, see Phase 4 TASKS.md audit) happens to be
+    exactly that — a dedicated NOP-only rung count sweep (N=10/100/1000,
+    same 1 program/1 task) that will pin NOP's real marginal rate down
+    independently. Once that lands, the true routine-shell-only constant
+    (with NOP's contribution cleanly subtracted back out) can be derived
+    and wired in one more pass, same as the string-formula pattern this
+    session already used successfully elsewhere.
+
 12. **OQ-INDIRECT — Indirect addressing overhead [captured 2026-08-25, real findings,
     NOT yet decomposed into weights].** `gen_indirect_addressing.py` —
     direct vs. tag-driven array index, plus (James: "Does tag[idx+1] take
