@@ -2216,8 +2216,66 @@ generator already covers them, just waiting on the next capture batch.
     still no literal "PowerFlex 700" catalog anywhere in the 63-file real
     corpus (confirmed again this pass) -- it's a discontinued line;
     PowerFlex 755 remains the real modern-equivalent stand-in already
-    built. If James has an actual real PF700 export, upload it and it gets
-    used directly instead of guessed at.
+    built. **James confirmed 2026-08-27: PF755 IS what he meant by "700" --
+    resolved, no further action.**
+
+    **Full coverage audit + Kinetix full-bus test, 2026-08-27, third batch
+    same day.** James: "Please confirm you are going to 100% test every io
+    module you found in a separate file... you know there are lots of
+    kinetix 5700 modules in the sample code so be sure to test all of
+    those catalog numbers. You have seen how full bus systems compile
+    there (all axis in motion group with bus power groups etc..)."
+    Audited every distinct real CatalogNumber across the full 63-file
+    corpus against gen_module_sweep.py + gen_module_sweep_variants.py +
+    gen_module_motion.py + gen_module_vfd.py: **118 of 119 real catalogs
+    already individually covered** (all 13 real 2198-series Kinetix 5700
+    catalogs included -- turns out the general per-catalog sweep already
+    swept every motion/VFD catalog too, not just the 3 James originally
+    uploaded samples for). One real gap found and closed:
+    `gen_module_sweep_gap.py` -- "150 SMC Flex-E" (a 150-series soft
+    starter, DPI port type, missed because the original sweep never
+    walked drive/starter peripherals). **Individual per-catalog coverage
+    is now 119/119.**
+
+    New real finding building the Kinetix bus test: a Kinetix power supply
+    module gets its OWN AXIS_CIP_DRIVE tag too (a "bus power" axis, e.g.
+    real `Bus1_GNT_Power`, MotionModule="<power supply>:Ch1") -- confirmed
+    verbatim from DnR_Personal/Bender134053_201104.L5X, same real
+    `<Data Format="Axis"><AxisParameters.../></Data>` shape already
+    validated for a normal drive axis (OQ-AXISDEEP) -- not a smaller or
+    different shape, same real AXIS_CIP_DRIVE tag, just pointed at a power
+    supply instead of a drive. `gen_module_kinetix_bus.py` extracts the
+    WHOLE real 2-bus, 5-module, 8-axis subgraph from that one file
+    verbatim (2198-P031+2198-D032-ERS3 dual-axis on bus 1,
+    2198-P070+2198-D057-ERS3+2198-D020-ERS3 dual-axis on bus 2, all in one
+    real Motion Group) -- module XML reused from the sweep dicts, axis
+    tags reused from gen_module_motion.py's validated `_axis_tag` helper.
+    Lint-clean, 0 sizing crashes, 0 regressions.
+
+    **"Test all the I/O in one file" -- real complication found, not yet
+    built, flagged rather than rushed.** A literal single L5X containing
+    every one of the 119 catalogs at its own real shape hits a genuine
+    Rockwell hardware ceiling for the ~21 catalogs whose real shape is
+    `ParentModule="Local"`/`Type="ICP"` (the local-backplane shape): a
+    real ControlLogix chassis holds at most 16 I/O slots (17 total minus
+    the CPU's own slot) -- there is only ONE "Local" per controller, so
+    more than 16 of these literally cannot coexist as real local-chassis
+    members in one file, full stop, not a modeling choice. Separately, most
+    of the other ~85 catalogs' own sweep XML already embeds ITS OWN real
+    parent adapter/bridge chain (e.g. every 1734- catalog's block carries
+    its own 1734-AENTR/C) -- naively concatenating many of those into one
+    file would create duplicate adapter modules with colliding addresses,
+    exactly the kind of mistake this session's rack-integrity check (see
+    above) was built to catch. Doing this correctly needs the same
+    careful per-catalog chain-deduplication already done by hand for
+    `gen_module_rack_pointio.py` -- worth doing, but deliberately not
+    rushed under time pressure into something that could reintroduce a
+    real topology bug. Flagged here as real next work, not silently
+    skipped.
+
+    **File count, this message's ask:** 140 files now in
+    `samples/generated/modules/` (targeting >100 -- met). 0 lint findings,
+    0 sizing crashes across the full 1,250-file generated corpus.
 
     **Original entry below, kept for history.** James's own methodology, applied directly: compare a
     module's auto-generated "Module-Defined" data type (raw member-sum of
