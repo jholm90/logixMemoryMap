@@ -49,6 +49,16 @@ class StringModel:
 
 
 @dataclass(frozen=True)
+class StringArrayModel:
+    builtin_confidence: str
+    builtin_array_base: int
+    builtin_per_element: int
+    custom_confidence: str
+    custom_array_base: int
+    custom_per_element: int
+
+
+@dataclass(frozen=True)
 class PredefinedArrayStructure:
     base: int
     per_element: int
@@ -199,6 +209,7 @@ class MemoryModel:
     predefined_array_structures: dict[str, PredefinedArrayStructure]
     bool: BoolModel
     string: StringModel
+    string_array: StringArrayModel
     udt: UdtModel
     array: ArrayModel
     aoi_array: AoiArrayModel
@@ -259,6 +270,14 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             custom_data_padding_multiple=s["custom_data_padding_multiple"],
             custom_mod4eq1_definition_bonus=s["custom_mod4eq1_definition_bonus"],
             custom_data_padding_confidence=s["custom_data_padding_confidence"],
+        ),
+        string_array=StringArrayModel(
+            builtin_confidence=raw["string_array"]["builtin_confidence"],
+            builtin_array_base=raw["string_array"]["builtin_array_base"],
+            builtin_per_element=raw["string_array"]["builtin_per_element"],
+            custom_confidence=raw["string_array"]["custom_confidence"],
+            custom_array_base=raw["string_array"]["custom_array_base"],
+            custom_per_element=raw["string_array"]["custom_per_element"],
         ),
         udt=UdtModel(alignment_confidence=raw["udt"]["alignment_confidence"]),
         array=ArrayModel(

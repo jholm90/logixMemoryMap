@@ -74,9 +74,34 @@ def compute_array_size(
         struct = model.predefined_array_structures[data_type]
         return struct.base + struct.per_element * element_count, struct.confidence
 
+    if data_type == "STRING":
+        # Array-of-builtin-STRING: a DIFFERENT real mechanism from a
+        # scalar STRING tag (OQ-STRINGARRAYPAD, confirmed 2026-08-26) --
+        # array elements do NOT get the scalar tag's -2/tag benefit, and
+        # instead carry their own flat one-time array_base PLUS a real
+        # per-element surcharge on top of the ordinary N x (LEN+DATA)
+        # size. See memory_model.yaml string_array for the derivation
+        # (6/6 real count points exact, zero residual).
+        element_bytes, element_confidence = compute_element_size(data_type, data_types, model, _stack)
+        sa = model.string_array
+        total = sa.builtin_array_base + (element_bytes + sa.builtin_per_element) * element_count
+        return total, weakest(element_confidence, sa.builtin_confidence)
+
     element_bytes, element_confidence = compute_element_size(
         data_type, data_types, model, _stack
     )
+    if data_type in data_types and data_types[data_type].is_string_family:
+        # Array-of-custom-string: same real "different from scalar"
+        # mechanism as builtin STRING above, different confirmed rate
+        # (4/element vs 2/element) -- see memory_model.yaml string_array.
+        # custom_array_base is FITTED, not KNOWN: real data shows it's
+        # type-name-length-dependent (an already-separately-flagged, still
+        # -open effect on the custom-string scalar definition cost too),
+        # so this is confirmed exact for the specific type name it was
+        # fit against, a good approximation for others.
+        sa = model.string_array
+        total = sa.custom_array_base + (element_bytes + sa.custom_per_element) * element_count
+        return total, weakest(element_confidence, sa.custom_confidence)
     if data_type in data_types and data_types[data_type].is_aoi:
         # Array-of-AOI-instances: a real, DIFFERENT formula from plain
         # array-of-UDT below -- confirmed 2026-08-26, see memory_model.yaml

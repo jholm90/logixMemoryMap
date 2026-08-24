@@ -1170,6 +1170,22 @@ generator already covers them, just waiting on the next capture batch.
       `gen_string_closure.py`'s `group_typename_length` (6 files, short/
       medium/long type names at the same maxlen) isolates it directly —
       generated 2026-08-25, awaiting capture.
+
+      **2026-08-26, that batch's data landed: -8 at 1 char, 0 at 9 char,
+      +24 at 32 char.** Confirms the residual is real (not noise, def_only
+      and 1_instance shapes track identically, i.e. it's purely a
+      DEFINITION-level effect) but 3 sparse points still don't fit any
+      clean formula tried — a `ceil`/`floor`-per-8-chars step function
+      predicts nonzero deltas for the already-confirmed flat-0 6/7/14-char
+      names, directly contradicted by real data. James, 2026-08-26: "I
+      want to close strings." `gen_string_close_out.py`'s
+      `group_dense_namelen` (22 files, every integer length 1-16 plus
+      20/24/28/32/36/40, def_only only — def_only and 1_instance were
+      already shown to track identically at this same 3-point sweep, so
+      testing def_only alone isn't a shortcut) is built specifically to
+      find where the -8→0 and 0→+24 transitions actually sit, lint-clean,
+      awaiting capture. Not wired — no formula to wire yet, this batch
+      exists to produce one.
     - **Array-of-STRING** (both builtin and custom): see new
       OQ-STRINGARRAYPAD below — split out as its own question since it's
       a structurally different case (Decorated array, not the scalar
@@ -1201,6 +1217,26 @@ generator already covers them, just waiting on the next capture batch.
       Do not treat array-of-STRING as closed until this lands — it is the
       one piece of "strings as a whole" genuinely still open.
 
+    **RESOLVED 2026-08-26, wired.** All 6 count points landed clean per
+    variant (builtin: n=1/5/10/25/50/100; custom100: n=1/5/10/25/50/100
+    across 2 type names). Real formula, confirmed exact:
+    `total = array_base + (scalar_element_size + per_element) * n`.
+    Builtin: `array_base=6, per_element=2` — KNOWN, 6/6 real points exact,
+    zero residual. Custom: `per_element=4` — KNOWN, 6/6 points exact
+    across BOTH type names tested (11-char and 13-char, same slope both
+    times). `array_base` for custom is FITTED not KNOWN — it's real but
+    type-name-length-dependent (the 2 type names gave array_base=4 and
+    =12, a consistent +8 gap that lines up with the same still-open
+    type-name-length effect on the scalar definition cost below); wired
+    using the better-supported 13-char name's value (12, backed by 4
+    points vs the other's 2). Wired in `udt.py`'s `compute_array_size`
+    (new `STRING`/`is_string_family` branches before the generic atomic/
+    array-of-UDT fallback) and `memory_model.yaml`'s new `string_array`
+    section. Live-verified against all 12 real manifest rows: 10/12
+    exact, 2/12 (the 11-char-name family) show the expected, already-
+    documented ~8-byte type-name-length gap — not a bug, the honest
+    predicted consequence of using the better-supported name's intercept.
+
 14c. **OQ-STRINGUDTMEMBER (tracked separately, mostly a capture-queue
     issue not a formula gap).** STRING (builtin and custom) as a UDT
     member (`udtstring_builtin_n01/n10`, `udtstring_custom100_n01/n10`,
@@ -1211,6 +1247,35 @@ generator already covers them, just waiting on the next capture batch.
     needed. Only `udtstring_builtin_n10` has real usable data
     (delta=-20, single point, unexplained) — too little to fit anything
     yet. Revisit once the retried rows land.
+
+    **2026-08-26, all 4 rows now have real data, real findings, NOT
+    wired — two separate real effects, not yet closeable.**
+    - **Builtin STRING as a UDT member**: `n01`=-2, `n10`=-20 — a real
+      slope of exactly -2/instance, matching the confirmed scalar
+      `builtin_tag_overhead_correction` (-2) precisely. Strong evidence
+      this correction should apply once per builtin-STRING-member-
+      containing tag INSTANCE, not only to standalone STRING-typed tags
+      — but only 2 count points exist and no test yet separates "per tag
+      instance" from "per STRING member" (a UDT with 2+ STRING members
+      is untested).
+    - **Custom100 (16-char type name "CStrUdtMember100") as a UDT
+      member**: `n01`=+8, `n10`=+8 — FLAT, not growing, so a one-time
+      definition-level effect, not per-instance. Could be the SAME
+      already-known type-name-length effect (16 chars is untested on the
+      standalone curve, which only has points at 1/9/32 chars) showing
+      up here, or a genuinely separate UDT-nesting tax — can't tell from
+      one data point which.
+    - **`gen_string_close_out.py` built 2026-08-26** to resolve both:
+      `group_builtin_udtmember_scaling` (n=3/n=20 count points, plus 2-
+      and 3-STRING-member UDTs at n=1, isolating per-instance vs per-
+      member), `group_udtmember_namelen_crosscheck` (the exact 3 type
+      names already tested standalone — 1/9/32 chars — reused as UDT
+      members, so a direct comparison reveals whether nesting adds
+      anything beyond name length), `group_udtmember_maxlen_sweep` (a
+      fixed short, flat-0-zone type name at maxlen 50/250/500/1000, to
+      see if the nesting residual — if group B confirms one exists at
+      all — depends on the string's own size). 11 files total, lint-
+      clean, in the manifest, awaiting capture.
 
 14d. **OQ-STRINGCONSTFAIL — RESOLVED 2026-08-26, real cause was tooling,
     not the L5X content; the processor-varying design itself was

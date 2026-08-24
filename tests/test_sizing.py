@@ -182,3 +182,31 @@ def test_self_referential_udt_raises():
     )
     with pytest.raises(RecursiveUdtError):
         size("Bad", data_types={"Bad": bad})
+
+
+# ---------------------------------------------------------------------------
+# Array-of-STRING -- 2026-08-26, OQ-STRINGARRAYPAD. A different real
+# mechanism from a scalar STRING tag (no -2/tag benefit for array
+# elements, but a real additive array_base + per-element surcharge
+# instead). Values match the confirmed real formula in memory_model.yaml
+# string_array exactly (6/6 and 4/4 real manifest rows verified live).
+# ---------------------------------------------------------------------------
+
+def test_builtin_string_array_matches_confirmed_real_formula():
+    # total = array_base(6) + (86 + per_element(2)) * n
+    assert size("STRING", (1,)) == (6 + 88 * 1, "KNOWN")
+    assert size("STRING", (5,)) == (6 + 88 * 5, "KNOWN")
+    assert size("STRING", (100,)) == (6 + 88 * 100, "KNOWN")
+
+
+def test_custom_string_array_matches_confirmed_real_formula():
+    string100 = DataTypeDef(
+        name="CStrArrCsTest", family="StringFamily",
+        members=[Member(name="LEN", data_type="DINT", dimension=0), Member(name="DATA", data_type="SINT", dimension=100)],
+    )
+    data_types = {"CStrArrCsTest": string100}
+    # scalar element = LEN(4) + DATA(100 rounds DOWN to 96, exact mod-8
+    # tie per the nearest-8 padding rule) = 100. total = array_base(12) +
+    # (100 + per_element(4)) * n
+    assert size("CStrArrCsTest", (1,), data_types=data_types) == (12 + 104 * 1, "FITTED")
+    assert size("CStrArrCsTest", (100,), data_types=data_types) == (12 + 104 * 100, "FITTED")

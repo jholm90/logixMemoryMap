@@ -201,6 +201,37 @@ string:
   # 9/9 real data points fit exactly with zero residual.
   custom_data_padding_confidence: KNOWN
 
+# Array-of-STRING (OQ-STRINGARRAYPAD, wired 2026-08-26, James: "I want
+# strings as a whole closed"). A DIFFERENT real mechanism from the scalar
+# case above -- array elements do NOT get the scalar tag's -2/tag benefit,
+# and instead carry their own real, additive, per-element AND one-time
+# array-level cost on top of the already-correct N x (scalar element size).
+#
+# Builtin STRING array: CONFIRMED KNOWN, 6/6 real count points (n=1/5/10/
+# 25/50/100) exactly fit `array_base(6) + per_element(2) * n` with ZERO
+# residual at every single point -- as clean a fit as any formula in this
+# project.
+#
+# Custom-string array: per-element rate CONFIRMED KNOWN at 4/element --
+# 6/6 real points across TWO different type names (11-char "CStrArrTest"
+# and 13-char "CStrArrCsTest", both maxlen=100) land on the identical
+# slope=4/rung with zero variance. The ONE-TIME array_base term is FITTED
+# not KNOWN and genuinely type-name-length-dependent -- the two type names
+# above give array_base=4 and =12 respectively (a consistent flat +8 gap
+# between them, same order of magnitude as the already-documented, still-
+# unresolved custom-string type-NAME-length effect on the scalar
+# definition cost, see the `string:` block above). custom_array_base below
+# uses the 13-char name's value (12) since it's backed by 4 real points
+# vs the 11-char name's 2 -- expect a real, small (~8-byte), name-length-
+# dependent residual for other type names until that axis is closed too.
+string_array:
+  builtin_confidence: KNOWN
+  builtin_array_base: 6
+  builtin_per_element: 2
+  custom_confidence: FITTED
+  custom_array_base: 12
+  custom_per_element: 4
+
 udt:
   # No alignment/padding between members -- tight packing, declared order.
   # Confirmed 2026-08-22 (OQ-ALIGN, RESOLVED_QUESTIONS.md): James's own
