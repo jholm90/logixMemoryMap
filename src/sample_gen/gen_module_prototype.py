@@ -341,7 +341,7 @@ def group_ethernet_bridge_with_downstream() -> None:
         target_name="ModuleProto3EN2T", tags_xml="", extra_modules_xml=_EN2T_WITH_DOWNSTREAM_MODULE_XML
     )
     _write_unmodeled(
-        l5x, "moduleproto_1756en2t_with_downstream_ia16",
+        l5x, "moduleproto_en2t_downstream_ia16",
         "1756-EN2T (\"local ethernet card\", off the 1756-L81E's own embedded Ethernet port) hosting a "
         "real 4-slot remote chassis (Bus Size=4, matching a real 1756-A4) with exactly ONE downstream "
         "module actually populated (slot 1: a 1756-IA16 AC input) -- genericized from real corpus "
