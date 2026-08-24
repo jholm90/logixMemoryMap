@@ -164,6 +164,20 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # doesn't reveal how Logix compiles rungs, this is a fitted heuristic
     # model, not a formula derived from first principles). ST routines are
     # skipped entirely by parse_rll_routines, not estimated as if RLL.
+    # Bare tag name -> DataType, for the operand-type surcharge
+    # (OQ-OPERANDTYPE) to resolve a type-sensitive instruction's operands
+    # against. Deliberately GLOBAL (controller-scope + every program's
+    # tags merged by bare name, last one wins on a collision) rather than
+    # scoped per-routine's own program -- a real simplification, not
+    # something confirmed safe: two different programs each declaring
+    # their own same-named tag of different types would resolve to
+    # whichever one this dict saw last, not necessarily the one the
+    # routine doing the actual instruction call can see. None of this
+    # project's real calibration data exercises that collision, so it's
+    # untested territory, not a guessed-away one -- flagged here rather
+    # than silently assumed correct.
+    tag_types = {t.name: t.data_type for t in tags if t.data_type}
+
     logic_entries: list[tuple[str, str, str, int, str]] = []
     for routine in parse_rll_routines(root):
         if routine.is_jsr_target:
@@ -173,7 +187,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             # is_jsr_target's docstring. Emitting a separate entry here
             # would double-count it.
             continue
-        logic_bytes, logic_basis = compute_routine_logic_bytes(routine, model.logic_instructions)
+        logic_bytes, logic_basis = compute_routine_logic_bytes(routine, model.logic_instructions, tag_types)
         logic_entries.append((routine.path, "routine_logic", "RLL", logic_bytes, logic_basis))
 
     # Fixed per-project overhead (controller/module/task/program scaffolding)

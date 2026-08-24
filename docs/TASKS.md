@@ -409,14 +409,30 @@ that's the actual remaining Phase 4/4b implementation work.
       corpus expression (likely the exact expression the old flat-452 was
       originally fit against). Not patched further — 3 data points can't
       isolate which of several stacked factors (tier mixing, literal
-      position, REAL vs DINT operands) drives that gap; needs a dedicated
-      mixed-operator test batch. See OQ-CMPCPTLAYOUT for the full
-      derivation. CMP's own compound-boolean-condition cost is untouched,
-      separately flagged (a real inconsistency was found against CMP's
-      existing flat weight while deriving this, not yet investigated).
-      Also newly caveated 2026-08-25: all of these were only fit against
-      DINT/LINT/REAL operands — SINT/INT/STRING operands cost substantially
-      more (OQ-OPERANDTYPE), not yet wired.
+      position, REAL vs DINT operands) drives that gap; `gen_cpt_mixed_
+      operators.py` (33 files, James 2026-08-26: "mix up to 15 operands
+      per expression as needed") built to isolate each factor
+      independently — pairwise tier mixing (both orders), operand-count
+      scaling to 15, all-3-tier mixes, literal position, REAL-vs-DINT
+      cross-check, a stacked-factors ladder rebuilding the exact
+      problematic expression one factor at a time, and a 15-operand
+      rung-count linearity check. Lint-clean, awaiting capture. See
+      OQ-CMPCPTLAYOUT for the full derivation.
+      **CMP's own weight — RESOLVED 2026-08-26: the earlier "inconsistency"
+      was a manual-arithmetic error, not a real bug.** Live-recomputed:
+      `CMP: 76` is exact for a single condition. A real, previously-
+      unwired COMPOUND-condition surcharge (+64/rung, KNOWN, exact at both
+      n=100/n=1000) and FLOAT-literal surcharge (+72/rung, FITTED, single
+      point) are now wired and verified (9/10 real rows exact, 1/10 hits
+      the separate known large-file anomaly).
+      **OQ-OPERANDTYPE — RESOLVED 2026-08-26, wired.** All 13 type-
+      sensitive instructions (ADD/SUB/MUL/DIV/MOD/EQU/GEQ/GRT/LEQ/LES/NEQ/
+      MOV/LIM) now apply a real SINT/INT/REAL/STRING surcharge on top of
+      their DINT-rate base weight, derived from the already-captured
+      typesweep_* corpus (69 rows). FITTED (single count point per
+      type, no linearity cross-check like CPT got) — verified live:
+      67/67 real rows land on the identical tiny +5 baseline noise once
+      the surcharge is applied (was off by 88-164/rung before).
 - ✅ **Motion instructions (MAM/MAS/MAJ/MAH/MSO/MSF/MDW/MAW/MASR/MAFR) and
       cam/route (DCS/CROUT)** — NOT in original scope, added after real data
       showed ~90 real uses across 12 distinct instructions; James: "we use
@@ -455,13 +471,12 @@ that's the actual remaining Phase 4/4b implementation work.
       not ASCII-module instructions specifically (zero of those seen) — all
       CONFIRMED. (TRUNC has 0 real corpus occurrences, never separately
       tested — flagged, not a gap in practice.)
-- 🔴 Indirect addressing overhead (compare direct vs indirect same logic) —
-      real data captured and RE-CONFIRMED 2026-08-25 with 4 count points
-      each (tag-driven index: exactly 84/rung, arithmetic-offset tag-driven
-      index: exactly 108/rung, both perfectly linear at every interval
-      tested) but still not wired — needs the logic parser to detect
-      indirect-addressing syntax in operand text, real architecture work,
-      not a constant edit. See OQ-INDIRECT in OPEN_QUESTIONS.md.
+- ✅ **Indirect addressing overhead — WIRED 2026-08-26.** Parser scans rung
+      text for `Name[...]` brackets, classifies direct/literal (0 cost),
+      tag-driven (+84/rung), or tag+literal-offset (+108/rung). KNOWN
+      confidence — verified live against all 8 real manifest rows (both
+      variants × n=10/50/100/1000): every one lands on the identical tiny
+      +4 baseline noise. See OQ-INDIRECT in OPEN_QUESTIONS.md.
 - 🔴 JSR/subroutine call overhead (call site cost vs routine body cost,
       separate these two numbers) — 238 real JSR uses, matters. JSR's own
       flat weight (72/rung) is CONFIRMED and wired. The SBR/RET generator
@@ -478,9 +493,10 @@ that's the actual remaining Phase 4/4b implementation work.
       weight resolved (48/rung), operand's own MESSAGE-structure tag cost
       still unmodeled (separate, tracked item).
 - 🔴 Consolidate full instruction-weight table into MEMORY_MODEL.md — table
-      exists and is kept current, but the OQ-OPERANDTYPE/OQ-JSRPARAMCOST
-      caveats mean it isn't a single clean flat-weight-per-instruction table
-      anymore; revisit once those land.
+      exists and is kept current, but the OQ-JSRPARAMCOST caveat (still
+      open) means it isn't a single clean flat-weight-per-instruction
+      table yet; OQ-OPERANDTYPE resolved 2026-08-26, no longer blocking
+      this. Revisit once JSR param cost lands.
 - 🔴 Hold out 3-5 samples, validate fitted model against them, log residual
 
 ## Phase 5 — UI v2 (logic browsing)

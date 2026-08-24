@@ -484,6 +484,100 @@ cpt_expression:
     "**": 116
   per_extra_same_tier_operand: 24
 
+# Operand-type surcharge (OQ-OPERANDTYPE, wired 2026-08-26, James: "touch
+# these and finalize them now"). Every weight in `logic_instructions.
+# weights` below was fit against DINT-operand sweeps -- real data
+# (typesweep_<instr>_<type>_n01000, 69 real captures, error_count=0,
+# matched shape/tag-count per instruction) shows SINT/INT/REAL/STRING
+# operands genuinely cost more (or, for LIM+REAL, slightly less) than
+# DINT. LINT ties DINT exactly everywhere tested (0 surcharge, omitted).
+# Derivation: live-recomputed each typesweep file's delta against the
+# CURRENT engine (predicted using the base DINT-rate weight), divided by
+# the file's 1000-rung count -- e.g. ADD+SINT: delta=132,005 at n=1000 ->
+# 132/rung surcharge (the leftover +5 is the same tiny flat cross-file
+# baseline noise seen elsewhere in this project, not per-rung).
+#
+# CONFIDENCE IS FITTED, NOT KNOWN -- unlike CPT's operator tiers (each
+# cross-validated at n=10/n=100/n=1000), every number here comes from a
+# SINGLE count point (n=1000 only). The round, clean values (multiples of
+# 4, matching this project's usual "blocks" quantization) are a good sign,
+# but linearity itself is assumed, not independently confirmed the way
+# CPT's was. Needs a 2nd count point per instruction/type before this
+# earns KNOWN.
+#
+# Application (sizing/logic.py): resolves EACH type-sensitive call's
+# operands against the tag table; if a bare-tag operand resolves to a
+# type with a nonzero entry below, that surcharge is added ONCE per call
+# on top of the call's normal weights[mnemonic] base cost. Deliberately
+# does NOT attempt to resolve a member-access ("Tag.Member"), array-index
+# ("Tag[0]"), or literal operand's type -- none of those appear in the
+# calibration data (every typesweep_* file uses bare bare-tag operands of
+# one uniform type throughout the call), so guessing their behavior would
+# violate this project's rule against inventing untested Rockwell
+# behavior. A call with an unresolvable or mixed-type operand set falls
+# back to the existing DINT-rate weight, same as before this change --
+# an honest "don't know" rather than a wrong guess.
+operand_type_surcharge:
+  confidence: FITTED
+  surcharges:
+    ADD: {SINT: 132, INT: 156, REAL: 16}
+    SUB: {SINT: 132, INT: 156, REAL: 16}
+    MUL: {SINT: 132, INT: 156, REAL: 0}
+    DIV: {SINT: 132, INT: 156, REAL: 0}
+    MOD: {SINT: 132, INT: 156, REAL: 0}
+    EQU: {SINT: 88, INT: 112, REAL: 0, STRING: 52}
+    GEQ: {SINT: 88, INT: 112, REAL: 16}
+    GRT: {SINT: 88, INT: 112, REAL: 16}
+    LEQ: {SINT: 88, INT: 112, REAL: 16}
+    LES: {SINT: 88, INT: 112, REAL: 16}
+    NEQ: {SINT: 88, INT: 112, REAL: 0, STRING: 52}
+    MOV: {SINT: 92, INT: 104, REAL: 24}
+    LIM: {SINT: 128, INT: 164, REAL: -8}
+
+# Indirect (tag-driven) array-index cost (OQ-INDIRECT, wired 2026-08-26).
+# CONFIRMED KNOWN -- 4 real count points each (10/50/100/1000 rungs),
+# every single one exact once the same tiny universal +4 flat baseline
+# noise seen elsewhere in this tag pool is set aside (direct_index's own
+# n=1000 point shows the identical +4, confirming it's unrelated to
+# indexing at all): tag_index_cost solved exactly from n=10/n=1000
+# (84/rung, F=4) and independently reproduces n=50/n=100 with zero
+# residual; tag_offset_index_cost the same way (108/rung, F=4). A direct/
+# literal index ("Arr[5]") costs nothing extra -- confirmed via
+# indirect_direct_index_n01000's own flat +4 (identical noise, no growth).
+indirect_index:
+  confidence: KNOWN
+  tag_index_cost: 84
+  tag_offset_index_cost: 108
+
+# CMP's own surcharges (wired 2026-08-26). The existing flat CMP:76 below
+# is CONFIRMED EXACT for a single simple condition -- live-recomputed
+# against the current engine: cmpcpt_cmp_single_n00100 delta=0, n01000
+# delta=-264 (the same already-understood large-file anomaly seen
+# elsewhere, not a formula error). The "CMP's compound-condition rate
+# doesn't match its own wired weight" note from an earlier pass was a
+# manual-arithmetic error on this project's part, not a real
+# inconsistency -- corrected here, CMP:76 stays as-is.
+#
+# COMPOUND condition (2+ clauses via && or ||): +64/rung, CONFIRMED KNOWN
+# -- exact at BOTH n=100 (delta=6400/100=64) and n=1000 (delta=64000/1000
+# =64), zero residual at either point (no large-file anomaly here,
+# unlike the single-condition case above -- genuinely doesn't always
+# recur). AND/OR/a duplicated clause all cost the identical +64, so this
+# doesn't distinguish which logical connective, just "more than one
+# clause." Only ever tested with exactly 2 clauses/1 connective -- 3+
+# clauses is untested, not assumed to scale the same way.
+#
+# FLOAT-literal comparison: +72/rung, FITTED not KNOWN -- only one count
+# point (n=1000). An int-literal comparison costs nothing extra (matches
+# CPT's own int-literal finding). Applied ADDITIVELY with the compound
+# surcharge if a call has both -- never actually tested together, an
+# assumption, not a confirmed combination.
+cmp_surcharge:
+  compound_confidence: KNOWN
+  compound_cost: 64
+  float_literal_confidence: FITTED
+  float_literal_cost: 72
+
 logic_instructions:
   fixed_base_per_routine: 4816
   jsr_fixed_base_per_routine: 5096  # JSR's routine also declares the target subroutine

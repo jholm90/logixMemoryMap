@@ -150,12 +150,46 @@ class CptExpressionModel:
 
 
 @dataclass(frozen=True)
+class OperandTypeSurchargeModel:
+    confidence: str
+    surcharges: dict[str, dict[str, int]]  # instruction -> {atomic_type: extra bytes/call}
+
+    def surcharge_for(self, mnemonic: str, atomic_type: str) -> int:
+        return self.surcharges.get(mnemonic, {}).get(atomic_type, 0)
+
+
+@dataclass(frozen=True)
+class IndirectIndexModel:
+    confidence: str
+    tag_index_cost: int
+    tag_offset_index_cost: int
+
+    def cost_for(self, kind: str) -> int:
+        if kind == "tag":
+            return self.tag_index_cost
+        if kind == "tag_offset":
+            return self.tag_offset_index_cost
+        return 0
+
+
+@dataclass(frozen=True)
+class CmpSurchargeModel:
+    compound_confidence: str
+    compound_cost: int
+    float_literal_confidence: str
+    float_literal_cost: int
+
+
+@dataclass(frozen=True)
 class LogicInstructionModel:
     fixed_base_per_routine: int
     jsr_fixed_base_per_routine: int
     confidence: str
     weights: dict[str, int]
     cpt_expression: CptExpressionModel
+    operand_type_surcharge: OperandTypeSurchargeModel
+    indirect_index: IndirectIndexModel
+    cmp_surcharge: CmpSurchargeModel
 
 
 @dataclass(frozen=True)
@@ -268,6 +302,24 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 base_read=raw["cpt_expression"]["base_read"],
                 operator_tier_costs=dict(raw["cpt_expression"]["operator_tier_costs"]),
                 per_extra_same_tier_operand=raw["cpt_expression"]["per_extra_same_tier_operand"],
+            ),
+            operand_type_surcharge=OperandTypeSurchargeModel(
+                confidence=raw["operand_type_surcharge"]["confidence"],
+                surcharges={
+                    instr: dict(types)
+                    for instr, types in raw["operand_type_surcharge"]["surcharges"].items()
+                },
+            ),
+            indirect_index=IndirectIndexModel(
+                confidence=raw["indirect_index"]["confidence"],
+                tag_index_cost=raw["indirect_index"]["tag_index_cost"],
+                tag_offset_index_cost=raw["indirect_index"]["tag_offset_index_cost"],
+            ),
+            cmp_surcharge=CmpSurchargeModel(
+                compound_confidence=raw["cmp_surcharge"]["compound_confidence"],
+                compound_cost=raw["cmp_surcharge"]["compound_cost"],
+                float_literal_confidence=raw["cmp_surcharge"]["float_literal_confidence"],
+                float_literal_cost=raw["cmp_surcharge"]["float_literal_cost"],
             ),
         ),
     )

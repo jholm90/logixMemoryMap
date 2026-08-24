@@ -264,3 +264,150 @@ def test_cpt_costed_per_call_not_via_flat_weights_table():
     bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions)
     # fixed_base_per_routine + base_read(88) + ADD tier(36) + 1 extra operand(24)
     assert bytes_ == MODEL.logic_instructions.fixed_base_per_routine + 88 + 36 + 24
+
+
+# ---------------------------------------------------------------------------
+# Operand-type surcharge -- 2026-08-26, OQ-OPERANDTYPE. Confirmed via the
+# real typesweep_* corpus (69 captures, error_count=0): SINT/INT/REAL/
+# STRING operands cost more than DINT/LINT for a wide instruction set.
+# ---------------------------------------------------------------------------
+
+def test_parser_extracts_typed_call_operands():
+    routine = _one_rung_routine("ADD(TD0,TD1,TD2);")
+    assert routine.typed_calls == [("ADD", ["TD0", "TD1", "TD2"])]
+
+
+def test_typed_call_still_counted_in_instruction_counts_too():
+    routine = _one_rung_routine("ADD(TD0,TD1,TD2);")
+    assert routine.instruction_counts == {"ADD": 1}
+
+
+def test_operand_type_surcharge_applies_on_top_of_base_weight():
+    routine = _one_rung_routine("ADD(TS0,TS1,TS2);")
+    tag_types = {"TS0": "SINT", "TS1": "SINT", "TS2": "SINT"}
+    bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions, tag_types)
+    # fixed_base + ADD's base DINT-rate weight(40) + SINT surcharge(132)
+    add_weight = MODEL.logic_instructions.weights["ADD"]
+    assert bytes_ == MODEL.logic_instructions.fixed_base_per_routine + add_weight + 132
+
+
+def test_operand_type_surcharge_zero_for_dint_and_lint():
+    routine_dint = _one_rung_routine("ADD(TD0,TD1,TD2);")
+    routine_lint = _one_rung_routine("ADD(TL0,TL1,TL2);")
+    tag_types = {"TD0": "DINT", "TD1": "DINT", "TD2": "DINT", "TL0": "LINT", "TL1": "LINT", "TL2": "LINT"}
+    dint_bytes, _ = compute_routine_logic_bytes(routine_dint, MODEL.logic_instructions, tag_types)
+    lint_bytes, _ = compute_routine_logic_bytes(routine_lint, MODEL.logic_instructions, tag_types)
+    assert dint_bytes == lint_bytes == MODEL.logic_instructions.fixed_base_per_routine + MODEL.logic_instructions.weights["ADD"]
+
+
+def test_operand_type_surcharge_no_tag_types_is_a_noop():
+    # No tag_types supplied (default None) -- same behavior as before this
+    # feature existed, not a crash.
+    routine = _one_rung_routine("ADD(TS0,TS1,TS2);")
+    bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions)
+    assert bytes_ == MODEL.logic_instructions.fixed_base_per_routine + MODEL.logic_instructions.weights["ADD"]
+
+
+def test_operand_type_surcharge_ignores_member_and_array_operands():
+    # Neither "Udt.Member" nor "Arr[0]" is a bare tag -- deliberately NOT
+    # resolved (see memory_model.yaml operand_type_surcharge), falls back
+    # to the base DINT-rate weight rather than guessing.
+    routine = _one_rung_routine("ADD(Udt.Member,Arr[0],Dest);")
+    tag_types = {"Udt": "SomeUdt", "Arr": "SINT", "Dest": "DINT"}
+    bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions, tag_types)
+    assert bytes_ == MODEL.logic_instructions.fixed_base_per_routine + MODEL.logic_instructions.weights["ADD"]
+
+
+def test_operand_type_surcharge_string_and_lim_negative_real():
+    # EQU+STRING and LIM+REAL are the two "unusual" real data points: a
+    # STRING-specific surcharge, and the only case where a non-DINT type
+    # costs LESS than DINT, not more.
+    equ_routine = _one_rung_routine("EQU(TS0,TS1);")
+    lim_routine = _one_rung_routine("LIM(TR0,TR1,TR2);")
+    equ_bytes, _ = compute_routine_logic_bytes(
+        equ_routine, MODEL.logic_instructions, {"TS0": "STRING", "TS1": "STRING"}
+    )
+    lim_bytes, _ = compute_routine_logic_bytes(
+        lim_routine, MODEL.logic_instructions, {"TR0": "REAL", "TR1": "REAL", "TR2": "REAL"}
+    )
+    assert equ_bytes == MODEL.logic_instructions.fixed_base_per_routine + MODEL.logic_instructions.weights["EQU"] + 52
+    assert lim_bytes == MODEL.logic_instructions.fixed_base_per_routine + MODEL.logic_instructions.weights["LIM"] - 8
+
+
+# ---------------------------------------------------------------------------
+# Indirect (tag-driven) array-index cost -- 2026-08-26, OQ-INDIRECT.
+# Confirmed KNOWN: exact across 4 real count points (10/50/100/1000) each
+# for a plain tag index and a tag+literal-offset index.
+# ---------------------------------------------------------------------------
+
+def test_direct_literal_index_costs_nothing_extra():
+    routine = _one_rung_routine("MOV(Arr[5],Dest);")
+    assert routine.indirect_index_kinds == []
+    bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions)
+    assert bytes_ == MODEL.logic_instructions.fixed_base_per_routine + MODEL.logic_instructions.weights["MOV"]
+
+
+def test_tag_driven_index_parsed_and_costed():
+    routine = _one_rung_routine("MOV(Arr[Idx],Dest);")
+    assert routine.indirect_index_kinds == ["tag"]
+    bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions)
+    assert bytes_ == MODEL.logic_instructions.fixed_base_per_routine + MODEL.logic_instructions.weights["MOV"] + 84
+
+
+def test_tag_driven_offset_index_parsed_and_costed():
+    routine = _one_rung_routine("MOV(Arr[Idx+1],Dest);")
+    assert routine.indirect_index_kinds == ["tag_offset"]
+    bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions)
+    assert bytes_ == MODEL.logic_instructions.fixed_base_per_routine + MODEL.logic_instructions.weights["MOV"] + 108
+
+
+def test_unresolvable_index_shape_costs_nothing_not_guessed():
+    # Two tags inside the bracket -- not a shape any real capture confirms,
+    # deliberately left uncosted rather than guessed at.
+    routine = _one_rung_routine("MOV(Arr[Idx+Offset],Dest);")
+    assert routine.indirect_index_kinds == []
+
+
+# ---------------------------------------------------------------------------
+# CMP compound-condition/float-literal surcharge -- 2026-08-26. CMP:76
+# confirmed exact for a single condition; compound (&&/||) and float-
+# literal conditions cost real, additional, previously-unwired amounts.
+# ---------------------------------------------------------------------------
+
+def test_cmp_single_condition_costs_base_weight_only():
+    routine = _one_rung_routine("CMP(L0>L1)OTE(TB0);")
+    assert routine.cmp_calls == [(False, False)]
+    bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions)
+    ote_weight = MODEL.logic_instructions.weights["OTE"]
+    cmp_weight = MODEL.logic_instructions.weights["CMP"]
+    assert cmp_weight == 76
+    assert bytes_ == MODEL.logic_instructions.fixed_base_per_routine + cmp_weight + ote_weight
+
+
+def test_cmp_compound_condition_adds_surcharge():
+    for expr in ["L0>L1&&(L2<L3)", "L0>L1||(L2<L3)", "L0>L1&&(L0>L1)"]:
+        routine = _one_rung_routine(f"CMP({expr})OTE(TB0);")
+        assert routine.cmp_calls == [(True, False)]
+        bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions)
+        base = (
+            MODEL.logic_instructions.fixed_base_per_routine
+            + MODEL.logic_instructions.weights["CMP"]
+            + MODEL.logic_instructions.weights["OTE"]
+        )
+        assert bytes_ == base + 64
+
+
+def test_cmp_float_literal_adds_surcharge_int_literal_does_not():
+    float_routine = _one_rung_routine("CMP(L0>5.5)OTE(TB0);")
+    int_routine = _one_rung_routine("CMP(L0>5)OTE(TB0);")
+    assert float_routine.cmp_calls == [(False, True)]
+    assert int_routine.cmp_calls == [(False, False)]
+    base = (
+        MODEL.logic_instructions.fixed_base_per_routine
+        + MODEL.logic_instructions.weights["CMP"]
+        + MODEL.logic_instructions.weights["OTE"]
+    )
+    float_bytes, _ = compute_routine_logic_bytes(float_routine, MODEL.logic_instructions)
+    int_bytes, _ = compute_routine_logic_bytes(int_routine, MODEL.logic_instructions)
+    assert float_bytes == base + 72
+    assert int_bytes == base

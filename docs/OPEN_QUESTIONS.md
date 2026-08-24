@@ -819,6 +819,13 @@ generator already covers them, just waiting on the next capture batch.
    just the earlier MCCP citation). Needs a real count sweep (e.g.
    1/5/10/20/50 CAM elements) before any byte formula is wired.
 
+   **2026-08-26, sweep built (James: "touch these and finalize them
+   now").** `gen_cam_sweep.py` -- 5 files, 1/5/10/20/50 CAM elements,
+   `write_sample_unmodeled` (predicted_bytes=0, honest -- there's still no
+   formula to predict with), lint-clean, in the manifest, awaiting
+   capture. This is the concrete next step the entry above already named;
+   nothing to analyze until real Capacity numbers land for these 5.
+
    **MESSAGE — James, 2026-08-25: "Message size is fine for the 90%
    accuracy as it's not a common usage instruction." Deprioritized —
    the research below stays as real, useful background, but no MESSAGE
@@ -983,6 +990,44 @@ generator already covers them, just waiting on the next capture batch.
     (if small) architecture task, not a one-line constant fix. Left open
     deliberately rather than rush-wired.
 
+    **2026-08-26, James: "touch these and finalize them now."** Real
+    progress, still genuinely not closeable tonight -- here's exactly why,
+    not a deferral for its own sake. `taskoverhead_n04tasks` (4th data
+    point) and `programoverhead_n02progs_1task` (2 Programs, SAME single
+    Task) landed since the note above was written. Live-recomputed
+    against the current engine:
+    - **Per-Task axis: cleanly isolated, real, single clean comparison.**
+      `taskoverhead_n02tasks` (2 tasks/2 programs/2 routines, actual
+      19,600) minus `programoverhead_n02progs_1task` (1 task/2 programs/2
+      routines, actual 18,900) holds program AND routine count IDENTICAL
+      between the two files, varying ONLY task count — a real, isolated
+      +700/extra-task marginal cost, not confounded with anything else.
+    - **Per-Program axis: still NOT isolated from per-routine-within-a-
+      program** -- every real file to date, including the two new ones,
+      has program count and routine count moving together (every extra
+      Program in this batch always brought exactly one extra Routine with
+      it). There is still no real data point with 2 Routines under 1
+      Program under 1 Task to break that tie. Extrapolating the n=3/n=4
+      totals against the isolated +700/task rate leaves a small (+/-16 to
+      32 blocks) residual too, consistent with a real, small, separate
+      per-periodic-Task config cost not yet isolated either -- flagged
+      honestly rather than folded into either number.
+    - **Why this can't be code-wired tonight regardless of effort:** the
+      per-Task correction and the per-Program/per-routine split are
+      mathematically COUPLED through the existing `fixed_base_per_routine`
+      mechanism (currently applied once per routine, unconditionally) --
+      correcting one without the other would either double-correct or
+      leave the model self-inconsistent for any file with more than one
+      routine. This isn't an analysis gap that more time closes; it's a
+      real missing data point.
+    - **Closed the data gap, not the formula:** `gen_task_overhead_
+      disentangle.py`'s new `taskoverhead_n02routines_1program_1task.L5X`
+      (1 Task, 1 Program, 2 plain NOP routines, no JSR relationship) is
+      generated, lint-clean, in the manifest, awaiting capture -- this is
+      the exact missing 3rd axis. Once it lands, the +700/task rate above
+      combines with it to fully solve the 3-way split in one more pass,
+      no further test design needed.
+
 12. **OQ-INDIRECT — Indirect addressing overhead [captured 2026-08-25, real findings,
     NOT yet decomposed into weights].** `gen_indirect_addressing.py` —
     direct vs. tag-driven array index, plus (James: "Does tag[idx+1] take
@@ -1023,12 +1068,21 @@ generator already covers them, just waiting on the next capture batch.
       overhead) = 36/rung, and 144/rung (offset-index total) − 108/rung
       (indirect overhead) = 36/rung — the SAME implied base MOV(direct-
       index) marginal both ways. Internally consistent.
-    - **Still not wired**, but now for a real architectural reason, not a
-      data-confidence one: applying this requires the sizing engine to
-      inspect a MOV/CPT/etc. operand's *text* for indirect-addressing
-      syntax (a tag-valued or arithmetic-expression array subscript) —
-      that's parser work, not a constant edit. The numbers are ready
-      whenever that parser support lands.
+    - **RESOLVED 2026-08-26 — wired.** `parser/logic.py` now scans rung
+      text for `Name[...]` bracket expressions and classifies each as
+      direct/literal (0 cost), tag-driven (`tag_index_cost`), or tag+
+      literal-offset (`tag_offset_index_cost`); `sizing/logic.py` applies
+      the cost per real occurrence. Confidence KNOWN — verified live
+      end-to-end (`build_report()` against the actual generated files,
+      not just the formula in isolation) across all 8 real manifest rows
+      (both variants × n=10/50/100/1000): every single one now lands on
+      the identical tiny +4 flat baseline noise already seen elsewhere in
+      this tag pool (confirmed unrelated to indexing — the direct/literal
+      baseline file shows the same +4). Deliberately generalized to scan
+      the WHOLE rung, not scoped to MOV specifically — only MOV-carried
+      indexing was ever captured, so applying this inside e.g. a CPT
+      expression's own indexed operand is an untested assumption, not
+      independently confirmed for that context.
 
 13. **OQ-STRINGTAGOVERHEAD — SCALAR CASE FULLY RESOLVED 2026-08-25 (both
     builtin and custom). Array-of-STRING split out as its own open
