@@ -70,6 +70,19 @@ synthesizes it; processor_type="1756-L81ES" is passed through to match
 the real program's exact processor exactly rather than the project
 default (1756-L81E).
 
+**Cross-checked 2026-08-27 against James's own "stripped" export**
+(samples/local/bender_stripped/Bender134053_stripper.L5X -- the real
+program with logic/UDTs/most Controller Tags removed but the Modules
+section left intact, gitignored real corpus): the module catalog
+inventory matches this file's extraction exactly, module-for-module.
+Independently confirms 1756-L8SP (the Safety Partner excluded above)
+really is absent from a normal module list, not something specific to
+the earlier full export. Also picked up 2 real Controller-scope AOI
+instance tags that export kept (`Bus2AccPressure`/`Bus2PumpPressure`,
+both `ANA_IN_FIL` -- a real analog-input-filter AOI, its definition
+included here too) that weren't part of the original module-only
+extraction -- genuine real program content this file was still missing.
+
 Run: python -m sample_gen.gen_module_bender_full
 """
 
@@ -4177,6 +4190,346 @@ _ALL_MODULES_XML = """\
 """
 
 
+_ANA_IN_FIL_AOI_XML = """\
+<AddOnInstructionDefinition Name="ANA_IN_FIL" Class="Standard" Revision="1.0" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2008-06-16T17:27:24.062Z" CreatedBy="dnrt\\nvesovic" EditedDate="2020-09-24T15:32:03.955Z" EditedBy="James-PC\\James" SoftwareRevision="v32.00">
+<RevisionNote>
+Analoge Input Scale to Eng Units and Filtered
+Zero Filter Value Disables Filtering
+</RevisionNote>
+<Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Usage="Input" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read Only">
+
+</Parameter>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read Only">
+
+</Parameter>
+<Parameter Name="ORange" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="false" Visible="true" ExternalAccess="Read Only">
+
+<DefaultData Format="L5K">
+0
+</DefaultData>
+<DefaultData Format="Decorated">
+<DataValue DataType="BOOL" Radix="Decimal" Value="0" />
+</DefaultData>
+</Parameter>
+<Parameter Name="URange" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="false" Visible="true" ExternalAccess="Read Only">
+
+<DefaultData Format="L5K">
+0
+</DefaultData>
+<DefaultData Format="Decorated">
+<DataValue DataType="BOOL" Radix="Decimal" Value="0" />
+</DefaultData>
+</Parameter>
+<Parameter Name="PVMax" TagType="Base" DataType="REAL" Usage="Input" Radix="Float" Required="false" Visible="true" ExternalAccess="Read/Write">
+
+<DefaultData Format="L5K">
+0.00000000e+000
+</DefaultData>
+<DefaultData Format="Decorated">
+<DataValue DataType="REAL" Radix="Float" Value="0.0" />
+</DefaultData>
+</Parameter>
+<Parameter Name="PVMin" TagType="Base" DataType="REAL" Usage="Input" Radix="Float" Required="false" Visible="true" ExternalAccess="Read/Write">
+
+<DefaultData Format="L5K">
+0.00000000e+000
+</DefaultData>
+<DefaultData Format="Decorated">
+<DataValue DataType="REAL" Radix="Float" Value="0.0" />
+</DefaultData>
+</Parameter>
+<Parameter Name="RawMax" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="false" Visible="true" ExternalAccess="Read/Write">
+
+<DefaultData Format="L5K">
+0
+</DefaultData>
+<DefaultData Format="Decorated">
+<DataValue DataType="DINT" Radix="Decimal" Value="0" />
+</DefaultData>
+</Parameter>
+<Parameter Name="RawMin" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="false" Visible="true" ExternalAccess="Read/Write">
+
+<DefaultData Format="L5K">
+0
+</DefaultData>
+<DefaultData Format="Decorated">
+<DataValue DataType="DINT" Radix="Decimal" Value="0" />
+</DefaultData>
+</Parameter>
+<Parameter Name="FiIterFreq" TagType="Base" DataType="REAL" Usage="Input" Radix="Float" Required="false" Visible="true" ExternalAccess="Read/Write">
+
+<DefaultData Format="L5K">
+0.00000000e+000
+</DefaultData>
+<DefaultData Format="Decorated">
+<DataValue DataType="REAL" Radix="Float" Value="0.0" />
+</DefaultData>
+</Parameter>
+<Parameter Name="Raw" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write">
+
+<DefaultData Format="L5K">
+0
+</DefaultData>
+<DefaultData Format="Decorated">
+<DataValue DataType="DINT" Radix="Decimal" Value="0" />
+</DefaultData>
+</Parameter>
+<Parameter Name="Limiting" TagType="Base" DataType="BOOL" Usage="Input" Radix="Decimal" Required="false" Visible="true" ExternalAccess="Read/Write">
+<DefaultData Format="L5K">
+0
+</DefaultData>
+<DefaultData Format="Decorated">
+<DataValue DataType="BOOL" Radix="Decimal" Value="0" />
+</DefaultData>
+</Parameter>
+<Parameter Name="PV" TagType="Base" DataType="REAL" Usage="Output" Radix="Float" Required="false" Visible="true" ExternalAccess="Read Only">
+
+<DefaultData Format="L5K">
+0.00000000e+000
+</DefaultData>
+<DefaultData Format="Decorated">
+<DataValue DataType="REAL" Radix="Float" Value="0.0" />
+</DefaultData>
+</Parameter>
+<Parameter Name="PVF" TagType="Base" DataType="REAL" Usage="Output" Radix="Float" Required="false" Visible="true" ExternalAccess="Read Only">
+
+<DefaultData Format="L5K">
+0.00000000e+000
+</DefaultData>
+<DefaultData Format="Decorated">
+<DataValue DataType="REAL" Radix="Float" Value="0.0" />
+</DefaultData>
+</Parameter>
+<Parameter Name="FilterFault" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="false" Visible="true" ExternalAccess="Read Only">
+
+<DefaultData Format="L5K">
+0
+</DefaultData>
+<DefaultData Format="Decorated">
+<DataValue DataType="BOOL" Radix="Decimal" Value="0" />
+</DefaultData>
+</Parameter>
+<Parameter Name="ScaleFault" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="false" Visible="true" ExternalAccess="Read Only">
+
+<DefaultData Format="L5K">
+0
+</DefaultData>
+<DefaultData Format="Decorated">
+<DataValue DataType="BOOL" Radix="Decimal" Value="0" />
+</DefaultData>
+</Parameter>
+</Parameters>
+<LocalTags>
+<LocalTag Name="SCL" DataType="SCALE" ExternalAccess="Read/Write">
+<DefaultData Format="L5K">
+[1,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0,0.00000000e+000,0,5.60519386e-045,0.00000000e+000,0.00000000e+000,0.00000000e+000]
+</DefaultData>
+<DefaultData Format="Decorated">
+<Structure DataType="SCALE">
+<DataValueMember Name="EnableIn" DataType="BOOL" Value="1" />
+<DataValueMember Name="In" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="InRawMax" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="InRawMin" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="InEUMax" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="InEUMin" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="Limiting" DataType="BOOL" Value="0" />
+<DataValueMember Name="EnableOut" DataType="BOOL" Value="0" />
+<DataValueMember Name="Out" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="MaxAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="MinAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000" />
+<DataValueMember Name="InstructFault" DataType="BOOL" Value="0" />
+<DataValueMember Name="InRawRangeInv" DataType="BOOL" Value="0" />
+</Structure>
+</DefaultData>
+</LocalTag>
+<LocalTag Name="LPF" DataType="FILTER_LOW_PASS" ExternalAccess="Read/Write">
+<DefaultData Format="L5K">
+[1,0.00000000e+000,3.40282347e+038,1,0,0.00000000e+000,1,0,0,0.00000000e+000,0.00000000e+000,0,5.60519386e-045,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000,0.00000000e+000]
+</DefaultData>
+<DefaultData Format="Decorated">
+<Structure DataType="FILTER_LOW_PASS">
+<DataValueMember Name="EnableIn" DataType="BOOL" Value="1" />
+<DataValueMember Name="In" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="Initialize" DataType="BOOL" Value="0" />
+<DataValueMember Name="WLag" DataType="REAL" Radix="Float" Value="3.40282347e+038" />
+<DataValueMember Name="Order" DataType="DINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="TimingMode" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="OversampleDT" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="RTSTime" DataType="DINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="RTSTimeStamp" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="EnableOut" DataType="BOOL" Value="0" />
+<DataValueMember Name="Out" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="DeltaT" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000" />
+<DataValueMember Name="InstructFault" DataType="BOOL" Value="0" />
+<DataValueMember Name="WLagInv" DataType="BOOL" Value="0" />
+<DataValueMember Name="OrderInv" DataType="BOOL" Value="0" />
+<DataValueMember Name="TimingModeInv" DataType="BOOL" Value="0" />
+<DataValueMember Name="RTSMissed" DataType="BOOL" Value="0" />
+<DataValueMember Name="RTSTimeInv" DataType="BOOL" Value="0" />
+<DataValueMember Name="RTSTimeStampInv" DataType="BOOL" Value="0" />
+<DataValueMember Name="DeltaTInv" DataType="BOOL" Value="0" />
+</Structure>
+</DefaultData>
+</LocalTag>
+<LocalTag Name="MUL" DataType="FBD_MATH" ExternalAccess="Read/Write">
+
+<DefaultData Format="L5K">
+[1,0.00000000e+000,0.00000000e+000,0.00000000e+000]
+</DefaultData>
+<DefaultData Format="Decorated">
+<Structure DataType="FBD_MATH">
+<DataValueMember Name="EnableIn" DataType="BOOL" Value="1" />
+<DataValueMember Name="SourceA" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="SourceB" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="EnableOut" DataType="BOOL" Value="0" />
+<DataValueMember Name="Dest" DataType="REAL" Radix="Float" Value="0.0" />
+</Structure>
+</DefaultData>
+</LocalTag>
+<LocalTag Name="NEQ" DataType="FBD_COMPARE" ExternalAccess="Read/Write">
+<DefaultData Format="L5K">
+[1,0.00000000e+000,0.00000000e+000]
+</DefaultData>
+<DefaultData Format="Decorated">
+<Structure DataType="FBD_COMPARE">
+<DataValueMember Name="EnableIn" DataType="BOOL" Value="1" />
+<DataValueMember Name="SourceA" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="SourceB" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="EnableOut" DataType="BOOL" Value="0" />
+<DataValueMember Name="Dest" DataType="BOOL" Value="0" />
+</Structure>
+</DefaultData>
+</LocalTag>
+</LocalTags>
+<Routines>
+<Routine Name="Logic" Type="FBD">
+<FBDContent SheetSize="Tabloid - 11 x 17 in" SheetOrientation="Landscape">
+<Sheet Number="1">
+<IRef ID="0" X="440" Y="640" Operand="0" HideDesc="false" />
+<IRef ID="1" X="120" Y="580" Operand="6.28" HideDesc="false" />
+<IRef ID="2" X="120" Y="480" Operand="FiIterFreq" HideDesc="false" />
+<IRef ID="3" X="280" Y="360" Operand="Limiting" HideDesc="false" />
+<IRef ID="4" X="100" Y="300" Operand="PVMax" HideDesc="false" />
+<IRef ID="5" X="140" Y="380" Operand="PVMin" HideDesc="false" />
+<IRef ID="6" X="240" Y="60" Operand="Raw" HideDesc="false" />
+<IRef ID="7" X="200" Y="120" Operand="RawMax" HideDesc="false" />
+<IRef ID="8" X="140" Y="180" Operand="RawMin" HideDesc="false" />
+<ORef ID="9" X="1070" Y="360" Operand="FilterFault" HideDesc="false" />
+<ORef ID="10" X="640" Y="180" Operand="ORange" HideDesc="false" />
+<ORef ID="11" X="1160" Y="120" Operand="PV" HideDesc="false" />
+<ORef ID="12" X="1150" Y="240" Operand="PVF" HideDesc="false" />
+<ORef ID="13" X="620" Y="300" Operand="ScaleFault" HideDesc="false" />
+<ORef ID="14" X="640" Y="240" Operand="URange" HideDesc="false" />
+<Block Type="LPF" ID="15" X="840" Y="280" Operand="LPF" VisiblePins="EnableIn In WLag Out InstructFault" HideDesc="false" />
+<Block Type="MUL" ID="16" X="280" Y="500" Operand="MUL" VisiblePins="SourceA SourceB Dest" HideDesc="false" />
+<Block Type="NEQ" ID="17" X="520" Y="560" Operand="NEQ" VisiblePins="SourceA SourceB Dest" HideDesc="false" />
+<Block Type="SCL" ID="18" X="340" Y="180" Operand="SCL" VisiblePins="In InRawMax InRawMin InEUMax InEUMin Limiting Out MaxAlarm MinAlarm InstructFault" HideDesc="false" />
+<Wire FromID="0" ToID="17" ToParam="SourceB" />
+<Wire FromID="1" ToID="16" ToParam="SourceB" />
+<Wire FromID="2" ToID="16" ToParam="SourceA" />
+<Wire FromID="3" ToID="18" ToParam="Limiting" />
+<Wire FromID="4" ToID="18" ToParam="InEUMax" />
+<Wire FromID="5" ToID="18" ToParam="InEUMin" />
+<Wire FromID="6" ToID="18" ToParam="In" />
+<Wire FromID="7" ToID="18" ToParam="InRawMax" />
+<Wire FromID="8" ToID="18" ToParam="InRawMin" />
+<Wire FromID="15" FromParam="InstructFault" ToID="9" />
+<Wire FromID="15" FromParam="Out" ToID="12" />
+<Wire FromID="16" FromParam="Dest" ToID="15" ToParam="WLag" />
+<Wire FromID="16" FromParam="Dest" ToID="17" ToParam="SourceA" />
+<Wire FromID="17" FromParam="Dest" ToID="15" ToParam="EnableIn" />
+<Wire FromID="18" FromParam="MaxAlarm" ToID="10" />
+<Wire FromID="18" FromParam="Out" ToID="11" />
+<Wire FromID="18" FromParam="InstructFault" ToID="13" />
+<Wire FromID="18" FromParam="MinAlarm" ToID="14" />
+<Wire FromID="18" FromParam="Out" ToID="15" ToParam="In" />
+</Sheet>
+</FBDContent>
+</Routine>
+</Routines>
+</AddOnInstructionDefinition>
+
+"""
+
+_BUS2_ACC_PRESSURE_TAG_XML = """\
+<Tag Name="Bus2AccPressure" Class="Standard" TagType="Base" DataType="ANA_IN_FIL" Constant="false" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[3,3.62500000e+003,0.00000000e+000,16383,3100,1.00000000e-001,6401,9.00860046e+002,9.00645874e+002
+		,[1,6.40100000e+003,1.63830000e+004,3.10000000e+003,3.62500000e+003,0.00000000e+000,1,9.00860046e+002
+		,0,0.00000000e+000,1.32830000e+004,7.52841952e-005,9.00860046e+002],[1,9.00860046e+002,6.28000021e-001
+		,1,0,0.00000000e+000,1,0,1,9.00645874e+002,2.00000000e-003,0,0.00000000e+000,2.80259693e-045
+		,5.89888987e-036,0.00000000e+000,7.89211295e-042,2.00000000e-003,6.28000021e-001,1.40129846e-045
+		,6.28000021e-001,2.00000000e-003,1.40129846e-045,6.27606000e-004,1.59335632e+003,9.00860046e+002
+		,9.00645874e+002,6.27606000e-004,-9.98744786e-001,9.00860046e+002,9.00645874e+002,0.00000000e+000
+		,0.00000000e+000,9.00860046e+002,9.00645569e+002,0.00000000e+000,0.00000000e+000,9.00860046e+002
+		,9.00645200e+002],[3,1.00000000e-001,6.28000021e+000,6.28000021e-001],[15,6.28000021e-001,0.00000000e+000
+		]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="ANA_IN_FIL">
+<DataValueMember Name="EnableIn" DataType="BOOL" Value="1" />
+<DataValueMember Name="EnableOut" DataType="BOOL" Value="1" />
+<DataValueMember Name="ORange" DataType="BOOL" Value="0" />
+<DataValueMember Name="URange" DataType="BOOL" Value="0" />
+<DataValueMember Name="PVMax" DataType="REAL" Radix="Float" Value="3625.0" />
+<DataValueMember Name="PVMin" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="RawMax" DataType="DINT" Radix="Decimal" Value="16383" />
+<DataValueMember Name="RawMin" DataType="DINT" Radix="Decimal" Value="3100" />
+<DataValueMember Name="FiIterFreq" DataType="REAL" Radix="Float" Value="0.1" />
+<DataValueMember Name="Raw" DataType="DINT" Radix="Decimal" Value="6401" />
+<DataValueMember Name="Limiting" DataType="BOOL" Value="0" />
+<DataValueMember Name="PV" DataType="REAL" Radix="Float" Value="900.86005" />
+<DataValueMember Name="PVF" DataType="REAL" Radix="Float" Value="900.6459" />
+<DataValueMember Name="FilterFault" DataType="BOOL" Value="0" />
+<DataValueMember Name="ScaleFault" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</Tag>
+
+"""
+
+_BUS2_PUMP_PRESSURE_TAG_XML = """\
+<Tag Name="Bus2PumpPressure" Class="Standard" TagType="Base" DataType="ANA_IN_FIL" Constant="false" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[3,3.62500000e+003,0.00000000e+000,16383,3100,1.00000000e-001,3289,5.15790825e+001,5.15546722e+001
+		,[1,3.28900000e+003,1.63830000e+004,3.10000000e+003,3.62500000e+003,0.00000000e+000,1,5.15790825e+001
+		,0,0.00000000e+000,1.32830000e+004,7.52841952e-005,5.15790825e+001],[1,5.15790825e+001,6.28000021e-001
+		,1,0,0.00000000e+000,1,0,1,5.15546722e+001,2.00000000e-003,0,0.00000000e+000,2.80259693e-045
+		,5.89932215e-036,0.00000000e+000,7.89211295e-042,2.00000000e-003,6.28000021e-001,1.40129846e-045
+		,6.28000021e-001,2.00000000e-003,1.40129846e-045,6.27606000e-004,1.59335632e+003,5.15790825e+001
+		,5.15546722e+001,6.27606000e-004,-9.98744786e-001,5.15790825e+001,5.15546722e+001,0.00000000e+000
+		,0.00000000e+000,5.15790825e+001,5.15546417e+001,0.00000000e+000,0.00000000e+000,5.15790825e+001
+		,5.15545959e+001],[3,1.00000000e-001,6.28000021e+000,6.28000021e-001],[15,6.28000021e-001,0.00000000e+000
+		]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="ANA_IN_FIL">
+<DataValueMember Name="EnableIn" DataType="BOOL" Value="1" />
+<DataValueMember Name="EnableOut" DataType="BOOL" Value="1" />
+<DataValueMember Name="ORange" DataType="BOOL" Value="0" />
+<DataValueMember Name="URange" DataType="BOOL" Value="0" />
+<DataValueMember Name="PVMax" DataType="REAL" Radix="Float" Value="3625.0" />
+<DataValueMember Name="PVMin" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="RawMax" DataType="DINT" Radix="Decimal" Value="16383" />
+<DataValueMember Name="RawMin" DataType="DINT" Radix="Decimal" Value="3100" />
+<DataValueMember Name="FiIterFreq" DataType="REAL" Radix="Float" Value="0.1" />
+<DataValueMember Name="Raw" DataType="DINT" Radix="Decimal" Value="3289" />
+<DataValueMember Name="Limiting" DataType="BOOL" Value="0" />
+<DataValueMember Name="PV" DataType="REAL" Radix="Float" Value="51.579082" />
+<DataValueMember Name="PVF" DataType="REAL" Radix="Float" Value="51.554672" />
+<DataValueMember Name="FilterFault" DataType="BOOL" Value="0" />
+<DataValueMember Name="ScaleFault" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</Tag>
+
+"""
+
+
+
 def main() -> None:
     tags_xml = "\n".join([
         _MOTION_GROUP_TAG_XML,
@@ -4188,10 +4541,13 @@ def main() -> None:
         _axis_tag("Bus2_Drive057_Xfer_Axis", "Bus2_Drive_D057:Ch3"),
         _axis_tag("Bus2_Drive020_Chuck_Axis", "Bus2_Drive_D020:Ch1"),
         _axis_tag("Bus2_Drive020_Sf_Axis", "Bus2_Drive_D020:Ch3"),
+        _BUS2_ACC_PRESSURE_TAG_XML,
+        _BUS2_PUMP_PRESSURE_TAG_XML,
     ])
     l5x = build_l5x(
         target_name="BenderFullProgram", tags_xml=tags_xml,
-        extra_modules_xml=_ALL_MODULES_XML, processor_type="1756-L81ES",
+        extra_modules_xml=_ALL_MODULES_XML, extra_aoi_xml=_ANA_IN_FIL_AOI_XML,
+        processor_type="1756-L81ES",
     )
     out_path = OUT_ROOT / "modulerack_bender_full_program.L5X"
     write_sample_unmodeled(l5x, out_path)
@@ -4201,16 +4557,24 @@ def main() -> None:
         "DnR_Personal/Bender134053_201104.L5X (5 Point I/O adapters with all 44 real "
         "children, 5 ArmorBlock I/O, 2 PowerFlex 527-STO safety drives, 2 EX260 valve "
         "manifolds, RMC150E, full 2-bus/5-module Kinetix 5700 subgraph with 8 real axis "
-        "tags), genericized but structurally verbatim, not deduplicated -- built to be "
-        "captured against the real program's actual controller memory for accuracy "
-        "validation. 5 modules excluded (GuardLogix Safety Partner -- not independently "
-        "importable; 2 generic-EDS encoders + 1 barcode reader + 1 FANUC robot profile -- "
-        "real Studio 5000 'module profile not found' errors, need an EDS not guaranteed "
-        "present) -- see this generator's own docstring for the full real error-driven "
-        "rationale. 0 lint findings, 0 duplicate names, 0 dangling parent refs.",
+        "tags), genericized but structurally verbatim, not deduplicated. Cross-verified "
+        "against James's own real 'stripped' export of this program (Bender134053_"
+        "stripper.L5X, logic/UDTs/most tags removed but Modules section intact) -- exact "
+        "module-catalog match, confirmed the Safety Partner really is absent from a normal "
+        "module export (independent confirmation of the earlier exclusion). Added 2 real "
+        "Controller-scope AOI instance tags from that stripped export (Bus2AccPressure/"
+        "Bus2PumpPressure, both ANA_IN_FIL -- real analog-input-filter AOI, its own "
+        "definition included) that weren't in the original module-only extraction -- "
+        "built to be captured against the real program's actual controller memory for "
+        "accuracy validation. 5 modules excluded (GuardLogix Safety Partner -- not "
+        "independently importable; 2 generic-EDS encoders + 1 barcode reader + 1 FANUC "
+        "robot profile -- real Studio 5000 'module profile not found' errors, need an EDS "
+        "not guaranteed present) -- see this generator's own docstring for the full "
+        "real error-driven rationale. 0 lint findings, 0 duplicate names, 0 dangling "
+        "parent refs.",
         "modules", out_path, 0,
     )
-    print("Done. 1 full-program replica file written (64 modules, 8 axes).")
+    print("Done. 1 full-program replica file written (64 modules, 8 axes, 2 AOI tags).")
 
 
 if __name__ == "__main__":
