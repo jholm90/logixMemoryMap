@@ -152,6 +152,10 @@ Status(msg) {
         ; know what changes on screen when load finishes -- file size will
         ; vary this just like Build does, same reasoning as the Build popup.
         Sleep 2000
+				
+				;ErrorValue := ExtractCount(ControlGetText("Button10", "A"))
+				;WinActivate
+				;sleep 20
 
         ; --- Build ---
         Status("Alt")
@@ -172,6 +176,7 @@ Status(msg) {
         }
 
         Sleep 250
+				ErrorValue := ExtractCount(ControlGetText("Button10", "A"))
         ; Captured at the same moment as Error/Warning/Message -- the
         ; window title has the open .ACD filename baked in (James, 2026-08-22:
         ; "window title is valid there with the filename.acd present inside"),
