@@ -22,7 +22,12 @@
                        reads, deletes it (consumed), and logs. window_title
                        is cross-checked against the requested filename --
                        a mismatch is logged loudly and flagged in the
-                       row's own notes rather than trusted quietly.
+                       row's own notes rather than trusted quietly. A
+                       literal "0" ocd_value is treated the same way
+                       (2026-08-27) -- a real Capacity reading is never
+                       actually 0, so a 0 read is a bad-read symptom, not
+                       real data; flagged ZERO CAPACITY and auto-retried
+                       next run, never silently counted.
 
   Per file:
     1. Write the ACD path to -OpenRequestPath.
@@ -116,25 +121,26 @@ $manifest = @(Import-Csv $ManifestPath)
 $alreadyLogged = @{}
 # James, 2026-08-25: "any test that fails for window title mismatch should
 # be rerun... make sure you can rerun those tests next time without me
-# prompting you." A row flagged WINDOW TITLE MISMATCH in notes still has
-# actual_bytes populated (with data that may belong to a different file --
-# see the cross-check below), so without this exclusion it would silently
-# count as "already logged" forever. Excluding it here means it's treated
-# as never-captured and gets picked back up automatically the very next
-# time this script runs against the same $ConvertLog -- no ACD rebuild
-# needed, since convert_log.csv already has status=ok for it (only the
-# capture READ was suspect, not the conversion).
-$manifest | Where-Object { $_.actual_bytes -and ($_.notes -notmatch 'WINDOW TITLE MISMATCH') } |
+# prompting you." A row flagged WINDOW TITLE MISMATCH or (2026-08-27)
+# ZERO CAPACITY in notes still has actual_bytes populated (with data that
+# may belong to a different file, or may just be a bad "0" read -- see
+# the checks below), so without this exclusion it would silently count as
+# "already logged" forever. Excluding it here means it's treated as
+# never-captured and gets picked back up automatically the very next time
+# this script runs against the same $ConvertLog -- no ACD rebuild needed,
+# since convert_log.csv already has status=ok for it (only the capture
+# READ was suspect, not the conversion).
+$manifest | Where-Object { $_.actual_bytes -and ($_.notes -notmatch 'WINDOW TITLE MISMATCH|ZERO CAPACITY') } |
     ForEach-Object { $alreadyLogged[$_.l5x_path] = $true }
 $mismatchFlagged = @{}
-$manifest | Where-Object { $_.notes -match 'WINDOW TITLE MISMATCH' } |
+$manifest | Where-Object { $_.notes -match 'WINDOW TITLE MISMATCH|ZERO CAPACITY' } |
     ForEach-Object { $mismatchFlagged[$_.l5x_path] = $true }
 
 $rows = Import-Csv $ConvertLog | Where-Object { $_.status -eq "ok" }
 $remaining = $rows | Where-Object { -not $alreadyLogged.ContainsKey((Get-RelPath $_.l5x_path)) }
 if ($Limit -gt 0) { $remaining = $remaining | Select-Object -First $Limit }
 $retryCount = @($remaining | Where-Object { $mismatchFlagged.ContainsKey((Get-RelPath $_.l5x_path)) }).Count
-Write-Host "$($rows.Count) converted sample(s) in log; $($alreadyLogged.Count) already logged; $($remaining.Count) remaining this pass ($retryCount of those are window-title-mismatch retries)."
+Write-Host "$($rows.Count) converted sample(s) in log; $($alreadyLogged.Count) already logged; $($remaining.Count) remaining this pass ($retryCount of those are window-title-mismatch/zero-capacity retries)."
 Write-Host "Ctrl+C at any time -- already-logged rows are skipped on the next run."
 Write-Host "Make sure your AHK script is already running and waiting before this starts."
 
@@ -228,6 +234,19 @@ foreach ($row in $remaining) {
     if ($windowTitle -notmatch [regex]::Escape($expectedFileName)) {
         Write-Warning "Window title mismatch for $($meta.Id): expected '$expectedFileName' in `"$windowTitle`" -- may have captured the wrong file's data."
         $notes = "WINDOW TITLE MISMATCH: expected '$expectedFileName', got `"$windowTitle`""
+    }
+    # James, 2026-08-27: "if memory size is 0 it needs to be flagged and
+    # not counted." A real controller's Capacity-tab reading is never
+    # actually 0 (every project carries the empty_project_baseline floor
+    # at minimum) -- a "0" read is a bad-read symptom (wrong dialog/field
+    # focused, a timing glitch), not a real data point, but it would
+    # otherwise pass the blank-check above and silently log as valid.
+    # Same treatment as WINDOW TITLE MISMATCH: flagged loudly, and
+    # excluded from "already logged" below so it's automatically retried
+    # next run, no manual re-flagging needed.
+    if ($blocksUsed -eq "0") {
+        Write-Warning "Capacity read as 0 for $($meta.Id) -- almost certainly a bad read, not a real value. Flagging, not counting."
+        $notes = if ($notes) { "$notes; ZERO CAPACITY: read as 0, not a real value, not counted" } else { "ZERO CAPACITY: read as 0, not a real value, not counted" }
     }
     $date = Get-Date -Format "yyyy-MM-dd"
     $predicted = if ($existing -and $existing.predicted_bytes) { $existing.predicted_bytes } else { "" }

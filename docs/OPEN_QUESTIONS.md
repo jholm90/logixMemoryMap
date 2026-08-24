@@ -322,6 +322,47 @@ generator already covers them, just waiting on the next capture batch.
    when the processor type changes between consecutive files in this
    batch — a capture-tooling change, not an L5X-generation one.
 
+   **2026-08-27, real contamination found in 8 of the 29 files — James:
+   "I'm noticing lots of the sample l5x firmware processor files have
+   safety task and safety program, even the ones that are not safety plc
+   CPU. Be sure you exclude these from your calculations."** Checked
+   every file's actual `<Task Name="...">` elements against its
+   `CatalogNumber` (not just filename). 3 files legitimately have a
+   `SafetyTask` (`v35_l306erms2`/`erms3`/`ers2` — real "S"/"MS" suffix
+   catalog numbers, safety-rated hardware, expected). **8 files have a
+   real `SafetyTask`/`SafetyProgram` despite NOT being safety-rated
+   hardware at all** (no S/ES suffix in the catalog number):
+   `v35_l3100erm` (5069-L3100ERM), `v35_l320er`/`l330er`/`l340er`
+   (5069-L320ER/L330ER/L340ER — the rest of the "same series, different
+   memory capacity" set was meant to be clean, only `v35_l306er` itself
+   came out clean), and all 4 of `v35_l82e`/`l83e`/`l84e`/`l85e`
+   (1756-L82E through L85E — the entire ControlLogix 5580 memory-tier
+   set, 4/4 contaminated). Likely a template/export artifact from however
+   this batch was staged, not a real feature of plain hardware. **All 8
+   flagged in `manifest.csv`'s `notes`** (`EXCLUDE FROM PROCESSOR/
+   FIRMWARE BASELINE COMPARISON`) — none had real capture data yet, so
+   nothing needed correcting, only prevented going forward. Whatever real
+   Capacity number these 8 eventually get will include SafetyTask
+   scaffolding cost on top of the true processor/firmware baseline, and
+   must never be used to fit this question's formula. The other 21 files
+   (including the 3 legitimately-safety ones, correctly excluded from the
+   "clean memory-tier" comparisons for the OPPOSITE reason — they're
+   supposed to have it) remain valid.
+
+   **Also 2026-08-27, standing rule added for all future capture
+   processing — James: "if memory size is 0 it needs to be flagged and
+   not counted."** A real controller's Capacity-tab reading can never
+   actually be 0 (every project carries the `empty_project_baseline`
+   floor at minimum), so a literal `"0"` `actual_bytes` is a bad-read
+   symptom, not real data. `batch_memory_capture.ps1` updated to treat a
+   `"0"` `ocd_value` the same way it already treats a window-title
+   mismatch: flagged loudly in `notes` (`ZERO CAPACITY`) and excluded
+   from "already logged" so it's auto-retried next run, never silently
+   counted as valid. No currently-logged manifest row was actually
+   affected (checked: 0 rows have `actual_bytes` literally `0` today),
+   but this needed to be a standing rule in the capture tooling itself,
+   not a one-time manual check.
+
    **2026-08-27, FIRST REAL DATA POINT LANDED — confirms the whole
    concern, real and dramatic.** James: "l81_v30.l5x failed as the SDK
    didnt support v30 files - please manually add as 29272 blocks used."
