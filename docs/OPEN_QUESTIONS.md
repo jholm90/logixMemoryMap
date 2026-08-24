@@ -322,6 +322,31 @@ generator already covers them, just waiting on the next capture batch.
    when the processor type changes between consecutive files in this
    batch — a capture-tooling change, not an L5X-generation one.
 
+   **2026-08-27, FIRST REAL DATA POINT LANDED — confirms the whole
+   concern, real and dramatic.** James: "l81_v30.l5x failed as the SDK
+   didnt support v30 files - please manually add as 29272 blocks used."
+   `l81_v30` (1756-L81E, firmware 30.02) — `l5xgit`'s SDK doesn't support
+   v30 firmware at all, so this file can never go through the normal
+   L5X→ACD→AHK-capture pipeline; James read the real Capacity number
+   directly and reported it for manual entry. Real actual = **29,272**
+   against this engine's flat prediction of 13,296 (every file in this
+   whole project assumes 1756-L81E/35.05's baseline) — a **+15,976
+   (+120.16%) gap**, by far the largest miss this project has ever
+   recorded for ANY category, single-handedly confirming James's original
+   2026-08-23 warning was not theoretical. Manually entered in
+   `manifest.csv` (`notes` flagged `MANUAL ENTRY`, `error_count`/
+   `warning_count`/etc. left blank since there was no AHK capture cycle
+   for this row — a real, deliberate exception to the normal capture
+   convention, not a data-quality gap). **Still only 1 real point** — not
+   enough to fit a (processor, firmware) formula yet, and this single
+   point can't tell "firmware 30.02 specifically" apart from "the SDK's
+   inability to build v30 at all reflects some OTHER real difference
+   about that firmware" — but it's now proven this axis is real and
+   large, not a minor correction. The other 28 staged `fw_baseline` files
+   remain awaiting capture (7 more `l81_v3x` firmware points on the same
+   catalog would be the fastest way to see whether the gap trends with
+   firmware version or is specific to v30).
+
 3. **OQ-AXISDEEP — FULLY RESOLVED 2026-08-25.** CIP/virtual axis, used
    everywhere in real programs, 0.01%-tolerance target. **Partially
    resolved 2026-08-23** — the pure predefined-structure constants
