@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="ModSweepV_1734IB8SB1conn" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 24 19:55:43 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="ModSweepV_1734IB8SB1conn" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 24 19:55:43 2026" LastModifiedDate="Mon Aug 24 19:55:43 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="TestMod1_1734IB8SB" CatalogNumber="1734-AENT/C" Vendor="1" ProductType="12" ProductCode="108" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="0" Type="PointIO" Upstream="false">
+<Bus Size="17" />
+</Port>
+<Port Id="2" Address="192.168.1.73" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications CommMethod="805306369">
+<Connections>
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1734_17SLOT:I:0">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1110_0000_0000_0001_1111" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="17" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000" />
+<Element Index="[1]" Value="2#0000_0000" />
+<Element Index="[2]" Value="2#0000_0000" />
+<Element Index="[3]" Value="2#0000_0000" />
+<Element Index="[4]" Value="2#0000_0000" />
+<Element Index="[5]" Value="2#0000_1100" />
+<Element Index="[6]" Value="2#0000_1000" />
+<Element Index="[7]" Value="2#0001_0100" />
+<Element Index="[8]" Value="2#0001_0101" />
+<Element Index="[9]" Value="2#0000_0100" />
+<Element Index="[10]" Value="2#0000_0000" />
+<Element Index="[11]" Value="2#0000_0000" />
+<Element Index="[12]" Value="2#0000_0000" />
+<Element Index="[13]" Value="2#0000_0000" />
+<Element Index="[14]" Value="2#0000_0000" />
+<Element Index="[15]" Value="2#0000_0000" />
+<Element Index="[16]" Value="2#0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[-131041,-1,[0,0,0,0,0,0,0,0,0,0,0,0,35,2,0,11,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_17SLOT:O:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="17" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000" />
+<Element Index="[1]" Value="2#0000_0000" />
+<Element Index="[2]" Value="2#0000_0000" />
+<Element Index="[3]" Value="2#0000_0000" />
+<Element Index="[4]" Value="2#0000_0000" />
+<Element Index="[5]" Value="2#0000_0000" />
+<Element Index="[6]" Value="2#0000_0000" />
+<Element Index="[7]" Value="2#0000_0000" />
+<Element Index="[8]" Value="2#0000_0000" />
+<Element Index="[9]" Value="2#0000_0000" />
+<Element Index="[10]" Value="2#0000_0000" />
+<Element Index="[11]" Value="2#0000_0000" />
+<Element Index="[12]" Value="2#0010_0011" />
+<Element Index="[13]" Value="2#0000_0010" />
+<Element Index="[14]" Value="2#0000_0000" />
+<Element Index="[15]" Value="2#0000_1011" />
+<Element Index="[16]" Value="2#0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod2_1734IB8SB" CatalogNumber="1734-IB8S/B" Vendor="1" ProductType="35" ProductCode="15" Major="2" Minor="1" ParentModule="TestMod1_1734IB8SB" ParentModPortId="1" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_41a6_051c_de92">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="1" Type="PointIO" Upstream="true" />
+</Ports>
+<Communications>
+<ConfigData ConfigSize="82">
+<Data Format="L5K">
+[86,864,1986065483,67167386,17121,514,1000,16842752,0,513,16842752,0,513,16842752,0,513,16842752,0,66049
+		,50,0,0,0]
+</Data>
+</ConfigData>
+<Connections>
+<Connection Name="Input" RPI="10000" Type="SafetyInput" EventID="0" ProgrammaticallySendEventTrigger="false" TimeoutMultiplier="2" NetworkDelayMultiplier="200" ReactionTimeLimit="40.064" MaxObservedNetworkDelay="0" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1734_IB8S_Safety6:I:0">
+<DataValueMember Name="RunMode" DataType="BOOL" Value="1" />
+<DataValueMember Name="ConnectionFaulted" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt00Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt01Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt02Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt03Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt04Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt05Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt06Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt07Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputPowerStatus" DataType="BOOL" Value="0" />
+<DataValueMember Name="CombinedInputStatus" DataType="BOOL" Value="1" />
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>
