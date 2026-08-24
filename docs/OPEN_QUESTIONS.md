@@ -2277,6 +2277,57 @@ generator already covers them, just waiting on the next capture batch.
     `samples/generated/modules/` (targeting >100 -- met). 0 lint findings,
     0 sizing crashes across the full 1,250-file generated corpus.
 
+    **General "all IO in one file" approach, James's answer 2026-08-27:**
+    "if you have 21 catalogs then you would need an expansion rack via a
+    2nd rack and ethernet connection between them. pointio should be able
+    to expand the bus to add multiple modules - if you reach '20' modules
+    then make another rack." Confirms the exact pattern already built in
+    `gen_module_rack_1756remote.py` (local rack + Ethernet-bridged remote
+    rack) generalizes correctly -- when the generic one-of-each-catalog
+    version of "all IO in one file" gets built, split the >16 local-ICP-
+    shape catalogs across a local rack + one or more Ethernet-bridged
+    expansion racks the same way, and split Point I/O children across
+    multiple adapters once a real adapter's practical module count gets
+    large (his ~20 figure is a rule-of-thumb ceiling, not the `Bus Size`
+    attribute itself -- the two real adapters extracted this session both
+    stated `Bus Size="14"`). Not yet built -- superseded for now by the
+    full-Bender-program replica below, which was the concrete ask.
+
+    **`gen_module_bender_full.py`, 2026-08-27 -- James: "i want a full
+    test like take all of the io from Bender program and put in this file
+    to get 99.97% accuracy."** Different from every other file in this
+    project: not one-representative-per-catalog, not deduplicated -- the
+    ENTIRE real Controller/Modules section from
+    DnR_Personal/Bender134053_201104.L5X, all 69 non-CPU modules,
+    duplicates and all (44 Point I/O children across 5 real adapters,
+    GuardLogix Safety Partner, 5 ArmorBlock modules, 2 PowerFlex 527-STO
+    safety drives, 2 EX260 valve manifolds, FANUC robot profile, RMC150E,
+    2 generic-EDS encoders + 1 Datalogic reader with no CatalogNumber
+    attribute at all (real, confirmed), and the full 2-bus/5-module
+    Kinetix subgraph + 8 real axis tags already built for
+    `gen_module_kinetix_bus.py`, name-consistent with that file).
+    Genericized the same way as every other extraction (Name/IP
+    placeholders, ExtendedProperties/Description/Comments stripped
+    throughout including nested tag-operand Comments that carried real
+    process-descriptive text). Verified: catalog counts match the real
+    file exactly module-for-module, 0 duplicate Names, 0 dangling
+    ParentModule references, 0 lint findings, 0 sizing crashes, 0
+    regressions across the full 1,251-file corpus.
+
+    Sizing this file today returns 31 real SizeErrors -- one per
+    rack-aliased (RackConnection/InAliasTag) Point I/O child, all already-
+    documented (module_overhead was FITTED from only 2 discrete-Connection
+    modules; zero real data confirms it applies the same way to a
+    rack-aliased child, so it's deliberately not charged, per
+    parser/modules.py's own docstring). **This is exactly the intended use
+    of this file, not a bug to fix**: once James captures this exact
+    module section's real controller-memory cost from the actual Bender
+    controller, the residual between predicted and real can be divided
+    across these 31 modules to solve for their real per-module overhead --
+    the same fitting methodology that produced `module_overhead` itself.
+    Awaiting that real capture before "99.97% accuracy" can be evaluated
+    at all; nothing to claim yet either way.
+
     **Original entry below, kept for history.** James's own methodology, applied directly: compare a
     module's auto-generated "Module-Defined" data type (raw member-sum of
     its InputTag/OutputTag/ConfigTag Structure content, same math as any
