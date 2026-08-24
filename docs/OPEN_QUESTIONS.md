@@ -2397,3 +2397,29 @@ generator already covers them, just waiting on the next capture batch.
     Same real-corpus caveat as everywhere else in this project: branching
     rungs are extremely common in real ladder logic, so this is a genuine
     gap worth prioritizing, not an edge case.
+
+20. **OQ-LEGACYNETOVERHEAD (new, 2026-08-27, James directive — reminder
+    flag, not yet implemented).** Covers the "antique network" module
+    category OQ-MODULEIO's entry #17 above deliberately left out of the
+    122-file sweep: legacy chassis/remote-I/O platforms (SLC/PLC-5/RIO/
+    DH+/ControlNet port types — architecturally different addressing from
+    a modern Logix5000 module). James: "Your antique network is fine to
+    just allocate as controller tag size plus some arbitrary overhead
+    value. This is a reminder flag to see what average overhead values
+    are on these isolated Ethernet style networks to be updated once you
+    have more networking knowledge."
+
+    Approach to use WHEN this gets picked up (not built yet — no real
+    corpus, no capture data, nothing to size against today): size a
+    legacy-network module the same way a modern module's I/O side already
+    works (controller-tag/Module-Defined member-sum via `_structure_size`
+    in `parser/modules.py`), then add a flat placeholder overhead
+    constant on top — deliberately arbitrary, ASSUMED basis, NOT fitted
+    from real data (unlike `module_overhead` in `memory_model.yaml`,
+    which is FITTED from n=2 real captures). Needs its own named constant
+    in `memory_model.yaml` (never hardcoded in parser/sizing code per the
+    project's standing rule) once work starts, clearly tagged as a rough
+    placeholder — James's own framing is that the arbitrary value itself
+    is the open question, to be replaced once real RIO/DH+/ControlNet
+    capture data comes in. Not wired, not scheduled — logged here so it
+    isn't lost before that data exists.
