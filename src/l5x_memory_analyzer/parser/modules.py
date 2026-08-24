@@ -215,6 +215,15 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
                         module_defined_bytes += size
                         unknown_types.extend(unk)
 
+            # ConfigTag (Decorated Structure content available -- e.g. every
+            # I/O module found this session) vs ConfigData (2026-08-27,
+            # found in the real motion/drive corpus -- P208/D012/S086 all
+            # use this instead: an L5K-only blob, NO Decorated structure at
+            # all, just a real stated ConfigSize). Both carry a real
+            # ConfigSize attribute; only ConfigTag's Decorated form can be
+            # summed member-by-member, so ConfigData falls back to its own
+            # stated attribute -- still real, not guessed, just less
+            # granular than computing from actual member content.
             config_tag_el = comm_el.find("ConfigTag")
             if config_tag_el is not None:
                 config_bytes = _int_attr(config_tag_el, "ConfigSize")
@@ -222,6 +231,11 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
                 size, unk = _structure_size(_structure_el(config_tag_el))
                 module_defined_bytes += size
                 unknown_types.extend(unk)
+            else:
+                config_data_el = comm_el.find("ConfigData")
+                if config_data_el is not None:
+                    config_bytes = _int_attr(config_data_el, "ConfigSize")
+                    module_defined_bytes += config_bytes
 
         result.append(ModuleInfo(
             name=name, catalog_number=catalog, slot=slot,
