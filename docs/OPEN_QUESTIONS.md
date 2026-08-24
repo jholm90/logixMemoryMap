@@ -1330,6 +1330,37 @@ generator already covers them, just waiting on the next capture batch.
       find where the -8→0 and 0→+24 transitions actually sit, lint-clean,
       awaiting capture. Not wired — no formula to wire yet, this batch
       exists to produce one.
+
+      **SOLVED 2026-08-26, wired.** All 22 dense-sweep points landed and
+      fit a clean step function exactly, 22/22 real points, zero
+      residual: `custom_definition_cost_for(name_len) = base(208) +
+      bucket(8) * floor((name_len - offset(5)) / bucket(8))`. This also
+      resolves the earlier "6/7/14-char names should be flat-0" claim as
+      never actually having been tested against a maxlen=100-matched
+      sample at 14 chars specifically — the old sweep varied maxlen
+      primarily, with incidental name lengths; 6 and 7 chars DO land in
+      the confirmed flat zone (offset 5 through offset+bucket-1=12), so
+      there's no real contradiction, just an under-specified earlier
+      claim. Cross-checked against 3 more real points where the SAME 3
+      type names (1/9/32 chars) are used as a UDT member instead of
+      standalone (`stringclose_udtmember_namelen_short/medium/long`): 2/3
+      matched the formula exactly at the total-report level; the 3rd
+      (32-char name) showed an apparent -8 that traced entirely to the
+      *wrapping* UDT's own name length (16 chars vs the other two
+      fixtures' 17/18 chars — an unrelated, already-KNOWN, already-exact
+      `udt_definition.name_per_8_chars` effect, confirmed by inspecting
+      the individual `udt_definition` report entries: the string type's
+      own line item was exactly 200/208/232 in all 3 files, matching the
+      formula perfectly every time). No separate UDT-nesting tax exists —
+      the earlier-suspected "+8 nesting mystery" is fully explained by
+      name length alone. Wired in `constants.py`'s `StringModel.
+      custom_definition_cost_for()`, `memory_model.yaml`'s
+      `custom_definition_base`/`_namelen_offset`/`_namelen_bucket`,
+      `report.py`, and `tree.py`'s `_expand_string_definition`. Also
+      confirmed via `stringclose_udtmember_maxlen_0050/0250/0500/1000`
+      (4/4 exact) that the cost depends ONLY on the type's own name
+      length, not on its `maxlen` — no separate maxlen-dependent nesting
+      term needed either.
     - **Array-of-STRING** (both builtin and custom): see new
       OQ-STRINGARRAYPAD below — split out as its own question since it's
       a structurally different case (Decorated array, not the scalar
@@ -1420,6 +1451,39 @@ generator already covers them, just waiting on the next capture batch.
       see if the nesting residual — if group B confirms one exists at
       all — depends on the string's own size). 11 files total, lint-
       clean, in the manifest, awaiting capture.
+
+    **2026-08-26, `group_udtmember_namelen_crosscheck` and
+    `group_udtmember_maxlen_sweep` are now CLOSED** — see the SOLVED
+    block under item 14 above: the custom100-as-UDT-member case has NO
+    separate nesting tax at all, it's fully explained by the same
+    standalone type-name-length formula (once the wrapping UDT's own,
+    unrelated, already-KNOWN name-length cost is accounted for), and has
+    no dependence on the string's own `maxlen` either (4/4 exact).
+
+    **`group_builtin_udtmember_scaling` (builtin STRING, not custom)
+    landed too — real, still NOT closeable, needs one more test axis.**
+    4 new points, all live-verified exact once the naive (uncorrected)
+    per-member formula is used as the baseline to diff against:
+    - 1 instance, 2 STRING members: correction = 0 (no adjustment).
+    - 1 instance, 3 STRING members: correction = **+2** (real memory is 2
+      bytes HIGHER than the naive sum — the opposite direction from the
+      existing -2/instance correction).
+    - 1-member UDT, 3 instances: correction = -6 (exactly -2 × 3).
+    - 1-member UDT, 20 instances: correction = -40 (exactly -2 × 20).
+    So at a FIXED instance count of 1, correction as a function of member
+    count m fits a clean line: `correction(m, n=1) = 2m - 4` (m=1: -2,
+    matching the older single-point finding; m=2: 0; m=3: +2). And at a
+    FIXED member count of 1, correction as a function of instance count n
+    is simply `-2n` (m=1, n=1/3/10/20 all fit). These are two 1-D slices
+    through what must be a 2-D surface (member count × instance count),
+    and no combination tried (`-2n + 2(m-1)`, `-2n*m`, etc.) reproduces
+    both slices from one formula without a data point at m>1 AND n>1
+    simultaneously to pin it down. Not wired — would be guessing which
+    2-D surface fits from two 1-D slices alone. Next test needed: a 2- or
+    3-member UDT at n=3 or n=10 (not yet generated) to disentangle. Left
+    open deliberately rather than force-fitting a shape from insufficient
+    data, per this project's standing discipline against overfitting
+    2-point findings.
 
 14d. **OQ-STRINGCONSTFAIL — RESOLVED 2026-08-26, real cause was tooling,
     not the L5X content; the processor-varying design itself was

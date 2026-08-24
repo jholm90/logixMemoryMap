@@ -207,6 +207,24 @@ def test_cam_predefined_array_structure_matches_confirmed_real_formula():
     assert size("CAM", (50,)) == (8 + 12 * 50, "KNOWN")
 
 
+def test_custom_string_definition_cost_matches_confirmed_namelen_step_function():
+    # OQ-CUSTOMSTRINGTYPENAME, SOLVED 2026-08-26: base(208) + bucket(8) *
+    # floor((name_len - offset(5)) / bucket(8)). Confirmed exact against
+    # 22/22 real dense-namelen-sweep points (samples/manifest.csv
+    # stringclose_densenamelen_*) plus a separate 3-point UDT-member
+    # cross-check (stringclose_udtmember_namelen_short/medium/long) --
+    # see report.py's build_report for the live end-to-end usage.
+    f = MODEL.string.custom_definition_cost_for
+    assert f(1) == 200  # short name -- below the offset, buckets down
+    assert f(5) == 208  # exactly at the offset -- start of the flat base zone
+    assert f(8) == 208  # "STRING40" (8 chars) -- confirmed flat-208 zone
+    assert f(9) == 208  # medium cross-check name ("CStr100Md", 9 chars)
+    assert f(12) == 208  # top of the flat-208 bucket (offset+bucket-1)
+    assert f(13) == 216  # first name length to cross into the next bucket
+    assert f(32) == 232  # long cross-check name (32 chars)
+    assert f(40) == 240  # top of the dense sweep's tested range
+
+
 def test_custom_string_array_matches_confirmed_real_formula():
     string100 = DataTypeDef(
         name="CStrArrCsTest", family="StringFamily",

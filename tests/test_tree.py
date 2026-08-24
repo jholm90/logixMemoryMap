@@ -196,7 +196,8 @@ def test_expand_udt_definition_bool_run_gets_its_own_row():
 def test_expand_string_definition_sums_to_report_formula():
     children = expand_definition_children("STRING40", DEF_DATA_TYPES, MODEL)
     # maxlen=40, 40 % 4 == 0 -- no mod-4 bonus row, just the flat base.
-    assert sum(c.bytes for c in children) == MODEL.string.custom_definition_cost
+    # "STRING40" is 8 chars -- lands in the confirmed flat 5-12 bucket.
+    assert sum(c.bytes for c in children) == MODEL.string.custom_definition_cost_for(len("STRING40"))
     assert len(children) == 1
     assert children[0].basis == MODEL.string.custom_definition_confidence
 

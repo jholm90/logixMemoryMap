@@ -148,7 +148,11 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             # maxlen mod 4 == 1 gets an extra +8 one-time definition-cost
             # bonus, confirmed 2026-08-25 (3/3 real points exact: 49, 101,
             # 501) -- paired with the "no per-tag correction" branch above.
-            def_cost = model.string.custom_definition_cost
+            # The base itself depends on the TYPE's own name length --
+            # SOLVED 2026-08-26, a clean step function, see
+            # memory_model.yaml's custom_definition_base for the
+            # derivation.
+            def_cost = model.string.custom_definition_cost_for(len(name))
             if custom_string_maxlen(udt_types[name]) % 4 == 1:
                 def_cost += model.string.custom_mod4eq1_definition_bonus
             definition_entries.append((

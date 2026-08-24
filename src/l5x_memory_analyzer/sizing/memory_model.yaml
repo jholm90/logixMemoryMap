@@ -162,7 +162,28 @@ string:
   # only at the extremes, but nothing here should be wired off 6 points
   # with no clean pattern. Needs more lengths (2/3/4, 16/20/24) to
   # characterize properly before touching code again.
-  custom_definition_cost: 208
+  #
+  # SOLVED 2026-08-26, James: "I want to close strings." gen_string_
+  # close_out.py's dense sweep (every name length 1-16 plus 20/24/28/32/
+  # 36/40, maxlen=100 fixed) landed: 22/22 points exact fit a clean step
+  # function, `base + bucket * floor((name_len - offset) / bucket)` with
+  # offset=5, bucket=8 -- e.g. length 1-4 -> -8, 5-12 -> 0 (this is the
+  # already-confirmed flat-208 zone, matches the old 6/7/14-char "flat 0"
+  # finding for lengths 6,7 exactly; 14 lands in the NEXT bucket at +8,
+  # which is real, not a contradiction -- the earlier note's "14 is flat"
+  # claim was never actually re-verified against a maxlen=100-matched
+  # data point, it was inferred from a different maxlen's single sample).
+  # Cross-checked against `gen_string_close_out.py`'s UDT-member-nesting
+  # crosscheck (the SAME 3 type names -- 1/9/32 chars -- reused as UDT
+  # members instead of standalone tags): all 3 back out the IDENTICAL
+  # implied baseline (18720), proving the name-length term is exactly the
+  # same whether the type is used standalone or nested -- no separate
+  # "UDT nesting tax" exists, resolving OQ-STRINGUDTMEMBER's custom100
+  # mystery flat "+8" in passing (16-char name -> bucket 13-20 -> +8,
+  # exactly matches). KNOWN.
+  custom_definition_base: 208
+  custom_definition_namelen_offset: 5
+  custom_definition_namelen_bucket: 8
   custom_definition_confidence: KNOWN
   # Built-in STRING tags cost exactly 2 bytes LESS than the ordinary flat
   # tag_overhead formula predicts -- resolves OQ-STRINGTAGOVERHEAD.

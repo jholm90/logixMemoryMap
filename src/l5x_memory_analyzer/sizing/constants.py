@@ -39,13 +39,28 @@ class StringModel:
     default_data_bytes: int
     confidence: str
     custom_confidence: str
-    custom_definition_cost: int
+    custom_definition_base: int
+    custom_definition_namelen_offset: int
+    custom_definition_namelen_bucket: int
     custom_definition_confidence: str
     builtin_tag_overhead_correction: int
     builtin_tag_overhead_correction_confidence: str
     custom_data_padding_multiple: int
     custom_mod4eq1_definition_bonus: int
     custom_data_padding_confidence: str
+
+    def custom_definition_cost_for(self, type_name_length: int) -> int:
+        """Custom StringFamily type's own one-time definition cost --
+        OQ-CUSTOMSTRINGTYPENAME, SOLVED 2026-08-26. A clean step function
+        of the type's own name length, confirmed exact against 22 real
+        dense-sweep points (every length 1-16 plus 20/24/28/32/36/40) and
+        3 more confirming it's identical whether the type is used
+        standalone or as a UDT member (no separate nesting cost) -- see
+        memory_model.yaml for the full derivation."""
+        bucket = self.custom_definition_namelen_bucket
+        return self.custom_definition_base + bucket * (
+            (type_name_length - self.custom_definition_namelen_offset) // bucket
+        )
 
 
 @dataclass(frozen=True)
@@ -279,7 +294,9 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             default_data_bytes=s["default_data_bytes"],
             confidence=s["confidence"],
             custom_confidence=s["custom_confidence"],
-            custom_definition_cost=s["custom_definition_cost"],
+            custom_definition_base=s["custom_definition_base"],
+            custom_definition_namelen_offset=s["custom_definition_namelen_offset"],
+            custom_definition_namelen_bucket=s["custom_definition_namelen_bucket"],
             custom_definition_confidence=s["custom_definition_confidence"],
             builtin_tag_overhead_correction=s["builtin_tag_overhead_correction"],
             builtin_tag_overhead_correction_confidence=s["builtin_tag_overhead_correction_confidence"],

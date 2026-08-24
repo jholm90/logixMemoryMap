@@ -219,7 +219,10 @@ def _expand_aoi_definition(aoi: DataTypeDef, model: MemoryModel) -> list[Child]:
 def _expand_string_definition(udt: DataTypeDef, model: MemoryModel) -> list[Child]:
     conf = model.string.custom_definition_confidence
     children = [
-        Child("Base definition cost", ".base", "OVERHEAD", (), model.string.custom_definition_cost, conf, False)
+        Child(
+            "Base definition cost", ".base", "OVERHEAD", (),
+            model.string.custom_definition_cost_for(len(udt.name)), conf, False,
+        )
     ]
     if custom_string_maxlen(udt) % 4 == 1:
         children.append(
