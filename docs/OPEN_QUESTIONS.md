@@ -2157,6 +2157,68 @@ generator already covers them, just waiting on the next capture batch.
     profile labels (ETHERNET-MODULE-as-a-name, CIP-MODULE, etc. -- not
     real catalog numbers).
 
+    **RACK-LEVEL tests added 2026-08-27, same day, second batch.** James:
+    "so are you generating a l5x for testing each module... a point io
+    rack, one for each type of module and on other test with multiple
+    varied modules in one rack? I also want to see some 1756 local modules
+    in the processor rack as well as 1756-Ethernet that talks to another
+    1756-Ethernet rack that has remote 1756 io modules." The per-module
+    sweep above tests one catalog at a time; these 4 new files test
+    multiple real modules sharing ONE rack/chassis, matching how an actual
+    panel looks:
+      - `gen_module_rack_pointio.py` -- 2 files. Rack A: real 1734-AENTR/C
+        adapter + 5 distinct real child catalogs, genericized verbatim from
+        DnR_Personal/Bender134053_201104.L5X adapter "JB" (deduplicated to
+        one module per distinct catalog -- the real file repeats several
+        catalogs many times, a rack test needs each TYPE once). Rack B: a
+        SECOND, different real adapter + 6 distinct catalogs from
+        FlareFunction_311D_240731.L5X adapter "Point_IO" (different mix --
+        adds IJ/C and OB8S/B, drops OE2C/C).
+      - `gen_module_rack_1756local.py` -- 1 file, 16 real ControlLogix
+        local-shape catalogs (12 I/O + 4 bridge/scanner cards) sharing one
+        17-slot chassis with the CPU. Every module's own XML is IMPORTED
+        directly from gen_module_sweep.py/gen_module_sweep_variants.py
+        (same real content already used in the per-module sweep) --
+        the only change is mechanical: each module's own real
+        `<Port Address="N" Type="ICP">` slot number is reassigned to a
+        unique value 1-16 so they can share one rack without colliding.
+      - `gen_module_rack_1756remote.py` -- 1 file. **Confidence caveat,
+        unlike everything else in this sweep:** this topology is a
+        SYNTHESIS of two independently real, corpus-confirmed pieces, not
+        one literal chain. The bridge-to-bridge linkage (a second
+        1756-ENBT/A networked off the first one's Ethernet port, with its
+        own real `<Bus Size="13"/>`) is pulled verbatim from
+        L5X_Samples/RobbinsGrn_2026_05_13r00.L5X's real "Control_Ethernet"
+        /"MoCo_Stacker" pair. The remote-bridge-owns-real-I/O-children part
+        uses the exact same real `ParentModule`/`ParentModPortId="1"`/
+        `Type="ICP"` syntax every local-rack module already uses. Searched
+        the full 63-file real corpus for this exact combination (a remote
+        bridge with real I/O children, not a peer controller) -- it
+        doesn't exist as one literal file; every real EN-under-EN case
+        found only has a PROCESSOR as the remote child (a peer PLC on the
+        network). Nothing here is invented syntax, but flagged so this one
+        file is never read at the same confidence level as the rest of
+        the sweep.
+
+    All 4 new files: 0 lint findings, 0 sizing crashes, 0 slot collisions
+    (verified programmatically), zero regressions across the full existing
+    1,248-file generated corpus.
+
+    **Kinetix 5700 / PowerFlex 525 / PowerFlex 700, same James message --
+    status, not new work:** Kinetix 5700 is already covered --
+    `gen_module_motion.py`'s P208 (power supply)/D012 (single+dual axis
+    drive)/S086 (safety drive) are the 2198- catalog family (Rockwell's
+    Kinetix 5700 servo line); L5X itself never states a product-family
+    name, only CatalogNumber, so this is public Rockwell catalog
+    knowledge, not something verifiable from XML content alone -- flagging
+    that distinction rather than silently treating it as corpus-verified.
+    PowerFlex 525 already covered (`gen_module_vfd.py`). PowerFlex 700:
+    still no literal "PowerFlex 700" catalog anywhere in the 63-file real
+    corpus (confirmed again this pass) -- it's a discontinued line;
+    PowerFlex 755 remains the real modern-equivalent stand-in already
+    built. If James has an actual real PF700 export, upload it and it gets
+    used directly instead of guessed at.
+
     **Original entry below, kept for history.** James's own methodology, applied directly: compare a
     module's auto-generated "Module-Defined" data type (raw member-sum of
     its InputTag/OutputTag/ConfigTag Structure content, same math as any
