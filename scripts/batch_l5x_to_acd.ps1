@@ -130,13 +130,41 @@ if ($prunedCount -gt 0) {
 $recordedHash = @{}
 $prunedRows | Where-Object { $_.status -eq "ok" -and $_.l5x_hash } | ForEach-Object { $recordedHash[$_.l5x_path] = $_.l5x_hash }
 
+# James, 2026-08-27: "l81_v30.l5x failed as the SDK didnt support v30
+# files ... drop it from the list that batch_l5x_to_acd.ps1 is going to
+# ask every time." A FAILED row never gets a $recordedHash entry (the
+# filter above only populates it for status "ok"), so a file that ALWAYS
+# fails to convert -- not a transient/flaky failure, a permanent one, e.g.
+# "Logix Designer SDK does not support Logix Designer versions 30 and
+# earlier" -- was being retried every single pass forever, with no way to
+# mark it "known, don't bother." Same self-healing pattern already used in
+# batch_memory_capture.ps1 for WINDOW TITLE MISMATCH/ZERO CAPACITY: detect
+# this specific permanent-failure message and skip the file UNLESS its
+# content has actually changed since that failure was recorded (e.g. the
+# sample got regenerated at a newer, SDK-supported firmware revision --
+# then the hash differs and it's worth trying again).
+$UNSUPPORTED_SDK_VERSION_PATTERN = "does not support Logix Designer versions"
+$permanentlyFailedHash = @{}
+$prunedRows | Where-Object { $_.status -eq "FAILED" -and $_.message -match $UNSUPPORTED_SDK_VERSION_PATTERN -and $_.l5x_hash } |
+    ForEach-Object { $permanentlyFailedHash[$_.l5x_path] = $_.l5x_hash }
+
 # Files this pass actually needs to run through l5xgit for.
 $files = $allFiles | Where-Object {
     $acdPath = Join-Path $OutputDir ($_.BaseName + ".ACD")
+    $knownBadHash = $permanentlyFailedHash[$_.FullName]
+    if ($knownBadHash -and $knownBadHash -eq $currentHash[$_.FullName]) { return $false }  # same content that's already known SDK-unsupported -- don't retry
     if (-not (Test-Path $acdPath)) { return $true }  # never converted -- needs it
     $recorded = $recordedHash[$_.FullName]
     if (-not $recorded) { return -not $AdoptExisting }  # no hash on file -- reconvert to be safe, unless adopting
     return $recorded -ne $currentHash[$_.FullName]  # true if the content actually changed
+}
+
+$skippedKnownBad = $allFiles | Where-Object {
+    $knownBadHash = $permanentlyFailedHash[$_.FullName]
+    $knownBadHash -and $knownBadHash -eq $currentHash[$_.FullName]
+}
+if ($skippedKnownBad.Count -gt 0) {
+    Write-Host "Skipping $($skippedKnownBad.Count) file(s) with a known permanent SDK-unsupported failure (unchanged since last attempt): $($skippedKnownBad.Name -join ', ')"
 }
 
 # Files -AdoptExisting is trusting as-is: has a .ACD, no recorded hash,
@@ -151,8 +179,8 @@ if ($AdoptExisting) {
     }
 }
 
-$upToDateCount = $allFiles.Count - $files.Count - $adopted.Count
-Write-Host "Found $($allFiles.Count) L5X file(s) under $InputDir; $upToDateCount already converted and up to date; $($adopted.Count) adopted as-is (no reconversion); $($files.Count) to convert this pass."
+$upToDateCount = $allFiles.Count - $files.Count - $adopted.Count - $skippedKnownBad.Count
+Write-Host "Found $($allFiles.Count) L5X file(s) under $InputDir; $upToDateCount already converted and up to date; $($adopted.Count) adopted as-is (no reconversion); $($skippedKnownBad.Count) skipped (known permanent SDK-unsupported failure); $($files.Count) to convert this pass."
 Write-Host "Press any key at any time to stop cleanly after the current file (resume later by re-running)."
 
 if ($adopted.Count -gt 0) {
