@@ -279,6 +279,13 @@ class RoutineLogic:
     # One entry per real CMP(...) call, (is_compound, has_float_literal) --
     # see _cmp_calls above (OQ-CMPCPTLAYOUT's CMP piece, wired 2026-08-26).
     cmp_calls: list[tuple[bool, bool]] = field(default_factory=list)
+    # Every routine name THIS routine JSRs to (2026-08-27, Phase 5 call-
+    # tree UI) -- distinct from is_jsr_target above, which only says
+    # whether some OTHER routine calls this one, not who calls whom. Byte
+    # totals already correctly avoid double-counting via is_jsr_target
+    # (confirmed 2026-08-22); this field exists purely so the UI can show
+    # the real call structure, not to change any sizing.
+    jsr_target_names: frozenset[str] = field(default_factory=frozenset)
 
     @property
     def path(self) -> str:
@@ -345,6 +352,7 @@ def parse_rll_routines(root: ET.Element) -> list[RoutineLogic]:
                 typed_calls=_typed_instruction_calls(rung_texts),
                 indirect_index_kinds=_indirect_index_kinds(rung_texts),
                 cmp_calls=_cmp_calls(rung_texts),
+                jsr_target_names=frozenset(_jsr_targets(rung_texts)),
             ))
 
     return routines

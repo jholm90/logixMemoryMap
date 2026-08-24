@@ -23,6 +23,7 @@ def build_hierarchy(
     data_types: dict[str, DataTypeDef] | None = None,
     model: MemoryModel | None = None,
     tag_dimensions: dict[str, tuple[int, ...]] | None = None,
+    program_to_task: dict[str, str] | None = None,
 ) -> dict:
     """Root -> {"Controller Tags", "Program: <name>", ...} -> leaf tag nodes.
 
@@ -113,8 +114,50 @@ def build_hierarchy(
                 "children": routines,
             })
         children.append({"name": g, "path": g, "children": kids})
+
+    if program_to_task:
+        children = _nest_programs_under_tasks(children, program_to_task)
+
     total_bytes = sum(e.bytes for e in entries)
     return {"name": "root", "path": "", "value": total_bytes, "children": children}
+
+
+def _nest_programs_under_tasks(children: list[dict], program_to_task: dict[str, str]) -> list[dict]:
+    """Re-groups top-level "Program: X" children under a "Task: Y" parent
+    where X's owning Task is known (real, L5X-stated Controller/Tasks/
+    ScheduledProgram relationship -- see parser/tasks.py -- not a fitted
+    formula, so no byte-cost question is involved: a Task's displayed
+    total is just the sum of its already-correct Programs). "Controller
+    Tags"/"Type Definitions"/"Project Overhead" and any program with no
+    known Task (real gap in the source L5X, or program_to_task simply not
+    supplied) are left as top-level siblings, unchanged -- this pass only
+    ever adds a layer, never drops or renames anything.
+    """
+    result: list[dict] = []
+    task_groups: dict[str, list[dict]] = {}
+    task_order: list[str] = []
+
+    for child in children:
+        name = child["name"]
+        if name.startswith("Program: "):
+            program_name = name[len("Program: "):]
+            task_name = program_to_task.get(program_name)
+            if task_name:
+                if task_name not in task_groups:
+                    task_groups[task_name] = []
+                    task_order.append(task_name)
+                task_groups[task_name].append(child)
+                continue
+        result.append(child)
+
+    for task_name in task_order:
+        programs = task_groups[task_name]
+        task_total = sum(sum(c["value"] for c in p["children"]) for p in programs)
+        result.append({
+            "name": f"Task: {task_name}", "path": f"Task: {task_name}", "value": task_total,
+            "children": programs,
+        })
+    return result
 
 
 def type_utilization(entries: list[SizeEntry]) -> list[dict]:

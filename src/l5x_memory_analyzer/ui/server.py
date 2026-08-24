@@ -20,7 +20,9 @@ from flask import Flask, jsonify, request
 from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
 from l5x_memory_analyzer.parser.datatypes import DataTypeDef, parse_data_types
 from l5x_memory_analyzer.parser.load import L5XDocument, L5XFormatError, load_l5x, load_l5x_bytes
+from l5x_memory_analyzer.parser.logic import parse_rll_routines
 from l5x_memory_analyzer.parser.tags import parse_tags
+from l5x_memory_analyzer.parser.tasks import program_to_task_map
 from l5x_memory_analyzer.sizing.constants import MemoryModel, load_memory_model
 from l5x_memory_analyzer.sizing.controller_budgets import load_controller_budgets
 from l5x_memory_analyzer.sizing.report import build_report
@@ -60,6 +62,22 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
 
     budget = _BUDGET_TABLE.lookup(doc.processor_type)
 
+    # JSR call-tree info (2026-08-27, Phase 5). Byte totals already avoid
+    # double-counting a JSR target's cost (RoutineLogic.is_jsr_target --
+    # confirmed 2026-08-22) by simply never emitting that target routine
+    # as its own SizeEntry -- correct for bytes, but it means a called
+    # subroutine is otherwise INVISIBLE in the treemap, with no way to see
+    # its cost is folded into the caller. This surfaces the real caller ->
+    # target relationship (keyed by the SAME routine.path used as every
+    # routine_logic SizeEntry's path, so the frontend can join them) purely
+    # for display -- no sizing change, see parser/logic.py's
+    # jsr_target_names field docstring.
+    jsr_calls = {
+        r.path: sorted(r.jsr_target_names)
+        for r in parse_rll_routines(doc.root)
+        if r.jsr_target_names
+    }
+
     report_json = {
         "loaded": True,
         "file_name": doc.path.name,
@@ -68,8 +86,12 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         "processor_type": doc.processor_type,
         "target_type": doc.target_type,
         "is_controller_export": doc.is_controller_export,
-        "hierarchy": build_hierarchy(entries, data_types, model, {p: d for p, (dt, d) in tag_index.items()}),
+        "hierarchy": build_hierarchy(
+            entries, data_types, model, {p: d for p, (dt, d) in tag_index.items()},
+            program_to_task_map(doc.root),
+        ),
         "type_summary": type_utilization(entries),
+        "jsr_calls": jsr_calls,
         "entries": [
             {
                 "path": e.path,

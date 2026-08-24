@@ -104,6 +104,27 @@ def test_routine_logic_nests_under_a_routines_subgroup_not_flat_with_tags():
     assert all(c["tier"] == "estimated" for c in routines_group["children"])
 
 
+def test_programs_nest_under_task_when_mapping_supplied():
+    # Phase 5 Task-level grouping (2026-08-27): real L5X-stated
+    # Controller/Tasks/ScheduledProgram relationship, not a fitted byte
+    # formula -- a Task's total is just the sum of its Programs' bytes.
+    tree = build_hierarchy(ENTRIES, program_to_task={"MainProgram": "MainTask"})
+    group_names = [c["name"] for c in tree["children"]]
+    assert group_names == ["Controller Tags", "Task: MainTask"]
+
+    task_group = tree["children"][1]
+    assert task_group["value"] == 100  # LocalFlag(4) + LocalDint(96)
+    assert [c["name"] for c in task_group["children"]] == ["Program: MainProgram"]
+
+
+def test_program_with_no_known_task_stays_top_level():
+    # A real gap in the source L5X (or no mapping supplied at all) must
+    # never drop or hide a program -- it just isn't nested.
+    tree = build_hierarchy(ENTRIES, program_to_task={"SomeOtherProgram": "SomeTask"})
+    group_names = [c["name"] for c in tree["children"]]
+    assert group_names == ["Controller Tags", "Program: MainProgram"]
+
+
 def test_type_utilization_rolls_up_across_scopes():
     rows = type_utilization(ENTRIES)
     by_type = {r["data_type"]: r for r in rows}

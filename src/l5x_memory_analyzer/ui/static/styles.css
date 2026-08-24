@@ -213,6 +213,17 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
 .basis-FITTED { background: var(--basis-fitted); }
 .basis-UNKNOWN { background: var(--basis-unknown); }
 
+/* Theme-aware dim text, for use on the normal page background (list
+   table, etc). NOT for inside #tooltip -- that has a fixed dark
+   background regardless of page theme, see .text-dim-on-dark below. */
+.text-dim { color: var(--text-dim); font-size: 0.72rem; }
+
+/* Same purpose as .text-dim but tuned for #tooltip's fixed dark
+   background (#10131a/#fff, doesn't follow the page theme) -- the
+   theme-variable --text-dim would be too low-contrast there in light
+   mode. */
+.text-dim-on-dark { color: #9aa3b0; font-size: 0.72rem; }
+
 .tier-chip {
   display: inline-block;
   padding: 0.05rem 0.45rem;

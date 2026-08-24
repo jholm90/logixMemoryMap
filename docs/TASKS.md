@@ -548,24 +548,43 @@ on top of already-wired logic sizing.
       smoke-tested this pass. Rung-level entries deliberately don't exist
       (too granular to be useful visually, per this item's own parenthetical
       — not a gap).
-- 🟡 **Treemap drill: Task → Program → Routine — Program→Routine DONE,
-      Task level NOT.** `hierarchy.py` now nests each program's
-      `routine_logic` entries under their own "Routines" subgroup instead
-      of sitting as flat siblings next to that program's tags (previously
-      they were flattened together with no visual distinction at all).
-      Smoke-tested live via headless Chromium against a real 2-routine
-      file: breadcrumb `All > Program: MainProgram > Routines >
-      MainRoutine/SecondRoutine`, correct nesting and byte totals. Task
-      level is NOT done — same real blocker as the per-Task-overhead item
-      above: the parser has zero awareness of `Controller/Tasks/Task`, so
-      there's no real task→program mapping to group by yet, not an
-      oversight. Rung-level lists remain out of scope (too granular).
-- 🔴 Subroutine call-tree rollup (JSR chains sum correctly, no double-counting
-      shared subroutines called from multiple places — OQ-JSRSHARED). Note:
-      the DOUBLE-COUNTING PREVENTION itself is already correct at the engine
-      level (`RoutineLogic.is_jsr_target` already skips separate emission,
-      confirmed 2026-08-22) — what's still missing is the VISUAL call-tree
-      (which routine calls which), a real, separate UI feature not started.
+- ✅ **Treemap drill: Task → Program → Routine — DONE 2026-08-27, full
+      4-level drill confirmed live.** Corrected same-day: Task-level
+      grouping needed no parser "sizing awareness" at all, only realized
+      after James pushed on "what is holding you back" — `Controller/
+      Tasks/Task/ScheduledPrograms/ScheduledProgram` states the real
+      Task→Program relationship directly in the L5X (same category as
+      Module I/O's stated Connection sizes, no fitting involved), and a
+      Task's displayed total is just the sum of its already-correct
+      Programs' bytes, no new formula needed. New `parser/tasks.py`
+      (`parse_tasks`/`program_to_task_map`), wired through `hierarchy.py`'s
+      `_nest_programs_under_tasks` and `server.py`. Smoke-tested live via
+      headless Chromium against a real 3-task file: full breadcrumb
+      `All > Task: MainTask > Program: MainProgram > Routines >
+      MainRoutine`, correct nesting and byte totals at every level. This
+      is a DIFFERENT, easier problem than the still-open per-Task-overhead
+      BYTE-COST question above (that one genuinely needs real capture data
+      to disentangle NOP content cost from routine-shell cost) — display
+      grouping and cost formula are separate concerns, conflating them
+      was the earlier (wrong) reason this was marked blocked. Rung-level
+      lists remain out of scope (too granular, per this item's own
+      original parenthetical).
+- ✅ **Subroutine call-tree — DONE 2026-08-27 (lightweight version).** The
+      DOUBLE-COUNTING PREVENTION was already correct at the engine level
+      (`RoutineLogic.is_jsr_target` skips separate emission, confirmed
+      2026-08-22) but a JSR target routine was consequently invisible in
+      the UI with no way to see why. New `RoutineLogic.jsr_target_names`
+      (parser/logic.py) captures which routine(s) each routine calls;
+      `server.py` exposes it as `jsr_calls` (keyed by the same routine
+      path every treemap/list node already carries); both tooltip and
+      list view now show "Calls via JSR: X (cost already included above)"
+      on the calling routine. Smoke-tested live: `MainRoutine` correctly
+      shows the note, `SubTest` (its JSR target) correctly does NOT
+      appear as its own row — the "why isn't Sub visible" question is now
+      directly answerable in the UI. NOT a full interactive graph/tree
+      view (that's a bigger, separate UI paradigm) — this is the targeted
+      fix for OQ-JSRSHARED's actual concern (is the relationship visible
+      and explainable), not a general call-graph visualizer.
 - ✅ **"Estimated" badge/color on every logic-derived number in both treemap
       and list views — DONE 2026-08-27.** New `.tier-chip` (distinct purple,
       `--tier-estimated`) shown alongside (never merged with) the existing

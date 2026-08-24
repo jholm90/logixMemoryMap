@@ -483,6 +483,20 @@ function colorForType(dataType) {
   return `hsl(${hue}, 50%, 42%)`;
 }
 
+// JSR call-tree note (Phase 5, 2026-08-27): a routine's own byte total
+// already correctly folds in its JSR targets' cost (no double-counting --
+// see parser/logic.py's is_jsr_target/jsr_target_names docstrings), but a
+// called subroutine never appears as its own treemap/list node at all, so
+// without this note there's no way to see WHY. REPORT.jsr_calls is keyed
+// by the exact same routine.path every routine leaf's node.path already
+// carries, so this is a direct lookup, not a search.
+function jsrCallsNote(node) {
+  const targets = REPORT && REPORT.jsr_calls && REPORT.jsr_calls[node.path];
+  if (!targets || !targets.length) return "";
+  return `<br><span class="text-dim-on-dark">Calls via JSR: ${targets.join(", ")} ` +
+    `(cost already included above)</span>`;
+}
+
 function showTooltip(ev, node) {
   const tooltip = document.getElementById("tooltip");
   tooltip.classList.remove("hidden");
@@ -500,6 +514,7 @@ function showTooltip(ev, node) {
       `${fmtBytes(node.value)}<br>` +
       (node.tier === "estimated" ? `<span class="tier-chip">ESTIMATED</span>` : "") +
       `<span class="basis-chip basis-${node.basis}">${node.basis}</span>` +
+      jsrCallsNote(node) +
       (isDrillable(node) ? " (click to drill in)" : "");
   }
 }
@@ -526,6 +541,7 @@ function currentLevelRows() {
       pct_of_total: total ? (bytes / total) * 100 : 0,
       basis: c.basis || "",
       tier: c.tier || "",
+      jsr_targets: (REPORT && REPORT.jsr_calls && REPORT.jsr_calls[c.path]) || null,
     };
   });
 }
@@ -541,8 +557,9 @@ function renderList() {
   tbody.innerHTML = "";
   for (const e of rows) {
     const tr = document.createElement("tr");
+    const jsrNote = e.jsr_targets ? `<br><span class="text-dim">Calls via JSR: ${e.jsr_targets.join(", ")}</span>` : "";
     tr.innerHTML =
-      `<td>${e.name}</td>` +
+      `<td>${e.name}${jsrNote}</td>` +
       `<td>${e.data_type}</td>` +
       `<td class="num">${Math.round(e.bytes).toLocaleString()}</td>` +
       `<td class="num">${e.pct_of_total.toFixed(2)}%</td>` +

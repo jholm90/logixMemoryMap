@@ -166,6 +166,11 @@ def test_jsr_target_routine_not_double_counted():
     by_name = {r.routine_name: r for r in routines}
     assert by_name["SubTest"].is_jsr_target is True
     assert by_name["MainRoutine"].is_jsr_target is False
+    # Phase 5 call-tree UI (2026-08-27): jsr_target_names captures WHICH
+    # routine(s) THIS routine calls, distinct from is_jsr_target (which
+    # only says whether some other routine calls this one).
+    assert by_name["MainRoutine"].jsr_target_names == frozenset({"SubTest"})
+    assert by_name["SubTest"].jsr_target_names == frozenset()
 
     entries, errors = build_report(root, MODEL)
     assert errors == []
