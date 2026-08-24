@@ -1032,6 +1032,47 @@ generator already covers them, just waiting on the next capture batch.
     (delta=-20, single point, unexplained) — too little to fit anything
     yet. Revisit once the retried rows land.
 
+14d. **OQ-STRINGCONSTFAIL (new, 2026-08-26, ALL 8 files in the
+    Constant-flag x processor batch failed L5X→ACD conversion).** James:
+    "check the string test acd failures and see if there is something you
+    want clarification on the l5x generation." `gen_string_closure.py`'s
+    `group_constant_flag` batch (`stringconst_*`, 8 files: builtin/custom
+    x const/nonconst x L8/5069) failed 8/8, `XMLSrv_E_IMPORT_ABORTED_
+    NO_CHANGES`, no further detail reaches `convert_log.csv` (the .NET SDK
+    wrapper only logs "See error log" with no error-log content
+    captured). Investigated and ruled out:
+    - **Constant value itself**: both `const` (true) and `nonconst`
+      (false) variants failed identically — the real corpus has a
+      confirmed working `Constant="true"` STRING example
+      (`samples/local/DnR_Personal/Fisher_Synergy_Bead_20240725.L5X`'s
+      `Comma` tag, `Constant="true" ExternalAccess="Read/Write"`, same
+      shape as this project's generated tags) — Constant isn't the sole
+      trigger since even the plain `false` case failed too.
+    - **Processor validity broadly**: both L8 (1756-L85E) and 5069
+      (5069-L306ER) variants failed. 5069-L306ER alone has succeeded in
+      hundreds of prior conversions across this whole project, so 5069
+      itself isn't the trigger either.
+    - **XML encoding/malformation**: byte-level check clean, no non-ASCII,
+      no malformed CDATA.
+    - **ProductCode mismatch**: found and fixed a REAL bug while chasing
+      this (wrapper.py's per-catalog ProductCode was wrong for every
+      processor except the untouched default — see the wrapper.py commit
+      2026-08-26 sourced from `samples/local/fw_versions/`'s real
+      exports), but the SAME kind of mismatch was present in hundreds of
+      prior successful 5069-L306ER conversions, so it's very unlikely to
+      be the actual cause here. Regenerated all 8 files with the
+      corrected ProductCode anyway to eliminate it as a variable — still
+      awaiting a fresh conversion attempt.
+    **What's actually needed to resolve this**: the real on-screen
+    Studio-5000 import-error text (or the local "error log" the SDK
+    exception references), which never reaches `convert_log.csv` — asked
+    James directly for this rather than guessing further. Also noted:
+    `stringoverhead_namelen32_n050`'s 3 FAILED rows in this same push are
+    OLD (timestamps from earlier 2026-08-23, before the double-underscore
+    fix landed) — the currently-committed file is already clean (no `__`
+    present), just needs a fresh reconversion against the current L5X, not
+    a new investigation.
+
 14. **OQ-OPERANDTYPE (new, MAJOR, found 2026-08-25 mining already-captured
     but never-analyzed `typesweep_*` data — NOT wired, needs parser
     architecture work).** The entire `logic_instructions.weights` table
