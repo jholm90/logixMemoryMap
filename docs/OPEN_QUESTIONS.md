@@ -428,6 +428,22 @@ generator already covers them, just waiting on the next capture batch.
    it from the required list" ask was already satisfied by how the
    original entry was worded.
 
+   **"Does an M motion processor have more overhead?" — ANSWERED, no,
+   2026-08-27.** James: "the 'M' compactlogix motion processors dont
+   need more overhead memory." Directly confirmed by the 9-point batch
+   above: `v35_l18er` (base, non-M) and `v35_l18erm` (M-suffix) are a
+   clean, real base-vs-M pair on the SAME catalog family/memory tier —
+   both read **exactly 69,600**, zero difference. This was one of
+   James's own 3 original questions this whole batch was staged to
+   answer (2026-08-25 entry above); answered here for the 1769 family
+   specifically. The originally-planned `v35_l306er`/`l306erm` pair
+   (5069 family) would extend this same confirmation cross-platform, but
+   isn't needed to answer the question itself — already answered once,
+   real, clean, from a genuinely matched pair. `l24er_qbfc1b` vs
+   `l27erm_qbfc1b` (both 98,944, one plain one M+QBFC1B) is a second,
+   independent confirmation of the same thing at a different tier —
+   2/2 real comparisons now agree, not just 1.
+
 3. **OQ-AXISDEEP — FULLY RESOLVED 2026-08-25.** CIP/virtual axis, used
    everywhere in real programs, 0.01%-tolerance target. **Partially
    resolved 2026-08-23** — the pure predefined-structure constants
