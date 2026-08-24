@@ -305,6 +305,23 @@ generator already covers them, just waiting on the next capture batch.
    invisible/forgotten. `actual_bytes` for all 29 stays blank, ready for
    capture, same as every other pending row in the manifest.
 
+   **2026-08-26, real tooling risk found for THIS batch specifically (see
+   OQ-STRINGCONSTFAIL for the full derivation).** Studio 5000's
+   same-instance "switch file via Ctrl+O without closing" batch-capture
+   flow throws a real error (`Name collision: imported Module 'Local'
+   renamed to 'Local1'` → `Required property 'Port' was missing`) the
+   first time consecutive files have a DIFFERENT processor identity —
+   confirmed by James pasting the actual import output for a similar
+   L8/5069-switching batch. Every prior capture in this project's history
+   kept the same processor between consecutive files, so this never
+   surfaced before. **This batch is 29 files that ALL vary
+   processor/firmware by design** — if captured via the same fast
+   same-instance switch flow used for everything else, expect this
+   collision on every processor change, not just occasionally. Likely
+   needs a full Studio 5000 close/reopen (not just Ctrl+O) specifically
+   when the processor type changes between consecutive files in this
+   batch — a capture-tooling change, not an L5X-generation one.
+
 3. **OQ-AXISDEEP — FULLY RESOLVED 2026-08-25.** CIP/virtual axis, used
    everywhere in real programs, 0.01%-tolerance target. **Partially
    resolved 2026-08-23** — the pure predefined-structure constants
@@ -1032,8 +1049,9 @@ generator already covers them, just waiting on the next capture batch.
     (delta=-20, single point, unexplained) — too little to fit anything
     yet. Revisit once the retried rows land.
 
-14d. **OQ-STRINGCONSTFAIL (new, 2026-08-26, ALL 8 files in the
-    Constant-flag x processor batch failed L5X→ACD conversion).** James:
+14d. **OQ-STRINGCONSTFAIL — RESOLVED 2026-08-26, real cause was tooling,
+    not the L5X content; the processor-varying design itself was
+    unnecessary and has been dropped.** James:
     "check the string test acd failures and see if there is something you
     want clarification on the l5x generation." `gen_string_closure.py`'s
     `group_constant_flag` batch (`stringconst_*`, 8 files: builtin/custom
@@ -1063,15 +1081,49 @@ generator already covers them, just waiting on the next capture batch.
       be the actual cause here. Regenerated all 8 files with the
       corrected ProductCode anyway to eliminate it as a variable — still
       awaiting a fresh conversion attempt.
-    **What's actually needed to resolve this**: the real on-screen
-    Studio-5000 import-error text (or the local "error log" the SDK
-    exception references), which never reaches `convert_log.csv` — asked
-    James directly for this rather than guessing further. Also noted:
-    `stringoverhead_namelen32_n050`'s 3 FAILED rows in this same push are
-    OLD (timestamps from earlier 2026-08-23, before the double-underscore
-    fix landed) — the currently-committed file is already clean (no `__`
-    present), just needs a fresh reconversion against the current L5X, not
-    a new investigation.
+    **Real cause, from James pasting the actual Studio 5000 import output
+    (the on-screen text never reached `convert_log.csv`):**
+    ```
+    Warning: Line 11: Name collision: imported Module 'Local' renamed to 'Local1'
+    Error: Line 20: Required property 'Port' was missing.
+    ```
+    Not a bug in the L5X — Studio 5000 was treating this as an IMPORT
+    into whatever project was ALREADY open in the same running Designer
+    instance (the AHK-driven "switch file via Ctrl+O without closing"
+    batch-capture flow this project relies on for speed), not a fresh
+    Open. Every prior file in this whole project's capture history kept
+    the same Controller/processor identity between consecutive files, so
+    the "Local" module always matched cleanly. The first time a batch
+    item's PROCESSOR differs from whatever was previously loaded (L85E or
+    5069-L306ER after an L81E file), the same-instance switch can't
+    replace the "Local" module in place — it renames the incoming one to
+    "Local1" and the renamed module then fails structural validation.
+    This would affect ANY processor-varying file run through the
+    same-instance switch flow, including the 29 `fw_baseline` files still
+    awaiting capture.
+
+    **Design itself corrected, not just the tooling gap worked around**
+    (James, direct field knowledge, 2026-08-26): "5069 and l8/l9
+    processors use the same calculations for constant strings ... don't
+    know why you would change that all of a sudden." The processor
+    variation in this test was never a real open question — L8/L9/5069
+    compute identically here. Real fact for the record, unrelated to
+    sizing but worth keeping: **L8/L9/5069 can `MOV` a STRING tag
+    directly; older L7/1769 processors required `COP` instead.**
+    `group_constant_flag` rebuilt to drop the processor axis entirely and
+    use the same single default processor (1756-L81E) every other file in
+    this project uses — 4 files (builtin/custom × const/nonconst),
+    regenerated, lint-clean, awaiting capture. The "Local"-module-collision
+    tooling gap is still real and still applies to the 29 `fw_baseline`
+    files (those genuinely need to vary processor, by design) — that
+    part of this finding stays open and relevant there, just no longer
+    blocking this particular test.
+
+    Also noted: `stringoverhead_namelen32_n050`'s 3 FAILED rows in this
+    same push are OLD (timestamps from earlier 2026-08-23, before the
+    double-underscore fix landed) — the currently-committed file is
+    already clean (no `__` present), just needs a fresh reconversion
+    against the current L5X, not a new investigation.
 
 14. **OQ-OPERANDTYPE (new, MAJOR, found 2026-08-25 mining already-captured
     but never-analyzed `typesweep_*` data — NOT wired, needs parser

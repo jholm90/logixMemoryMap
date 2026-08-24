@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="CStrConstL5069Const" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 24 00:46:49 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="CStrConstL5069Const" ProcessorType="5069-L306ER" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 24 00:46:49 2026" LastModifiedDate="Mon Aug 24 00:46:49 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="CStrConstNonconst" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 24 01:06:22 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="CStrConstNonconst" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 24 01:06:22 2026" LastModifiedDate="Mon Aug 24 01:06:22 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -13,16 +13,13 @@
     </DataType>
 </DataTypes>
 <Modules>
-<Module Name="Local" CatalogNumber="5069-L306ER" Vendor="1" ProductType="14" ProductCode="196" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
 <EKey State="Disabled"/>
 <Ports>
-<Port Id="1" Address="0" Type="5069" Upstream="false">
-<Bus Size="32"/>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
 </Port>
-<Port Id="3" Type="Ethernet" Upstream="false">
-<Bus/>
-</Port>
-<Port Id="4" Type="Ethernet" Upstream="false">
+<Port Id="2" Type="Ethernet" Upstream="false">
 <Bus/>
 </Port>
 </Ports>
@@ -33,7 +30,7 @@
 
 </AddOnInstructionDefinitions>
 <Tags>
-      <Tag Name="CStrConstTag" TagType="Base" DataType="CStrConstTest" Constant="true" ExternalAccess="Read/Write">
+      <Tag Name="CStrConstTag" TagType="Base" DataType="CStrConstTest" Constant="false" ExternalAccess="Read/Write">
         <Data Format="L5K">
 <![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
 		]]]>

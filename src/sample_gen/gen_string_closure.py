@@ -46,9 +46,6 @@ from sample_gen.wrapper import build_l5x
 TAGS_OUT = Path(__file__).parent.parent.parent / "samples" / "generated" / "tags"
 LOGIC_OUT = Path(__file__).parent.parent.parent / "samples" / "generated" / "logic"
 
-L8_PROCESSOR = "1756-L85E"
-L5069_PROCESSOR = "5069-L306ER"
-
 
 def _write(out_dir: Path, l5x: str, out_name: str, description: str, category: str) -> int:
     out_path = out_dir / f"{out_name}.L5X"
@@ -86,30 +83,43 @@ def group_typename_length() -> int:
 
 
 # ---------------------------------------------------------------------------
-# B. Constant="true" x processor family (L8 vs 5069), builtin + custom
+# B. Constant="true", builtin + custom -- single processor (1756-L81E, the
+#    same default every other file in this project uses).
+#
+#    2026-08-26 CORRECTION (James, direct field knowledge): the original
+#    version of this group crossed Constant with processor family (L8 vs
+#    5069), which was unnecessary and actively broke the capture batch --
+#    "5069 and l8/l9 processors use the same calculations for constant
+#    strings ... don't know why you would change that all of a sudden."
+#    Real fact, logged for the record: L8/L9/5069 can MOV a STRING tag
+#    directly; older L7/1769 processors required COP instead. Not a
+#    sizing question, and not something that needed a processor-varying
+#    test here -- dropped back to the same single default processor every
+#    other file uses. The processor-varying files also happened to
+#    surface a real tooling issue (a "Local" module name collision when
+#    Studio 5000's same-instance file-switch changes processor identity
+#    mid-batch, see OQ-STRINGCONSTFAIL) -- moot now that this group no
+#    longer varies processor at all.
 # ---------------------------------------------------------------------------
 
 def group_constant_flag() -> int:
     n = 0
     custom_type = custom_string_type_xml("CStrConstTest", 82)
-    for proc_label, processor in [("l8", L8_PROCESSOR), ("l5069", L5069_PROCESSOR)]:
-        for const_label, const in [("const", True), ("nonconst", False)]:
-            builtin_tag = tag_xml("StrConstTag", "STRING", string_max_len=82, constant=const)
-            l5x = build_l5x(target_name=f"StrConst{proc_label.title()}{const_label.title()}",
-                             tags_xml=builtin_tag, processor_type=processor)
-            n += _write(TAGS_OUT, l5x, f"stringconst_builtin_{const_label}_{proc_label}",
-                        f"1 built-in STRING tag, Constant={const}, processor {processor} -- "
-                        f"James: does marking a STRING tag Constant change its size, and does that "
-                        f"differ between L8/5069 processor families?",
-                        "string_tagoverhead")
+    for const_label, const in [("const", True), ("nonconst", False)]:
+        builtin_tag = tag_xml("StrConstTag", "STRING", string_max_len=82, constant=const)
+        l5x = build_l5x(target_name=f"StrConst{const_label.title()}", tags_xml=builtin_tag)
+        n += _write(TAGS_OUT, l5x, f"stringconst_builtin_{const_label}",
+                    f"1 built-in STRING tag, Constant={const} -- James: does marking a STRING tag "
+                    f"Constant change its size",
+                    "string_tagoverhead")
 
-            custom_tag = tag_xml("CStrConstTag", "CStrConstTest", string_max_len=82, constant=const)
-            l5x = build_l5x(target_name=f"CStrConst{proc_label.title()}{const_label.title()}",
-                             tags_xml=custom_tag, extra_datatypes_xml=custom_type, processor_type=processor)
-            n += _write(TAGS_OUT, l5x, f"stringconst_custom_{const_label}_{proc_label}",
-                        f"1 custom string (maxlen=82) tag, Constant={const}, processor {processor} -- "
-                        f"same Constant/processor question for a custom StringFamily type",
-                        "string_tagoverhead")
+        custom_tag = tag_xml("CStrConstTag", "CStrConstTest", string_max_len=82, constant=const)
+        l5x = build_l5x(target_name=f"CStrConst{const_label.title()}",
+                         tags_xml=custom_tag, extra_datatypes_xml=custom_type)
+        n += _write(TAGS_OUT, l5x, f"stringconst_custom_{const_label}",
+                    f"1 custom string (maxlen=82) tag, Constant={const} -- same Constant question "
+                    f"for a custom StringFamily type",
+                    "string_tagoverhead")
     return n
 
 
