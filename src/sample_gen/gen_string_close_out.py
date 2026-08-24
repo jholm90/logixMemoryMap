@@ -194,10 +194,49 @@ def group_builtin_udtmember_scaling() -> int:
     return n_files
 
 
+# ---------------------------------------------------------------------------
+# E. Builtin-STRING-as-UDT-member disentangle, round 2 (2026-08-26).
+#
+# Group D's own results came back with a 2-D surface, not a 1-D one:
+#   correction(m, n=1) = 2m - 4  (m=1:-2, m=2:0, m=3:+2)
+#   correction(m=1, n) = -2n    (n=1/3/10/20 all fit)
+# Both slices only ever vary ONE axis while holding the other at 1 -- a
+# bilinear model (correction = a*m*n + b*m + c*n + d) can't be told apart
+# from an additive one (correction = f(m) + g(n)) without a point where
+# BOTH m>1 AND n>1. These 2 files are exactly that: same 2-/3-member UDTs
+# as group D, but now at 3 instances instead of 1, holding member count
+# fixed at group D's values and moving n off of 1 for the first time.
+# ---------------------------------------------------------------------------
+
+def group_builtin_udtmember_disentangle() -> int:
+    n_files = 0
+    for member_count in [2, 3]:
+        members = [MemberSpec(f"S{i}", "STRING") for i in range(member_count)]
+        udt = udt_xml(f"UdtBuiltinStr{member_count}MembersN3", members)
+        instances = 3
+        tags = "\n".join(
+            tag_xml(f"UBSM3_{i}", f"UdtBuiltinStr{member_count}MembersN3", udt_members=members)
+            for i in range(instances)
+        )
+        l5x = build_l5x(
+            target_name=f"StrUdtBuiltin{member_count}MembersN3", tags_xml=tags, extra_datatypes_xml=udt
+        )
+        n_files += _write(
+            UDT_OUT, l5x, f"stringclose_udtmember_builtin_{member_count}members_n03",
+            f"UDT with {member_count} built-in STRING members, {instances} instances -- disentangles "
+            f"group D's two 1-D slices (correction(m,n=1)=2m-4, correction(m=1,n)=-2n): the first real "
+            f"point with BOTH member count > 1 AND instance count > 1, needed to tell a bilinear "
+            f"correction surface (a*m*n+b*m+c*n+d) apart from a simple additive one (f(m)+g(n))",
+            "udt",
+        )
+    return n_files
+
+
 if __name__ == "__main__":
     total = 0
     total += group_dense_namelen()
     total += group_udtmember_namelen_crosscheck()
     total += group_udtmember_maxlen_sweep()
     total += group_builtin_udtmember_scaling()
+    total += group_builtin_udtmember_disentangle()
     print(f"\nTotal files: {total}")
