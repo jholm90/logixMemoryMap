@@ -328,13 +328,27 @@ def parse_rll_routines(root: ET.Element) -> list[RoutineLogic]:
                 continue
             routine_name = routine_el.get("Name")
             rll_content = routine_el.find("RLLContent")
-            if rll_content is None:
-                continue
             rung_texts = []
-            for rung_el in rll_content.findall("Rung"):
-                text_el = rung_el.find("Text")
-                if text_el is not None and text_el.text:
-                    rung_texts.append(text_el.text)
+            # 2026-08-27, OQ-EMPTYROUTINE: a self-closing <Routine Type="RLL"/>
+            # (no RLLContent child at all) is a real, common shape -- 15+ real
+            # corpus files have one -- and was being silently dropped here
+            # entirely, so it never got a RoutineLogic entry and never
+            # contributed to n_plain_routines in report.py's Task/Program/
+            # Routine shell decomposition. That's wrong: real data (emptyroutine_
+            # n01/n02/n03, captured 2026-08-27) shows a self-closing routine
+            # still pays the same real per-extra-routine shell cost as an
+            # ordinary one (272-ish/routine, matching the already-wired
+            # task_program_overhead.routine_extra exactly, within the usual
+            # small-N noise) -- it just has zero content cost, which falls out
+            # naturally once it's counted as a routine with 0 rungs instead of
+            # not counted at all. Emitting it here (rung_texts=[]) rather than
+            # skipping lets the existing shell-decomposition math handle it
+            # for free, no new constant needed.
+            if rll_content is not None:
+                for rung_el in rll_content.findall("Rung"):
+                    text_el = rung_el.find("Text")
+                    if text_el is not None and text_el.text:
+                        rung_texts.append(text_el.text)
             per_routine_rung_texts[routine_name] = rung_texts
 
         program_jsr_targets: set[str] = set()

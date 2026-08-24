@@ -2149,21 +2149,43 @@ generator already covers them, just waiting on the next capture batch.
     prediction yet; it surfaces each module as a non-summed `SizeError`
     (path `modules/<name>`) stating its raw L5X sizes, same treatment
     AXIS_CIP_DRIVE/MOTION_GROUP got before their own real formulas
-    landed. **Next step, needs James, not more generation:** since a
-    synthetic module can't be authored from scratch the way tag/UDT
-    tests can (module Catalog/Connection/EKey XML is hardware-specific
-    and this project has zero confirmed template for inventing a NEW one
-    safely — every module example is a real corpus file, not something
-    this project's generators know how to build), the fastest real path
-    is a small, targeted real-world test: capture the exact Capacity-tab
-    delta between two of James's own real project variants that differ
-    ONLY in one added/removed I/O module (or, if he wants a controlled
-    synthetic version, he'd need to add one module to an otherwise-blank
-    test project in Studio 5000 himself and export it, since only Logix
-    Designer itself can generate valid module/Connection XML for a real
-    catalog number). Once even 2-3 such deltas exist, the per-module/
-    per-connection overhead constant can be fit directly against these
-    already-exact raw sizes — a much smaller fitting problem than usual.
+    landed.
+
+    **CORRECTED 2026-08-27 — synthetic module generation DOES work, and
+    now has 2 real deltas.** The claim below (that a synthetic module
+    "can't be authored from scratch") was already stale by the time it
+    was written — `gen_module_prototype.py` (built same session) had
+    already produced 3 genericized-but-structurally-verbatim module test
+    files from real corpus XML, matching the same "isolate one variable"
+    convention every other category uses; James: "generate a l5x file for
+    each module from your sample dB... you have samples you should be
+    able to generate those tests" (correcting my own wrong framing that
+    this needed him to hand-supply deltas first). Extended to 5 files
+    this pass via `samples/local/module_extraction.csv`'s real high-
+    frequency catalog numbers, each re-verified against its own real
+    corpus source before genericizing (never guessed): a mixed Point I/O
+    bus (1734-IB8/C, 1734-OB8/C rack-optimized + 1734-IE2C/C direct-
+    connection, confirming both connection styles coexist on one real
+    adapter bus) and a CIP Safety module (1734-IB8S/B — genuinely
+    different shape: `SafetyNetwork` attribute, `ConfigData` not
+    `ConfigTag`, dual `SafetyInput`/`SafetyOutput` Connections with real
+    timing attributes). Motion/Kinetix (2198-series) and VFD (PowerFlex
+    525-EENET) shapes deliberately deferred — need their own real-shape
+    research first, not a safe reuse of anything validated so far.
+
+    **First 2 real per-module deltas landed 2026-08-27** (captured the
+    normal way, via the normal pipeline, same as every other category):
+    `moduleproto_1756ib16_slot1` (1756-IB16, 16-pt digital in, backplane)
+    = **1,712 bytes** real cost beyond baseline+shell. `moduleproto_
+    1734aentr_cpu_ethernet` (1734-AENTR/C Point I/O adapter alone, no
+    downstream modules, off the CPU's embedded Ethernet port) = **1,696
+    bytes**. Two points, two different module types — not enough to fit
+    a general per-module/per-connection formula yet (need several more,
+    ideally isolating Connection-size scaling within one module family),
+    but real progress: the "need James to hand-supply deltas" blocker is
+    resolved, this is just the normal capture pipeline now. Once the 2
+    new module files above (and the earlier EN2T+downstream file) land
+    their own captures, there'll be enough points to start fitting.
     Produced/consumed tags (OQ-PRODCONS) remain completely untouched,
     same as before this pass.
 
@@ -2191,8 +2213,33 @@ generator already covers them, just waiting on the next capture batch.
     data preparation — no formula wired, no new sizing claim, exactly
     what was asked for.
 
-18. **OQ-EMPTYROUTINE (new, 2026-08-24, found while investigating the
-    `l81_v35` fw_baseline manual entry).** `l81_v35` (1756-L81E, firmware
+18. **OQ-EMPTYROUTINE — WIRED 2026-08-27.** `emptyroutine_n01/n02/n03`
+    (1/2/3 self-closing routines, no firmware variable) landed: actual
+    18,884 / 19,148 / 19,412, linear at exactly **264/extra self-closing
+    routine**. That rate is within ordinary small-N noise of the already-
+    wired `task_program_overhead.routine_extra` (272) — meaning a self-
+    closing routine costs the SAME real per-extra-routine shell tax as an
+    ordinary one, it just has zero content cost, which falls out for free
+    once it's actually counted as a routine. Root cause and fix: `parser/
+    logic.py`'s `parse_rll_routines` was silently `continue`-ing past any
+    `<Routine Type="RLL"/>` with no `RLLContent` child instead of counting
+    it with 0 rungs — so it never became a `RoutineLogic` entry and never
+    contributed to `report.py`'s `n_plain_routines` count at all. Fixed:
+    emit it with `rung_texts=[]` instead of skipping. Live-recomputed
+    against all 3 disentangle files: 0.00% / 0.04% / 0.08% residual. This
+    also retroactively fixes every other self-closing-routine real file in
+    the corpus that was previously flat-predicting `empty_project_baseline`
+    with no routine shell at all — `l81_v34`/`v35_l306er` (etc.) now land
+    exactly/near-exactly on baseline+shell instead of missing it entirely;
+    `l81_v30/v31/v32/v33`'s real firmware-specific residual (see
+    OQ-BASELINE-PROCFW) shrank accordingly since the routine-shell
+    component is no longer bundled into what looked like "firmware
+    variance." Broad regression: every affected file's gap shrank or held,
+    none got worse (verified via before/after full-manifest diff).
+
+    **Original entry below, kept for history (2026-08-24, found while
+    investigating the `l81_v35` fw_baseline manual entry).** `l81_v35`
+    (1756-L81E, firmware
     35.05 — the SAME firmware every other confirmed file in the corpus
     uses) showed a real +4,816 gap against the engine's flat 13,296
     prediction, even though this file has zero tags/UDTs/logic content —
