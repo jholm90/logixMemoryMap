@@ -1989,6 +1989,30 @@ generator already covers them, just waiting on the next capture batch.
     Produced/consumed tags (OQ-PRODCONS) remain completely untouched,
     same as before this pass.
 
+    **2026-08-27, comparison table prepped (James: "i know you dont have
+    modules yet but i want you to prep this data").** `parser/modules.py`
+    extended to also capture, per module: `slot` (Port Address) and the
+    real Rockwell module-profile string off each of
+    ConfigTag/InputTag/OutputTag's own `<Data Format="Decorated">
+    <Structure DataType="...">` body (e.g. `AB:5000_DI16:C:0` for config,
+    `AB:5000_DI16:I:0` for input — same base module type, different
+    suffix per I/O direction, kept as 3 separate fields per James's ask
+    to keep in/out/config separately marked throughout, not collapsed).
+    New `scripts/extract_module_data.py` walks every real L5X in
+    `samples/local/` and writes one row per real module to
+    `samples/local/module_extraction.csv` — itself gitignored (derived
+    from real client files, same policy as every other local-corpus
+    artifact) — with `input_profile`/`input_bytes`,
+    `output_profile`/`output_bytes`, `config_profile`/`config_bytes`,
+    `stated_total_bytes`, and a deliberately BLANK `actual_module_bytes`
+    column: the checkable comparison slot for whenever a real per-module
+    Capacity delta lands (see the "next step" above — unchanged, still
+    needs a real capture, not more prep). First run: **1,212 real module
+    rows across 30 of James's own real files, 131 distinct catalog
+    numbers, 690 rows with at least one profile string captured.** Pure
+    data preparation — no formula wired, no new sizing claim, exactly
+    what was asked for.
+
 18. **OQ-EMPTYROUTINE (new, 2026-08-24, found while investigating the
     `l81_v35` fw_baseline manual entry).** `l81_v35` (1756-L81E, firmware
     35.05 — the SAME firmware every other confirmed file in the corpus

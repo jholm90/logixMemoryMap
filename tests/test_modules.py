@@ -21,7 +21,19 @@ _MODULES_XML = """
         <Communications>
           <ConfigTag ConfigSize="64" ExternalAccess="Read/Write">
             <Data Format="L5K"><![CDATA[[68,160]]]></Data>
+            <Data Format="Decorated">
+              <Structure DataType="AB:5000_DI16:C:0">
+                <DataValueMember Name="Dummy" DataType="SINT" Value="0"/>
+              </Structure>
+            </Data>
           </ConfigTag>
+          <InputTag ExternalAccess="Read/Write">
+            <Data Format="Decorated">
+              <Structure DataType="AB:5000_DI16:I:0">
+                <DataValueMember Name="RunMode" DataType="BOOL" Value="0"/>
+              </Structure>
+            </Data>
+          </InputTag>
           <Connections>
             <Connection Name="Standard" RPI="10000" Type="Input" InputSize="4" OutputSize="0"/>
           </Connections>
@@ -62,6 +74,26 @@ def test_module_config_and_connection_sizes_parsed_from_real_attributes():
     assert ib16.connection_input_bytes == 4
     assert ib16.connection_output_bytes == 0
     assert ib16.stated_total_bytes == 68
+    assert ib16.slot == 1
+
+
+def test_module_profiles_kept_separate_per_io_direction():
+    # James, 2026-08-27: "add records from the L5X module profile as a
+    # checkable item" -- in/config profiles are DIFFERENT strings (same
+    # base module type, different :I:/:C: suffix), not one shared value.
+    modules = parse_modules(_root(_MODULES_XML))
+    ib16 = next(m for m in modules if m.name == "IB16_1")
+    assert ib16.config_profile == "AB:5000_DI16:C:0"
+    assert ib16.input_profile == "AB:5000_DI16:I:0"
+    assert ib16.output_profile is None  # this module has no OutputTag at all
+
+
+def test_module_with_no_ports_has_no_slot():
+    modules = parse_modules(_root(_MODULES_XML))
+    safety = next(m for m in modules if m.name == "Safety_1")
+    assert safety.slot is None
+    assert safety.config_profile is None
+    assert safety.input_profile is None
 
 
 def test_module_with_multiple_connections_sums_all_of_them():

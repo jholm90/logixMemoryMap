@@ -46,9 +46,22 @@ from dataclasses import dataclass
 class ModuleInfo:
     name: str
     catalog_number: str
+    slot: int | None
     connection_input_bytes: int
     connection_output_bytes: int
     config_bytes: int
+    # Rockwell's own internal module-profile identifier, e.g.
+    # "AB:5000_DI16:I:0" / "AB:5000_DI16:C:0" -- the Structure DataType on
+    # each of InputTag/OutputTag/ConfigTag's own <Data Format="Decorated">
+    # body (2026-08-27, James: "add records from the L5X module profile as
+    # a checkable item"). Kept separately per I/O direction rather than
+    # collapsed into one field -- a module's Input and Config profiles are
+    # DIFFERENT strings (same base type, different :I:/:O:/:C: suffix),
+    # not one shared identifier, and James asked for in/out/config kept
+    # separately marked throughout, not just for the byte counts.
+    input_profile: str | None
+    output_profile: str | None
+    config_profile: str | None
 
     @property
     def stated_total_bytes(self) -> int:
@@ -62,6 +75,23 @@ def _int_attr(el: ET.Element, name: str) -> int:
     return int(val) if val is not None else 0
 
 
+def _structure_datatype(tag_el: ET.Element | None) -> str | None:
+    """The module-profile string off a <ConfigTag>/<InputTag>/<OutputTag>'s
+    own <Data Format="Decorated"><Structure DataType="..."> body, if
+    present. Real shape confirmed 2026-08-27 against samples/local/
+    DnR_Personal/*.L5X -- e.g. ConfigTag's own Structure carries
+    "AB:5000_DI16:C:0", InputTag's carries "AB:5000_SDI8:I:0" (same base
+    module type, different suffix per I/O direction)."""
+    if tag_el is None:
+        return None
+    for data_el in tag_el.findall("Data"):
+        if data_el.get("Format") == "Decorated":
+            structure_el = data_el.find("Structure")
+            if structure_el is not None:
+                return structure_el.get("DataType")
+    return None
+
+
 def parse_modules(root: ET.Element) -> list[ModuleInfo]:
     modules_el = root.find("Controller/Modules")
     if modules_el is None:
@@ -72,8 +102,23 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
         name = module_el.get("Name", "")
         catalog = module_el.get("CatalogNumber", "")
 
+        slot: int | None = None
+        ports_el = module_el.find("Ports")
+        if ports_el is not None:
+            port_el = ports_el.find("Port")
+            if port_el is not None and port_el.get("Address") is not None:
+                try:
+                    slot = int(port_el.get("Address"))
+                except ValueError:
+                    slot = None
+
         input_bytes = 0
         output_bytes = 0
+        input_profile: str | None = None
+        output_profile: str | None = None
+        config_bytes = 0
+        config_profile: str | None = None
+
         comm_el = module_el.find("Communications")
         if comm_el is not None:
             connections_el = comm_el.find("Connections")
@@ -82,15 +127,18 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
                     input_bytes += _int_attr(conn_el, "InputSize")
                     output_bytes += _int_attr(conn_el, "OutputSize")
 
-        config_bytes = 0
-        if comm_el is not None:
             config_tag_el = comm_el.find("ConfigTag")
             if config_tag_el is not None:
                 config_bytes = _int_attr(config_tag_el, "ConfigSize")
+                config_profile = _structure_datatype(config_tag_el)
+
+            input_profile = _structure_datatype(comm_el.find("InputTag"))
+            output_profile = _structure_datatype(comm_el.find("OutputTag"))
 
         result.append(ModuleInfo(
-            name=name, catalog_number=catalog,
+            name=name, catalog_number=catalog, slot=slot,
             connection_input_bytes=input_bytes, connection_output_bytes=output_bytes,
             config_bytes=config_bytes,
+            input_profile=input_profile, output_profile=output_profile, config_profile=config_profile,
         ))
     return result
