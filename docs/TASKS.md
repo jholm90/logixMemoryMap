@@ -416,8 +416,21 @@ that's the actual remaining Phase 4/4b implementation work.
       scaling to 15, all-3-tier mixes, literal position, REAL-vs-DINT
       cross-check, a stacked-factors ladder rebuilding the exact
       problematic expression one factor at a time, and a 15-operand
-      rung-count linearity check. Lint-clean, awaiting capture. See
-      OQ-CMPCPTLAYOUT for the full derivation.
+      rung-count linearity check. **Real data landed same day: T1(ADD/SUB)
+      +T2(MUL/DIV/MOD)-only mixes are now SOLVED** — `100 + 32*operator_
+      count`, 4/5 real operand-count points exact (k=7 within the usual
+      small noise band), order/arrangement confirmed irrelevant. Wired as
+      a special case in `CptExpressionModel.cost_for`, live-verified
+      15/18 real rows exact. T1T3 and T2T3 pairs and all-3-tier mixes
+      remain on the additive-sum fallback — real single/few-point data
+      exists (e.g. T1T3=T2T3=288 for 2 operators) but no operand-count
+      sweep like T1T2 got, so no formula to wire yet; REAL-operand and
+      float-literal effects in a mixed expression are real, large, and
+      confirmed to NOT compose additively with each other or with
+      OQ-OPERANDTYPE's own surcharges (float+REAL together cost LESS than
+      either alone would predict if additive) — characterized, not
+      forced into a formula. See OQ-CMPCPTLAYOUT for the full derivation
+      and the next-batch recommendation (T1T3/T2T3 operand-count sweeps).
       **CMP's own weight — RESOLVED 2026-08-26: the earlier "inconsistency"
       was a manual-arithmetic error, not a real bug.** Live-recomputed:
       `CMP: 76` is exact for a single condition. A real, previously-
@@ -452,14 +465,13 @@ that's the actual remaining Phase 4/4b implementation work.
       WAS a real generator bug (undeclared tag + wrong axis reuse), root-
       caused and fixed 2026-08-25 (OQ-MAPC-COMPAT), James flagged this as
       a 100%-accuracy priority — **CONFIRMED same day, real capture
-      landed: error_count=0, logic weight 260/rung, wired.** Both MCCP and
-      MAPC still blocked on the unmodeled CAM structure for
-      their operand's own tag cost regardless of the logic-weight fix.
-      Treating this item as closed — every instruction in it now has a
-      real, definitive status (confirmed, wrong, build-failed, or out of
-      scope), even
-      though 2 sub-pieces (CAM structure, DCS out-of-scope) remain
-      separately tracked open questions.
+      landed: error_count=0, logic weight 260/rung, wired.** **CAM
+      structure — RESOLVED 2026-08-26**: real 5-point count sweep landed
+      (`gen_cam_sweep.py`), `base(8) + per_element(12)`, KNOWN, wired via
+      the existing `predefined_array_structures` mechanism — MCCP/MAPC's
+      operand tag cost is no longer blocked. Treating this item as fully
+      closed — every instruction and every sub-piece (CAM structure now
+      included) has a real, definitive, wired status.
 - ✅ **GSV/SSV instruction overhead** — NOT in original scope, added after
       real data showed 101/47 real uses; James called these out explicitly.
       Different sizing question than tag-level GSV memory reads (that's a

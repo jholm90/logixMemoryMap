@@ -133,6 +133,8 @@ class CptExpressionModel:
     base_read: int
     operator_tier_costs: dict[str, int]
     per_extra_same_tier_operand: int
+    two_tier_mix_base: int
+    two_tier_mix_per_operator: int
 
     def cost_for(self, operators: list[str]) -> int:
         """Real per-call CPT cost from its expression's operator tokens
@@ -141,21 +143,35 @@ class CptExpressionModel:
         operator the same tier -- covers plain chains like A+B+C+D, the
         dominant real usage pattern) is exact: confirmed 0 residual across
         the n=1 operand-count sweep (1-10 operands) AND the n=1000
-        chain-length sweep (3/4/5/6/8/10 operands), independently. A MIXED
-        expression (more than one distinct operator tier present, e.g.
-        A+B*C) falls back to a simple per-operator-tier sum -- a WEAK
-        approximation, not a confirmed one: off by only ~20 bytes/call on
-        2 simple 3-operator test points, but off by ~150 bytes/call on a
-        real 5-operator/3-tier/mixed-literal corpus expression. See
-        memory_model.yaml cpt_expression for the full derivation and why
-        this isn't patched further tonight (too few points to isolate
-        which factor drives the larger gap).
+        chain-length sweep (3/4/5/6/8/10 operands), independently.
+
+        A MIXED expression using EXACTLY the ADD/SUB and MUL/DIV/MOD tiers
+        together (no POW) is ALSO exact now, 2026-08-26: `two_tier_mix_base
+        + two_tier_mix_per_operator * operator_count`, confirmed at 4 of 5
+        real operand-count points (3/5/11/15 operands exact, 8 operands off
+        by the same small universal noise seen throughout this project) --
+        order/arrangement doesn't matter (alternating vs grouped tiers give
+        the same result). Any OTHER mixed-tier combination (POW mixed with
+        either other tier, or all 3 tiers present) falls back to a simple
+        per-operator-tier sum -- a real but WEAK approximation: off by only
+        ~20 bytes/call on simple 3-operator test points, by ~150 bytes/call
+        on a real 5-operator/3-tier/mixed-literal corpus expression, and
+        REAL-typed operands or a float literal each add real extra cost
+        that does NOT compose additively with anything else (confirmed
+        2026-08-26, see memory_model.yaml). See memory_model.yaml
+        cpt_expression for the full derivation and why the non-T1T2 mixed
+        cases aren't patched further yet (each needs its own operand-count
+        sweep the way T1T2 got, not force-fit from a handful of points).
         """
         if not operators:
             return self.base_read
         tiers = [self.operator_tier_costs[op] for op in operators]
         if len(set(tiers)) == 1:
             return self.base_read + tiers[0] + self.per_extra_same_tier_operand * (len(operators) - 1)
+        add_tier = self.operator_tier_costs["+"]
+        mul_tier = self.operator_tier_costs["*"]
+        if set(tiers) == {add_tier, mul_tier}:
+            return self.two_tier_mix_base + self.two_tier_mix_per_operator * len(operators)
         return self.base_read + sum(tiers)
 
 
@@ -321,6 +337,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 base_read=raw["cpt_expression"]["base_read"],
                 operator_tier_costs=dict(raw["cpt_expression"]["operator_tier_costs"]),
                 per_extra_same_tier_operand=raw["cpt_expression"]["per_extra_same_tier_operand"],
+                two_tier_mix_base=raw["cpt_expression"]["two_tier_mix_base"],
+                two_tier_mix_per_operator=raw["cpt_expression"]["two_tier_mix_per_operator"],
             ),
             operand_type_surcharge=OperandTypeSurchargeModel(
                 confidence=raw["operand_type_surcharge"]["confidence"],

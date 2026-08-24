@@ -300,6 +300,41 @@ def group_near_fifteen_operand() -> int:
     return n
 
 
+# ---------------------------------------------------------------------------
+# H. T1T3 and T2T3 operand-count scaling (2026-08-26 follow-up).
+#
+# The T1(ADD/SUB)+T2(MUL/DIV/MOD) pair got the full Group B treatment
+# (3/5/8/11/15 operands) and came back SOLVED: 100 + 32*operator_count,
+# 4/5 points exact. The 2 remaining tier pairs -- T1T3(ADD/SUB+POW) and
+# T2T3(MUL/DIV/MOD+POW) -- only have a single 2-operand data point each
+# (both =288, from group_pairwise_tier_mix above) with no operand-count
+# scaling data at all, so no per-operator rate can be derived for either
+# yet. This mirrors group_operand_count_scaling exactly, just swapping
+# which two tiers alternate, to close that gap the same way T1T2 got
+# closed. Alternating arrangement only -- T1T2 already confirmed
+# arrangement doesn't matter, no reason to expect these 2 pairs differ.
+# ---------------------------------------------------------------------------
+
+def group_t1t3_t2t3_scaling() -> int:
+    n = 0
+    pairs = {"t1t3": ("+", "**"), "t2t3": ("*", "**")}
+    for pair_name, (op_a, op_b) in pairs.items():
+        for count in [3, 5, 8, 11, 15]:
+            operands = [f"L{i}" for i in range(count)]
+            ops = [(op_a if i % 2 == 0 else op_b) for i in range(count - 1)]
+            expr = _join_expr(operands, ops)
+            _one_rung_file(
+                expr, f"CptMix{pair_name.title()}AltN{count:02d}",
+                f"cptmix_scaling_{pair_name}_alternating_n{count:02d}",
+                f"{count}-operand {pair_name.upper()}-alternating mix -- operand-count scaling for "
+                f"the pair T1T2 got (100+32k), to see if the same or a different rate/formula applies "
+                f"here (2-operand point already shows {pair_name.upper()}=288, different from T1T2's "
+                f"164, so a different base and/or rate is expected, not assumed identical)",
+            )
+            n += 1
+    return n
+
+
 if __name__ == "__main__":
     total = 0
     total += group_pairwise_tier_mix()
@@ -309,4 +344,5 @@ if __name__ == "__main__":
     total += group_real_operand_crosscheck()
     total += group_stacked_factors()
     total += group_near_fifteen_operand()
+    total += group_t1t3_t2t3_scaling()
     print(f"\nTotal files: {total}")

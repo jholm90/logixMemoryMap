@@ -199,6 +199,14 @@ def test_builtin_string_array_matches_confirmed_real_formula():
     assert size("STRING", (100,)) == (6 + 88 * 100, "KNOWN")
 
 
+def test_cam_predefined_array_structure_matches_confirmed_real_formula():
+    # OQ-PREDEFINED item 8, wired 2026-08-26: base(8) + per_element(12),
+    # confirmed via a 5-point real count sweep (2/5 exact, 3/5 within the
+    # same small universal noise band seen throughout this project).
+    assert size("CAM", (1,)) == (8 + 12 * 1, "KNOWN")
+    assert size("CAM", (50,)) == (8 + 12 * 50, "KNOWN")
+
+
 def test_custom_string_array_matches_confirmed_real_formula():
     string100 = DataTypeDef(
         name="CStrArrCsTest", family="StringFamily",

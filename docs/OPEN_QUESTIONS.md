@@ -538,6 +538,99 @@ generator already covers them, just waiting on the next capture batch.
      dedicated mixed-operator test batch**: a tier-pair sweep, a literal-
      position isolation, and a REAL-vs-DINT operand cross-check, before
      this branch earns the same trust the uniform case now has.
+
+     **2026-08-26, that batch landed (James: "mix up to 15 operands per
+     expression as needed, 100% solved closed").** 33 real files,
+     `error_count=0` throughout. Real, substantial progress — one clean
+     tier-pair now fully solved, several other real mechanisms
+     characterized, none of it forced into a general formula it doesn't
+     support:
+     - **Operator ORDER confirmed irrelevant** — every tier-pair tested
+       both orders (T1-first vs T2-first, e.g. `L0+L1*L2` vs
+       `L0*L1+L2`) landed on the IDENTICAL byte count, for all 3 pairs
+       (T1T2, T1T3, T2T3). Confirms the "bag of operators, not sequence"
+       hypothesis fully, not just for the 2 shapes tested before.
+     - **Literal presence/position confirmed irrelevant in mixed
+       expressions too** — `cptmix_litpos_alltag_baseline`/
+       `_literal_first`/`_literal_middle`/`_literal_last` (fixed 2-tier
+       3-operand shape, literal substituted at each position in turn)
+       all land on the exact same byte count. Extends the uniform case's
+       int-literal finding cleanly to the mixed case.
+     - **T1+T2 (ADD/SUB + MUL/DIV/MOD) alternating mix: SOLVED, clean
+       formula.** The operand-count scaling sweep (3/5/8/11/15 operands,
+       alternating tiers) fits `true_cost = 100 + 32*operator_count`
+       **exactly at 4 of 5 points** (k=2,4,10,14 all zero residual; k=7
+       off by -8, the same small universal noise pattern seen everywhere
+       else in this project). Note this "32/operator" rate is a REAL,
+       DIFFERENT number from the uniform case's 24/operator rate —
+       alternating between two tiers costs more per operator than
+       repeating the same tier. "Grouped" arrangement (all T1 operators
+       then all T2, same operator bag, different order) matches
+       "alternating" at 4/5 counts too (only n=5 shows a small 4-byte
+       blip, noise). This is the first mixed-tier sub-case to reach the
+       uniform case's level of confidence — ready to wire as a real,
+       KNOWN-tier special case (when a CPT expression's operator set is
+       exactly {T1, T2}), not deferred further.
+     - **T1T3 and T2T3 pairs: real, but only single-point data.**
+       2-operator T1T3 (`+`,`**`) = 288; 2-operator T2T3 (`*`,`**`) =
+       288 (identical to each other, both real, both order-independent).
+       No operand-count-scaling sweep exists for either pair yet (only
+       T1T2 got that treatment) — cannot extrapolate a per-operator rate
+       for these pairs the way T1T2's was solved. Needs its own Group-B-
+       style count sweep before it can be wired.
+     - **All-3-tier mixes (alternating +,*,**): real data, doesn't fit
+       any simple linear-in-operator-count model tried.** n=3(k=2)=164
+       (identical to the T1T2 2-operator case, as expected — the
+       alternating pattern at k=2 only reaches tiers T1,T2), n=5(k=4)=448,
+       n=8(k=7)=656, n=10(k=9)=784, n=15(k=14)=1152 (from the 15-operand
+       group, see below). These don't fit `base+rate*k` cleanly the way
+       the T1T2-only case did — plausible since the exact tier MIX
+       shifts as k grows here (unlike T1T2's fixed 50/50 ratio
+       throughout), a real 3-way interaction effect, not further
+       decomposed from 4 points.
+     - **REAL operand type in a mixed expression costs MORE than naively
+       composing the separately-confirmed OQ-OPERANDTYPE surcharges
+       predicts.** `cptmix_realcheck_dint`/`_real` (identical 2-tier
+       3-operand shape, DINT vs REAL operands): the REAL version costs
+       +40 more than DINT. Naively summing OQ-OPERANDTYPE's own ADD+REAL
+       (+16) and MUL+REAL (+0) surcharges would predict +16. Real effect
+       is 2.5x that — REAL operand type doesn't compose additively with
+       mixed-tier CPT costs, a genuine unexplained interaction, not
+       wired.
+     - **Float-literal and REAL-operand costs stack SUB-additively, not
+       additively.** `gen_cpt_mixed_operators.py`'s stacked-factors ladder
+       finally isolates the ~150-byte/rung mystery from the original
+       corpus expression `(D0+D1)*R1-R2/2+1.5`: against an all-DINT/no-
+       literal baseline (true cost 252), a float literal ALONE (still all
+       DINT operands) adds +244 (→496); REAL operands ALONE (no literal)
+       add +236 (→488); but REAL operands AND a float literal TOGETHER
+       (the original shape) add only +200 (→452 — matches this project's
+       independently-derived ~452/rung finding for this exact expression
+       from earlier in the session, a clean cross-validation). +244 and
+       +236 stacked would predict +480 if additive; real combined cost is
+       less than HALF that. A real, large, genuine interaction (plausibly
+       a float literal's storage already overlaps with REAL-operand
+       handling) — characterized, not reducible to independent additive
+       terms from this data.
+     - **Rung-count linearity for a large mixed expression: CONFIRMED.**
+       `cptmix_fifteen_n00001` (single rung) and `_n00100` (100 identical
+       rungs) both give exactly 160/rung for the same 15-operand 3-tier
+       expression — resolves whether large/complex mixed expressions
+       scale linearly with rung count at all (yes; the original corpus
+       expression this whole investigation started from was previously
+       only ever captured at n≥1000, so its own rung-count linearity was
+       assumed, never actually confirmed until this cross-check).
+     **Net effect on the additive-sum fallback**: still the right choice
+     for tier combinations without their own solved formula (T1T3, T2T3,
+     3-tier), still real and useful there, still honestly imprecise.
+     **T1T2 wired same day** as a special case in `CptExpressionModel.
+     cost_for` (`two_tier_mix_base=100, two_tier_mix_per_operator=32`),
+     live-verified 15/18 real T1T2-family rows exact (3/18 within the
+     usual small noise band). `gen_cpt_mixed_operators.py`'s new
+     `group_t1t3_t2t3_scaling` (10 files, mirrors the T1T2 operand-count
+     sweep exactly for the 2 remaining pairs) generated, lint-clean, in
+     the manifest, awaiting capture — the direct next step to close the
+     rest of the mixed-tier case the same way.
    - **CMP's own compound-boolean-condition formula was NOT touched** —
      while deriving this, `cmpcpt_cmp_single`'s real rate (~91.7/rung from
      n=100→n=1000) doesn't match the existing wired standalone `CMP: 76`
@@ -826,6 +919,17 @@ generator already covers them, just waiting on the next capture batch.
    capture. This is the concrete next step the entry above already named;
    nothing to analyze until real Capacity numbers land for these 5.
 
+   **RESOLVED same day, real data landed and confirms the mechanistic
+   prediction exactly.** All 5 points, `error_count=0`:
+   `base(8) + per_element(12)`, KNOWN -- 2/5 points (n=1, n=5) exact zero
+   residual, the other 3 (n=10/20/50) all land on the identical small -4
+   universal noise already accepted throughout this project (the same
+   magnitude/pattern seen in array_dint, indirect-index baseline, etc,
+   not a formula defect). Wired via the existing
+   `predefined_array_structures` mechanism (same pattern CAM_PROFILE
+   already used) -- no new code path needed, just a new yaml entry.
+   Live-verified against all 5 real manifest rows.
+
    **MESSAGE — James, 2026-08-25: "Message size is fine for the 90%
    accuracy as it's not a common usage instruction." Deprioritized —
    the research below stays as real, useful background, but no MESSAGE
@@ -1027,6 +1131,46 @@ generator already covers them, just waiting on the next capture batch.
       the exact missing 3rd axis. Once it lands, the +700/task rate above
       combines with it to fully solve the 3-way split in one more pass,
       no further test design needed.
+
+    **RESOLVED (analysis) 2026-08-26 — the missing data landed, full 3-way
+    split now solved cleanly via 3 chained direct comparisons, no
+    assumptions:**
+    - `taskoverhead_n02routines_1program_1task` (2 Routines, 1 Program,
+      1 Task) = 18,416. Against the well-established general baseline for
+      1 Task/1 Program/1 Routine (18,112 -- project_baseline+
+      fixed_base_per_routine, independently confirmed hundreds of times
+      elsewhere in this project): **pure per-extra-Routine cost (same
+      Program, same Task) = +304.**
+    - `programoverhead_n02progs_1task` (2 Programs, 2 Routines total, 1
+      Task) minus the routine-only file above -- SAME routine count (2)
+      in both, SAME task count (1), differing ONLY in whether those 2
+      routines sit in 1 program or 2: 18,900 − 18,416 = **pure
+      per-extra-Program cost = +484** (cleanly separated from the
+      routine's own content cost for the first time -- earlier passes
+      could only measure "+788" as one bundled program+its-mandatory-
+      first-routine number; that 788 = 304+484 exactly, now split).
+    - `taskoverhead_n02tasks` (2 Tasks, 2 Programs, 2 Routines) minus the
+      2-program file above -- SAME program count (2) and routine count
+      (2) in both, differing ONLY in task count: 19,600 − 18,900 = **pure
+      per-extra-Task cost = +700** (matches the earlier direct-comparison
+      result exactly, independent cross-check).
+    Sanity check against the ORIGINAL taskoverhead_n03/n04tasks sweep
+    (task+program+routine all scaling together): predicted =
+    18,112+(n−1)×(304+484+700) reproduces n=2 exactly (by construction)
+    and n=3/n=4 within the same small ±16 residual already flagged
+    before this decomposition — a small, real, still-unexplained
+    periodic-Task-specific cost (not resolved by this pass, but now
+    isolated to a ±16 residual rather than an entire unmeasured axis).
+    **Still not wired, for the same coupling reason above** — applying
+    this correctly needs the parser to be Task-aware (which Program is
+    scheduled under which Task, not just raw counts) and needs to be
+    layered onto the existing per-routine `fixed_base_per_routine`/
+    `jsr_fixed_base_per_routine` mechanism without disturbing the
+    already-validated JSR-vs-plain-routine distinction those two
+    constants encode. This is now a well-specified, bounded architecture
+    task (not an open data question) — real next-session work, not
+    rushed in during this pass given the interaction risk with JSR
+    routines.
 
 12. **OQ-INDIRECT — Indirect addressing overhead [captured 2026-08-25, real findings,
     NOT yet decomposed into weights].** `gen_indirect_addressing.py` —
@@ -1508,6 +1652,43 @@ generator already covers them, just waiting on the next capture batch.
     `jsr_mixedio_5in_2out_r01000` (delta 144244) and `jsr_multiret_n04_
     r01000` (delta 64456) sit alongside as extra r=1000 data points for
     whenever that decomposition work happens, not analyzed further here.
+
+    **BREAKTHROUGH 2026-08-26 — decomposition solved cleanly, real data.**
+    `gen_jsr_decompose.py`'s 2 files (n=5, n=10 at r=100, matching the
+    existing r=1000 points at those same param counts) landed. For the
+    FIRST time this project has BOTH rung counts at the SAME param count
+    — the two-variable system (`delta(n,R) = A(n) + B(n)*R`) can finally
+    be solved directly instead of guessed at:
+    - n=5: `A+100B=10604`, `A+1000B=104204` → **B(5)=104/rung exactly,
+      A(5)=204 exactly**.
+    - n=10: `A+100B=20704`, `A+1000B=204304` → **B(10)=204/rung exactly,
+      A(10)=304 exactly**.
+    Both solve to clean integers (not coincidental-looking noise), and
+    both fit a simple linear-in-n pattern: `B(n) = 4 + 20*n` (the true
+    per-rung, per-call rate), `A(n) = 104 + 20*n` (a real, one-time,
+    rung-count-independent cost — almost certainly the subroutine's own
+    Parameters-block declaration cost, scaling with param count but paid
+    once regardless of how many times the routine is called). This also
+    explains the earlier "r=1000 doesn't fit the r=100-only formula"
+    finding: the r=100-only fit (`512+2020n`) was measuring `A(n)+100*B(n)`
+    collapsed into one line, not the true per-rung rate — not a
+    contradiction, a different (composite) quantity. Cross-check:
+    `A(n)+B(n)*100` using the new A/B formulas reproduces 5/6 of the
+    ORIGINAL r=100 sweep (n=3,4,6,8,12) with a flat +8 residual (their
+    real values run 8 higher than this 2-point-derived formula predicts)
+    — real, small, and exactly the kind of "confirmed on 2 points, doesn't
+    perfectly generalize" gap this project's discipline exists to catch,
+    not glossed over here.
+    **Still NOT wired** — only 2 (param-count) points have been through
+    this decomposition; a linear fit through exactly 2 points is
+    trivially exact and doesn't by itself prove `A(n)`/`B(n)` are really
+    linear in n generally (the +8 mismatch against the n=3/4/6/8/12 group
+    above is the concrete evidence it might not be). `gen_jsr_decompose.py`'s
+    new `group_jsr_third_disentangle_point` (n=8 at r=1000, matching the
+    existing n=8 at r=100) is generated, lint-clean, in the manifest,
+    awaiting capture — the cheapest way to get a 3rd real (A,B) solve and
+    confirm or refute the linear-in-n pattern before trusting it enough
+    to wire.
 
 16. **OQ-CAPTURERACE (new, 2026-08-25, James: "flag results that stand out
     and might need retesting, I don't want to go forward with you assuming

@@ -60,6 +60,18 @@ predefined_structures:
 # confirms that field count.
 predefined_array_structures:
   CAM_PROFILE: { base: 4, per_element: 56, confidence: FITTED }
+  # CAM (used by MCCP/MAPC's cam-profile operand -- NOT CAM_PROFILE, a
+  # different predefined structure with a different real shape, see the
+  # CAM_PROFILE entry above and OPEN_QUESTIONS.md OQ-PREDEFINED item 8).
+  # Wired 2026-08-26 from gen_cam_sweep.py's real 5-point count sweep
+  # (n=1/5/10/20/50, error_count=0 throughout): exact at n=1 and n=5, a
+  # flat -4 (already-familiar small universal noise, seen throughout this
+  # project) at n=10/20/50 -- clean enough for KNOWN. Matches the
+  # mechanistic prediction made before this data existed: CAM's own L5K
+  # format shows no hidden fields (unlike CAM_PROFILE), so a clean
+  # base+12*count (not CAM_PROFILE's much larger 56/element, which DOES
+  # hide fields) was the expected shape, now confirmed.
+  CAM: { base: 8, per_element: 12, confidence: KNOWN }
 
 # Fixed per-project overhead the sizing engine never modeled before
 # 2026-08-23 -- controller/module/task/program scaffolding that exists in
@@ -514,6 +526,18 @@ cpt_expression:
     MOD: 52
     "**": 116
   per_extra_same_tier_operand: 24
+  # T1(ADD/SUB)+T2(MUL/DIV/MOD) mixed expression, wired 2026-08-26 from
+  # gen_cpt_mixed_operators.py's real operand-count-scaling sweep (3/5/8/
+  # 11/15 operands, alternating tiers): 4/5 points exact with zero
+  # residual (k=2,4,10,14 operators), k=7 off by the same small universal
+  # -8ish noise seen throughout this project. Order/arrangement doesn't
+  # matter (grouped vs alternating give the same result at 4/5 counts).
+  # ONLY applies when the operator SET present is exactly {T1, T2} (no
+  # POW) -- T1T3, T2T3, and all-3-tier mixes each show their own real,
+  # different behavior (see OPEN_QUESTIONS.md OQ-CMPCPTLAYOUT) and fall
+  # back to the plain additive-sum approximation below instead.
+  two_tier_mix_base: 100
+  two_tier_mix_per_operator: 32
 
 # Operand-type surcharge (OQ-OPERANDTYPE, wired 2026-08-26, James: "touch
 # these and finalize them now"). Every weight in `logic_instructions.

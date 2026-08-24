@@ -249,13 +249,24 @@ def test_cpt_uniform_chain_matches_confirmed_real_formula():
         assert model.cpt_expression.cost_for(operators) == 88 + expected_operator_cost
 
 
-def test_cpt_mixed_tier_falls_back_to_additive_sum():
+def test_cpt_t1_t2_mix_matches_confirmed_real_formula():
+    # gen_cpt_mixed_operators.py's real operand-count sweep, 2026-08-26:
+    # a T1(ADD/SUB)+T2(MUL/DIV/MOD)-only mix is exact at 100+32*operators
+    # for 3/5/11/15 operators (4/5 real points, k=7 off by small noise).
+    # "+","-","*" is exactly this tier set (2 operators).
     model = MODEL.logic_instructions
-    # cptcx_operatormix_mixedops: L0+L1-L2*L3 -- real actual delta was 104,
-    # not the 88+36+36+52=212 (or 124 op-only) additive sum below; this
-    # documents the KNOWN, flagged-approximate behavior, not a claim it's
-    # exact (see memory_model.yaml cpt_expression's "Mixed-tier" note).
-    assert model.cpt_expression.cost_for(["+", "-", "*"]) == 88 + 36 + 36 + 52
+    assert model.cpt_expression.cost_for(["+", "-", "*"]) == 100 + 32 * 3
+
+
+def test_cpt_other_mixed_tiers_fall_back_to_additive_sum():
+    # Any mix involving POW (T3) alongside another tier isn't the solved
+    # T1T2 special case -- still the real-but-approximate additive sum
+    # (see memory_model.yaml cpt_expression's "Mixed-tier" note: real
+    # data shows T1T3/T2T3 pairs have their own different, not-yet-fully-
+    # characterized behavior, not force-fit into this fallback as if
+    # confirmed).
+    model = MODEL.logic_instructions
+    assert model.cpt_expression.cost_for(["+", "**"]) == 88 + 36 + 116
 
 
 def test_cpt_costed_per_call_not_via_flat_weights_table():
