@@ -6,9 +6,48 @@ refuse to generate you all the io stuff. you will need to make this work
 on your own. i will test your generated files. dont spam me with all the
 io module files right away youll need to validate your builder engines.").
 
-Deliberately exactly 3 files, no more -- James's own instruction, and this
-project's own discipline against padding a batch beyond what's actually
-needed to validate something. Each Module element below is NOT invented --
+First 3 files (groups 1-3) validated clean against real Studio 5000 import.
+**2026-08-27, James: "generate a l5x file for each module from your sample
+dB ... keep in mind sizing for racks and slots ... all of the 'for claude'
+tests should be done now."** Extended using `samples/local/module_
+extraction.csv` (1,212 real module rows, 130 distinct catalog numbers,
+built earlier this session) to pick real high-frequency catalog numbers,
+then re-verified each one's actual XML shape directly against the real
+corpus file it came from before genericizing -- same standard as groups
+1-3, never guessed. Groups 4-5 below cover two more real shapes this
+pass surfaced:
+
+  4. group_pointio_bus_mixed -- three Point I/O modules on the SAME
+     1734-AENTR/C adapter bus (reusing group 2's already-validated
+     adapter): 1734-IB8/C (8-pt digital in, 187 real corpus rows) and
+     1734-OB8/C (8-pt digital out, 106 rows) both use RackConnection/
+     InAliasTag (rack-optimized, aliased into the adapter's own Slot
+     array, same shape as group 3's downstream module); 1734-IE2C/C
+     (2-ch analog in, 12 rows) uses its OWN direct Connection instead --
+     a real, important distinction confirmed by inspection, NOT invented:
+     Rockwell lets each module on a rack-optimized adapter's bus choose
+     Rack-Optimized vs Direct/Individual connection independently: this
+     one real corpus file has both styles side by side on the same
+     adapter. Same "no stated InputSize on a simple Connection" gap as
+     group 1 applies to the IE2C's own Connection.
+  5. group_pointio_safety_input -- 1734-IB8S/B (11 real corpus rows), a
+     CIP Safety module, genuinely different shape from every other group:
+     `SafetyNetwork` attribute on the Module element itself, `<ConfigData>`
+     (not `<ConfigTag>`) with only an L5K config blob (no Decorated
+     structure for config), and TWO Connections (`SafetyInput`/
+     `SafetyOutput`) each carrying real safety-specific attributes
+     (TimeoutMultiplier, NetworkDelayMultiplier, ReactionTimeLimit) not
+     present on any ordinary Connection -- own InputTag/OutputTag nested
+     inside each, same as groups 1/4's non-aliased pattern.
+
+Deliberately NOT covered this pass, flagged rather than guessed: motion/
+Kinetix drives (2198-series, real corpus has 200+ rows across several
+models) and VFDs (PowerFlex 525-EENET, 43 rows) -- both look like they
+need their own real-shape research (drive-specific parameter/datalink
+structures, not simple I/O Connection sizing), not a safe reuse of any
+shape already validated here. Next batch, not this one.
+
+Each Module element below is NOT invented --
 it's a genericized (customer-identifying names/comments/real values
 stripped, replaced with plain placeholders/zeros) but STRUCTURALLY
 VERBATIM copy of a real Module found in samples/local/ during this same
@@ -353,12 +392,268 @@ def group_ethernet_bridge_with_downstream() -> None:
     )
 
 
+# ---------------------------------------------------------------------------
+# 4. Point I/O bus: mixed rack-optimized (IB8/OB8) + direct-connection (IE2C).
+# ---------------------------------------------------------------------------
+
+_IB8_MODULE_XML = """\
+<Module Name="PointIO_DigitalIn8" CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PointIO_Adapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="5" Type="PointIO" Upstream="true"/>
+</Ports>
+<Communications CommMethod="1073741824">
+<ConfigTag ConfigSize="36" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[40,103,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]></Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_DI8:C:0">
+<DataValueMember Name="Pt0FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="Pt0FilterOnOff" DataType="INT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="Pt1FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="Pt1FilterOnOff" DataType="INT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="Pt2FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="Pt2FilterOnOff" DataType="INT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="Pt3FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="Pt3FilterOnOff" DataType="INT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="Pt4FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="Pt4FilterOnOff" DataType="INT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="Pt5FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="Pt5FilterOnOff" DataType="INT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="Pt6FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="Pt6FilterOnOff" DataType="INT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="Pt7FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="Pt7FilterOnOff" DataType="INT" Radix="Decimal" Value="1000"/>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<RackConnection>
+<InAliasTag/>
+</RackConnection>
+</Connections>
+</Communications>
+</Module>"""
+
+_OB8_MODULE_XML = """\
+<Module Name="PointIO_DigitalOut8" CatalogNumber="1734-OB8/C" Vendor="1" ProductType="7" ProductCode="232" Major="3" Minor="1" ParentModule="PointIO_Adapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="6" Type="PointIO" Upstream="true"/>
+</Ports>
+<Communications CommMethod="1073741824">
+<ConfigTag ConfigSize="12" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[16,123,1,0,0,0,0,0,0,0,0]]]></Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_DO8_NoDiag:C:0">
+<DataValueMember Name="FaultMode" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Pt0FaultMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt1FaultMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt2FaultMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt3FaultMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt4FaultMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt5FaultMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt6FaultMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt7FaultMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FaultValue" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Pt0FaultValue" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt1FaultValue" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt2FaultValue" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt3FaultValue" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt4FaultValue" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt5FaultValue" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt6FaultValue" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt7FaultValue" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgMode" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Pt0ProgMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt1ProgMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt2ProgMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt3ProgMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt4ProgMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt5ProgMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt6ProgMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt7ProgMode" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<RackConnection>
+<InAliasTag/>
+</RackConnection>
+</Connections>
+</Communications>
+</Module>"""
+
+_IE2C_MODULE_XML = """\
+<Module Name="PointIO_AnalogIn2" CatalogNumber="1734-IE2C/C" Vendor="1" ProductType="115" ProductCode="24" Major="3" Minor="1" ParentModule="PointIO_Adapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="4" Type="PointIO" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="42" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[46,123,1,0,32767,0,3113,16547,2867,16793,3,0,1,0,0,16383,0,3113,16547,2867,16793,3,0,1,2,10]]]></Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_IE2:C:0">
+<DataValueMember Name="Ch0LowEngineering" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Ch0HighEngineering" DataType="INT" Radix="Decimal" Value="32767"/>
+<DataValueMember Name="Ch0DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Ch0LAlarmLimit" DataType="INT" Radix="Decimal" Value="3113"/>
+<DataValueMember Name="Ch0HAlarmLimit" DataType="INT" Radix="Decimal" Value="16547"/>
+<DataValueMember Name="Ch0LLAlarmLimit" DataType="INT" Radix="Decimal" Value="2867"/>
+<DataValueMember Name="Ch0HHAlarmLimit" DataType="INT" Radix="Decimal" Value="16793"/>
+<DataValueMember Name="Ch0RangeType" DataType="SINT" Radix="Decimal" Value="3"/>
+<DataValueMember Name="Ch0LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Ch0AlarmDisable" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="Ch1LowEngineering" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Ch1HighEngineering" DataType="INT" Radix="Decimal" Value="16383"/>
+<DataValueMember Name="Ch1DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Ch1LAlarmLimit" DataType="INT" Radix="Decimal" Value="3113"/>
+<DataValueMember Name="Ch1HAlarmLimit" DataType="INT" Radix="Decimal" Value="16547"/>
+<DataValueMember Name="Ch1LLAlarmLimit" DataType="INT" Radix="Decimal" Value="2867"/>
+<DataValueMember Name="Ch1HHAlarmLimit" DataType="INT" Radix="Decimal" Value="16793"/>
+<DataValueMember Name="Ch1RangeType" DataType="SINT" Radix="Decimal" Value="3"/>
+<DataValueMember Name="Ch1LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Ch1AlarmDisable" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="NotchFilter" DataType="SINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="RealTimeSample" DataType="INT" Radix="Decimal" Value="10"/>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="InputData" RPI="5000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1734_IE2:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="Ch0Data" DataType="INT" Radix="Decimal" Value="32767"/>
+<DataValueMember Name="Ch1Data" DataType="INT" Radix="Decimal" Value="-4072"/>
+<DataValueMember Name="Ch0Status" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Ch0Fault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Calibration" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0HAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0HHAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Overrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Status" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Ch1Fault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Calibration" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1HAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1HHAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Overrange" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>"""
+
+
+def group_pointio_bus_mixed() -> None:
+    l5x = build_l5x(
+        target_name="ModuleProto4PointIO", tags_xml="",
+        extra_modules_xml=_AENTR_MODULE_XML + "\n" + _IB8_MODULE_XML + "\n" + _OB8_MODULE_XML + "\n" + _IE2C_MODULE_XML,
+    )
+    _write_unmodeled(
+        l5x, "moduleproto_pointio_bus_mixed",
+        "1734-AENTR/C adapter (reusing group 2's shape) with 3 real downstream Point I/O modules on "
+        "its bus: 1734-IB8/C (8-pt digital in) and 1734-OB8/C (8-pt digital out) both use RackConnection/"
+        "InAliasTag (rack-optimized, aliased into the adapter -- same shape as group 3's downstream "
+        "module); 1734-IE2C/C (2-ch analog in) uses its OWN direct Connection instead -- a real, "
+        "confirmed-by-inspection distinction: modules on the same rack-optimized adapter bus can "
+        "independently choose Rack-Optimized vs Direct connection style. See OQ-MODULEIO.",
+    )
+
+
+# ---------------------------------------------------------------------------
+# 5. CIP Safety module (genuinely different shape: SafetyNetwork, ConfigData,
+#    SafetyInput/SafetyOutput Connections with real timing attributes).
+# ---------------------------------------------------------------------------
+
+_IB8S_MODULE_XML = """\
+<Module Name="PointIO_SafetyIn8" CatalogNumber="1734-IB8S/B" Vendor="1" ProductType="35" ProductCode="15" Major="2" Minor="1" ParentModule="PointIO_Adapter" ParentModPortId="1" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_447d_042b_b261">
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="1" Type="PointIO" Upstream="true"/>
+</Ports>
+<Communications>
+<ConfigData ConfigSize="82">
+<Data Format="L5K"><![CDATA[[86,864,1902747612,70116045,17611,514,1000,131072,0,2,16842752,0,513,131072,0,786434,131072,12,65538,65566,65566,65566,150]]]></Data>
+</ConfigData>
+<Connections>
+<Connection Name="Input" RPI="10000" Type="SafetyInput" EventID="0" ProgrammaticallySendEventTrigger="false" TimeoutMultiplier="2" NetworkDelayMultiplier="200" ReactionTimeLimit="40.064" MaxObservedNetworkDelay="0" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1734_IB8S_Safety2:I:0">
+<DataValueMember Name="RunMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ConnectionFaulted" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Pt00Data" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt01Data" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt02Data" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt03Data" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt04Data" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt05Data" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt06Data" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt07Data" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt00Status" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt01Status" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt02Status" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt03Status" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt04Status" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt05Status" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt06Status" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Pt07Status" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+<Connection Name="Output" RPI="20000" Type="SafetyOutput" EventID="0" ProgrammaticallySendEventTrigger="false" TimeoutMultiplier="2" NetworkDelayMultiplier="200" ReactionTimeLimit="60" MaxObservedNetworkDelay="0" Unicast="true">
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[0]]]></Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_IB8S:O:0">
+<DataValueMember Name="Test00Data" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Test01Data" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Test02Data" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Test03Data" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>"""
+
+
+def group_pointio_safety_input() -> None:
+    l5x = build_l5x(
+        target_name="ModuleProto5Safety", tags_xml="",
+        extra_modules_xml=_AENTR_MODULE_XML + "\n" + _IB8S_MODULE_XML,
+    )
+    _write_unmodeled(
+        l5x, "moduleproto_pointio_safety_input",
+        "1734-AENTR/C adapter (reusing group 2's shape) with a 1734-IB8S/B CIP Safety 8-pt input "
+        "module on its bus -- genuinely different real shape from every other group: SafetyNetwork "
+        "attribute on the Module element itself, ConfigData (not ConfigTag) with only an L5K config "
+        "blob (no Decorated config structure), and two Connections (SafetyInput/SafetyOutput) each "
+        "carrying real safety-specific timing attributes (TimeoutMultiplier, NetworkDelayMultiplier, "
+        "ReactionTimeLimit) not present on any ordinary Connection. See OQ-MODULEIO.",
+    )
+
+
 def main() -> None:
     group_local_backplane()
     group_ethernet_off_cpu_port()
     group_ethernet_bridge_with_downstream()
-    print("\nDone. 3 files -- deliberately no more, per James's own instruction not to spam a big "
-          "IO batch before these validate the generator against real Studio 5000 import.")
+    group_pointio_bus_mixed()
+    group_pointio_safety_input()
+    print("\nDone. 5 files -- groups 1-3 already validated against real Studio 5000 import; "
+          "groups 4-5 are new this pass, from real corpus catalog numbers via module_extraction.csv.")
 
 
 if __name__ == "__main__":
