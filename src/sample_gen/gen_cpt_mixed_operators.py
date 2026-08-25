@@ -368,6 +368,73 @@ def group_t1t3_t2t3_scaling() -> int:
     return n
 
 
+# ---------------------------------------------------------------------------
+# J. OQ-CMPCPTLAYOUT closeout, 2026-08-25 (James: "Only two unsolved
+# threads? Fix please"). Live-recomputing group C's real captures (already
+# on file, 2026-08-24) against a per-tier-count linear model (delta =
+# a*T1_count + b*T2_count + c*T3_count + d, fit from n=3/5/8/10) landed
+# EXACT on 5 of 6 real points (n=3,5,8,10,11) -- a much stronger result
+# than "doesn't fit any simple model." Only n=15 misses, by 144. n=15 is
+# the ONLY point where the operator-tier-cycle remainder is 2 (14
+# operators / 3 = remainder 2, giving T1=T2=5 > T3=4 -- every other point
+# has remainder 0 or 1). These two probes at a much smaller scale test
+# whether "remainder 2" itself is the real trigger (matching pattern) or
+# whether n=15 is a separate, size-linked effect (mismatching pattern).
+#
+# Group K does the same for the REAL-operand/float-literal thread: group
+# F's real stacked-factor captures (already on file) isolate REAL-operand
+# count (0 vs 2, from alldint_noliteral vs mixed_dint_real_noliteral) and
+# float-literal count (0 vs 2, from dint_intliteral vs dint_floatliteral)
+# cleanly for the first time -- ~118/REAL-operand and ~122/float-literal,
+# assuming linearity across n=2 (not yet independently confirmed at n=1).
+# Combining both terms additively over-predicts original_shape (2 REAL
+# operands, 1 float literal, 1 int literal) by 158, a real negative
+# interaction. These probes get the missing n=1 points for each
+# factor AND a same-shape point with BOTH factors at their n=2 rate (no
+# int literal at all) to fully solve the 2-variable surface.
+# ---------------------------------------------------------------------------
+
+def group_three_tier_remainder_probe() -> int:
+    n = 0
+    for count in [6, 9]:
+        operands = [f"L{i}" for i in range(count)]
+        tiers = ["+", "*", "**"]
+        ops = [tiers[i % 3] for i in range(count - 1)]
+        expr = _join_expr(operands, ops)
+        _one_rung_file(
+            expr, f"CptMix3TierRem2N{count:02d}", f"cptmix_threetier_rem2_n{count:02d}",
+            f"{count}-operand all-3-tier (+,*,**) alternating mix, remainder-2 tier-cycle point "
+            f"(same remainder pattern as the n=15 outlier that broke the per-tier-count linear fit "
+            f"derived from n=3/5/8/10/11) -- OQ-CMPCPTLAYOUT closeout, tests whether the deviation "
+            f"tracks the remainder pattern (small-scale mismatch too) or file size (small-scale match)",
+        )
+        n += 1
+    return n
+
+
+def group_real_float_literal_disentangle() -> int:
+    n = 0
+    variants = [
+        ("real1_noliteral", "(L0+L1)*R1-L3/L4+L5", "DestR",
+         "1 REAL operand (of 6 total), no literal -- OQ-CMPCPTLAYOUT closeout, the missing n=1 "
+         "point for the REAL-operand-count isolation (0 REAL=alldint_noliteral, 2 REAL="
+         "mixed_dint_real_noliteral)"),
+        ("float1_noreal", "(L0+L1)*L2-L3/2+1.5", "DestR",
+         "1 float literal (of 2 total), no REAL operand -- OQ-CMPCPTLAYOUT closeout, the missing "
+         "n=1 point for the float-literal-count isolation (0 float=dint_intliteral, 2 float="
+         "dint_floatliteral)"),
+        ("real2_float2_noint", "(L0+L1)*R1-R2/2.0+1.5", "DestR",
+         "2 REAL operands AND 2 float literals together, no int literal at all -- OQ-CMPCPTLAYOUT "
+         "closeout, isolates whether the REAL+float negative interaction seen in original_shape "
+         "(1 float+1 int literal, 2 REAL) holds at each factor's own full n=2 rate"),
+    ]
+    for name, expr, dest, desc in variants:
+        _one_rung_file(expr, f"CptMixDisentangle{name.title().replace('_', '')}",
+                        f"cptmix_disentangle_{name}", desc, dest=dest)
+        n += 1
+    return n
+
+
 if __name__ == "__main__":
     total = 0
     total += group_pairwise_tier_mix()
@@ -378,4 +445,6 @@ if __name__ == "__main__":
     total += group_stacked_factors()
     total += group_near_fifteen_operand()
     total += group_t1t3_t2t3_scaling()
+    total += group_three_tier_remainder_probe()
+    total += group_real_float_literal_disentangle()
     print(f"\nTotal files: {total}")

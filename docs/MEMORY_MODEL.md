@@ -65,12 +65,13 @@ fully explains the real per-tag rate. Wired as
 `string.custom_data_padding_multiple = 4` (the 2-step rounding logic
 lives in `udt.py`'s `compute_udt_size`).
 
-**Still open (2026-08-26):** builtin STRING (not custom) as a UDT member
-shows a real correction that depends on BOTH member count and instance
-count in a way not yet pinned to one formula (two consistent 1-D slices,
-no confirmed 2-D surface) -- see OPEN_QUESTIONS.md item 14c. Custom-string
+**RESOLVED 2026-08-25:** builtin STRING (not custom) as a UDT member was
+tracked as having a real correction depending on both member count and
+instance count -- the m>1-AND-n>1 disentangle points turned out to
+already have unreconciled real capture data showing no correction is
+needed at all (see RESOLVED_QUESTIONS.md OQ-STRINGUDTMEMBER). Custom-string
 type-name length (immediately above) and array-of-STRING padding
-(OPEN_QUESTIONS.md OQ-STRINGARRAYPAD) are both now RESOLVED and wired.
+(OPEN_QUESTIONS.md OQ-STRINGARRAYPAD) are also both RESOLVED and wired.
 
 ## Predefined structure types (KNOWN)
 
@@ -647,13 +648,12 @@ for an arithmetic-offset tag-driven index, vs. the direct-index case's
 rung's own instruction weight subtracted out first, and the instruction
 used in that sweep identified) — flagged, not guessed.
 
-Cross-program tag referencing (`gen_xprogref.py`) — real capture in hand,
-unexplained: a single-program alias baseline shows the expected small +64
-gap, but the two-program shared-alias case (`xprogref_twoprog_shared_
-alias_n01000`) shows a NEGATIVE gap (-3948, engine over-predicts) — the
-opposite direction from every other known gap in this document. Not
-root-caused; see `docs/OPEN_QUESTIONS.md` OQ-XPROGREF. Do not wire
-anything off this single 2-program data point.
+Cross-program tag referencing (`gen_xprogref.py`) — **RESOLVED 2026-08-25**:
+the -3,948 negative gap this note used to describe on the two-program
+shared-alias case no longer exists against the current engine (real
+3rd/4th-program data was sitting unreconciled and showed a clean, tiny
+-16/rung per additional program instead). See RESOLVED_QUESTIONS.md
+OQ-XPROGREF. No formula change needed.
 
 ## Change log
 
