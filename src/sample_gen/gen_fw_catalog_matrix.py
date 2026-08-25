@@ -130,7 +130,44 @@ _5069_CATALOGS = [
     "5069-L330ER", "5069-L330ERMS2", "5069-L340ER", "5069-L340ERS2", "5069-L3100ERM",
 ]
 
-ALL_CATALOGS = _L8X_CATALOGS + _5069_CATALOGS
+# ControlLogix 5570 (James, 2026-08-25: "L7 is good all the way").
+# Real confirmed ProductCodes for L71/L72/L75 (92/93/96, from
+# samples/local/L7_v21_Sample.L5X, L5X_Samples/Sorter1_20260722r00.L5X,
+# DnR_Personal/FlareFunction_311D_240731.L5X) are PERFECTLY sequential --
+# L73/L74 are inferred as 94/95 from that pattern (unlike the 5069 family,
+# where sequential-tier codes turned out NOT to hold -- flagged as
+# INFERRED in their own manifest notes, not presented as equally
+# confirmed). Bus Size=4 confirmed from the L71 sample itself, same
+# minimal-chassis convention as this whole matrix already uses.
+_L7X_PRODUCT_CODES = {
+    "1756-L71": "92",
+    "1756-L72": "93",
+    "1756-L73": "94",  # INFERRED, not directly confirmed
+    "1756-L74": "95",  # INFERRED, not directly confirmed
+    "1756-L75": "96",
+}
+_L7X_INFERRED = {"1756-L73", "1756-L74"}
+_L7X_CATALOGS = list(_L7X_PRODUCT_CODES)
+
+# GuardLogix 5580 safety-rated (James, 2026-08-25: "L8 needs safety
+# processors too"). L81ES's ProductCode (164) is confirmed real and
+# IDENTICAL to plain L81E's -- same physical hardware, safety unlocked in
+# firmware, not a different Module signature. L82ES-L85ES are INFERRED
+# on that same same-as-non-S basis (165/166/167/168), not independently
+# confirmed -- flagged in their own manifest notes.
+_L8XS_PRODUCT_CODES = {
+    "1756-L81ES": "164",
+    "1756-L82ES": "165",  # INFERRED, not directly confirmed
+    "1756-L83ES": "166",  # INFERRED, not directly confirmed
+    "1756-L84ES": "167",  # INFERRED, not directly confirmed
+    "1756-L85ES": "168",  # INFERRED, not directly confirmed
+}
+_L8XS_INFERRED = {"1756-L82ES", "1756-L83ES", "1756-L84ES", "1756-L85ES"}
+_L8XS_CATALOGS = list(_L8XS_PRODUCT_CODES)
+
+ALL_CATALOGS = _L8X_CATALOGS + _5069_CATALOGS + _L7X_CATALOGS
+SAFETY_CATALOGS = _L8XS_CATALOGS
+ALL_INFERRED = _L7X_INFERRED | _L8XS_INFERRED
 
 
 def _product_code(catalog: str) -> str:
@@ -138,6 +175,10 @@ def _product_code(catalog: str) -> str:
         return _PRODUCT_CODES[catalog]
     if catalog in _5069_EXTRA_PRODUCT_CODES:
         return _5069_EXTRA_PRODUCT_CODES[catalog]
+    if catalog in _L7X_PRODUCT_CODES:
+        return _L7X_PRODUCT_CODES[catalog]
+    if catalog in _L8XS_PRODUCT_CODES:
+        return _L8XS_PRODUCT_CODES[catalog]
     raise KeyError(f"No confirmed real ProductCode for {catalog!r} -- refusing to guess")
 
 
@@ -158,7 +199,8 @@ def _local_ports_xml(catalog: str) -> str:
     )
 
 
-def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs: str) -> str:
+def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs: str,
+                is_safety: bool = False) -> str:
     target_name = f"FwMatrix{major_rev}" + "".join(c for c in catalog if c.isalnum())
     now = datetime.now().strftime("%a %b %d %H:%M:%S %Y")
     if "{DATAEXCHANGEID}" in extra_attrs:
@@ -166,12 +208,32 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
         extra_attrs = extra_attrs.replace("{DATAEXCHANGEID}", guid)
     product_code = _product_code(catalog)
     local_ports_xml = _local_ports_xml(catalog)
+    # Real shape confirmed 2026-08-25 against samples/local/SJ_Gormley_
+    # 20251112_r02.L5X and DnR_Personal/Bender134053_201104.L5X (James:
+    # "Safety processor needs a safety task. You don't have to put in a
+    # safety program... check Gormley or bender as samples"): the real
+    # marker isn't the NAME "SafetyTask" -- it's Class="Safety" on BOTH
+    # the Task and the Program it schedules. Kept minimal (bare
+    # MainRoutine, no real safety content) per James's "don't have to put
+    # in a safety program" -- but a Task always schedules a real Program
+    # in both real references, so the pairing itself is kept, just empty.
+    safety_info_xml = '<SafetyInfo SafetyLocked="true" SignatureRunModeProtect="false" ConfigureSafetyIOAlways="true" SafetyLevel="SIL2/PLd"/>' if is_safety else '<SafetyInfo/>'
+    safety_program_xml = (
+        '<Program Name="SafetyProgram" TestEdits="false" MainRoutineName="MainRoutine" '
+        'Disabled="false" Class="Safety" UseAsFolder="false">\n<Tags/>\n<Routines>\n'
+        '<Routine Name="MainRoutine" Type="RLL"/>\n</Routines>\n</Program>\n'
+    ) if is_safety else ""
+    safety_task_xml = (
+        '<Task Name="SafetyTask" Type="PERIODIC" Rate="20" Priority="10" Watchdog="20" '
+        'DisableUpdateOutputs="false" InhibitTask="false" Class="Safety">\n<ScheduledPrograms>\n'
+        '<ScheduledProgram Name="SafetyProgram"/>\n</ScheduledPrograms>\n</Task>\n'
+    ) if is_safety else ""
     return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="{software_revision}" TargetName="{target_name}" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="{now}" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
 <Controller Use="Target" Name="{target_name}" ProcessorType="{catalog}" MajorRev="{major_rev}" MinorRev="{MINOR_REV}" ProjectCreationDate="{now}" LastModifiedDate="{now}" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false"{extra_attrs}>
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
-<SafetyInfo/>
+{safety_info_xml}
 <DataTypes/>
 <Modules>
 <Module Name="Local" CatalogNumber="{catalog}" Vendor="1" ProductType="14" ProductCode="{product_code}" Major="{major_rev}" Minor="{MINOR_REV}" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
@@ -190,14 +252,14 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
 <Routine Name="MainRoutine" Type="RLL"/>
 </Routines>
 </Program>
-</Programs>
+{safety_program_xml}</Programs>
 <Tasks>
 <Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
 <ScheduledPrograms>
 <ScheduledProgram Name="MainProgram"/>
 </ScheduledPrograms>
 </Task>
-</Tasks>
+{safety_task_xml}</Tasks>
 <CST MasterID="0"/>
 <WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
 <Trends/>
@@ -219,8 +281,10 @@ def _write(l5x: str, out_name: str, description: str) -> None:
 
 def main() -> None:
     written = 0
+    all_catalogs = ALL_CATALOGS + SAFETY_CATALOGS
     for major_rev, software_revision, extra_attrs, assumed in FIRMWARE_TABLE:
-        for catalog in ALL_CATALOGS:
+        for catalog in all_catalogs:
+            is_safety = catalog in SAFETY_CATALOGS
             slug = catalog.lower().replace("-", "_")
             out_name = f"fwmatrix_v{major_rev}_{slug}"
             assumed_note = (
@@ -228,15 +292,25 @@ def main() -> None:
                 f"interpolated from the confirmed v35/v38 bracket, correct from real capture)."
                 if assumed else ""
             )
-            l5x = _build_xml(catalog, major_rev, software_revision, extra_attrs)
+            inferred_note = (
+                f" ProductCode {_product_code(catalog)} is INFERRED (same-tier sequential pattern "
+                f"from confirmed neighbors), not independently confirmed for this exact catalog."
+                if catalog in ALL_INFERRED else ""
+            )
+            safety_note = (
+                " GuardLogix safety-rated (SIL2/PLd, single primary, no partner) -- real Task/"
+                "Program Class=\"Safety\" shape confirmed against Gormley/Bender real corpus."
+                if is_safety else ""
+            )
+            l5x = _build_xml(catalog, major_rev, software_revision, extra_attrs, is_safety=is_safety)
             _write(
                 l5x, out_name,
                 f"Blank baseline, {catalog} at firmware {major_rev} (SoftwareRevision "
                 f"{software_revision}) -- OQ-BASELINE-PROCFW full catalog x firmware matrix."
-                f"{assumed_note}",
+                f"{assumed_note}{inferred_note}{safety_note}",
             )
             written += 1
-    print(f"Done. {written} files ({len(FIRMWARE_TABLE)} firmware versions x {len(ALL_CATALOGS)} catalogs).")
+    print(f"Done. {written} files ({len(FIRMWARE_TABLE)} firmware versions x {len(all_catalogs)} catalogs).")
 
 
 if __name__ == "__main__":

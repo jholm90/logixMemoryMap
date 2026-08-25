@@ -64,35 +64,50 @@ other 4 (small real per-model variance, not error) — see `manifest.csv`
 notes on `v35_l82e/l83e/l84e/l85e/l3100erm/l320er/l330er/l340er`. 20 files
 remain awaiting capture.
 
-**Full catalog x firmware matrix built 2026-08-25**
-(`gen_fw_catalog_matrix.py`, 152 files, `fw_catalog_matrix` category).
+**Full catalog x firmware matrix built 2026-08-25, expanded same day**
+(`gen_fw_catalog_matrix.py`, 232 files, `fw_catalog_matrix` category).
 Every real catalog number sourced from Rockwell literature/distributor
 documentation via web search (not guessed), cross-checked against this
 project's own already-confirmed ProductCodes before generating anything:
-19 catalogs (5× ControlLogix 5580 1756-L8x, 14× CompactLogix 5380
-5069-Lxxx) × 8 firmware versions (31-38, v30 excluded — SDK confirmed
-unable to build it at all). Firmware attribute shape (SoftwareRevision,
-AutoDiagsEnabled/WebServerEnabled presence, v38's DataExchangeId) is real
-per version, confirmed from the existing v31-35/v38 samples — v36/v37
-specifically are flagged ASSUMED in every file's own manifest note (real
-firmware majors confirmed to exist, but no real v31-38-range L5X sample
-for either exists yet to confirm their exact attribute shape). Files
-sorted `fwmatrix_v{NN}_{catalog}` so a plain directory listing groups all
-of v31 together, then v32, etc.
+29 catalogs × 8 firmware versions (31-38, v30 excluded — SDK confirmed
+unable to build it at all):
+- 5× ControlLogix 5580 (1756-L8x), 14× CompactLogix 5380 (5069-Lxxx) —
+  original 152-file batch.
+- 5× ControlLogix 5570 (1756-L7x, L71/L72/L75 real ProductCode 92/93/96,
+  L73/L74 INFERRED 94/95 from the sequential pattern — flagged per-file).
+- 5× GuardLogix 5580 safety-rated (1756-L8xES, L81ES real ProductCode 164,
+  L82ES-L85ES INFERRED 165-168 from the single confirmed ES/E pairing —
+  flagged per-file). Each gets a real `SafetyTask`/`SafetyProgram` pair
+  with `Class="Safety"` on both elements (the real marker, confirmed
+  against Gormley/Bender corpus — NOT the element name) plus a populated
+  `<SafetyInfo SafetyLevel="SIL2/PLd" .../>`.
+
+Firmware attribute shape (SoftwareRevision, AutoDiagsEnabled/
+WebServerEnabled presence, v38's DataExchangeId) is real per version,
+confirmed from the existing v31-35/v38 samples — v36/v37 specifically are
+flagged ASSUMED in every file's own manifest note (real firmware majors
+confirmed to exist, but no real v31-38-range L5X sample for either exists
+yet to confirm their exact attribute shape). Files sorted
+`fwmatrix_v{NN}_{catalog}` so a plain directory listing groups all of v31
+together, then v32, etc. Structural parse-check: 0 errors across all 1533
+generated files (up from 1453). Content spot-checked directly (v38 L71,
+v38 L81ES) — ProductCode/Bus Size/Safety shape all render as intended.
 
 **Sourced but deliberately NOT generated, real ProductCode still
-unconfirmed:** ControlLogix 5570 (1756-L7x) beyond L71 (only L71 has a
-confirmed real ProductCode, and that's from a v21 sample, outside this
-firmware range — L72-L75 have zero confirmed code, and this hardware
-generation's actual firmware ceiling in the 31-38 range is unconfirmed
-too); ControlLogix 5590 (1756-L9x, "TS" suffix — L902TS/L905TS/L908TS/
-L915TS/L925TS/L950TS/L980TS) — a brand-new family (FactoryTalk Design
-Studio only added support in v2.03, Nov 2025) with zero real L5X corpus
-examples anywhere; CompactLogix 5480 (5069-L4xx process controllers —
-L430ERMW/L450ERMW/L4100ERMW/L4200ERMW) — also zero real corpus examples.
-Building any of these without a real sample risks fabricating a
-ProductCode/Module shape that fails Studio 5000 import outright. Needs a
-real sample from James before generating.
+unconfirmed:** ControlLogix 5590 (1756-L9x, "TS" suffix — L902TS/L905TS/
+L908TS/L915TS/L925TS/L950TS/L980TS) — a brand-new family (FactoryTalk
+Design Studio only added support in v2.03, Nov 2025) with zero real L5X
+corpus examples anywhere, and zero real ProductCode/Module-signature data
+found anywhere publicly accessible despite thorough web search (Rockwell's
+own domains are all blocked by this environment's egress proxy; even
+distributor/3rd-party sites carry catalog numbers but never the internal
+ProductCode). James asked for one L9 sample minimum v38 — still blocked on
+this, needs either a real sample from him or explicit sign-off on a
+flagged best-effort placeholder. CompactLogix 5480 (5069-L4xx process
+controllers — L430ERMW/L450ERMW/L4100ERMW/L4200ERMW) — also zero real
+corpus examples, not yet requested by James. Building either without a
+real sample risks fabricating a ProductCode/Module shape that fails
+Studio 5000 import outright.
 
 [^cmpcpt]: T1T3/T2T3 wired 2026-08-25: real capture data existed
 unreconciled since 2026-08-24; `pow_tier_mix_base=160,
