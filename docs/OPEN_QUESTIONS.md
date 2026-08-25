@@ -9,8 +9,9 @@ the matching footnote at the bottom, not inline.
    effort redirected to safety work per James.[^instrfirstpass]
 
 2. **OQ-BASELINE-PROCFW** — real, large, genuinely open. Baseline varies
-   hugely by processor/firmware; 28 of 29 staged files have valid data
-   points now, 20 still await capture — that's the next step.[^baseline]
+   hugely by processor/firmware; a full 152-file catalog x firmware matrix
+   (19 catalogs × v31-38) now covers this, all awaiting capture — that's
+   the next step, not more generation.[^baseline]
 
 3. **OQ-CMPCPTLAYOUT** — mostly closed. Uniform, T1+T2, and T1T3/T2T3
    mixed-tier CPT are solved and wired. Two threads left, both narrowed
@@ -62,6 +63,36 @@ match to the already-confirmed reference point) and 18,120-18,144 for the
 other 4 (small real per-model variance, not error) — see `manifest.csv`
 notes on `v35_l82e/l83e/l84e/l85e/l3100erm/l320er/l330er/l340er`. 20 files
 remain awaiting capture.
+
+**Full catalog x firmware matrix built 2026-08-25**
+(`gen_fw_catalog_matrix.py`, 152 files, `fw_catalog_matrix` category).
+Every real catalog number sourced from Rockwell literature/distributor
+documentation via web search (not guessed), cross-checked against this
+project's own already-confirmed ProductCodes before generating anything:
+19 catalogs (5× ControlLogix 5580 1756-L8x, 14× CompactLogix 5380
+5069-Lxxx) × 8 firmware versions (31-38, v30 excluded — SDK confirmed
+unable to build it at all). Firmware attribute shape (SoftwareRevision,
+AutoDiagsEnabled/WebServerEnabled presence, v38's DataExchangeId) is real
+per version, confirmed from the existing v31-35/v38 samples — v36/v37
+specifically are flagged ASSUMED in every file's own manifest note (real
+firmware majors confirmed to exist, but no real v31-38-range L5X sample
+for either exists yet to confirm their exact attribute shape). Files
+sorted `fwmatrix_v{NN}_{catalog}` so a plain directory listing groups all
+of v31 together, then v32, etc.
+
+**Sourced but deliberately NOT generated, real ProductCode still
+unconfirmed:** ControlLogix 5570 (1756-L7x) beyond L71 (only L71 has a
+confirmed real ProductCode, and that's from a v21 sample, outside this
+firmware range — L72-L75 have zero confirmed code, and this hardware
+generation's actual firmware ceiling in the 31-38 range is unconfirmed
+too); ControlLogix 5590 (1756-L9x, "TS" suffix — L902TS/L905TS/L908TS/
+L915TS/L925TS/L950TS/L980TS) — a brand-new family (FactoryTalk Design
+Studio only added support in v2.03, Nov 2025) with zero real L5X corpus
+examples anywhere; CompactLogix 5480 (5069-L4xx process controllers —
+L430ERMW/L450ERMW/L4100ERMW/L4200ERMW) — also zero real corpus examples.
+Building any of these without a real sample risks fabricating a
+ProductCode/Module shape that fails Studio 5000 import outright. Needs a
+real sample from James before generating.
 
 [^cmpcpt]: T1T3/T2T3 wired 2026-08-25: real capture data existed
 unreconciled since 2026-08-24; `pow_tier_mix_base=160,
