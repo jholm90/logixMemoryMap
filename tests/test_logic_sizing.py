@@ -272,15 +272,25 @@ def test_cpt_t1_t2_mix_matches_confirmed_real_formula():
     assert model.cpt_expression.cost_for(["+", "-", "*"]) == 100 + 32 * 3
 
 
-def test_cpt_other_mixed_tiers_fall_back_to_additive_sum():
-    # Any mix involving POW (T3) alongside another tier isn't the solved
-    # T1T2 special case -- still the real-but-approximate additive sum
-    # (see memory_model.yaml cpt_expression's "Mixed-tier" note: real
-    # data shows T1T3/T2T3 pairs have their own different, not-yet-fully-
-    # characterized behavior, not force-fit into this fallback as if
-    # confirmed).
+def test_cpt_pow_tier_mix_solved_for_t1t3_and_t2t3():
+    # POW (T3) alongside EXACTLY ONE other tier (T1 or T2) is now solved
+    # (OQ-CMPCPTLAYOUT, 2026-08-25): pow_tier_mix_base + pow_tier_mix_per_operator
+    # * operator_count. Real data confirmed T1T3 and T2T3 cost IDENTICALLY at
+    # every tested operator count -- one formula for both pairs.
     model = MODEL.logic_instructions
-    assert model.cpt_expression.cost_for(["+", "**"]) == 88 + 36 + 116
+    assert model.cpt_expression.cost_for(["+", "**"]) == 160 + 64 * 2
+    assert model.cpt_expression.cost_for(["*", "**"]) == 160 + 64 * 2
+    assert model.cpt_expression.cost_for(["+", "**"]) == model.cpt_expression.cost_for(["*", "**"])
+
+
+def test_cpt_all_three_tiers_falls_back_to_additive_sum():
+    # All 3 tiers present in one expression isn't solved yet -- still the
+    # real-but-approximate additive sum (see memory_model.yaml
+    # cpt_expression's "Mixed-tier" note: real data shows this case doesn't
+    # fit any simple base+rate model from the 4 points on file, not force-fit
+    # into a formula as if confirmed).
+    model = MODEL.logic_instructions
+    assert model.cpt_expression.cost_for(["+", "*", "**"]) == 88 + 36 + 52 + 116
 
 
 def test_cpt_costed_per_call_not_via_flat_weights_table():

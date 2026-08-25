@@ -81,6 +81,15 @@ body {
 }
 #export-warning.hidden { display: none; }
 
+#safety-warning {
+  padding: 0.5rem 1rem;
+  background: #4a1414;
+  color: #f5a3a3;
+  font-size: 0.82rem;
+  border-bottom: 1px solid var(--border);
+}
+#safety-warning.hidden { display: none; }
+
 #empty-state {
   display: flex;
   flex-direction: column;

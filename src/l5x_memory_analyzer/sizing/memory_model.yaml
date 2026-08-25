@@ -609,6 +609,19 @@ cpt_expression:
   # back to the plain additive-sum approximation below instead.
   two_tier_mix_base: 100
   two_tier_mix_per_operator: 32
+  # T1T3/T2T3 mixed expression (POW alongside exactly one of ADD/SUB or
+  # MUL/DIV/MOD), wired 2026-08-25 -- OQ-CMPCPTLAYOUT. Real capture data
+  # already existed (2026-08-24, gen_cpt_mixed_operators.py's
+  # group_t1t3_t2t3_scaling) but was never reconciled into a formula.
+  # T1T3 and T2T3 give IDENTICAL real bytes at every one of 5 tested
+  # operator counts (2/4/7/10/14) -- once POW is present, whether the
+  # OTHER tier is T1 or T2 makes no measurable difference, so one formula
+  # covers both pairs. 4 of 5 points exact (k=2,4,10,14), k=7 off by the
+  # same +16 this project's other CPT formulas also miss by at that
+  # specific operator count. All-3-tier mixes remain unresolved (see
+  # OPEN_QUESTIONS.md OQ-CMPCPTLAYOUT), fall back to the additive-sum path.
+  pow_tier_mix_base: 160
+  pow_tier_mix_per_operator: 64
 
 # Operand-type surcharge (OQ-OPERANDTYPE, wired 2026-08-26, James: "touch
 # these and finalize them now"). Every weight in `logic_instructions.

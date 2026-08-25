@@ -29,10 +29,23 @@ class L5XDocument:
     software_revision: str | None
     target_type: str | None
     processor_type: str | None
+    safety_level: str | None
 
     @property
     def is_controller_export(self) -> bool:
         return self.target_type == CONTROLLER_TARGET_TYPE
+
+    @property
+    def is_safety_project(self) -> bool:
+        # Real shape (see sample_gen/wrapper.py): a non-safety project's
+        # <SafetyInfo/> is empty (no SafetyLevel attribute); a safety
+        # project (SIL2 or SIL3) always carries a real SafetyLevel value
+        # like "SIL2/PLd" or "SIL3/PLe". OQ-SAFETY (RESOLVED_QUESTIONS.md):
+        # out of scope for a combined byte total -- this tool doesn't
+        # attempt to size Safety Task/Program content at all, so a safety
+        # project's total is silently wrong (understated) without this
+        # warning.
+        return bool(self.safety_level)
 
 
 def _build_document(root: ET.Element, display_name: str) -> L5XDocument:
@@ -43,6 +56,8 @@ def _build_document(root: ET.Element, display_name: str) -> L5XDocument:
 
     controller_el = root.find("Controller")
     processor_type = controller_el.get("ProcessorType") if controller_el is not None else None
+    safety_info_el = controller_el.find("SafetyInfo") if controller_el is not None else None
+    safety_level = safety_info_el.get("SafetyLevel") if safety_info_el is not None else None
 
     return L5XDocument(
         path=Path(display_name),
@@ -51,6 +66,7 @@ def _build_document(root: ET.Element, display_name: str) -> L5XDocument:
         software_revision=root.get("SoftwareRevision"),
         target_type=root.get("TargetType"),
         processor_type=processor_type,
+        safety_level=safety_level,
     )
 
 

@@ -650,3 +650,42 @@ corpus, including several `fw_baseline` firmware points whose apparent
 acceptable band. The existing UDT-definition + per-tag formulas already
 generalize to a realistic messy/nested member mix; no formula change
 needed.
+
+## Stale-open-question sweep, 2026-08-25
+
+James asked for a review of every numbered OPEN_QUESTIONS.md item; 2 of
+them turned out to already be closed by real capture data that had landed
+on disk but was never reconciled back into a conclusion — same root cause
+as the CPT/JSR findings logged elsewhere this date.
+
+**OQ-XPROGREF, resolved 2026-08-25.** Was tracking a genuine-looking
+-3,948-byte negative gap on the two-program shared-alias case. The 3rd/4th
+program files (`xprogref_3prog_shared_alias_n01000`,
+`xprogref_4prog_shared_alias_n01000`) already had real capture data
+(2026-08-24) sitting unreconciled. Live-recomputed against the current
+engine: the gap no longer exists at all — single=0 delta, two-program=-16,
+3-program=-32, 4-program=-48 (a clean -16/rung per each additional
+program, <0.05% of file total throughout). Whatever fixed the alias
+formula in an earlier pass already resolved this as a side effect.
+
+**OQ-STRINGUDTMEMBER (builtin-as-UDT-member piece), resolved 2026-08-25.**
+Was tracking a 2-D `correction(m,n)` surface derived from two 1-D slices
+(`correction(m,n=1)=2m-4`, `correction(m=1,n)=-2n`). The disentangle files
+needed to tell a bilinear surface apart from a simple additive one
+(`stringclose_udtmember_builtin_2members_n03`, `_3members_n03`) already
+had real capture data (2026-08-24) sitting unreconciled. Live-recomputed
+against the current (plain, uncorrected) engine: residuals are 0, 0, +2,
++6 bytes across all 4 points (2/3 members × 1/3 instances) — no correction
+term needed at all. Whatever fixed STRING-in-UDT sizing in an earlier pass
+already resolved this too.
+
+**Two generator bugs, fixed 2026-08-25, still awaiting recapture (not a
+real open question, just implementation status).** Double underscores are
+forbidden in Rockwell tag names — a name-length padding filler could
+produce one; fixed in 3 places (`cli.py`, `gen_string_tagoverhead.py`,
+`gen_string_batch2.py`) to avoid a trailing `_`. AOI call-site tag count
+must match the definition's Required/Visible parameter count — 2 files
+(`axis_aoi_inout_1_instance`, `axis_full_combo`) wired a value into a
+param declared hidden by default; fixed by marking it `required=True,
+visible=True`. Both regenerated, lint-clean, stale capture data cleared —
+just needs to go through the normal capture pipeline like anything else.

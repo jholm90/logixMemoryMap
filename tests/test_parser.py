@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from l5x_memory_analyzer.parser.datatypes import parse_data_types
-from l5x_memory_analyzer.parser.load import L5XFormatError, load_l5x
+from l5x_memory_analyzer.parser.load import L5XFormatError, load_l5x, load_l5x_bytes
 from l5x_memory_analyzer.parser.tags import parse_tags
 
 FIXTURE = Path(__file__).parent.parent / "samples/generated/tags/count_0001_dint.L5X"
@@ -57,6 +57,39 @@ def test_load_l5x_rejects_wrong_root():
             load_l5x(path)
     finally:
         Path(path).unlink()
+
+
+# ---------------------------------------------------------------------------
+# OQ-SAFETY -- 2026-08-25, warn (don't attempt a combined total) on a
+# safety-rated project. Real shape (sample_gen/wrapper.py): a non-safety
+# project's <SafetyInfo/> is empty (no SafetyLevel); SIL2/SIL3 always
+# carry a real SafetyLevel value.
+# ---------------------------------------------------------------------------
+
+def test_is_safety_project_true_when_safety_level_present():
+    xml = (
+        '<RSLogix5000Content SchemaRevision="1.0"><Controller Name="Test">'
+        '<SafetyInfo SafetyLevel="SIL3/PLe"/></Controller></RSLogix5000Content>'
+    )
+    doc = load_l5x_bytes(xml.encode(), "safety.L5X")
+    assert doc.is_safety_project is True
+    assert doc.safety_level == "SIL3/PLe"
+
+
+def test_is_safety_project_false_when_safety_info_empty():
+    xml = (
+        '<RSLogix5000Content SchemaRevision="1.0"><Controller Name="Test">'
+        "<SafetyInfo/></Controller></RSLogix5000Content>"
+    )
+    doc = load_l5x_bytes(xml.encode(), "nonsafety.L5X")
+    assert doc.is_safety_project is False
+    assert doc.safety_level is None
+
+
+def test_is_safety_project_false_when_safety_info_absent():
+    xml = '<RSLogix5000Content SchemaRevision="1.0"><Controller Name="Test"/></RSLogix5000Content>'
+    doc = load_l5x_bytes(xml.encode(), "nosafetyinfo.L5X")
+    assert doc.is_safety_project is False
 
 
 def test_parse_data_types_bit_alias():

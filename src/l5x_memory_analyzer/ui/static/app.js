@@ -34,6 +34,7 @@ function renderAll() {
   if (!loaded) {
     document.getElementById("file-info").textContent = "No file loaded";
     document.getElementById("export-warning").classList.add("hidden");
+    document.getElementById("safety-warning").classList.add("hidden");
     return;
   }
 
@@ -42,6 +43,17 @@ function renderAll() {
   if (REPORT.processor_type) infoParts.push(REPORT.processor_type);
   document.getElementById("file-info").textContent =
     `${REPORT.file_name}  (${infoParts.join(", ")})`;
+
+  const safetyWarn = document.getElementById("safety-warning");
+  if (REPORT.is_safety_project) {
+    safetyWarn.classList.remove("hidden");
+    safetyWarn.textContent =
+      `This is a Safety-rated project (${REPORT.safety_level}) -- Safety Task/Program content is ` +
+      `NOT sized by this tool at all. The total below is understated, not a full picture. Treat it ` +
+      `as informational only until Safety content sizing is built (OQ-SAFETY).`;
+  } else {
+    safetyWarn.classList.add("hidden");
+  }
 
   const warn = document.getElementById("export-warning");
   if (!REPORT.is_controller_export) {

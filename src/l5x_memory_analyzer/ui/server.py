@@ -86,6 +86,8 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         "processor_type": doc.processor_type,
         "target_type": doc.target_type,
         "is_controller_export": doc.is_controller_export,
+        "is_safety_project": doc.is_safety_project,
+        "safety_level": doc.safety_level,
         "hierarchy": build_hierarchy(
             entries, data_types, model, {p: d for p, (dt, d) in tag_index.items()},
             program_to_task_map(doc.root),

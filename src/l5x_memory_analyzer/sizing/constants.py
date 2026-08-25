@@ -162,6 +162,8 @@ class CptExpressionModel:
     per_extra_same_tier_operand: int
     two_tier_mix_base: int
     two_tier_mix_per_operator: int
+    pow_tier_mix_base: int
+    pow_tier_mix_per_operator: int
 
     def cost_for(self, operators: list[str]) -> int:
         """Real per-call CPT cost from its expression's operator tokens
@@ -178,17 +180,31 @@ class CptExpressionModel:
         real operand-count points (3/5/11/15 operands exact, 8 operands off
         by the same small universal noise seen throughout this project) --
         order/arrangement doesn't matter (alternating vs grouped tiers give
-        the same result). Any OTHER mixed-tier combination (POW mixed with
-        either other tier, or all 3 tiers present) falls back to a simple
-        per-operator-tier sum -- a real but WEAK approximation: off by only
-        ~20 bytes/call on simple 3-operator test points, by ~150 bytes/call
-        on a real 5-operator/3-tier/mixed-literal corpus expression, and
-        REAL-typed operands or a float literal each add real extra cost
-        that does NOT compose additively with anything else (confirmed
-        2026-08-26, see memory_model.yaml). See memory_model.yaml
-        cpt_expression for the full derivation and why the non-T1T2 mixed
-        cases aren't patched further yet (each needs its own operand-count
-        sweep the way T1T2 got, not force-fit from a handful of points).
+        the same result).
+
+        A MIXED expression using POW alongside EXACTLY ONE other tier (T1T3
+        or T2T3) is ALSO exact now, 2026-08-25: `pow_tier_mix_base +
+        pow_tier_mix_per_operator * operator_count`, wired from real capture
+        data that already existed in manifest.csv (2026-08-24) but had never
+        been reconciled into a formula. T1T3 and T2T3 give IDENTICAL real
+        bytes at every one of 5 tested operator counts (2/4/7/10/14) --
+        once POW is present, the OTHER tier (T1 vs T2) makes no measurable
+        difference, so one formula covers both pairs. 4 of 5 points exact
+        (k=2,4,10,14), k=7 off by the same +16 this project's other CPT
+        formulas also miss by at that specific operator count -- a
+        file-specific quirk, not a per-formula one. See memory_model.yaml
+        cpt_expression for the full derivation.
+
+        Any OTHER mixed-tier combination (all 3 tiers present in one
+        expression) falls back to a simple per-operator-tier sum -- a real
+        but WEAK approximation: off by ~150 bytes/call on a real
+        5-operator/3-tier/mixed-literal corpus expression, and REAL-typed
+        operands or a float literal each add real extra cost that does NOT
+        compose additively with anything else (confirmed 2026-08-26, see
+        memory_model.yaml). See memory_model.yaml cpt_expression for why
+        the all-3-tier case isn't patched further yet (needs its own
+        operand-count sweep the way T1T2/T1T3/T2T3 each got, not force-fit
+        from 4 points that don't fit any simple base+rate model).
         """
         if not operators:
             return self.base_read
@@ -197,8 +213,11 @@ class CptExpressionModel:
             return self.base_read + tiers[0] + self.per_extra_same_tier_operand * (len(operators) - 1)
         add_tier = self.operator_tier_costs["+"]
         mul_tier = self.operator_tier_costs["*"]
+        pow_tier = self.operator_tier_costs["**"]
         if set(tiers) == {add_tier, mul_tier}:
             return self.two_tier_mix_base + self.two_tier_mix_per_operator * len(operators)
+        if set(tiers) in ({add_tier, pow_tier}, {mul_tier, pow_tier}):
+            return self.pow_tier_mix_base + self.pow_tier_mix_per_operator * len(operators)
         return self.base_read + sum(tiers)
 
 
@@ -383,6 +402,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 per_extra_same_tier_operand=raw["cpt_expression"]["per_extra_same_tier_operand"],
                 two_tier_mix_base=raw["cpt_expression"]["two_tier_mix_base"],
                 two_tier_mix_per_operator=raw["cpt_expression"]["two_tier_mix_per_operator"],
+                pow_tier_mix_base=raw["cpt_expression"]["pow_tier_mix_base"],
+                pow_tier_mix_per_operator=raw["cpt_expression"]["pow_tier_mix_per_operator"],
             ),
             operand_type_surcharge=OperandTypeSurchargeModel(
                 confidence=raw["operand_type_surcharge"]["confidence"],

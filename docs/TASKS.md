@@ -210,11 +210,13 @@ instructions fitted at 0.00% residual, full table in `docs/MEMORY_MODEL.md`.
       LEQ/DIV/CPT).** Everything except CPT is CONFIRMED. CPT: real
       per-operand expression parser built and wired (`parser/logic.py` +
       `sizing/logic.py`'s `CptExpressionModel`, replacing the old
-      flat-wrong `CPT: 452`). Uniform-tier case and the T1+T2 mixed-tier
-      case are both resolved and wired (RESOLVED_QUESTIONS.md OQ-CPT).
-      T1T3/T2T3 pairs, all-3-tier mixes, and REAL-operand/float-literal
-      interaction inside a mixed expression remain open — see
-      OPEN_QUESTIONS.md OQ-CMPCPTLAYOUT. CMP's own weight (76/rung,
+      flat-wrong `CPT: 452`). Uniform-tier, T1+T2 mixed-tier, and (2026-08-25)
+      T1T3/T2T3 mixed-tier cases are all resolved and wired
+      (RESOLVED_QUESTIONS.md OQ-CPT). Only 2 threads remain, both genuinely
+      real interaction effects with no simple base+rate fit from data on
+      hand yet — see OPEN_QUESTIONS.md OQ-CMPCPTLAYOUT: all-3-tier mixes,
+      and REAL-operand/float-literal interaction inside a mixed expression.
+      CMP's own weight (76/rung,
       +64/rung compound-condition surcharge, +72/rung float-literal
       surcharge) is resolved and wired (RESOLVED_QUESTIONS.md
       OQ-CMP weight). Operand data type (OQ-OPERANDTYPE) is resolved and
@@ -235,16 +237,32 @@ instructions fitted at 0.00% residual, full table in `docs/MEMORY_MODEL.md`.
       `Name[...]` brackets, classifies direct/literal (0 cost), tag-driven
       (+84/rung), or tag+literal-offset (+108/rung). KNOWN confidence.
 - 🔴 **JSR/subroutine call overhead.** JSR's own flat weight (72/rung) is
-      CONFIRMED and wired. Per-param cost decomposition mechanism is
-      solved (`A(n)=104+20n`, `B(n)=4+20n`) but only from 2 param counts —
-      not yet confirmed general, not wired. See OPEN_QUESTIONS.md
-      OQ-JSRPARAMCOST.
+      CONFIRMED and wired. Per-param cost formula (`A(n)=104+20n`,
+      `B(n)=4+20n`) is now CONFIRMED general (2026-08-25, a 3rd point at
+      n=8 lands exactly on the 2-point line) but not wired — needs real
+      parser work first (JSR call args aren't parsed at all yet, only the
+      target routine name). See OPEN_QUESTIONS.md OQ-JSRPARAMCOST.
 - ✅ MSG instruction overhead — only 4 real uses, low priority. LOGIC
       weight resolved (48/rung); operand's own MESSAGE-structure tag cost
       stays unmodeled, deprioritized (OPEN_QUESTIONS.md OQ-PREDEFINED).
 - 🔴 Consolidate full instruction-weight table into MEMORY_MODEL.md — table
       exists and is kept current; blocked only on OQ-JSRPARAMCOST landing.
-- 🔴 Hold out 3-5 samples, validate fitted model against them, log residual
+- ✅ **Hold out 10 real captured samples, validate fitted model, log
+      residual (2026-08-25).** `gen_logic_random_mix.py`'s 10 random-
+      combination files (5-24 instruction types each, 505-27,267 rungs,
+      captured 2026-08-22/23) were never used to fit any single constant —
+      each combines many already-fitted weights, the correct shape for a
+      holdout check. Live-recomputed against the CURRENT engine: 7 of 10
+      files land at a flat +23-byte residual regardless of file size
+      (0.002%-0.05% — essentially exact for ESTIMATED-tier logic). The
+      other 3 (`randommix_07`, `cmpcpt_randommix_00/01`) miss by 1.8%-4.1%
+      — fully explained, not a new gap: all 3 contain the exact
+      REAL-operand+float-literal-in-a-mixed-expression CPT shape that's
+      already tracked as open (OPEN_QUESTIONS.md OQ-CMPCPTLAYOUT), scaled
+      up by call count. No other instruction weight is implicated. The
+      flat +23 residual on the other 7 is a minor, low-priority curiosity
+      (same flavor as OQ-INSTRFIRSTPASS-FLATOFFSET's +6-byte finding,
+      different magnitude) — noted, not chased.
 
 ## Phase 5 — UI v2 (logic browsing)
 Built while waiting on test captures — none of this needed real capture
@@ -270,14 +288,29 @@ data, it's UI/data-contract work on top of already-wired logic sizing.
       `.tier-chip` shown alongside (never merged with) the existing
       basis-chip; dashed outline on estimated-tier treemap rects. Tier and
       basis are deliberately separate confidence axes per CLAUDE.md.
-- 🟡 **Combined root view merging tags + logic + module overhead.**
-      Tags+logic have always shared the same "Program: X" root group.
-      Module I/O is surfaced as informational, non-summed `SizeError`
-      entries — deliberately not merged into the byte map since its
-      formula isn't confirmed yet (OQ-MODULEIO).
+- ✅ **Combined root view merging tags + logic + module overhead
+      (2026-08-25, James: "close this task if you are done, it seems
+      worthless").** Tags+logic have always shared the same "Program: X"
+      root group. Module I/O is surfaced as informational, non-summed
+      `SizeError` entries, deliberately not merged into the byte map — the
+      code side of this is complete and correct as-is; whether module
+      overhead is confident enough to fold into the summed total is purely
+      an OQ-MODULEIO data question (141 files awaiting capture), tracked
+      there so it isn't duplicated as a separate open task here.
 
 ## Phase 6 — Polish
-- 🔴 Safety task scope decision implemented (OQ-SAFETY)
+- ✅ **Safety task scope decision implemented (OQ-SAFETY), 2026-08-25.**
+      Decision (out of scope for launch, warn rather than attempt a wrong
+      combined total) was already recorded in RESOLVED_QUESTIONS.md but
+      never built. `L5XDocument.is_safety_project`/`.safety_level` parses
+      `Controller/SafetyInfo/@SafetyLevel` (real shape: absent/empty for
+      a non-safety project, a real value like "SIL3/PLe" for SIL2/SIL3).
+      UI shows a red banner (mirrors the existing export-type warning
+      pattern); CLI `size` prints the same warning to stderr. Verified
+      against the real SIL3 Bender replica (warns) and an ordinary file
+      (silent). Doesn't size Safety Task/Program content itself — still
+      just a warning that the total is understated, per the OQ-SAFETY
+      decision.
 - 🔴 Alarm instance (ALMD/ALMA) overhead if in scope (OQ-ALARM)
 - ✅ **Per-part-number memory budget.** Real capacity ranges 0.6MB-40MB by
       catalog number, was hardcoded to a flat 4MB. `sizing/

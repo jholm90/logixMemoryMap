@@ -47,6 +47,14 @@ def _cmd_size(args: argparse.Namespace) -> int:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
+    if doc.is_safety_project:
+        print(
+            f"warning: this is a Safety-rated project ({doc.safety_level}) -- Safety Task/Program "
+            f"content is NOT sized by this tool at all. The total below is understated, not a full "
+            f"picture. Treat it as informational only until Safety content sizing is built (OQ-SAFETY).",
+            file=sys.stderr,
+        )
+
     model = load_memory_model()
     entries, errors = build_report(doc.root, model)
     entries = sorted(entries, key=lambda e: e.bytes, reverse=True)

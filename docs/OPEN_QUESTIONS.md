@@ -15,16 +15,35 @@ generator already covers them, just waiting on the next capture batch.
    **PID** (0 real examples, needs its own structure tag). Also not
    started: a "third pass" for per-file instance/call-site multiplicity
    (rung count is confirmed flat-rate; call-site count is not) — low
-   priority, no reason yet to suspect it's needed.
+   priority, no reason yet to suspect it's needed. **Deprioritized
+   2026-08-25 (James: "move to safety related feature")** — none of the
+   3 remaining instructions have a 2nd real corpus example to test
+   against anyway, so effort redirects to Phase 6's OQ-SAFETY (safety
+   task scope decision) instead of manufacturing synthetic SCP/FBC/PID
+   points with no real data to validate against.
 
-   1a. **OQ-INSTRFIRSTPASS-FLATOFFSET (minor, 2026-08-25).** All 32 clean
-   `instrfirst_*` file pairs (everything except MCCP/MSG) show an
-   identical flat +6 byte gap at both n=1 and n=10 — doesn't scale with
-   rung count, so didn't affect any confirmed weight (marginal-delta
-   derivation is immune to a fixed offset). Real, consistent across 32
-   independent files, small (~0.03% of file total), not yet root-caused —
-   likely something in the shared tag pool these files declare. Low
-   priority.
+   1a. **OQ-INSTRFIRSTPASS-FLATOFFSET — corrected to +12 (was misrecorded
+   as +6), narrowed to the shared tag pool, 2026-08-25.** Live-recomputed
+   all 74 `instrfirst_*` manifest rows against the current engine: the
+   real number is a flat **+12**, not +6 — every one of the 64 "clean"
+   files (32 instructions × n=1/n=10, everything except CROUT/MAPC/MCCP/
+   MSG, each of which has its own already-known separate gap) shows
+   exactly +12, no exceptions. Confirmed independent of both instruction
+   choice and rung count (n=1 and n=10 match exactly), which rules out
+   any per-instruction weight or per-rung effect and narrows this
+   entirely to the shared tag pool every `instrfirst_*` file declares
+   (4 REAL, 4 BOOL, 3× DINT[20] array, 3× built-in STRING(82), 1 CONTROL,
+   1 MOTION_INSTRUCTION, 1 CAM_PROFILE[5]) — every one of those 7 types
+   is independently confirmed EXACT in its own dedicated isolation test
+   elsewhere in this project, so the +12 is most likely a real
+   interaction effect from having many DISTINCT tag types coexist in one
+   file (plausibly a small per-distinct-type registry/metadata cost),
+   not a miscalibration of any single type's own formula. Isolating which
+   specific type (or the interaction itself) needs one more real point —
+   a reduced-pool variant of an already-confirmed `instrfirst_*` file —
+   not more analysis of data already on hand. Small (~0.06% of file
+   total), low priority, doesn't affect any confirmed weight (marginal-
+   delta derivation is immune to a fixed offset).
 
 2. **OQ-BASELINE-PROCFW — genuinely open, real and large.**
    `empty_project_baseline=13,296` (RESOLVED_QUESTIONS.md OQ-BASELINE) is
@@ -70,16 +89,19 @@ generator already covers them, just waiting on the next capture batch.
    The other 20 non-contaminated `fw_baseline` files remain awaiting
    capture — that capture, not more file generation, is the next step.
 
-3. **OQ-CMPCPTLAYOUT — mixed-tier CPT, still open.** Uniform-tier CPT and
-   the T1(ADD/SUB)+T2(MUL/DIV/MOD) mixed case are resolved and wired
-   (RESOLVED_QUESTIONS.md OQ-CPT). Still open, real data exists but no
-   formula:
-   - **T1T3 and T2T3 pairs** (`+`/`**` and `*`/`**`): only single-point
-     data (both = 288 for 2 operators, order-independent) — no
-     operand-count-scaling sweep like T1T2 got, so no per-operator rate to
-     extrapolate. `gen_cpt_mixed_operators.py`'s `group_t1t3_t2t3_scaling`
-     (10 files, mirrors the T1T2 sweep) is generated and awaiting capture
-     — the direct next step.
+3. **OQ-CMPCPTLAYOUT — mixed-tier CPT, half closed 2026-08-25.** Uniform-
+   tier CPT, the T1(ADD/SUB)+T2(MUL/DIV/MOD) mixed case, and now
+   **T1T3/T2T3 (POW alongside exactly one other tier)** are all resolved
+   and wired. The T1T3/T2T3 real capture data (`group_t1t3_t2t3_scaling`,
+   10 files) had actually already landed 2026-08-24 but was never
+   reconciled — `pow_tier_mix_base=160, pow_tier_mix_per_operator=64`,
+   exact at 4 of 5 operand-count points (k=2,4,10,14 operators), k=7 off
+   by the same +16 this project's other CPT formulas also miss by at that
+   specific operator count. T1T3 and T2T3 give IDENTICAL real bytes at
+   every tested point — once POW is present, T1-vs-T2 makes no measurable
+   difference. See `sizing/constants.py` `CptExpressionModel.cost_for`.
+
+   Still open, real data exists but no formula:
    - **All-3-tier mixes**: real data (5 points, n=3/5/8/10/15 operands)
      doesn't fit any simple `base+rate*k` model — the tier mix itself
      shifts as k grows, a real 3-way interaction not decomposed from 4
@@ -129,63 +151,53 @@ generator already covers them, just waiting on the next capture batch.
    ratio to write a general rule. Needs more BOOL:non-BOOL ratios and
    count points crossing n=32 on the pure-BOOL shape specifically.
 
-5. **OQ-PREDEFINED, MESSAGE structure — open, deprioritized.** CAM is
-   resolved and wired (RESOLVED_QUESTIONS.md). MESSAGE's own byte cost
-   stays unmodeled — James, 2026-08-25: "Message size is fine for the 90%
-   accuracy as it's not a common usage instruction," no sweep planned.
-   Real research on file if it's ever picked back up: shape is a single
-   self-closed `<MessageParameters>` element, but the attribute SET varies
-   by `MessageType` (CIP Generic=12 attrs, the type currently modeled, vs
-   PLC5 Typed Read=7 attrs) — testing only CIP Generic risks badly
-   generalizing to the other 5 real MessageTypes in the corpus. MSG's own
-   LOGIC weight (48/rung) is separately resolved and wired.
+5. **OQ-PREDEFINED, MESSAGE structure — test batch built 2026-08-25,
+   awaiting capture.** CAM is resolved and wired (RESOLVED_QUESTIONS.md).
+   MESSAGE's own byte cost stays unmodeled for now, but James reversed
+   the earlier deprioritization: "Generate messages to satisfy this
+   question? Message instructions are just like axis tags, lots of
+   config but always the same data size." `gen_msg_typesweep.py` built 7
+   new isolated-MSG files, one per real MessageType found by grepping the
+   full `samples/local/` corpus (CIP Data Table Read/Write, PLC5 Typed
+   Read/Write, PLC5 Word Range Write, SLC Typed Read/Write — every
+   attribute copied verbatim from a real element, never guessed), on top
+   of the already-existing CIP Generic file (`instrfirst_msg.L5X`). 8
+   MessageTypes now covered total. Once captured, a flat size across all
+   8 confirms James's axis-tag-style hypothesis; any spread ties the cost
+   to attribute-set complexity instead. MSG's own LOGIC weight (48/rung)
+   is separately resolved and wired.
 
-6. **OQ-XPROGREF — captured, negative gap, unexplained.** Real Logix has
-   no direct cross-program tag-addressing syntax; the mechanism is a
-   Controller-scoped global with each program declaring its own Local
-   alias to it. Single-program alias baseline shows the expected small +64
-   gap, but the two-program shared-alias case shows a NEGATIVE gap
-   (-3,948, engine over-predicts) — opposite direction from every other
-   finding in this project. Hypothesis (unconfirmed): the second program's
-   alias to the same Controller-scoped tag may not carry its own full
-   `alias_overhead` cost. Needs a 3rd/4th program data point before
-   touching code.
+6. **OQ-JSRPARAMCOST — formula CONFIRMED general 2026-08-25, blocked on
+   wiring effort now, not data.** JSR's own flat weight (72/rung) is
+   confirmed. Per-param cost decomposes as `delta(n,R) = A(n) + B(n)*R`.
+   The 3rd disentangle point (n=8 at r=1000,
+   `jsr_paramcount_n08_r01000_decompose`) already had real capture data
+   on hand (2026-08-24) that was never reconciled. Solved from the
+   matching r=100/r=1000 pair the same way n=5/n=10 were: raw marginal
+   rate = (256072-43672)/900 = 236/rung; subtracting the already-confirmed
+   72/rung JSR base gives `B(8) = 164` — **exact match** to the
+   `B(n) = 4 + 20*n` prediction (4+20*8=164). A 3rd independent point
+   landing exactly on a 2-point-derived line is real evidence the linear-
+   in-n model generalizes, not a coincidence. `A(8)` wasn't independently
+   re-solved this pass (the intercept extraction needs the tag-storage
+   contribution from each n's own `2n` declared DINT tags controlled for,
+   which the original A(5)/A(10) derivation must have done but isn't
+   documented step-by-step) — B(n) alone being confirmed exact is the
+   operationally important half (it's the per-call-site marginal cost
+   that dominates total cost for any routine with multiple call sites).
 
-7. **OQ-STRINGUDTMEMBER, builtin-as-UDT-member piece — real, not yet
-   closeable.** (Custom-type-as-UDT-member is resolved, see
-   RESOLVED_QUESTIONS.md OQ-STRINGUDTMEMBER.) At a fixed instance count of
-   1, correction as a function of member count m fits `correction(m,n=1) =
-   2m - 4`; at a fixed member count of 1, correction as a function of
-   instance count n fits `-2n`. These are two 1-D slices through what must
-   be a 2-D surface — no combination tried reproduces both without a data
-   point at m>1 AND n>1 simultaneously. Needs a 2- or 3-member UDT at n=3
-   or n=10 (not yet generated) to disentangle.
+   **Not wired yet — this is now a parser task, not a capture task.**
+   `parser/logic.py`'s `_JSR_TARGET` regex only extracts the target
+   routine name, not the call's argument list, so per-call param count
+   isn't available to the sizing engine at all yet. Wiring needs: (1)
+   parse each JSR call's full arg list to get `n` per call site, (2) a
+   `JsrParamCostModel` (mirroring `CptExpressionModel`'s shape) applying
+   `B(n)` per call site, (3) `A(n)` charged once per distinct target
+   routine regardless of call-site count (needs call-site deduplication
+   already partially present via `jsr_target_names`). Real architecture
+   work, not a rush-wire.
 
-8. **OQ-JSRPARAMCOST — decomposition mechanism solved, not yet confirmed
-   general, not wired.** JSR's own flat weight (72/rung) is confirmed.
-   Per-param cost decomposes as `delta(n,R) = A(n) + B(n)*R` — solved from
-   2 param counts (n=5, n=10) where both r=100 and r=1000 data exist:
-   `B(n) = 4 + 20*n` (true per-rung, per-call rate), `A(n) = 104 + 20*n` (a
-   real one-time cost, likely the subroutine's own Parameters-block
-   declaration, paid once regardless of call count). A 2-point linear fit
-   is trivially exact and doesn't by itself prove A(n)/B(n) are linear in
-   n generally — applying it to the original r=100-only sweep (n=3,4,6,
-   8,12) leaves a flat +8 residual, real evidence it might not generalize
-   cleanly. `gen_jsr_decompose.py`'s `group_jsr_third_disentangle_point`
-   (n=8 at r=1000, matching the existing n=8 at r=100) is generated and
-   awaiting capture — the cheapest way to get a 3rd (A,B) solve.
-
-9. **Two generator bugs fixed 2026-08-25, awaiting recapture.** Double
-   underscores are forbidden in Rockwell tag names — a name-length padding
-   filler could produce one; fixed in 3 places (`cli.py`,
-   `gen_string_tagoverhead.py`, `gen_string_batch2.py`) to avoid a
-   trailing `_`. AOI call-site tag count must match the definition's
-   Required/Visible parameter count — 2 files (`axis_aoi_inout_1_instance`,
-   `axis_full_combo`) wired a value into a param declared hidden by
-   default; fixed by marking it `required=True, visible=True`. Both
-   regenerated, lint-clean, stale capture data cleared, no real data yet.
-
-10. **OQ-MODULEIO — WIRED, LOW CONFIDENCE (n=2), real gap remains, 141
+7. **OQ-MODULEIO — WIRED, LOW CONFIDENCE (n=2), real gap remains, 141
     files awaiting capture.** `module_overhead = 1,672 bytes/module` (flat,
     mean of 2 real deltas: 1756-IB16=1,684, 1734-AENTR/C=1,660), wired in
     `report.py` as ESTIMATED tier. Whether it's really flat or scales with
@@ -252,17 +264,24 @@ generator already covers them, just waiting on the next capture batch.
     the one profile currently covered — needs more real corpus examples
     before building a variant sweep, not guessed.
 
-11. **OQ-BRANCHDEPTH — real, sizeable, not modeled.** A parallel branch
-    bracket has its own real structural cost beyond the sum of its legs'
-    instruction weights: legs01 (no branch) is an exact match; legs03 is
-    under-predicted by 16/rung; legs05 by 24/rung. Not linear in leg count
-    (legs01→03 is 8/leg, legs03→05 is 4/leg — the per-leg rate is
-    dropping). Only 2 non-trivial points — needs at least one more (e.g.
-    legs02, legs04, legs07/10) to see whether it's log-ish/diminishing-
-    marginal or something else. Branching rungs are extremely common in
-    real ladder logic — a genuine gap worth prioritizing.
+8. **OQ-BRANCHDEPTH — real, sizeable, not modeled, closeout batch built
+    2026-08-25.** James: "Does bst/bnd ([,]) branches take memory? If I
+    have 30 deep or condition it must cost more than 30 xic." **Already
+    answered by existing data, confirmed real:** legs01 (no branch,
+    control) is an exact 0.00% match, but legs03 is under-predicted by
+    16/rung and legs05 by 24/rung — the branch bracket structure itself
+    (compiled internally to BST/NXB/BND, not modeled at all by this
+    project's regex-based per-instruction-mnemonic parser) DOES cost real
+    memory beyond the sum of each leg's own instruction weight. Confirmed,
+    not hypothesized. Not linear in leg count (legs01→03 is 8/leg,
+    legs03→05 is 4/leg — the per-leg rate is dropping).
+    `gen_branchdepth_closeout.py` adds 8 more leg-count points
+    (2/4/6/8/10/15/20/30 — legs=30 is a literal real data point for
+    James's own "if I have 30 deep" example, not an extrapolation) to fit
+    the real curve shape once captured. Branching rungs are extremely
+    common in real ladder logic — a genuine gap worth prioritizing.
 
-12. **OQ-LEGACYNETOVERHEAD — reminder flag, not implemented.** Legacy
+9. **OQ-LEGACYNETOVERHEAD — reminder flag, not implemented.** Legacy
     chassis/remote-I/O platforms (SLC/PLC-5/RIO/DH+/ControlNet) are
     deliberately out of the current module sweep. James: "allocate as
     controller tag size plus some arbitrary overhead value... this is a
