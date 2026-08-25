@@ -23,17 +23,14 @@ the matching footnote at the bottom, not inline.
 5. **OQ-PREDEFINED (MESSAGE)** — 8-MessageType test batch built, awaiting
    capture to test the axis-tag-style flat-size hypothesis.[^predefined]
 
-6. **OQ-JSRPARAMCOST** — formula confirmed general (3rd point lands
-   exact). Blocked on parser work now, not data.[^jsrparam]
-
-7. **OQ-MODULEIO** — wired, LOW CONFIDENCE (n=2). 141 files awaiting
+6. **OQ-MODULEIO** — wired, LOW CONFIDENCE (n=2). 141 files awaiting
    capture; that's the next step, not more generation.[^moduleio]
 
-8. **OQ-BRANCHDEPTH** — confirmed real (branch structure costs memory
+7. **OQ-BRANCHDEPTH** — confirmed real (branch structure costs memory
    beyond leg instructions). Two independent test batches — leg-count
    width and staggered/nested depth — await capture.[^branchdepth]
 
-9. **OQ-LEGACYNETOVERHEAD** — reminder flag only. No real corpus, no
+8. **OQ-LEGACYNETOVERHEAD** — reminder flag only. No real corpus, no
    capture data, nothing to size against yet.
 
 ---
@@ -110,16 +107,6 @@ existing CIP Generic file — 8 types total. A flat size across all 8 would
 confirm James's axis-tag-style hypothesis ("lots of config, always the
 same data size"); a spread ties cost to attribute-set complexity instead.
 MSG's own LOGIC weight (48/rung) is separately resolved and wired.
-
-[^jsrparam]: JSR's own flat weight (72/rung) confirmed. Per-param cost
-`delta(n,R) = A(n) + B(n)*R`, `B(n) = 4 + 20*n` confirmed exact at a 3rd
-point (n=8: solved B(8)=164 from real unreconciled 2026-08-24 data,
-matching the 2-point-derived formula exactly). `A(n)` not independently
-re-solved this pass. Not wired: `parser/logic.py`'s `_JSR_TARGET` regex
-only extracts the target routine name, not the call's argument list.
-Needs: (1) parse each call's arg list for `n`, (2) a `JsrParamCostModel`
-applying `B(n)` per call site, (3) `A(n)` charged once per distinct target
-routine (call-site dedup already partially present via `jsr_target_names`).
 
 [^moduleio]: `module_overhead = 1,672 bytes/module` (flat, mean of 2 real
 deltas), wired as ESTIMATED tier. 141 files in `samples/generated/modules/`:

@@ -99,4 +99,13 @@ def compute_routine_logic_bytes(
         if has_float_literal:
             total += model.cmp_surcharge.float_literal_cost
 
+    # JSR per-param B(n) surcharge (OQ-JSRPARAMCOST) -- additive per real
+    # call site, on top of the flat JSR:72/rung weight already summed via
+    # instruction_counts above. The one-time A(n) cost (the callee's own
+    # Parameters-block declaration) is charged separately, once per
+    # distinct target routine, by report.py -- not here, since it isn't a
+    # property of any one calling routine or call site.
+    for _target, n in routine.jsr_calls:
+        total += model.jsr_param_cost.b_cost(n)
+
     return total, model.confidence

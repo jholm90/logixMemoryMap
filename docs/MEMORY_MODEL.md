@@ -548,12 +548,17 @@ Verified against real data for all 5 JSR count points, exact match. Only
 confirmed for a trivial (1-NOP-rung) target — a JSR target with
 *substantial* content is untested territory, same caveat as OQ-JSRSHARED.
 
-**The 72/rung JSR weight above is also only confirmed for a small/fixed
-parameter count.** Real data (`jsr_paramcount_n01/n05/n10_r01000`, see
-`docs/OPEN_QUESTIONS.md` OQ-JSRPARAMCOST) shows a real additional cost of
-roughly 20-21 blocks/rung per JSR parameter, not captured by the flat
-72/rung weight. NOT wired: the parser doesn't currently parse a JSR call's
-own parameter-list length out of the rung text.
+**JSR per-param cost — WIRED 2026-08-25 (OQ-JSRPARAMCOST).** The flat
+72/rung JSR weight above only covers the base call; a real per-param cost
+on top decomposes as `delta(n,R) = A(n) + B(n)*R` -- `B(n) = 4 + 20*n`
+(the per-call-site marginal rate, added by `sizing/logic.py` per real
+`JSR(...)` call, `n` read straight off the call's own 2nd argument -- the
+declared param count Studio 5000 itself writes there) and `A(n) = 104 +
+20*n` (the target routine's own one-time Parameters-block declaration
+cost, charged once per distinct target by `report.py`, never per call
+site). Verified end-to-end against all 6 real `jsr_paramcount_n05/08/10_
+r00100/r01000` points: 4 exact, 2 (both n=8) off by the same small +8
+universal noise seen elsewhere in this project.
 | LIM | 68 | **52** (LIM+OTE combined) | 4,816 | 5 | 0.00% |
 | ONS | 56 | **36** (XIC+ONS+OTE combined) | 4,816 | 5 | 0.00% |
 | MUL | 56 | 56 (solo rung) | 4,816 | 5 | 0.00% |

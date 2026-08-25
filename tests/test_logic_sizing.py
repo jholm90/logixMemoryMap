@@ -184,12 +184,63 @@ def test_jsr_target_routine_not_double_counted():
     entries, errors = build_report(root, MODEL)
     assert errors == []
     logic_entries = [e for e in entries if e.tier == ESTIMATED]
-    # Only MainRoutine gets an entry -- SubTest is skipped entirely, not
-    # charged its own fixed_base on top of the caller's jsr_fixed_base.
-    assert len(logic_entries) == 1
-    assert logic_entries[0].path == "program:MainProgram/MainRoutine"
-    # jsr_fixed_base_per_routine(5096) + JSR's own weight(72)*1 = 5168
-    assert logic_entries[0].bytes == 5096 + 72
+    # MainRoutine gets its own entry (its content, never double-counted
+    # with SubTest's own content). SubTest, being a JSR target, gets ONLY
+    # its A(n) Parameters-block one-time cost (OQ-JSRPARAMCOST) -- not its
+    # own fixed_base/content, which stays folded into the caller's
+    # jsr_fixed_base_per_routine as before this feature existed.
+    assert len(logic_entries) == 2
+    by_path = {e.path: e for e in logic_entries}
+    main = by_path["program:MainProgram/MainRoutine"]
+    sub = by_path["program:MainProgram/SubTest"]
+    # jsr_fixed_base_per_routine(5096) + JSR's own weight(72)*1 + B(0)=4 = 5172
+    assert main.bytes == 5096 + 72 + 4
+    # A(0) = a_base(104) + a_per_param(20)*0 = 104
+    assert sub.bytes == 104
+
+
+def test_jsr_param_cost_a_charged_once_even_with_two_call_sites():
+    # A(n) is the TARGET routine's own one-time Parameters-block cost --
+    # must not be double-charged just because 2 different rungs (or 2
+    # different calling routines) both JSR to the same target.
+    xml = """
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test">
+        <DataTypes/>
+        <AddOnInstructionDefinitions/>
+        <Tags/>
+        <Programs>
+          <Program Name="MainProgram">
+            <Tags/>
+            <Routines>
+              <Routine Name="MainRoutine" Type="RLL">
+                <RLLContent>
+                  <Rung Number="0" Type="N"><Text><![CDATA[JSR(SubTest,2,A,B);]]></Text></Rung>
+                  <Rung Number="1" Type="N"><Text><![CDATA[JSR(SubTest,2,C,D);]]></Text></Rung>
+                </RLLContent>
+              </Routine>
+              <Routine Name="SubTest" Type="RLL">
+                <RLLContent>
+                  <Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+                </RLLContent>
+              </Routine>
+            </Routines>
+          </Program>
+        </Programs>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    root = ET.fromstring(xml)
+    entries, errors = build_report(root, MODEL)
+    assert errors == []
+    logic_entries = [e for e in entries if e.tier == ESTIMATED]
+    by_path = {e.path: e for e in logic_entries}
+    sub = by_path["program:MainProgram/SubTest"]
+    # A(2) = 104 + 20*2 = 144 -- charged exactly once, not twice for the 2 call sites.
+    assert sub.bytes == 144
+    main = by_path["program:MainProgram/MainRoutine"]
+    # jsr_fixed_base(5096) + JSR weight(72)*2 calls + B(2)=4+20*2=44 *2 calls
+    assert main.bytes == 5096 + 72 * 2 + 44 * 2
 
 
 # ---------------------------------------------------------------------------

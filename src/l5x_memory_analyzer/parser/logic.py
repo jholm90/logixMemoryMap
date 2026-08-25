@@ -23,6 +23,14 @@ _INSTRUCTION_CALL = re.compile(r"\b([A-Z][A-Z0-9_]*)\(")
 # below for why this needs its own extraction, not just an instruction count.
 _JSR_TARGET = re.compile(r"\bJSR\(\s*([A-Za-z_][A-Za-z0-9_]*)")
 
+# JSR's own 2nd argument is the real declared param count -- confirmed
+# real shape (samples/local/ corpus, e.g. "JSR(_525_OutputMapping_TS,1,
+# IncisorTop_AxisOutput,EM203_IncisorTop:O)"): target routine name, then a
+# literal integer Studio 5000 itself writes as the number of params
+# following, then the params themselves. OQ-JSRPARAMCOST's per-call cost
+# depends on this count, wired 2026-08-25.
+_JSR_CALL_START = re.compile(r"\bJSR\(")
+
 # CPT's own expression argument needs real parsing, not a flat per-call
 # weight (OQ-CMPCPTLAYOUT, wired 2026-08-26) -- real capture data shows
 # CPT's cost is expression-complexity-dependent (operator count/type), not
@@ -141,6 +149,27 @@ def _typed_instruction_calls(rung_texts: list[str]) -> list[tuple[str, list[str]
             if args is None:
                 continue
             calls.append((m.group(1), [a.strip() for a in args]))
+    return calls
+
+
+def _jsr_calls(rung_texts: list[str]) -> list[tuple[str, int]]:
+    """One entry per real JSR(...) call, (target_routine_name, param_count)
+    -- param_count read directly off the call's own 2nd argument (see
+    _JSR_CALL_START above), the authoritative source rather than counting
+    the trailing argument tokens ourselves. Skips a call whose 2nd argument
+    isn't a plain integer literal (malformed/unexpected, don't guess) --
+    no real corpus example has ever shown anything else there."""
+    calls: list[tuple[str, int]] = []
+    for text in rung_texts:
+        for m in _JSR_CALL_START.finditer(text):
+            args = _extract_call_args(text, m.end())
+            if args is None or len(args) < 2:
+                continue
+            target = args[0].strip()
+            count_text = args[1].strip()
+            if not count_text.isdigit():
+                continue
+            calls.append((target, int(count_text)))
     return calls
 
 
@@ -286,6 +315,13 @@ class RoutineLogic:
     # (confirmed 2026-08-22); this field exists purely so the UI can show
     # the real call structure, not to change any sizing.
     jsr_target_names: frozenset[str] = field(default_factory=frozenset)
+    # One entry per real JSR(...) call THIS routine makes, (target_name,
+    # param_count) -- see _jsr_calls above (OQ-JSRPARAMCOST, wired
+    # 2026-08-25). sizing/logic.py charges the confirmed per-call B(n) cost
+    # for each entry here; report.py separately charges A(n) once per
+    # distinct target routine (a one-time cost of the callee's own
+    # Parameters-block declaration, not the caller's).
+    jsr_calls: list[tuple[str, int]] = field(default_factory=list)
 
     @property
     def path(self) -> str:
@@ -367,6 +403,7 @@ def parse_rll_routines(root: ET.Element) -> list[RoutineLogic]:
                 indirect_index_kinds=_indirect_index_kinds(rung_texts),
                 cmp_calls=_cmp_calls(rung_texts),
                 jsr_target_names=frozenset(_jsr_targets(rung_texts)),
+                jsr_calls=_jsr_calls(rung_texts),
             ))
 
     return routines

@@ -54,11 +54,10 @@ files; PID and ASCII-module instructions dropped (zero real occurrences).
 - ✅ Timers/counters, motion+cam/route, GSV/SSV, array/file, string
       instructions, indirect addressing — all CONFIRMED and wired
 - 🟡 Math/compare[^cmpcpt]
-- 🔴 JSR param cost[^jsrparam]
+- ✅ JSR param cost[^jsrparam]
 - ✅ MSG logic weight wired (48/rung); operand's own structure cost — see
       OPEN_QUESTIONS.md OQ-PREDEFINED
-- 🔴 Consolidate full instruction-weight table into MEMORY_MODEL.md —
-      blocked only on JSR param cost landing
+- ✅ Consolidate full instruction-weight table into MEMORY_MODEL.md
 - ✅ Holdout validation[^holdout]
 
 ## Phase 5 — UI v2 (logic browsing)
@@ -97,11 +96,12 @@ tier mixes, REAL-operand/float-literal interaction) — see OPEN_QUESTIONS.md
 OQ-CMPCPTLAYOUT for the diagnostic batch now awaiting capture. CMP's own
 weight and OQ-OPERANDTYPE's per-type surcharge are both resolved and wired.
 
-[^jsrparam]: JSR's own flat weight (72/rung) is wired. Per-param cost
-formula is CONFIRMED general (a 3rd real point lands exactly on the
-2-point-derived line) but not wired — needs `parser/logic.py` to parse
-each JSR call's argument list, which it doesn't do at all today (only the
-target routine name). See OPEN_QUESTIONS.md OQ-JSRPARAMCOST.
+[^jsrparam]: JSR's own flat weight (72/rung) and per-param cost
+(`B(n)=4+20n` per call site, `A(n)=104+20n` once per distinct target)
+both wired 2026-08-25. `parser/logic.py`'s `_jsr_calls()` reads the param
+count off each real call's own 2nd argument. Verified end-to-end against
+all 6 real capture points: 4 exact, 2 off by the same small +8 noise seen
+elsewhere. See RESOLVED_QUESTIONS.md OQ-JSRPARAMCOST.
 
 [^holdout]: 10 real captured files never used to fit anything (random
 instruction-type combinations) checked against the current engine: 7/10

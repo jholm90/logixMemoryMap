@@ -261,6 +261,28 @@ class TaskProgramOverheadModel:
 
 
 @dataclass(frozen=True)
+class JsrParamCostModel:
+    """Real per-param JSR cost (OQ-JSRPARAMCOST, wired 2026-08-25):
+    `delta(n,R) = A(n) + B(n)*R`, `A(n) = a_base + a_per_param*n` (a
+    one-time cost of the callee's own Parameters-block declaration, paid
+    once per distinct target routine regardless of call-site count) and
+    `B(n) = b_base + b_per_param*n` (the true per-call-site marginal
+    rate). Confirmed exact at 3 real (n,B) points (n=5,8,10) -- see
+    memory_model.yaml jsr_param_cost for the derivation."""
+    a_base: int
+    a_per_param: int
+    b_base: int
+    b_per_param: int
+    confidence: str
+
+    def a_cost(self, n: int) -> int:
+        return self.a_base + self.a_per_param * n
+
+    def b_cost(self, n: int) -> int:
+        return self.b_base + self.b_per_param * n
+
+
+@dataclass(frozen=True)
 class LogicInstructionModel:
     fixed_base_per_routine: int
     jsr_fixed_base_per_routine: int
@@ -271,6 +293,7 @@ class LogicInstructionModel:
     indirect_index: IndirectIndexModel
     cmp_surcharge: CmpSurchargeModel
     task_program_overhead: TaskProgramOverheadModel
+    jsr_param_cost: JsrParamCostModel
 
 
 @dataclass(frozen=True)
@@ -428,6 +451,13 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 program_extra=raw["task_program_overhead"]["program_extra"],
                 task_extra=raw["task_program_overhead"]["task_extra"],
                 confidence=raw["task_program_overhead"]["confidence"],
+            ),
+            jsr_param_cost=JsrParamCostModel(
+                a_base=raw["jsr_param_cost"]["a_base"],
+                a_per_param=raw["jsr_param_cost"]["a_per_param"],
+                b_base=raw["jsr_param_cost"]["b_base"],
+                b_per_param=raw["jsr_param_cost"]["b_per_param"],
+                confidence=raw["jsr_param_cost"]["confidence"],
             ),
         ),
     )

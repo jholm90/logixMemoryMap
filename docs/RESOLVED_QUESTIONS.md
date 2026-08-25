@@ -689,3 +689,33 @@ must match the definition's Required/Visible parameter count — 2 files
 param declared hidden by default; fixed by marking it `required=True,
 visible=True`. Both regenerated, lint-clean, stale capture data cleared —
 just needs to go through the normal capture pipeline like anything else.
+
+## OQ-JSRPARAMCOST, fully wired 2026-08-25
+
+JSR's own flat weight (72/rung) was already confirmed. The per-param cost
+formula (`delta(n,R) = A(n) + B(n)*R`, `B(n) = 4 + 20*n`, `A(n) = 104 +
+20*n`) was confirmed general the same day off a 3rd real point (n=8), but
+stayed unwired since `parser/logic.py` never parsed a JSR call's argument
+list, only the target routine name.
+
+James: "I hope you are going to have the jsr param cost sorted finally."
+Wired properly:
+- `parser/logic.py`'s new `_jsr_calls()` reads `n` straight off each real
+  `JSR(...)` call's own 2nd argument (Studio 5000 itself writes the
+  declared param count there — confirmed real shape via the full
+  `samples/local/` corpus) into `RoutineLogic.jsr_calls`.
+- `sizing/constants.py`'s new `JsrParamCostModel` (`a_cost`/`b_cost`),
+  loaded from `memory_model.yaml`'s new `jsr_param_cost` block.
+- `sizing/logic.py` adds `B(n)` per real call site, on top of the
+  existing flat JSR weight.
+- `sizing/report.py` builds a target-routine → param-count map across the
+  whole file, then charges `A(n)` exactly once per distinct JSR target
+  routine (never per call site, never per calling routine) — the target's
+  own Parameters-block declaration cost, previously not charged at all.
+
+Verified end-to-end (not just hand-derived) against all 6 real
+`jsr_paramcount_n05/08/10_r00100/r01000` capture points: 4 exact, the
+other 2 (both n=8) off by the same small +8 universal noise seen
+elsewhere in this project. Two new unit tests cover the not-double-
+counted case (single call) and the multiple-call-sites-to-one-target case
+(A(n) charged once, not per call site).

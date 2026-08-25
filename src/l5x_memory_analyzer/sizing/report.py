@@ -184,15 +184,40 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # than silently assumed correct.
     tag_types = {t.name: t.data_type for t in tags if t.data_type}
 
+    all_routines = parse_rll_routines(root)
+
+    # Target routine name -> declared param count, from every real JSR(...)
+    # call site across the whole file (OQ-JSRPARAMCOST, wired 2026-08-25).
+    # A(n) below is a property of the TARGET routine's own Parameters-block
+    # declaration, not of any one caller/call-site, so it's built once here
+    # rather than inside the per-routine loop. Real Logix wouldn't compile
+    # mismatched param counts across call sites to the same target, so the
+    # first count seen for a name is trusted.
+    jsr_target_param_counts: dict[str, int] = {}
+    for routine in all_routines:
+        for target, n in routine.jsr_calls:
+            jsr_target_param_counts.setdefault(target, n)
+
     logic_entries: list[tuple[str, str, str, int, str]] = []
     n_plain_routines = 0
-    for routine in parse_rll_routines(root):
+    for routine in all_routines:
         if routine.is_jsr_target:
             # Confirmed 2026-08-22 against real data: a JSR target routine's
-            # own cost is already folded into the caller's
+            # own CONTENT cost is already folded into the caller's
             # jsr_fixed_base_per_routine constant -- see RoutineLogic.
-            # is_jsr_target's docstring. Emitting a separate entry here
-            # would double-count it.
+            # is_jsr_target's docstring. Emitting a separate entry for that
+            # content here would double-count it. The target's own
+            # Parameters-block declaration cost (A(n), OQ-JSRPARAMCOST) is
+            # a real, SEPARATE one-time cost this project didn't used to
+            # charge at all -- charged here instead, once per distinct
+            # target, since it belongs to the callee, not the caller.
+            n = jsr_target_param_counts.get(routine.routine_name)
+            if n is not None:
+                a_cost = model.logic_instructions.jsr_param_cost.a_cost(n)
+                logic_entries.append((
+                    routine.path, "routine_logic", "RLL", a_cost,
+                    model.logic_instructions.jsr_param_cost.confidence,
+                ))
             continue
         # 2026-08-27, Task/Program/Routine shell decomposition (OQ-
         # TASKOVERHEAD, see memory_model.yaml task_program_overhead): a

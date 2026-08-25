@@ -772,6 +772,23 @@ task_program_overhead:
   task_extra: 700
   confidence: FITTED
 
+# OQ-JSRPARAMCOST, wired 2026-08-25. delta(n,R) = A(n) + B(n)*R, solved
+# from real (n, rung_count) pairs at n=5/8/10 (both r=100 and r=1000
+# captured for each): B(n) = 4 + 20*n (the true per-call-site marginal
+# rate, confirmed exact at all 3 points, including n=8 landing exactly on
+# the 2-point line derived from n=5/n=10 -- real evidence the linear-in-n
+# model generalizes). A(n) = 104 + 20*n (a one-time cost, likely the
+# target routine's own Parameters-block declaration, charged once per
+# distinct JSR target regardless of call-site count) -- solved from the
+# same n=5/n=10 pair; not independently re-confirmed at n=8 this pass.
+# See docs/OPEN_QUESTIONS.md OQ-JSRPARAMCOST.
+jsr_param_cost:
+  a_base: 104
+  a_per_param: 20
+  b_base: 4
+  b_per_param: 20
+  confidence: FITTED
+
 logic_instructions:
   fixed_base_per_routine: 4816
   jsr_fixed_base_per_routine: 5096  # JSR's routine also declares the target subroutine
