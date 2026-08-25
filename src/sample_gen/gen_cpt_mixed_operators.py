@@ -396,7 +396,7 @@ def group_t1t3_t2t3_scaling() -> int:
 
 def group_three_tier_remainder_probe() -> int:
     n = 0
-    for count in [6, 9]:
+    for count in [6, 9, 12]:
         operands = [f"L{i}" for i in range(count)]
         tiers = ["+", "*", "**"]
         ops = [tiers[i % 3] for i in range(count - 1)]
@@ -405,8 +405,10 @@ def group_three_tier_remainder_probe() -> int:
             expr, f"CptMix3TierRem2N{count:02d}", f"cptmix_threetier_rem2_n{count:02d}",
             f"{count}-operand all-3-tier (+,*,**) alternating mix, remainder-2 tier-cycle point "
             f"(same remainder pattern as the n=15 outlier that broke the per-tier-count linear fit "
-            f"derived from n=3/5/8/10/11) -- OQ-CMPCPTLAYOUT closeout, tests whether the deviation "
-            f"tracks the remainder pattern (small-scale mismatch too) or file size (small-scale match)",
+            f"derived from n=3/5/8/10/11) -- OQ-CMPCPTLAYOUT closeout, 3rd point (with n=6/9) to fit "
+            f"a remainder-2 correction term with confidence rather than solving it from 2 points -- "
+            f"tests whether the deviation tracks the remainder pattern and, if so, whether the "
+            f"correction is a flat bonus or itself scales with count",
         )
         n += 1
     return n
@@ -427,6 +429,11 @@ def group_real_float_literal_disentangle() -> int:
          "2 REAL operands AND 2 float literals together, no int literal at all -- OQ-CMPCPTLAYOUT "
          "closeout, isolates whether the REAL+float negative interaction seen in original_shape "
          "(1 float+1 int literal, 2 REAL) holds at each factor's own full n=2 rate"),
+        ("real1_float1", "(L0+L1)*R1-L3/2.0+L5", "DestR",
+         "1 REAL operand AND 1 float literal together (both factors' n=1 rate, not n=2) -- "
+         "OQ-CMPCPTLAYOUT closeout, a genuine cross-check point: once the bilinear surface is fit "
+         "from the 0/1/2-count marginal points above, this confirms (or refutes) the fit at a "
+         "combination none of those points directly tested"),
     ]
     for name, expr, dest, desc in variants:
         _one_rung_file(expr, f"CptMixDisentangle{name.title().replace('_', '')}",

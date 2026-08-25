@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="CptMixT2T3AltN03" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Tue Aug 25 02:35:37 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="CptMixT2T3AltN03" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Tue Aug 25 02:35:37 2026" LastModifiedDate="Tue Aug 25 02:35:37 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="CptMixDisentangleReal1Float1" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Tue Aug 25 02:35:38 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="CptMixDisentangleReal1Float1" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Tue Aug 25 02:35:38 2026" LastModifiedDate="Tue Aug 25 02:35:38 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -107,7 +107,7 @@
 <Routine Name="MainRoutine" Type="RLL">
 <RLLContent>
               <Rung Number="0" Type="N">
-                <Text><![CDATA[CPT(Dest,L0*L1**L2);]]></Text>
+                <Text><![CDATA[CPT(DestR,(L0+L1)*R1-L3/2.0+L5);]]></Text>
               </Rung>
 </RLLContent>
 </Routine>

@@ -72,15 +72,19 @@ POW is present). See `sizing/constants.py` `CptExpressionModel.cost_for`.
 (`delta = 44*T1 - 116*T2 + 76*T3 + 72`, fit from 4 points) lands EXACT on
 5 of 6 real points (n=3/5/8/10/11) — only n=15 misses, by 144. n=15 is the
 only point at operator-cycle remainder 2 (every other point is remainder
-0 or 1); `cptmix_threetier_rem2_n06/n09` test whether that specific
-remainder is the trigger at a much smaller scale. **REAL-operand/float-
-literal interaction**: isolated per-factor rates from existing captures
-(~118/REAL-operand, ~122/float-literal, both assuming linearity across
-n=2); combining both terms additively over-predicts the real corpus shape
-by 158 (a genuine negative interaction). `cptmix_disentangle_real1_
-noliteral/float1_noreal/real2_float2_noint` get the missing n=1 points
-and a full 2-REAL+2-float point to solve the 2-variable surface. Additive
-fallback stays the honest default until each formula lands.
+0 or 1); `cptmix_threetier_rem2_n06/n09/n12` (3 points, not 2 — enough to
+tell a flat remainder-2 bonus apart from one that scales with count in
+one capture round) test whether that specific remainder is the trigger.
+**REAL-operand/float-literal interaction**: isolated per-factor rates
+from existing captures (~118/REAL-operand, ~122/float-literal, both
+assuming linearity across n=2); combining both terms additively over-
+predicts the real corpus shape by 158 (a genuine negative interaction).
+`cptmix_disentangle_real1_noliteral/float1_noreal/real2_float2_noint` get
+the missing n=1 points and a full 2-REAL+2-float point to fit the
+2-variable surface; `real1_float1` (1 of each, not 2) is a genuine cross-
+check point none of the fitting data directly tests. 7 diagnostic files
+total, all built and awaiting capture — additive fallback stays the
+honest default until each formula lands.
 
 [^aoidef]: Per-type declared-item rate table (BOOL=16, SINT/INT=18,
 DINT/REAL=20, LINT=24/item, base=1184) wired for single-type defs;
