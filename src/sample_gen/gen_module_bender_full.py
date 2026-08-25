@@ -10,65 +10,90 @@ duplicates and all: 5 real 1734-AENTR/C Point I/O adapters (MCC/HMI/JB/VP/
 PP134070 in the real file) with their full real child counts (44 total,
 not deduplicated), 5 ArmorBlock (1732E-series) I/O modules, 2 PowerFlex
 527-STO CIP Safety drives, 2 EX260 SMC valve manifold nodes, a real Delta
-Motion RMC150E (generic Ethernet-Module profile), and the full real
-2-bus, 5-module Kinetix 5700 shared-bus subgraph with 8 real axis tags
-(same real modules/axis wiring as gen_module_kinetix_bus.py, kept
-name-consistent with that file).
+Motion RMC150E (generic Ethernet-Module profile), the full real 2-bus,
+5-module Kinetix 5700 shared-bus subgraph with 8 real axis tags (same
+real modules/axis wiring as gen_module_kinetix_bus.py), the real FANUC
+Robot R30iB Plus/A controller (`RobotController1` -- all 3 real
+connections including its 2 real CIP Safety connections, see below), and
+a real GuardLogix Safety Partner (see below).
 
-**Only 1 of the real file's 69 non-CPU modules is excluded outright:**
-`BENDER:Partner` (1756-L8SP GuardLogix Safety Partner) -- confirmed by
-James himself: "I stripped the safety partner." A Safety Partner is a
-companion object Studio 5000 auto-pairs with specific safety-capable
-primary processor catalog numbers, not something addable as a standalone
-<Module> element (real import error confirmed earlier: "Invalid module
-type for import. Module type cannot be created independently.").
+**GuardLogix Safety Partner -- WRONG in an earlier pass, corrected
+2026-08-27.** James: "The large full program has the safety partner. For
+a second time I removed it temporarily for you to see the field io
+without complaining. I regret doing this. You need to handle safety
+partner. One safety partner is located beside the CPU on the right if the
+program is sil3. Sil2 has no safety partner. You need to handle this."
+An earlier pass excluded the Safety Partner outright after hitting a real
+Studio 5000 import error ("Invalid module type for import. Module type
+cannot be created independently.") -- wrong call: James's own stripped
+reference file had the partner manually removed ONLY so the field I/O
+would be visible without that error blocking the rest of the import, not
+because the partner should be dropped from the model. Root-caused
+properly this time: the real Bender program is SIL3/PLe
+(`Controller/SafetyInfo SafetyLevel="SIL3/PLe"`, confirmed real), and a
+SIL3 redundant safety pairing needs the PRIMARY CPU's own backplane Port
+to declare `Width="2"` (it now spans its own slot AND the partner's) plus
+a real `SafetyNetwork` identifier -- without that, Studio 5000 has no way
+to know slot 1 is reserved for a paired partner and correctly rejects it
+as an invalid standalone add. `wrapper.py`'s `build_l5x(...,
+safety_partner=True)` now emits that real Width/SafetyNetwork
+configuration on the Local module plus real `SafetyInfo` content
+(SIL3/PLe); `safety_partner_module_xml()` builds the real partner module
+itself (`EKey State="ExactMatch"`, `Width="0"` on its own port,
+module-level `SafetyNetwork` -- all confirmed real from the source file).
+SIL2 programs use a single non-redundant safety-capable primary with NO
+partner at all -- this capability is opt-in per file (`safety_partner`
+param), not forced on every generated file.
 
-**4 real modules with no installed profile are represented via Generic
-Ethernet Module instead of being dropped** -- James, 2026-08-27: "You
-will need to accommodate missing eds files. This is a 100% requirement
-that you will need to account for." `LH_CART_ENC`/`RH_CART_ENC` (2 real
-TR-Electronic GmbH encoders, no CatalogNumber at all), `Datalogic` (a
-barcode reader, also no CatalogNumber), and `E35_Robot1` (FANUC Robot
-R30iB Plus/A, a generic-Ethernet-device profile) all real-error "Module
-profile could not be found" on import -- each needs an EDS/AOP registered
-on the specific machine that built the real program, not guaranteed
-present anywhere else. The real, standard Rockwell accommodation for
-exactly this situation: Studio 5000's own built-in "Generic Ethernet
-Module" (`CatalogNumber="ETHERNET-MODULE"`, `Vendor="1"`) needs no EDS at
-all -- this exact real file's own RMC150E module already uses it
-(confirmed real, imports clean per James's own report). Substituted all
-4 onto that mechanism, preserving their REAL stated Connection sizes
-exactly (`GenericEncoder1`/`GenericEncoder2`: 12-byte Input Only, matching
-real LH_CART_ENC/RH_CART_ENC `InputSize="12"` `OutputSize="0"`;
-`GenericBarcodeReader1`: 476/468-byte bidirectional, matching real
-Datalogic exactly; `RobotController1`: 16/16-byte bidirectional, matching
-E35_Robot1's real `Standard_Slot_01` connection). **One real, honest
-gap**: E35_Robot1's real file ALSO carries 2 CIP Safety connections
-(`A_Safety_Output` 8 bytes, `B_Safety_Input` 12 bytes) that a Generic
-Ethernet Module fundamentally cannot represent -- CIP Safety requires a
-certified safety device profile with a real safety network number, not
-achievable via the generic mechanism. Those 20 bytes of real safety I/O
-are NOT included in `RobotController1` -- flagged here rather than
-silently modeled as if present.
+**EDS-dependent devices, James: "You will need to accommodate missing
+eds files. This is a 100% requirement."** 2 real TR-Electronic GmbH
+encoders (`LH_CART_ENC`/`RH_CART_ENC`, no CatalogNumber) and a Datalogic
+barcode reader (`Datalogic`, also no CatalogNumber) real-error "Module
+profile could not be found" -- confirmed genuinely independent failures
+(explicit "profile not found," not a cascade), each needs an EDS
+registered on the specific machine that built the real program, not
+guaranteed present anywhere else. Represented via Rockwell's own built-in
+Generic Ethernet Module (`CatalogNumber="ETHERNET-MODULE"`,
+`Vendor="1"`, no EDS needed -- confirmed real, this exact file's own
+RMC150E module already uses it) as `GenericEncoder1`/`GenericEncoder2`/
+`GenericBarcodeReader1`, preserving their real stated Connection sizes
+exactly (12-byte Input Only x2, 476/468-byte bidirectional).
+
+**The FANUC robot's earlier exclusion was reconsidered and reversed.**
+Its first-pass error was a bare "Module import failed" -- unlike the 3
+EDS devices above, it never said "profile could not be found." That
+weaker, vaguer error is the same shape as the OTHER modules that failed
+purely as a cascade of the Safety Partner's invalid standalone import
+(see James's message above) -- most likely the robot's failure was the
+same cascade, not an independent EDS problem. With the Safety Partner now
+fixed, the robot is back in as its REAL, full, verbatim module (not a
+Generic Ethernet Module substitute) -- James: "The robot stays. Your
+purpose is to calculate memory usage of tags and logic... You need to
+take the possibility of safety [I/O] data into your programming." Its 2
+real CIP Safety connections (`A_Safety_Output` 8 bytes,
+`B_Safety_Input` 12 bytes) are included verbatim alongside its real
+Standard connection (16/16 bytes) -- real stated sizes, real Decorated
+Structure content, all counted toward the sizing total per the actual
+project goal (calculating memory usage), not excluded just because a
+generic substitute mechanism couldn't represent them for a clean
+reimport.
 
 Genericized the same way as every other real extraction in this project:
 every real module Name replaced with a generic Name (adapter children
 numbered PtIOAdapterN_ModM in real file order), every real IP address
-replaced with a placeholder, ExtendedProperties/Description/Comments
-stripped throughout (including nested Comments on I/O tag operands, which
-carried real process-descriptive text in a few Safety modules). Sanity-
-checked before writing: 0 duplicate Names, 0 dangling ParentModule
-references, 0 lint findings, 0 sizing crashes.
+and SafetyNetwork identifier replaced with a placeholder (same real
+16#0000_xxxx_xxxx_xxxx bit-length/format, different digits),
+ExtendedProperties/Description/Comments stripped throughout.
+Sanity-checked before writing: 0 duplicate Names, 0 dangling
+ParentModule references, 0 lint findings, 0 sizing crashes.
 
 **Cross-checked 2026-08-27 against James's own "stripped" export**
 (samples/local/bender_stripped/Bender134053_stripper.L5X -- the real
 program with logic/UDTs/most Controller Tags removed but the Modules
 section left intact, gitignored real corpus): module catalog inventory
-matches this file's extraction exactly, module-for-module. James
-confirmed directly that the 2 ANA_IN_FIL Controller tags that export
-still carried (`BNDAccPressure`/`BNDPumpPressure`) were leftover cruft he
-forgot to strip, NOT intended reference content -- an earlier version of
-this file picked them up and included them; removed per his correction.
+matches this file's extraction exactly, module-for-module (the Safety
+Partner's absence there was James's own deliberate temporary removal,
+confirmed above, not evidence it should stay excluded).
 
 Sizing this file returns real SizeErrors -- one per rack-aliased
 (RackConnection/InAliasTag) Point I/O child module, all already-
@@ -97,7 +122,7 @@ from pathlib import Path
 
 from sample_gen.gen_module_motion import _axis_tag, _MOTION_GROUP_TAG_XML
 from sample_gen.manifest import append_manifest_row, write_sample_unmodeled
-from sample_gen.wrapper import build_l5x
+from sample_gen.wrapper import build_l5x, safety_partner_module_xml
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "modules"
 
@@ -3530,10 +3555,125 @@ _ALL_MODULES_XML = """\
 </Communications>
 </Module>
 
+<Module Name="RobotController1" CatalogNumber="FANUC Robot R30iB Plus/A" Vendor="356" ProductType="12" ProductCode="4" Major="3" Minor="1" UserDefinedVendor="356" UserDefinedProductType="140" UserDefinedProductCode="40" UserDefinedMajor="3" UserDefinedMinor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_1001_0003_0003" SafetyEnabled="true">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="192.168.1.24" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications>
+<ConfigData ConfigSize="0">
+<Data Format="L5K">
+[4,100]
+</Data>
+</ConfigData>
+<SafetyScript Size="57">
+<Data Format="L5K">
+[53,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,37,0,0,0,0,0,0,0,0,3,0,0,0,23,0,0,0,0,0,0,16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+</Data>
+</SafetyScript>
+<Connections>
+<Connection Name="A_Safety_Output" RPI="20000" Type="SafetyOutputDataDriven" OutputSize="8" EventID="0" ProgrammaticallySendEventTrigger="false" TimeoutMultiplier="2" NetworkDelayMultiplier="200" ReactionTimeLimit="60" MaxObservedNetworkDelay="0" Priority="High" InputConnectionType="Unicast" InputProductionTrigger="Application" ConnectionPath="20 04 25 00 00 04 20 04 25 00 88 03 20 04 25 00 00 04" OutputTagSuffix="SO">
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[[12,0,0,0,65,0,0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="FR:Safety_RobotPlus_8Bytes:SO:0">
+<ArrayMember Name="Output" DataType="SINT" Dimensions="8" Radix="Hex">
+<Element Index="[0]" Value="16#0c" />
+<Element Index="[1]" Value="16#00" />
+<Element Index="[2]" Value="16#00" />
+<Element Index="[3]" Value="16#00" />
+<Element Index="[4]" Value="16#41" />
+<Element Index="[5]" Value="16#00" />
+<Element Index="[6]" Value="16#00" />
+<Element Index="[7]" Value="16#00" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+<Connection Name="B_Safety_Input" RPI="10000" Type="SafetyInputDataDriven" InputSize="12" EventID="0" ProgrammaticallySendEventTrigger="false" TimeoutMultiplier="2" NetworkDelayMultiplier="200" ReactionTimeLimit="40.064" MaxObservedNetworkDelay="0" Priority="High" InputConnectionType="Unicast" InputProductionTrigger="Application" ConnectionPath="20 04 25 00 00 04 20 04 25 00 00 04 20 04 25 00 08 03" InputTagSuffix="SI">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="FR:Safety_RobotPlus_8Bytes:SI:0">
+<DataValueMember Name="RunMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="ConnectionFaulted" DataType="BOOL" Value="1" />
+<ArrayMember Name="Input" DataType="SINT" Dimensions="8" Radix="Hex">
+<Element Index="[0]" Value="16#00" />
+<Element Index="[1]" Value="16#00" />
+<Element Index="[2]" Value="16#00" />
+<Element Index="[3]" Value="16#00" />
+<Element Index="[4]" Value="16#00" />
+<Element Index="[5]" Value="16#00" />
+<Element Index="[6]" Value="16#00" />
+<Element Index="[7]" Value="16#00" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+<Connection Name="Standard_Slot_01" RPI="32000" Type="StandardDataDriven" OutputSize="16" InputSize="16" EventID="0" ProgrammaticallySendEventTrigger="false" Priority="Scheduled" InputConnectionType="Unicast" InputProductionTrigger="Cyclic" ConnectionPath="20 04 24 64 2c 97 2c 65" InputTagSuffix="I1" OutputTagSuffix="O1">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="FR:Standard_RobotPlus_16Bytes:I1:0">
+<ArrayMember Name="Input" DataType="SINT" Dimensions="16" Radix="Hex">
+<Element Index="[0]" Value="16#70" />
+<Element Index="[1]" Value="16#04" />
+<Element Index="[2]" Value="16#00" />
+<Element Index="[3]" Value="16#04" />
+<Element Index="[4]" Value="16#ff" />
+<Element Index="[5]" Value="16#00" />
+<Element Index="[6]" Value="16#00" />
+<Element Index="[7]" Value="16#00" />
+<Element Index="[8]" Value="16#00" />
+<Element Index="[9]" Value="16#02" />
+<Element Index="[10]" Value="16#00" />
+<Element Index="[11]" Value="16#e0" />
+<Element Index="[12]" Value="16#1f" />
+<Element Index="[13]" Value="16#00" />
+<Element Index="[14]" Value="16#00" />
+<Element Index="[15]" Value="16#80" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[[0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,-64]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="FR:Standard_RobotPlus_16Bytes:O1:0">
+<ArrayMember Name="Output" DataType="SINT" Dimensions="16" Radix="Hex">
+<Element Index="[0]" Value="16#00" />
+<Element Index="[1]" Value="16#00" />
+<Element Index="[2]" Value="16#00" />
+<Element Index="[3]" Value="16#00" />
+<Element Index="[4]" Value="16#00" />
+<Element Index="[5]" Value="16#00" />
+<Element Index="[6]" Value="16#00" />
+<Element Index="[7]" Value="16#00" />
+<Element Index="[8]" Value="16#00" />
+<Element Index="[9]" Value="16#02" />
+<Element Index="[10]" Value="16#00" />
+<Element Index="[11]" Value="16#00" />
+<Element Index="[12]" Value="16#00" />
+<Element Index="[13]" Value="16#00" />
+<Element Index="[14]" Value="16#00" />
+<Element Index="[15]" Value="16#c0" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
 <Module Name="Bus1_PowerSupply" CatalogNumber="2198-P031" Vendor="1" ProductType="48" ProductCode="1" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="2" Address="192.168.1.24" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.25" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigData ConfigSize="376">
@@ -3578,7 +3718,7 @@ _ALL_MODULES_XML = """\
 <Module Name="Bus1_Drive_D032" CatalogNumber="2198-D032-ERS3" Vendor="1" ProductType="45" ProductCode="13" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_44c9_02ec_d2d2" SafetyEnabled="true">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="2" Address="192.168.1.25" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.26" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigData ConfigSize="448">
@@ -3666,7 +3806,7 @@ _ALL_MODULES_XML = """\
 <Module Name="Bus2_PowerSupply" CatalogNumber="2198-P070" Vendor="1" ProductType="48" ProductCode="2" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="2" Address="192.168.1.26" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.27" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigData ConfigSize="376">
@@ -3711,7 +3851,7 @@ _ALL_MODULES_XML = """\
 <Module Name="Bus2_Drive_D057" CatalogNumber="2198-D057-ERS3" Vendor="1" ProductType="45" ProductCode="14" Major="9" Minor="3" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_44c9_02ed_0afc" SafetyEnabled="true">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="2" Address="192.168.1.27" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.28" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigData ConfigSize="448">
@@ -3798,7 +3938,7 @@ _ALL_MODULES_XML = """\
 <Module Name="Bus2_Drive_D020" CatalogNumber="2198-D020-ERS3" Vendor="1" ProductType="45" ProductCode="12" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_44c9_02ed_47c8" SafetyEnabled="true">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="2" Address="192.168.1.28" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.29" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigData ConfigSize="448">
@@ -3889,7 +4029,7 @@ _ALL_MODULES_XML = """\
 <Port Id="1" Address="0" Type="PointIO" Upstream="false">
 <Bus Size="7" />
 </Port>
-<Port Id="2" Address="192.168.1.29" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.30" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
@@ -5228,66 +5368,6 @@ _ALL_MODULES_XML = """\
 </Connections>
 </Communications>
 </Module>
-<Module Name="RobotController1" CatalogNumber="ETHERNET-MODULE" Vendor="1" ProductType="0" ProductCode="18" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
-<EKey State="Disabled" />
-<Ports>
-<Port Id="2" Address="192.168.1.73" Type="Ethernet" Upstream="true" />
-</Ports>
-<Communications CommMethod="536870914" PrimCxnInputSize="16" PrimCxnOutputSize="16">
-<Connections>
-<Connection Name="Standard" RPI="20000" Type="Output" InputCxnPoint="1" OutputCxnPoint="2" OutputSize="16" InputSize="16" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:ETHERNET_MODULE_REAL_16Bytes:I:0">
-<ArrayMember Name="Data" DataType="SINT" Dimensions="16" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-<Element Index="[2]" Value="0" />
-<Element Index="[3]" Value="0" />
-<Element Index="[4]" Value="0" />
-<Element Index="[5]" Value="0" />
-<Element Index="[6]" Value="0" />
-<Element Index="[7]" Value="0" />
-<Element Index="[8]" Value="0" />
-<Element Index="[9]" Value="0" />
-<Element Index="[10]" Value="0" />
-<Element Index="[11]" Value="0" />
-<Element Index="[12]" Value="0" />
-<Element Index="[13]" Value="0" />
-<Element Index="[14]" Value="0" />
-<Element Index="[15]" Value="0" />
-</ArrayMember>
-</Structure>
-</Data>
-</InputTag>
-<OutputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:ETHERNET_MODULE_REAL_16Bytes:O:0">
-<ArrayMember Name="Data" DataType="SINT" Dimensions="16" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-<Element Index="[2]" Value="0" />
-<Element Index="[3]" Value="0" />
-<Element Index="[4]" Value="0" />
-<Element Index="[5]" Value="0" />
-<Element Index="[6]" Value="0" />
-<Element Index="[7]" Value="0" />
-<Element Index="[8]" Value="0" />
-<Element Index="[9]" Value="0" />
-<Element Index="[10]" Value="0" />
-<Element Index="[11]" Value="0" />
-<Element Index="[12]" Value="0" />
-<Element Index="[13]" Value="0" />
-<Element Index="[14]" Value="0" />
-<Element Index="[15]" Value="0" />
-</ArrayMember>
-</Structure>
-</Data>
-</OutputTag>
-</Connection>
-</Connections>
-</Communications>
-</Module>
 """
 
 
@@ -5303,32 +5383,33 @@ def main() -> None:
         _axis_tag("Bus2_Drive020_Chuck_Axis", "Bus2_Drive_D020:Ch1"),
         _axis_tag("Bus2_Drive020_Sf_Axis", "Bus2_Drive_D020:Ch3"),
     ])
+    target_name = "BenderFullProgram"
+    modules_xml = _ALL_MODULES_XML + "\n" + safety_partner_module_xml(target_name)
     l5x = build_l5x(
-        target_name="BenderFullProgram", tags_xml=tags_xml,
-        extra_modules_xml=_ALL_MODULES_XML, processor_type="1756-L81ES",
+        target_name=target_name, tags_xml=tags_xml,
+        extra_modules_xml=modules_xml, processor_type="1756-L81ES",
+        safety_partner=True,
     )
     out_path = OUT_ROOT / "modulerack_bender_full_program.L5X"
     write_sample_unmodeled(l5x, out_path)
     append_manifest_row(
         "modulerack_bender_full_program",
-        "Full real-program replica: 68 of the 69 non-CPU modules in James's real "
-        "DnR_Personal/Bender134053_201104.L5X (5 Point I/O adapters with all 44 real "
-        "children, 5 ArmorBlock I/O, 2 PowerFlex 527-STO safety drives, 2 EX260 valve "
-        "manifolds, RMC150E, full 2-bus/5-module Kinetix 5700 subgraph with 8 real axis "
-        "tags, plus 4 real EDS-dependent devices represented via Generic Ethernet Module "
-        "since their real profile isn't guaranteed installed -- 2 encoders, 1 barcode "
-        "reader, 1 robot controller, real stated Connection sizes preserved exactly), "
-        "genericized but structurally verbatim, not deduplicated -- built to be captured "
-        "against the real program's actual controller memory for accuracy validation. "
-        "Only 1 module excluded (GuardLogix Safety Partner -- not independently "
-        "importable, confirmed by James himself). See this generator's own docstring for "
-        "the full real error-driven rationale, including the one honest gap (a FANUC "
-        "robot's 20 bytes of real CIP Safety I/O can't be represented via Generic "
-        "Ethernet Module and is not included). 0 lint findings, 0 duplicate names, 0 "
-        "dangling parent refs.",
+        "Full real-program replica: all 69 non-CPU modules in James's real "
+        "DnR_Personal/Bender134053_201104.L5X now represented (5 Point I/O adapters with "
+        "all 44 real children, 5 ArmorBlock I/O, 2 PowerFlex 527-STO safety drives, 2 "
+        "EX260 valve manifolds, RMC150E, full 2-bus/5-module Kinetix 5700 subgraph with 8 "
+        "real axis tags, the real FANUC robot controller with its 2 real CIP Safety "
+        "connections restored, a real GuardLogix Safety Partner via wrapper.py's new "
+        "safety_partner support, and 3 EDS-dependent devices represented via Generic "
+        "Ethernet Module with real stated Connection sizes preserved), genericized but "
+        "structurally verbatim, not deduplicated -- built to be captured against the real "
+        "program's actual controller memory for accuracy validation. See this generator's "
+        "own docstring for the full real error-driven rationale on the Safety Partner fix "
+        "and the robot's restoration. 0 lint findings, 0 duplicate names, 0 dangling "
+        "parent refs.",
         "modules", out_path, 0,
     )
-    print("Done. 1 full-program replica file written (68 modules, 8 axes).")
+    print("Done. 1 full-program replica file written (69 modules incl. Safety Partner, 8 axes).")
 
 
 if __name__ == "__main__":

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="BenderFullProgram" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 24 23:58:12 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="BenderFullProgram" ProcessorType="1756-L81ES" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 24 23:58:12 2026" LastModifiedDate="Mon Aug 24 23:58:12 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="BenderFullProgram" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Tue Aug 25 00:11:05 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="BenderFullProgram" ProcessorType="1756-L81ES" MajorRev="35" MinorRev="11" ProjectCreationDate="Tue Aug 25 00:11:05 2026" LastModifiedDate="Tue Aug 25 00:11:05 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
-<SafetyInfo/>
+<SafetyInfo SafetyLocked="true" SignatureRunModeProtect="false" ConfigureSafetyIOAlways="true" SafetyLevel="SIL3/PLe"/>
 <DataTypes>
 
 </DataTypes>
@@ -11,10 +11,10 @@
 <Module Name="Local" CatalogNumber="1756-L81ES" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
 <EKey State="Disabled"/>
 <Ports>
-<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Port Id="1" Address="0" Type="ICP" Upstream="false" Width="2" SafetyNetwork="16#0000_1001_0001_0001">
 <Bus Size="17"/>
 </Port>
-<Port Id="2" Type="Ethernet" Upstream="false">
+<Port Id="2" Type="Ethernet" Upstream="false" SafetyNetwork="16#0000_1001_0002_0002">
 <Bus/>
 </Port>
 </Ports>
@@ -3447,10 +3447,125 @@
 </Communications>
 </Module>
 
+<Module Name="RobotController1" CatalogNumber="FANUC Robot R30iB Plus/A" Vendor="356" ProductType="12" ProductCode="4" Major="3" Minor="1" UserDefinedVendor="356" UserDefinedProductType="140" UserDefinedProductCode="40" UserDefinedMajor="3" UserDefinedMinor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_1001_0003_0003" SafetyEnabled="true">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="192.168.1.24" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications>
+<ConfigData ConfigSize="0">
+<Data Format="L5K">
+[4,100]
+</Data>
+</ConfigData>
+<SafetyScript Size="57">
+<Data Format="L5K">
+[53,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,37,0,0,0,0,0,0,0,0,3,0,0,0,23,0,0,0,0,0,0,16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+</Data>
+</SafetyScript>
+<Connections>
+<Connection Name="A_Safety_Output" RPI="20000" Type="SafetyOutputDataDriven" OutputSize="8" EventID="0" ProgrammaticallySendEventTrigger="false" TimeoutMultiplier="2" NetworkDelayMultiplier="200" ReactionTimeLimit="60" MaxObservedNetworkDelay="0" Priority="High" InputConnectionType="Unicast" InputProductionTrigger="Application" ConnectionPath="20 04 25 00 00 04 20 04 25 00 88 03 20 04 25 00 00 04" OutputTagSuffix="SO">
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[[12,0,0,0,65,0,0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="FR:Safety_RobotPlus_8Bytes:SO:0">
+<ArrayMember Name="Output" DataType="SINT" Dimensions="8" Radix="Hex">
+<Element Index="[0]" Value="16#0c" />
+<Element Index="[1]" Value="16#00" />
+<Element Index="[2]" Value="16#00" />
+<Element Index="[3]" Value="16#00" />
+<Element Index="[4]" Value="16#41" />
+<Element Index="[5]" Value="16#00" />
+<Element Index="[6]" Value="16#00" />
+<Element Index="[7]" Value="16#00" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+<Connection Name="B_Safety_Input" RPI="10000" Type="SafetyInputDataDriven" InputSize="12" EventID="0" ProgrammaticallySendEventTrigger="false" TimeoutMultiplier="2" NetworkDelayMultiplier="200" ReactionTimeLimit="40.064" MaxObservedNetworkDelay="0" Priority="High" InputConnectionType="Unicast" InputProductionTrigger="Application" ConnectionPath="20 04 25 00 00 04 20 04 25 00 00 04 20 04 25 00 08 03" InputTagSuffix="SI">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="FR:Safety_RobotPlus_8Bytes:SI:0">
+<DataValueMember Name="RunMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="ConnectionFaulted" DataType="BOOL" Value="1" />
+<ArrayMember Name="Input" DataType="SINT" Dimensions="8" Radix="Hex">
+<Element Index="[0]" Value="16#00" />
+<Element Index="[1]" Value="16#00" />
+<Element Index="[2]" Value="16#00" />
+<Element Index="[3]" Value="16#00" />
+<Element Index="[4]" Value="16#00" />
+<Element Index="[5]" Value="16#00" />
+<Element Index="[6]" Value="16#00" />
+<Element Index="[7]" Value="16#00" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+<Connection Name="Standard_Slot_01" RPI="32000" Type="StandardDataDriven" OutputSize="16" InputSize="16" EventID="0" ProgrammaticallySendEventTrigger="false" Priority="Scheduled" InputConnectionType="Unicast" InputProductionTrigger="Cyclic" ConnectionPath="20 04 24 64 2c 97 2c 65" InputTagSuffix="I1" OutputTagSuffix="O1">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="FR:Standard_RobotPlus_16Bytes:I1:0">
+<ArrayMember Name="Input" DataType="SINT" Dimensions="16" Radix="Hex">
+<Element Index="[0]" Value="16#70" />
+<Element Index="[1]" Value="16#04" />
+<Element Index="[2]" Value="16#00" />
+<Element Index="[3]" Value="16#04" />
+<Element Index="[4]" Value="16#ff" />
+<Element Index="[5]" Value="16#00" />
+<Element Index="[6]" Value="16#00" />
+<Element Index="[7]" Value="16#00" />
+<Element Index="[8]" Value="16#00" />
+<Element Index="[9]" Value="16#02" />
+<Element Index="[10]" Value="16#00" />
+<Element Index="[11]" Value="16#e0" />
+<Element Index="[12]" Value="16#1f" />
+<Element Index="[13]" Value="16#00" />
+<Element Index="[14]" Value="16#00" />
+<Element Index="[15]" Value="16#80" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[[0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,-64]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="FR:Standard_RobotPlus_16Bytes:O1:0">
+<ArrayMember Name="Output" DataType="SINT" Dimensions="16" Radix="Hex">
+<Element Index="[0]" Value="16#00" />
+<Element Index="[1]" Value="16#00" />
+<Element Index="[2]" Value="16#00" />
+<Element Index="[3]" Value="16#00" />
+<Element Index="[4]" Value="16#00" />
+<Element Index="[5]" Value="16#00" />
+<Element Index="[6]" Value="16#00" />
+<Element Index="[7]" Value="16#00" />
+<Element Index="[8]" Value="16#00" />
+<Element Index="[9]" Value="16#02" />
+<Element Index="[10]" Value="16#00" />
+<Element Index="[11]" Value="16#00" />
+<Element Index="[12]" Value="16#00" />
+<Element Index="[13]" Value="16#00" />
+<Element Index="[14]" Value="16#00" />
+<Element Index="[15]" Value="16#c0" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
 <Module Name="Bus1_PowerSupply" CatalogNumber="2198-P031" Vendor="1" ProductType="48" ProductCode="1" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="2" Address="192.168.1.24" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.25" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigData ConfigSize="376">
@@ -3495,7 +3610,7 @@
 <Module Name="Bus1_Drive_D032" CatalogNumber="2198-D032-ERS3" Vendor="1" ProductType="45" ProductCode="13" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_44c9_02ec_d2d2" SafetyEnabled="true">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="2" Address="192.168.1.25" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.26" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigData ConfigSize="448">
@@ -3583,7 +3698,7 @@
 <Module Name="Bus2_PowerSupply" CatalogNumber="2198-P070" Vendor="1" ProductType="48" ProductCode="2" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="2" Address="192.168.1.26" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.27" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigData ConfigSize="376">
@@ -3628,7 +3743,7 @@
 <Module Name="Bus2_Drive_D057" CatalogNumber="2198-D057-ERS3" Vendor="1" ProductType="45" ProductCode="14" Major="9" Minor="3" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_44c9_02ed_0afc" SafetyEnabled="true">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="2" Address="192.168.1.27" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.28" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigData ConfigSize="448">
@@ -3715,7 +3830,7 @@
 <Module Name="Bus2_Drive_D020" CatalogNumber="2198-D020-ERS3" Vendor="1" ProductType="45" ProductCode="12" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_44c9_02ed_47c8" SafetyEnabled="true">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="2" Address="192.168.1.28" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.29" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigData ConfigSize="448">
@@ -3806,7 +3921,7 @@
 <Port Id="1" Address="0" Type="PointIO" Upstream="false">
 <Bus Size="7" />
 </Port>
-<Port Id="2" Address="192.168.1.29" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.30" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
@@ -5145,67 +5260,13 @@
 </Connections>
 </Communications>
 </Module>
-<Module Name="RobotController1" CatalogNumber="ETHERNET-MODULE" Vendor="1" ProductType="0" ProductCode="18" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
-<EKey State="Disabled" />
-<Ports>
-<Port Id="2" Address="192.168.1.73" Type="Ethernet" Upstream="true" />
-</Ports>
-<Communications CommMethod="536870914" PrimCxnInputSize="16" PrimCxnOutputSize="16">
-<Connections>
-<Connection Name="Standard" RPI="20000" Type="Output" InputCxnPoint="1" OutputCxnPoint="2" OutputSize="16" InputSize="16" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:ETHERNET_MODULE_REAL_16Bytes:I:0">
-<ArrayMember Name="Data" DataType="SINT" Dimensions="16" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-<Element Index="[2]" Value="0" />
-<Element Index="[3]" Value="0" />
-<Element Index="[4]" Value="0" />
-<Element Index="[5]" Value="0" />
-<Element Index="[6]" Value="0" />
-<Element Index="[7]" Value="0" />
-<Element Index="[8]" Value="0" />
-<Element Index="[9]" Value="0" />
-<Element Index="[10]" Value="0" />
-<Element Index="[11]" Value="0" />
-<Element Index="[12]" Value="0" />
-<Element Index="[13]" Value="0" />
-<Element Index="[14]" Value="0" />
-<Element Index="[15]" Value="0" />
-</ArrayMember>
-</Structure>
-</Data>
-</InputTag>
-<OutputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:ETHERNET_MODULE_REAL_16Bytes:O:0">
-<ArrayMember Name="Data" DataType="SINT" Dimensions="16" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-<Element Index="[2]" Value="0" />
-<Element Index="[3]" Value="0" />
-<Element Index="[4]" Value="0" />
-<Element Index="[5]" Value="0" />
-<Element Index="[6]" Value="0" />
-<Element Index="[7]" Value="0" />
-<Element Index="[8]" Value="0" />
-<Element Index="[9]" Value="0" />
-<Element Index="[10]" Value="0" />
-<Element Index="[11]" Value="0" />
-<Element Index="[12]" Value="0" />
-<Element Index="[13]" Value="0" />
-<Element Index="[14]" Value="0" />
-<Element Index="[15]" Value="0" />
-</ArrayMember>
-</Structure>
-</Data>
-</OutputTag>
-</Connection>
-</Connections>
-</Communications>
-</Module>
 
+<Module Name="BenderFullProgram:Partner" CatalogNumber="1756-L8SP" Vendor="1" ProductType="14" ProductCode="171" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_0000_0000_0000">
+<EKey State="ExactMatch" />
+<Ports>
+<Port Id="1" Address="1" Type="ICP" Upstream="true" Width="0" />
+</Ports>
+</Module>
 </Modules>
 <AddOnInstructionDefinitions>
 

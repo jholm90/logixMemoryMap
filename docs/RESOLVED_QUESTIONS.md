@@ -487,3 +487,166 @@ to custom StringFamily types — that data shows a maxlen-dependent rate,
 not a clean flat -2, and needs more data before wiring (see
 OPEN_QUESTIONS.md OQ-STRINGTAGOVERHEAD for the still-open custom-string
 piece).
+
+**OQ-PREDEFINED, CAM piece, resolved 2026-08-26.** Real 5-point count sweep
+(1/5/10/20/50 elements) confirms the mechanistic prediction from reading
+CAM's real Decorated/L5K shape: `base=8, per_element=12` blocks, KNOWN
+confidence, 5/5 points at or near zero residual (the small non-zero points
+are the same -4 universal noise seen elsewhere). Wired via the existing
+`predefined_array_structures` mechanism, same pattern CAM_PROFILE already
+used. MESSAGE's own byte cost remains unmodeled — deprioritized by James
+2026-08-25 ("fine for 90% accuracy, not a common instruction"); MSG's own
+LOGIC weight (48/rung) is separately resolved and wired.
+
+## Motion, CPT, string, and task-overhead batch, 2026-08-25–26
+
+**OQ-CROUT-MAPC-BUILDFAIL, resolved 2026-08-25.** CROUT's build failure is
+not a bug — CROUT is a Safety-only instruction (James: "requires a safety
+plc cpu"), reclassified OUT OF SCOPE alongside DCS. MAPC's build failure
+was two real generator bugs (undeclared `Axis_Cip_Drive` tag, and
+slave/master axis reusing the same tag instead of two distinct axis tags)
+— fixed via `gen_axis_composite.py`/`gen_instruction_firstpass.py`'s
+`group_mapc_v2`. Real capture confirmed both fixes: clean build, logic
+weight = 260/rung exactly, wired in `memory_model.yaml` (`MAPC: 260`).
+
+**OQ-MAMFAMILY-BUILDFAIL, resolved 2026-08-26.** MAM/MAJ/MAS/MRP's 100%
+build failure was a generator bug, not a syntax question — each needs its
+own full parameter list (James: the bare 2-operand call used is MAH/MSO's
+shape, not theirs). Real corpus operand counts confirmed: MAM=20, MAJ=17,
+MAS=9, MRP=5. Fixed with real corpus-transplanted templates in
+`gen_motion_instructions.py`; all 4 now build clean and are wired:
+`MAM=224, MAJ=236, MAS=100, MRP=128` blocks/rung. Keyword-value variation
+(Merge, Profile, StopType×Decel×Jerk) doesn't change size except MRP's two
+real operand-4/5 patterns, which differ by 52 bytes (single flat MRP
+weight used regardless).
+
+**OQ-CPT, uniform and T1+T2 mixed-tier cases resolved 2026-08-26, wired.**
+`parser/logic.py` now extracts every real `CPT(...)` call's operator
+tokens; `sizing/logic.py`'s `CptExpressionModel` costs each call
+individually, replacing the old flat-wrong `CPT: 452` weight entirely.
+Uniform-tier (single operator type, e.g. plain ADD chains — the dominant
+real usage pattern): `base_read=88`, `operator_tier_costs` ADD/SUB=36,
+MUL/DIV/MOD=52, POW=116, `per_extra_same_tier_operand=24` — confirmed
+exact at 22/24 real manifest rows (2/24 hit a small, already-understood
+large-file +264 anomaly unrelated to the formula). Literal operands (int
+or float) cost the same as tag operands; operator order and literal
+position don't matter. T1(ADD/SUB)+T2(MUL/DIV/MOD) mixed expressions:
+`true_cost = 100 + 32*operator_count`, exact at 4/5 operand-count points,
+wired as a special case in `CptExpressionModel.cost_for`, live-verified
+15/18 real rows exact. T1T3, T2T3, and all-3-tier mixes remain on the
+older additive-sum fallback — see OPEN_QUESTIONS.md OQ-CMPCPTLAYOUT for
+what's still open there.
+
+**OQ-CMP weight, resolved 2026-08-26.** The apparent inconsistency between
+`cmpcpt_cmp_single`'s mined rate and the wired `CMP: 76` weight was a
+manual-arithmetic error, not a real bug — `CMP: 76` is exact for a single
+condition. A real, previously-unwired compound-condition surcharge
+(+64/rung, KNOWN, exact at n=100 and n=1000) and float-literal surcharge
+(+72/rung, FITTED, single point) are now wired too, verified 9/10 real
+rows exact (1/10 hits the same known large-file anomaly noted above).
+
+**OQ-INDIRECT, resolved 2026-08-26, wired.** Tag-driven array indexing
+costs +84 blocks/rung, tag+literal-offset indexing (`tag[idx+1]`) costs
++108 blocks/rung, both confirmed perfectly linear across n=10/50/100/1000
+(120/rung and 144/rung total respectively, zero variance). `parser/
+logic.py` scans rung text for `Name[...]` brackets and classifies
+direct/literal (0 cost) vs tag-driven vs tag+offset; `sizing/logic.py`
+applies the cost per occurrence. KNOWN confidence, verified against all 8
+real manifest rows. Deliberately scanned across the whole rung, not scoped
+to MOV specifically — only MOV-carried indexing was ever captured, so use
+inside e.g. a CPT operand is untested.
+
+**OQ-OPERANDTYPE, resolved 2026-08-26, wired.** All 13 type-sensitive
+instructions (ADD/SUB/MUL/DIV/MOD/EQU/GEQ/GRT/LEQ/LES/NEQ/MOV/LIM) apply a
+real SINT/INT/REAL/STRING surcharge on top of their DINT-rate base weight,
+derived from the `typesweep_*` corpus (69 real rows, 1000-rung sweeps,
+exact per-1000 deltas). LINT behaves identically to DINT (no separate
+handling needed). FITTED confidence (single count point per type) —
+verified live: 67/67 real rows land on the same small baseline noise once
+the surcharge is applied (was off by 88-164/rung before).
+
+**OQ-CAPTURERACE, resolved 2026-08-26.** The 6 rows flagged by James's own
+tooling as WINDOW TITLE MISMATCH were retested (`_v2` suffix) and
+reproduced the original readings almost exactly — not a capture race after
+all. n=1 and n=2 DINT arrays genuinely report the identical `actual_bytes`
+(a real Capacity-display rounding granularity at that size, not a bug).
+Tag comment length (0-200 chars) confirmed zero effect on size,
+independently, in the same pass.
+
+**OQ-STRINGTAGOVERHEAD, scalar case (builtin + custom) fully resolved
+2026-08-25/26.** Builtin STRING tags cost exactly -2 bytes vs the ordinary
+flat tag_overhead formula, confirmed flat across 13 real data points,
+wired as `string.builtin_tag_overhead_correction`. Custom StringFamily
+types: the DATA member rounds to the NEAREST multiple of 8 (rounding down
+at the exact tie) — real bug fix, 0 residual against 9 real maxlen points
+spanning every mod-4/mod-8 remainder; maxlen mod 4 == 1 gets its own
+confirmed +8 one-time definition bonus. Custom type-NAME length also
+resolved: `custom_definition_cost_for(name_len) = base(208) +
+8*floor((name_len-5)/8)`, exact across 22 real dense-sweep points — the
+earlier suspected "UDT-nesting tax" was fully explained by this same
+name-length formula, no separate nesting cost exists. All wired in
+`constants.py`'s `StringModel`, `memory_model.yaml`, `report.py`,
+`tree.py`.
+
+**OQ-STRINGARRAYPAD, resolved 2026-08-26, wired.** Array-of-STRING (one
+tag, `Dimensions=N`) is a structurally different case from a scalar STRING
+tag and doesn't inherit the scalar formula: `total = array_base +
+(scalar_element_size + per_element) * n`. Builtin: `array_base=6,
+per_element=2`, KNOWN, 6/6 real points exact. Custom: `per_element=4`,
+KNOWN, 6/6 points exact across 2 type names; `array_base` is FITTED
+(type-name-length-dependent, same effect as the scalar case) — wired using
+the better-supported 13-char name's value (12). Wired in `udt.py`'s
+`compute_array_size` and `memory_model.yaml`'s new `string_array` section.
+
+**OQ-STRINGUDTMEMBER, custom-type piece resolved 2026-08-26.** Custom
+STRING type as a UDT member has NO separate nesting tax — fully explained
+by the same standalone type-name-length formula (OQ-STRINGTAGOVERHEAD
+above) once the wrapping UDT's own unrelated name-length cost is accounted
+for, and has no dependence on the string's own `maxlen` (4/4 exact real
+points). Builtin STRING as a UDT member is a separate, still-open 2-D
+(member-count × instance-count) effect — see OPEN_QUESTIONS.md
+OQ-STRINGUDTMEMBER.
+
+**OQ-STRINGCONSTFAIL, resolved 2026-08-26.** The 8/8 build failures in the
+constant-flag/processor batch were a tooling artifact, not an L5X content
+bug: Studio 5000's same-instance "switch file without closing"
+batch-capture flow can't cleanly replace the "Local" module when the
+PROCESSOR changes between consecutive files (renames it to "Local1", which
+then fails validation) — affects any processor-varying batch run through
+that flow, including the `fw_baseline` files. Separately, James confirmed
+L8/L9/5069 compute constant-STRING sizing identically, so the processor
+axis in this particular test was never a real question — dropped, test
+rebuilt on a single default processor.
+
+**OQ-TASKOVERHEAD, resolved and wired 2026-08-27.** Per-Task/per-Program/
+per-Routine scaffolding costs, cleanly separated via 3 chained real file
+comparisons: `routine_extra=272`, `program_extra=484`, `task_extra=700`,
+applied once per file in `memory_model.yaml`'s `task_program_overhead`, on
+top of the existing (unchanged) `fixed_base_per_routine`/per-rung content
+costs. Verified exact against the disentangle-batch files and the original
+multi-task sweep (within 0.21% at n=4 tasks). Broad regression across
+1,059 manifest rows: exact-match count 279→292, over-3%-residual count
+50→43, zero regressions. Also fixed two real multi-program over-counting
+bugs found along the way (`xprogref_twoprog_shared_alias_n01000`
+4076→16, `lbljmp_samename_diffroutines` 4049→-11).
+
+## Module I/O and empty-routine batch, 2026-08-27
+
+**OQ-EMPTYROUTINE, resolved and wired 2026-08-27.** A `<Routine
+Type="RLL"/>` with no `RLLContent` child (a legitimate real construct —
+James: "you're allowed to have a SBR with no rungs," found in 15 of his
+real production files) was being silently skipped by `parse_rll_routines`,
+charged 0 bytes. Real data (`emptyroutine_n01/n02/n03`) confirms it costs
+the same real per-routine shell tax as an ordinary routine (264/extra
+routine, matching the already-wired `task_program_overhead.routine_extra`)
+— it just has zero content cost. Fixed to emit `rung_texts=[]` instead of
+skipping; retroactively corrects every self-closing-routine file in the
+corpus, including several `fw_baseline` firmware points whose apparent
+"firmware variance" was partly this bug.
+
+**OQ-MIXEDUDT, resolved 2026-08-27.** `mixedudt_messy_def_only/1_instance/
+25_instance` real captures (19,384 / 19,704 / 25,472) land within
+0.37%-2.65% of the current engine's prediction — comfortably inside the
+acceptable band. The existing UDT-definition + per-tag formulas already
+generalize to a realistic messy/nested member mix; no formula change
+needed.
