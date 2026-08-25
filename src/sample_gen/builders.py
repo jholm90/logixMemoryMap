@@ -890,18 +890,34 @@ def module_generic_ethernet_xml(name: str, ip_address: str, input_bytes: int, ou
 
 
 def task_xml(task_name: str, program_name: str, task_type: str = "CONTINUOUS",
-             priority: int = 10, watchdog: int = 500) -> str:
+             priority: int = 10, watchdog: int = 500,
+             event_trigger: str | None = None, event_tag: str | None = None) -> str:
     """A second/extra <Task> block (with its own <ScheduledPrograms>), for
     build_l5x(extra_tasks_xml=...). Real shape matches the wrapper's own
     MainTask element exactly, just parametrized. Only CONTINUOUS Type is
     used by callers today -- real Logix only allows ONE Continuous task per
     controller, so a second Task under test must be Type="Periodic" (with a
     Rate attribute) to actually import; callers pass task_type explicitly
-    for that reason rather than defaulting silently."""
-    rate_attr = ' Rate="10"' if task_type == "PERIODIC" else ""
+    for that reason rather than defaulting silently.
+
+    Type="EVENT" (event_trigger set) mirrors the real corpus shape found in
+    SJ_Gormley_20251112_r02.L5X/Sorter1_20260722r00.L5X: a Rate attribute
+    (same as Periodic), DisableUpdateOutputs="true" (real EVENT tasks always
+    carry this, unlike Periodic/Continuous's "false"), and a child
+    <EventInfo EventTrigger="..."/> element -- either "EVENT Instruction
+    Only" (no EventTag) or "Axis Watch" (EventTag pointing at a real
+    AXIS_CIP_DRIVE/AXIS_VIRTUAL tag, confirmed real in the Gormley corpus)."""
+    rate_attr = ' Rate="10"' if task_type in ("PERIODIC", "EVENT") else ""
+    disable_outputs = "true" if task_type == "EVENT" else "false"
+    event_tag_attr = f' EventTag="{event_tag}"' if event_tag else ""
+    event_info_xml = (
+        f'<EventInfo EventTrigger="{event_trigger}"{event_tag_attr} EnableTimeout="false"/>\n'
+        if event_trigger else ""
+    )
     return (
         f'<Task Name="{task_name}" Type="{task_type}"{rate_attr} Priority="{priority}" '
-        f'Watchdog="{watchdog}" DisableUpdateOutputs="false" InhibitTask="false">\n'
+        f'Watchdog="{watchdog}" DisableUpdateOutputs="{disable_outputs}" InhibitTask="false">\n'
+        f'{event_info_xml}'
         f'<ScheduledPrograms>\n<ScheduledProgram Name="{program_name}"/>\n</ScheduledPrograms>\n'
         f"</Task>"
     )

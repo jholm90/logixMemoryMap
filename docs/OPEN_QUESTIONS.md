@@ -34,6 +34,11 @@ the matching footnote at the bottom, not inline.
 8. **OQ-LEGACYNETOVERHEAD** — reminder flag only. No real corpus, no
    capture data, nothing to size against yet.
 
+9. **OQ-EVENTTRIGGER** — new, real. task_extra (+700) was derived only
+   from CONTINUOUS+PERIODIC tasks; EVENT-type tasks are completely
+   untested, and so is trigger-source (Axis Watch vs. EVENT-instruction)
+   within EVENT. Two files built, awaiting capture.[^eventtrigger]
+
 ---
 
 [^instrfirstpass]: CROUT (safety-only) and MAPC resolved separately
@@ -178,6 +183,28 @@ Deliberately not charged `module_overhead`: rack-aliased modules,
 `CatalogNumber="Embedded"` I/O. Produced/consumed tags untouched
 (OQ-PRODCONS). PowerFlex 525 has multiple real I/O payload UDTs beyond
 the one profile covered — needs more real corpus examples, not guessed.
+
+[^eventtrigger]: James, 2026-08-25: "Does an event task triggered by MAW
+cost more than an event task triggered by the EVENT instruction?" Real
+corpus grep (12 real `Type="EVENT"` Tasks across SJ_Gormley_20251112_r02
+and Sorter1_20260722r00) confirms exactly two real `EventTrigger` values:
+"EVENT Instruction Only" (no EventTag) and "Axis Watch" (EventTag pointing
+at a real `AXIS_CIP_DRIVE` tag — confirmed against Gormley's
+`EM108_GradingLC`). "Axis Watch" is a Task-level config, not the MAW
+*instruction* itself, but it's the real mechanism James's "MAW" question
+maps to — there's no other real EVENT-trigger shape in the corpus.
+Genuinely untested axis: every existing task-overhead calibration file
+(`taskoverhead_n0Xtasks`, the ones that produced task_extra=+700) used
+only CONTINUOUS/PERIODIC tasks, never EVENT — so it's currently unknown
+whether EVENT itself costs differently from PERIODIC, on top of the
+trigger-source question. `eventtask_instronly` and `eventtask_axiswatch`
+(`gen_event_task_trigger.py`) mirror `taskoverhead_n02tasks` exactly
+(1 Continuous + 1 extra Task, 5069-L306ER/fw35.11, NOP-only programs),
+changing only the extra Task's Type/trigger, so direct deltas isolate
+both questions. `eventtask_axiswatch` also declares a real
+`AXIS_CIP_DRIVE` tag (EventTag must reference a real tag) — that tag has
+its own separately-modeled cost and will need subtracting from the raw
+capture delta before comparing trigger sources.
 
 [^branchdepth]: Real, sizeable, not modeled — the branch bracket
 structure itself (BST/NXB/BND, not modeled by this project's regex-based
