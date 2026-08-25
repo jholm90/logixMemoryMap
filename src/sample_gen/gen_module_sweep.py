@@ -12846,6 +12846,9 @@ mPo
 </Connection>
 </Connections>
 </Communications>
+<ExtendedProperties>
+<public><Vendor>Rockwell Automation/Allen-Bradley</Vendor><CatNum>PowerFlex 525-EENET</CatNum><LgxVersion>35</LgxVersion><ConnectedCommModule>0</ConnectedCommModule><PrimaryModulePort>0</PrimaryModulePort><ConfigCode>220</ConfigCode><PortName>PF525_A</PortName><PortDescription/><ConfigID>115</ConfigID><ADDAVersion>1</ADDAVersion><InputDataTag>&lt;DataTypes&gt;&lt;DataType Name="AB:PowerFlex525V_E_F6518AFA:I:0" Class="IO"&gt;&lt;Members&gt;&lt;Member Name="pad" DataType="DINT" Hidden="1" /&gt;&lt;Member Name="DriveStatus" DataType="INT" Radix="Binary" /&gt;&lt;Member Name="Ready" DataType="BIT" BitNumber="0" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="Active" DataType="BIT" BitNumber="1" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="CommandDir" DataType="BIT" BitNumber="2" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="ActualDir" DataType="BIT" BitNumber="3" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="Accelerating" DataType="BIT" BitNumber="4" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="Decelerating" DataType="BIT" BitNumber="5" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="Faulted" DataType="BIT" BitNumber="7" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="AtReference" DataType="BIT" BitNumber="8" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="CommFreqCnt" DataType="BIT" BitNumber="9" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="CommLogicCnt" DataType="BIT" BitNumber="10" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="ParmsLocked" DataType="BIT" BitNumber="11" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="DigIn1Active" DataType="BIT" BitNumber="12" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="DigIn2Active" DataType="BIT" BitNumber="13" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="DigIn3Active" DataType="BIT" BitNumber="14" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="DigIn4Active" DataType="BIT" BitNumber="15" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="OutputFreq" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="OutputCurrent" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="OutputVoltage" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="CommandedFreq" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="MaximumFreq" DataType="INT" Radix="Decimal" /&gt;&lt;/Members&gt;&lt;/DataType&gt;&lt;/DataTypes&gt;</InputDataTag><OutputDataTag>&lt;DataTypes&gt;&lt;DataType Name="AB:PowerFlex525V_E_34F78343:O:0" Class="IO"&gt;&lt;Members&gt;&lt;Member Name="LogicCommand" DataType="INT" Radix="Binary" /&gt;&lt;Member Name="Stop" DataType="BIT" BitNumber="0" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="Start" DataType="BIT" BitNumber="1" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="Jog" DataType="BIT" BitNumber="2" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="ClearFaults" DataType="BIT" BitNumber="3" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="Forward" DataType="BIT" BitNumber="4" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="Reverse" DataType="BIT" BitNumber="5" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="ForceKeypadCtrl" DataType="BIT" BitNumber="6" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="MOPIncrement" DataType="BIT" BitNumber="7" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="AccelRate1" DataType="BIT" BitNumber="8" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="AccelRate2" DataType="BIT" BitNumber="9" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="DecelRate1" DataType="BIT" BitNumber="10" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="DecelRate2" DataType="BIT" BitNumber="11" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="FreqSel01" DataType="BIT" BitNumber="12" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="FreqSel02" DataType="BIT" BitNumber="13" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="FreqSel03" DataType="BIT" BitNumber="14" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="MOPDecrement" DataType="BIT" BitNumber="15" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="FreqCommand" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="AccelTime1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="DecelTime1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="JogFrequency" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="JogAccelDecel" DataType="INT" Radix="Decimal" /&gt;&lt;/Members&gt;&lt;/DataType&gt;&lt;/DataTypes&gt;</OutputDataTag><UdcAopVersion>16.3.1.10350</UdcAopVersion></public>
+</ExtendedProperties>
 </Module>
 """, 'SJ_Gormley_20251112_r02.L5X', 1),
     'PowerFlex 527-STO CIP Safety': ("""\
@@ -13323,13 +13326,61 @@ mPo
 }
 
 
+# Real 5069-family (Compact 5000, no separate chassis) catalogs -- these
+# real modules' own Port Type="5069" only matches a 5069- processor's own
+# local bus shape, never the project default 1756-L81E's Type="ICP" bus.
+# Real Studio 5000 import bug found by James, 2026-08-27: "Child module
+# incompatible with parent module" -- these were parented onto the wrong
+# chassis family entirely, not a minor attribute mismatch. "5069-L306ER"
+# is this project's own already-confirmed-real plain 5069 test processor
+# (used throughout the fw_baseline sweep). 2 of these 6 are ALSO real
+# safety modules (SafetyEnabled="true") needing a safety-rated 5069
+# processor too -- "5069-L306ERMS2" is this project's own already-
+# confirmed-real M+S(afety) 5069 catalog (same fw_baseline sweep).
+_5069_PROCESSOR_TYPE = "5069-L306ER"
+_5069_SAFETY_CATALOGS = {"5069-IB8S/A", "5069-OBV8S/A"}
+_5069_CATALOGS = {"5069-IB16/A", "5069-IB8S/A", "5069-IY4/A", "5069-OB16/A", "5069-OB16/B", "5069-OBV8S/A"}
+
+# Real modules whose own SafetyEnabled="true" needs a safety-capable
+# controller (SIL2, no redundant partner -- see wrapper.py's
+# build_l5x docstring) -- real Studio 5000 error found by James,
+# 2026-08-27: "Failed to set the 'SafetyEnabled' property (The Controller
+# is not a Safety Controller.)". Kinetix 4conn safety-drive variants live
+# in gen_module_sweep_variants.py, handled there.
+#
+# 1734-OB8S/A, 1734-OB8S/B, and 442G-MABLB-UR-E0JP4679/A don't set
+# SafetyEnabled="true" on the module tag at all -- but their Connections
+# use Type="SafetyInput"/"SafetyOutput", which CIP Safety requires a
+# safety-capable controller to actually establish on either end. James,
+# 2026-08-25: "noted all of your OB8S files the input module was not
+# present" -- the safety connection silently failed against a standard
+# controller, so the module showed as absent in the I/O tree even though
+# the L5X imported "ok". Needs the same safety-capable controller as the
+# SafetyEnabled="true" catalogs above.
+_SIL2_CATALOGS = {
+    "PowerFlex 527-STO CIP Safety", "FANUC Robot R30iB Plus/A",
+    "1734-OB8S/A", "1734-OB8S/B", "442G-MABLB-UR-E0JP4679/A",
+}
+_SAFETY_PROCESSOR_TYPE = "1756-L81ES"
+
+
 def main() -> None:
     written = 0
     for catalog, (xml, source, chain_len) in _MODULE_CHAINS.items():
         out_name = "modulesweep_" + "".join(c if c.isalnum() else "_" for c in catalog).strip("_").lower()
         chain_note = "standalone module" if chain_len == 1 else f"module + its real {chain_len - 1}-deep parent chain"
+        kwargs = {}
+        if catalog in _5069_CATALOGS:
+            kwargs["processor_type"] = (
+                "5069-L306ERMS2" if catalog in _5069_SAFETY_CATALOGS else _5069_PROCESSOR_TYPE
+            )
+            if catalog in _5069_SAFETY_CATALOGS:
+                kwargs["safety_level"] = "SIL2"
+        elif catalog in _SIL2_CATALOGS:
+            kwargs["processor_type"] = _SAFETY_PROCESSOR_TYPE
+            kwargs["safety_level"] = "SIL2"
         l5x = build_l5x(target_name="ModSweep_" + "".join(c if c.isalnum() else "" for c in catalog)[:20],
-                         tags_xml="", extra_modules_xml=xml)
+                         tags_xml="", extra_modules_xml=xml, **kwargs)
         _write_unmodeled(
             l5x, out_name,
             f"{catalog} -- real corpus module ({chain_note}), genericized from {source}, "

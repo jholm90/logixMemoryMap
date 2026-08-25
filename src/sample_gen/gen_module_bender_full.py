@@ -36,14 +36,15 @@ to declare `Width="2"` (it now spans its own slot AND the partner's) plus
 a real `SafetyNetwork` identifier -- without that, Studio 5000 has no way
 to know slot 1 is reserved for a paired partner and correctly rejects it
 as an invalid standalone add. `wrapper.py`'s `build_l5x(...,
-safety_partner=True)` now emits that real Width/SafetyNetwork
+safety_level="SIL3")` now emits that real Width/SafetyNetwork
 configuration on the Local module plus real `SafetyInfo` content
 (SIL3/PLe); `safety_partner_module_xml()` builds the real partner module
 itself (`EKey State="ExactMatch"`, `Width="0"` on its own port,
 module-level `SafetyNetwork` -- all confirmed real from the source file).
 SIL2 programs use a single non-redundant safety-capable primary with NO
-partner at all -- this capability is opt-in per file (`safety_partner`
-param), not forced on every generated file.
+partner at all (`safety_level="SIL2"` -- no Width/partner, just a
+safety-rated processor_type + SafetyInfo) -- this capability is opt-in
+per file, not forced on every generated file.
 
 **EDS-dependent devices, James: "You will need to accommodate missing
 eds files. This is a 100% requirement."** 2 real TR-Electronic GmbH
@@ -5388,7 +5389,7 @@ def main() -> None:
     l5x = build_l5x(
         target_name=target_name, tags_xml=tags_xml,
         extra_modules_xml=modules_xml, processor_type="1756-L81ES",
-        safety_partner=True,
+        safety_level="SIL3",
     )
     out_path = OUT_ROOT / "modulerack_bender_full_program.L5X"
     write_sample_unmodeled(l5x, out_path)

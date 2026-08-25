@@ -6,9 +6,36 @@ SJ_Gormley_20251112_r02.L5X) and PowerFlex 755-EENET (the modern successor
 to the discontinued PowerFlex 700 line -- no literal "PowerFlex 700" catalog
 number exists anywhere in the real corpus, 700-series' real modern
 equivalent is the 753/755 family, confirmed present: samples/local/
-L5X_Samples/Sorter1_20260722r00.L5X). Both genericized (Name/IP changed,
-ExtendedProperties stripped -- verbose duplicate DataType metadata Studio
-5000 doesn't require) but structurally verbatim otherwise.
+L5X_Samples/Sorter1_20260722r00.L5X). Both genericized (Name/IP changed)
+but structurally verbatim otherwise.
+
+**Fixed 2026-08-27, real Studio 5000 import bug found by James: "Data
+type mismatch."** PowerFlex 525-EENET's I/O payload is a
+User-Defined-Catalog (UDC) type (`UdcAopVersion` present) -- same real
+class of bug as `gen_module_sweep_gap.py`'s 150 SMC Flex-E fix: its
+`ExtendedProperties` carries the actual `InputDataTag`/`OutputDataTag`
+type schema Studio 5000 needs to validate its Decorated Data against
+(the DataType name itself is a per-configuration hash,
+`PowerFlex525V_E_<hash>`, not a fixed universal type). Stripping
+ExtendedProperties (this project's usual genericization convention,
+correct for a standard AB catalog module where it's pure boilerplate)
+broke it. Restored verbatim (confirmed no site/customer-identifying
+content, just Vendor/CatNum/PortName/the embedded schema).
+PowerFlex 755-EENET does NOT have this bug (confirmed: its real
+DataType names are fixed/non-hashed, no UdcAopVersion) -- only 525
+needed the fix.
+
+**James, 2026-08-27, real and NOT yet addressed: "keep in mind PF525 can
+have many different data payloads. there is many different UDT's
+available for 525's."** This file represents ONE of several real,
+user-selectable I/O Comm Format configurations for the 525 (this
+project's real corpus happened to capture this specific one) -- not
+exhaustive. Flagged in OQ-MODULEIO as a genuine open gap, same shape as
+the 14 multi-shape catalogs already covered via gen_module_sweep_
+variants.py, just not yet built out for PF525's own payload variants
+(needs more real corpus examples of different Comm Format selections
+before a variant sweep can be built, same "never guess" bar as
+everywhere else).
 
 Real VFD-specific shape, genuinely different from every module found
 earlier this session: `ConfigData` (L5K only, real stated ConfigSize) PLUS
@@ -286,6 +313,9 @@ _PF525_MODULE_XML = """\
 </Connection>
 </Connections>
 </Communications>
+<ExtendedProperties>
+<public><Vendor>Rockwell Automation/Allen-Bradley</Vendor><CatNum>PowerFlex 525-EENET</CatNum><LgxVersion>35</LgxVersion><ConnectedCommModule>0</ConnectedCommModule><PrimaryModulePort>0</PrimaryModulePort><ConfigCode>220</ConfigCode><PortName>PF525_A</PortName><PortDescription/><ConfigID>115</ConfigID><ADDAVersion>1</ADDAVersion><InputDataTag>&lt;DataTypes&gt;&lt;DataType Name="AB:PowerFlex525V_E_F6518AFA:I:0" Class="IO"&gt;&lt;Members&gt;&lt;Member Name="pad" DataType="DINT" Hidden="1" /&gt;&lt;Member Name="DriveStatus" DataType="INT" Radix="Binary" /&gt;&lt;Member Name="Ready" DataType="BIT" BitNumber="0" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="Active" DataType="BIT" BitNumber="1" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="CommandDir" DataType="BIT" BitNumber="2" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="ActualDir" DataType="BIT" BitNumber="3" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="Accelerating" DataType="BIT" BitNumber="4" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="Decelerating" DataType="BIT" BitNumber="5" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="Faulted" DataType="BIT" BitNumber="7" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="AtReference" DataType="BIT" BitNumber="8" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="CommFreqCnt" DataType="BIT" BitNumber="9" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="CommLogicCnt" DataType="BIT" BitNumber="10" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="ParmsLocked" DataType="BIT" BitNumber="11" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="DigIn1Active" DataType="BIT" BitNumber="12" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="DigIn2Active" DataType="BIT" BitNumber="13" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="DigIn3Active" DataType="BIT" BitNumber="14" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="DigIn4Active" DataType="BIT" BitNumber="15" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="OutputFreq" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="OutputCurrent" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="OutputVoltage" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="CommandedFreq" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="MaximumFreq" DataType="INT" Radix="Decimal" /&gt;&lt;/Members&gt;&lt;/DataType&gt;&lt;/DataTypes&gt;</InputDataTag><OutputDataTag>&lt;DataTypes&gt;&lt;DataType Name="AB:PowerFlex525V_E_34F78343:O:0" Class="IO"&gt;&lt;Members&gt;&lt;Member Name="LogicCommand" DataType="INT" Radix="Binary" /&gt;&lt;Member Name="Stop" DataType="BIT" BitNumber="0" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="Start" DataType="BIT" BitNumber="1" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="Jog" DataType="BIT" BitNumber="2" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="ClearFaults" DataType="BIT" BitNumber="3" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="Forward" DataType="BIT" BitNumber="4" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="Reverse" DataType="BIT" BitNumber="5" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="ForceKeypadCtrl" DataType="BIT" BitNumber="6" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="MOPIncrement" DataType="BIT" BitNumber="7" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="AccelRate1" DataType="BIT" BitNumber="8" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="AccelRate2" DataType="BIT" BitNumber="9" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="DecelRate1" DataType="BIT" BitNumber="10" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="DecelRate2" DataType="BIT" BitNumber="11" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="FreqSel01" DataType="BIT" BitNumber="12" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="FreqSel02" DataType="BIT" BitNumber="13" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="FreqSel03" DataType="BIT" BitNumber="14" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="MOPDecrement" DataType="BIT" BitNumber="15" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="FreqCommand" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="AccelTime1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="DecelTime1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="JogFrequency" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="JogAccelDecel" DataType="INT" Radix="Decimal" /&gt;&lt;/Members&gt;&lt;/DataType&gt;&lt;/DataTypes&gt;</OutputDataTag><UdcAopVersion>16.3.1.10350</UdcAopVersion></public>
+</ExtendedProperties>
 </Module>
 """
 

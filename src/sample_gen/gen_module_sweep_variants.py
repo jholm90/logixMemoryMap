@@ -4203,6 +4203,19 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 }
 
 
+# Real 4-Connection Kinetix variants add SafetyInputDataDriven/
+# SafetyOutputDataDriven connections with SafetyEnabled="true" -- real
+# Studio 5000 error found by James, 2026-08-27: "Failed to set the
+# 'SafetyEnabled' property (The Controller is not a Safety Controller.)".
+# Needs a safety-capable controller (SIL2, no redundant partner -- see
+# wrapper.py's build_l5x docstring), not the project's default standard
+# 1756-L81E.
+_SIL2_VARIANT_LABELS = {("2198-D012-ERS3", "4conn"), ("2198-D020-ERS3", "4conn"),
+                         ("2198-D032-ERS3", "4conn"), ("2198-D057-ERS3", "4conn"),
+                         ("2198-S086-ERS3", "4conn")}
+_SAFETY_PROCESSOR_TYPE = "1756-L81ES"
+
+
 def main() -> None:
     written = 0
     for catalog, variants in _MODULE_VARIANTS.items():
@@ -4211,7 +4224,11 @@ def main() -> None:
             out_name = f"modulesweep_{cat_slug}_variant_{label}"
             chain_note = "standalone module" if chain_len == 1 else f"module + its real {chain_len - 1}-deep parent chain"
             target = ("ModSweepV_" + "".join(c if c.isalnum() else "" for c in catalog) + label)[:24]
-            l5x = build_l5x(target_name=target, tags_xml="", extra_modules_xml=xml)
+            kwargs = {}
+            if (catalog, label) in _SIL2_VARIANT_LABELS:
+                kwargs["processor_type"] = _SAFETY_PROCESSOR_TYPE
+                kwargs["safety_level"] = "SIL2"
+            l5x = build_l5x(target_name=target, tags_xml="", extra_modules_xml=xml, **kwargs)
             _write_unmodeled(
                 l5x, out_name,
                 f"{catalog} -- real corpus module, VARIANT '{label}' ({chain_note}), genericized "

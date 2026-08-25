@@ -185,11 +185,11 @@ generator already covers them, just waiting on the next capture batch.
    default; fixed by marking it `required=True, visible=True`. Both
    regenerated, lint-clean, stale capture data cleared, no real data yet.
 
-10. **OQ-MODULEIO — WIRED, LOW CONFIDENCE (n=2), real gap remains, 125
+10. **OQ-MODULEIO — WIRED, LOW CONFIDENCE (n=2), real gap remains, 141
     files awaiting capture.** `module_overhead = 1,672 bytes/module` (flat,
     mean of 2 real deltas: 1756-IB16=1,684, 1734-AENTR/C=1,660), wired in
     `report.py` as ESTIMATED tier. Whether it's really flat or scales with
-    connection/point count/module family is unconfirmed off 2 points. 140
+    connection/point count/module family is unconfirmed off 2 points. 141
     files now in `samples/generated/modules/`: per-catalog sweep (119/119
     real corpus catalogs individually covered, incl. all 13 real Kinetix
     5700 catalogs), rack-level tests (Point I/O rack, 1756-local-rack,
@@ -197,17 +197,60 @@ generator already covers them, just waiting on the next capture batch.
     of 2 independently-real pieces, not one literal corpus chain, flagged
     at lower confidence than the rest), a full Kinetix 2-bus/8-axis
     subgraph, and a full-fidelity replica of James's real Bender program
-    (69 modules, GuardLogix Safety Partner + SIL3 handling now wired as a
-    reusable `build_l5x(..., safety_partner=True)` capability, EDS-less
-    devices represented via Rockwell's real Generic Ethernet Module
-    mechanism rather than dropped). Most of this batch is awaiting real
-    capture — that's the actual next step, not more generation.
+    (69 modules incl. GuardLogix Safety Partner). GuardLogix SIL2/SIL3
+    safety-controller handling is a reusable `build_l5x(...,
+    safety_level="SIL2"|"SIL3")` capability (real: SIL3 = redundant
+    partner beside the CPU + `Width="2"` ICP port; SIL2 = single
+    safety-capable primary, no partner). EDS-less devices represented via
+    Rockwell's real Generic Ethernet Module mechanism rather than dropped.
+    Most of this batch is awaiting real capture — that's the actual next
+    step, not more generation.
+
+    Real Studio 5000 conversion errors from the 2026-08-24/25 test batch,
+    root-caused and fixed: (a) module-level `SafetyEnabled="true"`
+    against a non-safety controller ("Controller is not a Safety
+    Controller") — fixed on 8 catalogs (PF527-STO, FANUC robot, 5 Kinetix
+    4conn variants, 2× 5069 safety I/O) via `safety_level`; (b) CIP
+    Safety `Type="SafetyInput"/"SafetyOutput"` Connections without
+    `SafetyEnabled="true"` on the module tag still require a safety
+    controller to actually establish — silently failed as "input module
+    not present" in the I/O tree despite the L5X importing "ok"; fixed on
+    `1734-OB8S/A`, `1734-OB8S/B`, `442G-MABLB-UR-E0JP4679/A`; (c) 5069
+    modules need `Port Type="5069"` — placing them on the default 1756/ICP
+    backplane threw "Child module incompatible with parent module", fixed
+    via `processor_type` switching; (d) User-Defined-Catalog devices
+    (150 SMC Flex-E, PowerFlex 525-EENET) need their real
+    `ExtendedProperties/UdcAopVersion` schema — it's functionally
+    required for Decorated Data validation, not boilerplate like standard
+    AB catalog modules; stripping it threw "Data type mismatch", fixed by
+    restoring verbatim. PowerFlex 755-EENET does NOT share this (fixed,
+    non-hashed DataType names, no UdcAopVersion) — confirmed untouched.
+    Also fixed: duplicate Ethernet IP across drive+power-supply pairs,
+    non-unique `AxisID` on 2+ coexisting `AXIS_CIP_DRIVE` tags (now
+    SHA-256-derived per tag name), a real slot collision in the EN2T
+    downstream prototype, and `ParentModPortId="4"` (real source has more
+    physical ports than the wrapper synthesizes) on 9 catalogs.
+
+    James also flagged the 1734/1756 rack-level test files as having
+    non-tight-packed slot addressing ("a 1734 module you placed in slot
+    10" concern) — audited both the sizing engine
+    (`l5x_memory_analyzer/parser/modules.py::_structure_size`) and the
+    rack generators: **verified not a bug.** Module data size is read
+    exclusively from the module's own real `ArrayMember/@Dimensions` in
+    its Connection Structure; `Port/@Address` (slot number) is parsed
+    into `ModuleInfo.slot` for display only and never feeds size math.
+    The rack generators' slot gaps are real captured addresses kept
+    as-is from source programs (real point-bus positions, not
+    synthesized) — cosmetically loose, not a sizing defect.
 
     **Deliberately NOT charged `module_overhead`, flagged not guessed:** a
     rack-aliased module (`RackConnection`/`InAliasTag` — zero real data on
     whether its cost resembles a module with its own Connection) and
     `CatalogNumber="Embedded"` modules (CompactLogix 5370 "ER" built-in
-    I/O). Produced/consumed tags remain untouched (OQ-PRODCONS).
+    I/O). Produced/consumed tags remain untouched (OQ-PRODCONS). Still
+    open: PowerFlex 525 has multiple real I/O data-payload UDTs beyond
+    the one profile currently covered — needs more real corpus examples
+    before building a variant sweep, not guessed.
 
 11. **OQ-BRANCHDEPTH — real, sizeable, not modeled.** A parallel branch
     bracket has its own real structural cost beyond the sum of its legs'

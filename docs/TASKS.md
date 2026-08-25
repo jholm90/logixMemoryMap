@@ -34,8 +34,12 @@ genuinely separate remaining piece stays open, not just paperwork) — 🔴 open
       ConfigScript sizes are read straight off the L5X (Logix Designer
       states them directly, no fitting needed for the raw size). A flat
       `module_overhead` per-module constant is wired (see OPEN_QUESTIONS.md
-      OQ-MODULEIO) but only from n=2 real deltas — LOW CONFIDENCE, ~125
-      test files awaiting capture before this can be trusted broadly.
+      OQ-MODULEIO) but only from n=2 real deltas — LOW CONFIDENCE, 141
+      test files awaiting capture before this can be trusted broadly. Real
+      Studio 5000 conversion errors from the 2026-08-24/25 batch (safety
+      controller wiring, 5069 backplane compat, UDC ExtendedProperties,
+      dup IPs/AxisIDs) all root-caused and fixed 2026-08-25 — see
+      OQ-MODULEIO.
       Produced/consumed tags (OQ-PRODCONS) still untouched.
 - ✅ Controller-scope vs program-scope tag separation in output
 - ✅ Flat output contract: `{path, category, bytes, pct_of_total,

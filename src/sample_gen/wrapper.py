@@ -155,22 +155,26 @@ def build_l5x(
     extra_scheduled_programs_xml: str = "",
     extra_modules_xml: str = "",
     extra_tasks_xml: str = "",
-    safety_partner: bool = False,
+    safety_level: str | None = None,
 ) -> str:
+    """`safety_level`: None (default, standard non-safety controller),
+    "SIL2" (single non-redundant safety-capable primary -- any module with
+    `SafetyEnabled="true"` real-errors "The Controller is not a Safety
+    Controller" against a standard controller, confirmed 2026-08-27 on
+    James's own real conversion attempts of the 4conn Kinetix safety-drive
+    variants and PowerFlex 527-STO), or "SIL3" (redundant primary +
+    partner -- see `safety_partner_module_xml`). Real, well-established
+    IEC 61508/62061 SIL-to-PL correspondence used for `SafetyLevel`
+    (SIL2/PLd, SIL3/PLe) -- James, 2026-08-27: "One safety partner is
+    located beside the CPU on the right if the program is sil3. Sil2 has
+    no safety partner." Callers must ALSO pass a real safety-rated
+    `processor_type` (e.g. "1756-L81ES") -- this function does not
+    silently upgrade a plain processor_type on the caller's behalf, real
+    processor catalog choice stays explicit."""
     rungs = extra_rungs_xml if extra_rungs_xml.strip() else (
         '<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>'
     )
     is_5069 = processor_type.startswith("5069")
-    # safety_partner=True (2026-08-27, real SIL3/PLe requirement -- see
-    # safety_partner_module_xml's own docstring): the primary CPU's own
-    # local backplane Port needs Width="2" (it now spans its own slot AND
-    # the partner's, confirmed real) plus a real SafetyNetwork identifier
-    # on BOTH its ICP and Ethernet ports -- without this the Safety
-    # Partner module in extra_modules_xml is rejected as an invalid
-    # standalone import, it isn't a self-sufficient module on its own.
-    # SafetyNetwork values are per-installation-unique in a real project;
-    # these are placeholder-format (not James's real numbers) but keep
-    # the same real 16#0000_xxxx_xxxx_xxxx bit-length/format.
     if is_5069:
         local_ports_xml = (
             f'<Port Id="1" Address="0" Type="5069" Upstream="false">\n'
@@ -180,7 +184,16 @@ def build_l5x(
             f'<Port Id="4" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
         )
         local_product_code = _PRODUCT_CODES.get(processor_type, "223")
-    elif safety_partner:
+    elif safety_level == "SIL3":
+        # Redundant pairing: the primary's own local backplane Port needs
+        # Width="2" (spans its own slot AND the partner's, confirmed real)
+        # plus a real SafetyNetwork identifier on BOTH its ICP and
+        # Ethernet ports -- without this a Safety Partner module in
+        # extra_modules_xml is rejected as an invalid standalone import.
+        # SafetyNetwork values are per-installation-unique in a real
+        # project; these are placeholder-format (not James's real
+        # numbers) but keep the same real 16#0000_xxxx_xxxx_xxxx
+        # bit-length/format.
         local_ports_xml = (
             f'<Port Id="1" Address="0" Type="ICP" Upstream="false" Width="2" '
             f'SafetyNetwork="16#0000_1001_0001_0001">\n'
@@ -190,6 +203,10 @@ def build_l5x(
         )
         local_product_code = _PRODUCT_CODES.get(processor_type, _PRODUCT_CODE)
     else:
+        # SIL2 (single non-redundant safety-capable primary) uses the
+        # SAME local Ports shape as a standard controller -- no adjacent
+        # slot to reserve, since there's no partner. Only SafetyInfo
+        # below differs for SIL2.
         local_ports_xml = (
             f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n'
             f'<Bus Size="{_ICP_BUS_SIZE}"/>\n'
@@ -197,11 +214,18 @@ def build_l5x(
             f'<Port Id="2" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
         )
         local_product_code = _PRODUCT_CODES.get(processor_type, _PRODUCT_CODE)
-    safety_info_xml = (
-        '<SafetyInfo SafetyLocked="true" SignatureRunModeProtect="false" '
-        'ConfigureSafetyIOAlways="true" SafetyLevel="SIL3/PLe"/>'
-        if safety_partner else '<SafetyInfo/>'
-    )
+    if safety_level == "SIL3":
+        safety_info_xml = (
+            '<SafetyInfo SafetyLocked="true" SignatureRunModeProtect="false" '
+            'ConfigureSafetyIOAlways="true" SafetyLevel="SIL3/PLe"/>'
+        )
+    elif safety_level == "SIL2":
+        safety_info_xml = (
+            '<SafetyInfo SafetyLocked="true" SignatureRunModeProtect="false" '
+            'ConfigureSafetyIOAlways="true" SafetyLevel="SIL2/PLd"/>'
+        )
+    else:
+        safety_info_xml = '<SafetyInfo/>'
     # Format matches the real reference export exactly (Python's ctime-style
     # strftime): "Thu Aug 20 11:19:00 2026".
     now = datetime.now().strftime("%a %b %d %H:%M:%S %Y")
