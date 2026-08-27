@@ -78,6 +78,13 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         if r.jsr_target_names
     }
 
+    # Rung counts per routine (James, 2026-08-27: "routines need to have
+    # indication how many rungs"). Same side-channel-dict shape as jsr_calls
+    # above, keyed by the identical routine.path every routine_logic leaf
+    # node's own path already carries, purely for display -- no sizing
+    # change.
+    rung_counts = {r.path: r.rung_count for r in parse_rll_routines(doc.root)}
+
     report_json = {
         "loaded": True,
         "file_name": doc.path.name,
@@ -94,6 +101,7 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         ),
         "type_summary": type_utilization(entries),
         "jsr_calls": jsr_calls,
+        "rung_counts": rung_counts,
         "entries": [
             {
                 "path": e.path,
@@ -226,4 +234,12 @@ def run(l5x_path: str | Path | None, host: str = "127.0.0.1", port: int = 8765, 
 
         threading.Timer(0.75, lambda: webbrowser.open(f"http://{host}:{port}")).start()
 
-    app.run(host=host, port=port, debug=False)
+    # threaded=True: the "2 levels deep" treemap toggle (James, 2026-08-27)
+    # fires one /api/node fetch per visible drillable tile CONCURRENTLY
+    # from the browser -- against Flask's default single-threaded dev
+    # server those just queue up serially, which is fine for a handful of
+    # tiles but turns "Controller Tags" on a real program (hundreds of
+    # tags) into a multi-second stall for no reason, since each request is
+    # independent read-only work against the same already-parsed in-memory
+    # DocState.
+    app.run(host=host, port=port, debug=False, threaded=True)

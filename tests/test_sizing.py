@@ -111,7 +111,7 @@ def test_udt_array_of_udt():
     data_types = {"Inner": inner}
     bytes_, confidence = size("Inner", (10,), data_types=data_types)
     assert bytes_ == 40
-    assert confidence == "UNKNOWN"  # OQ-ARRAYPACK is UNKNOWN and outranks the element's tier
+    assert confidence == "KNOWN"  # OQ-ARRAYPACK resolved 2026-08-24, array.udt_confidence is KNOWN
 
 
 def test_custom_string_type_uses_len_plus_data_not_generic_udt_path():

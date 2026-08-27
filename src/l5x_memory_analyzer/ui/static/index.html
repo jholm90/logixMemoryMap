@@ -26,6 +26,12 @@
     <button class="tab-btn active" data-tab="treemap">Treemap</button>
     <button class="tab-btn" data-tab="list">List</button>
     <button class="tab-btn" data-tab="types">Type Summary</button>
+    <span class="tabs-spacer"></span>
+    <label class="tab-toggle" title="Nest each tile's own children inside it">
+      <input type="checkbox" id="depth2-toggle">
+      2 levels deep
+    </label>
+    <button id="split-toggle" class="tab-btn split-toggle-btn" title="Show List / Type Summary alongside the treemap">⊞ Details</button>
   </nav>
 
   <div id="breadcrumb"></div>
@@ -40,8 +46,35 @@
 
   <main>
     <section id="panel-treemap" class="panel active">
-      <svg id="treemap-svg"></svg>
-      <div id="tooltip" class="hidden"></div>
+      <div id="treemap-main">
+        <svg id="treemap-svg"></svg>
+        <div id="tooltip" class="hidden"></div>
+      </div>
+      <div id="details-dock">
+        <div id="dock-tabs">
+          <button class="dock-tab-btn active" data-dock="list">List</button>
+          <button class="dock-tab-btn" data-dock="types">Type Summary</button>
+        </div>
+        <div class="dock-body">
+          <div class="dock-panel active" data-dock-panel="list">
+            <table id="list-table-dock">
+              <thead>
+                <tr>
+                  <th data-sort="name">Name</th>
+                  <th data-sort="data_type">Type</th>
+                  <th data-sort="bytes">Bytes</th>
+                  <th data-sort="pct_of_total">%</th>
+                  <th data-sort="basis">Confidence</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="dock-panel" data-dock-panel="types">
+            <div id="type-summary-dock"></div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section id="panel-list" class="panel">

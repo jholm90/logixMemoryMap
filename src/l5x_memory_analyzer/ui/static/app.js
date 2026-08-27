@@ -12,9 +12,15 @@ let REPORT = null;
 let CURRENT_NODE = null; // node currently shown as the treemap root
 let NODE_STACK = [];     // ancestors of CURRENT_NODE, for the breadcrumb
 let SORT_STATE = { key: "bytes", dir: -1 };
+let SPLIT_OPEN = false;  // James 2026-08-27: List/Type Summary docked
+                         // alongside the treemap, always-available toggle
+let DEPTH2_ENABLED = false; // James 2026-08-27: render grandchildren nested
+                             // inside their parent's tile
 
 async function main() {
   setupTabs();
+  setupSplitDock();
+  setupDepth2Toggle();
   setupTreemapResize();
   setupFileOpen();
   await loadReport();
@@ -103,8 +109,8 @@ function renderAll() {
 
 // Re-renders everything that depends on CURRENT_NODE -- called after any
 // navigation (drill in, breadcrumb click, sibling jump) so the List and
-// Type Summary tabs stay in sync with wherever the treemap is, even if
-// they're not the active tab right now.
+// Type Summary tabs (and their docked twins, see setupSplitDock) stay in
+// sync with wherever the treemap is, even when they're not the active tab.
 function renderCurrentLevel() {
   renderBreadcrumb();
   renderTreemap();
@@ -155,17 +161,75 @@ function isGroup(node) {
   return node.data_type == null;
 }
 
+// Real rung count for a routine_logic leaf, keyed by the exact same
+// routine.path every such leaf's own node.path already carries (James,
+// 2026-08-27: "routines need to have indication how many rungs").
+function rungCountFor(node) {
+  return REPORT && REPORT.rung_counts ? REPORT.rung_counts[node.path] : null;
+}
+
+// A "Program: X" group's routine count, read off its own nested "Routines"
+// subgroup (hierarchy.py always builds this subgroup when a program has
+// any routine_logic entries) -- no backend change needed, the count is
+// just that subgroup's own child count.
+function routineCountFor(groupNode) {
+  if (!isGroup(groupNode) || !groupNode.children) return null;
+  const routines = groupNode.children.find(c => c.name === "Routines");
+  return routines && routines.children ? routines.children.length : null;
+}
+
 // ---- tabs ----
 
 function setupTabs() {
-  document.querySelectorAll(".tab-btn").forEach(btn => {
+  document.querySelectorAll(".tab-btn[data-tab]").forEach(btn => {
     btn.addEventListener("click", () => {
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-btn[data-tab]").forEach(b => b.classList.remove("active"));
       document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
       btn.classList.add("active");
       document.getElementById(`panel-${btn.dataset.tab}`).classList.add("active");
       if (btn.dataset.tab === "treemap") renderTreemap();
     });
+  });
+}
+
+// James 2026-08-27: "Type/list should be always visible but hidden. if
+// clicked the treeview should resize to fit half size and share with the
+// type/list." A single always-visible toggle button splits the Treemap
+// panel in half, docking a mini List/Type-Summary pane (its own small
+// tab pair) alongside the SVG. The full-page List/Type Summary tabs are
+// untouched -- this is an additional way to see the same data, not a
+// replacement.
+function setupSplitDock() {
+  const btn = document.getElementById("split-toggle");
+  const treemapPanel = document.getElementById("panel-treemap");
+  btn.addEventListener("click", () => {
+    SPLIT_OPEN = !SPLIT_OPEN;
+    treemapPanel.classList.toggle("split-mode", SPLIT_OPEN);
+    btn.classList.toggle("active", SPLIT_OPEN);
+    // Let the layout settle before measuring the SVG's new (halved) width.
+    requestAnimationFrame(renderTreemap);
+  });
+
+  document.querySelectorAll(".dock-tab-btn").forEach(dbtn => {
+    dbtn.addEventListener("click", () => {
+      document.querySelectorAll(".dock-tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".dock-panel").forEach(p => p.classList.remove("active"));
+      dbtn.classList.add("active");
+      document.querySelector(`.dock-panel[data-dock-panel="${dbtn.dataset.dock}"]`).classList.add("active");
+    });
+  });
+}
+
+// James 2026-08-27: "the treeview shows a nice map on stuff that level, i
+// think we need the option/checkbox to see two levels deep with there
+// being some obvious difference between parent/children." See
+// renderTreemap's nested-squarify block for the paint side; nested tiles
+// get a dashed stroke + reduced opacity + smaller label so they're never
+// mistaken for a same-level sibling.
+function setupDepth2Toggle() {
+  document.getElementById("depth2-toggle").addEventListener("change", ev => {
+    DEPTH2_ENABLED = ev.target.checked;
+    renderTreemap();
   });
 }
 
@@ -399,26 +463,60 @@ const HATCH_PATTERN_SVG =
   '<line x1="0" y1="0" x2="0" y2="6" stroke="#000" stroke-opacity="0.4" stroke-width="3"/>' +
   '</pattern>';
 
-function renderTreemap() {
+// Second line of a tile's label -- rung count for a routine, routine count
+// for a Program group, [DataType] for an ordinary tag/member leaf (James,
+// 2026-08-27: "all tags need [DataType] as a 2nd line", "routines need to
+// have indication how many rungs", "programs need indication how many
+// routines"). Returns [] when there's nothing extra to say.
+function subLabelFor(node) {
+  if (isGroup(node)) {
+    if (node.name.startsWith("Program: ")) {
+      const n = routineCountFor(node);
+      if (n != null) return [`${n} routine${n === 1 ? "" : "s"}`];
+    }
+    return [];
+  }
+  if (node.data_type === "RLL") {
+    const rc = rungCountFor(node);
+    if (rc != null) return [`${rc} rung${rc === 1 ? "" : "s"}`];
+    return [];
+  }
+  return [`[${node.data_type}]`];
+}
+
+async function renderTreemap() {
   const svg = document.getElementById("treemap-svg");
   if (!svg.clientWidth) return; // hidden tab, nothing to measure yet
+  const children = CURRENT_NODE.children || [];
+
+  // Depth-2 mode needs every visible node's own children loaded before we
+  // can lay any of it out -- fetch them all up front (they're cheap local
+  // Flask JSON round-trips) rather than trying to paint incrementally.
+  if (DEPTH2_ENABLED) {
+    await Promise.all(children.filter(isDrillable).map(ensureChildren));
+  }
+
+  paintTreemap(svg, children);
+}
+
+function paintTreemap(svg, children) {
   svg.innerHTML = "";
   const w = svg.clientWidth, h = svg.clientHeight;
   svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
 
-  const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+  const svgNS = "http://www.w3.org/2000/svg";
+  const defs = document.createElementNS(svgNS, "defs");
   defs.innerHTML = HATCH_PATTERN_SVG;
   svg.appendChild(defs);
 
-  const children = CURRENT_NODE.children || [];
   const rects = [];
   squarify(children, 0, 0, w, h, rects);
 
   for (const r of rects) {
     const node = r.node;
-    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    const g = document.createElementNS(svgNS, "g");
 
-    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    const rect = document.createElementNS(svgNS, "rect");
     rect.setAttribute("x", r.x);
     rect.setAttribute("y", r.y);
     rect.setAttribute("width", Math.max(r.w, 0));
@@ -431,7 +529,7 @@ function renderTreemap() {
     g.appendChild(rect);
 
     if (!isGroup(node) && node.basis && node.basis !== "KNOWN") {
-      const hatch = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      const hatch = document.createElementNS(svgNS, "rect");
       hatch.setAttribute("x", r.x);
       hatch.setAttribute("y", r.y);
       hatch.setAttribute("width", Math.max(r.w, 0));
@@ -448,7 +546,7 @@ function renderTreemap() {
     // nodes mix tiers, so they're left unmarked, same convention the
     // basis hatch above already uses).
     if (!isGroup(node) && node.tier === "estimated") {
-      const outline = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      const outline = document.createElementNS(svgNS, "rect");
       outline.setAttribute("x", r.x + 1);
       outline.setAttribute("y", r.y + 1);
       outline.setAttribute("width", Math.max(r.w - 2, 0));
@@ -461,13 +559,62 @@ function renderTreemap() {
       g.appendChild(outline);
     }
 
+    let labelLinesUsed = 0;
     if (r.w > 40 && r.h > 14) {
-      const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      const label = document.createElementNS(svgNS, "text");
       label.setAttribute("x", r.x + 4);
       label.setAttribute("y", r.y + 14);
       label.classList.add("tm-label");
       label.textContent = truncateLabel(node.name, r.w);
       g.appendChild(label);
+      labelLinesUsed = 1;
+
+      const subLines = subLabelFor(node);
+      if (subLines.length && r.h > 28) {
+        const label2 = document.createElementNS(svgNS, "text");
+        label2.setAttribute("x", r.x + 4);
+        label2.setAttribute("y", r.y + 27);
+        label2.classList.add("tm-label", "tm-label-sub");
+        label2.textContent = truncateLabel(subLines[0], r.w);
+        g.appendChild(label2);
+        labelLinesUsed = 2;
+      }
+    }
+
+    // Depth-2 nesting (James, 2026-08-27): paint this tile's own children
+    // inset inside it, visually distinct (dashed stroke, reduced opacity,
+    // smaller label) so a grandchild is never mistaken for a same-level
+    // sibling. Reserves the header strip the label above already used.
+    if (DEPTH2_ENABLED && isDrillable(node) && node.children && node.children.length) {
+      const inset = 3;
+      const headerH = labelLinesUsed === 2 ? 28 : labelLinesUsed === 1 ? 14 : 0;
+      const nx = r.x + inset, ny = r.y + inset + headerH;
+      const nw = Math.max(r.w - 2 * inset, 0), nh = Math.max(r.h - 2 * inset - headerH, 0);
+      const innerRects = [];
+      squarify(node.children, nx, ny, nw, nh, innerRects);
+      for (const ir of innerRects) {
+        const cnode = ir.node;
+        const crect = document.createElementNS(svgNS, "rect");
+        crect.setAttribute("x", ir.x);
+        crect.setAttribute("y", ir.y);
+        crect.setAttribute("width", Math.max(ir.w, 0));
+        crect.setAttribute("height", Math.max(ir.h, 0));
+        crect.classList.add("tm-rect", "tm-rect-nested");
+        crect.style.fill = isGroup(cnode) ? "var(--group-fill)" : colorForType(cnode.data_type);
+        crect.addEventListener("click", () => drillInto(cnode));
+        crect.addEventListener("mousemove", ev => showTooltip(ev, cnode));
+        crect.addEventListener("mouseleave", hideTooltip);
+        g.appendChild(crect);
+
+        if (ir.w > 26 && ir.h > 12) {
+          const clabel = document.createElementNS(svgNS, "text");
+          clabel.setAttribute("x", ir.x + 3);
+          clabel.setAttribute("y", ir.y + 10);
+          clabel.classList.add("tm-label", "tm-label-nested");
+          clabel.textContent = truncateLabel(cnode.name, ir.w);
+          g.appendChild(clabel);
+        }
+      }
     }
 
     svg.appendChild(g);
@@ -509,24 +656,46 @@ function jsrCallsNote(node) {
     `(cost already included above)</span>`;
 }
 
+// % of the CURRENT treemap root's total this node represents -- a half-
+// full bar means this element is half of its parent's usage (James,
+// 2026-08-27). Uses CURRENT_NODE (the treemap's current drill root), not
+// the node's structural parent, since that's what the visible tiles are
+// actually being sized relative to.
+function tooltipParentBar(node) {
+  const parentTotal = nodeValue(CURRENT_NODE);
+  const val = isGroup(node) ? nodeValue(node) : node.value;
+  const pct = parentTotal ? (val / parentTotal) * 100 : 0;
+  const parentName = CURRENT_NODE.name === "root" ? "All" : CURRENT_NODE.name;
+  return (
+    `<div class="tooltip-bar-wrap"><div class="tooltip-bar" style="width:${Math.min(pct, 100).toFixed(1)}%"></div></div>` +
+    `<div class="tooltip-bar-label">${pct.toFixed(1)}% of ${parentName}</div>`
+  );
+}
+
 function showTooltip(ev, node) {
   const tooltip = document.getElementById("tooltip");
   tooltip.classList.remove("hidden");
-  const wrap = document.getElementById("panel-treemap").getBoundingClientRect();
+  const wrap = document.getElementById("treemap-main").getBoundingClientRect();
   tooltip.style.left = (ev.clientX - wrap.left + 12) + "px";
   tooltip.style.top = (ev.clientY - wrap.top + 12) + "px";
 
   if (isGroup(node)) {
+    const routines = routineCountFor(node);
     tooltip.innerHTML = `<strong>${node.name}</strong><br>${fmtBytes(nodeValue(node))}` +
+      (routines != null ? `<br>${routines} routine${routines === 1 ? "" : "s"}` : "") +
+      tooltipParentBar(node) +
       (isDrillable(node) ? " (click to drill in)" : "");
   } else {
+    const rc = node.data_type === "RLL" ? rungCountFor(node) : null;
     tooltip.innerHTML =
       `<strong>${node.name}</strong><br>` +
       `${node.data_type}<br>` +
+      (rc != null ? `${rc} rung${rc === 1 ? "" : "s"}<br>` : "") +
       `${fmtBytes(node.value)}<br>` +
       (node.tier === "estimated" ? `<span class="tier-chip">ESTIMATED</span>` : "") +
       `<span class="basis-chip basis-${node.basis}">${node.basis}</span>` +
       jsrCallsNote(node) +
+      tooltipParentBar(node) +
       (isDrillable(node) ? " (click to drill in)" : "");
   }
 }
@@ -539,7 +708,10 @@ function hideTooltip() {
 // Scoped to CURRENT_NODE's direct children (James, 2026-08-20: "if im down
 // branches then those should represent the current level") -- not the
 // whole file. Re-rendered on every navigation via renderCurrentLevel so it
-// stays in sync even when this tab isn't the active one.
+// stays in sync even when this tab isn't the active one. Rendered into
+// BOTH the full-page list table and its docked twin (see setupSplitDock)
+// every time -- cheap, and keeps them from ever going stale relative to
+// each other.
 
 function currentLevelRows() {
   const kids = CURRENT_NODE.children || [];
@@ -547,6 +719,7 @@ function currentLevelRows() {
   return kids.map(c => {
     const bytes = nodeValue(c);
     return {
+      node: c,
       name: c.name,
       data_type: c.data_type || "(group)",
       bytes,
@@ -554,12 +727,25 @@ function currentLevelRows() {
       basis: c.basis || "",
       tier: c.tier || "",
       jsr_targets: (REPORT && REPORT.jsr_calls && REPORT.jsr_calls[c.path]) || null,
+      rung_count: c.data_type === "RLL" ? rungCountFor(c) : null,
+      routine_count: routineCountFor(c),
     };
   });
 }
 
+const LIST_TABLE_IDS = ["list-table", "list-table-dock"];
+
 function renderList() {
-  const tbody = document.querySelector("#list-table tbody");
+  for (const id of LIST_TABLE_IDS) renderListInto(id);
+}
+
+// James 2026-08-27: rows are now click-to-drill (same target a treemap
+// tile click would drill into), matching "List should be browsable to see
+// inside each element name or type."
+function renderListInto(tableId) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+  const tbody = table.querySelector("tbody");
   const rows = currentLevelRows().sort((a, b) => {
     const { key, dir } = SORT_STATE;
     if (typeof a[key] === "string") return a[key].localeCompare(b[key]) * dir;
@@ -569,9 +755,19 @@ function renderList() {
   tbody.innerHTML = "";
   for (const e of rows) {
     const tr = document.createElement("tr");
-    const jsrNote = e.jsr_targets ? `<br><span class="text-dim">Calls via JSR: ${e.jsr_targets.join(", ")}</span>` : "";
+    const drillable = isDrillable(e.node);
+    tr.classList.toggle("row-drillable", drillable);
+    if (drillable) tr.addEventListener("click", () => drillInto(e.node));
+
+    const subNote = e.jsr_targets
+      ? `<br><span class="text-dim">Calls via JSR: ${e.jsr_targets.join(", ")}</span>`
+      : e.rung_count != null
+      ? `<br><span class="text-dim">${e.rung_count} rung${e.rung_count === 1 ? "" : "s"}</span>`
+      : e.routine_count != null
+      ? `<br><span class="text-dim">${e.routine_count} routine${e.routine_count === 1 ? "" : "s"}</span>`
+      : "";
     tr.innerHTML =
-      `<td>${e.name}${jsrNote}</td>` +
+      `<td>${e.name}${subNote}</td>` +
       `<td>${e.data_type}</td>` +
       `<td class="num">${Math.round(e.bytes).toLocaleString()}</td>` +
       `<td class="num">${e.pct_of_total.toFixed(2)}%</td>` +
@@ -580,7 +776,7 @@ function renderList() {
     tbody.appendChild(tr);
   }
 
-  document.querySelectorAll("#list-table th").forEach(th => {
+  table.querySelectorAll("th").forEach(th => {
     th.onclick = () => {
       const key = th.dataset.sort;
       SORT_STATE.dir = SORT_STATE.key === key ? -SORT_STATE.dir : -1;
@@ -591,10 +787,18 @@ function renderList() {
 }
 
 // ---- type summary ----
-// Also scoped to CURRENT_NODE's direct children, same reasoning as the list.
+// Also scoped to CURRENT_NODE's direct children, same reasoning as the
+// list. Rendered into both the full-page pane and its docked twin.
+
+const TYPE_SUMMARY_IDS = ["type-summary", "type-summary-dock"];
 
 function renderTypeSummary() {
-  const el = document.getElementById("type-summary");
+  for (const id of TYPE_SUMMARY_IDS) renderTypeSummaryInto(id);
+}
+
+function renderTypeSummaryInto(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
   el.innerHTML = "";
 
   const kids = CURRENT_NODE.children || [];
@@ -612,9 +816,13 @@ function renderTypeSummary() {
   for (const t of rows) {
     const row = document.createElement("div");
     row.className = "type-row";
+    // type-name is a bounded, ellipsis-truncated flex item now (James,
+    // 2026-08-27: "Type summary needs to be more dynamic for
+    // REALLY_VERY_LONG_TAGS_AND_UDT_NAMES") -- the full name is always
+    // available via the title attribute on hover.
     row.innerHTML =
       `<div class="type-swatch" style="background:${colorForType(t.data_type)}"></div>` +
-      `<div class="type-name">${t.data_type}</div>` +
+      `<div class="type-name" title="${t.data_type}">${t.data_type}</div>` +
       `<div class="type-bar-wrap"><div class="type-bar" style="width:${(t.pct_of_total / maxPct) * 100}%"></div></div>` +
       `<div class="type-bytes">${fmtBytes(t.bytes)} (${t.pct_of_total.toFixed(2)}%)</div>`;
     el.appendChild(row);

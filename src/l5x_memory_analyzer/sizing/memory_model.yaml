@@ -296,10 +296,17 @@ udt:
 array:
   # dimension x element_size, no padding ambiguity for atomic element types.
   atomic_confidence: KNOWN
-  # dimension x udt_size -- padding treatment (per-element vs whole-block)
-  # not yet resolved. See OQ-ARRAYPACK (test built 2026-08-22, awaiting
-  # capture) -- still genuinely open, do not flip this without real data.
-  udt_confidence: UNKNOWN
+  # dimension x udt_size, each element rounded up to a 4-byte boundary.
+  # RESOLVED 2026-08-24 (OQ-ARRAYPACK/OQ-UDTARRAYALIGN, see
+  # RESOLVED_QUESTIONS.md) -- arraypack_odd3b_n(1/10/100/1000/5000) and
+  # udtarrayalign_tight8b_n(1/10/100) both confirmed exact once the 4-byte
+  # rounding is applied. Was UNKNOWN; the rounding formula itself was
+  # wired into sizing/udt.py's compute_array_size that same day, but this
+  # constant was never flipped to match -- caught 2026-08-27 live-checking
+  # James's own real corpus (a 200-element array of a UDT with a nested
+  # UDT member, controller/Grading_LC, showed UNKNOWN in the UI despite
+  # the formula being fully resolved).
+  udt_confidence: KNOWN
 
 # Array-of-AOI-instances: a real, DIFFERENT formula from plain array-of-UDT
 # above -- confirmed 2026-08-26 across 4 total member counts (10/20/30/60),

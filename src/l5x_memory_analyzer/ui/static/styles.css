@@ -131,6 +131,70 @@ body {
 }
 .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
 
+.tabs-spacer { flex: 1; }
+
+/* James 2026-08-27: "Type/list should be always visible but hidden" --
+   this checkbox and the split-toggle button below sit in the tab bar
+   permanently, unlike the 3 mutually-exclusive tab-btns to their left. */
+.tab-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  padding: 0 0.6rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.split-toggle-btn {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin: 0.2rem 0.25rem;
+  padding: 0.3rem 0.6rem;
+}
+.split-toggle-btn.active { color: var(--accent); border-color: var(--accent); }
+
+/* Docked List/Type-Summary pane, toggled via .split-toggle-btn -- hidden
+   (width 0) until #panel-treemap gets .split-mode, at which point it and
+   #treemap-main share the panel 50/50. Its own body scrolls independently
+   ("type/list need to be scrollable if theres lots of elements"). */
+#details-dock {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel-bg);
+  overflow: hidden;
+}
+#panel-treemap.split-mode #treemap-main { flex: 1 1 50%; }
+#panel-treemap.split-mode #details-dock { display: flex; flex: 1 1 50%; }
+
+#dock-tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.35rem 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.dock-tab-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  font-size: 0.78rem;
+  border-bottom: 2px solid transparent;
+}
+.dock-tab-btn.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+
+.dock-body { flex: 1; min-height: 0; overflow: auto; padding: 0.5rem; }
+.dock-panel { display: none; }
+.dock-panel.active { display: block; }
+#list-table-dock { font-size: 0.78rem; }
+
 #breadcrumb {
   padding: 0.4rem 1rem;
   font-size: 0.8rem;
@@ -176,7 +240,19 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
 .panel { display: none; height: 100%; }
 .panel.active { display: block; }
 
-#panel-treemap { position: relative; height: 100%; }
+/* James 2026-08-27: the treemap panel now splits in half on demand (the
+   "⊞ Details" toggle) to dock a mini List/Type-Summary pane alongside the
+   SVG -- #treemap-main holds the SVG+tooltip exactly as before, #details-
+   dock is the new always-present-but-collapsed sibling. */
+/* .panel.active normally means display:block (see the generic rule
+   above) -- #panel-treemap needs flex instead so #treemap-main and
+   #details-dock can sit side by side. Scoped to the ID+.active combo
+   (not the bare #panel-treemap ID) so it doesn't out-specificity the
+   plain ".panel { display: none }" hidden-tab rule when this tab isn't
+   the active one. */
+#panel-treemap.active { display: flex; gap: 0.6rem; }
+#panel-treemap { height: 100%; }
+#treemap-main { position: relative; flex: 1 1 100%; min-width: 0; height: 100%; }
 #treemap-svg { width: 100%; height: 100%; display: block; background: var(--panel-bg); border: 1px solid var(--border); border-radius: 6px; }
 
 .tm-rect { stroke: var(--panel-bg); stroke-width: 1.5; cursor: pointer; }
@@ -189,6 +265,16 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
   stroke-linejoin: round;
   pointer-events: none;
 }
+.tm-label-sub { font-size: 9.5px; opacity: 0.85; }
+
+/* Depth-2 nested tiles (James, 2026-08-27: "some obvious difference
+   between parent/children") -- dashed stroke + reduced opacity + smaller
+   label, on top of (never instead of) the ordinary .tm-rect/.tm-label
+   styling above, so a grandchild tile is never mistaken for a same-level
+   sibling. Declared after .tm-rect/.tm-label so it wins at equal
+   specificity. */
+.tm-rect-nested { stroke-dasharray: 2,2; opacity: 0.78; }
+.tm-label-nested { font-size: 8.5px; opacity: 0.9; }
 
 #tooltip {
   position: absolute;
@@ -204,11 +290,29 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
 }
 #tooltip.hidden { display: none; }
 
-#list-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: var(--panel-bg); }
-#list-table th, #list-table td { text-align: left; padding: 0.35rem 0.6rem; border-bottom: 1px solid var(--border); }
-#list-table th { cursor: pointer; color: var(--text-dim); position: sticky; top: 0; background: var(--panel-bg); }
-#list-table th:hover { color: var(--accent); }
-#list-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+/* % of the current treemap root this tile represents -- a half-full bar
+   means this element is half its parent's usage (James, 2026-08-27).
+   Fixed dark colors, same reasoning as .text-dim-on-dark: #tooltip has a
+   permanently dark background regardless of page theme. */
+.tooltip-bar-wrap { background: #333a45; border-radius: 3px; height: 7px; overflow: hidden; margin-top: 0.35rem; }
+.tooltip-bar { height: 100%; background: var(--accent); }
+.tooltip-bar-label { font-size: 0.7rem; color: #9aa3b0; margin-top: 0.15rem; }
+
+#list-table, #list-table-dock { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: var(--panel-bg); }
+#list-table th, #list-table td, #list-table-dock th, #list-table-dock td { text-align: left; padding: 0.35rem 0.6rem; border-bottom: 1px solid var(--border); }
+#list-table th, #list-table-dock th { cursor: pointer; color: var(--text-dim); position: sticky; top: 0; background: var(--panel-bg); }
+#list-table th:hover, #list-table-dock th:hover { color: var(--accent); }
+/* James 2026-08-27: header ("BYTES"/"%") is left-aligned via the general
+   rule above -- data cells used to override to right-align, which is what
+   he flagged; left-aligned now, tabular-nums kept so digits still line up
+   in a column even without right alignment. */
+#list-table td.num, #list-table-dock td.num { font-variant-numeric: tabular-nums; }
+
+/* James 2026-08-27: "List should be browsable to see inside each element
+   name or type" -- a row for a drillable node behaves like a treemap
+   tile click. */
+#list-table tbody tr.row-drillable, #list-table-dock tbody tr.row-drillable { cursor: pointer; }
+#list-table tbody tr.row-drillable:hover, #list-table-dock tbody tr.row-drillable:hover { background: var(--border); }
 
 .basis-chip {
   display: inline-block;
@@ -243,13 +347,25 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
   margin-right: 0.35rem;
 }
 
-#type-summary { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem; }
+#type-summary, #type-summary-dock { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem; }
 .type-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.3rem 0; font-size: 0.85rem; }
 .type-row .type-swatch { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
-.type-row .type-name { width: 140px; flex-shrink: 0; }
-.type-row .type-bar-wrap { flex: 1; background: var(--border); border-radius: 3px; height: 14px; overflow: hidden; }
+/* James 2026-08-27: "Type summary needs to be more dynamic for
+   REALLY_VERY_LONG_TAGS_AND_UDT_NAMES" -- was a fixed 140px width (long
+   names just overflowed/wrapped the row). Now a bounded, ellipsis-
+   truncated flex item; the full name is always available via the title
+   attribute (native browser tooltip) on hover. */
+.type-row .type-name {
+  flex: 0 1 220px;
+  min-width: 60px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.type-row .type-bar-wrap { flex: 1 1 auto; min-width: 40px; background: var(--border); border-radius: 3px; height: 14px; overflow: hidden; }
 .type-row .type-bar { height: 100%; background: var(--accent); }
-.type-row .type-bytes { width: 130px; text-align: right; color: var(--text-dim); flex-shrink: 0; }
+.type-row .type-bytes { flex: 0 0 auto; min-width: 120px; text-align: right; color: var(--text-dim); }
 
 #errors-footer {
   padding: 0.5rem 1rem;
