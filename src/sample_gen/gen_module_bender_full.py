@@ -5391,10 +5391,19 @@ def main() -> None:
         extra_modules_xml=modules_xml, processor_type="1756-L81ES",
         safety_level="SIL3",
     )
-    out_path = OUT_ROOT / "modulerack_bender_full_program.L5X"
+    # Real l5x2acd conversion failure, James's 2026-08-27 push
+    # (samples/convert_log.csv) -- this file contains the same PowerFlex
+    # 527-STO / FANUC robot / safety-drive module shapes that also fail
+    # standalone in gen_module_sweep.py/gen_module_sweep_variants.py
+    # (undiagnosed there too, see those files' own _UNDIAGNOSED_RETEST_
+    # comments), so no new/separate root cause was found here specifically
+    # -- regenerated unchanged, suffixed per James's own instruction so
+    # his re-test run doesn't collide with the still-present old failing
+    # file.
+    out_path = OUT_ROOT / "modulerack_bender_full_program_r2.L5X"
     write_sample_unmodeled(l5x, out_path)
     append_manifest_row(
-        "modulerack_bender_full_program",
+        "modulerack_bender_full_program_r2",
         "Full real-program replica: all 69 non-CPU modules in James's real "
         "DnR_Personal/Bender134053_201104.L5X now represented (5 Point I/O adapters with "
         "all 44 real children, 5 ArmorBlock I/O, 2 PowerFlex 527-STO safety drives, 2 "

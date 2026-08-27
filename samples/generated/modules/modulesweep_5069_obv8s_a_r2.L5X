@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="ModSweep_5069OBV8SA" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Aug 27 23:06:39 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="ModSweep_5069OBV8SA" ProcessorType="5069-L306ERMS2" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Aug 27 23:06:39 2026" LastModifiedDate="Thu Aug 27 23:06:39 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo SafetyLocked="true" SignatureRunModeProtect="false" ConfigureSafetyIOAlways="true" SafetyLevel="SIL2/PLd"/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="5069-L306ERMS2" Vendor="1" ProductType="14" ProductCode="226" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="5069" Upstream="false">
+<Bus Size="32"/>
+</Port>
+<Port Id="3" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+<Port Id="4" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module CatalogNumber="5069-OBV8S/A" Vendor="1" ProductType="35" ProductCode="24" Major="3" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_49d6_03bc_cbd4" SafetyEnabled="true">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="4" Type="5069" Upstream="true" />
+</Ports>
+<Communications>
+<SafetyScript Size="105">
+<Data Format="L5K">
+[101,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,85,0,0,0,0,0,0,0,0,3,0,0,0,71,0,0,0,0,0,0,64,0,0,0,-88,0,0,0,68,-126,123,-28,-16,14,-65,2,122,75,0,0,-24
+		,3,2,0,-24,3,2,0,-24,3,2,0,-24,3,2,0,-24,3,1,2,-24,3,1,2,-24,3,1,2,-24,3,1,2,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0]
+</Data>
+</SafetyScript>
+<Connections>
+<Connection Name="SafetyInput" RPI="10000" Type="SafetyInputDataDriven" InputSize="36" EventID="0" ProgrammaticallySendEventTrigger="false" TimeoutMultiplier="2" NetworkDelayMultiplier="200" ReactionTimeLimit="40.064" MaxObservedNetworkDelay="1.792" Priority="High" InputConnectionType="Multicast" InputProductionTrigger="Application" ConnectionPath="20 04 24 a8 20 04 24 c7 20 04 25 00 25 04" InputTagSuffix="I">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:5000_SDO8:I:1">
+<DataValueMember Name="RunMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="ConnectionFaulted" DataType="BOOL" Value="1" />
+<DataValueMember Name="DiagnosticActive" DataType="BOOL" Value="0" />
+<DataValueMember Name="DiagnosticSequenceCount" DataType="SINT" Radix="Decimal" Value="0" />
+<StructureMember Name="Pt00" DataType="AB:5000_SafetyReadback_Channel:I:1">
+<DataValueMember Name="Readback" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="1" />
+<DataValueMember Name="Uncertain" DataType="BOOL" Value="0" />
+<DataValueMember Name="NoLoad" DataType="BOOL" Value="0" />
+<DataValueMember Name="ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="FieldPowerOff" DataType="BOOL" Value="0" />
+<DataValueMember Name="Status" DataType="BOOL" Value="0" />
+</StructureMember>
+<StructureMember Name="Pt01" DataType="AB:5000_SafetyReadback_Channel:I:1">
+<DataValueMember Name="Readback" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="1" />
+<DataValueMember Name="Uncertain" DataType="BOOL" Value="0" />
+<DataValueMember Name="NoLoad" DataType="BOOL" Value="0" />
+<DataValueMember Name="ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="FieldPowerOff" DataType="BOOL" Value="0" />
+<DataValueMember Name="Status" DataType="BOOL" Value="0" />
+</StructureMember>
+<StructureMember Name="Pt02" DataType="AB:5000_SafetyReadback_Channel:I:1">
+<DataValueMember Name="Readback" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="1" />
+<DataValueMember Name="Uncertain" DataType="BOOL" Value="0" />
+<DataValueMember Name="NoLoad" DataType="BOOL" Value="0" />
+<DataValueMember Name="ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="FieldPowerOff" DataType="BOOL" Value="0" />
+<DataValueMember Name="Status" DataType="BOOL" Value="0" />
+</StructureMember>
+<StructureMember Name="Pt03" DataType="AB:5000_SafetyReadback_Channel:I:1">
+<DataValueMember Name="Readback" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="1" />
+<DataValueMember Name="Uncertain" DataType="BOOL" Value="0" />
+<DataValueMember Name="NoLoad" DataType="BOOL" Value="0" />
+<DataValueMember Name="ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="FieldPowerOff" DataType="BOOL" Value="0" />
+<DataValueMember Name="Status" DataType="BOOL" Value="0" />
+</StructureMember>
+<StructureMember Name="Pt04" DataType="AB:5000_SafetyReadback_Channel:I:1">
+<DataValueMember Name="Readback" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="1" />
+<DataValueMember Name="Uncertain" DataType="BOOL" Value="0" />
+<DataValueMember Name="NoLoad" DataType="BOOL" Value="0" />
+<DataValueMember Name="ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="FieldPowerOff" DataType="BOOL" Value="0" />
+<DataValueMember Name="Status" DataType="BOOL" Value="0" />
+</StructureMember>
+<StructureMember Name="Pt05" DataType="AB:5000_SafetyReadback_Channel:I:1">
+<DataValueMember Name="Readback" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="1" />
+<DataValueMember Name="Uncertain" DataType="BOOL" Value="0" />
+<DataValueMember Name="NoLoad" DataType="BOOL" Value="0" />
+<DataValueMember Name="ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="FieldPowerOff" DataType="BOOL" Value="0" />
+<DataValueMember Name="Status" DataType="BOOL" Value="0" />
+</StructureMember>
+<StructureMember Name="Pt06" DataType="AB:5000_SafetyReadback_Channel:I:1">
+<DataValueMember Name="Readback" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="1" />
+<DataValueMember Name="Uncertain" DataType="BOOL" Value="0" />
+<DataValueMember Name="NoLoad" DataType="BOOL" Value="0" />
+<DataValueMember Name="ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="FieldPowerOff" DataType="BOOL" Value="0" />
+<DataValueMember Name="Status" DataType="BOOL" Value="0" />
+</StructureMember>
+<StructureMember Name="Pt07" DataType="AB:5000_SafetyReadback_Channel:I:1">
+<DataValueMember Name="Readback" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="1" />
+<DataValueMember Name="Uncertain" DataType="BOOL" Value="0" />
+<DataValueMember Name="NoLoad" DataType="BOOL" Value="0" />
+<DataValueMember Name="ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="FieldPowerOff" DataType="BOOL" Value="0" />
+<DataValueMember Name="Status" DataType="BOOL" Value="0" />
+</StructureMember>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+<Connection Name="SafetyOutput" RPI="20000" Type="SafetyOutputDataDriven" OutputSize="32" EventID="0" ProgrammaticallySendEventTrigger="false" TimeoutMultiplier="2" NetworkDelayMultiplier="200" ReactionTimeLimit="60" MaxObservedNetworkDelay="0" Priority="High" InputConnectionType="Unicast" InputProductionTrigger="Application" ConnectionPath="20 04 24 a8 20 04 24 74 20 04 24 c7" OutputTagSuffix="O">
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[[1,0,0,0],[1,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:5000_DO8:O:0">
+<StructureMember Name="Pt00" DataType="CHANNEL_DO:O:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="1" />
+</StructureMember>
+<StructureMember Name="Pt01" DataType="CHANNEL_DO:O:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="1" />
+</StructureMember>
+<StructureMember Name="Pt02" DataType="CHANNEL_DO:O:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+</StructureMember>
+<StructureMember Name="Pt03" DataType="CHANNEL_DO:O:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+</StructureMember>
+<StructureMember Name="Pt04" DataType="CHANNEL_DO:O:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+</StructureMember>
+<StructureMember Name="Pt05" DataType="CHANNEL_DO:O:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+</StructureMember>
+<StructureMember Name="Pt06" DataType="CHANNEL_DO:O:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+</StructureMember>
+<StructureMember Name="Pt07" DataType="CHANNEL_DO:O:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+</StructureMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

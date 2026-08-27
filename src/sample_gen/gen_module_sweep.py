@@ -13363,11 +13363,32 @@ _SIL2_CATALOGS = {
 }
 _SAFETY_PROCESSOR_TYPE = "1756-L81ES"
 
+# Real l5x2acd conversion failures, James's 2026-08-27 push
+# (samples/convert_log.csv): every one of these still failed even with the
+# safety-controller fix above already applied (confirmed by direct
+# inspection -- ProcessorType/SafetyEnabled were already correct on the
+# on-disk files). The convert_log's own error text is a generic
+# "XMLSrv_E_IMPORT_ABORTED_NO_CHANGES ... See error log" wrapper with no
+# further detail, so the real per-catalog cause is NOT diagnosed here --
+# regenerated unchanged, suffixed per James's own instruction ("regenerate
+# all failed modules with a suffix to make the files unique") so his
+# re-test run doesn't collide with the still-present old failing files.
+# Needs the actual Studio 5000 error-log detail (not just this wrapper) to
+# root-cause for real.
+_UNDIAGNOSED_RETEST_SUFFIX = "_r2"
+_UNDIAGNOSED_RETEST_CATALOGS = {
+    "1734-OB8S/A", "1734-OB8S/B", "442G-MABLB-UR-E0JP4679/A",
+    "5069-IB16/A", "5069-IB8S/A", "5069-IY4/A", "5069-OB16/A", "5069-OB16/B",
+    "5069-OBV8S/A", "FANUC Robot R30iB Plus/A", "PowerFlex 527-STO CIP Safety",
+}
+
 
 def main() -> None:
     written = 0
     for catalog, (xml, source, chain_len) in _MODULE_CHAINS.items():
         out_name = "modulesweep_" + "".join(c if c.isalnum() else "_" for c in catalog).strip("_").lower()
+        if catalog in _UNDIAGNOSED_RETEST_CATALOGS:
+            out_name += _UNDIAGNOSED_RETEST_SUFFIX
         chain_note = "standalone module" if chain_len == 1 else f"module + its real {chain_len - 1}-deep parent chain"
         kwargs = {}
         if catalog in _5069_CATALOGS:

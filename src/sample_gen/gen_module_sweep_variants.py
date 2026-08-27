@@ -4215,6 +4215,23 @@ _SIL2_VARIANT_LABELS = {("2198-D012-ERS3", "4conn"), ("2198-D020-ERS3", "4conn")
                          ("2198-S086-ERS3", "4conn")}
 _SAFETY_PROCESSOR_TYPE = "1756-L81ES"
 
+# Real l5x2acd conversion failures, James's 2026-08-27 push
+# (samples/convert_log.csv): all 5 "4conn" (motion + Safety) variants still
+# failed even with the safety-controller fix above already applied
+# (confirmed correct on-disk). A real, useful datapoint ruling out one
+# hypothesis: the plain "2conn" (motion-only, no Safety) variant of the
+# SAME catalog -- also no axis tag, also a non-safety controller --
+# imports fine, so a missing Axis/MotionGroup tag is NOT the cause (if it
+# were, 2conn would fail too). The real cause is something specific to the
+# SafetyInputDataDriven/SafetyOutputDataDriven connection shape itself,
+# not diagnosed further -- convert_log's error text is a generic
+# "XMLSrv_E_IMPORT_ABORTED_NO_CHANGES ... See error log" wrapper with no
+# further detail. Regenerated unchanged, suffixed per James's own
+# instruction so his re-test run doesn't collide with the still-present
+# old failing files. Needs the actual Studio 5000 error-log detail to
+# root-cause for real.
+_UNDIAGNOSED_RETEST_SUFFIX = "_r2"
+
 
 def main() -> None:
     written = 0
@@ -4222,6 +4239,8 @@ def main() -> None:
         cat_slug = "".join(c if c.isalnum() else "_" for c in catalog).strip("_").lower()
         for label, xml, source, chain_len in variants:
             out_name = f"modulesweep_{cat_slug}_variant_{label}"
+            if (catalog, label) in _SIL2_VARIANT_LABELS:
+                out_name += _UNDIAGNOSED_RETEST_SUFFIX
             chain_note = "standalone module" if chain_len == 1 else f"module + its real {chain_len - 1}-deep parent chain"
             target = ("ModSweepV_" + "".join(c if c.isalnum() else "" for c in catalog) + label)[:24]
             kwargs = {}
