@@ -48,6 +48,30 @@ predefined_structures:
   # 3-DINT-status-structure convention. FITTED pending a documented-layout
   # citation to promote to KNOWN.
   MOTION_INSTRUCTION: { bytes: 12, confidence: FITTED }
+  # SFC/FBD-family native structures, James (2026-08-27): "You should know
+  # all of those native instructions data types." Not derived from a
+  # documentation citation -- read directly off REAL Decorated-XML L5K
+  # data in James's own corpus (SJ_Gormley_20251112_r02.L5X, Bender134053_
+  # 201104.L5X, BAI10048_TrimmerTally_20250704.L5X, BT1XX_FFC_20240325.L5X)
+  # the same way TIMER's own real shape would be read: each real instance's
+  # <Data Format="L5K"> raw value array length x 4 bytes IS the real total
+  # (one DINT per raw L5K scalar -- exactly how TIMER's 3-element/12-byte
+  # L5K array already confirms that convention). Zero variance across
+  # every real instance checked (272/272 SFC_STEP, 97/97 SFC_ACTION, 5/5
+  # FBD_TIMER, 4/4 FBD_ONESHOT, 2/2 FBD_MATH -- RATE_LIMITER/SCALE only
+  # 1 real instance each so far). ASSUMED, not KNOWN -- real and
+  # zero-variance, but not yet independently confirmed against an actual
+  # controller memory-capture delta the way TIMER/COUNTER/CONTROL are.
+  # Not drillable to a per-field breakdown yet (sizing/tree.py's
+  # _THREE_FIELD_PREDEFINED set) -- only the TOTAL is confirmed this way,
+  # not a per-field byte attribution.
+  SFC_STEP: { bytes: 28, confidence: ASSUMED }   # Status+PRE+T+TMax+Count+LimitLow+LimitHigh = 7 DINT
+  SFC_ACTION: { bytes: 16, confidence: ASSUMED } # Status+PRE+T+Count = 4 DINT
+  FBD_TIMER: { bytes: 48, confidence: ASSUMED }  # 12 DINT-equivalent (bools packed in)
+  FBD_ONESHOT: { bytes: 12, confidence: ASSUMED } # 3 DINT-equivalent
+  FBD_MATH: { bytes: 16, confidence: ASSUMED }   # EnableIn/Out packed + SourceA/B/Dest REAL = 4 DINT
+  RATE_LIMITER: { bytes: 92, confidence: ASSUMED } # 23 DINT-equivalent, n=1 real sample
+  SCALE: { bytes: 52, confidence: ASSUMED }      # 13 DINT-equivalent, n=1 real sample
 
 # Predefined structures whose real cost is base + per_element*array_length
 # rather than a flat scalar -- CAM_PROFILE is always used as an array in

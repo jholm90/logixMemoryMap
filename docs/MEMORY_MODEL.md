@@ -78,9 +78,12 @@ type-name length (immediately above) and array-of-STRING padding
 Firmware-native structures referenced by name in L5X Tag/Member DataType
 attributes but never given a member list in `Controller/DataTypes` --
 Logix Designer resolves them internally, so there's nothing to recurse.
-Only types with a well-documented, version-stable layout are modeled here;
-everything else found in real samples (MESSAGE, PID, and other
-safety/comms structures) is deliberately left unsized rather than guessed.
+Only types with a real, evidence-backed layout are modeled here; MESSAGE,
+DCI_STOP, CONFIGURABLE_ROUT, and ALARM_DIGITAL are deliberately left
+unsized rather than guessed -- zero real decorated-XML evidence exists
+anywhere in James's 64-file corpus for their layout (DCI_STOP has real
+evidence but is withheld pending a Safety-scope product decision, see
+OPEN_QUESTIONS.md OQ-PREDEFINED).
 
 | Type | Bytes | Notes |
 |---|---|---|
@@ -93,6 +96,19 @@ safety/comms structures) is deliberately left unsized rather than guessed.
 | AXIS_SERVO | 16,796 | FITTED, 2026-08-23. Same. |
 | AXIS_VIRTUAL | 16,796 | FITTED, 2026-08-23. Identical to AXIS_SERVO -- confirmed independently, not assumed. |
 | MOTION_INSTRUCTION | 12 | FITTED, 2026-08-23. Same 3-DINT-style layout as TIMER/COUNTER/CONTROL; exact fit across a 1/5/50 tag-count sweep. |
+| SFC_STEP | 28 | ASSUMED, 2026-08-27. 7 DINT (Status+PRE+T+TMax+Count+LimitLow+LimitHigh), read off real Decorated-XML L5K data, zero variance across 272 real instances. Not yet capture-confirmed. |
+| SFC_ACTION | 16 | ASSUMED, 2026-08-27. 4 DINT (Status+PRE+T+Count), zero variance across 97 real instances. |
+| FBD_TIMER | 48 | ASSUMED, 2026-08-27. 12 DINT-equivalent, zero variance across 5 real instances. |
+| FBD_ONESHOT | 12 | ASSUMED, 2026-08-27. 3 DINT-equivalent, zero variance across 4 real instances. |
+| FBD_MATH | 16 | ASSUMED, 2026-08-27. 4 DINT-equivalent, zero variance across 2 real instances. |
+| RATE_LIMITER | 92 | ASSUMED, 2026-08-27. 23 DINT-equivalent, only 1 real instance so far. |
+| SCALE | 52 | ASSUMED, 2026-08-27. 13 DINT-equivalent, only 1 real instance so far. |
+
+None of the SFC/FBD-family rows above are drillable to a per-field
+breakdown (unlike TIMER/COUNTER/CONTROL's 3-way split) -- only the TOTAL
+is confirmed this way, field counts vary per type (4 to 23), and a
+fabricated even split would misrepresent that. See `sizing/tree.py`'s
+`_THREE_FIELD_PREDEFINED` set.
 
 ## Predefined array structures (FITTED, 2026-08-23)
 

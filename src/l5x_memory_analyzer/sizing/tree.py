@@ -29,6 +29,19 @@ class NotDrillableError(ValueError):
     """The resolved node is a true leaf -- no further children exist."""
 
 
+# Predefined structures with a real, confirmed per-field byte breakdown
+# (each field an equal 1/3 share of the total, see _expand_predefined_
+# structure) -- deliberately NOT every key in model.predefined_structures.
+# The SFC/FBD-family additions (James, 2026-08-27) only have a confirmed
+# TOTAL (read off real Decorated-XML L5K array length), not a confirmed
+# per-field byte attribution or even a consistent field count (SFC_STEP
+# has 7 fields, SFC_ACTION has 4, RATE_LIMITER has 23...) -- showing them
+# via the generic 3-way split would be a fabricated breakdown the total
+# doesn't actually support. They stay correctly-sized, non-drillable
+# leaves until a real per-field derivation exists.
+_THREE_FIELD_PREDEFINED = {"TIMER", "COUNTER", "CONTROL"}
+
+
 @dataclass(frozen=True)
 class Child:
     name: str  # display label, e.g. "Speed" or "[42]"
@@ -47,11 +60,14 @@ def has_children(
         return math.prod(dimensions) > 0
     if data_type in data_types:
         return True  # UDT/AOI (merged) and custom string types all expose at least LEN+DATA or members
-    if data_type in model.predefined_structures:
+    if data_type in _THREE_FIELD_PREDEFINED:
         return True  # TIMER/COUNTER/CONTROL expose their 3 documented fields
     if data_type == "STRING":
         return True  # built-in STRING: LEN + DATA
-    return False  # plain atomic scalar (SINT/INT/DINT/LINT/REAL) or standalone BOOL -- true leaf
+    return False  # plain atomic scalar (SINT/INT/DINT/LINT/REAL), standalone BOOL, or a
+    # predefined structure with a confirmed total but no confirmed per-field
+    # breakdown yet (SFC_STEP/SFC_ACTION/etc, model.predefined_structures
+    # but not _THREE_FIELD_PREDEFINED) -- all true leaves for drill purposes.
 
 
 def expand_children(
@@ -67,7 +83,7 @@ def expand_children(
         return _expand_array(data_type, dimensions, data_types, model, _stack)
     if data_type in data_types:
         return _expand_udt(data_type, data_types, model, _stack)
-    if data_type in model.predefined_structures:
+    if data_type in _THREE_FIELD_PREDEFINED:
         return _expand_predefined_structure(data_type, model)
     if data_type == "STRING":
         return _expand_builtin_string(model)
@@ -250,7 +266,7 @@ def resolve_type_at_path(
             dimensions = ()  # indexing into an array yields one scalar element
         elif segment.startswith("."):
             member_name = segment[1:]
-            if data_type in model.predefined_structures and member_name in ("Status", "PRE", "ACC", "POS"):
+            if data_type in _THREE_FIELD_PREDEFINED and member_name in ("Status", "PRE", "ACC", "POS"):
                 data_type, dimensions = "DINT", ()
                 continue
             if data_type not in data_types:

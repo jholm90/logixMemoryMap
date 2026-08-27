@@ -22,29 +22,37 @@ the matching footnote at the bottom, not inline.
    probes await capture.[^aoidef]
 
 5. **OQ-PREDEFINED (MESSAGE + siblings)** — 8-MessageType test batch built,
-   awaiting capture to test the axis-tag-style flat-size hypothesis. Also
-   now covers a real, quantified sibling gap found 2026-08-27: SFC_STEP/
-   SFC_ACTION/FBD_TIMER/SCALE/CAM_PROFILE/DCI_STOP/RATE_LIMITER/
-   CONFIGURABLE_ROUT/ALARM_DIGITAL/FBD_ONESHOT/FBD_MATH are the same class
-   of unmodeled native structure as MESSAGE (never carry their own
-   `<DataType>`/`<AddOnInstructionDefinition>` in any of James's 64 real
-   files) — 1,277 real tag-sizing errors across 24/64 files trace to this,
-   369 of them SFC_STEP/SFC_ACTION alone.[^predefined]
+   awaiting capture to test the axis-tag-style flat-size hypothesis.
+   SFC_STEP/SFC_ACTION/FBD_TIMER/RATE_LIMITER/SCALE/FBD_ONESHOT/FBD_MATH
+   wired 2026-08-27 (real, ASSUMED — read directly off real Decorated-XML
+   L5K data, not yet capture-confirmed); closed 523 of 1,277 real
+   tag-sizing errors. MESSAGE/DCI_STOP/CONFIGURABLE_ROUT/ALARM_DIGITAL
+   still genuinely unmodeled — zero real decorated-data evidence found
+   anywhere in James's 64-file corpus.[^predefined]
 
-6. **OQ-MODULEIO** — wired, LOW CONFIDENCE (n=2). 141 files awaiting
+6. **OQ-AOIARRAYDIMENSION** — real parser bug fixed 2026-08-27:
+   `<Parameter>`/`<LocalTag>` array size is a "Dimensions" (plural)
+   attribute, not "Dimension" (singular, correct only for a plain UDT
+   `<Member>`) — was silently sizing every array-dimensioned AOI local/
+   param as a scalar. 5 existing test files need a fresh real capture;
+   their prior "confirmed" numbers almost certainly tested scalar
+   behavior by coincidence, not the array behavior they were meant
+   to.[^aoiarraydimension]
+
+7. **OQ-MODULEIO** — wired, LOW CONFIDENCE (n=2). 141 files awaiting
    capture; that's the next step, not more generation.[^moduleio]
 
-7. **OQ-BRANCHDEPTH** — confirmed real (branch structure costs memory
+8. **OQ-BRANCHDEPTH** — confirmed real (branch structure costs memory
    beyond leg instructions). Two independent test batches — leg-count
    width and staggered/nested depth — await capture.[^branchdepth]
 
-8. **OQ-LEGACYNETOVERHEAD** — reminder flag only. No real corpus, no
+9. **OQ-LEGACYNETOVERHEAD** — reminder flag only. No real corpus, no
    capture data, nothing to size against yet.
 
-9. **OQ-EVENTTRIGGER** — new, real. task_extra (+700) was derived only
-   from CONTINUOUS+PERIODIC tasks; EVENT-type tasks are completely
-   untested, and so is trigger-source (Axis Watch vs. EVENT-instruction)
-   within EVENT. Two files built, awaiting capture.[^eventtrigger]
+10. **OQ-EVENTTRIGGER** — new, real. task_extra (+700) was derived only
+    from CONTINUOUS+PERIODIC tasks; EVENT-type tasks are completely
+    untested, and so is trigger-source (Axis Watch vs. EVENT-instruction)
+    within EVENT. Two files built, awaiting capture.[^eventtrigger]
 
 ---
 
@@ -175,19 +183,105 @@ completeness (James: "confirm we can browse down to base structure level
 for all UDT/AOI"). Drill-down itself is fully confirmed for everything the
 engine CAN size — a recursive walk of all 2,780 UDT/AOI definitions across
 James's real 64-file corpus reached 4,502,812 true leaves with zero bad
-leaves and zero silent dead-ends. But a real, separate gap surfaced along
-the way: any tag whose type transitively includes a member typed
-SFC_STEP/SFC_ACTION/FBD_TIMER/SCALE/CAM_PROFILE/DCI_STOP/RATE_LIMITER/
+leaves and zero silent dead-ends. A real, separate gap surfaced along the
+way: any tag whose type transitively includes a member typed SFC_STEP/
+SFC_ACTION/FBD_TIMER/SCALE/CAM_PROFILE/DCI_STOP/RATE_LIMITER/
 CONFIGURABLE_ROUT/ALARM_DIGITAL/FBD_ONESHOT/FBD_MATH — confirmed present
 in 0 of 64 real files' own `<DataType>`/`<AddOnInstructionDefinition>`
-blocks, same as MESSAGE — can't be sized at all (`UnknownDataTypeError`,
-caught cleanly by report.py, so the whole file doesn't break, but that
-tag is silently excluded from the treemap/list and only shows up in the
-small errors footer). 1,277 tag-sizing errors across 24/64 real files
-trace to this; SFC_STEP (272) + SFC_ACTION (97) alone account for 369 of
-them — likely the highest-value next target if this gets prioritized,
-same "native structure with no exportable definition" shape as
-TIMER/COUNTER/CONTROL/MESSAGE, just not modeled yet.
+blocks, same as MESSAGE — couldn't be sized at all (`UnknownDataTypeError`,
+caught cleanly by report.py, so the whole file doesn't break, but that tag
+was silently excluded from the treemap/list, only showing up in the small
+errors footer). 1,277 tag-sizing errors across 24/64 real files traced to
+this.
+
+**Wired 2026-08-27** (James: "You should know all of those native
+instructions data types ... look for Rockwell instruction manual for data
+layout"): rather than trust an instruction-manual citation blind (this
+project's own ground-truth discipline — CLAUDE.md — wants a real capture
+or real corpus evidence first), checked whether the real corpus itself
+already reveals the layout via `Data Format="Decorated"` — it does.
+Bender134053_201104.L5X alone has 272 real `SFC_STEP` and 97 real
+`SFC_ACTION` tag instances with full decorated field lists; other files
+had real (if sparser) evidence for the rest. The mechanism: a predefined
+structure's real `Data Format="L5K"` raw value array is one scalar per
+DINT-sized field (same convention that already gives TIMER's 3-element/
+12-byte L5K array its real shape) — so the array's length × 4 bytes IS
+the real total, independent of how many of those DINTs are further
+bit-packed status flags. Confirmed zero-variance across every real
+instance checked: 272/272 SFC_STEP (28 bytes: Status+PRE+T+TMax+Count+
+LimitLow+LimitHigh, 7 DINT), 97/97 SFC_ACTION (16 bytes: Status+PRE+T+
+Count, 4 DINT), 5/5 FBD_TIMER (48 bytes), 4/4 FBD_ONESHOT (12 bytes), 2/2
+FBD_MATH (16 bytes); RATE_LIMITER (92 bytes) and SCALE (52 bytes) only
+1 real instance each so far. Wired into `memory_model.yaml`
+`predefined_structures` at ASSUMED confidence (real and zero-variance,
+but not yet independently confirmed against an actual controller
+memory-capture delta the way TIMER/COUNTER/CONTROL are) — closed 523 of
+the 1,277 errors. `sizing/tree.py` deliberately does NOT extend the
+generic TIMER/COUNTER/CONTROL 3-way-split drill-down to these — their
+field counts vary (SFC_STEP has 7, SFC_ACTION has 4, RATE_LIMITER has
+23) and only the TOTAL is confirmed, not a per-field byte attribution,
+so a fabricated even split would be worse than staying a correctly-sized,
+non-drillable leaf (`_THREE_FIELD_PREDEFINED` set).
+
+**Still genuinely unmodeled** — zero real decorated-data evidence found
+anywhere in the 64-file corpus, not guessed: MESSAGE (own dedicated test
+batch, see above), CONFIGURABLE_ROUT, ALARM_DIGITAL. **DCI_STOP** (35
+errors) has real decorated evidence (SJ_Gormley_20251112_r02.L5X, 80
+bytes/20 DINT) but is deliberately NOT wired yet — every real instance
+found carries `Class="Safety"` on the Tag itself, and this project's
+Safety content is currently NOT sized by design (OQ-SAFETY, the UI's red
+warning banner) even though nothing in the code actually enforces that
+exclusion per-tag today — it just happens that Safety AOI types are
+mostly unresolvable native structures. Wiring DCI_STOP would make
+Safety-scoped totals partially counted for the first time, which needs
+a decision from James (exclude Safety-class tags by design everywhere,
+or size everything resolvable including Safety and adjust the warning
+wording) before it's just silently changed.
+
+[^aoiarraydimension]: James, 2026-08-27: "be sure you are handling the bit
+mapped bools from hidden sints" prompted a broader audit of AOI-local
+sizing, which surfaced a real, separate bug (verified via
+`compute_udt_size`, `is_bit_alias`/`hidden` in parser/datatypes.py: the
+BOOL-hidden-SINT question ITSELF was already correct and directly unit-
+tested — `test_udt_mixed_bool_dint_string_with_bit_packing` — 1 byte for
+the backing SINT regardless of how many BOOL aliases point into it, 0
+extra for each alias, confirmed exact). The real bug found instead:
+`parser/aoi.py`'s `_member_from_element` read a `<Parameter>`/`<LocalTag>`
+element's array size off a "Dimension" (singular) attribute — correct for
+a plain UDT `<Member>` (parser/datatypes.py, unaffected), but real
+`<Parameter>`/`<LocalTag>` elements carry it on "Dimensions" (PLURAL) —
+confirmed against 80 real `<Parameter Dimensions="N">` and 191 real
+`<LocalTag Dimensions="N">` elements across all 64 corpus files, zero
+counter-examples for the singular form anywhere. Every array-dimensioned
+AOI Parameter/LocalTag was silently sized as a scalar. Real customer-file
+impact: 35 tag-sizing errors closed immediately (all CAM_PROFILE, which
+was already correctly wired in `predefined_array_structures` but never
+reachable through this bug).
+
+Fixed in `parser/aoi.py`. `sample_gen/builders.py` had the IDENTICAL bug
+(`Dimension=` instead of `Dimensions=`) generating AOI Parameter/LocalTag
+XML — the two bugs self-consistently masked each other for this project's
+own synthetic test files (both sides wrong the same way), which is why no
+existing test caught it. Fixed there too. 5 existing files (
+`aoi_array_localtag_def_only`/`_1_instance`, `aoi_array_param_def_only`,
+`aoi_nested_array_localtag_def_only`/`_1_instance`) regenerated with the
+corrected attribute — flagged `NEEDS RE-CAPTURE` in manifest.csv, old
+actual_bytes/delta cleared rather than trusted. Reasoning: the prior
+2026-08-22 capture of these files almost certainly measured SCALAR
+behavior, not array behavior — Studio 5000 very likely didn't recognize
+the malformed singular attribute either (real syntax requires plural) and
+silently coerced it to scalar on import, same as this project's own
+buggy parser did. The math backs this out precisely for
+`aoi_array_localtag_1_instance`: fixed-engine prediction is 19,832 bytes,
+old real capture was 19,424 — a 408-byte gap, matching almost exactly
+what a 100-element DINT array minus a scalar DINT should cost (396) plus
+the small universal per-file noise (~8-12) seen everywhere else in this
+project. Needs a fresh real capture of the corrected files before this
+project can claim the AOI-array-local/param formula is confirmed at all
+— it currently rests entirely on the already-validated general
+array-of-atomic/array-of-UDT member cost formula being assumed to apply
+unchanged to an AOI's own Parameter/LocalTag members too, which was never
+actually tested end-to-end against a real capture.
 
 [^moduleio]: `module_overhead = 1,672 bytes/module` (flat, mean of 2 real
 deltas), wired as ESTIMATED tier. 141 files in `samples/generated/modules/`:

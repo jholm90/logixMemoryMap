@@ -408,7 +408,19 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
             f'Required="true" Visible="true"{constant_attr}/>'
         )
 
-    dim_attr = f' Dimension="{m.dimension}"' if m.dimension else ""
+    # Real bug fix, 2026-08-27: <Parameter>/<LocalTag> array size is a
+    # "Dimensions" (PLURAL) attribute in real Rockwell exports -- was
+    # "Dimension" (singular, correct only for a plain UDT <Member>, see
+    # datatypes.py), which self-consistently matched the SAME bug in
+    # parser/aoi.py's own reader. Confirmed against 271 real <Parameter>/
+    # <LocalTag Dimensions="N"> elements in James's corpus, zero
+    # counter-examples. Every previously-generated file with an
+    # array-dimensioned AOI Parameter/LocalTag needs regenerating +
+    # RE-CAPTURING -- the malformed attribute name almost certainly also
+    # went unrecognized by Studio 5000's own importer on the prior
+    # capture, meaning those "confirmed" numbers likely tested scalar
+    # behavior, not the array behavior they were meant to.
+    dim_attr = f' Dimensions="{m.dimension}"' if m.dimension else ""
     radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
     external_access = "Read Only" if usage == "Output" else "Read/Write"
     default = "" if m.dimension else _aoi_default_data_xml(m)
@@ -422,7 +434,9 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
 
 
 def _aoi_local_tag_xml(m: "MemberSpec") -> str:
-    dim_attr = f' Dimension="{m.dimension}"' if m.dimension else ""
+    # See the matching comment in _aoi_parameter_xml -- same real
+    # Dimension->Dimensions attribute-name fix, same reason.
+    dim_attr = f' Dimensions="{m.dimension}"' if m.dimension else ""
     if m.nested_members is not None:
         # Real shape confirmed: a nested-UDT/nested-AOI LocalTag has no
         # Radix attribute at all (matches the same UDT-typed-tag rule).

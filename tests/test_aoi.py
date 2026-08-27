@@ -35,6 +35,14 @@ _XML = """
           <LocalTag Name="Self" DataType="Cycle"/>
         </LocalTags>
       </AddOnInstructionDefinition>
+      <AddOnInstructionDefinition Name="ArrayLocalAOI" Class="None">
+        <Parameters>
+          <Parameter Name="InputBuffer" DataType="DINT" Usage="Input" Dimensions="10"/>
+        </Parameters>
+        <LocalTags>
+          <LocalTag Name="Buffer" DataType="DINT" Dimensions="20"/>
+        </LocalTags>
+      </AddOnInstructionDefinition>
     </AddOnInstructionDefinitions>
   </Controller>
 </RSLogix5000Content>
@@ -47,7 +55,7 @@ def _parse():
 
 def test_parses_aoi_names():
     aois = _parse()
-    assert set(aois) == {"DI_V4", "fbWrapper", "Cycle"}
+    assert set(aois) == {"DI_V4", "fbWrapper", "Cycle", "ArrayLocalAOI"}
 
 
 def test_inout_parameter_excluded_from_members():
@@ -83,3 +91,16 @@ def test_self_referential_aoi_raises():
         assert False, "expected RecursiveUdtError"
     except RecursiveUdtError:
         pass
+
+
+def test_parameter_and_localtag_dimensions_attribute_is_plural():
+    # Real bug, found 2026-08-27: real <Parameter>/<LocalTag> elements
+    # carry their array size on "Dimensions" (PLURAL) -- confirmed against
+    # 271 real corpus instances, zero counter-examples for the singular
+    # form a plain UDT <Member> uses instead. This previously read
+    # "Dimension" (singular) and always silently defaulted to 0/scalar.
+    aois = _parse()
+    input_buffer = next(m for m in aois["ArrayLocalAOI"].members if m.name == "InputBuffer")
+    buffer = next(m for m in aois["ArrayLocalAOI"].members if m.name == "Buffer")
+    assert input_buffer.dimension == 10
+    assert buffer.dimension == 20
