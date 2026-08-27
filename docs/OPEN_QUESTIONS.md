@@ -21,14 +21,19 @@ the matching footnote at the bottom, not inline.
    closed (no real effect). Name-length and BOOL-array-packing-boundary
    probes await capture.[^aoidef]
 
-5. **OQ-PREDEFINED (MESSAGE + siblings)** — 8-MessageType test batch built,
-   awaiting capture to test the axis-tag-style flat-size hypothesis.
-   SFC_STEP/SFC_ACTION/FBD_TIMER/RATE_LIMITER/SCALE/FBD_ONESHOT/FBD_MATH
-   wired 2026-08-27 (real, ASSUMED — read directly off real Decorated-XML
-   L5K data, not yet capture-confirmed); closed 523 of 1,277 real
-   tag-sizing errors. MESSAGE/DCI_STOP/CONFIGURABLE_ROUT/ALARM_DIGITAL
-   still genuinely unmodeled — zero real decorated-data evidence found
-   anywhere in James's 64-file corpus.[^predefined]
+5. **OQ-PREDEFINED (MESSAGE + siblings)** — 8-MessageType + 2-ALMD test
+   batches built, both awaiting capture. SFC_STEP/SFC_ACTION/FBD_TIMER/
+   RATE_LIMITER/SCALE/FBD_ONESHOT/FBD_MATH wired 2026-08-27 (real, ASSUMED —
+   read directly off real Decorated-XML L5K data, not yet capture-confirmed);
+   closed 523 of 1,277 real tag-sizing errors. MESSAGE and ALARM_DIGITAL's
+   full real member lists are now sourced directly from RM018A (2026-08-27,
+   see below) — genuinely new, primary-source information — but neither has
+   an exact byte TOTAL yet: both are confirmed dead ends for the L5K-array
+   technique (every real instance in `samples/local/` uses a specialized
+   semantic `Data Format="Message"`/`"Alarm"` view, never raw Decorated/L5K),
+   so a real capture is the only path forward, same as TIMER/COUNTER/CONTROL.
+   COUNTER cross-checked exact against RM018A — no change, already correct.
+   DCI_STOP/CONFIGURABLE_ROUT remain fully unmodeled.[^predefined]
 
 6. **OQ-AOIARRAYDIMENSION** — real parser bug fixed 2026-08-27:
    `<Parameter>`/`<LocalTag>` array size is a "Dimensions" (plural)
@@ -223,20 +228,89 @@ field counts vary (SFC_STEP has 7, SFC_ACTION has 4, RATE_LIMITER has
 so a fabricated even split would be worse than staying a correctly-sized,
 non-drillable leaf (`_THREE_FIELD_PREDEFINED` set).
 
-**Still genuinely unmodeled** — zero real decorated-data evidence found
-anywhere in the 64-file corpus, not guessed: MESSAGE (own dedicated test
-batch, see above), CONFIGURABLE_ROUT, ALARM_DIGITAL. **DCI_STOP** (35
-errors) has real decorated evidence (SJ_Gormley_20251112_r02.L5X, 80
-bytes/20 DINT) but is deliberately NOT wired yet — every real instance
-found carries `Class="Safety"` on the Tag itself, and this project's
-Safety content is currently NOT sized by design (OQ-SAFETY, the UI's red
-warning banner) even though nothing in the code actually enforces that
-exclusion per-tag today — it just happens that Safety AOI types are
+**DCI_STOP** (35 errors) has real decorated evidence (SJ_Gormley_20251112_
+r02.L5X, 80 bytes/20 DINT) but is deliberately NOT wired yet — every real
+instance found carries `Class="Safety"` on the Tag itself, and this
+project's Safety content is currently NOT sized by design (OQ-SAFETY, the
+UI's red warning banner) even though nothing in the code actually enforces
+that exclusion per-tag today — it just happens that Safety AOI types are
 mostly unresolvable native structures. Wiring DCI_STOP would make
 Safety-scoped totals partially counted for the first time, which needs
 a decision from James (exclude Safety-class tags by design everywhere,
 or size everything resolvable including Safety and adjust the warning
-wording) before it's just silently changed.
+wording) before it's just silently changed. **CONFIGURABLE_ROUT** remains
+fully unmodeled — not yet read in RM018A, no real corpus evidence either.
+
+**MESSAGE and ALARM_DIGITAL member lists sourced from RM018A, 2026-08-27**
+(James: "you need to size all of these instruction data types... look for
+Rockwell instruction manual for data layout", scoped down to 1756-RM018A
+specifically per his follow-up clarification). Read directly from the real
+manual PDF James pushed (`samples/1756-rm018_-en-p.pdf`, 927 pages, via
+`pdftotext -layout` + form-feed page-indexed navigation), not guessed.
+
+*MESSAGE* (RM018A pages 142-147): real member list — `.FLAGS` INT (bit-
+mapped status word: bit 2=.EW, 4=.ER, 5=.DN, 6=.ST, 7=.EN, 8=.TO, 9=.EN_CC —
+confirmed by the manual's own bit table that these 7 BOOL "members" are
+aliased VIEWS into `.FLAGS`, not separate storage, exactly the same pattern
+already established for TIMER's `.EN`/`.TT`/`.DN`), `.ERR`/`.EXERR`/
+`.REQ_LEN`/`.DN_LEN` INT, `.ERR_SRC` SINT, `.DestinationLink`/
+`.DestinationNode`/`.SourceLink`/`.Class`/`.Attribute` INT, `.Instance`/
+`.LocalIndex` DINT, `.Channel`/`.Rack`/`.Group`/`.Slot` SINT, `.Path` STRING,
+`.RemoteIndex` DINT, `.RemoteElement` STRING, `.UnconnectedTimeout`/
+`.ConnectionRate` DINT, `.TimeoutMultiplier` SINT. Non-STRING fields sum to
+a KNOWN 46 bytes (10 INT×2 + 6 SINT×1 + 5 DINT×4) under this project's
+already-confirmed tight-packing/no-alignment rule for structure members —
+**but the total stays unwired**: RM018A never states `.Path`/
+`.RemoteElement`'s real STRING capacity (searched the manual text directly,
+not found), and guessing the default 82-char built-in STRING size would be
+exactly the kind of fabrication CLAUDE.md forbids. `gen_msg_typesweep.py`'s
+8 files (already built, awaiting capture) are still the right path to the
+real total — once captured, the confirmed 46-byte non-STRING subtotal lets
+the STRING length be backed out exactly rather than assumed.
+
+*ALARM_DIGITAL/ALMD* (RM018A pages 53-64): real member list — 23 Input
+BOOL (EnableIn/In/InFault/Condition/AckRequired/Latched/ProgAck/OperAck/
+ProgReset/OperReset/ProgSuppress/OperSuppress/ProgUnsuppress/
+OperUnsuppress/OperShelve/ProgUnshelve/OperUnshelve/ProgDisable/
+OperDisable/ProgEnable/OperEnable/AlarmCountReset/UseProgTime), 1 Input
+LINT (ProgTime), 4 Input DINT (Severity/MinDurationPRE/ShelveDuration/
+MaxShelveDuration), 8 Output BOOL (EnableOut/InAlarm/Acked/InAlarmUnack/
+Suppressed/Shelved/Disabled/Commissioned), 3 Output DINT (MinDurationACC/
+AlarmCount/Status — Status.0/.1/.2 = InstructFault/InFaulted/SeverityInv
+are bit-aliases of the Status word, same pattern as MESSAGE/TIMER, NOT
+separate storage), 6 Output LINT (InAlarmTime/AckTime/RetToNormalTime/
+AlarmCountResetTime/ShelveTime/UnshelveTime). Cross-validated exactly
+against the real `Comms_Bus1_ALMD` tag in `samples/local/L5X_Samples/
+MRFP_Edger_2026_06_01_r00.L5X` — every real `<AlarmDigitalParameters>`
+attribute name matches the manual's Input Parameter table verbatim.
+**Two genuine unknowns block a total**: (1) whether the 31 scalar BOOL
+members bit-pack 8-per-hidden-SINT (the confirmed convention for ordinary
+UDTs) or take a full byte/word each in this controller-native structure —
+unconfirmed, native structures go through different firmware than user
+UDTs; (2) real ALMD tags always carry an `<AlarmConfig>` message/class-text
+block alongside the base structure (confirmed: both real corpus files with
+ALMD tags have it) — unknown whether that text counts toward the tag's own
+byte cost or is stored/compiled separately. `gen_almd_singletag.py` built
+2026-08-27 (2 files: `almd_minimal` isolates the base structure with
+1-char message/class text, `almd_realtext` uses real-length text copied
+from `Comms_Bus1_ALMD` to test question (2) directly) — awaiting capture,
+mirrors the MESSAGE sweep's isolate-one-variable-at-a-time approach.
+
+*COUNTER cross-check* (RM018A pages 92-93): `.CD`/`.DN`/`.OV`/`.UN` BOOL
+(bit-aliased status word) + `.PRE`/`.ACC` DINT — matches the already-wired
+3-DINT/12-byte model exactly. No change needed; first time this project's
+COUNTER model has been confirmed against a real Rockwell primary source
+rather than only empirical black-box capture.
+
+**Negative finding, saves future effort**: the L5K-raw-array-length
+technique that solved SFC_STEP/SFC_ACTION/FBD_TIMER/etc. (real `Data
+Format="L5K"` value-array length × 4 bytes = real total) does NOT work for
+either MESSAGE or ALARM_DIGITAL — grepped every real instance of both types
+across the full `samples/local/` corpus (not just James's 64-file subset)
+and confirmed zero use `Format="Decorated"` or `Format="L5K"`; Rockwell's
+export tooling always uses a specialized semantic view (`Format="Message"`/
+`Format="Alarm"`) for these two types instead. Don't re-attempt that
+technique on these two — go straight to a real capture.
 
 [^aoiarraydimension]: James, 2026-08-27: "be sure you are handling the bit
 mapped bools from hidden sints" prompted a broader audit of AOI-local

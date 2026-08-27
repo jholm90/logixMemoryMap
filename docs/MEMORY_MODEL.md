@@ -80,10 +80,17 @@ attributes but never given a member list in `Controller/DataTypes` --
 Logix Designer resolves them internally, so there's nothing to recurse.
 Only types with a real, evidence-backed layout are modeled here; MESSAGE,
 DCI_STOP, CONFIGURABLE_ROUT, and ALARM_DIGITAL are deliberately left
-unsized rather than guessed -- zero real decorated-XML evidence exists
-anywhere in James's 64-file corpus for their layout (DCI_STOP has real
-evidence but is withheld pending a Safety-scope product decision, see
-OPEN_QUESTIONS.md OQ-PREDEFINED).
+unsized rather than guessed (DCI_STOP has real evidence but is withheld
+pending a Safety-scope product decision, see OPEN_QUESTIONS.md
+OQ-PREDEFINED). MESSAGE and ALARM_DIGITAL's full real member lists/types
+ARE now known (sourced directly from RM018A, 2026-08-27) but neither has a
+confirmed byte TOTAL -- see OPEN_QUESTIONS.md OQ-PREDEFINED for the field
+list, the confirmed 46-byte MESSAGE non-STRING subtotal, and the two named
+unknowns blocking each (STRING field length; native-structure BOOL packing
+convention). CONFIGURABLE_ROUT remains fully unread/unmodeled. TIMER/
+COUNTER/CONTROL below are now cross-checked exact against RM018A (pages
+92-93 for COUNTER) -- first time confirmed against a real Rockwell primary
+source rather than only empirical capture.
 
 | Type | Bytes | Notes |
 |---|---|---|

@@ -50,7 +50,7 @@ from dataclasses import dataclass
 # growing it as new real instructions get used matters more than
 # completeness on day one.
 _KNOWN_NATIVE_INSTRUCTIONS = {
-    "ABS", "ADD", "AFI", "BTD", "CLR", "CMP", "CONCAT", "COP", "CPS", "CPT",
+    "ABS", "ADD", "AFI", "ALMD", "BTD", "CLR", "CMP", "CONCAT", "COP", "CPS", "CPT",
     "CTU", "CTD", "DELETE", "DIV", "DTOS", "EQU", "FLL", "GEQ", "GRT", "GSV",
     "JMP", "JSR", "LBL", "LEQ", "LES", "LIM", "MEQ", "MID", "MOD", "MOV",
     "MSG", "MUL", "MVM", "NEQ", "NOP", "ONS", "OTE", "OTL", "OTU", "RES",
