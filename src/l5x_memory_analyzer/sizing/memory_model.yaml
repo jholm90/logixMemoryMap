@@ -72,6 +72,30 @@ predefined_structures:
   FBD_MATH: { bytes: 16, confidence: ASSUMED }   # EnableIn/Out packed + SourceA/B/Dest REAL = 4 DINT
   RATE_LIMITER: { bytes: 92, confidence: ASSUMED } # 23 DINT-equivalent, n=1 real sample
   SCALE: { bytes: 52, confidence: ASSUMED }      # 13 DINT-equivalent, n=1 real sample
+  # FBD_BOOLEAN_AND/OR/NOT -- RM018A pages 546-548 give the real member
+  # list (AND/OR: EnableIn+In1..In8+EnableOut+Out = 11 BOOL; NOT:
+  # EnableIn+In+EnableOut+Out = 4 BOOL), but unlike SFC_STEP the real L5K
+  # array does NOT scale 1-value-per-field -- all 3 real corpus instances
+  # (BAND_01/BNOT_02/BOR_01, Bender134053_201104.L5X) show exactly 3 raw
+  # L5K values regardless of member count. Bit-level decode against the
+  # real Decorated-XML values on the SAME instances confirms the packing
+  # exactly (not guessed): L5K[0] = input word, bit0=EnableIn, bit(n)=InN
+  # (BAND_01 real bits EnableIn=1,In1=0,In2=0,In3..In8=1 -> 1+8+16+32+64+
+  # 128+256=505, matches real L5K[0]=505 exactly; BOR_01 EnableIn=1,In1=1,
+  # rest 0 -> 1+2=3, matches real L5K[0]=3). L5K[1] = output word, bit0=
+  # EnableOut, bit1=Out (BAND_01 EnableOut=1,Out=0 -> 1, matches; BOR_01/
+  # BNOT_02 EnableOut=1,Out=1 -> 3, matches both). L5K[2] is an identical
+  # REAL constant (5.60519386e-045) across every instance of every type --
+  # a fixed reserved/uninitialized field, not user data. 3 fields x 4
+  # bytes = 12, same flat shape as TIMER/COUNTER/CONTROL/MOTION_
+  # INSTRUCTION. ASSUMED (real, zero-variance across 2 distinct member-
+  # count shapes with exact bit-level reproduction; not yet capture-
+  # confirmed). Not added to sizing/tree.py's _THREE_FIELD_PREDEFINED --
+  # the 3 real fields are bit-packed words, not named Status/PRE/ACC-style
+  # members, so there's no real per-field drill target to expose.
+  FBD_BOOLEAN_AND: { bytes: 12, confidence: ASSUMED }
+  FBD_BOOLEAN_OR: { bytes: 12, confidence: ASSUMED }
+  FBD_BOOLEAN_NOT: { bytes: 12, confidence: ASSUMED }
 
 # Predefined structures whose real cost is base + per_element*array_length
 # rather than a flat scalar -- CAM_PROFILE is always used as an array in
