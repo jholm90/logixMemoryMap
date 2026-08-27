@@ -21,8 +21,15 @@ the matching footnote at the bottom, not inline.
    closed (no real effect). Name-length and BOOL-array-packing-boundary
    probes await capture.[^aoidef]
 
-5. **OQ-PREDEFINED (MESSAGE)** — 8-MessageType test batch built, awaiting
-   capture to test the axis-tag-style flat-size hypothesis.[^predefined]
+5. **OQ-PREDEFINED (MESSAGE + siblings)** — 8-MessageType test batch built,
+   awaiting capture to test the axis-tag-style flat-size hypothesis. Also
+   now covers a real, quantified sibling gap found 2026-08-27: SFC_STEP/
+   SFC_ACTION/FBD_TIMER/SCALE/CAM_PROFILE/DCI_STOP/RATE_LIMITER/
+   CONFIGURABLE_ROUT/ALARM_DIGITAL/FBD_ONESHOT/FBD_MATH are the same class
+   of unmodeled native structure as MESSAGE (never carry their own
+   `<DataType>`/`<AddOnInstructionDefinition>` in any of James's 64 real
+   files) — 1,277 real tag-sizing errors across 24/64 files trace to this,
+   369 of them SFC_STEP/SFC_ACTION alone.[^predefined]
 
 6. **OQ-MODULEIO** — wired, LOW CONFIDENCE (n=2). 141 files awaiting
    capture; that's the next step, not more generation.[^moduleio]
@@ -162,6 +169,25 @@ existing CIP Generic file — 8 types total. A flat size across all 8 would
 confirm James's axis-tag-style hypothesis ("lots of config, always the
 same data size"); a spread ties cost to attribute-set complexity instead.
 MSG's own LOGIC weight (48/rung) is separately resolved and wired.
+
+**Sibling native-structure gap, found 2026-08-27** verifying drill-down
+completeness (James: "confirm we can browse down to base structure level
+for all UDT/AOI"). Drill-down itself is fully confirmed for everything the
+engine CAN size — a recursive walk of all 2,780 UDT/AOI definitions across
+James's real 64-file corpus reached 4,502,812 true leaves with zero bad
+leaves and zero silent dead-ends. But a real, separate gap surfaced along
+the way: any tag whose type transitively includes a member typed
+SFC_STEP/SFC_ACTION/FBD_TIMER/SCALE/CAM_PROFILE/DCI_STOP/RATE_LIMITER/
+CONFIGURABLE_ROUT/ALARM_DIGITAL/FBD_ONESHOT/FBD_MATH — confirmed present
+in 0 of 64 real files' own `<DataType>`/`<AddOnInstructionDefinition>`
+blocks, same as MESSAGE — can't be sized at all (`UnknownDataTypeError`,
+caught cleanly by report.py, so the whole file doesn't break, but that
+tag is silently excluded from the treemap/list and only shows up in the
+small errors footer). 1,277 tag-sizing errors across 24/64 real files
+trace to this; SFC_STEP (272) + SFC_ACTION (97) alone account for 369 of
+them — likely the highest-value next target if this gets prioritized,
+same "native structure with no exportable definition" shape as
+TIMER/COUNTER/CONTROL/MESSAGE, just not modeled yet.
 
 [^moduleio]: `module_overhead = 1,672 bytes/module` (flat, mean of 2 real
 deltas), wired as ESTIMATED tier. 141 files in `samples/generated/modules/`:
