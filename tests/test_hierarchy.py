@@ -50,6 +50,40 @@ def test_build_hierarchy_groups_by_scope():
     assert {c["name"] for c in program_group["children"]} == {"LocalFlag", "LocalDint"}
 
 
+def test_build_hierarchy_breaks_out_axis_tags_at_root():
+    entries = ENTRIES + [
+        SizeEntry(
+            path="controller/Axis1",
+            category="controller_tag",
+            data_type="AXIS_CIP_DRIVE",
+            bytes=22636,
+            pct_of_total=0.0,
+            tier="estimated",
+            basis="FITTED",
+        ),
+        SizeEntry(
+            path="program:MainProgram/LocalAxis",
+            category="program_tag",
+            data_type="AXIS_VIRTUAL",
+            bytes=16796,
+            pct_of_total=0.0,
+            tier="estimated",
+            basis="FITTED",
+        ),
+    ]
+    tree = build_hierarchy(entries)
+    group_names = [c["name"] for c in tree["children"]]
+    assert "Axis Definitions" in group_names
+    assert "Controller Tags" in group_names
+
+    axis_group = next(c for c in tree["children"] if c["name"] == "Axis Definitions")
+    axis_names = {c["name"] for c in axis_group["children"]}
+    assert axis_names == {"Axis1", "LocalAxis"}
+
+    controller_group = next(c for c in tree["children"] if c["name"] == "Controller Tags")
+    assert "Axis1" not in {c["name"] for c in controller_group["children"]}
+
+
 def test_has_children_defaults_false_without_data_types():
     tree = build_hierarchy(ENTRIES)
     controller_group = tree["children"][0]

@@ -78,6 +78,24 @@ def build_hierarchy(
         "module_io": "I/O Modules",
     }
 
+    # Axis/motion tags (James, 2026-08-28: "the UI treeview needs to have
+    # the Axis (CIP_Drive, Virtual, etc) broken out at the root level").
+    # These are ordinary Controller/Program-scoped tags in the L5X (same
+    # category/path shape as any other tag), just typed as one of the
+    # predefined motion structures -- so unlike the NON_TAG_GROUPS above
+    # (which key off e.category), this keys off e.data_type and pulls
+    # matching tags OUT of "Controller Tags"/"Program: X" into their own
+    # root group instead, regardless of scope. Real predefined motion
+    # types this project already models (memory_model.yaml
+    # predefined_structures) -- MOTION_GROUP and COORDINATE_SYSTEM
+    # included alongside the AXIS_* types themselves since they're part
+    # of the same motion-configuration subsystem, not separate axes.
+    AXIS_DATA_TYPES = {
+        "AXIS_CIP_DRIVE", "AXIS_SERVO", "AXIS_VIRTUAL",
+        "COORDINATE_SYSTEM", "MOTION_GROUP",
+    }
+    AXIS_GROUP_NAME = "Axis Definitions"
+
     for e in entries:
         if e.category in NON_TAG_GROUPS:
             group_name = NON_TAG_GROUPS[e.category]
@@ -90,7 +108,11 @@ def build_hierarchy(
             kids = e.category == "udt_definition" and data_types is not None and name in data_types
         else:
             scope, name = _scope_and_name(e.path)
-            group_name = "Controller Tags" if scope == CONTROLLER_SCOPE else f"Program: {scope.split(':', 1)[1]}"
+            group_name = (
+                AXIS_GROUP_NAME if e.data_type in AXIS_DATA_TYPES
+                else "Controller Tags" if scope == CONTROLLER_SCOPE
+                else f"Program: {scope.split(':', 1)[1]}"
+            )
             dims = (tag_dimensions or {}).get(e.path, ())
             kids = (
                 _has_children(e.data_type, dims, data_types, model)
