@@ -109,14 +109,42 @@ unable to build it at all):
 
 Firmware attribute shape (SoftwareRevision, AutoDiagsEnabled/
 WebServerEnabled presence, v38's DataExchangeId) is real per version,
-confirmed from the existing v31-35/v38 samples — v36/v37 specifically are
-flagged ASSUMED in every file's own manifest note (real firmware majors
-confirmed to exist, but no real v31-38-range L5X sample for either exists
-yet to confirm their exact attribute shape). Files sorted
-`fwmatrix_v{NN}_{catalog}` so a plain directory listing groups all of v31
-together, then v32, etc. Structural parse-check: 0 errors across all 1533
-generated files (up from 1453). Content spot-checked directly (v38 L71,
-v38 L81ES) — ProductCode/Bus Size/Safety shape all render as intended.
+confirmed from the existing v31-35/v38 samples. **v36/v37 removed
+entirely 2026-08-28** (James: not asked for, told to leave out) — they
+were the only two ASSUMED/unconfirmed firmware majors in the table (no
+real v36/v37 L5X sample ever existed in this project); the batch is now
+174 files (6 firmware x 29 catalogs), all on real-confirmed firmware
+attribute shapes. Files sorted `fwmatrix_v{NN}_{catalog}` so a plain
+directory listing groups all of v31 together, then v32, etc.
+
+**Real, systemic structural bug found and fixed 2026-08-28** (James:
+"your controller firmware tests are really really bad. very high failure
+rate. you obviously have missed something" — followed by a fresh real
+Studio 5000 export of 1756-L71 sent for direct comparison; the exact same
+evidence was ALSO already sitting unused in `samples/local/
+L7_v21_Sample.L5X`, meaning this generator was built without ever
+cross-checking against corpus evidence that was already available).
+ControlLogix 5570 (1756-L7x) has NO embedded Ethernet interface on the
+CPU module itself — real shape is exactly ONE Local Port (`Type="ICP"`,
+`Bus Size="4"`, not the L8x-style 17) and no top-level `<EthernetPorts>`
+element at all. This generator applied the L8x shape (second Ethernet
+Port + EthernetPorts element describing a port that doesn't physically
+exist) to all 5 L7x catalogs across every firmware version — a real
+structural error, not a cosmetic one, plausible root cause for a large
+share of the reported high failure rate. Fixed: `_local_ports_xml` now
+branches for `_L7X_PRODUCT_CODES`, and the top-level `<EthernetPorts>`
+is conditionally omitted for that family. Only L71 is directly
+corpus-confirmed; L72-L75 are the same ControlLogix 5570 physical form
+factor so treated identically, not independently confirmed per-catalog.
+Also added two real Controller/RedundancyInfo attributes confirmed by
+both real references (`TimeSlice="20" ShareUnusedTimeSlice="1"`,
+`IOMemoryPadPercentage="90" DataTablePadPercentage="50"`) — `build_l5x`'s
+own already-working template omits both and still imports fine across
+~1300 tested files, so these are almost certainly Studio-5000-optional
+rather than the actual failure cause, but added for fidelity now that
+real values exist. All 174 files regenerated — awaiting real
+re-conversion to confirm the L7x fix actually resolves the failure rate,
+not just structurally plausible like the module fixes earlier today.
 
 **Sourced but deliberately NOT generated, real ProductCode still
 unconfirmed:** ControlLogix 5590 (1756-L9x, "TS" suffix — L902TS/L905TS/

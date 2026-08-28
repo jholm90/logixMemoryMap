@@ -87,7 +87,7 @@ from datetime import datetime
 from pathlib import Path
 
 from sample_gen.manifest import append_manifest_row, write_sample
-from sample_gen.wrapper import _ICP_BUS_SIZE, _PRODUCT_CODES, _5069_BUS_SIZE
+from sample_gen.wrapper import _5069_bus_size, _ICP_BUS_SIZE, _PRODUCT_CODES
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "fw_catalog_matrix"
 
@@ -100,8 +100,9 @@ FIRMWARE_TABLE: list[tuple[str, str, str, bool]] = [
     ("33", "33.01", ' AutoDiagsEnabled="false" WebServerEnabled="false"', False),
     ("34", "34.01", ' AutoDiagsEnabled="false" WebServerEnabled="false"', False),
     ("35", "35.05", ' AutoDiagsEnabled="false" WebServerEnabled="false"', False),
-    ("36", "36.00", ' AutoDiagsEnabled="false" WebServerEnabled="false"', True),
-    ("37", "37.00", ' AutoDiagsEnabled="false" WebServerEnabled="false"', True),
+    # v36/v37 deliberately excluded 2026-08-28 (James: not asked for, told
+    # to leave out) -- they were ASSUMED/unconfirmed firmware attributes
+    # anyway (no real v36/v37 L5X sample ever existed in this project).
     # DataExchangeId filled in per-file at generation time (real attribute,
     # but the GUID itself is per-export, not a firmware constant).
     ("38", "38.02", ' AutoDiagsEnabled="false" WebServerEnabled="false" DataExchangeId="{DATAEXCHANGEID}"', False),
@@ -186,11 +187,26 @@ def _local_ports_xml(catalog: str) -> str:
     if catalog.startswith("5069"):
         return (
             f'<Port Id="1" Address="0" Type="5069" Upstream="false">\n'
-            f'<Bus Size="{_5069_BUS_SIZE}"/>\n'
+            f'<Bus Size="{_5069_bus_size(catalog)}"/>\n'
             f'</Port>\n'
             f'<Port Id="3" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>\n'
             f'<Port Id="4" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
         )
+    if catalog in _L7X_PRODUCT_CODES:
+        # REAL BUG FOUND 2026-08-28 (James sent a fresh real Studio 5000
+        # export of 1756-L71 for comparison; the exact same shape was
+        # ALSO already sitting unused in samples/local/L7_v21_Sample.L5X
+        # -- this generator was never cross-checked against it).
+        # ControlLogix 5570 (1756-L7x) has NO embedded Ethernet port on
+        # the CPU module itself -- Ethernet comes from a separate bridge
+        # module in another slot, unlike 1756-L8x's embedded port. Real
+        # shape: exactly ONE Port (ICP, Bus Size=4, not the L8x-style 17),
+        # no second Port element at all. The caller must also skip the
+        # top-level <EthernetPorts> element for this family -- see
+        # _build_xml. Only L71 is directly corpus-confirmed; L72-L75 are
+        # the same physical ControlLogix 5570 form factor so treated the
+        # same, not independently confirmed per-catalog.
+        return f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n<Bus Size="4"/>\n</Port>'
     return (
         f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n'
         f'<Bus Size="{_ICP_BUS_SIZE}"/>\n'
@@ -221,17 +237,38 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
     safety_program_xml = (
         '<Program Name="SafetyProgram" TestEdits="false" MainRoutineName="MainRoutine" '
         'Disabled="false" Class="Safety" UseAsFolder="false">\n<Tags/>\n<Routines>\n'
-        '<Routine Name="MainRoutine" Type="RLL"/>\n</Routines>\n</Program>\n'
+        '<Routine Name="MainRoutine" Type="RLL">\n<RLLContent>\n'
+        '<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>\n'
+        '</RLLContent>\n</Routine>\n</Routines>\n</Program>\n'
     ) if is_safety else ""
     safety_task_xml = (
         '<Task Name="SafetyTask" Type="PERIODIC" Rate="20" Priority="10" Watchdog="20" '
         'DisableUpdateOutputs="false" InhibitTask="false" Class="Safety">\n<ScheduledPrograms>\n'
         '<ScheduledProgram Name="SafetyProgram"/>\n</ScheduledPrograms>\n</Task>\n'
     ) if is_safety else ""
+    # Real attributes confirmed 2026-08-28 -- were sitting unused in
+    # samples/local/L7_v21_Sample.L5X AND a fresh export James sent for
+    # direct comparison, both showing the exact same shape. Added for
+    # fidelity; build_l5x's own template omits both and still imports
+    # fine across ~1300 already-tested files, so these are almost
+    # certainly Studio-5000-optional (internal defaults applied when
+    # absent) rather than the actual cause of any real failure -- but now
+    # that real values exist, there's no reason to keep omitting them.
+    time_slice_attrs = ' TimeSlice="20" ShareUnusedTimeSlice="1"'
+    redundancy_pad_attrs = ' IOMemoryPadPercentage="90" DataTablePadPercentage="50"'
+    # REAL BUG FOUND 2026-08-28: ControlLogix 5570 (1756-L7x) has no
+    # embedded Ethernet interface on the CPU module -- see
+    # _local_ports_xml's docstring above. The top-level <EthernetPorts>
+    # element describes THAT embedded interface, so it must be omitted
+    # entirely for this family too, not just the Local module's second
+    # Port -- confirmed absent in both real L71 references.
+    ethernet_ports_xml = "" if catalog in _L7X_PRODUCT_CODES else (
+        '<EthernetPorts>\n<EthernetPort Port="1" Label="1" PortEnabled="true"/>\n</EthernetPorts>\n'
+    )
     return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="{software_revision}" TargetName="{target_name}" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="{now}" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="{target_name}" ProcessorType="{catalog}" MajorRev="{major_rev}" MinorRev="{MINOR_REV}" ProjectCreationDate="{now}" LastModifiedDate="{now}" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false"{extra_attrs}>
-<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Controller Use="Target" Name="{target_name}" ProcessorType="{catalog}" MajorRev="{major_rev}" MinorRev="{MINOR_REV}"{time_slice_attrs} ProjectCreationDate="{now}" LastModifiedDate="{now}" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false"{extra_attrs}>
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"{redundancy_pad_attrs}/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 {safety_info_xml}
 <DataTypes/>
@@ -249,7 +286,11 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
 <Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
 <Tags/>
 <Routines>
-<Routine Name="MainRoutine" Type="RLL"/>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
 </Routines>
 </Program>
 {safety_program_xml}</Programs>
@@ -265,10 +306,7 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
 <Trends/>
 <DataLogs/>
 <TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
-<EthernetPorts>
-<EthernetPort Port="1" Label="1" PortEnabled="true"/>
-</EthernetPorts>
-</Controller>
+{ethernet_ports_xml}</Controller>
 </RSLogix5000Content>
 """
 
