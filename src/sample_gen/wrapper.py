@@ -176,12 +176,29 @@ def build_l5x(
     )
     is_5069 = processor_type.startswith("5069")
     if is_5069:
+        # BUG FOUND 2026-08-28 alongside the SIL2 fix below: this branch
+        # is checked BEFORE safety_level, so a 5069-family safety project
+        # (e.g. 5069-L306ERMS2 hosting a SafetyEnabled="true" 5069-IB8S/A)
+        # never reached the SIL2 SafetyNetwork logic at all -- same
+        # orphaned-reference failure, different code path. Real corpus
+        # confirmation this time from a genuine 5069 sample already in
+        # the local corpus (samples/local/L306ERS2_Sample.L5X,
+        # ProcessorType="5069-L306ERS2"): ALL THREE Local ports (the
+        # local "5069" bus AND both Ethernet ports) carry a real
+        # SafetyNetwork attribute, not just one -- confirmed real, not
+        # guessed.
+        safety_net_attrs = (
+            (' SafetyNetwork="16#0000_1003_0001_0001"',
+             ' SafetyNetwork="16#0000_1003_0003_0003"',
+             ' SafetyNetwork="16#0000_1003_0004_0004"')
+            if safety_level else ("", "", "")
+        )
         local_ports_xml = (
-            f'<Port Id="1" Address="0" Type="5069" Upstream="false">\n'
+            f'<Port Id="1" Address="0" Type="5069" Upstream="false"{safety_net_attrs[0]}>\n'
             f'<Bus Size="{_5069_BUS_SIZE}"/>\n'
             f'</Port>\n'
-            f'<Port Id="3" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>\n'
-            f'<Port Id="4" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
+            f'<Port Id="3" Type="Ethernet" Upstream="false"{safety_net_attrs[1]}>\n<Bus/>\n</Port>\n'
+            f'<Port Id="4" Type="Ethernet" Upstream="false"{safety_net_attrs[2]}>\n<Bus/>\n</Port>'
         )
         local_product_code = _PRODUCT_CODES.get(processor_type, "223")
     elif safety_level == "SIL3":
@@ -202,11 +219,42 @@ def build_l5x(
             f'<Port Id="2" Type="Ethernet" Upstream="false" SafetyNetwork="16#0000_1001_0002_0002">\n<Bus/>\n</Port>'
         )
         local_product_code = _PRODUCT_CODES.get(processor_type, _PRODUCT_CODE)
+    elif safety_level == "SIL2":
+        # BUG FOUND 2026-08-28 (James: "did a super in-depth memory
+        # analysis... review the last batch of l5x conversions"):
+        # this branch previously assumed SIL2 (single non-redundant
+        # safety-capable primary, no partner) needed no SafetyNetwork on
+        # the Local module's own ports -- "no adjacent slot to reserve,
+        # since there's no partner. Only SafetyInfo differs for SIL2."
+        # That conflated two separate real Rockwell concepts: Width="2"
+        # is about reserving the ADJACENT SLOT for a redundant partner
+        # (correctly SIL3-only), but SafetyNetwork is about establishing
+        # the safety NETWORK SEGMENT identity that any downstream
+        # safety-enabled I/O module's own SafetyNetwork attribute
+        # references -- needed any time a descendant module has
+        # SafetyEnabled="true", with or without a redundant partner.
+        # Root-caused against real convert_log.csv data: every one of 11
+        # real SIL2 module-sweep failures (2198-*-ERS3 4conn variants,
+        # 1734-OB8S/A+B, PowerFlex 527-STO, 442G-MABLB, FANUC robot,
+        # 5069-IB8S/A, 5069-OBV8S/A) had a downstream module correctly
+        # declaring SafetyNetwork, but the Local module's own ICP/
+        # Ethernet ports never established that network -- an orphaned
+        # reference. Confirmed against real corpus (SJ_Gormley_
+        # 20251112_r02.L5X): its Local module's ICP port carries
+        # SafetyNetwork="...cbbc" and its Ethernet port carries "...cbbd",
+        # the exact value every downstream Kinetix ERS3 safety module in
+        # that file references. Fixed: SIL2 now emits SafetyNetwork on
+        # both ports too, just without SIL3's Width="2" partner
+        # reservation.
+        local_ports_xml = (
+            f'<Port Id="1" Address="0" Type="ICP" Upstream="false" '
+            f'SafetyNetwork="16#0000_1002_0001_0001">\n'
+            f'<Bus Size="{_ICP_BUS_SIZE}"/>\n'
+            f'</Port>\n'
+            f'<Port Id="2" Type="Ethernet" Upstream="false" SafetyNetwork="16#0000_1002_0002_0002">\n<Bus/>\n</Port>'
+        )
+        local_product_code = _PRODUCT_CODES.get(processor_type, _PRODUCT_CODE)
     else:
-        # SIL2 (single non-redundant safety-capable primary) uses the
-        # SAME local Ports shape as a standard controller -- no adjacent
-        # slot to reserve, since there's no partner. Only SafetyInfo
-        # below differs for SIL2.
         local_ports_xml = (
             f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n'
             f'<Bus Size="{_ICP_BUS_SIZE}"/>\n'

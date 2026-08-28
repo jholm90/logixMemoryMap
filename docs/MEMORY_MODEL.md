@@ -110,6 +110,10 @@ source rather than only empirical capture.
 | FBD_MATH | 16 | ASSUMED, 2026-08-27. 4 DINT-equivalent, zero variance across 2 real instances. |
 | RATE_LIMITER | 92 | ASSUMED, 2026-08-27. 23 DINT-equivalent, only 1 real instance so far. |
 | SCALE | 52 | ASSUMED, 2026-08-27. 13 DINT-equivalent, only 1 real instance so far. |
+| FBD_BOOLEAN_AND | 12 | ASSUMED, 2026-08-27. Bit-packed 3-DINT shape, decoded exactly (not guessed) against real Decorated values on the same instances -- see OPEN_QUESTIONS.md OQ-PREDEFINED. |
+| FBD_BOOLEAN_OR | 12 | ASSUMED, 2026-08-27. Same bit-packed shape, independently confirmed. |
+| FBD_BOOLEAN_NOT | 12 | ASSUMED, 2026-08-27. Same bit-packed shape, independently confirmed. |
+| SFC_STOP | 20 | ASSUMED, 2026-08-28. 5 DINT-equivalent (4 named Decorated members + 1 hidden field revealed only by the real L5K array), zero variance across 4 real instances. Missed on the first corpus sweep (regex bug), found on re-check. |
 
 None of the SFC/FBD-family rows above are drillable to a per-field
 breakdown (unlike TIMER/COUNTER/CONTROL's 3-way split) -- only the TOTAL

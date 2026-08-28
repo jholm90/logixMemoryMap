@@ -72,6 +72,21 @@ predefined_structures:
   FBD_MATH: { bytes: 16, confidence: ASSUMED }   # EnableIn/Out packed + SourceA/B/Dest REAL = 4 DINT
   RATE_LIMITER: { bytes: 92, confidence: ASSUMED } # 23 DINT-equivalent, n=1 real sample
   SCALE: { bytes: 52, confidence: ASSUMED }      # 13 DINT-equivalent, n=1 real sample
+  # SFC_STOP -- found 2026-08-28 re-checking the corpus after a regex bug
+  # (didn't account for a <Description> block between Tag-open and Data)
+  # hid this real evidence on the first pass (James: "did a super in-depth
+  # memory analysis... it doesn't seem like you analyzed it enough"). Real
+  # Decorated members: Status(DINT)+X(BOOL)+Reset(BOOL)+Count(DINT), but
+  # the real L5K array has 5 raw values -- [8193,0,0,0,0], zero variance
+  # across all 4 real instances (Stop_014/Stop_046/Seq_Stop_015/Seq_
+  # Stop_069, Bender134053_201104.L5X). L5K[0]=8193=16#2001 matches the
+  # real Status value exactly. One more raw value than named Decorated
+  # members -- a hidden field not shown in the Decorated view, same
+  # "voodoo" pattern already documented for CAM_PROFILE (only 1 of 14 real
+  # per-element fields visible there). 5 x 4 bytes = 20, same convention
+  # as SFC_STEP/SFC_ACTION. ASSUMED, zero-variance across 4 instances, not
+  # yet capture-confirmed.
+  SFC_STOP: { bytes: 20, confidence: ASSUMED }   # Status+X+Reset+Count+1 hidden = 5 DINT-equivalent
   # FBD_BOOLEAN_AND/OR/NOT -- RM018A pages 546-548 give the real member
   # list (AND/OR: EnableIn+In1..In8+EnableOut+Out = 11 BOOL; NOT:
   # EnableIn+In+EnableOut+Out = 4 BOOL), but unlike SFC_STEP the real L5K

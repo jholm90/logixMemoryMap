@@ -365,18 +365,73 @@ Bender program (69 modules incl. GuardLogix Safety Partner). GuardLogix
 SIL2/SIL3 handling is a reusable `build_l5x(..., safety_level=...)`
 capability. Real Studio 5000 conversion errors from the 2026-08-24/25
 batch all root-caused and fixed: module-level `SafetyEnabled="true"` vs a
-non-safety controller; CIP Safety connections needing a safety controller
-even without that attribute (1734-OB8S/A/B, 442G-MABLB); 5069 modules
-needing `Port Type="5069"`; User-Defined-Catalog devices needing their
-real `ExtendedProperties/UdcAopVersion` schema (150 SMC Flex-E, PowerFlex
-525-EENET — PF755 confirmed NOT affected); duplicate Ethernet IPs/AxisIDs;
-a slot collision; `ParentModPortId` mismatches. Rack slot-address gaps
-("a module in slot 10" concern) audited and confirmed NOT a bug — module
-size reads exclusively from `ArrayMember/@Dimensions`, never slot number.
+non-safety controller; 5069 modules needing `Port Type="5069"`; User-
+Defined-Catalog devices needing their real `ExtendedProperties/
+UdcAopVersion` schema (150 SMC Flex-E, PowerFlex 525-EENET — PF755
+confirmed NOT affected); duplicate Ethernet IPs/AxisIDs; a slot collision;
+`ParentModPortId` mismatches. Rack slot-address gaps ("a module in slot
+10" concern) audited and confirmed NOT a bug — module size reads
+exclusively from `ArrayMember/@Dimensions`, never slot number.
 Deliberately not charged `module_overhead`: rack-aliased modules,
 `CatalogNumber="Embedded"` I/O. Produced/consumed tags untouched
 (OQ-PRODCONS). PowerFlex 525 has multiple real I/O payload UDTs beyond
 the one profile covered — needs more real corpus examples, not guessed.
+
+**CORRECTION, 2026-08-28** (James: "did a super in-depth memory analysis
+on the last pushed file? ... review the last batch of l5x conversions,
+there was more than 50"): the "1734-OB8S/A/B, 442G-MABLB ... CIP Safety
+connections needing a safety controller even without that attribute"
+claim above was WRONG/incomplete — the earlier fix (switching to a
+safety-rated processor_type) was necessary but not sufficient. These
+files, plus 5 more, still failed real conversion in the 226-row
+2026-08-27 batch (`53e91d9`, `samples/convert_log.csv`) with a generic
+`XMLSrv_E_IMPORT_ABORTED_NO_CHANGES ... See error log` that gave no
+detail on its own. Real root cause found by diffing a passing vs. failing
+pair that differ by exactly one real config axis (`modulesweep_2198_
+d012_ers3_variant_2conn` PASS vs. `_variant_4conn` FAIL — same catalog,
+2conn has Integrated Safety off, 4conn has it on): `wrapper.py`'s
+`build_l5x(..., safety_level="SIL2")` branch assumed a single non-
+redundant safety-capable primary (no CPU partner) needed no
+`SafetyNetwork` attribute on its own Local module's ICP/Ethernet ports —
+"no adjacent slot to reserve, since there's no partner. Only SafetyInfo
+differs for SIL2." That conflated two separate real Rockwell concepts:
+`Width="2"` reserves the adjacent slot for a redundant CPU partner
+(correctly SIL3-only); `SafetyNetwork` establishes the safety NETWORK
+SEGMENT identity that any downstream safety-enabled I/O module's own
+`SafetyNetwork` attribute references, needed whenever a descendant module
+has `SafetyEnabled="true"`, with or without a redundant partner. Every
+one of the affected files had a downstream module correctly declaring
+`SafetyNetwork`, referencing a network segment the project never
+established — an orphaned reference. Confirmed against real corpus
+(`SJ_Gormley_20251112_r02.L5X`): its Local module's ICP port carries
+`SafetyNetwork="...cbbc"` and its Ethernet port carries `"...cbbd"`, the
+exact value every downstream Kinetix ERS3 safety module in that file
+references. The `is_5069` branch (checked BEFORE `safety_level`, so a
+5069-family safety project like `5069-L306ERMS2` hosting
+`5069-IB8S/A`/`5069-OBV8S/A` never reached the SIL2 logic at all) had the
+identical bug via a separate code path — confirmed against a second real
+corpus file (`samples/local/L306ERS2_Sample.L5X`, `5069-L306ERS2`): all
+THREE Local ports (the local "5069" bus and both Ethernet ports) carry a
+real `SafetyNetwork`. Both branches fixed 2026-08-28, regenerated (the
+`_r2`-suffixed retest files, matching the existing suffix convention so
+James's re-test run doesn't collide with old files): 12 of the 17 real
+failures now carry the fix (6× `2198-*-ERS3` 4conn variants,
+`1734-OB8S/A`+`B`, `PowerFlex 527-STO`, `442G-MABLB`, `FANUC Robot`,
+`5069-IB8S/A`, `5069-OBV8S/A`) — awaiting a real re-conversion to confirm
+this actually resolves the import error, not just structurally plausible.
+**Still genuinely unresolved, 4 files, confirmed a DIFFERENT cause**:
+`5069-IB16/A`, `5069-IY4/A`, `5069-OB16/A`, `5069-OB16/B` all have
+`SafetyEnabled="false"` — no Safety content at all — so the SafetyNetwork
+fix doesn't apply and doesn't touch them. Every 5069-family file with
+"5069" in its own name has failed real conversion 100% of the time across
+the whole log history (0 passes, several attempts) — while plain
+5069-family CONTROLLER-only files (no I/O module attached, `fw_catalog_
+matrix` batch, e.g. `v35_l306er.L5X`) pass 8/8, isolating the failure to
+something about attaching one of these 4 specific real 5069 I/O module
+shapes, not the 5069 processor/local-bus mechanism itself. Needs the real
+Studio 5000 error-log detail (same limitation as before — the CSV only
+carries a generic wrapper message) or a structural diff against a
+passing 5069 I/O module to actually root-cause, not guessed further here.
 
 [^eventtrigger]: James, 2026-08-25: "Does an event task triggered by MAW
 cost more than an event task triggered by the EVENT instruction?" Real
