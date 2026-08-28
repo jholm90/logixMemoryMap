@@ -447,6 +447,30 @@ already-safety-fixed 5069 files keep their correct value too. All 17 of
 the original real failures now have a real, evidenced fix — awaiting
 real re-conversion of all 17 affected `_r2` files to confirm.
 
+**1769-family had the identical class of bug, found by generalizing**
+(James: "the 5069 and 1769 have different backplane sizes based on the
+catalog number ordered"). Worse than 5069's case: there was no `is_1769`
+branch in `wrapper.py` at all, so every 1769 processor silently fell
+through to the generic ICP-chassis `else` branch — wrong Port TYPE
+(`"ICP"`), not just a wrong Bus Size number. Real corpus evidence
+(`samples/local/DnR_Personal/TOYOTA_135453_20221024.L5X`, `1769-L33ERMS`)
+shows a real, distinct `Type="Compact"` (neither 1756's `"ICP"` nor
+5069's `"5069"`), single Ethernet port (unlike 5069's dual-Ethernet).
+Fixed 2026-08-28: added the missing branch with the correct Port Type
+and SafetyNetwork handling (mirroring the SIL2 fix, though not
+independently confirmed as required for 1769 the way it was for 5069/
+1756 — the one real corpus file has a populated SafetyNetwork but no
+downstream safety module to test the orphaned-reference failure mode
+against). Only ONE real per-catalog Bus Size data point exists
+(`L33ERMS` → 17) — every other 1769 catalog's real max is genuinely
+UNCONFIRMED, kept as an explicit fallback rather than guessed model-by-
+model the way the 5069 table could be. The 9 existing `fw_baseline`
+1769 files predate the current generator scripts (moved in from
+elsewhere per `git log`, not reproducible via `python -m`) and already
+pass conversion regardless (same "empty project never trips the
+validation" pattern already confirmed for 5069) — not regenerated, the
+structural fix matters for any NEW 1769 generation going forward.
+
 [^eventtrigger]: James, 2026-08-25: "Does an event task triggered by MAW
 cost more than an event task triggered by the EVENT instruction?" Real
 corpus grep (12 real `Type="EVENT"` Tasks across SJ_Gormley_20251112_r02

@@ -88,6 +88,31 @@ def _5069_bus_size(processor_type: str) -> str:
     m = re.match(r"5069-(L\d{3})", processor_type)
     return _5069_BUS_SIZE_BY_MODEL.get(m.group(1), _5069_BUS_SIZE_DEFAULT) if m else _5069_BUS_SIZE_DEFAULT
 
+
+# 1769-family (CompactLogix 5370, DIN-rail expansion I/O bus) real Local
+# Ports shape -- STRUCTURAL BUG FOUND 2026-08-28 (James: "the 5069 and
+# 1769 have different backplane sizes based on the catalog number
+# ordered"): there was no is_1769 branch at all before this, so every
+# 1769 processor silently fell through to the generic ICP-chassis else
+# branch (Port Type="ICP", single Ethernet port) -- wrong PORT TYPE, not
+# just a wrong number. Real corpus evidence (samples/local/DnR_Personal/
+# TOYOTA_135453_20221024.L5X, ProcessorType="1769-L33ERMS"): Port
+# Type="Compact" (a third distinct value, neither 1756's "ICP" nor
+# 5069's "5069"), single Ethernet port -- same single-Ethernet shape as
+# 1756, unlike 5069's dual-Ethernet. Only ONE real per-catalog bus-size
+# data point exists so far (L33ERMS -> 17); every other 1769 catalog's
+# real max is UNCONFIRMED -- same 17 kept only as a fallback, not
+# asserted as correct for other models the way the 5069 table is.
+_1769_BUS_SIZE_BY_MODEL = {
+    "L33": "17",  # confirmed, TOYOTA_135453_20221024.L5X (1769-L33ERMS)
+}
+_1769_BUS_SIZE_DEFAULT = "17"  # unconfirmed for any model not in the table above
+
+
+def _1769_bus_size(processor_type: str) -> str:
+    m = re.match(r"1769-(L\d{2})", processor_type)
+    return _1769_BUS_SIZE_BY_MODEL.get(m.group(1), _1769_BUS_SIZE_DEFAULT) if m else _1769_BUS_SIZE_DEFAULT
+
 # Real per-catalog ProductCode, 2026-08-26 (James's own real fw_baseline
 # exports, samples/local/fw_versions/) -- found while investigating why
 # every stringconst_*_l8 file (Constant-flag x processor batch) failed to
@@ -207,8 +232,30 @@ def build_l5x(
     rungs = extra_rungs_xml if extra_rungs_xml.strip() else (
         '<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>'
     )
+    is_1769 = processor_type.startswith("1769")
     is_5069 = processor_type.startswith("5069")
-    if is_5069:
+    if is_1769:
+        # See _1769_bus_size's docstring above for the real corpus source.
+        # SafetyNetwork handling mirrors the SIL2/is_5069 fix (same real
+        # orphaned-reference risk applies to any family) even though no
+        # real 1769 Safety corpus example has been checked yet -- TOYOTA_
+        # 135453_20221024.L5X's own Local module DOES carry a real
+        # SafetyNetwork on its Ethernet port, so the family supports it,
+        # just not independently confirmed as required in every safety
+        # config the way the 5069/1756 cases were.
+        safety_net_attrs = (
+            (' SafetyNetwork="16#0000_1004_0001_0001"',
+             ' SafetyNetwork="16#0000_1004_0002_0002"')
+            if safety_level else ("", "")
+        )
+        local_ports_xml = (
+            f'<Port Id="1" Address="0" Type="Compact" Upstream="false"{safety_net_attrs[0]}>\n'
+            f'<Bus Size="{_1769_bus_size(processor_type)}"/>\n'
+            f'</Port>\n'
+            f'<Port Id="2" Type="Ethernet" Upstream="false"{safety_net_attrs[1]}>\n<Bus/>\n</Port>'
+        )
+        local_product_code = _PRODUCT_CODES.get(processor_type, _PRODUCT_CODE)
+    elif is_5069:
         # BUG FOUND 2026-08-28 alongside the SIL2 fix below: this branch
         # is checked BEFORE safety_level, so a 5069-family safety project
         # (e.g. 5069-L306ERMS2 hosting a SafetyEnabled="true" 5069-IB8S/A)
