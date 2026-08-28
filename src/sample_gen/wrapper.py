@@ -20,6 +20,7 @@ reference to get right.
 
 from __future__ import annotations
 
+import re
 from datetime import datetime
 
 # v35 / ControlLogix 5580-class -- switched 2026-08-20 (James: "why didnt
@@ -47,13 +48,45 @@ _ICP_BUS_SIZE = "17"
 # Real 5069-family (Compact 5000, no separate chassis) Local-module Ports
 # shape, confirmed 2026-08-22 against samples/local/DnR_Personal/
 # BT1XX_FFC_20240325.L5X (5069-L330ERMS2): local bus Port Type="5069" (not
-# "ICP"), Bus Size="32" (vs 1756's 17-slot-chassis convention), and TWO
-# Ethernet ports (dual embedded switch) rather than 1756's one. James,
-# 2026-08-22: "You'll have to swap to a 5069 processor to test the 5069
-# modules" -- a naive processor_type string swap on the old ICP/single-
-# Ethernet template would still be structurally wrong, so this is a real
-# separate shape, not just a catalog-string substitution.
-_5069_BUS_SIZE = "32"
+# "ICP"), vs 1756's 17-slot-chassis convention, and TWO Ethernet ports
+# (dual embedded switch) rather than 1756's one. James, 2026-08-22:
+# "You'll have to swap to a 5069 processor to test the 5069 modules" -- a
+# naive processor_type string swap on the old ICP/single-Ethernet template
+# would still be structurally wrong, so this is a real separate shape, not
+# just a catalog-string substitution.
+#
+# BUG FOUND 2026-08-28 (James, real Studio 5000 error on
+# modulesweep_5069_ib16_a.L5X): "Failed to set the 'Size' property
+# (Chassis size exceeds the allowable size for a chassis.)". The flat
+# Bus Size="32" used for EVERY 5069 catalog was only ever confirmed real
+# for 5069-L330ERMS2 -- it's NOT a fixed constant, it's a real per-model
+# maximum-local-I/O-count that scales with CPU tier. An empty project
+# (no local module attached) never trips this validation regardless of
+# the declared value (confirmed: v35_l306er.L5X passes 8/8 with the same
+# wrong "32"), which is exactly why this stayed hidden until a real local
+# 5069 I/O module actually got attached. Real per-catalog values pulled
+# directly from 5 separate real corpus files (never guessed):
+# samples/local/L306ERS2_Sample.L5X (5069-L306ERS2, 9),
+# samples/local/DnR_Personal/PWO_134190.L5X (5069-L310ERS2, 9),
+# samples/local/DnR_Personal/Fisher_Synergy_Bead_20240725.L5X
+# (5069-L320ERMS2, 17), FlareFunction_311D_240731.L5X (5069-L320ERMS3, 17),
+# BT1XX_FFC_20240325.L5X (5069-L330ERMS2, 32),
+# Fisher_P800Sub_20240531.L5X (5069-L340ERS2, 32). The M/MS2/MS3/S2/ER
+# suffix doesn't change the physical backplane capacity within the same
+# base model number (e.g. L306ER and L306ERS2 are the same tier, only the
+# safety/motion feature suffix differs), so this keys off the base model
+# number extracted from processor_type.
+_5069_BUS_SIZE_BY_MODEL = {
+    "L306": "9", "L310": "9",
+    "L320": "17",
+    "L330": "32", "L340": "32",
+}
+_5069_BUS_SIZE_DEFAULT = "32"  # unconfirmed for any model not in the table above
+
+
+def _5069_bus_size(processor_type: str) -> str:
+    m = re.match(r"5069-(L\d{3})", processor_type)
+    return _5069_BUS_SIZE_BY_MODEL.get(m.group(1), _5069_BUS_SIZE_DEFAULT) if m else _5069_BUS_SIZE_DEFAULT
 
 # Real per-catalog ProductCode, 2026-08-26 (James's own real fw_baseline
 # exports, samples/local/fw_versions/) -- found while investigating why
@@ -195,7 +228,7 @@ def build_l5x(
         )
         local_ports_xml = (
             f'<Port Id="1" Address="0" Type="5069" Upstream="false"{safety_net_attrs[0]}>\n'
-            f'<Bus Size="{_5069_BUS_SIZE}"/>\n'
+            f'<Bus Size="{_5069_bus_size(processor_type)}"/>\n'
             f'</Port>\n'
             f'<Port Id="3" Type="Ethernet" Upstream="false"{safety_net_attrs[1]}>\n<Bus/>\n</Port>\n'
             f'<Port Id="4" Type="Ethernet" Upstream="false"{safety_net_attrs[2]}>\n<Bus/>\n</Port>'
