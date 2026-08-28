@@ -419,19 +419,33 @@ failures now carry the fix (6× `2198-*-ERS3` 4conn variants,
 `1734-OB8S/A`+`B`, `PowerFlex 527-STO`, `442G-MABLB`, `FANUC Robot`,
 `5069-IB8S/A`, `5069-OBV8S/A`) — awaiting a real re-conversion to confirm
 this actually resolves the import error, not just structurally plausible.
-**Still genuinely unresolved, 4 files, confirmed a DIFFERENT cause**:
-`5069-IB16/A`, `5069-IY4/A`, `5069-OB16/A`, `5069-OB16/B` all have
-`SafetyEnabled="false"` — no Safety content at all — so the SafetyNetwork
-fix doesn't apply and doesn't touch them. Every 5069-family file with
-"5069" in its own name has failed real conversion 100% of the time across
-the whole log history (0 passes, several attempts) — while plain
-5069-family CONTROLLER-only files (no I/O module attached, `fw_catalog_
-matrix` batch, e.g. `v35_l306er.L5X`) pass 8/8, isolating the failure to
-something about attaching one of these 4 specific real 5069 I/O module
-shapes, not the 5069 processor/local-bus mechanism itself. Needs the real
-Studio 5000 error-log detail (same limitation as before — the CSV only
-carries a generic wrapper message) or a structural diff against a
-passing 5069 I/O module to actually root-cause, not guessed further here.
+**The 4 remaining 5069 failures ALSO root-caused, 2026-08-28** (James sent
+the real Studio 5000 error this time, not just the generic CSV wrapper):
+`5069-IB16/A`, `5069-IY4/A`, `5069-OB16/A`, `5069-OB16/B` all real-error
+`Failed to set the 'Size' property (Chassis size exceeds the allowable
+size for a chassis.)` at `Modules/Module[@Name="Local"]/Ports/Port/Bus` —
+a completely different, non-Safety cause from the 13 above, confirming
+the earlier guess that these 4 needed a separate diagnosis. `wrapper.py`
+used a flat `Bus Size="32"` for every 5069 catalog, sourced from only ONE
+real corpus file (5069-L330ERMS2) and silently assumed universal — it's
+actually a real per-model maximum local-I/O-slot count, not a constant.
+An empty project (no local module attached) never trips this validation
+regardless of the declared value (confirmed: `v35_l306er.L5X` passes 8/8
+with the same wrong "32"), which is exactly why this stayed hidden until
+a real local 5069 I/O module got attached — every one of these 4 failing
+files attaches one. Real per-catalog values pulled from 6 separate real
+corpus files (never guessed): `5069-L306ERS2`→9 (`L306ERS2_Sample.L5X`),
+`5069-L310ERS2`→9 (`PWO_134190.L5X`), `5069-L320ERMS2`/`MS3`→17
+(`Fisher_Synergy_Bead_20240725.L5X`, `FlareFunction_311D_240731.L5X`),
+`5069-L330ERMS2`→32 (`BT1XX_FFC_20240325.L5X`), `5069-L340ERS2`→32
+(`Fisher_P800Sub_20240531.L5X`). The failing files all use
+`5069-L306ER` (real max 9, was getting 32) — fixed by keying Bus Size off
+the base model number extracted from `processor_type` (the M/MS2/MS3/S2/
+ER suffix doesn't change physical backplane capacity within the same
+tier), regenerated the 4 `_r2` retest files plus re-verified the 2
+already-safety-fixed 5069 files keep their correct value too. All 17 of
+the original real failures now have a real, evidenced fix — awaiting
+real re-conversion of all 17 affected `_r2` files to confirm.
 
 [^eventtrigger]: James, 2026-08-25: "Does an event task triggered by MAW
 cost more than an event task triggered by the EVENT instruction?" Real
