@@ -475,6 +475,27 @@ already-safety-fixed 5069 files keep their correct value too. All 17 of
 the original real failures now have a real, evidenced fix — awaiting
 real re-conversion of all 17 affected `_r2` files to confirm.
 
+**A second, separate real 5069 bug found 2026-08-28** (James: "looks
+like your 5069-LxxERMSx has issues as well"). `EtherNetIPMode="A1/A2:
+Dual-IP"` is a real Controller-level attribute confirmed present, with
+the identical value, in EVERY 5069 corpus file checked (6/6, zero
+variance) — describes how the CPU's two embedded Ethernet ports are
+addressed, something only a 5069 processor has (1756/1769 have at most
+one embedded port). It was missing from both `wrapper.py`'s
+`build_l5x` (the primary template used across ~1300 already-tested
+files) and `gen_fw_catalog_matrix.py`, for every 5069 catalog, not
+specifically the ERMSx (motion+safety) subset James happened to be
+testing — confirmed by diffing a plain non-motion S2 catalog's real
+export against a motion+safety ERMS2 one and finding the attribute
+identical in both. Fixed in both generators (conditional on
+`processor_type`/`catalog` starting with `"5069"`); regenerated all 90
+affected files (`fw_catalog_matrix`'s 15 5069 catalogs x 6 firmware, plus
+the module-sweep/variant/bender-full files that call `build_l5x`
+directly). Whether this attribute is actually required for import or,
+like `TimeSlice`/the `RedundancyInfo` pad percentages, Studio-5000-
+optional is still unconfirmed — added regardless now that a real value
+exists, same reasoning as those two.
+
 **1769-family had the identical class of bug, found by generalizing**
 (James: "the 5069 and 1769 have different backplane sizes based on the
 catalog number ordered"). Worse than 5069's case: there was no `is_1769`

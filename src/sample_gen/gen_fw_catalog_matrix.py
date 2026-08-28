@@ -265,9 +265,17 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
     ethernet_ports_xml = "" if catalog in _L7X_PRODUCT_CODES else (
         '<EthernetPorts>\n<EthernetPort Port="1" Label="1" PortEnabled="true"/>\n</EthernetPorts>\n'
     )
+    # REAL BUG FOUND 2026-08-28 (James: "looks like your 5069-LxxERMSx
+    # has issues as well"). EtherNetIPMode="A1/A2: Dual-IP" is a real
+    # Controller-level attribute confirmed present, identical value, in
+    # EVERY 5069 corpus file checked (6/6, zero variance) -- a
+    # 5069-family-wide gap (describes the CPU's two embedded Ethernet
+    # ports' addressing mode), not specific to the ERMSx subset James
+    # happened to be testing. See wrapper.py's build_l5x for the same fix.
+    ethernet_ip_mode_attr = ' EtherNetIPMode="A1/A2: Dual-IP"' if catalog.startswith("5069") else ""
     return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="{software_revision}" TargetName="{target_name}" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="{now}" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="{target_name}" ProcessorType="{catalog}" MajorRev="{major_rev}" MinorRev="{MINOR_REV}"{time_slice_attrs} ProjectCreationDate="{now}" LastModifiedDate="{now}" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false"{extra_attrs}>
+<Controller Use="Target" Name="{target_name}" ProcessorType="{catalog}" MajorRev="{major_rev}" MinorRev="{MINOR_REV}"{time_slice_attrs} ProjectCreationDate="{now}" LastModifiedDate="{now}" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false"{ethernet_ip_mode_attr}{extra_attrs}>
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"{redundancy_pad_attrs}/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 {safety_info_xml}

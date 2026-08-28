@@ -357,9 +357,20 @@ def build_l5x(
     # Format matches the real reference export exactly (Python's ctime-style
     # strftime): "Thu Aug 20 11:19:00 2026".
     now = datetime.now().strftime("%a %b %d %H:%M:%S %Y")
+    # REAL BUG FOUND 2026-08-28 (James: "looks like your 5069-LxxERMSx has
+    # issues as well"). EtherNetIPMode="A1/A2: Dual-IP" is a real
+    # Controller-level attribute confirmed present, identical value, in
+    # EVERY 5069 corpus file checked (6/6, zero variance -- both plain
+    # non-motion S2 catalogs and motion+safety ERMSx catalogs alike, so
+    # this is a 5069-family-wide gap, not specific to the ERMSx subset
+    # James happened to be testing). Describes how the CPU's two embedded
+    # Ethernet ports are configured (Dual-IP addressing) -- something
+    # only a 5069 processor has (1756/1769 have at most one embedded
+    # port), so it's correctly omitted for every other family.
+    ethernet_ip_mode_attr = ' EtherNetIPMode="A1/A2: Dual-IP"' if is_5069 else ""
     return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="{software_revision}" TargetName="{target_name}" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="{now}" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="{target_name}" ProcessorType="{processor_type}" MajorRev="{major_rev}" MinorRev="{minor_rev}" ProjectCreationDate="{now}" LastModifiedDate="{now}" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<Controller Use="Target" Name="{target_name}" ProcessorType="{processor_type}" MajorRev="{major_rev}" MinorRev="{minor_rev}" ProjectCreationDate="{now}" LastModifiedDate="{now}" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false"{ethernet_ip_mode_attr} AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 {safety_info_xml}
