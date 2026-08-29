@@ -389,17 +389,26 @@ for the full derivation and `docs/AOI_KNOWLEDGE_MAP.md` for history.
 
 ## Module / I/O tag sizing
 
-**Wired 2026-08-27 (n=2, FITTED, LOW CONFIDENCE — see OQ-MODULEIO for the
-full derivation).** `module_defined_bytes` (real, computed from the
+**Wired 2026-08-27, per-catalog table added 2026-08-29 — see OQ-MODULEIO
+for the full derivation.** `module_defined_bytes` (real, computed from the
 module's own auto-generated "Module-Defined" data type — InputTag/
 OutputTag/ConfigTag Structure content, sized the same way as any UDT) +
-`module_overhead` (1,672 bytes/module flat, the mean of 2 real captured
-deltas: 1756-IB16=1,684, 1734-AENTR/C=1,660 — ~98% of a module's real cost
-either way). Wired as ESTIMATED tier, not EXACT — 2 real points doesn't
-earn tag/UDT/AOI-level confidence yet. NOT charged to a rack-aliased
-module (`RackConnection`/`InAliasTag`) or a `CatalogNumber="Embedded"`
+a real per-catalog overhead when one exists (`module_overhead_by_catalog`,
+51 catalogs, real range -793 to +10,497, ASSUMED confidence, derived the
+same subtraction way as `predefined_structures`), else the flat
+`module_overhead` (1,672 bytes/module, the mean of the original 2 real
+captured deltas) as a fallback for any catalog with no real data yet.
+Both stay ESTIMATED tier, not EXACT. NOT charged to a rack-aliased module
+(`RackConnection`/`InAliasTag`) or a `CatalogNumber="Embedded"`
 processor-integrated I/O block (CompactLogix 5370 "ER" family) — zero real
-data for either shape, stays fully unmodeled rather than guessed.
+data for either shape, stays fully unmodeled rather than guessed. Real,
+still-open gaps: a module's 2nd/3rd/... instance of the SAME catalog in
+one file costs LESS than the 1st (not flat per-instance — real
+`module_1756_ib16_n01/n03/n10` deltas are -4/-1,588/-7,160 against a flat
+per-instance assumption), and a handful of catalogs (generic Ethernet
+placeholders, a couple of adapter/bridge catalogs) show real
+connection-variant-dependent overhead not yet decomposed — see
+OPEN_QUESTIONS.md OQ-MODULEIO.
 - Produced/Consumed: **RESOLVED — OQ-PRODCONS**. No special connection-
   overhead formula needed — a correctly-built produced/consumed tag's
   DataType already includes a `CONNECTION_STATUS`-typed member, so
@@ -827,3 +836,15 @@ there's a record of *why* a number is what it is, not just what it currently is.
   OPEN_QUESTIONS.md OQ-CMPCPTLAYOUT for the full finding and a real
   hypothesis (type-promotion-point count, not operand count) for the next
   probe batch.
+- **2026-08-29, same day, full manifest.csv audit** (James: "make another
+  in-depth pass"). Re-ran every category with real capture data through
+  the live engine, not just the categories a previous pass happened to
+  check. Found 90 of 126 `modules`-category rows were never checked
+  against the engine at all despite having real data since 2026-08-22.
+  Wired `module_overhead_by_catalog` (51 catalogs, real range -793 to
+  +10,497, replacing the flat 1,672 FITTED-from-2-points estimate for
+  those catalogs) — see "Module / I/O tag sizing" above. Real exact-match
+  rate on the 126 real module rows: 1/126 -> 54/126. Two real threads
+  left open, both genuine architecture gaps (non-flat multi-module
+  marginal cost; a few connection-variant-dependent catalogs), documented
+  in OPEN_QUESTIONS.md OQ-MODULEIO rather than force-fit.

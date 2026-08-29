@@ -76,9 +76,12 @@ files; PID and ASCII-module instructions dropped (zero real occurrences).
 ---
 
 [^moduleio]: `parser/modules.py` reads Connection/ConfigTag/ConfigScript
-sizes straight off the L5X (Logix Designer states them directly). A flat
-`module_overhead` constant is wired but only from n=2 real deltas — see
-OPEN_QUESTIONS.md OQ-MODULEIO for the 141-file test batch and its status.
+sizes straight off the L5X (Logix Designer states them directly). Real
+per-catalog overhead (51 catalogs, `module_overhead_by_catalog`) replaced
+the flat n=2 `module_overhead` estimate for those catalogs 2026-08-29 —
+see OPEN_QUESTIONS.md OQ-MODULEIO. Two real threads remain (multi-module
+marginal cost, a few connection-variant-dependent catalogs), both need
+their own architecture work, not more test generation.
 Produced/consumed tags (OQ-PRODCONS) RESOLVED — no special formula needed,
 ordinary UDT-member recursion already covers a produced/consumed tag's
 `CONNECTION_STATUS`-typed member, which is itself now a wired

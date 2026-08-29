@@ -54,8 +54,14 @@ the matching footnote at the bottom, not inline.
    behavior by coincidence, not the array behavior they were meant
    to.[^aoiarraydimension]
 
-7. **OQ-MODULEIO** — wired, LOW CONFIDENCE (n=2). 141 files awaiting
-   capture; that's the next step, not more generation.[^moduleio]
+7. **OQ-MODULEIO** — mostly closed 2026-08-29. 126 real module captures
+   were sitting unreconciled in manifest.csv; 51 catalogs now have a real
+   per-catalog overhead value (exact-match rate on real data went from
+   1/126 to 54/126). Two real sub-threads remain, both needing
+   architecture work not more generation: multi-module marginal cost
+   (adding a 2nd/3rd of the same module doesn't cost the same as the
+   1st), and a handful of catalogs with real connection-variant-dependent
+   overhead.[^moduleio]
 
 8. **OQ-BRANCHDEPTH** — confirmed real (branch structure costs memory
    beyond leg instructions). Two independent test batches — leg-count
@@ -574,9 +580,54 @@ confirmed NOT affected); duplicate Ethernet IPs/AxisIDs; a slot collision;
 10" concern) audited and confirmed NOT a bug — module size reads
 exclusively from `ArrayMember/@Dimensions`, never slot number.
 Deliberately not charged `module_overhead`: rack-aliased modules,
-`CatalogNumber="Embedded"` I/O. Produced/consumed tags untouched
-(OQ-PRODCONS). PowerFlex 525 has multiple real I/O payload UDTs beyond
-the one profile covered — needs more real corpus examples, not guessed.
+`CatalogNumber="Embedded"` I/O. Produced/consumed tags: RESOLVED, see
+RESOLVED_QUESTIONS.md OQ-PRODCONS. PowerFlex 525 has multiple real I/O
+payload UDTs beyond the one profile covered — needs more real corpus
+examples, not guessed.
+
+**Real per-catalog overhead table wired 2026-08-29.** The 141-file batch
+above had real capture data landing since 2026-08-22 — 126 rows total, of
+which 90 were never checked against the live engine and stayed on the
+flat 1,672 estimate. Found the same way OQ-CMPCPTLAYOUT was: re-running
+every module-category manifest row through the current engine and
+diffing against real actual_bytes. Derived `module_overhead_by_catalog`
+(memory_model.yaml, `constants.py` `ModuleOverheadModel`) via the same
+subtraction methodology as `predefined_structures`:
+`real_catalog_overhead = 1,672 + (actual_bytes - engine_predicted)`, ONLY
+for real captures where the file's entire module list is exactly
+`[Local, one real module]` — strict on purpose, since several
+adapter/bridge catalogs (e.g. `1734-AENTR/C`) turned out to be absorbing
+a whole rack of aliased child I/O modules into their own single entry,
+which would have corrupted a looser per-catalog derivation with
+configuration-dependent numbers. 51 catalogs got a clean, unambiguous
+real value (real range: -793 to +10,497 — the flat 1,672 mean was a poor
+proxy for this much real spread). Real exact-match rate against the 126
+real module rows: 1/126 (before) -> 54/126 (after); full-manifest
+regression checked (89 rows affected, 12 multi-module files got
+marginally worse by 4-68 bytes each — all already inside the "not solved
+this pass" bucket below, net effect strongly positive).
+
+**6 catalogs show a real, unmodeled connection-variant effect** and were
+deliberately left off the table rather than force-averaged:
+`ETHERNET-MODULE`/`ETHERNET-PANELVIEW` (generic-catalog placeholders —
+real overhead scales with declared I/O size, not flat at all),
+`1734-AENTR/C` and `1756-EN2T` (real 1-conn vs 2-conn/rack-aliased
+variance, up to +2,156 apart for the "same" catalog), PowerFlex
+525/755-EENET (a smaller ~48-byte gap between two independent
+file-generation methods, ambiguous which is representative).
+
+**38 multi-module files reveal a real, distinct architecture gap: the
+per-module marginal cost is NOT flat.** `module_1756_ib16_n01/n03/n10`
+(1/3/10 identical 1756-IB16 modules in one file) show delta -4, -1,588,
+-7,160 against "N x flat-per-catalog-overhead" — the SAME catalog's 2nd,
+3rd, ... Nth instance costs LESS than the 1st, not the same. Rack files
+(`modulerack_*`) and zero-connection modules (several `_variant_noconn`
+files cost real nonzero bytes despite `module_defined_bytes=0` and
+getting silently skipped by the current `continue`-on-0/0 check) show the
+same class of gap. Needs its own marginal-vs-fixed decomposition, the
+same shape task_program_overhead already got for Task/Program/Routine
+counts — real architecture work, not a quick constant fix, so not rushed
+into this pass.
 
 **CORRECTION, 2026-08-28** (James: "did a super in-depth memory analysis
 on the last pushed file? ... review the last batch of l5x conversions,

@@ -350,6 +350,27 @@ class SafetyCapableBaselineDeltaModel:
 
 
 @dataclass(frozen=True)
+class ModuleOverheadModel:
+    """Real per-catalog module overhead (OQ-MODULEIO, wired 2026-08-29) --
+    see memory_model.yaml module_overhead_by_catalog for the full
+    derivation and which catalogs were deliberately left off (adapter/
+    bridge catalogs that may be absorbing a rack of aliased children,
+    generic-catalog placeholders whose overhead scales with declared I/O
+    size, and a few real connection-variant-dependent cases). Any catalog
+    not in the table falls back to the flat default_bytes/
+    default_confidence -- the same flat FITTED-from-2-points estimate this
+    project used everywhere before this table existed."""
+    by_catalog: dict[str, tuple[int, str]]
+    default_bytes: int
+    default_confidence: str
+
+    def overhead_for(self, catalog_number: str | None) -> tuple[int, str]:
+        if not catalog_number:
+            return self.default_bytes, self.default_confidence
+        return self.by_catalog.get(catalog_number, (self.default_bytes, self.default_confidence))
+
+
+@dataclass(frozen=True)
 class MemoryModel:
     atomic_types: dict[str, AtomicType]
     predefined_structures: dict[str, AtomicType]
@@ -369,6 +390,7 @@ class MemoryModel:
     empty_project_baseline_confidence: str
     module_overhead_bytes: int
     module_overhead_confidence: str
+    module_overhead_by_catalog: ModuleOverheadModel
     firmware_baseline_delta: FirmwareBaselineDeltaModel
     safety_capable_baseline_delta: SafetyCapableBaselineDeltaModel
 
@@ -394,6 +416,7 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
     s = raw["string"]
     baseline = raw["empty_project_baseline"]
     module_overhead = raw["module_overhead"]
+    module_overhead_by_catalog = raw.get("module_overhead_by_catalog", {})
     fw_delta = raw["firmware_baseline_delta"]
     safety_delta = raw["safety_capable_baseline_delta"]
     return MemoryModel(
@@ -404,6 +427,14 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
         empty_project_baseline_confidence=baseline["confidence"],
         module_overhead_bytes=module_overhead["bytes"],
         module_overhead_confidence=module_overhead["confidence"],
+        module_overhead_by_catalog=ModuleOverheadModel(
+            by_catalog={
+                catalog: (v["bytes"], v["confidence"])
+                for catalog, v in module_overhead_by_catalog.items()
+            },
+            default_bytes=module_overhead["bytes"],
+            default_confidence=module_overhead["confidence"],
+        ),
         firmware_baseline_delta=FirmwareBaselineDeltaModel(
             by_major_version={
                 major: (v["bytes"], v["confidence"])

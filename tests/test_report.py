@@ -265,3 +265,59 @@ def test_firmware_and_safety_baseline_deltas_stack_additively():
     by_path = {e.path: e for e in entries}
     assert by_path["firmware_baseline_delta"].bytes == 11240
     assert by_path["safety_capable_baseline_delta"].bytes == 296
+
+
+def _root_with_module(catalog_number: str) -> ET.Element:
+    xml = f"""
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test">
+        <DataTypes/>
+        <AddOnInstructionDefinitions/>
+        <Tags/>
+        <Programs/>
+        <Modules>
+          <Module Name="Local" CatalogNumber="1756-L81E">
+            <Ports><Port Id="1" Address="0" Type="ICP" Upstream="false"/></Ports>
+          </Module>
+          <Module Name="TestMod" CatalogNumber="{catalog_number}">
+            <Ports><Port Id="1" Address="1" Type="ICP" Upstream="true"/></Ports>
+            <Communications>
+              <Connections>
+                <Connection Name="Standard" RPI="10000" Type="Input" InputSize="4" OutputSize="0">
+                  <InputTag ExternalAccess="Read/Write">
+                    <Data Format="Decorated">
+                      <Structure DataType="AB:5000_DI16:I:0">
+                        <DataValueMember Name="Fault" DataType="DINT" Value="0"/>
+                      </Structure>
+                    </Data>
+                  </InputTag>
+                </Connection>
+              </Connections>
+            </Communications>
+          </Module>
+        </Modules>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    return ET.fromstring(xml)
+
+
+def test_module_overhead_uses_real_per_catalog_value_when_known():
+    # OQ-MODULEIO, wired 2026-08-29: 1756-DNB has a real n=1 capture point
+    # (memory_model.yaml module_overhead_by_catalog) -- 6440, not the flat
+    # cross-catalog FITTED default (1672).
+    root = _root_with_module("1756-DNB")
+    entries, errors = build_report(root, MODEL)
+    assert errors == []
+    module_entry = next(e for e in entries if e.category == "module_io")
+    assert module_entry.basis == "ASSUMED"
+    assert module_entry.bytes == 4 + 6440  # module_defined_bytes(4) + real 1756-DNB overhead
+
+
+def test_module_overhead_falls_back_to_flat_default_for_unknown_catalog():
+    root = _root_with_module("9999-NOT-A-REAL-CATALOG")
+    entries, errors = build_report(root, MODEL)
+    assert errors == []
+    module_entry = next(e for e in entries if e.category == "module_io")
+    assert module_entry.basis == MODEL.module_overhead_confidence
+    assert module_entry.bytes == 4 + MODEL.module_overhead_bytes

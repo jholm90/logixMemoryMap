@@ -365,6 +365,92 @@ module_overhead:
   bytes: 1672
   confidence: FITTED
 
+# Real per-catalog module overhead (OQ-MODULEIO, wired 2026-08-29). 126
+# real module capture rows from manifest.csv sat unreconciled -- the flat
+# 1672 above (FITTED from only 2 points) is a poor approximation; real
+# per-catalog values vary from -793 to +10,497. Derived via the same
+# subtraction methodology as memory_model.yaml predefined_structures:
+# real_catalog_overhead = 1672 + (actual_bytes - engine_predicted_total),
+# for every real capture where the file's ENTIRE module list is exactly
+# [Local, one real module] -- no rack-aliased children hidden underneath
+# that could be absorbing extra real cost into the wrong catalog's number
+# (a real risk: several adapter/bridge catalogs, e.g. 1734-AENTR/C, show
+# wildly different "overhead" across files because a rack of child I/O
+# modules is folded into the adapter's own entry -- those stay on the
+# flat default below, not force-assigned a value from one arbitrary
+# rack composition). ASSUMED confidence (n=1 real capture per catalog,
+# same tier as the 174-type predefined_structures batch), n=2-3 for a
+# handful (1756-IB16, 2198-P208) where independent near-identical repeats
+# happened to land in the corpus already.
+#
+# 6 catalogs show a REAL, not-yet-modeled connection-variant effect
+# (different real overhead for the same catalog depending on connection
+# count/type) and are deliberately left OFF this table rather than
+# force-averaged: ETHERNET-MODULE/ETHERNET-PANELVIEW (generic-catalog
+# placeholders, overhead scales with declared I/O size -- not flat at
+# all), 1734-AENTR/C and 1756-EN2T (real 1conn vs 2conn/rackaliased
+# variance), PowerFlex 525/755-EENET (small ~48-byte gap between two
+# independent file-generation methods, inside plausible noise but not
+# confirmed which is representative). All 6 fall through to the flat
+# 1672 default, same as any catalog with zero real data.
+#
+# module_defined_bytes + module_overhead_by_catalog.get(catalog, 1672) is
+# still ESTIMATED tier, not EXACT -- a real per-catalog n=1 point is a
+# much better estimate than a flat cross-catalog average, but not yet the
+# same confidence as tag/UDT/AOI sizing.
+module_overhead_by_catalog:
+  '150 SMC Flex-E': { bytes: 6614, confidence: ASSUMED }
+  '1732E-IB16M12DR/A': { bytes: 2126, confidence: ASSUMED }
+  '1732E-IB16M12R/A': { bytes: 1422, confidence: ASSUMED }
+  '1732E-OB16M12R/A': { bytes: 1802, confidence: ASSUMED }
+  '1734-AENT/B': { bytes: 1608, confidence: ASSUMED }
+  '1734-AENT/C': { bytes: 1604, confidence: ASSUMED }
+  '1734-AENTR/B': { bytes: 1606, confidence: ASSUMED }
+  '1756-DHRIO/E': { bytes: 1390, confidence: ASSUMED }
+  '1756-DNB': { bytes: 6440, confidence: ASSUMED }
+  '1756-EN4TR': { bytes: 3608, confidence: ASSUMED }
+  '1756-ENBT/A': { bytes: 2580, confidence: ASSUMED }
+  '1756-HSC/A': { bytes: 2759, confidence: ASSUMED }
+  '1756-HSC/B': { bytes: 2759, confidence: ASSUMED }
+  '1756-HYD02': { bytes: 2280, confidence: ASSUMED }
+  '1756-IA16': { bytes: 1684, confidence: ASSUMED }
+  '1756-IA32/A': { bytes: 1688, confidence: ASSUMED }
+  '1756-IB16': { bytes: 1684, confidence: ASSUMED }
+  '1756-IB16IF/A': { bytes: 4952, confidence: ASSUMED }
+  '1756-IB32/B': { bytes: 1688, confidence: ASSUMED }
+  '1756-IF8/A': { bytes: 3415, confidence: ASSUMED }
+  '1756-OA16': { bytes: 2108, confidence: ASSUMED }
+  '1756-OA16I': { bytes: 1848, confidence: ASSUMED }
+  '1756-OB16E': { bytes: 2108, confidence: ASSUMED }
+  '1756-OB32': { bytes: 1848, confidence: ASSUMED }
+  '1756-OF4/A': { bytes: 3870, confidence: ASSUMED }
+  '1756-OF8/B': { bytes: 5066, confidence: ASSUMED }
+  '1794-AENT': { bytes: 1612, confidence: ASSUMED }
+  '2097-V34PR5-LM': { bytes: 3633, confidence: ASSUMED }
+  '2198-C4004-ERS': { bytes: 4065, confidence: ASSUMED }
+  '2198-D012-ERS3': { bytes: 10497, confidence: ASSUMED }
+  '2198-D020-ERS3': { bytes: 10497, confidence: ASSUMED }
+  '2198-D032-ERS3': { bytes: 10497, confidence: ASSUMED }
+  '2198-D057-ERS3': { bytes: 10497, confidence: ASSUMED }
+  '2198-H008-ERS': { bytes: 3629, confidence: ASSUMED }
+  '2198-P031': { bytes: 3613, confidence: ASSUMED }
+  '2198-P070': { bytes: 3613, confidence: ASSUMED }
+  '2198-P141': { bytes: 3613, confidence: ASSUMED }
+  '2198-P208': { bytes: 3589, confidence: ASSUMED }
+  '2198-RP200': { bytes: 3617, confidence: ASSUMED }
+  '2198-S086-ERS3': { bytes: 7377, confidence: ASSUMED }
+  '2198-S130-ERS3': { bytes: 7341, confidence: ASSUMED }
+  '2702782': { bytes: -16, confidence: ASSUMED }
+  '440C-CR30-22BBB/A': { bytes: 4388, confidence: ASSUMED }
+  '842E-CM-M': { bytes: 3633, confidence: ASSUMED }
+  '843E-MIPxxBAx/A': { bytes: 2966, confidence: ASSUMED }
+  'AL1122': { bytes: -793, confidence: ASSUMED }
+  'AL1222': { bytes: -793, confidence: ASSUMED }
+  'EX260-SEN1/A': { bytes: 1430, confidence: ASSUMED }
+  'EX260-SEN3/A': { bytes: 1432, confidence: ASSUMED }
+  'PowerFlex 755-EENET-CM': { bytes: 3613, confidence: ASSUMED }
+  'PowerFlex 755-EENET-CM-S': { bytes: 3621, confidence: ASSUMED }
+
 # Real per-firmware-major-version delta over the confirmed v34/v35 baseline
 # (OQ-BASELINE-PROCFW, wired 2026-08-29). 40 real fw_catalog_matrix
 # captures (10 catalogs x v31/v32/v33, 1756-L8x + 5069 non-safety, all real

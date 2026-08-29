@@ -352,9 +352,14 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                 ),
             ))
             continue
-        module_bytes = module.module_defined_bytes + model.module_overhead_bytes
+        # 2026-08-29, OQ-MODULEIO: real per-catalog overhead (memory_model.yaml
+        # module_overhead_by_catalog) replaces the flat cross-catalog FITTED
+        # average for any catalog with an unambiguous real capture point;
+        # falls back to the same flat default otherwise.
+        overhead_bytes, overhead_basis = model.module_overhead_by_catalog.overhead_for(module.catalog_number)
+        module_bytes = module.module_defined_bytes + overhead_bytes
         module_entries.append((f"modules/{label}", "module_io", module.catalog_number,
-                                module_bytes, model.module_overhead_confidence))
+                                module_bytes, overhead_basis))
         if module.unknown_member_types:
             errors.append(SizeError(
                 path=f"modules/{label}",
