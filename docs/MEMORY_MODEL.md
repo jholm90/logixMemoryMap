@@ -862,3 +862,17 @@ there's a record of *why* a number is what it is, not just what it currently is.
   an output-param term, too small to isolate from a single sample --
   reopened as OQ-JSRPARAMCOST in OPEN_QUESTIONS.md rather than left
   silently wrong in RESOLVED_QUESTIONS.md).
+- **2026-08-29, same audit, 1769-series real baseline + v30.** 9 more
+  real `fw_baseline`-category points (8 real 1769-series CompactLogix
+  5370 captures + 1 real v30 point) sat unreconciled. Wired
+  `catalog_baseline_delta` (exact-`ProcessorType`-string keyed, real
+  range +51,488 to +80,832 -- a single expansion-module suffix character
+  changes the value by 13,000+ bytes, e.g. `1769-L24ER-QB1B` vs
+  `-QBFC1B`, so kept exact-match only, no prefix/suffix generalization)
+  and added `"30"` to `firmware_baseline_delta` (+11,160, single real
+  MANUAL ENTRY point -- this project's SDK can't build v30 exports at
+  all, so there's no automated capture path). All 29 real `fw_baseline`
+  rows now checked: 17 exact, 6 within the small per-file noise band
+  (<=16 bytes), 3 already-documented small catalog-model variance
+  (+32 bytes), 3 already-documented Safety-Task-bearing-file gap
+  (see "Empty-project baseline" above).

@@ -376,6 +376,26 @@ class ModuleOverheadModel:
 
 
 @dataclass(frozen=True)
+class CatalogBaselineDeltaModel:
+    """Real per-catalog baseline delta for processor families whose real
+    empty-project baseline diverges enormously from the flat
+    empty_project_baseline (OQ-BASELINE-PROCFW, 1769-series thread, wired
+    2026-08-29) -- see memory_model.yaml catalog_baseline_delta for the
+    full derivation. Exact ProcessorType string match only, deliberately
+    NOT prefix/suffix-pattern-matched like safety_capable_baseline_delta
+    -- real data shows a single expansion-module suffix character (e.g.
+    `-QB1B` vs `-QBFC1B`) changes the real value by over 13,000 bytes, so
+    extrapolating beyond an exact confirmed catalog string would be a
+    guess, not a real value."""
+    by_processor_type: dict[str, tuple[int, str]]
+
+    def delta_for(self, processor_type: str | None) -> tuple[int, str] | None:
+        if not processor_type:
+            return None
+        return self.by_processor_type.get(processor_type)
+
+
+@dataclass(frozen=True)
 class MemoryModel:
     atomic_types: dict[str, AtomicType]
     predefined_structures: dict[str, AtomicType]
@@ -398,6 +418,7 @@ class MemoryModel:
     module_overhead_by_catalog: ModuleOverheadModel
     firmware_baseline_delta: FirmwareBaselineDeltaModel
     safety_capable_baseline_delta: SafetyCapableBaselineDeltaModel
+    catalog_baseline_delta: CatalogBaselineDeltaModel
 
 
 def load_memory_model(path: str | Path | None = None) -> MemoryModel:
@@ -424,6 +445,7 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
     module_overhead_by_catalog = raw.get("module_overhead_by_catalog", {})
     fw_delta = raw["firmware_baseline_delta"]
     safety_delta = raw["safety_capable_baseline_delta"]
+    catalog_delta = raw.get("catalog_baseline_delta", {})
     return MemoryModel(
         atomic_types=atomic_types,
         predefined_structures=predefined_structures,
@@ -452,6 +474,12 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             bytes=safety_delta["bytes"],
             confidence=safety_delta["confidence"],
             catalog_suffix_pattern=safety_delta["catalog_suffix_pattern"],
+        ),
+        catalog_baseline_delta=CatalogBaselineDeltaModel(
+            by_processor_type={
+                proc_type: (v["bytes"], v["confidence"])
+                for proc_type, v in catalog_delta.items()
+            },
         ),
         bool=BoolModel(
             standalone_tag_bytes=b["standalone_tag_bytes"],

@@ -473,9 +473,16 @@ module_overhead_by_catalog:
 # have no real sample at all (removed from the generation batch entirely,
 # 2026-08-28) so they also fall through to default_bytes. Keyed by the
 # integer major version parsed from the L5X root's own SoftwareRevision
-# (e.g. "31.02" -> "31").
+# (e.g. "31.02" -> "31"). v30 added 2026-08-29 (found during a full
+# manifest.csv audit): one real MANUAL ENTRY point (James read Capacity
+# directly off a real v30 controller -- this project's own SDK can't
+# build/convert v30 exports at all, so there's no automated capture path
+# and never will be), delta +11,160, close to but not exactly matching
+# v31/v32's +11,240 -- ASSUMED confidence (single point, no independent
+# cross-check possible).
 firmware_baseline_delta:
   by_major_version:
+    "30": { bytes: 11160, confidence: ASSUMED }
     "31": { bytes: 11240, confidence: FITTED }
     "32": { bytes: 11240, confidence: FITTED }
     "33": { bytes: 14248, confidence: FITTED }
@@ -506,6 +513,35 @@ safety_capable_baseline_delta:
   bytes: 296
   confidence: FITTED
   catalog_suffix_pattern: 'S[23]$'
+
+# Real per-catalog baseline for processor families whose baseline diverges
+# enormously from the flat empty_project_baseline, keyed by the L5X
+# Controller element's own EXACT ProcessorType string (OQ-BASELINE-PROCFW,
+# 1769-series thread, wired 2026-08-29 -- found during a full manifest.csv
+# audit, James: "make another in-depth pass"). 8 real 1769-series
+# (CompactLogix 5370) blank-baseline captures (all v35.05, all MANUAL
+# ENTRY -- Studio 5000's own "Estimate" button click requirement for this
+# family, see docs/TESTING_PLAN.md) sat unreconciled, previously
+# documented as "not modeled at all": real total baseline runs
+# 69,600-98,944, vs the flat 18,112 predicted for everything else.
+# Deliberately EXACT-string keyed, not prefix/suffix-pattern-matched like
+# safety_capable_baseline_delta above -- a single expansion-module suffix
+# character changes the real value by over 13,000 bytes
+# (1769-L24ER-QB1B=85,272 vs 1769-L24ER-QBFC1B=98,944), so extrapolating
+# beyond an exact confirmed catalog string would be a guess. Firmware-
+# independence assumed (same convention as everywhere else in this
+# section) but genuinely UNCONFIRMED -- zero 1769 data exists at any
+# firmware other than v35.
+catalog_baseline_delta:
+  '1769-L16ER-BB1B': { bytes: 51488, confidence: ASSUMED }
+  '1769-L18ER-BB1B': { bytes: 51488, confidence: ASSUMED }
+  '1769-L18ERM-BB1B': { bytes: 51488, confidence: ASSUMED }
+  '1769-L19ER-BB1B': { bytes: 51488, confidence: ASSUMED }
+  '1769-L24ER-QB1B': { bytes: 67160, confidence: ASSUMED }
+  '1769-L24ER-QBFC1B': { bytes: 80832, confidence: ASSUMED }
+  '1769-L27ERM-QBFC1B': { bytes: 80832, confidence: ASSUMED }
+  '1769-L30ERM': { bytes: 64736, confidence: ASSUMED }
+  '1769-L33ERM': { bytes: 64736, confidence: ASSUMED }
 
 bool:
   # Standalone BOOL controller/program tags: allocated as a full DINT, not

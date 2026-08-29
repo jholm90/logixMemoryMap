@@ -9,15 +9,19 @@ the matching footnote at the bottom, not inline.
    effort redirected to safety work per James.[^instrfirstpass]
 
 2. **OQ-BASELINE-PROCFW** — partially wired 2026-08-29. Firmware-version
-   (v31/v32/v33) and 5069-safety-capable-model baseline deltas are now
-   real, confirmed, and wired into `report.py`/`memory_model.yaml` —
-   validated against all 50 real (untainted) `fw_catalog_matrix` capture
-   rows, every one now predicts within 16 bytes (was off by up to 14,552).
-   Still genuinely open: v38 (only real capture is WINDOW-TITLE-MISMATCH-
+   (v30/v31/v32/v33), 5069-safety-capable-model, and (found the same day
+   via a full manifest.csv audit) 1769-series per-catalog baseline deltas
+   are now real, confirmed, and wired into `report.py`/`memory_model.yaml`
+   — validated against all 50 real (untainted) `fw_catalog_matrix` rows
+   plus 8 real 1769-series and 2 more `fw_baseline` points, every one now
+   predicts within 32 bytes (was off by up to 80,832 for 1769). Still
+   genuinely open: v38 (only real capture is WINDOW-TITLE-MISMATCH-
    flagged, awaiting the batch script's automatic retry), v36/v37 (no real
-   sample at all), and the full 1769-series baseline (69,600-98,944 range,
-   not modeled at all, only 1 real per-catalog Bus-Size point exists).
-   L7x/L8xES catalogs in the matrix still await their own
+   sample at all), and any 1769 catalog beyond the 9 exact ProcessorType
+   strings now confirmed (real data shows a single suffix character
+   changes the value by 13,000+ bytes, so unconfirmed catalogs correctly
+   stay unmodeled rather than guessed). L7x/L8xES catalogs in the matrix
+   still await their own
    capture.[^baseline]
 
 3. **OQ-CMPCPTLAYOUT** — down to one thread. Uniform, T1+T2, T1T3/T2T3,
@@ -188,6 +192,34 @@ controllers — L430ERMW/L450ERMW/L4100ERMW/L4200ERMW) — also zero real
 corpus examples, not yet requested by James. Building either without a
 real sample risks fabricating a ProductCode/Module shape that fails
 Studio 5000 import outright.
+
+**1769-series real per-catalog baseline + v30 wired 2026-08-29** (found
+during a full manifest.csv audit, James: "make another in-depth pass" —
+these 9 real points had been sitting in the `fw_baseline` category,
+MANUAL ENTRY, since before this project even had a `firmware_baseline_
+delta` mechanism to wire them into, and were never revisited). 8 real
+1769-series (CompactLogix 5370) blank-baseline captures, all v35.05 —
+real total baseline runs 69,600-98,944 against a flat 18,112 predicted
+for everything else, previously documented as "not modeled at all."
+Wired as `catalog_baseline_delta` (memory_model.yaml), keyed by the
+EXACT `ProcessorType` string (not prefix/suffix-matched like
+`safety_capable_baseline_delta`) — real data shows a single expansion-
+module suffix character changes the value by 13,000+ bytes
+(`1769-L24ER-QB1B`=67,160 vs `1769-L24ER-QBFC1B`=80,832), so any
+catalog beyond the 9 exact strings now confirmed correctly stays
+unmodeled. Firmware-independence assumed (same convention as
+`firmware_baseline_delta`) but genuinely unconfirmed — zero 1769 data
+exists at any firmware besides v35. Separately, `l81_v30` (real MANUAL
+ENTRY point, James read Capacity directly off a real v30 controller —
+this project's SDK can't build/convert v30 exports at all) added to
+`firmware_baseline_delta` at +11,160, ASSUMED confidence (single point).
+All 29 real `fw_baseline`-category rows now checked: 17 exact, 6 within
+the small per-file noise band (<=16 bytes), 3 already-documented small
+per-model variance (+32 bytes, `l306er`/`l306erm`/`l320er`), and 3
+already-documented Safety-Task-bearing-file gap (`l306erms2`/`erms3`/
+`ers2`, -1,424 — real Safety Task/Program content this tool doesn't
+size, see this same footnote's `v35_l306erms2`/`v35_l306erms3` note
+further below for the root cause).
 
 [^cmpcpt]: T1T3/T2T3 wired 2026-08-25: real capture data existed
 unreconciled since 2026-08-24; `pow_tier_mix_base=160,

@@ -392,13 +392,17 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             for e in entries
         ]
 
-    # Firmware-version + safety-capable-model baseline corrections
-    # (OQ-BASELINE-PROCFW, wired 2026-08-29 -- see memory_model.yaml
-    # firmware_baseline_delta / safety_capable_baseline_delta for the full
-    # derivation). Both are real per-file structural deltas layered on top
-    # of the already-confirmed flat empty_project_baseline -- same class of
-    # correction as module_overhead above (FITTED from real capture data,
-    # not yet KNOWN-grade), so ESTIMATED tier for the same reason. Category
+    # Firmware-version + safety-capable-model + per-catalog baseline
+    # corrections (OQ-BASELINE-PROCFW, wired 2026-08-29 -- see
+    # memory_model.yaml firmware_baseline_delta / safety_capable_baseline_
+    # delta / catalog_baseline_delta for the full derivation). All three
+    # are real per-file structural deltas layered on top of the
+    # already-confirmed flat empty_project_baseline -- same class of
+    # correction as module_overhead above (FITTED/ASSUMED from real
+    # capture data, not yet KNOWN-grade), so ESTIMATED tier for the same
+    # reason. catalog_baseline_delta (added same day) is the 1769-series
+    # thread: real per-catalog baseline is enormous (+51,488 to +80,832)
+    # and exact-string-keyed only, unlike the other two. Category
     # "project_baseline" (not a new category) deliberately reuses the
     # existing NON_TAG_GROUPS "Project Overhead" grouping in ui/hierarchy.py
     # -- these are structural scaffolding costs, not a new kind of thing.
@@ -419,6 +423,13 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             "safety_capable_baseline_delta", "project_baseline", "SAFETY_CAPABLE_BASELINE",
             model.safety_capable_baseline_delta.bytes,
             model.safety_capable_baseline_delta.confidence,
+        ))
+    catalog_delta = model.catalog_baseline_delta.delta_for(processor_type)
+    if catalog_delta is not None:
+        catalog_bytes, catalog_basis = catalog_delta
+        baseline_delta_entries.append((
+            "catalog_baseline_delta", "project_baseline", "CATALOG_BASELINE",
+            catalog_bytes, catalog_basis,
         ))
 
     if baseline_delta_entries:

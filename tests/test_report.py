@@ -267,6 +267,27 @@ def test_firmware_and_safety_baseline_deltas_stack_additively():
     assert by_path["safety_capable_baseline_delta"].bytes == 296
 
 
+def test_catalog_baseline_delta_applies_to_confirmed_1769_processor_type():
+    # OQ-BASELINE-PROCFW, 1769-series thread, wired 2026-08-29: real
+    # capture shows 1769-L24ER-QBFC1B costs +80,832 over the flat baseline.
+    root = _blank_root("35.05", "1769-L24ER-QBFC1B")
+    entries, errors = build_report(root, MODEL)
+    assert errors == []
+    by_path = {e.path: e for e in entries}
+    catalog_entry = by_path["catalog_baseline_delta"]
+    assert catalog_entry.bytes == 80832
+    assert catalog_entry.data_type == "CATALOG_BASELINE"
+
+
+def test_catalog_baseline_delta_is_exact_string_match_not_prefix():
+    # A single suffix character changes the real value by over 13,000
+    # bytes (1769-L24ER-QB1B=67,160 vs -QBFC1B=80,832) -- an unconfirmed
+    # 1769 catalog must NOT silently inherit a sibling's real value.
+    root = _blank_root("35.05", "1769-L24ER-NOTREAL")
+    entries, _ = build_report(root, MODEL)
+    assert "catalog_baseline_delta" not in {e.path for e in entries}
+
+
 def _root_with_module(catalog_number: str) -> ET.Element:
     xml = f"""
     <RSLogix5000Content SchemaRevision="1.0">
