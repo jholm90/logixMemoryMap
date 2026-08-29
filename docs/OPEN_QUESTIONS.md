@@ -265,6 +265,23 @@ surcharge) stays the honest default. Full data: 9 total points across the
 `cptmix_stacked_*` (5, already on file 2026-08-24) and `cptmix_
 disentangle_*` (4, captured 2026-08-27) sample sets.
 
+**Position-probe files built 2026-08-29** (`gen_cpt_mixed_operators.py`
+`group_real_float_position_probe`, James: "generate new tests... they
+have been dragging on for far too long" -- fair, the hypothesis above had
+sat undertested since it was written). 4 new files, all built/lint-clean/
+zero engine errors, awaiting real capture: `cptmix_real1_pos_first`/
+`cptmix_real1_pos_last` (1 REAL operand at slot 1 vs slot 6 of the same
+6-operand T1+T2 shape, "middle" position already on file as
+`cptmix_disentangle_real1_noliteral`) and `cptmix_float1_pos_first`/
+`cptmix_float1_pos_divisor` (1 float literal at slot 1 vs the divisor
+slot, "last" position already on file as `cptmix_disentangle_
+float1_noreal`). Once captured: if all 3 positions per factor land on the
+same real delta, position is ruled out (points back to an unexplained
+pure-count effect); if they differ, the pattern across first/middle/last
+tells us whether edge positions (fewer operator-adjacency "boundaries")
+cost less, which would directly support the type-promotion-point
+hypothesis.
+
 **Cross-validated at scale, 2026-08-29** (full manifest.csv audit):
 `randommix_07_n19811rungs_24types` (`logic_random_mix` category, real
 capture) was off by +39,959 -- traced to its 208 real CPT calls, which

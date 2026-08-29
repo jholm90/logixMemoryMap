@@ -442,6 +442,55 @@ def group_real_float_literal_disentangle() -> int:
     return n
 
 
+# ---------------------------------------------------------------------------
+# L. REAL-operand / float-literal POSITION probe (2026-08-29, OQ-CMPCPTLAYOUT
+# follow-up). group_real_float_literal_disentangle above proved count alone
+# doesn't explain the real data -- 1 REAL operand costs MORE than 2 (and
+# same for float literals), ruled out as noise since it holds identically
+# for both factors. Real hypothesis: the cost tracks WHERE the REAL
+# operand/float literal sits in the expression (a structural
+# type-promotion-boundary effect), not how many there are. These files
+# hold everything else fixed (same 6-operand, T1+T2 operator sequence
+# +,*,-,/,+ as real1_noliteral/float1_noreal above) and move ONLY the
+# REAL operand's (or float literal's) position -- first, middle, last.
+# "middle" for the REAL-operand axis is already on file
+# (cptmix_disentangle_real1_noliteral, R at slot 2 of 6) -- not rebuilt
+# here, just cross-referenced. Same for the float-literal axis: existing
+# cptmix_disentangle_float1_noreal already has the float literal LAST
+# (the trailing addend) -- "first" and "divisor" positions are new here.
+# ---------------------------------------------------------------------------
+
+def group_real_float_position_probe() -> int:
+    n = 0
+    real_variants = [
+        ("real1_pos_first", "(R0+L1)*L2-L3/L4+L5",
+         "1 REAL operand at the FIRST slot (position 1 of 6) -- position-probe companion to "
+         "real1_noliteral (REAL at slot 3, already on file) and real1_pos_last, isolating "
+         "whether WHERE a REAL operand sits (not how many) drives the real non-monotonic cost"),
+        ("real1_pos_last", "(L0+L1)*L2-L3/L4+R5",
+         "1 REAL operand at the LAST slot (position 6 of 6) -- position-probe companion to "
+         "real1_noliteral (REAL at slot 3, already on file) and real1_pos_first"),
+    ]
+    for name, expr, desc in real_variants:
+        _one_rung_file(expr, f"CptMix{name.title().replace('_', '')}", f"cptmix_{name}", desc, dest="DestR")
+        n += 1
+
+    float_variants = [
+        ("float1_pos_first", "1.5+L0*L1-L2/2+L3",
+         "1 float literal FIRST (position 1 of 6), int literal stays as the divisor -- "
+         "position-probe companion to float1_noreal (float literal LAST, already on file) and "
+         "float1_pos_divisor"),
+        ("float1_pos_divisor", "(L0+L1)*L2-L3/1.5+2",
+         "1 float literal as the DIVISOR (position 4 of 6), int literal moved to the trailing "
+         "addend -- position-probe companion to float1_noreal (float literal LAST, already on "
+         "file) and float1_pos_first"),
+    ]
+    for name, expr, desc in float_variants:
+        _one_rung_file(expr, f"CptMix{name.title().replace('_', '')}", f"cptmix_{name}", desc, dest="DestR")
+        n += 1
+    return n
+
+
 if __name__ == "__main__":
     total = 0
     total += group_pairwise_tier_mix()
@@ -454,4 +503,5 @@ if __name__ == "__main__":
     total += group_t1t3_t2t3_scaling()
     total += group_three_tier_remainder_probe()
     total += group_real_float_literal_disentangle()
+    total += group_real_float_position_probe()
     print(f"\nTotal files: {total}")
