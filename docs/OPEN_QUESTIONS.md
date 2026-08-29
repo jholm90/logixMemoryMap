@@ -36,7 +36,7 @@ the matching footnote at the bottom, not inline.
    closed (no real effect). Name-length and BOOL-array-packing-boundary
    probes await capture.[^aoidef]
 
-5. **OQ-PREDEFINED — CLOSED for 194 of ~195 known types, 2026-08-29.**
+5. **OQ-PREDEFINED — CLOSED for all 195 known types, corrected 2026-08-29.**
    James's own conversion+capture pipeline ran the full 184-file
    `gen_predefined_probe.py` blank-tag discovery batch; 174 imported clean
    and got a real Capacity delta. Wired all 174 into `memory_model.yaml`
@@ -45,9 +45,21 @@ the matching footnote at the bottom, not inline.
    types — are now resolved with real totals. SFC_STOP (wired 2026-08-28
    from real L5K data) matched the new real capture EXACTLY (0 residual),
    independently confirming the derivation method itself, not just that
-   one type. CONFIGURABLE_ROUT is the one remaining unmodeled type (probe
-   file result not captured/returned). See [^predefined] for the full
-   derivation method and the complete per-type real-value table.
+   one type. **`CONFIGURABLE_ROUT` was WRONGLY documented here as
+   unmodeled** — its real capture (`predefprobe_configurable_rout`,
+   actual 18,264) was on file in manifest.csv the whole time and IS wired
+   (52 bytes, same value as `BUS_OBJ`'s real capture, plausible for a
+   small structure, not a data-entry error — cross-checked directly).
+   The commit that wired the other 174 said "CONFIGURABLE_ROUT remains
+   unmodeled" while its own diff actually included it correctly — the
+   prose was wrong, the code wasn't. James is also right that
+   `CONFIGURABLE_ROUT` is very likely Safety-family (its name root
+   matches `CROUT`, the already-confirmed Safety-only instruction
+   requiring a GuardLogix/Safety CPU — see RESOLVED_QUESTIONS.md
+   OQ-CROUT-MAPC-BUILDFAIL) — added to the Safety-Instructions-family
+   list below, subject to the same pending Safety-scope inclusion
+   decision as DCI_STOP and the rest of that list. See [^predefined] for
+   the full derivation method and the complete per-type real-value table.
 
 6. **OQ-AOIARRAYDIMENSION** — real parser bug fixed 2026-08-27:
    `<Parameter>`/`<LocalTag>` array size is a "Dimensions" (plural)
@@ -375,8 +387,12 @@ mostly unresolvable native structures. Wiring DCI_STOP would make
 Safety-scoped totals partially counted for the first time, which needs
 a decision from James (exclude Safety-class tags by design everywhere,
 or size everything resolvable including Safety and adjust the warning
-wording) before it's just silently changed. **CONFIGURABLE_ROUT** remains
-fully unmodeled — not yet read in RM018A, no real corpus evidence either.
+wording) before it's just silently changed. **CONFIGURABLE_ROUT** —
+CORRECTED 2026-08-29, this was wrong: it DOES have real capture data and
+IS wired (52 bytes, see item 5 above) — not read in RM018A, but that's
+moot now that a real Capacity-based value exists directly. Falls under
+the same Safety-scope decision as DCI_STOP (name root matches `CROUT`,
+the confirmed Safety-only instruction).
 
 **MESSAGE and ALARM_DIGITAL member lists sourced from RM018A, 2026-08-27**
 (James: "you need to size all of these instruction data types... look for
@@ -493,18 +509,25 @@ checked, not a bug in the subtraction (every other value is a clean
 multiple of 4/8/12): plausibly genuine odd-byte real internal padding for
 those 4 specific structures (several mix SINT/STRING content with DINT
 content, unlike the mostly-DINT-uniform structures that land on round
-numbers). `CONFIGURABLE_ROUT` is the one probe file that either wasn't
-captured or came back without real data — still fully unmodeled.
+numbers). `CONFIGURABLE_ROUT`: CORRECTED 2026-08-29 — this line was
+wrong. `predefprobe_configurable_rout` DID capture real data (actual
+18,264, same as `BUS_OBJ`'s real capture) and IS wired at 52 bytes,
+already included in the 174-count and the "all 195" total in item 5
+above. Full table: 175 real-derived types now, not 174.
 
 **Safety-scope note applies to this whole new batch, not just DCI_STOP.**
 Several of the 174 (`DCI_*`, `SAFE_*`/`SAFELY_*`, `MUTING_*`,
 `LIGHT_CURTAIN`, `TWO_HAND_RUN_STATION`, `EMERGENCY_STOP`,
 `REDUNDANT_INPUT`/`OUTPUT`, `ENABLE_PENDANT`, `DIVERSE_INPUT`,
-`SAFETY_MAT`, `SAFETY_FEEDBACK_INTERFACE`, `DOMINANT_SET`/`RESET`) are
-Safety-Instructions-family types. The VALUES are real and wired; whether
-Safety-scoped tags should be included in the displayed total at all is
-the same still-open product decision flagged for DCI_STOP originally —
-not re-decided here, just now applying to a much bigger list of types.
+`SAFETY_MAT`, `SAFETY_FEEDBACK_INTERFACE`, `DOMINANT_SET`/`RESET`, and
+`CONFIGURABLE_ROUT` — added 2026-08-29, James: "seems like a safety
+instruction," and he's right, its name root matches `CROUT`, the
+already-confirmed Safety-only instruction requiring a GuardLogix/Safety
+CPU) are Safety-Instructions-family types. The VALUES are real and
+wired; whether Safety-scoped tags should be included in the displayed
+total at all is the same still-open product decision flagged for
+DCI_STOP originally — not re-decided here, just now applying to a much
+bigger list of types.
 
 **Two findings from this same batch, WIRED 2026-08-29** (`report.py`
 `build_report` now reads `SoftwareRevision`/`ProcessorType` straight off

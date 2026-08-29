@@ -87,9 +87,11 @@ blocked. DCI_STOP (76 bytes) and the rest of the Safety-Instructions-family
 types also now have real values, but stay subject to the same pending
 Safety-scope product decision as before (see OPEN_QUESTIONS.md) -- the
 VALUE is real and wired, the display/inclusion POLICY for Safety-scoped
-tags is a separate, still-open question. CONFIGURABLE_ROUT is the one
-remaining fully-unmodeled type from the original list (its probe file
-either wasn't captured yet or didn't get real data back). TIMER/COUNTER/
+tags is a separate, still-open question. CONFIGURABLE_ROUT -- CORRECTED
+2026-08-29, this line was wrong: its probe DID capture real data (actual
+18,264) and IS wired (52 bytes) -- also Safety-family (name root matches
+`CROUT`), same pending scope decision as DCI_STOP above. All 195 known
+predefined types are now wired with a real value. TIMER/COUNTER/
 CONTROL below are cross-checked exact against RM018A (pages 92-93 for
 COUNTER) -- first time confirmed against a real Rockwell primary source
 rather than only empirical capture.
