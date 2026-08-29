@@ -78,19 +78,21 @@ type-name length (immediately above) and array-of-STRING padding
 Firmware-native structures referenced by name in L5X Tag/Member DataType
 attributes but never given a member list in `Controller/DataTypes` --
 Logix Designer resolves them internally, so there's nothing to recurse.
-Only types with a real, evidence-backed layout are modeled here; MESSAGE,
-DCI_STOP, CONFIGURABLE_ROUT, and ALARM_DIGITAL are deliberately left
-unsized rather than guessed (DCI_STOP has real evidence but is withheld
-pending a Safety-scope product decision, see OPEN_QUESTIONS.md
-OQ-PREDEFINED). MESSAGE and ALARM_DIGITAL's full real member lists/types
-ARE now known (sourced directly from RM018A, 2026-08-27) but neither has a
-confirmed byte TOTAL -- see OPEN_QUESTIONS.md OQ-PREDEFINED for the field
-list, the confirmed 46-byte MESSAGE non-STRING subtotal, and the two named
-unknowns blocking each (STRING field length; native-structure BOOL packing
-convention). CONFIGURABLE_ROUT remains fully unread/unmodeled. TIMER/
-COUNTER/CONTROL below are now cross-checked exact against RM018A (pages
-92-93 for COUNTER) -- first time confirmed against a real Rockwell primary
-source rather than only empirical capture.
+**2026-08-29: 174 more wired in one batch**, real single-capture-each data
+from James's own conversion+capture pipeline against `gen_predefined_probe.py`'s
+184-file blank-tag discovery batch (see OPEN_QUESTIONS.md OQ-PREDEFINED for
+the full derivation method and per-type table) -- MESSAGE (688 bytes) and
+ALARM_DIGITAL (973 bytes) are now resolved, both previously genuinely
+blocked. DCI_STOP (76 bytes) and the rest of the Safety-Instructions-family
+types also now have real values, but stay subject to the same pending
+Safety-scope product decision as before (see OPEN_QUESTIONS.md) -- the
+VALUE is real and wired, the display/inclusion POLICY for Safety-scoped
+tags is a separate, still-open question. CONFIGURABLE_ROUT is the one
+remaining fully-unmodeled type from the original list (its probe file
+either wasn't captured yet or didn't get real data back). TIMER/COUNTER/
+CONTROL below are cross-checked exact against RM018A (pages 92-93 for
+COUNTER) -- first time confirmed against a real Rockwell primary source
+rather than only empirical capture.
 
 | Type | Bytes | Notes |
 |---|---|---|

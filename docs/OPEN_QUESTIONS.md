@@ -21,19 +21,18 @@ the matching footnote at the bottom, not inline.
    closed (no real effect). Name-length and BOOL-array-packing-boundary
    probes await capture.[^aoidef]
 
-5. **OQ-PREDEFINED (MESSAGE + siblings)** — 8-MessageType + 2-ALMD test
-   batches built, both awaiting capture. SFC_STEP/SFC_ACTION/FBD_TIMER/
-   RATE_LIMITER/SCALE/FBD_ONESHOT/FBD_MATH wired 2026-08-27 (real, ASSUMED —
-   read directly off real Decorated-XML L5K data, not yet capture-confirmed);
-   closed 523 of 1,277 real tag-sizing errors. MESSAGE and ALARM_DIGITAL's
-   full real member lists are now sourced directly from RM018A (2026-08-27,
-   see below) — genuinely new, primary-source information — but neither has
-   an exact byte TOTAL yet: both are confirmed dead ends for the L5K-array
-   technique (every real instance in `samples/local/` uses a specialized
-   semantic `Data Format="Message"`/`"Alarm"` view, never raw Decorated/L5K),
-   so a real capture is the only path forward, same as TIMER/COUNTER/CONTROL.
-   COUNTER cross-checked exact against RM018A — no change, already correct.
-   DCI_STOP/CONFIGURABLE_ROUT remain fully unmodeled.[^predefined]
+5. **OQ-PREDEFINED — CLOSED for 194 of ~195 known types, 2026-08-29.**
+   James's own conversion+capture pipeline ran the full 184-file
+   `gen_predefined_probe.py` blank-tag discovery batch; 174 imported clean
+   and got a real Capacity delta. Wired all 174 into `memory_model.yaml`
+   in one batch (ASSUMED, n=1 real capture each). MESSAGE (688 bytes) and
+   ALARM_DIGITAL (973 bytes) — the two longest-standing genuinely-blocked
+   types — are now resolved with real totals. SFC_STOP (wired 2026-08-28
+   from real L5K data) matched the new real capture EXACTLY (0 residual),
+   independently confirming the derivation method itself, not just that
+   one type. CONFIGURABLE_ROUT is the one remaining unmodeled type (probe
+   file result not captured/returned). See [^predefined] for the full
+   derivation method and the complete per-type real-value table.
 
 6. **OQ-AOIARRAYDIMENSION** — real parser bug fixed 2026-08-27:
    `<Parameter>`/`<LocalTag>` array size is a "Dimensions" (plural)
@@ -339,6 +338,109 @@ and confirmed zero use `Format="Decorated"` or `Format="L5K"`; Rockwell's
 export tooling always uses a specialized semantic view (`Format="Message"`/
 `Format="Alarm"`) for these two types instead. Don't re-attempt that
 technique on these two — go straight to a real capture.
+
+**RESOLVED 2026-08-29, real capture batch closes 174 of 184 probe files.**
+James's own conversion+capture pipeline ran the full `gen_predefined_probe.py`
+batch. Derivation method: the live engine, run fresh against each probe
+file, predicts a uniform `18128` for every still-unmodeled type (real
+`empty_project_baseline`(13296) + `task_program_shell`(4816) +
+`routine_logic`(16, the file's own default NOP rung) — the unresolvable
+`Probe1` tag itself contributes 0 and raises one caught `SizeError`, which
+is exactly the uniform "1 error" every one of these rows showed). So
+`real_structure_bytes = real_actual_bytes - 18128 - tag_overhead(84,
+real "Probe1" 6-char name)`. Validated against `SFC_STOP`, the one type
+already wired from real L5K data before this batch landed: the new real
+capture matched the live prediction EXACTLY (0 residual) — confirms the
+derivation method itself, not just that one type. All 174 resolved values
+wired into `memory_model.yaml` `predefined_structures` at ASSUMED
+confidence (n=1 real capture each). Full real values, sorted:
+
+```
+4:    ALARM_SET_CONTROL, CONNECTION_STATUS, PHASE_INSTRUCTION,
+      RAC_ITF_DVC_PWRDISCRETE_CMD/SET, RAC_ITF_DVC_PWRMOTION_CMD/INF/SET,
+      RAC_ITF_DVC_PWRVELOCITY_CMD/SET, SEQ_BOOL, SEQ_INT, SEQ_SINT
+12:   DATALOG_INSTRUCTION, DOMINANT_RESET, DOMINANT_SET,
+      EXT_ROUTINE_PARAMETERS, FBD_BOOLEAN_XOR, FBD_COMPARE, FBD_CONVERT,
+      FBD_LIMIT, FBD_LOGICAL, FBD_MASK_EQUAL, FBD_MATH_ADVANCED,
+      FBD_TRUNCATE, FLIP_FLOP_D, FLIP_FLOP_JK, ODOMETER,
+      P_INTERLOCK_BANK_STATUS, P_STRAPPING_TABLE_ROW, SEQ_DINT, SEQ_REAL,
+      SEQ_TRANSITION, SERIAL_PORT_CONTROL, SIGNED_ODOMETER
+20-28: CAM_EXTENDED, FBD_COUNTER, FBD_MASKED_MOVE, P_COMMAND_SOURCE,
+      SELECT, SELECTABLE_NEGATE, STRING_16 (20); FBD_BIT_FIELD_DISTRIBUTE,
+      HMIBC, MANUAL_VALVE_CONTROL, MAXIMUM_CAPTURE, MINIMUM_CAPTURE,
+      OUTPUT_CAM, OUTPUT_COMPENSATION, P_LEAD_LAG_STANDBY_MOTOR, PHASE,
+      POSITION_DATA, SAFE_DIRECTION, UP_DOWN_ACCUM (28)
+MESSAGE: 688. ALARM_DIGITAL: 973 (both previously genuinely blocked --
+      see the negative finding above). ALARM_ANALOG: 2461. PID: 180.
+      PID_ENHANCED: 396. PIDE_AUTOTUNE: 972.
+Full table (all 174): see memory_model.yaml predefined_structures,
+      block dated 2026-08-28/29.
+```
+
+Note: `ALARM_ANALOG`(2461), `ALARM_DIGITAL`(973), `ENERGY_BASE`/
+`ENERGY_ELECTRICAL`(107 each) are the only 4 values not a multiple of 4 —
+checked, not a bug in the subtraction (every other value is a clean
+multiple of 4/8/12): plausibly genuine odd-byte real internal padding for
+those 4 specific structures (several mix SINT/STRING content with DINT
+content, unlike the mostly-DINT-uniform structures that land on round
+numbers). `CONFIGURABLE_ROUT` is the one probe file that either wasn't
+captured or came back without real data — still fully unmodeled.
+
+**Safety-scope note applies to this whole new batch, not just DCI_STOP.**
+Several of the 174 (`DCI_*`, `SAFE_*`/`SAFELY_*`, `MUTING_*`,
+`LIGHT_CURTAIN`, `TWO_HAND_RUN_STATION`, `EMERGENCY_STOP`,
+`REDUNDANT_INPUT`/`OUTPUT`, `ENABLE_PENDANT`, `DIVERSE_INPUT`,
+`SAFETY_MAT`, `SAFETY_FEEDBACK_INTERFACE`, `DOMINANT_SET`/`RESET`) are
+Safety-Instructions-family types. The VALUES are real and wired; whether
+Safety-scoped tags should be included in the displayed total at all is
+the same still-open product decision flagged for DCI_STOP originally —
+not re-decided here, just now applying to a much bigger list of types.
+
+**Two new real findings surfaced by this same batch, not yet wired --
+architecture/further-work items, not just constants:**
+
+1. **Real per-firmware-version baseline deltas**, from the 51 real
+   `fw_catalog_matrix` captures in this same push. 1756-L8x/5069 (non-
+   safety-suffix) on v34/v35 both confirm the already-known 18,112 exact
+   (0 residual) -- but v31/v32 show a real +11,256 to +11,264 jump
+   (actual ≈29,368-29,376) and v33 shows +14,264 to +14,272
+   (actual≈32,376-32,384), both far larger than anything currently
+   modeled. v38 shows a real +304 over v34/35 on the SAME 1756-L81E
+   catalog (18,416 vs 18,112) -- plausibly the real `DataExchangeId` GUID
+   attribute (v38-only) costing real space, not yet confirmed. NOT wired
+   yet -- needs a real per-firmware-version adjustment mechanism in
+   `report.py`'s baseline computation, not just a memory_model.yaml
+   constant tweak, so flagged for dedicated follow-up rather than rushed.
+2. **Real 5069-safety-model baseline overhead, independent of SafetyInfo
+   content.** The 5069 Motion+Safety-suffix catalars (`L330ERMS2`,
+   `L340ERS2`) show a real +304 byte baseline over their non-safety
+   siblings (`L330ER`, `L340ER`, +8 only) on the SAME firmware, even
+   though `gen_fw_catalog_matrix.py` doesn't currently populate real
+   `SafetyInfo`/`Class="Safety"` content for these catalogs at all --
+   the mere fact of being a safety-CAPABLE processor model costs real
+   memory, before any actual safety configuration exists. Real, n=2,
+   not yet wired -- same "needs the right architectural home" reasoning
+   as item 1.
+
+**Also from this same push: real evidence AlarmConfig message/class text
+length adds to ALMD's real cost**, confirming the open question from
+`gen_almd_singletag.py`'s own docstring. `almd_minimal` (1-char text):
+19,719. `almd_realtext` (real-length text copied from `Comms_Bus1_ALMD`):
+19,754 -- a real +35 byte delta for the longer real text, on top of the
+instruction-call + real ALMD structure content these two files also
+carry (not directly comparable to the bare-tag 973-byte ALARM_DIGITAL
+figure above, which isolates the structure alone).
+
+**AOI array real-capture anomaly, needs investigation, not yet
+explained:** of the 5 AOI array files re-captured after the real
+Dimension/Dimensions bug fix, 4 show a modest positive delta (+400/+404/
++60/+64, plausibly a small remaining formula gap) but
+`aoi_array_param_def_only` shows a real NEGATIVE delta (predicted 19,332,
+actual 18,288, over-predicted by 1,044 bytes) -- the engine is
+overshooting for an AOI array PARAMETER (as opposed to LocalTag)
+specifically. Not investigated further in this pass; flagged as a real,
+distinct anomaly worth its own dedicated look before trusting AOI-array-
+parameter sizing at the current confidence tier.
 
 [^aoiarraydimension]: James, 2026-08-27: "be sure you are handling the bit
 mapped bools from hidden sints" prompted a broader audit of AOI-local

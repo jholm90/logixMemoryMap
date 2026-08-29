@@ -111,6 +111,194 @@ predefined_structures:
   FBD_BOOLEAN_AND: { bytes: 12, confidence: ASSUMED }
   FBD_BOOLEAN_OR: { bytes: 12, confidence: ASSUMED }
   FBD_BOOLEAN_NOT: { bytes: 12, confidence: ASSUMED }
+  # Real capture batch, 2026-08-28/29 (James: "pushed the last round of tests"),
+  # James's own conversion pipeline built + captured all 184 predefprobe_*.L5X
+  # blank-tag discovery files (see gen_predefined_probe.py) -- 174 of 184 imported
+  # clean and got a real Capacity delta (SFC_STOP already wired above matched
+  # exactly, 0 residual, confirming the derivation method itself). Real total per
+  # type = real actual_bytes - live-engine-predicted (baseline+task_shell+routine,
+  # the unresolvable tag contributes 0) - tag_overhead(84, real "Probe1" name).
+  # n=1 real capture each -- ASSUMED, not KNOWN, same tier as the RM018A/L5K-
+  # derived types above. Several (DCI_*, SAFE_*/SAFELY_*, MUTING_*, LIGHT_CURTAIN,
+  # TWO_HAND_RUN_STATION, EMERGENCY_STOP, REDUNDANT_INPUT/OUTPUT, ENABLE_PENDANT,
+  # DIVERSE_INPUT, SAFETY_MAT, SAFETY_FEEDBACK_INTERFACE, DOMINANT_SET/RESET) are
+  # Safety-Instructions-family types -- real values, but see OPEN_QUESTIONS.md
+  # OQ-PREDEFINED's Safety-scope note (same pending policy gate as DCI_STOP,
+  # applies to the whole family now, not just DCI_STOP).
+  ALARM: { bytes: 92, confidence: ASSUMED }
+  ALARM_ANALOG: { bytes: 2461, confidence: ASSUMED }
+  ALARM_DIGITAL: { bytes: 973, confidence: ASSUMED }
+  ALARM_SET_CONTROL: { bytes: 4, confidence: ASSUMED }
+  AUX_VALVE_CONTROL: { bytes: 68, confidence: ASSUMED }
+  AXIS_CONSUMED: { bytes: 16796, confidence: ASSUMED }
+  AXIS_GENERIC: { bytes: 16796, confidence: ASSUMED }
+  AXIS_GENERIC_DRIVE: { bytes: 17356, confidence: ASSUMED }
+  AXIS_SERVO_DRIVE: { bytes: 17356, confidence: ASSUMED }
+  BUS_OBJ: { bytes: 52, confidence: ASSUMED }
+  CAMSHAFT_MONITOR: { bytes: 92, confidence: ASSUMED }
+  CAM_EXTENDED: { bytes: 20, confidence: ASSUMED }
+  CAM_PROFILE_EXTENDED: { bytes: 52, confidence: ASSUMED }
+  CB_CONTINUOUS_MODE: { bytes: 52, confidence: ASSUMED }
+  CB_CRANKSHAFT_POS_MONITOR: { bytes: 44, confidence: ASSUMED }
+  CB_INCH_MODE: { bytes: 44, confidence: ASSUMED }
+  CB_SINGLE_STROKE_MODE: { bytes: 36, confidence: ASSUMED }
+  CC: { bytes: 8692, confidence: ASSUMED }
+  CONFIGURABLE_ROUT: { bytes: 52, confidence: ASSUMED }
+  CONNECTION_STATUS: { bytes: 4, confidence: ASSUMED }
+  DATALOG_INSTRUCTION: { bytes: 12, confidence: ASSUMED }
+  DCAF_INPUT: { bytes: 108, confidence: ASSUMED }
+  DCA_INPUT: { bytes: 108, confidence: ASSUMED }
+  DCI_MONITOR: { bytes: 68, confidence: ASSUMED }
+  DCI_START: { bytes: 76, confidence: ASSUMED }
+  DCI_STOP: { bytes: 76, confidence: ASSUMED }
+  DCI_STOP_TEST: { bytes: 92, confidence: ASSUMED }
+  DCI_STOP_TEST_LOCK: { bytes: 92, confidence: ASSUMED }
+  DCI_STOP_TEST_MUTE: { bytes: 100, confidence: ASSUMED }
+  DEADTIME: { bytes: 108, confidence: ASSUMED }
+  DERIVATIVE: { bytes: 84, confidence: ASSUMED }
+  DISCRETE_2STATE: { bytes: 36, confidence: ASSUMED }
+  DISCRETE_3STATE: { bytes: 44, confidence: ASSUMED }
+  DIVERSE_INPUT: { bytes: 52, confidence: ASSUMED }
+  DOMINANT_RESET: { bytes: 12, confidence: ASSUMED }
+  DOMINANT_SET: { bytes: 12, confidence: ASSUMED }
+  DYNAMICS_DATA: { bytes: 44, confidence: ASSUMED }
+  EIGHT_POS_MODE_SELECTOR: { bytes: 44, confidence: ASSUMED }
+  EMERGENCY_STOP: { bytes: 52, confidence: ASSUMED }
+  ENABLE_PENDANT: { bytes: 52, confidence: ASSUMED }
+  ENERGY_BASE: { bytes: 107, confidence: ASSUMED }
+  ENERGY_ELECTRICAL: { bytes: 107, confidence: ASSUMED }
+  EXT_ROUTINE_CONTROL: { bytes: 132, confidence: ASSUMED }
+  EXT_ROUTINE_PARAMETERS: { bytes: 12, confidence: ASSUMED }
+  FBD_BIT_FIELD_DISTRIBUTE: { bytes: 28, confidence: ASSUMED }
+  FBD_BOOLEAN_XOR: { bytes: 12, confidence: ASSUMED }
+  FBD_COMPARE: { bytes: 12, confidence: ASSUMED }
+  FBD_CONVERT: { bytes: 12, confidence: ASSUMED }
+  FBD_COUNTER: { bytes: 20, confidence: ASSUMED }
+  FBD_LIMIT: { bytes: 12, confidence: ASSUMED }
+  FBD_LOGICAL: { bytes: 12, confidence: ASSUMED }
+  FBD_MASKED_MOVE: { bytes: 20, confidence: ASSUMED }
+  FBD_MASK_EQUAL: { bytes: 12, confidence: ASSUMED }
+  FBD_MATH_ADVANCED: { bytes: 12, confidence: ASSUMED }
+  FBD_TRUNCATE: { bytes: 12, confidence: ASSUMED }
+  FILTER_HIGH_PASS: { bytes: 156, confidence: ASSUMED }
+  FILTER_LOW_PASS: { bytes: 156, confidence: ASSUMED }
+  FILTER_NOTCH: { bytes: 180, confidence: ASSUMED }
+  FIVE_POS_MODE_SELECTOR: { bytes: 36, confidence: ASSUMED }
+  FLIP_FLOP_D: { bytes: 12, confidence: ASSUMED }
+  FLIP_FLOP_JK: { bytes: 12, confidence: ASSUMED }
+  FUNCTION_GENERATOR: { bytes: 52, confidence: ASSUMED }
+  HL_LIMIT: { bytes: 36, confidence: ASSUMED }
+  HMIBC: { bytes: 28, confidence: ASSUMED }
+  IMC: { bytes: 4316, confidence: ASSUMED }
+  INTEGRATOR: { bytes: 84, confidence: ASSUMED }
+  LEAD_LAG: { bytes: 132, confidence: ASSUMED }
+  LEAD_LAG_SEC_ORDER: { bytes: 172, confidence: ASSUMED }
+  LIGHT_CURTAIN: { bytes: 52, confidence: ASSUMED }
+  MAIN_VALVE_CONTROL: { bytes: 52, confidence: ASSUMED }
+  MANUAL_VALVE_CONTROL: { bytes: 28, confidence: ASSUMED }
+  MAXIMUM_CAPTURE: { bytes: 28, confidence: ASSUMED }
+  MESSAGE: { bytes: 688, confidence: ASSUMED }
+  MINIMUM_CAPTURE: { bytes: 28, confidence: ASSUMED }
+  MMC: { bytes: 16388, confidence: ASSUMED }
+  MOVING_AVERAGE: { bytes: 52, confidence: ASSUMED }
+  MOVING_STD_DEV: { bytes: 60, confidence: ASSUMED }
+  MULTIPLEXER: { bytes: 60, confidence: ASSUMED }
+  MUTING_FOUR_SENSOR_BIDIR: { bytes: 100, confidence: ASSUMED }
+  MUTING_TWO_SENSOR_ASYM: { bytes: 100, confidence: ASSUMED }
+  MUTING_TWO_SENSOR_SYM: { bytes: 100, confidence: ASSUMED }
+  ODOMETER: { bytes: 12, confidence: ASSUMED }
+  OUTPUT_CAM: { bytes: 28, confidence: ASSUMED }
+  OUTPUT_COMPENSATION: { bytes: 28, confidence: ASSUMED }
+  PATH_DATA: { bytes: 68, confidence: ASSUMED }
+  PHASE: { bytes: 28, confidence: ASSUMED }
+  PHASE_INSTRUCTION: { bytes: 4, confidence: ASSUMED }
+  PID: { bytes: 180, confidence: ASSUMED }
+  PIDE_AUTOTUNE: { bytes: 972, confidence: ASSUMED }
+  PID_ENHANCED: { bytes: 396, confidence: ASSUMED }
+  POSITION_DATA: { bytes: 28, confidence: ASSUMED }
+  POSITION_PROP: { bytes: 124, confidence: ASSUMED }
+  PROP_INT: { bytes: 132, confidence: ASSUMED }
+  PULSE_MULTIPLIER: { bytes: 44, confidence: ASSUMED }
+  P_ANALOG_FANOUT: { bytes: 444, confidence: ASSUMED }
+  P_ANALOG_HART: { bytes: 404, confidence: ASSUMED }
+  P_ANALOG_INPUT: { bytes: 708, confidence: ASSUMED }
+  P_ANALOG_INPUT_DUAL: { bytes: 268, confidence: ASSUMED }
+  P_ANALOG_INPUT_MULTI: { bytes: 492, confidence: ASSUMED }
+  P_ANALOG_OUTPUT: { bytes: 428, confidence: ASSUMED }
+  P_BOOLEAN_LOGIC: { bytes: 476, confidence: ASSUMED }
+  P_COMMAND_SOURCE: { bytes: 20, confidence: ASSUMED }
+  P_DEADBAND: { bytes: 396, confidence: ASSUMED }
+  P_DISCRETE_4STATE: { bytes: 284, confidence: ASSUMED }
+  P_DISCRETE_INPUT: { bytes: 172, confidence: ASSUMED }
+  P_DISCRETE_MIX_PROOF: { bytes: 316, confidence: ASSUMED }
+  P_DISCRETE_N_POSITION: { bytes: 356, confidence: ASSUMED }
+  P_DISCRETE_OUTPUT: { bytes: 300, confidence: ASSUMED }
+  P_DOSING: { bytes: 484, confidence: ASSUMED }
+  P_HART_CODE_DESC_STATUS: { bytes: 44, confidence: ASSUMED }
+  P_HIGH_LOW_SELECT: { bytes: 164, confidence: ASSUMED }
+  P_INTERLOCK: { bytes: 204, confidence: ASSUMED }
+  P_INTERLOCK_BANK_STATUS: { bytes: 12, confidence: ASSUMED }
+  P_LEAD_LAG_STANDBY: { bytes: 1284, confidence: ASSUMED }
+  P_LEAD_LAG_STANDBY_MOTOR: { bytes: 28, confidence: ASSUMED }
+  P_MOTOR_DISCRETE: { bytes: 508, confidence: ASSUMED }
+  P_PERMISSIVE: { bytes: 36, confidence: ASSUMED }
+  P_PID: { bytes: 812, confidence: ASSUMED }
+  P_PRESS_TEMP_COMPENSATED: { bytes: 60, confidence: ASSUMED }
+  P_RESTART_INHIBIT: { bytes: 172, confidence: ASSUMED }
+  P_RUN_TIME: { bytes: 68, confidence: ASSUMED }
+  P_STRAPPING_TABLE_ROW: { bytes: 12, confidence: ASSUMED }
+  P_TANK_STRAPPING_TABLE: { bytes: 108, confidence: ASSUMED }
+  P_VALVE_DISCRETE: { bytes: 484, confidence: ASSUMED }
+  P_VALVE_STATISTICS: { bytes: 460, confidence: ASSUMED }
+  P_VARIABLE_SPEED_DRIVE: { bytes: 652, confidence: ASSUMED }
+  RAC_CODE_DESCRIPTION: { bytes: 92, confidence: ASSUMED }
+  RAC_EVENT: { bytes: 148, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRDISCRETE_CMD: { bytes: 4, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRDISCRETE_SET: { bytes: 4, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRDISCRETE_STS: { bytes: 316, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRMOTION_CMD: { bytes: 4, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRMOTION_INF: { bytes: 4, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRMOTION_SET: { bytes: 4, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRMOTION_STS: { bytes: 316, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRVELOCITY_CMD: { bytes: 4, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRVELOCITY_SET: { bytes: 4, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRVELOCITY_STS: { bytes: 324, confidence: ASSUMED }
+  RAMP_SOAK: { bytes: 108, confidence: ASSUMED }
+  REDUNDANT_INPUT: { bytes: 52, confidence: ASSUMED }
+  REDUNDANT_OUTPUT: { bytes: 36, confidence: ASSUMED }
+  SAFELY_LIMITED_POSITION: { bytes: 52, confidence: ASSUMED }
+  SAFELY_LIMITED_SPEED: { bytes: 36, confidence: ASSUMED }
+  SAFETY_FEEDBACK_INTERFACE: { bytes: 100, confidence: ASSUMED }
+  SAFETY_MAT: { bytes: 44, confidence: ASSUMED }
+  SAFE_BRAKE_CONTROL: { bytes: 52, confidence: ASSUMED }
+  SAFE_DIRECTION: { bytes: 28, confidence: ASSUMED }
+  SAFE_OPERATING_STOP: { bytes: 60, confidence: ASSUMED }
+  SAFE_STOP_1: { bytes: 76, confidence: ASSUMED }
+  SAFE_STOP_2: { bytes: 132, confidence: ASSUMED }
+  SEC_ORDER_CONTROLLER: { bytes: 172, confidence: ASSUMED }
+  SELECT: { bytes: 20, confidence: ASSUMED }
+  SELECTABLE_NEGATE: { bytes: 20, confidence: ASSUMED }
+  SELECTED_SUMMER: { bytes: 84, confidence: ASSUMED }
+  SELECT_ENHANCED: { bytes: 60, confidence: ASSUMED }
+  SEQUENCE: { bytes: 140, confidence: ASSUMED }
+  SEQ_BOOL: { bytes: 4, confidence: ASSUMED }
+  SEQ_DINT: { bytes: 12, confidence: ASSUMED }
+  SEQ_INT: { bytes: 4, confidence: ASSUMED }
+  SEQ_REAL: { bytes: 12, confidence: ASSUMED }
+  SEQ_SINT: { bytes: 4, confidence: ASSUMED }
+  SEQ_STEP: { bytes: 60, confidence: ASSUMED }
+  SEQ_STRING: { bytes: 268, confidence: ASSUMED }
+  SEQ_TRANSITION: { bytes: 12, confidence: ASSUMED }
+  SERIAL_PORT_CONTROL: { bytes: 12, confidence: ASSUMED }
+  SIGNED_ODOMETER: { bytes: 12, confidence: ASSUMED }
+  SPLIT_RANGE: { bytes: 108, confidence: ASSUMED }
+  STRING_16: { bytes: 20, confidence: ASSUMED }
+  STRING_32: { bytes: 36, confidence: ASSUMED }
+  S_CURVE: { bytes: 116, confidence: ASSUMED }
+  THRS_ENHANCED: { bytes: 92, confidence: ASSUMED }
+  TOTALIZER: { bytes: 116, confidence: ASSUMED }
+  TWO_HAND_RUN_STATION: { bytes: 44, confidence: ASSUMED }
+  UP_DOWN_ACCUM: { bytes: 28, confidence: ASSUMED }
 
 # Predefined structures whose real cost is base + per_element*array_length
 # rather than a flat scalar -- CAM_PROFILE is always used as an array in
