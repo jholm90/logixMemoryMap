@@ -387,4 +387,52 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             for e in entries
         ]
 
+    # Firmware-version + safety-capable-model baseline corrections
+    # (OQ-BASELINE-PROCFW, wired 2026-08-29 -- see memory_model.yaml
+    # firmware_baseline_delta / safety_capable_baseline_delta for the full
+    # derivation). Both are real per-file structural deltas layered on top
+    # of the already-confirmed flat empty_project_baseline -- same class of
+    # correction as module_overhead above (FITTED from real capture data,
+    # not yet KNOWN-grade), so ESTIMATED tier for the same reason. Category
+    # "project_baseline" (not a new category) deliberately reuses the
+    # existing NON_TAG_GROUPS "Project Overhead" grouping in ui/hierarchy.py
+    # -- these are structural scaffolding costs, not a new kind of thing.
+    controller_el = root.find("Controller")
+    software_revision = root.get("SoftwareRevision")
+    processor_type = controller_el.get("ProcessorType") if controller_el is not None else None
+
+    baseline_delta_entries: list[tuple[str, str, str, int, str]] = []
+    fw_bytes, fw_basis = model.firmware_baseline_delta.delta_for(software_revision)
+    if fw_bytes:
+        fw_major = software_revision.split(".")[0] if software_revision else "?"
+        baseline_delta_entries.append((
+            "firmware_baseline_delta", "project_baseline", f"FW_V{fw_major}_BASELINE",
+            fw_bytes, fw_basis,
+        ))
+    if model.safety_capable_baseline_delta.applies_to(processor_type):
+        baseline_delta_entries.append((
+            "safety_capable_baseline_delta", "project_baseline", "SAFETY_CAPABLE_BASELINE",
+            model.safety_capable_baseline_delta.bytes,
+            model.safety_capable_baseline_delta.confidence,
+        ))
+
+    if baseline_delta_entries:
+        baseline_delta_total = sum(size for _, _, _, size, _ in baseline_delta_entries)
+        total_bytes += baseline_delta_total
+        new_paths = {path for path, _, _, _, _ in baseline_delta_entries}
+        entries += [
+            SizeEntry(
+                path=path, category=category, data_type=data_type, bytes=size,
+                pct_of_total=(size / total_bytes * 100) if total_bytes else 0.0,
+                tier=ESTIMATED, basis=basis,
+            )
+            for path, category, data_type, size, basis in baseline_delta_entries
+        ]
+        entries = [
+            e if e.path in new_paths else
+            SizeEntry(path=e.path, category=e.category, data_type=e.data_type, bytes=e.bytes,
+                      pct_of_total=(e.bytes / total_bytes * 100), tier=e.tier, basis=e.basis)
+            for e in entries
+        ]
+
     return entries, errors

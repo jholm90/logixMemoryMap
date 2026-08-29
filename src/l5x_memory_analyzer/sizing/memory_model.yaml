@@ -365,6 +365,62 @@ module_overhead:
   bytes: 1672
   confidence: FITTED
 
+# Real per-firmware-major-version delta over the confirmed v34/v35 baseline
+# (OQ-BASELINE-PROCFW, wired 2026-08-29). 40 real fw_catalog_matrix
+# captures (10 catalogs x v31/v32/v33, 1756-L8x + 5069 non-safety, all real
+# Capacity deltas, zero WINDOW-TITLE-MISMATCH flags in manifest.csv) show a
+# real, distinct jump over the already-confirmed v34/v35 baseline
+# (empty_project_baseline + task_program_shell + routine_logic = 18,128
+# predicted / 18,112 actual, -16 known noise): v31 and v32 land IDENTICAL
+# at +11,240 (1756 catalogs) -- firmware 31->32 changed nothing
+# baseline-relevant; v33 jumps further to +14,248. Applied uniformly across
+# catalog family: the small 1756-vs-5069 8-byte spread (11,240 vs 11,248,
+# 14,248 vs 14,256) already falls inside this project's existing accepted
+# per-file noise band (same -16/-8 spread already present at the confirmed
+# v34/v35 baseline itself), not modeled as a separate firmware x family
+# interaction term. v38's only real capture (fwmatrix_v38_1756_l81e) is
+# WINDOW-TITLE-MISMATCH-flagged in manifest.csv (actual_bytes 18,416
+# belongs to a different file's window, fwmatrix_v35_5069_l340ers2) -- per
+# CLAUDE.md's standing rule that row's capture columns are not trusted, so
+# v38 is NOT wired here and stays on default_bytes (no adjustment) until
+# the batch script's automatic retry produces a real v38 capture. v36/v37
+# have no real sample at all (removed from the generation batch entirely,
+# 2026-08-28) so they also fall through to default_bytes. Keyed by the
+# integer major version parsed from the L5X root's own SoftwareRevision
+# (e.g. "31.02" -> "31").
+firmware_baseline_delta:
+  by_major_version:
+    "31": { bytes: 11240, confidence: FITTED }
+    "32": { bytes: 11240, confidence: FITTED }
+    "33": { bytes: 14248, confidence: FITTED }
+  default_bytes: 0
+  default_confidence: KNOWN
+
+# Real 5069 safety-CAPABLE processor baseline overhead, independent of
+# actual SafetyInfo/SafetyTask content (OQ-BASELINE-PROCFW, wired
+# 2026-08-29). 5069-L330ERMS2 and 5069-L340ERS2 (the only 2 safety-suffix
+# catalogs with a real capture so far) show a real +296 byte baseline over
+# their non-safety siblings (5069-L330ER/L340ER) on the SAME firmware --
+# actual 18,416 (safety) vs 18,120 (non-safety) at v34/v35, and the
+# identical +296 gap reproduces independently at v31/v32 (29,672 vs
+# 29,376) and v33 (32,680 vs 32,384), confirming no firmware x safety
+# interaction term is needed -- this delta stacks additively with
+# firmware_baseline_delta above. The mere fact of being a
+# safety-CAPABLE processor model costs real memory before any safety
+# configuration exists: gen_fw_catalog_matrix.py doesn't populate real
+# SafetyInfo/Class="Safety" content for these catalogs at all, so this is
+# a pure baseline effect, not double-counted Safety Task/Program content
+# (which this project doesn't size regardless -- see OQ-SAFETY). n=2 real
+# catalogs directly confirmed; applied to the whole 5069 safety-suffix
+# family (catalog ProcessorType ends "S2" or "S3" -- L306ERMS2/MS3,
+# L306ERS2, L310ERS2, L320ERMS2/MS3, L330ERMS2, L340ERS2) on the same
+# "same physical family, not independently confirmed per-catalog" basis
+# this project already uses for L72-L75 vs L71 and L82ES-L85ES vs L81ES.
+safety_capable_baseline_delta:
+  bytes: 296
+  confidence: FITTED
+  catalog_suffix_pattern: 'S[23]$'
+
 bool:
   # Standalone BOOL controller/program tags: allocated as a full DINT, not
   # bit-packed. See OQ-BOOLPACK -- ASSUMED, pending Phase 3 confirmation.

@@ -159,16 +159,32 @@ has its own constant.
 
 **CAVEAT, James 2026-08-23: "your empty project baseline is not a constant
 and will change based on processor and firmware. You need to be aware of
-this."** Not yet tested against any other processor or firmware revision
--- see `docs/OPEN_QUESTIONS.md` OQ-BASELINE-PROCFW. A ~30-file per-
-processor blank-project batch and a same-processor/different-firmware
-batch are coming to isolate both components separately. Once that lands,
-this needs to become a lookup keyed on (processor_type, firmware_rev),
-likely living in `controller_budgets.yaml` next to the existing per-
-processor memory-budget table, not a bare scalar in this file. Until then,
-**13,296 is only valid for 1756-L81E/35.05-class projects** -- do not
-apply it to a report for any other processor without flagging that
-explicitly.
+this."** Confirmed true, and **partially wired 2026-08-29** -- see
+`docs/OPEN_QUESTIONS.md` OQ-BASELINE-PROCFW for the full derivation. Rather
+than replace `empty_project_baseline` itself with a lookup, `report.py`
+applies two additional real, additive corrections on top of it (both in
+`memory_model.yaml`, ESTIMATED tier like `module_overhead` -- FITTED from
+real data, not yet KNOWN-grade):
+
+- **`firmware_baseline_delta`** -- keyed on the L5X root's own
+  `SoftwareRevision` major version. v31/v32 add a real +11,240; v33 adds
+  +14,248; v34/v35 (the already-confirmed 13,296 baseline itself) and any
+  unlisted/unconfirmed major (v36, v37, v38, ...) add 0 (no adjustment).
+- **`safety_capable_baseline_delta`** -- +296, applied when
+  `Controller/@ProcessorType` ends in `S2`/`S3` (the 5069 Motion+Safety
+  catalog suffix), independent of whether real Safety content exists in
+  the file at all.
+
+Validated against all 50 real (untainted) `fw_catalog_matrix` capture rows
+across v31-v35, 1756/5069, safety and non-safety: every one now predicts
+within 16 bytes. **Still genuinely unconfirmed:** v38 (its only capture is
+`WINDOW TITLE MISMATCH`-flagged, not trusted), v36/v37 (no real sample at
+all), the full 1769-series baseline (real range 69,600-98,944, not modeled
+at all), and 1756-L7x/L8xES catalogs in the matrix (built, not yet
+captured). **13,296 remains the correct base for 1756-L81E/35.05-class
+projects specifically** -- the two deltas above are corrections layered on
+top of it for the firmware/catalog combinations they cover, not a
+replacement lookup table.
 
 ## Alias tags (KNOWN, corrected 2026-08-25)
 
@@ -384,8 +400,13 @@ earn tag/UDT/AOI-level confidence yet. NOT charged to a rack-aliased
 module (`RackConnection`/`InAliasTag`) or a `CatalogNumber="Embedded"`
 processor-integrated I/O block (CompactLogix 5370 "ER" family) — zero real
 data for either shape, stays fully unmodeled rather than guessed.
-- Produced/Consumed: **UNKNOWN — OQ-PRODCONS**. Overhead formula not yet
-  isolated from base connection cost vs. payload cost vs. consumer count.
+- Produced/Consumed: **RESOLVED — OQ-PRODCONS**. No special connection-
+  overhead formula needed — a correctly-built produced/consumed tag's
+  DataType already includes a `CONNECTION_STATUS`-typed member, so
+  ordinary UDT-member recursion covers it; `CONNECTION_STATUS` itself is
+  now a wired `predefined_structures` entry (4 bytes, 2026-08-29 batch).
+  Zero produced/consumed tags in the real corpus so far. See
+  RESOLVED_QUESTIONS.md.
 - Motion/Kinetix (2198-series) and VFD (PowerFlex) module shapes:
   **UNKNOWN**, deliberately untouched — need their own real-shape
   research, not a safe reuse of the backplane/Point-I/O shapes above.
@@ -774,3 +795,19 @@ there's a record of *why* a number is what it is, not just what it currently is.
   regression across all 1,059 captured manifest rows went from 279 to 292
   exact matches with zero real regressions (see OPEN_QUESTIONS.md
   OQ-TASKOVERHEAD for the full derivation and regression numbers).
+- **2026-08-29** — Firmware-version + 5069-safety-capable-model baseline
+  deltas wired (OQ-BASELINE-PROCFW; see "Empty-project baseline" above for
+  the full formula). New `memory_model.yaml` sections
+  `firmware_baseline_delta` (v31/v32=+11,240, v33=+14,248, v34/v35/
+  unlisted=+0) and `safety_capable_baseline_delta` (+296, gated on
+  `ProcessorType` ending `S2`/`S3`), both ESTIMATED tier, read via
+  `report.py` off the L5X root's `SoftwareRevision`/`Controller/
+  @ProcessorType`. Validated against all 50 real (untainted)
+  `fw_catalog_matrix` rows: every one now predicts within 16 bytes, down
+  from errors up to 14,552. **Correction, same day:** a prior pass had
+  claimed a real "+304 v38 delta" and a real "-1,044 byte AOI-array-
+  parameter overshoot anomaly" — both were misreadings of
+  `WINDOW TITLE MISMATCH`-flagged manifest rows (contaminated capture
+  data, wrong file's numbers), not real engine gaps. Both rows' capture
+  columns cleared per CLAUDE.md's standing rule; neither claim is wired,
+  both stay open awaiting real (clean) capture.

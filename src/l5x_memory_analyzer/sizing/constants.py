@@ -7,6 +7,7 @@ hardcode them inline -- see CLAUDE.md working agreement.
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -297,6 +298,46 @@ class LogicInstructionModel:
 
 
 @dataclass(frozen=True)
+class FirmwareBaselineDeltaModel:
+    """Real per-firmware-major-version delta over the confirmed v34/v35
+    baseline (OQ-BASELINE-PROCFW, wired 2026-08-29) -- see memory_model.yaml
+    firmware_baseline_delta for the full derivation and which manifest.csv
+    rows it's fitted from. Keyed by the integer major version parsed out of
+    the L5X root's own SoftwareRevision attribute (e.g. "31.02" -> "31");
+    any major not in the table (including v34/v35 themselves, and any
+    firmware with no real sample) falls back to default_bytes/
+    default_confidence -- i.e. no adjustment."""
+    by_major_version: dict[str, tuple[int, str]]
+    default_bytes: int
+    default_confidence: str
+
+    def delta_for(self, software_revision: str | None) -> tuple[int, str]:
+        if not software_revision:
+            return self.default_bytes, self.default_confidence
+        major = software_revision.split(".")[0]
+        return self.by_major_version.get(major, (self.default_bytes, self.default_confidence))
+
+
+@dataclass(frozen=True)
+class SafetyCapableBaselineDeltaModel:
+    """Real 5069 safety-CAPABLE processor baseline overhead, independent of
+    actual SafetyInfo/SafetyTask content (OQ-BASELINE-PROCFW, wired
+    2026-08-29) -- see memory_model.yaml safety_capable_baseline_delta for
+    the full derivation (n=2 real catalogs, extended to the whole
+    safety-suffix family the same way this project already extends L71's
+    confirmed shape to L72-L75). catalog_suffix_pattern is matched against
+    the L5X Controller element's own ProcessorType attribute."""
+    bytes: int
+    confidence: str
+    catalog_suffix_pattern: str
+
+    def applies_to(self, processor_type: str | None) -> bool:
+        if not processor_type:
+            return False
+        return bool(re.search(self.catalog_suffix_pattern, processor_type))
+
+
+@dataclass(frozen=True)
 class MemoryModel:
     atomic_types: dict[str, AtomicType]
     predefined_structures: dict[str, AtomicType]
@@ -316,6 +357,8 @@ class MemoryModel:
     empty_project_baseline_confidence: str
     module_overhead_bytes: int
     module_overhead_confidence: str
+    firmware_baseline_delta: FirmwareBaselineDeltaModel
+    safety_capable_baseline_delta: SafetyCapableBaselineDeltaModel
 
 
 def load_memory_model(path: str | Path | None = None) -> MemoryModel:
@@ -339,6 +382,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
     s = raw["string"]
     baseline = raw["empty_project_baseline"]
     module_overhead = raw["module_overhead"]
+    fw_delta = raw["firmware_baseline_delta"]
+    safety_delta = raw["safety_capable_baseline_delta"]
     return MemoryModel(
         atomic_types=atomic_types,
         predefined_structures=predefined_structures,
@@ -347,6 +392,19 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
         empty_project_baseline_confidence=baseline["confidence"],
         module_overhead_bytes=module_overhead["bytes"],
         module_overhead_confidence=module_overhead["confidence"],
+        firmware_baseline_delta=FirmwareBaselineDeltaModel(
+            by_major_version={
+                major: (v["bytes"], v["confidence"])
+                for major, v in fw_delta["by_major_version"].items()
+            },
+            default_bytes=fw_delta["default_bytes"],
+            default_confidence=fw_delta["default_confidence"],
+        ),
+        safety_capable_baseline_delta=SafetyCapableBaselineDeltaModel(
+            bytes=safety_delta["bytes"],
+            confidence=safety_delta["confidence"],
+            catalog_suffix_pattern=safety_delta["catalog_suffix_pattern"],
+        ),
         bool=BoolModel(
             standalone_tag_bytes=b["standalone_tag_bytes"],
             standalone_confidence=b["standalone_confidence"],

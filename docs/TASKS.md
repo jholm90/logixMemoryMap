@@ -79,7 +79,11 @@ files; PID and ASCII-module instructions dropped (zero real occurrences).
 sizes straight off the L5X (Logix Designer states them directly). A flat
 `module_overhead` constant is wired but only from n=2 real deltas — see
 OPEN_QUESTIONS.md OQ-MODULEIO for the 141-file test batch and its status.
-Produced/consumed tags (OQ-PRODCONS) still untouched.
+Produced/consumed tags (OQ-PRODCONS) RESOLVED — no special formula needed,
+ordinary UDT-member recursion already covers a produced/consumed tag's
+`CONNECTION_STATUS`-typed member, which is itself now a wired
+`predefined_structures` entry (4 bytes, 2026-08-29 batch). See
+RESOLVED_QUESTIONS.md.
 
 [^aoidef]: `sizing/udt.py` `compute_aoi_definition_cost()`, FITTED not
 KNOWN. Two small threads remain — see OPEN_QUESTIONS.md OQ-AOIDEF.

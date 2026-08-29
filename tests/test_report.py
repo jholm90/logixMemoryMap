@@ -191,3 +191,77 @@ def test_udt_definition_cost_counts_bool_members_correctly():
     # name_per_8_chars(8)*ceil(13/8)=2 + bool_run_bonus(32) = 272.
     assert bytes_ == 160 + 16 * 4 + 8 * 2 + 32
     assert bytes_ == 272
+
+
+def _blank_root(software_revision: str, processor_type: str) -> ET.Element:
+    xml = f"""
+    <RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="{software_revision}">
+      <Controller Name="Test" ProcessorType="{processor_type}">
+        <DataTypes/>
+        <AddOnInstructionDefinitions/>
+        <Tags/>
+        <Programs/>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    return ET.fromstring(xml)
+
+
+def test_firmware_baseline_delta_applies_for_confirmed_major_version():
+    # OQ-BASELINE-PROCFW, wired 2026-08-29: v31 real capture shows a real
+    # +11,240 over the v34/v35 baseline (see memory_model.yaml
+    # firmware_baseline_delta) -- confirmed against 1756-L81E.
+    root = _blank_root("31.02", "1756-L81E")
+    entries, errors = build_report(root, MODEL)
+    assert errors == []
+    by_path = {e.path: e for e in entries}
+    fw_entry = by_path["firmware_baseline_delta"]
+    assert fw_entry.bytes == 11240
+    assert fw_entry.data_type == "FW_V31_BASELINE"
+    assert "safety_capable_baseline_delta" not in by_path
+
+
+def test_firmware_baseline_delta_absent_for_confirmed_v34_v35():
+    # v34/v35 is the already-confirmed reference baseline itself -- no
+    # correction, no extra entry emitted at all.
+    for rev in ("34.01", "35.05"):
+        root = _blank_root(rev, "1756-L81E")
+        entries, _ = build_report(root, MODEL)
+        assert "firmware_baseline_delta" not in {e.path for e in entries}
+
+
+def test_firmware_baseline_delta_absent_for_unconfirmed_major_version():
+    # v38's only real capture is WINDOW-TITLE-MISMATCH-contaminated (see
+    # OPEN_QUESTIONS.md OQ-BASELINE-PROCFW) -- not trusted, stays
+    # unadjusted until a real capture lands.
+    root = _blank_root("38.02", "1756-L81E")
+    entries, _ = build_report(root, MODEL)
+    assert "firmware_baseline_delta" not in {e.path for e in entries}
+
+
+def test_safety_capable_baseline_delta_applies_to_5069_safety_suffix():
+    root = _blank_root("35.05", "5069-L330ERMS2")
+    entries, errors = build_report(root, MODEL)
+    assert errors == []
+    by_path = {e.path: e for e in entries}
+    safety_entry = by_path["safety_capable_baseline_delta"]
+    assert safety_entry.bytes == 296
+    assert "firmware_baseline_delta" not in by_path
+
+
+def test_safety_capable_baseline_delta_absent_for_non_safety_5069():
+    root = _blank_root("35.05", "5069-L330ER")
+    entries, _ = build_report(root, MODEL)
+    assert "safety_capable_baseline_delta" not in {e.path for e in entries}
+
+
+def test_firmware_and_safety_baseline_deltas_stack_additively():
+    # v31 + safety-suffix catalog: both real, independent effects (see
+    # OPEN_QUESTIONS.md OQ-BASELINE-PROCFW -- the +296 safety gap
+    # reproduces identically at v31/v32/v33, confirming no interaction
+    # term is needed).
+    root = _blank_root("31.02", "5069-L330ERMS2")
+    entries, _ = build_report(root, MODEL)
+    by_path = {e.path: e for e in entries}
+    assert by_path["firmware_baseline_delta"].bytes == 11240
+    assert by_path["safety_capable_baseline_delta"].bytes == 296

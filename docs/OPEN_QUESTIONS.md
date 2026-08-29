@@ -8,10 +8,17 @@ the matching footnote at the bottom, not inline.
    SCP/FBC/PID deprioritized (no 2nd real example to test against);
    effort redirected to safety work per James.[^instrfirstpass]
 
-2. **OQ-BASELINE-PROCFW** — real, large, genuinely open. Baseline varies
-   hugely by processor/firmware; a full 152-file catalog x firmware matrix
-   (19 catalogs × v31-38) now covers this, all awaiting capture — that's
-   the next step, not more generation.[^baseline]
+2. **OQ-BASELINE-PROCFW** — partially wired 2026-08-29. Firmware-version
+   (v31/v32/v33) and 5069-safety-capable-model baseline deltas are now
+   real, confirmed, and wired into `report.py`/`memory_model.yaml` —
+   validated against all 50 real (untainted) `fw_catalog_matrix` capture
+   rows, every one now predicts within 16 bytes (was off by up to 14,552).
+   Still genuinely open: v38 (only real capture is WINDOW-TITLE-MISMATCH-
+   flagged, awaiting the batch script's automatic retry), v36/v37 (no real
+   sample at all), and the full 1769-series baseline (69,600-98,944 range,
+   not modeled at all, only 1 real per-catalog Bus-Size point exists).
+   L7x/L8xES catalogs in the matrix still await their own
+   capture.[^baseline]
 
 3. **OQ-CMPCPTLAYOUT** — mostly closed. Uniform, T1+T2, and T1T3/T2T3
    mixed-tier CPT are solved and wired. Two threads left, both narrowed
@@ -396,31 +403,64 @@ Safety-scoped tags should be included in the displayed total at all is
 the same still-open product decision flagged for DCI_STOP originally —
 not re-decided here, just now applying to a much bigger list of types.
 
-**Two new real findings surfaced by this same batch, not yet wired --
-architecture/further-work items, not just constants:**
+**Two findings from this same batch, WIRED 2026-08-29** (`report.py`
+`build_report` now reads `SoftwareRevision`/`ProcessorType` straight off
+the L5X root/Controller element; constants in `memory_model.yaml`
+`firmware_baseline_delta`/`safety_capable_baseline_delta`, ESTIMATED tier
+like `module_overhead`, never hardcoded inline per CLAUDE.md):
 
-1. **Real per-firmware-version baseline deltas**, from the 51 real
-   `fw_catalog_matrix` captures in this same push. 1756-L8x/5069 (non-
+1. **Real per-firmware-version baseline deltas.** 1756-L8x/5069 (non-
    safety-suffix) on v34/v35 both confirm the already-known 18,112 exact
-   (0 residual) -- but v31/v32 show a real +11,256 to +11,264 jump
-   (actual ≈29,368-29,376) and v33 shows +14,264 to +14,272
-   (actual≈32,376-32,384), both far larger than anything currently
-   modeled. v38 shows a real +304 over v34/35 on the SAME 1756-L81E
-   catalog (18,416 vs 18,112) -- plausibly the real `DataExchangeId` GUID
-   attribute (v38-only) costing real space, not yet confirmed. NOT wired
-   yet -- needs a real per-firmware-version adjustment mechanism in
-   `report.py`'s baseline computation, not just a memory_model.yaml
-   constant tweak, so flagged for dedicated follow-up rather than rushed.
+   (0 residual, unchanged -- v34/v35 stay on the default/no-adjustment
+   path). v31/v32 land IDENTICAL at +11,240 (1756 catalogs; actual
+   ≈29,368-29,376) and v33 at +14,248 (actual≈32,376-32,384) -- both now
+   wired, keyed off the firmware major parsed from `SoftwareRevision`.
+   **Correction:** the "v38 shows a real +304" claim from the prior pass
+   was wrong -- that row (`fwmatrix_v38_1756_l81e`) is
+   `WINDOW TITLE MISMATCH`-flagged in manifest.csv (its 18,416 actual_bytes
+   belongs to a different file, `fwmatrix_v35_5069_l340ers2`), so it was
+   never real v38 evidence. Manifest row cleared per CLAUDE.md's standing
+   rule; v38 stays unadjusted (default_bytes=0) until a real capture
+   lands.
 2. **Real 5069-safety-model baseline overhead, independent of SafetyInfo
-   content.** The 5069 Motion+Safety-suffix catalars (`L330ERMS2`,
-   `L340ERS2`) show a real +304 byte baseline over their non-safety
-   siblings (`L330ER`, `L340ER`, +8 only) on the SAME firmware, even
-   though `gen_fw_catalog_matrix.py` doesn't currently populate real
-   `SafetyInfo`/`Class="Safety"` content for these catalogs at all --
+   content.** The 5069 Motion+Safety-suffix catalogs (`L330ERMS2`,
+   `L340ERS2`) show a real +296 byte baseline over their non-safety
+   siblings (`L330ER`, `L340ER`) on the SAME firmware (18,416 vs 18,120 at
+   v34/v35; the identical +296 gap reproduces independently at v31/v32 and
+   v33, confirming no firmware x safety interaction term is needed) --
    the mere fact of being a safety-CAPABLE processor model costs real
-   memory, before any actual safety configuration exists. Real, n=2,
-   not yet wired -- same "needs the right architectural home" reasoning
-   as item 1.
+   memory before any actual safety configuration exists. n=2 real
+   catalogs directly confirmed, now wired and applied to the whole 5069
+   safety-suffix family (`ProcessorType` ending `S2`/`S3`) on the same
+   "same physical family" extrapolation basis this project already uses
+   for L72-L75 vs. L71.
+
+Validated against all 50 real (untainted) `fw_catalog_matrix` rows: every
+one now predicts within 16 bytes of its real actual_bytes (the same small
+per-file noise band already accepted at v34/v35), down from errors as
+large as 14,552 bytes before this fix. Cross-checked against 5 more real
+points from an earlier, separate `fw_baseline` batch (different generator,
+same real capture discipline): `l81_v31`/`v32`/`v33` (blank 1756-L81E)
+land within 16 bytes too, independently confirming the firmware delta
+outside the `fw_catalog_matrix` batch it was fitted from.
+
+**One real caveat surfaced by that same cross-check, not a regression:**
+`v35_l306erms2`/`v35_l306erms3` (also from the `fw_baseline` batch) are
+`5069-L306ERMS2`/`MS3` -- safety-suffix, so they now correctly get the new
++296 delta -- but unlike every `fw_catalog_matrix` safety file, these two
+ALSO carry a real populated `SafetyTask`/`SafetyProgram` pair
+(`SafetyLevel="SIL2/PLd"`, 0 real rungs). Prediction is now 1,424 off
+(was 1,128 off before this fix, so not newly broken, just already
+inaccurate) -- `task_program_overhead`'s `task_extra`/`program_extra`
+(fitted from ordinary Standard-class extra tasks/programs) doesn't
+correctly model a Safety-class task/program pair's real marginal shell
+cost, a distinct, already-known, already-out-of-scope gap
+(`is_safety_project` fires its red warning banner for both files, so the
+user is never shown this total without the caveat). `firmware_baseline_delta`
+and `safety_capable_baseline_delta` themselves are validated only against
+BLANK safety-capable-processor files (no real Safety Task/Program content)
+-- accurate for that case, not claimed accurate once real (unsized)
+Safety Task/Program content is also present in the same file.
 
 **Also from this same push: real evidence AlarmConfig message/class text
 length adds to ALMD's real cost**, confirming the open question from
@@ -431,16 +471,22 @@ instruction-call + real ALMD structure content these two files also
 carry (not directly comparable to the bare-tag 973-byte ALARM_DIGITAL
 figure above, which isolates the structure alone).
 
-**AOI array real-capture anomaly, needs investigation, not yet
-explained:** of the 5 AOI array files re-captured after the real
-Dimension/Dimensions bug fix, 4 show a modest positive delta (+400/+404/
-+60/+64, plausibly a small remaining formula gap) but
-`aoi_array_param_def_only` shows a real NEGATIVE delta (predicted 19,332,
-actual 18,288, over-predicted by 1,044 bytes) -- the engine is
-overshooting for an AOI array PARAMETER (as opposed to LocalTag)
-specifically. Not investigated further in this pass; flagged as a real,
-distinct anomaly worth its own dedicated look before trusting AOI-array-
-parameter sizing at the current confidence tier.
+**AOI array "anomaly" investigated 2026-08-29, was contaminated data, not
+a real formula problem.** Of the 5 AOI array files re-captured after the
+real Dimension/Dimensions bug fix, 4 show a modest positive delta (+400/
++404/+60/+64, plausibly a small remaining formula gap, still genuinely
+open) but `aoi_array_param_def_only`'s row was flagged
+`WINDOW TITLE MISMATCH` in manifest.csv (window title read back
+"ProbeDciStop" -- a completely different file from the predefined-
+structure probe batch, not this one) -- the "-1,044 byte overshoot" a
+previous pass reported was that mismatched file's real bytes, not this
+one's. Per CLAUDE.md's standing rule that row's capture columns are
+cleared, not trusted; `aoi_array_param_def_only` is back to needing a
+real, clean capture (still in the same NEEDS-RE-CAPTURE bucket the
+Dimension/Dimensions bug fix already put it in -- see
+[^aoiarraydimension] below, this was never actually re-captured cleanly).
+No engine change made or needed here -- AOI array PARAMETER sizing is
+UNTESTED, not confirmed broken.
 
 [^aoiarraydimension]: James, 2026-08-27: "be sure you are handling the bit
 mapped bools from hidden sints" prompted a broader audit of AOI-local
