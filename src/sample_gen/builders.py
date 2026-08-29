@@ -424,8 +424,27 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
     radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
     external_access = "Read Only" if usage == "Output" else "Read/Write"
     default = "" if m.dimension else _aoi_default_data_xml(m)
-    required_attr = "true" if m.required else "false"
-    visible_attr = "true" if (m.required or m.visible) else "false"
+    # 2026-08-29 real-world bug report (James: "aoi_array_param_def_only
+    # does not open"): this file used the false/false Required/Visible
+    # default on a DIMENSIONED (array) Input Parameter. The only real
+    # corpus evidence this project has for an array Parameter's Required/
+    # Visible (LOG_HMIDisplay Dimensions="25", BitArray Dimensions="1024",
+    # both InOut) is Required="true" Visible="true" -- already-confirmed
+    # for InOut specifically (see the InOut branch above), but never
+    # independently confirmed for Input/Output. Given a real file with
+    # false/false on an array Input Parameter is now confirmed BROKEN
+    # (doesn't open) and zero real evidence exists for false/false working
+    # on any array Parameter regardless of Usage, forcing true/true here
+    # is the best-supported fix available without a positive real Input/
+    # Output-array counter-example -- flagged as ASSUMED/hypothesis-driven
+    # in OPEN_QUESTIONS.md OQ-AOIARRAYDIMENSION, not silently treated as
+    # fully confirmed.
+    if m.dimension:
+        required_attr = "true"
+        visible_attr = "true"
+    else:
+        required_attr = "true" if m.required else "false"
+        visible_attr = "true" if (m.required or m.visible) else "false"
     return (
         f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{dim_attr} Usage="{usage}"'
         f'{radix_attr} Required="{required_attr}" Visible="{visible_attr}" '

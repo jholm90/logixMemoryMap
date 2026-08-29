@@ -636,6 +636,31 @@ array-of-atomic/array-of-UDT member cost formula being assumed to apply
 unchanged to an AOI's own Parameter/LocalTag members too, which was never
 actually tested end-to-end against a real capture.
 
+**Real import-failure bug found and fixed, 2026-08-29** (James: "the file
+does not open, regenerate it"). `aoi_array_param_def_only` itself
+wouldn't import into Studio 5000 at all -- a real, separate bug from the
+Dimension/Dimensions one above, not just a bad capture read. Root cause:
+`sample_gen/builders.py` `_aoi_parameter_xml` used the generic
+`Required="false" Visible="false"` default for the array Input Parameter
+(`InputBuffer`, `Dimensions="50"`). Zero real corpus evidence supports
+false/false on an array Parameter of any Usage -- the only two real
+array-Parameter examples this project has (`LOG_HMIDisplay
+Dimensions="25"`, `BitArray Dimensions="1024"`, both from real customer
+files) are both `Usage="InOut"` and both `Required="true" Visible="true"`,
+already-confirmed for InOut specifically but never independently tested
+for Input/Output. Fixed by forcing `Required="true" Visible="true"` on
+ANY dimensioned Input/Output Parameter, extending the one confirmed
+real pattern (this is a hypothesis-driven fix given the available
+evidence, not a positively-confirmed Input-array real example --
+flagged here, not silently treated as certain). File regenerated,
+lint-clean, zero engine errors; Required/Visible flag choice doesn't
+affect the sizing formula itself (already confirmed no real effect,
+see the Required/Visible closure note above), so predicted_bytes is
+unchanged (19,332). Still needs a real capture -- was never actually
+captured cleanly (first attempt hit the Dimension/Dimensions bug, second
+attempt hit WINDOW TITLE MISMATCH, and the underlying file itself was
+broken this whole time under both attempts).
+
 [^moduleio]: `module_overhead = 1,672 bytes/module` (flat, mean of 2 real
 deltas), wired as ESTIMATED tier. 141 files in `samples/generated/modules/`:
 per-catalog sweep (119/119 real corpus catalogs), rack-level tests, a full
