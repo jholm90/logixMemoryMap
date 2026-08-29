@@ -70,7 +70,18 @@ the matching footnote at the bottom, not inline.
 9. **OQ-LEGACYNETOVERHEAD** — reminder flag only. No real corpus, no
    capture data, nothing to size against yet.
 
-10. **OQ-EVENTTRIGGER** — new, real. task_extra (+700) was derived only
+10. **OQ-JSRPARAMCOST** — reopened 2026-08-29 for one small residual.
+    Output/return-param call-site cost is now wired and confirmed
+    (see RESOLVED_QUESTIONS.md). The callee's own one-time `A(n)`
+    Parameters-block cost almost certainly ALSO needs an output-param
+    term (real Parameters blocks include both Input and Output entries)
+    — `jsr_multiret_n04` still off by +332 after the call-site fix, too
+    small relative to a 1-distinct-target sample to isolate from noise.
+    Needs a dedicated small file (2+ distinct targets with different
+    output-param counts, input count held constant) to isolate A(n)'s
+    real output term cleanly.
+
+11. **OQ-EVENTTRIGGER** — new, real. task_extra (+700) was derived only
     from CONTINUOUS+PERIODIC tasks; EVENT-type tasks are completely
     untested, and so is trigger-source (Axis Watch vs. EVENT-instruction)
     within EVENT. Two files built, awaiting capture.[^eventtrigger]

@@ -195,8 +195,8 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # first count seen for a name is trusted.
     jsr_target_param_counts: dict[str, int] = {}
     for routine in all_routines:
-        for target, n in routine.jsr_calls:
-            jsr_target_param_counts.setdefault(target, n)
+        for target, n_in, _m_out in routine.jsr_calls:
+            jsr_target_param_counts.setdefault(target, n_in)
 
     logic_entries: list[tuple[str, str, str, int, str]] = []
     n_plain_routines = 0

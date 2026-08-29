@@ -110,7 +110,12 @@ OQ-OPERANDTYPE's per-type surcharge are both resolved and wired.
 both wired 2026-08-25. `parser/logic.py`'s `_jsr_calls()` reads the param
 count off each real call's own 2nd argument. Verified end-to-end against
 all 6 real capture points: 4 exact, 2 off by the same small +8 noise seen
-elsewhere. See RESOLVED_QUESTIONS.md OQ-JSRPARAMCOST.
+elsewhere. **Output/return-param cost added 2026-08-29** —
+`output_param_cost=20`/arg, charged per call site — see
+RESOLVED_QUESTIONS.md OQ-JSRPARAMCOST for the full correction (the
+original wiring only ever saw input-only calibration data) and
+OPEN_QUESTIONS.md OQ-JSRPARAMCOST for the one small remaining residual
+(A(n) not yet output-param-adjusted).
 
 [^holdout]: 10 real captured files never used to fit anything (random
 instruction-type combinations) checked against the current engine: 7/10

@@ -243,6 +243,52 @@ def test_jsr_param_cost_a_charged_once_even_with_two_call_sites():
     assert main.bytes == 5096 + 72 * 2 + 44 * 2
 
 
+def test_jsr_output_param_cost_charged_per_call_site():
+    # OQ-JSRPARAMCOST, wired 2026-08-29: trailing return-value args
+    # (`JSR(name, N_in, in_1..in_N, out_1..out_M)`) were completely
+    # unmodeled -- real jsr_mixedio_5in_2out/jsr_multiret_n04 capture data
+    # showed ~20/output-arg, same rate as an input arg. N_in=1 (arg "A"),
+    # 2 trailing output args (B, C) -> m_out=2.
+    xml = """
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test">
+        <DataTypes/>
+        <AddOnInstructionDefinitions/>
+        <Tags/>
+        <Programs>
+          <Program Name="MainProgram">
+            <Tags/>
+            <Routines>
+              <Routine Name="MainRoutine" Type="RLL">
+                <RLLContent>
+                  <Rung Number="0" Type="N"><Text><![CDATA[JSR(SubTest,1,A,B,C);]]></Text></Rung>
+                </RLLContent>
+              </Routine>
+              <Routine Name="SubTest" Type="RLL">
+                <RLLContent>
+                  <Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+                </RLLContent>
+              </Routine>
+            </Routines>
+          </Program>
+        </Programs>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    root = ET.fromstring(xml)
+    entries, errors = build_report(root, MODEL)
+    assert errors == []
+    logic_entries = [e for e in entries if e.tier == ESTIMATED]
+    by_path = {e.path: e for e in logic_entries}
+    main = by_path["program:MainProgram/MainRoutine"]
+    # jsr_fixed_base(5096) + JSR weight(72) + B(1)=4+20=24 + output_param_cost(20)*2
+    assert main.bytes == 5096 + 72 + 24 + 20 * 2
+    sub = by_path["program:MainProgram/SubTest"]
+    # A(1) unaffected by output param count (not yet adjusted -- see
+    # OPEN_QUESTIONS.md OQ-JSRPARAMCOST)
+    assert sub.bytes == 104 + 20
+
+
 # ---------------------------------------------------------------------------
 # CPT expression-aware cost -- 2026-08-26, OQ-CMPCPTLAYOUT. CPT is
 # deliberately absent from the flat `weights` table now (real data: its

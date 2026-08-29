@@ -848,3 +848,17 @@ there's a record of *why* a number is what it is, not just what it currently is.
   left open, both genuine architecture gaps (non-flat multi-module
   marginal cost; a few connection-variant-dependent catalogs), documented
   in OPEN_QUESTIONS.md OQ-MODULEIO rather than force-fit.
+- **2026-08-29, same audit, JSR output/return-param cost.** OQ-JSRPARAMCOST
+  had been marked "fully wired" (2026-08-25), but that only ever covered
+  INPUT params -- the calibration data's RET() was always empty, so
+  output/return-value args were never modeled at all. Two real captures
+  (`jsr_mixedio_5in_2out_r01000`, `jsr_multiret_n04_r01000`, both from
+  2026-08-23) sat unreconciled, off by +40,040 and +40,332. Both isolate
+  to ~20/output-arg, matching `b_per_param` exactly -- wired as
+  `output_param_cost=20`, charged per output arg per call site.
+  `jsr_paramcount_n05/08/10_r01000` (input-only, unaffected) stay exact/
+  near-exact; `jsr_mixedio` now off by +40 (noise-band); `jsr_multiret`
+  by +332 (the callee's one-time `A(n)` cost almost certainly also needs
+  an output-param term, too small to isolate from a single sample --
+  reopened as OQ-JSRPARAMCOST in OPEN_QUESTIONS.md rather than left
+  silently wrong in RESOLVED_QUESTIONS.md).

@@ -281,12 +281,17 @@ class JsrParamCostModel:
     once per distinct target routine regardless of call-site count) and
     `B(n) = b_base + b_per_param*n` (the true per-call-site marginal
     rate). Confirmed exact at 3 real (n,B) points (n=5,8,10) -- see
-    memory_model.yaml jsr_param_cost for the derivation."""
+    memory_model.yaml jsr_param_cost for the derivation. output_param_cost
+    (wired 2026-08-29): the per-call cost of each trailing RETURN-value
+    argument a JSR passes back, charged once per output arg per call site
+    -- a real, previously completely unmodeled cost (see
+    memory_model.yaml jsr_param_cost for the 2-file derivation)."""
     a_base: int
     a_per_param: int
     b_base: int
     b_per_param: int
     confidence: str
+    output_param_cost: int
 
     def a_cost(self, n: int) -> int:
         return self.a_base + self.a_per_param * n
@@ -563,6 +568,7 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 b_base=raw["jsr_param_cost"]["b_base"],
                 b_per_param=raw["jsr_param_cost"]["b_per_param"],
                 confidence=raw["jsr_param_cost"]["confidence"],
+                output_param_cost=raw["jsr_param_cost"]["output_param_cost"],
             ),
         ),
     )

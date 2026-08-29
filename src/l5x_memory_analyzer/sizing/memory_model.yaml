@@ -1207,6 +1207,26 @@ jsr_param_cost:
   b_base: 4
   b_per_param: 20
   confidence: FITTED
+  # Real per-call cost of a trailing RETURN-value argument
+  # (`JSR(name, N_in, in_1..in_N, out_1..out_M)`), wired 2026-08-29
+  # (OQ-JSRPARAMCOST, found during a full manifest.csv audit -- James:
+  # "make another in-depth pass"). Completely unmodeled before this: the
+  # original a_base/a_per_param/b_base/b_per_param fit (2026-08-25) only
+  # used group_param_count's pure-input files, where RET() is always
+  # empty -- zero real output-arg data went into that formula. Two
+  # independent real files (jsr_mixedio_5in_2out_r01000: delta +40,040 at
+  # 1000 calls/2 output args; jsr_multiret_n04_r01000, a totally different
+  # subroutine shape -- 4 RET points instead of 1 -- but the SAME 2 output
+  # args at the call site: delta +40,332) both landed 2026-08-23 and sat
+  # unreconciled. Both isolate to ~20/output-arg -- 40,040/1000/2=20.02,
+  # 40,332/1000/2=20.17 -- matching b_per_param exactly, i.e. an output arg
+  # costs the same per-arg rate as an input arg, just without a separate
+  # per-call base. Charged once per output arg per call site
+  # (sizing/logic.py). NOT yet applied to A(n)'s one-time callee
+  # Parameters-block cost (see OPEN_QUESTIONS.md OQ-JSRPARAMCOST) -- that
+  # effect is real too but too small relative to a 1-distinct-target
+  # sample to isolate from noise.
+  output_param_cost: 20
 
 logic_instructions:
   fixed_base_per_routine: 4816

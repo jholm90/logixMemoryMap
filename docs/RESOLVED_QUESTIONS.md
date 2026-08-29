@@ -719,3 +719,23 @@ other 2 (both n=8) off by the same small +8 universal noise seen
 elsewhere in this project. Two new unit tests cover the not-double-
 counted case (single call) and the multiple-call-sites-to-one-target case
 (A(n) charged once, not per call site).
+
+**CORRECTION, 2026-08-29: "fully wired" was wrong — this covered INPUT
+params only.** `group_param_count`'s calibration files always called
+`RET()` empty (no return value), so B(n)/A(n) never saw a single real
+byte of output/return-param cost — a real, sizeable gap silently
+undetected until a full manifest.csv audit (James: "make another in-depth
+pass") found `jsr_mixedio_5in_2out_r01000`/`jsr_multiret_n04_r01000` (real
+captures from 2026-08-23) sitting unreconciled, both off by +40,040 and
++40,332 respectively. Both isolate to ~20/output-arg (2 output args each,
+matching `b_per_param` exactly) — wired as `output_param_cost=20`,
+charged once per output arg per call site (`_jsr_calls()` now returns
+`(target, n_in, m_out)`, `m_out` computed from the real
+`JSR(name, N_in, in_1..in_N, out_1..out_M)` syntax). `jsr_mixedio` now off
+by +40 (noise-band), `jsr_multiret` by +332 — the callee's own one-time
+`A(n)` Parameters-block cost almost certainly also needs an output-param
+term (real target-routine Parameters blocks include both Input and Output
+entries), but that effect is too small relative to a 1-distinct-target
+sample to isolate from noise here — flagged as OQ-JSRPARAMCOST in
+OPEN_QUESTIONS.md rather than force-fit or silently left uncorrected in
+this file.
