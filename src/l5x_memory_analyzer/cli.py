@@ -10,6 +10,10 @@ breakdown -- see docs/TASKS.md Phase 1 output-contract item.
 `ui`: serve the Phase 2 treemap UI over a local web server. l5x_path is
 optional -- omit it to start with the File->Open picker instead (James
 2026-08-20: desktop-shortcut launch shouldn't require a command prompt).
+
+`export`: write the same flat byte breakdown as `size` to a CSV or XLSX
+file instead of stdout (docs/TASKS.md Phase 6 "Export report"). Format is
+inferred from the output path's extension.
 """
 
 from __future__ import annotations
@@ -71,6 +75,49 @@ def _cmd_size(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_export(args: argparse.Namespace) -> int:
+    try:
+        doc = load_l5x(args.l5x_path)
+    except (L5XFormatError, OSError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+
+    if doc.is_safety_project:
+        print(
+            f"warning: this is a Safety-rated project ({doc.safety_level}) -- Safety Task/Program "
+            f"content is NOT sized by this tool at all. The exported total is understated, not a "
+            f"full picture.",
+            file=sys.stderr,
+        )
+
+    suffix = args.output_path.lower().rsplit(".", 1)[-1] if "." in args.output_path else ""
+    if suffix not in ("csv", "xlsx"):
+        print(f"error: output path must end in .csv or .xlsx, got {args.output_path!r}", file=sys.stderr)
+        return 1
+
+    model = load_memory_model()
+    entries, errors = build_report(doc.root, model)
+
+    from l5x_memory_analyzer.sizing.export import write_csv, write_xlsx
+
+    if suffix == "csv":
+        with open(args.output_path, "w", encoding="utf-8", newline="") as f:
+            f.write(write_csv(entries, errors))
+    else:
+        try:
+            data = write_xlsx(entries, errors)
+        except ImportError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 1
+        with open(args.output_path, "wb") as f:
+            f.write(data)
+
+    print(f"wrote {args.output_path}", file=sys.stderr)
+    if errors:
+        print(f"{len(errors)} tag(s) could not be sized -- see the Errors section/sheet", file=sys.stderr)
+    return 0
+
+
 def _cmd_ui(args: argparse.Namespace) -> int:
     from l5x_memory_analyzer.ui.server import run
 
@@ -90,6 +137,11 @@ def main(argv: list[str] | None = None) -> int:
     size_parser = subparsers.add_parser("size", help="Print a tag/UDT byte-size breakdown")
     size_parser.add_argument("l5x_path", help="Path to an L5X export file")
     size_parser.set_defaults(func=_cmd_size)
+
+    export_parser = subparsers.add_parser("export", help="Write a byte-size breakdown to CSV or XLSX")
+    export_parser.add_argument("l5x_path", help="Path to an L5X export file")
+    export_parser.add_argument("output_path", help="Output file path, ending in .csv or .xlsx")
+    export_parser.set_defaults(func=_cmd_export)
 
     ui_parser = subparsers.add_parser("ui", help="Serve the treemap UI, optionally for an L5X file")
     ui_parser.add_argument("l5x_path", nargs="?", default=None,

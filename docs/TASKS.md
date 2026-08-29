@@ -71,7 +71,7 @@ files; PID and ASCII-module instructions dropped (zero real occurrences).
 - ✅ Per-part-number memory budget (`controller_budgets.yaml`, prefix-
       matched against `Controller/@ProcessorType`, unknown types show
       "budget unknown" rather than a guess)
-- 🔴 Export report (CSV/XLSX)
+- ✅ Export report (CSV/XLSX)[^export]
 
 ---
 
@@ -122,3 +122,13 @@ there only.
 `Controller/SafetyInfo/@SafetyLevel`. Doesn't size Safety Task/Program
 content — just warns the total is understated on a safety-rated project,
 per the OQ-SAFETY decision (RESOLVED_QUESTIONS.md).
+
+[^export]: `sizing/export.py`, same flat SizeEntry/SizeError contract as
+the CLI `size` command and the UI, just serialized differently — no new
+sizing logic. CSV is stdlib-only, always available; XLSX needs `openpyxl`
+(optional `[xlsx]` extra, pyproject.toml) and degrades to a clear error
+(CLI: message + exit 1; UI: 501 JSON error) rather than a broken file if
+it's missing. CLI: `l5x-memory-analyzer export <l5x_path> <output_path>`,
+format inferred from the output extension. UI: two toolbar buttons next to
+File Open, `/api/export.csv` and `/api/export.xlsx`, downloading the
+currently-loaded file's report.

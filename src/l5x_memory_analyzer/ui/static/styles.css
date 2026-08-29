@@ -72,6 +72,9 @@ body {
 }
 .toolbar-btn:hover { filter: brightness(1.1); }
 
+#export-buttons { display: flex; gap: 0.4rem; }
+#export-buttons.hidden { display: none; }
+
 #export-warning {
   padding: 0.5rem 1rem;
   background: #4a3a12;
