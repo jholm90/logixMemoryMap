@@ -936,6 +936,25 @@ cpt_expression:
   # OPEN_QUESTIONS.md OQ-CMPCPTLAYOUT), fall back to the additive-sum path.
   pow_tier_mix_base: 160
   pow_tier_mix_per_operator: 64
+  # All-3-tier mix (ADD/SUB + MUL/DIV/MOD + POW all present), CLOSED
+  # 2026-08-29 (OQ-CMPCPTLAYOUT closeout). Real correction on top of the
+  # plain per-operator-tier sum: base_by_remainder[operator_count % 3] +
+  # per_pow_operand * pow_operand_count. Confirmed 0 residual across all 9
+  # real all-3-tier data points on file (operator counts 4-14):
+  # remainder=1 EXACT at 3/3 points (k=4,7,10 -> POW count 1,2,3),
+  # remainder=2 EXACT at 4/4 points (k=5,8,11,14 -> POW count 1,2,3,4,
+  # including the original n=15 outlier that broke the first linear-model
+  # attempt AND the 3 new gen_cpt_mixed_operators.py
+  # group_three_tier_remainder_probe files that closed this). remainder=0
+  # rests on a single real point (k=9, POW count 3, base solved as
+  # 84 - 4*3 = 72) -- same +4/POW-operand slope as the other two
+  # remainder classes (independently confirmed twice), just one point
+  # short of its own independent confirmation.
+  three_tier_mix_base_by_remainder:
+    0: 72
+    1: 116
+    2: 144
+  three_tier_mix_per_pow_operand: 4
 
 # Operand-type surcharge (OQ-OPERANDTYPE, wired 2026-08-26, James: "touch
 # these and finalize them now"). Every weight in `logic_instructions.

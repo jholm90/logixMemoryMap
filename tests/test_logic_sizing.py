@@ -334,14 +334,46 @@ def test_cpt_pow_tier_mix_solved_for_t1t3_and_t2t3():
     assert model.cpt_expression.cost_for(["+", "**"]) == model.cpt_expression.cost_for(["*", "**"])
 
 
-def test_cpt_all_three_tiers_falls_back_to_additive_sum():
-    # All 3 tiers present in one expression isn't solved yet -- still the
-    # real-but-approximate additive sum (see memory_model.yaml
-    # cpt_expression's "Mixed-tier" note: real data shows this case doesn't
-    # fit any simple base+rate model from the 4 points on file, not force-fit
-    # into a formula as if confirmed).
+def test_cpt_all_three_tiers_applies_remainder_correction():
+    # All 3 tiers present in one expression, CLOSED 2026-08-29
+    # (OQ-CMPCPTLAYOUT): the plain additive sum plus a real correction
+    # keyed on operator_count % 3 -- confirmed 0 residual across all 9
+    # real all-3-tier data points on file (see memory_model.yaml
+    # cpt_expression). 3 operators -> remainder 0, 1 POW operand:
+    # base_by_remainder[0](72) + per_pow_operand(4)*1 = 76.
     model = MODEL.logic_instructions
-    assert model.cpt_expression.cost_for(["+", "*", "**"]) == 88 + 36 + 52 + 116
+    assert model.cpt_expression.cost_for(["+", "*", "**"]) == 88 + 36 + 52 + 116 + 76
+
+
+def test_cpt_three_tier_remainder_correction_matches_real_capture_points():
+    # Real cptmix_threetier_* / cptmix_threetier_rem2_* capture data
+    # (OQ-CMPCPTLAYOUT closeout, 2026-08-29): 3-tier alternating
+    # [+,*,**] expressions at operand counts 5/6/9/10 (operator counts
+    # 4/5/8/9), covering all 3 remainder classes with a real, exact
+    # match at each.
+    model = MODEL.logic_instructions
+    tiers = ["+", "*", "**"]
+
+    def ops(operator_count):
+        return [tiers[i % 3] for i in range(operator_count)]
+
+    # 4 operators (remainder 1, T1=2/T2=1/T3=1): real delta +120 over
+    # the plain additive sum.
+    plain = 88 + sum(model.cpt_expression.operator_tier_costs[op] for op in ops(4))
+    assert model.cpt_expression.cost_for(ops(4)) == plain + 120
+
+    # 5 operators (remainder 2, T1=2/T2=2/T3=1): real delta +148.
+    plain = 88 + sum(model.cpt_expression.operator_tier_costs[op] for op in ops(5))
+    assert model.cpt_expression.cost_for(ops(5)) == plain + 148
+
+    # 8 operators (remainder 2, T3=2): real delta +152.
+    plain = 88 + sum(model.cpt_expression.operator_tier_costs[op] for op in ops(8))
+    assert model.cpt_expression.cost_for(ops(8)) == plain + 152
+
+    # 9 operators (remainder 0, T1=T2=T3=3): real delta +84, the one
+    # remainder-0 point on file.
+    plain = 88 + sum(model.cpt_expression.operator_tier_costs[op] for op in ops(9))
+    assert model.cpt_expression.cost_for(ops(9)) == plain + 84
 
 
 def test_cpt_costed_per_call_not_via_flat_weights_table():

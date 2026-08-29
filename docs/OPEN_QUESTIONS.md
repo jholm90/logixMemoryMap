@@ -20,9 +20,13 @@ the matching footnote at the bottom, not inline.
    L7x/L8xES catalogs in the matrix still await their own
    capture.[^baseline]
 
-3. **OQ-CMPCPTLAYOUT** — mostly closed. Uniform, T1+T2, and T1T3/T2T3
-   mixed-tier CPT are solved and wired. Two threads left, both narrowed
-   substantially this pass; new diagnostic files await capture.[^cmpcpt]
+3. **OQ-CMPCPTLAYOUT** — down to one thread. Uniform, T1+T2, T1T3/T2T3,
+   and (as of 2026-08-29) the all-3-tier mix are ALL solved and wired,
+   confirmed exact on every real data point on file. Only the REAL-
+   operand/float-literal interaction remains open, and it's now a harder
+   problem than "assumed linear, awaiting more points" — real new data
+   shows it's genuinely NOT monotonic in operand count, ruling out any
+   simple per-count model.[^cmpcpt]
 
 4. **OQ-AOIDEF** — wired for the common case. Required/Visible flags
    closed (no real effect). Name-length and BOOL-array-packing-boundary
@@ -173,23 +177,44 @@ unreconciled since 2026-08-24; `pow_tier_mix_base=160,
 pow_tier_mix_per_operator=64` is exact at 4 of 5 points, and T1T3/T2T3
 give IDENTICAL real bytes at every point (T1-vs-T2 stops mattering once
 POW is present). See `sizing/constants.py` `CptExpressionModel.cost_for`.
-**All-3-tier mixes**: a per-tier-count linear model
-(`delta = 44*T1 - 116*T2 + 76*T3 + 72`, fit from 4 points) lands EXACT on
-5 of 6 real points (n=3/5/8/10/11) — only n=15 misses, by 144. n=15 is the
-only point at operator-cycle remainder 2 (every other point is remainder
-0 or 1); `cptmix_threetier_rem2_n06/n09/n12` (3 points, not 2 — enough to
-tell a flat remainder-2 bonus apart from one that scales with count in
-one capture round) test whether that specific remainder is the trigger.
-**REAL-operand/float-literal interaction**: isolated per-factor rates
-from existing captures (~118/REAL-operand, ~122/float-literal, both
-assuming linearity across n=2); combining both terms additively over-
-predicts the real corpus shape by 158 (a genuine negative interaction).
-`cptmix_disentangle_real1_noliteral/float1_noreal/real2_float2_noint` get
-the missing n=1 points and a full 2-REAL+2-float point to fit the
-2-variable surface; `real1_float1` (1 of each, not 2) is a genuine cross-
-check point none of the fitting data directly tests. 7 diagnostic files
-total, all built and awaiting capture — additive fallback stays the
-honest default until each formula lands.
+**All-3-tier mixes: CLOSED 2026-08-29.** The 3
+`cptmix_threetier_rem2_n06/n09/n12` files (plus the 4 disentangle files
+below) had real capture data from 2026-08-27 sitting unreconciled in
+manifest.csv this whole time — found and fixed the same day James pushed
+on why this wasn't closed already. The earlier `44*T1-116*T2+76*T3+72`
+attempt was wrong (not just "misses n=15" — checked directly, it doesn't
+reproduce the n=3/5/8/10/11 points it was supposedly fit from either).
+Correct formula, confirmed 0 residual across ALL 9 real all-3-tier points
+on file (operator counts 4-14): `base_by_remainder[operator_count % 3] +
+4 * pow_operand_count`, `base_by_remainder = {0: 72, 1: 116, 2: 144}`.
+remainder=1 exact at 3/3 points, remainder=2 exact at 4/4 points
+(including the original n=15 outlier AND the 3 new rem2 probe files —
+confirms the remainder-2 trigger hypothesis exactly, and that it's NOT a
+flat bonus, it scales at +4/POW-operand same as the other two remainder
+classes). remainder=0 rests on a single point (n=10) — same slope,
+extrapolated base, one point short of independent confirmation. Wired in
+`sizing/constants.py` `CptExpressionModel.cost_for` / `memory_model.yaml`
+cpt_expression.
+
+**REAL-operand/float-literal interaction: investigated 2026-08-29, still
+open — now for a more specific and more interesting reason than "not
+enough points."** The 4 disentangle files' real data (also from
+2026-08-27, also unreconciled) rules out any simple per-operand-count
+model: extra cost at R=1 REAL operand (276) is HIGHER than at R=2 (236),
+and the same pattern holds for float literals (F=1: 280, F=2: 244) — going
+from 1 to 2 of the same factor makes the file SMALLER, not bigger. That's
+not sub-linear/saturating, it's genuinely non-monotonic, and it holds
+identically for both factors, which rules out coincidence/noise. No
+formula wired — CLAUDE.md's ground-truth discipline means not force-
+fitting a linear or bilinear surface onto data that demonstrably isn't
+one. Real hypothesis worth testing next: cost may track the number of
+DINT→REAL type-PROMOTION points in the expression tree (a structural
+property of where mixed-type sub-expressions meet), not the raw REAL-
+operand/float-literal COUNT — needs files that vary operand/literal
+POSITION at a fixed count, not just count alone. Additive fallback (no
+surcharge) stays the honest default. Full data: 9 total points across the
+`cptmix_stacked_*` (5, already on file 2026-08-24) and `cptmix_
+disentangle_*` (4, captured 2026-08-27) sample sets.
 
 [^aoidef]: Per-type declared-item rate table (BOOL=16, SINT/INT=18,
 DINT/REAL=20, LINT=24/item, base=1184) wired for single-type defs;

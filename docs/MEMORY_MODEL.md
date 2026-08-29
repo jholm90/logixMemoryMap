@@ -811,3 +811,19 @@ there's a record of *why* a number is what it is, not just what it currently is.
   data, wrong file's numbers), not real engine gaps. Both rows' capture
   columns cleared per CLAUDE.md's standing rule; neither claim is wired,
   both stay open awaiting real (clean) capture.
+- **2026-08-29, same day** — Found and fixed a real process gap: 7
+  OQ-CMPCPTLAYOUT diagnostic CPT files had real capture data from
+  2026-08-27 sitting unreconciled in manifest.csv, never wired. Closed the
+  all-3-tier-mix CPT thread: `base_by_remainder[operator_count % 3] +
+  4 * pow_operand_count` (`base_by_remainder = {0: 72, 1: 116, 2: 144}`),
+  confirmed 0 residual across all 9 real all-3-tier data points on file
+  (operator counts 4-14) — corrects and replaces an earlier
+  `44*T1-116*T2+76*T3+72` attempt that, checked directly, didn't actually
+  reproduce the points it was claimed to fit. Wired in
+  `CptExpressionModel.cost_for`/`memory_model.yaml` cpt_expression. The
+  REAL-operand/float-literal thread stays open — investigated with the
+  other 4 files' real data and found genuinely non-monotonic (1 REAL
+  operand costs MORE than 2), ruling out any simple per-count formula; see
+  OPEN_QUESTIONS.md OQ-CMPCPTLAYOUT for the full finding and a real
+  hypothesis (type-promotion-point count, not operand count) for the next
+  probe batch.

@@ -93,12 +93,14 @@ memory beyond leg instructions), formula not yet fit — see
 OPEN_QUESTIONS.md OQ-BRANCHDEPTH for the leg-count and staggered/nested
 test batches now awaiting capture.
 
-[^cmpcpt]: Everything except CPT is CONFIRMED. CPT's uniform-tier, T1+T2,
-and T1T3/T2T3 mixed cases are solved and wired
-(`sizing/constants.py` `CptExpressionModel`). Two threads remain (all-3-
-tier mixes, REAL-operand/float-literal interaction) — see OPEN_QUESTIONS.md
-OQ-CMPCPTLAYOUT for the diagnostic batch now awaiting capture. CMP's own
-weight and OQ-OPERANDTYPE's per-type surcharge are both resolved and wired.
+[^cmpcpt]: Everything except one CPT thread is CONFIRMED. CPT's
+uniform-tier, T1+T2, T1T3/T2T3, and (2026-08-29) all-3-tier mixed cases
+are all solved and wired (`sizing/constants.py` `CptExpressionModel`,
+confirmed 0 residual on every real data point on file). One thread
+remains — the REAL-operand/float-literal interaction is real data
+demonstrating genuinely non-monotonic behavior, not yet a wireable
+formula — see OPEN_QUESTIONS.md OQ-CMPCPTLAYOUT. CMP's own weight and
+OQ-OPERANDTYPE's per-type surcharge are both resolved and wired.
 
 [^jsrparam]: JSR's own flat weight (72/rung) and per-param cost
 (`B(n)=4+20n` per call site, `A(n)=104+20n` once per distinct target)

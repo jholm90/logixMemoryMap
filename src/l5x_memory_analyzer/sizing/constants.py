@@ -165,6 +165,8 @@ class CptExpressionModel:
     two_tier_mix_per_operator: int
     pow_tier_mix_base: int
     pow_tier_mix_per_operator: int
+    three_tier_mix_base_by_remainder: dict[int, int]
+    three_tier_mix_per_pow_operand: int
 
     def cost_for(self, operators: list[str]) -> int:
         """Real per-call CPT cost from its expression's operator tokens
@@ -196,16 +198,22 @@ class CptExpressionModel:
         file-specific quirk, not a per-formula one. See memory_model.yaml
         cpt_expression for the full derivation.
 
-        Any OTHER mixed-tier combination (all 3 tiers present in one
-        expression) falls back to a simple per-operator-tier sum -- a real
-        but WEAK approximation: off by ~150 bytes/call on a real
-        5-operator/3-tier/mixed-literal corpus expression, and REAL-typed
-        operands or a float literal each add real extra cost that does NOT
-        compose additively with anything else (confirmed 2026-08-26, see
-        memory_model.yaml). See memory_model.yaml cpt_expression for why
-        the all-3-tier case isn't patched further yet (needs its own
-        operand-count sweep the way T1T2/T1T3/T2T3 each got, not force-fit
-        from 4 points that don't fit any simple base+rate model).
+        A mix using ALL 3 tiers together (ADD/SUB + MUL/DIV/MOD + POW) is
+        ALSO exact now, 2026-08-29 (OQ-CMPCPTLAYOUT closeout): a real
+        correction on top of the plain per-operator-tier sum,
+        `three_tier_mix_base_by_remainder[operator_count % 3] +
+        three_tier_mix_per_pow_operand * pow_operand_count`. Confirmed 0
+        residual across all 9 real all-3-tier data points spanning
+        operator counts 4-14 (the original n=3/5/8/10/11/15 sweep plus 3
+        new remainder-2 probes at n=6/9/12) -- see memory_model.yaml
+        cpt_expression for the full derivation. `operator_count % 3`
+        determines the class deterministically from the [+,*,**]-cycling
+        construction any real alternating 3-tier expression follows: which
+        of the 3 tiers ends up with one extra operator. remainder=0
+        (T1==T2==T3) rests on a single real point (n=10) -- same slope as
+        the other two remainder classes (independently confirmed at 3 and
+        4 points each), just one point short of independent confirmation
+        for its own base constant.
         """
         if not operators:
             return self.base_read
@@ -219,7 +227,11 @@ class CptExpressionModel:
             return self.two_tier_mix_base + self.two_tier_mix_per_operator * len(operators)
         if set(tiers) in ({add_tier, pow_tier}, {mul_tier, pow_tier}):
             return self.pow_tier_mix_base + self.pow_tier_mix_per_operator * len(operators)
-        return self.base_read + sum(tiers)
+        pow_operand_count = tiers.count(pow_tier)
+        remainder = len(operators) % 3
+        correction = self.three_tier_mix_base_by_remainder[remainder] + \
+            self.three_tier_mix_per_pow_operand * pow_operand_count
+        return self.base_read + sum(tiers) + correction
 
 
 @dataclass(frozen=True)
@@ -485,6 +497,10 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 two_tier_mix_per_operator=raw["cpt_expression"]["two_tier_mix_per_operator"],
                 pow_tier_mix_base=raw["cpt_expression"]["pow_tier_mix_base"],
                 pow_tier_mix_per_operator=raw["cpt_expression"]["pow_tier_mix_per_operator"],
+                three_tier_mix_base_by_remainder={
+                    int(k): v for k, v in raw["cpt_expression"]["three_tier_mix_base_by_remainder"].items()
+                },
+                three_tier_mix_per_pow_operand=raw["cpt_expression"]["three_tier_mix_per_pow_operand"],
             ),
             operand_type_surcharge=OperandTypeSurchargeModel(
                 confidence=raw["operand_type_surcharge"]["confidence"],
