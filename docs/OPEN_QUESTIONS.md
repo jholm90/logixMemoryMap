@@ -265,6 +265,18 @@ surcharge) stays the honest default. Full data: 9 total points across the
 `cptmix_stacked_*` (5, already on file 2026-08-24) and `cptmix_
 disentangle_*` (4, captured 2026-08-27) sample sets.
 
+**Cross-validated at scale, 2026-08-29** (full manifest.csv audit):
+`randommix_07_n19811rungs_24types` (`logic_random_mix` category, real
+capture) was off by +39,959 -- traced to its 208 real CPT calls, which
+all use `gen_logic_sweep.py`'s exact `(D+D)*R-R/2+1.5` shape (2 REAL
+operands, 1 float literal) -- the SAME `original_shape` this thread
+already covers. 208 x the already-known ~200/call gives ~41,600, close
+to the real 39,959 (the small gap is plausibly the rotating tag pool's
+per-call operand variety, not a new effect). Confirms this is the same
+open thread recurring at volume, not a separate bug -- no new formula
+needed or wired, consistent with the additive-fallback default already
+in place.
+
 [^aoidef]: Per-type declared-item rate table (BOOL=16, SINT/INT=18,
 DINT/REAL=20, LINT=24/item, base=1184) wired for single-type defs;
 mixed-type defs use the flat rate (confirmed non-additive once BOOL sits

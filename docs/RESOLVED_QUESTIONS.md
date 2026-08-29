@@ -203,6 +203,19 @@ tolerance bands. This is the real payoff of the whole sweep: the
 individually-confirmed constants compose correctly in a realistic mixed
 file, not just in isolation.
 
+**Re-checked against the current (2026-08-29) engine, full manifest.csv
+audit:** `large_mixed_100tags` (+136, 0.49%) and `large_mixed_1100tags`
+(+1,336, 1.07%) still land comfortably inside band. `large_mixed_
+1000tags_arrays` now shows +4,416 (~3.38% of predicted) — drifted
+slightly above the 2.6% figure quoted above and right at the edge of
+James's "acceptable" ceiling, most likely because array-dimension/
+UDT-array formulas have changed since this was originally resolved
+(2026-08-22-era). Not re-investigated this pass (single data point, no
+isolation of which specific array/UDT-array formula moved) — flagged
+here rather than left silently stale; a fresh `large_mixed_*`-style
+composite file would confirm whether this is real drift or just this one
+file's specific tag mix.
+
 **OQ-AXISSTRUCT (numbers, not the combo test).** Real reference exports
 confirmed these use `Data Format="Axis"` with a flat `AxisParameters`
 attribute list — structurally nothing like UDT/AOI, totally unmodeled by
