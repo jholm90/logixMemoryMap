@@ -141,6 +141,22 @@ $remaining = $rows | Where-Object { -not $alreadyLogged.ContainsKey((Get-RelPath
 if ($Limit -gt 0) { $remaining = $remaining | Select-Object -First $Limit }
 $retryCount = @($remaining | Where-Object { $mismatchFlagged.ContainsKey((Get-RelPath $_.l5x_path)) }).Count
 Write-Host "$($rows.Count) converted sample(s) in log; $($alreadyLogged.Count) already logged; $($remaining.Count) remaining this pass ($retryCount of those are window-title-mismatch/zero-capacity retries)."
+
+# James, 2026-08-30: list every file before starting, not just the count --
+# a batch review before committing to a long capture run, same reasoning as
+# batch_l5x_to_acd.ps1's equivalent listing.
+if ($remaining.Count -gt 0) {
+    Write-Host ""
+    Write-Host "Files to capture this pass ($($remaining.Count)):"
+    $n = 0
+    foreach ($row in $remaining) {
+        $n++
+        $retryTag = if ($mismatchFlagged.ContainsKey((Get-RelPath $row.l5x_path))) { " [RETRY]" } else { "" }
+        Write-Host ("  [{0}/{1}] {2}{3}" -f $n, $remaining.Count, (Get-RelPath $row.l5x_path), $retryTag)
+    }
+    Write-Host ""
+}
+
 Write-Host "Ctrl+C at any time -- already-logged rows are skipped on the next run."
 Write-Host "Make sure your AHK script is already running and waiting before this starts."
 
