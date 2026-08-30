@@ -328,7 +328,29 @@ untested and are flagged honestly rather than silently assumed closed:
 whether REAL-count and float-literal effects compose when both are
 present at varying counts/positions together, and whether a different
 expression tree shape (not just this flat 6-slot layout) changes the
-answer. 7 CPT probe files on file now.
+answer.
+
+**James, 2026-08-30: "add more tests to fully close this instead of
+guessing."** Both remaining gaps now have dedicated files instead of
+being left untested:
+- **REAL-count x float-literal composition**: `cptmix_real1_float1`,
+  `real2_adjacent_float1`, `real3_adjacent_float1` -- same shapes as
+  real1_pos_first/real2_adjacent/real3_adjacent with the trailing slot
+  replaced by the float literal 1.5, so the marginal float-literal cost
+  can be read directly by subtraction at each REAL count (constant
+  across n = additive/no interaction; varies = real interaction).
+- **Alternate expression tree shape**: `cptmix_real1_nested`,
+  `real2_nested` -- same operand/operator multiset as
+  real1_pos_first/real2_adjacent but deeply right-nested instead of a
+  flat left-to-right chain, REAL operand(s) at the innermost position.
+  Tests whether the type-promotion-point hypothesis holds once tree
+  structure (not just flat token position) changes.
+
+12 CPT probe files on file now, covering count (1/2/3), position
+(first/last/divisor), adjacency (adjacent/spread), float composition, and
+tree shape. This is the full hypothesis space as currently understood --
+not claiming it's exhaustive of every possible expression shape, but
+every specific mechanism proposed so far now has a real test.
 
 **Cross-validated at scale, 2026-08-29** (full manifest.csv audit):
 `randommix_07_n19811rungs_24types` (`logic_random_mix` category, real

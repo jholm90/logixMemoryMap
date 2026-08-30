@@ -534,6 +534,72 @@ def group_real_pair_adjacency_probe() -> int:
     return n
 
 
+# ---------------------------------------------------------------------------
+# J. REAL-count x float-literal composition (James, 2026-08-30: "add more
+# tests to fully close this instead of guessing"). The real production
+# shape (`cptmix_stacked_original_shape`, "(L0+L1)*R1-R2/2+1.5") has 2 REAL
+# operands AND a float literal together -- but every REAL-count probe so
+# far (real1_pos_first/real2_adjacent/real3_adjacent) has zero float
+# literal, so there's no way yet to tell whether the float-literal cost is
+# a constant additive term on top of the REAL-count effect, or whether the
+# two interact. Same real1/real2_adjacent/real3_adjacent shapes, trailing
+# L5 slot replaced by the float literal 1.5 -- single-variable change (add
+# 1 float literal), holding REAL count/position identical to the existing
+# no-float points so the marginal float cost can be read directly by
+# subtraction at each REAL count.
+# ---------------------------------------------------------------------------
+
+def group_real_count_float_composition() -> int:
+    n = 0
+    variants = [
+        ("real1_float1", "(R0+L1)*L2-L3/L4+1.5",
+         "1 REAL operand + 1 float literal (trailing slot) -- float-literal companion to "
+         "real1_pos_first (same shape, no float), isolates the marginal float-literal cost at "
+         "REAL count=1 for direct comparison against real2_adjacent_float1/real3_adjacent_float1"),
+        ("real2_adjacent_float1", "(R0+R1)*L2-L3/L4+1.5",
+         "2 REAL operands adjacent + 1 float literal -- float-literal companion to real2_adjacent "
+         "(same shape, no float), closely matches the real production shape "
+         "(cptmix_stacked_original_shape) structurally"),
+        ("real3_adjacent_float1", "(R0+R1)*R2-L3/L4+1.5",
+         "3 REAL operands adjacent + 1 float literal -- float-literal companion to real3_adjacent "
+         "(same shape, no float), completes the REAL-count x float-literal composition matrix"),
+    ]
+    for name, expr, desc in variants:
+        _one_rung_file(expr, f"CptMix{name.title().replace('_', '')}", f"cptmix_{name}", desc, dest="DestR")
+        n += 1
+    return n
+
+
+# ---------------------------------------------------------------------------
+# K. Alternate expression tree shape (James, 2026-08-30, same ask). Every
+# probe so far uses ONE flat left-to-right 6-slot shape -- position-probe
+# tests WHERE in that flat token order an operand sits, but never whether
+# the type-promotion-point hypothesis holds for a structurally different
+# tree (deep right-nesting instead of a flat chain). Same operand
+# multiset and same operator multiset (2x '+', 1x '*', 1x '-', 1x '/') as
+# real1_pos_first/real2_adjacent, just deeply parenthesized right-to-left
+# instead of flat, putting the REAL operand(s) at the innermost position
+# instead of the first flat slot.
+# ---------------------------------------------------------------------------
+
+def group_alternate_tree_shape() -> int:
+    n = 0
+    variants = [
+        ("real1_nested", "L5+(L4-(L3/(L2*(R0+L1))))",
+         "1 REAL operand at the INNERMOST position of a deeply right-nested expression -- same "
+         "operand/operator multiset as real1_pos_first (flat shape), tests whether nesting depth "
+         "(not just flat left-to-right position) changes the single-REAL-operand cost"),
+        ("real2_nested", "L5+(L4-(L3/(L2*(R0+R1))))",
+         "2 REAL operands adjacent at the INNERMOST position of the same nested structure -- "
+         "nested companion to real2_adjacent, tests whether the 1-vs-2 REAL non-monotonic "
+         "anomaly still shows up once the flat left-to-right shape is replaced by deep nesting"),
+    ]
+    for name, expr, desc in variants:
+        _one_rung_file(expr, f"CptMix{name.title().replace('_', '')}", f"cptmix_{name}", desc, dest="DestR")
+        n += 1
+    return n
+
+
 if __name__ == "__main__":
     total = 0
     total += group_pairwise_tier_mix()
@@ -548,4 +614,6 @@ if __name__ == "__main__":
     total += group_real_float_literal_disentangle()
     total += group_real_float_position_probe()
     total += group_real_pair_adjacency_probe()
+    total += group_real_count_float_composition()
+    total += group_alternate_tree_shape()
     print(f"\nTotal files: {total}")
