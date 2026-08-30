@@ -491,6 +491,39 @@ def group_real_float_position_probe() -> int:
     return n
 
 
+# ---------------------------------------------------------------------------
+# I. 2-REAL-operand adjacency probe (James, 2026-08-30: "are you sure you
+# only need 4 tests for cpt?" -- correct, 4 wasn't enough. The position
+# probe above only ever varies ONE lone operand's position at fixed
+# count=1; it can't touch the actual documented anomaly this whole thread
+# exists to explain -- 2 REAL operands costing LESS than 1 (non-monotonic
+# in count). This directly tests the leading hypothesis for THAT anomaly:
+# adjacent REAL operands (one DINT->REAL transition, one REAL->DINT
+# transition -- 2 promotion-point crossings) vs the same 2 REALs spread to
+# opposite ends of the same 6-slot shape (REAL->DINT->REAL->DINT -- up to
+# 4 crossings). If promotion POINTS (not raw REAL count) drive cost,
+# adjacent and spread should differ; if they measure the same, the
+# type-promotion-point hypothesis itself is wrong, not just uncalibrated.
+# ---------------------------------------------------------------------------
+
+def group_real_pair_adjacency_probe() -> int:
+    n = 0
+    variants = [
+        ("real2_adjacent", "(R0+R1)*L2-L3/L4+L5",
+         "2 REAL operands ADJACENT (slots 1-2 of 6) -- tests whether adjacency (fewer DINT<->REAL "
+         "promotion-point crossings) explains the documented anomaly that 2 REAL operands cost LESS "
+         "than 1 REAL operand does (non-monotonic in raw count); companion to real2_spread"),
+        ("real2_spread", "(R0+L1)*L2-L3/L4+R5",
+         "2 REAL operands SPREAD to opposite ends (slots 1 and 6 of 6) -- same total REAL-operand "
+         "count as real2_adjacent, more promotion-point crossings if the layout matters; companion "
+         "to real2_adjacent"),
+    ]
+    for name, expr, desc in variants:
+        _one_rung_file(expr, f"CptMix{name.title().replace('_', '')}", f"cptmix_{name}", desc, dest="DestR")
+        n += 1
+    return n
+
+
 if __name__ == "__main__":
     total = 0
     total += group_pairwise_tier_mix()
@@ -504,4 +537,5 @@ if __name__ == "__main__":
     total += group_three_tier_remainder_probe()
     total += group_real_float_literal_disentangle()
     total += group_real_float_position_probe()
+    total += group_real_pair_adjacency_probe()
     print(f"\nTotal files: {total}")

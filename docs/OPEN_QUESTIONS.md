@@ -305,6 +305,20 @@ tells us whether edge positions (fewer operator-adjacency "boundaries")
 cost less, which would directly support the type-promotion-point
 hypothesis.
 
+**James, 2026-08-30: "are you sure you only need 4 tests for cpt?" —
+correct, no.** The 4 position-probe files above hold REAL-operand/
+float-literal COUNT fixed at 1 and only vary where that single factor
+sits — they can't touch the actual anomaly this whole thread exists to
+explain (2 REAL operands costing LESS than 1, non-monotonic in count).
+Added `group_real_pair_adjacency_probe`: `cptmix_real2_adjacent` (2 REAL
+operands at slots 1-2, adjacent) vs `cptmix_real2_spread` (2 REAL operands
+at slots 1 and 6, same count, spread to opposite ends of the same 6-slot
+shape) — directly tests whether adjacency (fewer DINT↔REAL promotion-point
+crossings) is what drives the count anomaly, or whether the two layouts
+measure the same (which would falsify the promotion-point hypothesis
+itself, not just leave it uncalibrated). Built, lint-clean, zero engine
+errors, awaiting capture — 6 CPT probe files on file total now, not 4.
+
 **Cross-validated at scale, 2026-08-29** (full manifest.csv audit):
 `randommix_07_n19811rungs_24types` (`logic_random_mix` category, real
 capture) was off by +39,959 -- traced to its 208 real CPT calls, which
