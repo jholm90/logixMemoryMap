@@ -114,4 +114,12 @@ def compute_routine_logic_bytes(
     for _target, n_in, m_out in routine.jsr_calls:
         total += model.jsr_param_cost.b_cost(n_in) + model.jsr_param_cost.output_param_cost * m_out
 
+    # Branch-bracket cost (OQ-BRANCHDEPTH) -- additive per real BST/NXB/BND-
+    # family instruction the parser found (parser/logic.py
+    # _branch_bracket_instruction_count), on top of every leg's own
+    # instruction weight already summed via instruction_counts above. See
+    # memory_model.yaml logic_instructions.branch_bracket_cost_per_instruction
+    # for the derivation.
+    total += routine.branch_bracket_instruction_count * model.branch_bracket_cost_per_instruction
+
     return total, model.confidence

@@ -1311,6 +1311,30 @@ logic_instructions:
   fixed_base_per_routine: 4816
   jsr_fixed_base_per_routine: 5096  # JSR's routine also declares the target subroutine
   confidence: FITTED
+  # OQ-BRANCHDEPTH, wired 2026-08-30 -- real data (branchdepth_legs01/03/05,
+  # branchdepthc_legs02/04/06/08/10/15/20/30, branchdepthstag_d01-06, all
+  # n=1000 rungs) had been sitting unreconciled since James's own local
+  # branch capture on 2026-08-24 -- 16/16 real points, EXACT, once the real
+  # mechanism is understood rather than curve-fit blind: every real branch
+  # ("[...]") compiles to real BST/NXB/BND-family instructions, one BST +
+  # one NXB per extra leg + one BND -- i.e. (leg_count + 1) instructions
+  # per bracket group, summed recursively across nested/staggered branches.
+  # Confirmed: flat branchdepthc_legsN (N=2..30, single level) matches
+  # 4 * (N + 1) bytes/rung exactly; branchdepthstag_dD (D=1..6, 2 legs per
+  # level, D nested levels) matches 4 * 3 * D bytes/rung exactly (3
+  # instructions/level x D levels) -- the SAME per-instruction rate (4
+  # bytes) explains both independently-generated datasets, not two
+  # separate curve fits. legs01 (a single leg, i.e. no real branch at all)
+  # correctly costs 0 -- degenerate case, not a formula exception.
+  # sizing/logic.py multiplies branch_bracket_cost_per_instruction by
+  # RoutineLogic.branch_bracket_instruction_count (parser/logic.py
+  # _branch_bracket_instruction_count), additive on top of every leg's own
+  # instruction weight (already counted normally). Only ever tested at
+  # n=1000 rungs and one tag shape (BOOL XIC legs) -- FITTED not KNOWN,
+  # linearity with rung count assumed by project convention, not
+  # independently confirmed at a 2nd rung count for this specific formula.
+  branch_bracket_cost_per_instruction: 4
+  branch_bracket_confidence: FITTED
   weights:
     ABS: 120
     XPY: 116

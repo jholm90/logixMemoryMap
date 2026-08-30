@@ -575,3 +575,55 @@ def test_cmp_float_literal_adds_surcharge_int_literal_does_not():
     int_bytes, _ = compute_routine_logic_bytes(int_routine, MODEL.logic_instructions)
     assert float_bytes == base + 72
     assert int_bytes == base
+
+
+# ---------------------------------------------------------------------------
+# OQ-BRANCHDEPTH: real branch-bracket cost, wired 2026-08-30. A branch with
+# L legs compiles to L+1 real BST/NXB/BND-family instructions (1 BST +
+# (L-1) NXB + 1 BND); nested/staggered branches recurse. Confirmed exact
+# against 16/16 real capture points (branchdepthc_legs*/branchdepthstag_d*).
+# ---------------------------------------------------------------------------
+
+def test_no_branch_costs_nothing_extra():
+    routine = _one_rung_routine("XIC(L0)OTE(L1);")
+    assert routine.branch_bracket_instruction_count == 0
+    bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions)
+    base = (
+        MODEL.logic_instructions.fixed_base_per_routine
+        + MODEL.logic_instructions.weights["XIC"]
+        + MODEL.logic_instructions.weights["OTE"]
+    )
+    assert bytes_ == base
+
+
+def test_flat_branch_costs_legs_plus_one_instructions():
+    # 3-leg branch -> 1 BST + 2 NXB + 1 BND = 4 real instructions.
+    routine = _one_rung_routine("[XIC(L0),XIC(L1),XIC(L2)]OTE(L3);")
+    assert routine.branch_bracket_instruction_count == 4
+    bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions)
+    base = (
+        MODEL.logic_instructions.fixed_base_per_routine
+        + 3 * MODEL.logic_instructions.weights["XIC"]
+        + MODEL.logic_instructions.weights["OTE"]
+    )
+    assert bytes_ == base + 4 * MODEL.logic_instructions.branch_bracket_cost_per_instruction
+
+
+def test_nested_branch_sums_recursively():
+    # Outer: [leg1[nested], leg2] = 2 legs -> 3 instructions.
+    # Nested: [leg1, leg2] = 2 legs -> 3 instructions. Total = 6.
+    routine = _one_rung_routine("[XIC(L0)[XIC(L1),XIC(L2)],XIC(L3)]OTE(L4);")
+    assert routine.branch_bracket_instruction_count == 6
+    bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions)
+    base = (
+        MODEL.logic_instructions.fixed_base_per_routine
+        + 4 * MODEL.logic_instructions.weights["XIC"]
+        + MODEL.logic_instructions.weights["OTE"]
+    )
+    assert bytes_ == base + 6 * MODEL.logic_instructions.branch_bracket_cost_per_instruction
+
+
+def test_array_index_bracket_not_counted_as_branch():
+    # "Arr[5]" is an array index, not a branch -- must not be misclassified.
+    routine = _one_rung_routine("MOV(Arr[5],Dest);")
+    assert routine.branch_bracket_instruction_count == 0

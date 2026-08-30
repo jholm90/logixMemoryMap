@@ -346,6 +346,8 @@ class LogicInstructionModel:
     cmp_surcharge: CmpSurchargeModel
     task_program_overhead: TaskProgramOverheadModel
     jsr_param_cost: JsrParamCostModel
+    branch_bracket_cost_per_instruction: int
+    branch_bracket_confidence: str
 
 
 @dataclass(frozen=True)
@@ -635,5 +637,7 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 confidence=raw["jsr_param_cost"]["confidence"],
                 output_param_cost=raw["jsr_param_cost"]["output_param_cost"],
             ),
+            branch_bracket_cost_per_instruction=raw["logic_instructions"]["branch_bracket_cost_per_instruction"],
+            branch_bracket_confidence=raw["logic_instructions"]["branch_bracket_confidence"],
         ),
     )

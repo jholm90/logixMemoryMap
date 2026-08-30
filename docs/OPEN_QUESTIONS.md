@@ -71,14 +71,10 @@ the matching footnote at the bottom, not inline.
    1st), and a handful of catalogs with real connection-variant-dependent
    overhead.[^moduleio]
 
-7. **OQ-BRANCHDEPTH** — confirmed real (branch structure costs memory
-   beyond leg instructions). Two independent test batches — leg-count
-   width and staggered/nested depth — await capture.[^branchdepth]
-
-8. **OQ-LEGACYNETOVERHEAD** — reminder flag only. No real corpus, no
+7. **OQ-LEGACYNETOVERHEAD** — reminder flag only. No real corpus, no
    capture data, nothing to size against yet.
 
-9. **OQ-JSRPARAMCOST** — reopened 2026-08-29 for one small residual.
+8. **OQ-JSRPARAMCOST** — reopened 2026-08-29 for one small residual.
     Output/return-param call-site cost is now wired and confirmed
     (see RESOLVED_QUESTIONS.md). The callee's own one-time `A(n)`
     Parameters-block cost almost certainly ALSO needs an output-param
@@ -89,7 +85,7 @@ the matching footnote at the bottom, not inline.
     output-param counts, input count held constant) to isolate A(n)'s
     real output term cleanly.
 
-10. **OQ-EVENTTRIGGER** — new, real. task_extra (+700) was derived only
+9. **OQ-EVENTTRIGGER** — new, real. task_extra (+700) was derived only
     from CONTINUOUS+PERIODIC tasks; EVENT-type tasks are completely
     untested, and so is trigger-source (Axis Watch vs. EVENT-instruction)
     within EVENT. Two files built, awaiting capture.[^eventtrigger]
@@ -716,16 +712,3 @@ both questions. `eventtask_axiswatch` also declares a real
 `AXIS_CIP_DRIVE` tag (EventTag must reference a real tag) — that tag has
 its own separately-modeled cost and will need subtracting from the raw
 capture delta before comparing trigger sources.
-
-[^branchdepth]: Real, sizeable, not modeled — the branch bracket
-structure itself (BST/NXB/BND, not modeled by this project's regex-based
-parser) costs real memory beyond the sum of leg instructions: legs01 (no
-branch) is exact, legs03 under-predicted by 16/rung, legs05 by 24/rung,
-not linear in leg count. `gen_branchdepth_closeout.py` adds 8 more
-leg-count points (2-30, matching James's own "30 deep" example literally)
-to fit the WIDTH curve. Separately, `gen_branchdepth_staggered.py` tests
-a genuinely different axis James asked for — DEPTH: always 2 legs per
-level, but each level's first leg recurses into another 2-leg branch,
-cascading (root[2] → leg1 contains nested[2] → nested's leg1 contains
-nested-nested[2] → ...), depths 1-6. Real nested-bracket syntax confirmed
-against 624 real rungs in `samples/local/`.

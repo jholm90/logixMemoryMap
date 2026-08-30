@@ -338,10 +338,79 @@ class RoutineLogic:
     # A(n) is NOT yet adjusted for output param count, see
     # OPEN_QUESTIONS.md OQ-JSRPARAMCOST.
     jsr_calls: list[tuple[str, int, int]] = field(default_factory=list)
+    # Total real BST/NXB/BND-family branch-bracket instructions across this
+    # routine's rungs (OQ-BRANCHDEPTH, wired 2026-08-30) -- see
+    # _branch_bracket_instruction_count above. A single-level branch with L
+    # legs compiles to L+1 of these; nested/staggered branches recurse.
+    # sizing/logic.py charges this count x the confirmed flat per-
+    # instruction rate (memory_model.yaml branch_bracket_cost_per_
+    # instruction), additive on top of every leg's own instruction weight
+    # (already counted normally via instruction_counts above).
+    branch_bracket_instruction_count: int = 0
 
     @property
     def path(self) -> str:
         return f"program:{self.program_name}/{self.routine_name}"
+
+
+def _parse_branch_group(text: str, start: int) -> tuple[int, int]:
+    """text[start] == '[', a real branch-open (see _branch_bracket_
+    instruction_count below for how that's distinguished from an array-
+    index '['). Returns (total real BST/NXB/BND-family instruction count
+    for this group INCLUDING every nested branch inside it, index right
+    after this group's matching ']'). A group with L top-level legs
+    (comma-separated at paren-depth 0, not counting legs inside a nested
+    branch) compiles to 1 BST + (L-1) NXB + 1 BND = L+1 real instructions
+    -- confirmed exact against 16/16 real capture points (OQ-BRANCHDEPTH,
+    see memory_model.yaml branch_bracket_cost_per_instruction)."""
+    i = start + 1
+    n = len(text)
+    paren_depth = 0
+    legs = 1
+    nested_total = 0
+    while i < n:
+        c = text[i]
+        if c == "(":
+            paren_depth += 1
+            i += 1
+        elif c == ")":
+            paren_depth -= 1
+            i += 1
+        elif c == "[" and paren_depth == 0 and not (text[i - 1].isalnum() or text[i - 1] == "_"):
+            sub_total, next_i = _parse_branch_group(text, i)
+            nested_total += sub_total
+            i = next_i
+        elif c == "]" and paren_depth == 0:
+            return legs + 1 + nested_total, i + 1
+        elif c == "," and paren_depth == 0:
+            legs += 1
+            i += 1
+        else:
+            i += 1
+    # Unterminated group (malformed text) -- return what's been scanned
+    # rather than crash; report.py's own lint layer catches real structural
+    # errors upstream of sizing.
+    return legs + 1 + nested_total, i
+
+
+def _branch_bracket_instruction_count(rung_texts: list[str]) -> int:
+    """Total real BST/NXB/BND-family branch-bracket instructions across
+    every rung -- a '[' is a real branch-open only when NOT immediately
+    preceded by an identifier character (that shape is an array index,
+    e.g. "Tag[5]", handled entirely separately by _ARRAY_INDEX/
+    _indirect_index_kinds above, not a branch)."""
+    total = 0
+    for text in rung_texts:
+        i = 0
+        n = len(text)
+        while i < n:
+            if text[i] == "[" and not (i > 0 and (text[i - 1].isalnum() or text[i - 1] == "_")):
+                group_total, next_i = _parse_branch_group(text, i)
+                total += group_total
+                i = next_i
+            else:
+                i += 1
+    return total
 
 
 def _count_instructions(rung_texts: list[str]) -> dict[str, int]:
@@ -420,6 +489,7 @@ def parse_rll_routines(root: ET.Element) -> list[RoutineLogic]:
                 cmp_calls=_cmp_calls(rung_texts),
                 jsr_target_names=frozenset(_jsr_targets(rung_texts)),
                 jsr_calls=_jsr_calls(rung_texts),
+                branch_bracket_instruction_count=_branch_bracket_instruction_count(rung_texts),
             ))
 
     return routines

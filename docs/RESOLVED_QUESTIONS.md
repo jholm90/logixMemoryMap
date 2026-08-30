@@ -1152,3 +1152,57 @@ Safety-specific or newly found; `TimeSlice` was already established
 2026-08-28 as Studio-5000-optional (real files import fine with or
 without it), and `AutoDiagsEnabled` is plausible per-project variance,
 not a structural gap.
+
+## OQ-BRANCHDEPTH, CLOSED 2026-08-30
+
+James: "I know I asked you to do these tests last week, why were they not
+decompiled yet?" -- correct catch, same recurring pattern as CPT/1769/AOI
+this session: 16 real capture points (`branchdepth_legs01/03/05`,
+`branchdepthc_legs02/04/06/08/10/15/20/30`, `branchdepthstag_d01-06`) were
+sitting in manifest.csv with real `actual_bytes` -- "Reconciled from
+James's local branch (james-capture-aug24)" -- unreconciled into the
+sizing engine this whole time.
+
+The real mechanism, once understood rather than curve-fit blind: every
+real branch (`[...]`) compiles to real BST/NXB/BND-family instructions --
+one BST + one NXB per extra leg + one BND, i.e. `(leg_count + 1)`
+instructions per bracket group, and **every one of those instructions
+costs a flat 4 bytes**. Confirmed on BOTH independently-generated
+datasets with the SAME rate, not two separate fits:
+
+- Flat leg-count width (`branchdepthc_legsN`, N=2..30, single level):
+  `4 * (N + 1)` bytes/rung. 10/10 real points exact.
+- Staggered/nested depth (`branchdepthstag_dD`, D=1..6, always 2 legs per
+  level, D nested levels): `4 * 3 * D` bytes/rung (3 instructions/level x
+  D levels). 6/6 real points exact.
+- `legs01` (a single leg -- i.e. no real branch at all) correctly costs 0,
+  the degenerate case, not a formula exception.
+
+Wired end-to-end: `parser/logic.py`'s new `_branch_bracket_instruction_
+count`/`_parse_branch_group` (a real bracket-matching scan, not a naive
+regex -- correctly distinguishes a branch-open `[` from an array-index
+`Tag[5]` bracket by checking the character immediately before it, and
+correctly recurses through nested/staggered branches, counting legs only
+at paren-depth 0 so a multi-arg instruction inside a leg like `MOV(A,B)`
+doesn't get miscounted as two legs). `RoutineLogic.branch_bracket_
+instruction_count` carries the total; `sizing/logic.py` multiplies it by
+the new `branch_bracket_cost_per_instruction=4` constant
+(`memory_model.yaml logic_instructions`), additive on top of every leg's
+own already-counted instruction weight.
+
+Verified end-to-end (not just hand-derived): all 17 real files predict
+EXACTLY through the live `build_report` pipeline, zero delta. Full
+1707-file generated corpus AND all 64 real `samples/local/` corpus files
+re-swept: 0 crashes (the real corpus files have genuinely complex nested
+branches -- 41,603 `[` characters in one real file alone -- so this is a
+meaningful stress test of the bracket-matching parser, not just the
+synthetic calibration shapes). 4 new unit tests added
+(`tests/test_logic_sizing.py`): no-branch is a no-op, flat branch costs
+legs+1 instructions, nested branch sums recursively, array-index bracket
+is never miscounted as a branch.
+
+Confidence: FITTED, not KNOWN -- only ever tested at n=1000 rungs and one
+tag shape (BOOL XIC legs); linearity with rung count is assumed by this
+project's own established convention (every other per-instruction rate
+here scales linearly with rung/call count), not independently confirmed
+at a 2nd rung count for this specific formula.

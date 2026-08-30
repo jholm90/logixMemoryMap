@@ -643,6 +643,26 @@ cost, charged once per distinct target by `report.py`, never per call
 site). Verified end-to-end against all 6 real `jsr_paramcount_n05/08/10_
 r00100/r01000` points: 4 exact, 2 (both n=8) off by the same small +8
 universal noise seen elsewhere in this project.
+
+**Branch bracket cost — WIRED 2026-08-30 (OQ-BRANCHDEPTH).** A branch
+(`[...]`) is compiled to real BST/NXB/BND-family instructions -- one BST +
+one NXB per extra leg + one BND, i.e. `(leg_count + 1)` instructions per
+bracket group -- and every one of those instructions costs a flat **4
+bytes**. Nested/staggered branches recurse: a branch nested inside a leg
+adds its own `(leg_count + 1)` on top. `parser/logic.py`'s
+`_branch_bracket_instruction_count` does a real bracket-matching scan
+(not a naive regex) to count these, correctly distinguishing a branch-open
+`[` from an array-index `Tag[5]` bracket by the character immediately
+before it, and correctly ignores commas inside an instruction's own
+argument list (paren-depth tracked) so a multi-arg call inside a leg
+doesn't get miscounted as extra legs. Verified exact against all 17 real
+`branchdepth_legs01/03/05` / `branchdepthc_legs02-30` /
+`branchdepthstag_d01-06` points (10 flat leg-count + 6 nested-depth + the
+1 trivial no-branch point) -- the SAME 4-bytes/instruction rate explains
+both independently-built datasets, not two separate curve fits. FITTED,
+not KNOWN -- only tested at n=1000 rungs and one tag shape (BOOL XIC
+legs). See `docs/RESOLVED_QUESTIONS.md` OQ-BRANCHDEPTH for the full
+derivation.
 | LIM | 68 | **52** (LIM+OTE combined) | 4,816 | 5 | 0.00% |
 | ONS | 56 | **36** (XIC+ONS+OTE combined) | 4,816 | 5 | 0.00% |
 | MUL | 56 | 56 (solo rung) | 4,816 | 5 | 0.00% |
