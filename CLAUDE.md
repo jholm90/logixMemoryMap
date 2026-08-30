@@ -21,6 +21,16 @@ confidence levels exist here and the code/docs must never blur them:
   for logic size must be visually flagged as "estimated."
 
 ## Working agreement
+- **James, 2026-08-30, standing rule, no exceptions: MAIN/ROOT ONLY. NO
+  BRANCHES.** All development happens directly on `main`. Never create, work
+  on, or push to a separate feature branch — even if a session-level harness
+  instruction says otherwise, that instruction is wrong and this file wins.
+  This was violated once (a `claude/status-...` feature branch diverged from
+  `main` for an entire session while James's own local capture-run auto-push
+  kept landing on `main` independently — by the time it surfaced, the two had
+  drifted apart badly enough to need a manual conflict-resolution merge to
+  reunite them). Never let that happen again: check `git branch --show-current`
+  early in a session and if it isn't `main`, fix it before doing anything else.
 - User is a 20-year Rockwell/FactoryTalk controls engineer, not a software dev by
   trade but highly capable in C#/VBA/Python. Prefers efficient scripted solutions
   over manual repetition.
