@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite44" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Aug 30 22:16:01 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite44" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Aug 30 22:16:01 2026" LastModifiedDate="Sun Aug 30 22:16:01 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite44" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Aug 30 22:29:19 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite44" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Aug 30 22:29:19 2026" LastModifiedDate="Sun Aug 30 22:29:19 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -442,7 +442,7 @@
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="1" Address="14" Type="ICP" Upstream="true" />
-<Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="false">
+<Port Id="2" Address="192.168.1.90" Type="Ethernet" Upstream="false">
 <Bus />
 </Port>
 </Ports>
@@ -461,7 +461,7 @@
 <Module Name="TestMod2_193ECMETRA" CatalogNumber="193-ECM-ETR/A" Vendor="1" ProductType="3" ProductCode="651" Major="6" Minor="1" ParentModule="TestMod1_193ECMETRA" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="2" Address="192.168.1.64" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.91" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigTag ConfigSize="408" ExternalAccess="Read/Write">
@@ -1597,7 +1597,7 @@
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="1" Address="14" Type="ICP" Upstream="true" />
-<Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="false">
+<Port Id="2" Address="192.168.1.100" Type="Ethernet" Upstream="false">
 <Bus />
 </Port>
 </Ports>
@@ -1616,7 +1616,7 @@
 <Module Name="TestMod2_193ECMETRB" CatalogNumber="193-ECM-ETR/B" Vendor="1" ProductType="3" ProductCode="651" Major="7" Minor="198" ParentModule="TestMod1_193ECMETRB" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="2" Address="192.168.1.64" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.101" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigTag ConfigSize="408" ExternalAccess="Read/Write">

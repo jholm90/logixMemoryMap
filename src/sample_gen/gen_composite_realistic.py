@@ -46,6 +46,7 @@ Run: python -m sample_gen.gen_composite_realistic
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -156,6 +157,35 @@ def _aoi_specs(profile: Profile) -> list[tuple[str, str, list[MemberSpec]]]:
     return out
 
 
+def _modules_xml_unique_ips(catalogs: list[str]) -> str:
+    """James, 2026-08-30, real bug caught by self-audit before any file was
+    sent for testing: each catalog's block in gen_module_sweep.py's
+    _MODULE_CHAINS was extracted from a real reference export assuming it's
+    the ONLY networked device in its own file -- nearly all of them default
+    to the same real "192.168.1.63" Ethernet address. Combining 2-4 real
+    catalogs verbatim into one composite file (as this generator does)
+    reused that identical IP across multiple distinct real devices in 33 of
+    the first 50 files -- a genuine address collision, not something Studio
+    5000 would ever accept from real hardware. Fixed by assigning each
+    catalog in the file its own non-overlapping 192.168.1.x block (spaced
+    10 apart, since the largest number of distinct real IPs any single
+    catalog's own block legitimately uses is 2 -- e.g. 193-ECM-ETR/A/B) and
+    remapping ONLY those literal address strings, preserving each catalog's
+    own internal relative offset between its addresses (a 2-IP catalog
+    keeps using two DIFFERENT addresses, just shifted to a block nobody
+    else in the file is using) -- nothing else in any block is touched."""
+    parts = []
+    for i, cat in enumerate(catalogs):
+        xml, _source, _chain_len = _MODULE_CHAINS[cat]
+        real_ips = sorted(set(re.findall(r"192\.168\.1\.\d+", xml)))
+        base = 60 + (i + 1) * 10
+        mapping = {ip: f"192.168.1.{base + j}" for j, ip in enumerate(real_ips)}
+        for old, new in mapping.items():
+            xml = xml.replace(old, new)
+        parts.append(xml)
+    return "\n".join(parts)
+
+
 def _build(profile: Profile) -> tuple[str, str]:
     types_xml, udts = _udt_specs(profile)
     aois = _aoi_specs(profile)
@@ -213,7 +243,7 @@ def _build(profile: Profile) -> tuple[str, str]:
 
     logic_rungs = rungs_xml(profile.rung_count, rung_instr)
 
-    modules_xml = "\n".join(_MODULE_CHAINS[cat][0] for cat in profile.module_catalogs)
+    modules_xml = _modules_xml_unique_ips(profile.module_catalogs)
 
     l5x = build_l5x(
         target_name=f"Composite{profile.index:02d}",

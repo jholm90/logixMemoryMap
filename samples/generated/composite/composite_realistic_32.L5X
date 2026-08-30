@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite32" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Aug 30 22:15:58 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite32" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Aug 30 22:15:58 2026" LastModifiedDate="Sun Aug 30 22:15:58 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite32" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Aug 30 22:29:16 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite32" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Aug 30 22:29:16 2026" LastModifiedDate="Sun Aug 30 22:29:16 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -82,7 +82,7 @@
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="1" Address="14" Type="ICP" Upstream="true" />
-<Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="false">
+<Port Id="2" Address="192.168.1.70" Type="Ethernet" Upstream="false">
 <Bus />
 </Port>
 </Ports>
@@ -101,7 +101,7 @@
 <Module Name="TestMod2_193ECMETRA" CatalogNumber="193-ECM-ETR/A" Vendor="1" ProductType="3" ProductCode="651" Major="6" Minor="1" ParentModule="TestMod1_193ECMETRA" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="2" Address="192.168.1.64" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.71" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigTag ConfigSize="408" ExternalAccess="Read/Write">
@@ -1237,7 +1237,7 @@
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="1" Address="14" Type="ICP" Upstream="true" />
-<Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="false">
+<Port Id="2" Address="192.168.1.80" Type="Ethernet" Upstream="false">
 <Bus />
 </Port>
 </Ports>
@@ -1256,7 +1256,7 @@
 <Module Name="TestMod2_193ECMETRB" CatalogNumber="193-ECM-ETR/B" Vendor="1" ProductType="3" ProductCode="651" Major="7" Minor="198" ParentModule="TestMod1_193ECMETRB" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="2" Address="192.168.1.64" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.81" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigTag ConfigSize="408" ExternalAccess="Read/Write">
@@ -2391,7 +2391,7 @@
 <Module Name="TestMod1_2097V34PR5LM" CatalogNumber="2097-V34PR5-LM" Vendor="1" ProductType="37" ProductCode="37" Major="2" Minor="4" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.90" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigData ConfigSize="220">
@@ -2436,7 +2436,7 @@
 <Module Name="TestMod1_2198C4004ERS" CatalogNumber="2198-C4004-ERS" Vendor="1" ProductType="37" ProductCode="78" Major="13" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.100" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigData ConfigSize="468">

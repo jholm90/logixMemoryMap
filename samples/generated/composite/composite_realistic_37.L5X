@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite37" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Aug 30 22:15:59 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite37" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Aug 30 22:15:59 2026" LastModifiedDate="Sun Aug 30 22:15:59 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite37" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Aug 30 22:29:17 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite37" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Aug 30 22:29:17 2026" LastModifiedDate="Sun Aug 30 22:29:17 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -81,7 +81,7 @@
 <Module Name="TestMod1_1732EIB16M12RA" CatalogNumber="1732E-IB16M12R/A" Vendor="1" ProductType="7" ProductCode="369" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
+<Port Id="1" Address="192.168.1.70" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigTag ConfigSize="8" ExternalAccess="Read/Write">
@@ -113,7 +113,7 @@
 <Module Name="TestMod1_1732EOB16M12RA" CatalogNumber="1732E-OB16M12R/A" Vendor="1" ProductType="7" ProductCode="370" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
+<Port Id="1" Address="192.168.1.80" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
 <ConfigTag ConfigSize="5" ExternalAccess="Read/Write">
@@ -159,7 +159,7 @@
 <Port Id="1" Address="0" Type="PointIO" Upstream="false">
 <Bus Size="2" />
 </Port>
-<Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.90" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>

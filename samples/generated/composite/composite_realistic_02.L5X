@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite02" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Aug 30 22:15:52 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite02" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Aug 30 22:15:52 2026" LastModifiedDate="Sun Aug 30 22:15:52 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite02" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Aug 30 22:29:11 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite02" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Aug 30 22:29:11 2026" LastModifiedDate="Sun Aug 30 22:29:11 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -84,7 +84,7 @@
 <Port Id="1" Address="0" Type="PointIO" Upstream="false">
 <Bus Size="14" />
 </Port>
-<Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.70" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
@@ -230,7 +230,7 @@
 <Port Id="1" Address="0" Type="PointIO" Upstream="false">
 <Bus Size="13" />
 </Port>
-<Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.80" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
@@ -374,7 +374,7 @@
 <Port Id="1" Address="0" Type="PointIO" Upstream="false">
 <Bus Size="2" />
 </Port>
-<Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.90" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
@@ -487,7 +487,7 @@
 <Port Id="1" Address="0" Type="PointIO" Upstream="false">
 <Bus Size="8" />
 </Port>
-<Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="192.168.1.100" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
