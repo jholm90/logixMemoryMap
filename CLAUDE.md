@@ -55,8 +55,18 @@ confidence levels exist here and the code/docs must never blur them:
   a question is blocked on new data.
 
 ## Every time James says a batch of tests has been pushed (no exceptions)
-Run this exact sequence, in order, every single time — do not skip steps, do not
-wait to be re-asked:
+James, 2026-08-30: "your #6 is not detailed enough. you were supposed to
+analyze all of the new data, review all open questions one at a time with
+the new data and review all open issues in depth full exercise and be sure
+there is nothing else that can be done before letting me know you are done
+and asking to push. i feel that you do not do enough when i give you new
+data ... its just like your housekeeping and out of date Tasks/Open
+questions list i have to ask about every time instead of you working thru
+every time i push you new data." The full-depth open-questions review
+(below) is NOT a separately-requested action — it is a MANDATORY step of
+this same sequence, every single time new data lands, whether or not James
+separately says "review open questions." Run this exact sequence, in
+order, every single time — do not skip steps, do not wait to be re-asked:
 1. Pull/read the new results into samples/manifest.csv. Reconcile via
    row-level CSV merge keyed on sample_id (never a blind git merge — our
    predicted_bytes may have moved since the capture run started; recompute
@@ -68,9 +78,26 @@ wait to be re-asked:
    individual rows for James to rerun manually.
 2. Recalculate/re-derive sizing formulas from the new data; wire in anything
    that's now confirmed exact.
-3. Review docs/TASKS.md and update checkboxes.
-4. Review docs/INSTRUCTION_COVERAGE.md and update it.
-5. Review the task/progress list and decide the next batch of tests to generate.
+3. FULL-DEPTH OPEN QUESTIONS REVIEW — mandatory every pass, not on request.
+   Go through EVERY item in docs/OPEN_QUESTIONS.md one at a time, same bar
+   as "When I say review open questions, go as in depth as possible. Every
+   question. Full depth. No possible open items" (above): for each item,
+   recompute predicted_bytes live against the current engine for every
+   manifest.csv row that could plausibly relate to it (never trust stored
+   predicted_bytes/delta — they go stale), check for real
+   currently-unreconciled actual_bytes anywhere in the corpus, and
+   close/update/move to RESOLVED_QUESTIONS.md whatever the new data now
+   resolves. Don't stop at "does this batch's own data touch this
+   question" — the new engine state from step 2 can retroactively resolve
+   or break an OLDER manifest row too, so re-check the whole file, not just
+   rows from this batch.
+4. Bring docs/TASKS.md, docs/OPEN_QUESTIONS.md, and docs/RESOLVED_QUESTIONS.md
+   ALL current together — checkboxes, closed items actually moved out (not
+   just marked), stale claims corrected. This has gone stale multiple times
+   already (caught by James, not self-caught) — check it every single pass
+   without being asked, not just when James notices first.
+5. Review docs/INSTRUCTION_COVERAGE.md and update it.
+6. Review the task/progress list and decide the next batch of tests to generate.
    James, 2026-08-25: "Don't just fill up the minimum 60 test roster with
    filler work. I always ask for more before tests start anyway." The
    60-file floor is not a quota to pad toward — every file in a batch must
@@ -78,8 +105,11 @@ wait to be re-asked:
    in under 60, ship it at that size; James will ask for a bigger batch
    himself if he wants one. Don't manufacture variations just to hit a
    number.
-6. Send James a summary of what changed plus open questions from this run.
-7. Wait for his explicit acknowledgement before pushing (standing rule: never
+7. Only after 1-6 are actually done (not deferred, not summarized as "will
+   check later") — send James a summary of what changed, what's now
+   closed/resolved as a direct result, and what's genuinely still open with
+   the full-depth reasoning already applied, not left for him to trigger.
+8. Wait for his explicit acknowledgement before pushing (standing rule: never
    push without being told it's okay, every time, no blanket authorization
    carries forward).
 
