@@ -244,18 +244,30 @@ def _1769_module_xml(catalog: str, major_rev: str) -> str:
 # (4 real files agree) and L84ES=214 (1 real file, FlareFunction_311D --
 # never found by this project until now). 211->214 across L81ES->L84ES is
 # exactly +1 per catalog step, the same sequential pattern this project
-# already uses elsewhere for an unconfirmed run -- L82ES/L83ES/L85ES are
-# still not independently confirmed, but now inferred from TWO real
-# anchor points on the CORRECT numbering space, not one guess built on a
-# wrong anchor.
+# already uses elsewhere for an unconfirmed run -- L82ES(212)/L83ES(213)
+# have both since been real-tested by James (import succeeds, no line-1
+# error) though still not independently confirmed as the exact real
+# ProductCode the way L81ES/L84ES are.
+#
+# L85ES(215) REMOVED 2026-08-30 (James: "l85es fails on line 1 of the l5x
+# for multiple firmwares but works fine for l81es..l84es"): the same
+# +1-per-step inference that correctly predicted L82ES/L83ES broke
+# specifically at the L84ES->L85ES step -- real proof the sequence isn't
+# linear all the way to the top of the range (1756-L85ES IS a real,
+# current Rockwell product -- 40MB/3MB safety memory, confirmed via web
+# search -- so this isn't a fake-catalog problem, just an unconfirmed
+# ProductCode with no more real anchor to re-derive it from). Rather than
+# guess again and burn another of James's test cycles, treated the same
+# as OQ-BASELINE-PROCFW already treats 1756-L9x: sourced but deliberately
+# NOT generated until a real L85ES sample (or its real ProductCode)
+# surfaces. See docs/OPEN_QUESTIONS.md.
 _L8XS_PRODUCT_CODES = {
     "1756-L81ES": "211",
-    "1756-L82ES": "212",  # INFERRED, not directly confirmed
-    "1756-L83ES": "213",  # INFERRED, not directly confirmed
+    "1756-L82ES": "212",
+    "1756-L83ES": "213",
     "1756-L84ES": "214",
-    "1756-L85ES": "215",  # INFERRED, not directly confirmed
 }
-_L8XS_INFERRED = {"1756-L82ES", "1756-L83ES", "1756-L85ES"}
+_L8XS_INFERRED = {"1756-L82ES", "1756-L83ES"}
 _L8XS_CATALOGS = list(_L8XS_PRODUCT_CODES)
 
 ALL_CATALOGS = _L8X_CATALOGS + _5069_CATALOGS + _L7X_CATALOGS + _1769_CATALOGS

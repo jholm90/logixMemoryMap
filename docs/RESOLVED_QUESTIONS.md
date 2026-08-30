@@ -1342,3 +1342,31 @@ project already uses elsewhere for unmodeled predefined structures.
 
 All 54 1769 files (9 catalogs x 6 firmware) regenerated. Full corpus
 re-swept (1847 files): 0 crashes. 140/140 tests.
+
+## 1756-L85ES removed from the automated matrix, 2026-08-30
+
+James, live testing: "l85es fails on line 1 of the l5x for multiple
+firmwares but works fine for l81es..l84es." L81ES(211)/L84ES(214) are
+real (4 and 1 independent real corpus files respectively); L82ES(212)/
+L83ES(213)/L85ES(215) were all inferred from the same +1-per-catalog-
+step pattern anchored on those two real points. James's test shows
+L82ES/L83ES import fine but L85ES does not -- real proof the sequence
+isn't linear all the way to the top of the range, not that the
+inference method itself is unsound (it correctly predicted 2 of 3).
+
+Confirmed via web search that 1756-L85ES is a real, current Rockwell
+product (GuardLogix 5580, 40MB standard / 3MB safety memory, top of the
+line) -- this isn't a fake-catalog problem, just an unconfirmed
+ProductCode with no second real anchor left to re-derive it from
+(only one real point, L84ES=214, borders the gap; the L81ES anchor is
+too far away to trust a linear extrapolation across an already-proven-
+nonlinear stretch).
+
+Rather than guess again and cost James another test cycle, removed
+1756-L85ES entirely from `_L8XS_PRODUCT_CODES`/`_L8XS_CATALOGS` in
+`gen_fw_catalog_matrix.py` -- same treatment as 1756-L9x (see
+OPEN_QUESTIONS.md OQ-BASELINE-PROCFW): sourced but deliberately not
+generated until a real sample or its real ProductCode surfaces. The
+6 already-generated L85ES files (one per firmware version) and their
+manifest.csv rows were deleted, not left orphaned. Full corpus
+re-swept (1841 files): 0 crashes. 140/140 tests.

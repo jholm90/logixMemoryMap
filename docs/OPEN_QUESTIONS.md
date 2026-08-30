@@ -18,7 +18,16 @@ the matching footnote at the bottom, not inline.
    changes the value by 13,000+ bytes, so unconfirmed catalogs correctly
    stay unmodeled rather than guessed). L7x/L8xES catalogs in the matrix
    still await their own capture (L8xES additionally needed a real
-   ProductCode fix 2026-08-30, see RESOLVED_QUESTIONS.md). The 9
+   ProductCode fix 2026-08-30, see RESOLVED_QUESTIONS.md — L81ES-L84ES
+   now real-tested and importing; **1756-L85ES removed from the
+   automated matrix the same day** after its inferred ProductCode (215)
+   failed real testing while the SAME +1-per-step inference correctly
+   predicted L82ES/L83ES — the sequence breaks specifically at the top
+   of the range, no second real anchor exists to re-derive it from.
+   1756-L85ES is a real, current product (confirmed via web search, not
+   a fake catalog), same as 1756-L9x below — sourced but deliberately
+   not generated until a real sample or its real ProductCode surfaces).
+   The 9
    1769-series catalogs were re-added to the automated `fw_catalog_matrix`
    2026-08-30 (James: AHK capture now works for this family, same as
    L7x) — previously only ever built as single-firmware/v35
