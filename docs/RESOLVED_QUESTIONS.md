@@ -1116,3 +1116,39 @@ instruction-call + real ALMD structure content these two files also
 carry (not directly comparable to the bare-tag 973-byte ALARM_DIGITAL
 figure above, which isolates the structure alone).
 
+
+## Second real generator bug: L8xES Local module ports missing SafetyNetwork, fixed 2026-08-30
+
+James: "your generation of safety modules fails wildly when watching the
+conversion process... redo your module generator... does not require me
+to help with that process." Found this one without needing an error
+message -- same methodology as the SafetyLocked fix above, systematic
+attribute-by-attribute diff of a generated GuardLogix-ES file against a
+real one.
+
+`samples/local/SJ_Gormley_20251112_r02.L5X`'s own Controller
+`ProcessorType` is literally `1756-L81ES` -- the exact catalog family
+reported failing. Its real Local module's Ports (`Port Id="1"` ICP and
+`Port Id="2"` Ethernet) BOTH carry a `SafetyNetwork="16#0000_..."`
+attribute. `gen_fw_catalog_matrix.py`'s `_local_ports_xml` had zero
+awareness of `is_safety` at all -- it only ever added `Class="Safety"` to
+the Task/Program, never touched the CPU's own Local module Ports. This
+is a completely separate code path from `wrapper.py`'s `build_l5x`,
+which already got the analogous SIL2/SIL3 SafetyNetwork fix on
+2026-08-28 for its module-sweep files -- that fix was never cross-applied
+to the L8xES safety-catalog matrix generator.
+
+Real SafetyNetwork values are device-unique (confirmed real corpus
+values are effectively random 64-bit hex, not sequential or derivable) --
+no way to fabricate a "real" one, so this uses the same
+synthetic-but-correctly-formatted placeholder convention `wrapper.py`
+already established, one distinct value per port. Regenerated all 30
+L8xES safety-catalog matrix files. Full corpus re-swept: 0 crashes.
+
+Checked the rest of the Controller-level attributes for other
+differences (`AutoDiagsEnabled`, `TimeSlice`/`ShareUnusedTimeSlice`) --
+both differ from the real Gormley reference but neither is
+Safety-specific or newly found; `TimeSlice` was already established
+2026-08-28 as Studio-5000-optional (real files import fine with or
+without it), and `AutoDiagsEnabled` is plausible per-project variance,
+not a structural gap.

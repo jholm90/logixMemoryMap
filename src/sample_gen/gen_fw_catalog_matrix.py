@@ -183,7 +183,34 @@ def _product_code(catalog: str) -> str:
     raise KeyError(f"No confirmed real ProductCode for {catalog!r} -- refusing to guess")
 
 
-def _local_ports_xml(catalog: str) -> str:
+def _local_ports_xml(catalog: str, is_safety: bool = False) -> str:
+    if is_safety:
+        # REAL BUG FOUND 2026-08-30 (James: "your L8 safety failed to
+        # generate acd files" -- watched the conversion fail directly).
+        # A Safety-capable CPU's own Local module Ports need a
+        # SafetyNetwork attribute on EVERY port, not just the Task/Program
+        # Class="Safety" markers this generator already had. Confirmed
+        # against samples/local/SJ_Gormley_20251112_r02.L5X, whose
+        # Controller CatalogNumber is literally "1756-L81ES" -- the exact
+        # family reported failing -- real Local module: both Port 1 (ICP)
+        # and Port 2 (Ethernet) carry SafetyNetwork. This generator never
+        # added it at all for the L8xES catalogs (SAFETY_CATALOGS), a
+        # completely separate code path from wrapper.py's build_l5x,
+        # which already got the analogous SIL2/SIL3 module-sweep fix
+        # 2026-08-28 and was never cross-applied here. Real SafetyNetwork
+        # values are device-unique (confirmed real corpus values are
+        # effectively random 64-bit hex, not sequential) -- this project
+        # has no way to fabricate a "real" one, so uses the same
+        # synthetic-but-correctly-formatted placeholder convention
+        # wrapper.py already established, one distinct value per port.
+        return (
+            f'<Port Id="1" Address="0" Type="ICP" Upstream="false" '
+            f'SafetyNetwork="16#0000_1005_0001_0001">\n'
+            f'<Bus Size="{_ICP_BUS_SIZE}"/>\n'
+            f'</Port>\n'
+            f'<Port Id="2" Type="Ethernet" Upstream="false" '
+            f'SafetyNetwork="16#0000_1005_0002_0002">\n<Bus/>\n</Port>'
+        )
     if catalog.startswith("5069"):
         return (
             f'<Port Id="1" Address="0" Type="5069" Upstream="false">\n'
@@ -223,7 +250,7 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
         guid = "{" + str(uuid.uuid4()).upper() + "}"
         extra_attrs = extra_attrs.replace("{DATAEXCHANGEID}", guid)
     product_code = _product_code(catalog)
-    local_ports_xml = _local_ports_xml(catalog)
+    local_ports_xml = _local_ports_xml(catalog, is_safety=is_safety)
     # Real shape confirmed 2026-08-25 against samples/local/SJ_Gormley_
     # 20251112_r02.L5X and DnR_Personal/Bender134053_201104.L5X (James:
     # "Safety processor needs a safety task. You don't have to put in a
