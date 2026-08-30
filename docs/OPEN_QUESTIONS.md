@@ -158,7 +158,12 @@ the matching footnote at the bottom, not inline.
    built to isolate it (`aoi_orphaned_referenced`/`aoi_orphaned_
    unreferenced`, byte-identical except one has a live instance+call of a
    moderate utility AOI and the other has the same AOI declared but never
-   instantiated), awaiting capture.[^aoiorphan]
+   instantiated), awaiting capture.[^aoiorphan] Extended 2026-08-30 with 50
+   more real data points at realistic project scale/composition (see
+   `gen_composite_realistic.py` below) — every one of the 50 composite
+   files declares at least one orphaned AOI alongside several referenced
+   ones, so once captured this closes with a much larger, varied sample
+   than the original minimal pair, not just confirms it.
 
 10. **OQ-BLOCKBYTE** — new, very serious if real. James, 2026-08-30:
     Studio 5000's Capacity readout is labeled "bytes" for 1769/L7x
@@ -177,6 +182,35 @@ the matching footnote at the bottom, not inline.
     120,000×4, zero packing ambiguity). Any real conversion factor will
     show up as an obvious clean ratio between the two files' real Capacity
     readings. Awaiting capture on both.[^blockbyte]
+
+11. **OQ-COMPOSITESCALE** — new, real, James 2026-08-30 directive after
+    the confidential-project review found a >20% real gap: "I expect at
+    least 50 large programs with io and logic to test your generation
+    knowledge and test aois and udts." Every calibration file in this
+    project before now isolated ONE feature at a time — never tested
+    whether the individually-confirmed formulas are actually additive at
+    real project scale/density, or whether interaction effects between
+    many UDTs/AOIs/arrays/modules/rungs at once produce a real
+    discrepancy that isolated tests can't catch. 50 composite files built
+    (`gen_composite_realistic.py`, `samples/generated/composite/`), each a
+    genuinely different combination (not the same shape resized): 2-6
+    UDTs (1 always nested), 2-5 referenced AOIs + 1-3 orphaned AOIs (also
+    feeds OQ-AOIORPHAN), 3-6 large atomic arrays + 1 UDT array,
+    TIMER/COUNTER, 2-4 real I/O modules (cycled from `gen_module_sweep.
+    py`'s 86 real catalog blocks), 150-900 rungs mixing XIC/OTE/MOV/ADD/
+    CPT/TON/CTU/AOI-calls. All on 5069-L306ER/fw35.11 (the processor-
+    family question is isolated separately, OQ-BLOCKBYTE, to keep this
+    batch's findings unambiguous). 26 of the 50 have a fully-predicted
+    total; 24 hit an already-known unmodeled real I/O module shape
+    (rack-aliased connections, legacy-network bridges, a handful of
+    modules with unrecognized nested member types) and fall back to
+    predicted_bytes=0/unmodeled, same convention as elsewhere in this
+    project — genuinely unmodeled, not a bug in this batch. Real Capacity
+    on the 26 fully-predicted files is the actual test: if predicted and
+    real land within ~1% at this scale, the individually-confirmed
+    formulas really are additive; any real divergence pinpoints an
+    interaction effect (or a formula that only breaks at
+    scale/density) invisible to every prior isolated test.[^compositescale]
 
 ---
 
@@ -870,3 +904,23 @@ divisor/multiple of the 480,000 array-content portion, since that's the
 overwhelming majority of the total) is the real block size, and every
 formula in `memory_model.yaml` derived from L81E/5069-family data needs
 rescaling by it — which is most of this project's real corpus.
+
+[^compositescale]: `gen_composite_realistic.py` — a deterministic
+index-based feature schedule (`_profile_for_index`), not randomness, so
+every one of the 50 files' exact composition is reproducible and
+documented in its own manifest.csv description. UDT 0 in every file
+nests UDT 1 as a member (real "mixed and garbled" nesting pattern,
+matching `gen_axis_composite.py`'s established real corpus shape).
+Referenced AOIs get a real instance tag + a call rung
+(`AoiName(InstanceTag,0,...,OutBit);`); orphaned AOIs get neither, same
+mechanism as `gen_aoi_orphaned_def.py`. I/O modules are cycled from
+`gen_module_sweep.py`'s `_MODULE_CHAINS` (86 real, previously-extracted
+catalog blocks, never fabricated) via `(index*7) % 86` plus an offset, so
+the 50 files sample a wide, deterministic spread of the catalog list
+rather than always picking the same easy ones. The 24 files that hit an
+unmodeled module shape fall back to `write_sample_unmodeled` and are
+flagged in their own manifest description — real, already-documented
+engine limitations (rack-aliased connections, legacy-network bridges,
+modules with unrecognized nested member types), not something this batch
+introduced. Full corpus crash-swept clean (1801 files, 0 crashes) and
+140/140 unit tests pass with this batch included.
