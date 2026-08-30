@@ -32,6 +32,17 @@ confidence levels exist here and the code/docs must never blur them:
   could instead be a named constant sourced from there.
 - Every unresolved sizing question goes in docs/OPEN_QUESTIONS.md, not buried in
   code comments. Check that file before assuming a behavior.
+- James, 2026-08-30: "When I say review open questions, go as in depth as
+  possible. Every question. Full depth. No possible open items." When asked to
+  review/go through open questions, this is the bar every time, not just when
+  James has already pushed back on a specific item: for EVERY item in
+  docs/OPEN_QUESTIONS.md, before presenting it, recompute predicted_bytes
+  live against the current engine for every manifest.csv row that could
+  plausibly relate to it (never trust the stored predicted_bytes/delta
+  columns — they go stale) and check for real, currently-unreconciled
+  actual_bytes sitting anywhere in the corpus. Don't wait to be asked
+  per-item; do the check up front, the same way every time, before saying
+  a question is blocked on new data.
 
 ## Every time James says a batch of tests has been pushed (no exceptions)
 Run this exact sequence, in order, every single time — do not skip steps, do not
