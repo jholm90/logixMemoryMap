@@ -16,6 +16,7 @@ import math
 from dataclasses import dataclass
 
 from l5x_memory_analyzer.parser.datatypes import DataTypeDef, Member
+from l5x_memory_analyzer.sizing.confidence import weakest
 from l5x_memory_analyzer.sizing.constants import MemoryModel
 from l5x_memory_analyzer.sizing.udt import (
     RecursiveUdtError,
@@ -229,6 +230,11 @@ def _expand_aoi_definition(aoi: DataTypeDef, model: MemoryModel) -> list[Child]:
     children = [Child("Base", ".base", "OVERHEAD", (), model.aoi_definition.base, conf, False)]
     for m in declared_items:
         children.append(Child(m.name, f".{m.name}", m.data_type, (), model.aoi_definition.per_declared_item, conf, False))
+    name_conf = weakest(conf, model.aoi_definition.name_length_bucket_confidence)
+    children.append(
+        Child("Type name length", ".namelen", "OVERHEAD", (),
+              model.aoi_definition.name_length_bytes(aoi.name), name_conf, False)
+    )
     return children
 
 

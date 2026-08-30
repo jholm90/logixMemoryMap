@@ -752,3 +752,36 @@ entries), but that effect is too small relative to a 1-distinct-target
 sample to isolate from noise here — flagged as OQ-JSRPARAMCOST in
 OPEN_QUESTIONS.md rather than force-fit or silently left uncorrected in
 this file.
+
+## OQ-AOIDEF name-length step formula, CLOSED 2026-08-30
+
+An AOI type name's contribution to its own definition cost follows
+`8*max(0,(len(name)-8)//4) - 8` -- confirmed exact against all 7 real
+`aoiname_len08/09/13/16/20/25/30_def_only` points, which had been sitting
+unreconciled. Wired into `AoiDefinitionModel.name_length_bytes` (used by
+`compute_aoi_definition_cost` in `sizing/udt.py`), with a matching
+`.namelen` breakdown row added to `tree.py`'s `_expand_aoi_definition` so
+the UI drill-down sum stays consistent with the total.
+
+The first version wired used divisor `(len-7)//4` instead of `(len-8)//4`
+-- both reproduce all 7 tested points identically (none of the 7 sit at
+`len % 4 == 3`, the one residue class where the two divisors disagree), so
+the bug was invisible against that dataset alone. Caught by cross-checking
+two already-captured, unreconciled AOI-array-packing files that differ
+ONLY in AOI type name length and are otherwise byte-identical in shape (10
+BOOL In/10 BOOL Out/10 BOOL Local, array of 16 instances):
+`aoipack_bool_dense_array_n16` (`AoiPureBoolDense`, 16 chars) and
+`aoipack_bool_boundary_n16` (`AoiPureBoolBoundary`, 19 chars). Same shape,
+same array length -- real captured bytes must be identical once the
+(separately confirmed) array-of-instances cost is subtracted out, but the
+old divisor put len=19 one bucket higher than len=16, producing a genuine
+8-byte prediction mismatch between two files that should have predicted
+the same total. `(len-8)//4` resolves it to 0 bytes apart while leaving
+all 7 originally-tested points exact.
+
+Investigating that cross-check further turned up a second, larger,
+**still-open** issue with the array-of-AOI-instances per-element formula
+itself (previously tagged KNOWN) -- see OQ-AOIBOOLPACK-PAIRING in
+OPEN_QUESTIONS.md; confidence downgraded to FITTED pending new capture
+data (`gen_aoi_boolpack_pairing.py`, 23 files, generated but not yet
+captured).

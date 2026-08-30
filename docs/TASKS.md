@@ -89,7 +89,10 @@ ordinary UDT-member recursion already covers a produced/consumed tag's
 RESOLVED_QUESTIONS.md.
 
 [^aoidef]: `sizing/udt.py` `compute_aoi_definition_cost()`, FITTED not
-KNOWN. Two small threads remain — see OPEN_QUESTIONS.md OQ-AOIDEF.
+KNOWN. AOI type-name-length step CLOSED 2026-08-30 (7/7 exact). The
+separate array-of-AOI-instances element-cost formula (`aoi_array`,
+downgraded KNOWN→FITTED 2026-08-30) is now its own open item — see
+OPEN_QUESTIONS.md OQ-AOIBOOLPACK-PAIRING.
 
 [^branchdepth]: Real cost confirmed (branch bracket structure costs real
 memory beyond leg instructions), formula not yet fit — see

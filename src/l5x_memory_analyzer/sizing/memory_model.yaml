@@ -765,11 +765,36 @@ array:
 # (definition-level, not per-instance) cost for interspersed vs grouped --
 # separate finding, not yet wired (small, definition-cost-bucket effect,
 # same undecided architecture question as OQ-AOIDEF).
+#
+# CONFIDENCE DOWNGRADED 2026-08-30 (OQ-AOIBOOLPACK-PAIRING): the "15 real
+# points, exact fit throughout" claim above was checked only at 3 array-
+# instance counts per member-count (n=1/10/25) -- never dense/consecutive
+# n. 27 real points that were sitting unreconciled (aoipack_bool_array_n*,
+# aoipack_bool_boundary_n16-96, aoipack_bool_dense_array_n16-40, plus the
+# generalization batch's mc10/mc20/mc60 n=1/10/25 triples) prove this
+# formula is NOT exact once n varies densely: for the single-word case
+# (bool_count<=32), real bytes follow `8*ceil(n/2) + B` -- an odd-n array
+# costs 4 bytes MORE than the even-n prediction below -- where B is a
+# flat, n-independent offset this formula has no term for at all (B=20 for
+# a 10-BOOL/all-Input AOI, B=44 for 20-BOOL/all-Input, B=28 for the
+# original 30-BOOL/3-way-split [10 In+10 Out+10 Local] shape -- confirmed
+# exact against 3, 3, and 18 real points respectively, but B does NOT
+# extrapolate linearly across those three, so it is NOT simply a function
+# of bool_count alone; the 3-way section split likely matters and the
+# current parser only tracks a flat bool_count, not per-section counts).
+# The 60-BOOL/all-Input case (2 packed words/instance) is worse: all 3
+# real points (n=1/10/25) sit at ~8/instance on average but do NOT fit
+# `8*ceil(n/2)+const` at all -- multi-word packing is a materially
+# different, still-unsolved shape. NOT fixed here: guessing a generalized
+# replacement risks the same overfit mistake this project has already hit
+# once this session (the CPT three-tier formula). New dense/isolating test
+# files generated instead (gen_aoi_boolpack_pairing.py) -- see
+# OPEN_QUESTIONS.md OQ-AOIBOOLPACK-PAIRING for the full real-data table.
 aoi_array:
   flat_discount: 4
   bool_word_size: 32
   bool_word_extra: 4
-  confidence: KNOWN
+  confidence: FITTED
 
 # AOI *definition* cost (the AOI's own Parameters/LocalTags declaration,
 # separate from any tag that instantiates it) -- OQ-AOIDEF, wired 2026-08-26
@@ -835,6 +860,24 @@ aoi_definition:
     INT: 18
     LINT: 24
   confidence: FITTED
+  # AOI type-NAME length cost, OQ-AOIDEF closeout, wired 2026-08-29 (found
+  # during a full manifest.csv audit -- James: "AOI should have been
+  # closed by now" -- fair, `aoiname_len08/09/13/16/20/25/30` had real
+  # capture data since 2026-08-22/27 sitting unreconciled). Unlike
+  # UDT-definition's own 8*ceil(len/8) step, an AOI type name does NOT
+  # follow that convention: real actual bytes at len=8/9/13/16/20/25/30
+  # are 19384/19384/19392/19400/19408/19416/19424 -- confirmed 7/7 exact
+  # against `name_length_bytes = name_length_bucket_bytes *
+  # max(0,(len(name)-7)//4) + name_length_floor_bytes` (constants.py
+  # AoiDefinitionModel). name_length_floor_bytes(-8) matches the same
+  # -8-byte universal per-file residual seen throughout this project --
+  # any name length 8-9 hits this floor with zero incremental bucket
+  # cost, then +8/4-chars beyond that. Not confirmed below len=8 (no real
+  # data there), but the bucket floors at 0 so the formula never
+  # extrapolates further negative for a very short name.
+  name_length_bucket_bytes: 8
+  name_length_floor_bytes: -8
+  name_length_bucket_confidence: FITTED
 
 # Per-tag flat overhead: every top-level <Tag> entry (Controller/Tags or
 # Program/Tags) costs this ON TOP OF its own raw data size (from

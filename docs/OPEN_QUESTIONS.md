@@ -32,9 +32,20 @@ the matching footnote at the bottom, not inline.
    shows it's genuinely NOT monotonic in operand count, ruling out any
    simple per-count model.[^cmpcpt]
 
-4. **OQ-AOIDEF** — wired for the common case. Required/Visible flags
-   closed (no real effect). Name-length and BOOL-array-packing-boundary
-   probes await capture.[^aoidef]
+4. **OQ-AOIDEF** — CLOSED 2026-08-30. Required/Visible flags closed (no
+   real effect). AOI type-name-length step formula wired and verified
+   7/7 exact, plus a real off-by-one bucket-boundary bug found and fixed
+   via cross-validation against two same-shape files that only differed by
+   name length (len=19 was landing one bucket too high).[^aoidef]
+
+4b. **OQ-AOIBOOLPACK-PAIRING** — new 2026-08-30, split off OQ-AOIDEF's old
+    "BOOL-array-packing-boundary" thread once its 27 already-captured
+    points got reconciled. The `aoi_array` per-instance formula was tagged
+    KNOWN ("confirmed exact... 15 real points") but that claim was only
+    ever checked at 3 widely-spaced instance counts per shape (n=1/10/25)
+    — real dense data disproves it. Confidence downgraded to FITTED.
+    Genuinely open, new dense/isolating test files generated (not yet
+    captured).[^aoiboolpackpairing]
 
 5. **OQ-PREDEFINED — CLOSED for all 195 known types, corrected 2026-08-29.**
    James's own conversion+capture pipeline ran the full 184-file
@@ -314,13 +325,61 @@ exact, 52 within 1%, 1 at 2.10%. Full derivation: `docs/AOI_KNOWLEDGE_MAP.md`.
 Required/Visible/Hidden flag combinations: CLOSED 2026-08-25 — real
 2026-08-23 capture data was sitting unreconciled, deltas land within a
 32-block band with no direction tied to flag config (noise, not a real
-effect). Still open: AOI type-name length doesn't follow the uniform
-`8*ceil(len/8)` step other formulas use (`aoiname_len09/16/25` probe the
-gap, awaiting capture). AOI-instance-array element cost: 3 distinct real
-per-element rates depending on member composition (pure-atomic ≈124,
-pure-BOOL ≈4 not cleanly linear across an unresolved n=32 boundary, 50/50
-mix = exactly 64) — `aoipack_bool_dense_array_n16-40` (brackets n=32) and
-`aoipack_mix25_75/mix75_25` (new BOOL:non-BOOL ratios) await capture.
+effect).
+
+**Name-length CLOSED 2026-08-30**: `aoiname_len08/09/13/16/20/25/30_def_only`
+(7 real points, all sitting unreconciled) confirmed exact against
+`8*max(0,(len-8)//4) - 8` — wired into `AoiDefinitionModel.name_length_bytes`.
+A real off-by-one bug was found and fixed along the way: the first version
+wired (divisor `(len-7)//4`, chosen because it also reproduces all 7 of the
+same points) put len=19 one bucket too high. Caught by cross-checking two
+real AOI-array-packing captures that only differ in AOI type name length —
+`AoiPureBoolDense` (16 chars) and `AoiPureBoolBoundary` (19 chars), both 10
+BOOL In/10 BOOL Out/10 BOOL Local, both array of 16 instances — which must
+land on the identical total byte count if the shared shape is identical,
+but disagreed by exactly 8 bytes under the old divisor. `(len-8)//4`
+reproduces all 7 originally-tested lengths identically (none of them sit at
+len%4==3, the only residue class where the two divisors disagree) and
+resolves the cross-check to 0 bytes apart. AOI-instance-array element cost
+split off as its own item, OQ-AOIBOOLPACK-PAIRING, below.
+
+[^aoiboolpackpairing]: The `aoi_array` model's "confirmed exact, 15 real
+points" claim (mc=10/20/30/60, but only ever checked at n=1/10/25 per
+shape) doesn't survive dense n. Reconciling 27 already-captured points that
+were sitting unreconciled proved it: for a single-packed-word AOI
+(bool_count<=32), real array bytes follow `8*ceil(n/2) + B` — an odd-length
+array costs 4 bytes MORE than the even-length prediction the current
+formula makes, a term the formula has no place for at all. B itself is
+real and flat per shape but does NOT extrapolate cleanly across bool_count:
+B=20 for 10-BOOL-all-Input (`aoipack_mc10_b10_array_n01/10/25`, 3/3 exact),
+B=44 for 20-BOOL-all-Input (`aoipack_mc20_b20_array_n01/10/25`, 3/3 exact),
+B=28 for the original 30-BOOL/3-way-split shape — 10 In+10 Out+10 Local —
+(`aoipack_bool_array_n01/05/10/25/50` + `aoipack_bool_boundary_n16-96` +
+`aoipack_bool_dense_array_n16-40`, 18/18 exact). Since B doesn't scale
+linearly with bool_count across those three, and the only structural
+difference between the 30-BOOL case and the 10/20-BOOL cases is the 3-way
+section split (the current parser only tracks a flat total bool_count, not
+per-section In/Out/Local counts), the section split itself may be what
+actually drives B — untested directly until now.
+
+The 60-BOOL case (2 packed words/instance, `aoipack_mc60_b60_array_n01/10/25`)
+is worse: all 3 points show a flat +148-byte miss with **no** odd/even
+signal at all against the old formula, but do not fit `8*ceil(n/2)+const`
+either when checked directly — multi-word packing is a materially
+different, still-open shape from the 3 points on file.
+
+Confidence downgraded `aoi_array`: KNOWN → FITTED (`memory_model.yaml`,
+2026-08-30) — the formula is left un-replaced rather than guessing a
+generalized fix from underdetermined data (this project already ate one
+overfit formula this session, the CPT three-tier bug — not repeating it).
+New dense/isolating test files generated instead, not yet captured:
+`gen_aoi_boolpack_pairing.py` → `aoibp_dense_bc{10,20,60}_n{02,03,04,06,08,12}`
+(18 files, dense n right where the pairing period would show, including
+the FIRST dense points at all for bool_count=60) and
+`aoibp_split_allinput30_n{01,05,10,16,25}` (5 files, same bool_count=30 as
+the already-solved 3-way-split shape but all-Input/single-section, at the
+same n values, to directly test the section-split hypothesis). 23 files
+total — not padded to the 60-file floor (James, 2026-08-25: not a quota).
 
 [^predefined]: CAM is resolved and wired. MESSAGE's own byte cost stays
 unmodeled — `gen_msg_typesweep.py` built 7 new files (one per real

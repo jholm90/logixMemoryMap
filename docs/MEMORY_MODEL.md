@@ -383,11 +383,34 @@ alongside another type — a naive per-type sum under-predicts that file by
 80 bytes, while the flat rate matches it exactly. Live-recomputed against
 all 85 captured AOI manifest rows: 32 exact, 52 within 1%, 1 at 2.10%
 (a separate array-vs-definition-cost interaction, not a def-cost miss —
-see AOI_KNOWLEDGE_MAP.md item 3). Still open, both small (<2% of a file's
-total bytes at the tested extremes): AOI name length's non-uniform
-stepping effect, and Required/Visible/Hidden's small ±16 swing (recapture
-batch awaiting capture). See `memory_model.yaml`'s `aoi_definition` block
-for the full derivation and `docs/AOI_KNOWLEDGE_MAP.md` for history.
+see AOI_KNOWLEDGE_MAP.md item 3).
+
+**AOI type-name-length step, CLOSED 2026-08-30 (OQ-AOIDEF):** the AOI type
+name itself adds `8*max(0,(len(name)-8)//4) - 8` bytes to the definition
+cost, confirmed 7/7 exact against real `aoiname_len08/09/13/16/20/25/30`
+points. Wired as `AoiDefinitionModel.name_length_bytes`. See
+`docs/RESOLVED_QUESTIONS.md` for the off-by-one bucket-boundary bug found
+and fixed while closing this (the first divisor tried, `(len-7)//4`,
+reproduced the same 7 points but put len=19 one bucket too high, caught
+by cross-checking two AOI-array-packing files that only differed in AOI
+type name length).
+
+Required/Visible/Hidden's small ±16 swing was CLOSED 2026-08-25 (confirmed
+noise, no real effect tied to flag config). See `memory_model.yaml`'s
+`aoi_definition` block for the full derivation and
+`docs/AOI_KNOWLEDGE_MAP.md` for history.
+
+**Array-of-AOI-instances element cost (DOWNGRADED KNOWN → FITTED,
+2026-08-30, OQ-AOIBOOLPACK-PAIRING):** the `aoi_array` formula's earlier
+"confirmed exact, 15 real points" claim was only ever checked at 3 sparse
+instance counts per shape (n=1/10/25). Dense/consecutive real data (27
+points sitting unreconciled) disproves it: for a single-packed-word AOI
+(bool_count≤32), real array bytes follow `8*ceil(n/2) + B` — an odd-length
+array costs 4 bytes more than this formula predicts, and B (a flat,
+per-shape offset the formula has no term for) doesn't extrapolate cleanly
+across bool_count. See `docs/OPEN_QUESTIONS.md` OQ-AOIBOOLPACK-PAIRING for
+the full data table; new test files generated (`gen_aoi_boolpack_pairing.py`)
+but not yet captured.
 
 ## Module / I/O tag sizing
 

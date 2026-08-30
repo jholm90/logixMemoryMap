@@ -63,13 +63,15 @@ def test_alias_tags_size_not_error():
     # weakest remaining link for this AOI instance.
     assert aoi_instance.basis == "ASSUMED"
 
-    # AOI *definition* cost (2026-08-26, OQ-AOIDEF wiring) -- separate line
-    # item from the instance above, one per declared AOI regardless of
-    # instance count. fbDebounce's only counted declared item is DebTmr
-    # (EnableIn excluded by name, RawTag excluded already at parse time
-    # since it's InOut): base(1184) + 20*1.
+    # AOI *definition* cost (2026-08-26, OQ-AOIDEF wiring; name-length term
+    # added 2026-08-29) -- separate line item from the instance above, one
+    # per declared AOI regardless of instance count. fbDebounce's only
+    # counted declared item is DebTmr (EnableIn excluded by name, RawTag
+    # excluded already at parse time since it's InOut): base(1184) + 20*1
+    # + name_length_bytes("fbDebounce"). "fbDebounce" is 10 chars ->
+    # bucket=max(0,(10-7)//4)=0 -> 8*0 + (-8) = -8.
     aoi_def = by_path["udt_definitions/fbDebounce"]
-    assert aoi_def.bytes == 1184 + 20
+    assert aoi_def.bytes == 1184 + 20 - 8
     assert aoi_def.basis == "FITTED"
 
     # total now also includes the project_baseline entry (2026-08-23,

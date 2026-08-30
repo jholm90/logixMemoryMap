@@ -106,8 +106,11 @@ class AoiDefinitionModel:
     per_declared_item: int
     per_type_rate: dict[str, int]
     confidence: str
+    name_length_bucket_bytes: int
+    name_length_floor_bytes: int
+    name_length_bucket_confidence: str
 
-    def bytes_for(self, type_counts: dict[str, int]) -> int:
+    def bytes_for(self, type_counts: dict[str, int], name: str = "") -> int:
         # per_type_rate only applies when every declared item shares the
         # SAME type -- confirmed real that per-type rates do NOT compose
         # additively once BOOL sits alongside another type (see
@@ -118,8 +121,39 @@ class AoiDefinitionModel:
         if len(type_counts) == 1:
             (only_type,) = type_counts
             rate = self.per_type_rate.get(only_type, self.per_declared_item)
-            return self.base + rate * total_items
-        return self.base + self.per_declared_item * total_items
+            total = self.base + rate * total_items
+        else:
+            total = self.base + self.per_declared_item * total_items
+        return total + self.name_length_bytes(name)
+
+    def name_length_bytes(self, name: str) -> int:
+        # OQ-AOIDEF closeout, wired 2026-08-29 -- real data
+        # (aoiname_len08/09/13/16/20/25/30) confirmed 7/7 exact against
+        # `8*max(0,(len-8)//4) - 8`. Unlike UDT-definition's own
+        # 8*ceil(len/8) step, an AOI type name's cost isn't purely
+        # length-driven: there's a flat -8 floor (matching the same
+        # -8-byte universal per-file residual seen throughout this
+        # project) that any name length 8-9 hits, THEN +8 every 4
+        # characters beyond that -- see memory_model.yaml aoi_definition
+        # for the full derivation. Not confirmed below len=8 (no real
+        # data there), but the bucket floors at the same -8 rather than
+        # extrapolating further negative for very short names.
+        #
+        # Bucket boundary fixed 2026-08-30: the original `(len-7)//4`
+        # divisor (chosen to fit only the 7 tested lengths, which happen
+        # to skip every len==3 (mod 4)) put len=19 one bucket too high.
+        # Cross-checked against real captures of two same-shape (10 BOOL
+        # In/10 BOOL Out/10 BOOL Local) AOI array-packing files that only
+        # differ by AOI type name length -- AoiPureBoolDense (16 chars,
+        # confirmed bucket2) and AoiPureBoolBoundary (19 chars) -- every
+        # count point (n=16) lands on the exact same total byte count
+        # under `(len-8)//4` (bucket2 for both) but disagreed by 8 bytes
+        # under the old divisor (which put len=19 in bucket3). The 7
+        # originally-tested lengths (8,9,13,16,20,25,30) are all
+        # unaffected by this change; only len%4==3 (11,15,19,23,27,...)
+        # shifts down one bucket.
+        bucket = max(0, (len(name) - 8) // 4)
+        return self.name_length_bucket_bytes * bucket + self.name_length_floor_bytes
 
 
 @dataclass(frozen=True)
@@ -530,6 +564,9 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             per_declared_item=raw["aoi_definition"]["per_declared_item"],
             per_type_rate=raw["aoi_definition"].get("per_type_rate", {}),
             confidence=raw["aoi_definition"]["confidence"],
+            name_length_bucket_bytes=raw["aoi_definition"]["name_length_bucket_bytes"],
+            name_length_floor_bytes=raw["aoi_definition"]["name_length_floor_bytes"],
+            name_length_bucket_confidence=raw["aoi_definition"]["name_length_bucket_confidence"],
         ),
         tag_overhead=TagOverheadModel(
             flat_base=raw["tag_overhead"]["flat_base"],

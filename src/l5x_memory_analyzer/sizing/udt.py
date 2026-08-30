@@ -251,7 +251,8 @@ def compute_aoi_definition_cost(
         if m.name in ("EnableIn", "EnableOut"):
             continue
         type_counts[m.data_type] = type_counts.get(m.data_type, 0) + 1
-    return model.aoi_definition.bytes_for(type_counts), model.aoi_definition.confidence
+    confidence = weakest(model.aoi_definition.confidence, model.aoi_definition.name_length_bucket_confidence)
+    return model.aoi_definition.bytes_for(type_counts, name), confidence
 
 
 def referenced_data_type_names(
