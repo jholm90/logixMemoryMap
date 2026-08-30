@@ -76,9 +76,33 @@ order, every single time — do not skip steps, do not wait to be re-asked:
    retries are automatic" section: batch_memory_capture.ps1 now retries
    these on its own next run (fixed 2026-08-25, James), so don't hand-flag
    individual rows for James to rerun manually.
-2. Recalculate/re-derive sizing formulas from the new data; wire in anything
+2. James, 2026-08-30: caught me reporting "fixed" memory-result batches while
+   ignoring that some of those same committed files never actually produced
+   an ACD in the first place — "it seems like you only cared what you got
+   for memory results without errors and forgot about all of the other
+   tests you asked for." CHECK CONVERSION STATUS, EVERY PASS: cross-reference
+   every currently-committed samples/generated/**/*.L5X against
+   samples/convert_log.csv's latest recorded status for that exact filename
+   (take the last-logged row per file, not just "does FAILED appear
+   anywhere" — a later successful retry supersedes an earlier failure).
+   Any committed file with no "ok" on record — never converted, or still
+   FAILED as of its last attempt — gets logged explicitly, not silently
+   dropped from the summary. For each one: check this project's own
+   generator source (docstrings/comments) for an existing real diagnosis
+   before claiming a fix exists or guessing at a cause — don't repeat a
+   "should be fixed now" claim without re-verifying it against what the
+   code itself already says about that specific catalog/file (real
+   incident: told James a batch of module-sweep files were "fixed" when
+   the generator's own comment already documented them as still failing,
+   undiagnosed, needing the real Designer error-log line). If the cause
+   is genuinely unknown, say so plainly and ask James for the raw
+   Studio 5000 error-log detail (not just the generic SDK wrapper
+   exception text) rather than asserting a fix. A memory-results summary
+   that omits conversion failures on the same files is incomplete on its
+   own terms, every time — not just when asked.
+3. Recalculate/re-derive sizing formulas from the new data; wire in anything
    that's now confirmed exact.
-3. FULL-DEPTH OPEN QUESTIONS REVIEW — mandatory every pass, not on request.
+4. FULL-DEPTH OPEN QUESTIONS REVIEW — mandatory every pass, not on request.
    Go through EVERY item in docs/OPEN_QUESTIONS.md one at a time, same bar
    as "When I say review open questions, go as in depth as possible. Every
    question. Full depth. No possible open items" (above): for each item,
@@ -91,13 +115,13 @@ order, every single time — do not skip steps, do not wait to be re-asked:
    question" — the new engine state from step 2 can retroactively resolve
    or break an OLDER manifest row too, so re-check the whole file, not just
    rows from this batch.
-4. Bring docs/TASKS.md, docs/OPEN_QUESTIONS.md, and docs/RESOLVED_QUESTIONS.md
+5. Bring docs/TASKS.md, docs/OPEN_QUESTIONS.md, and docs/RESOLVED_QUESTIONS.md
    ALL current together — checkboxes, closed items actually moved out (not
    just marked), stale claims corrected. This has gone stale multiple times
    already (caught by James, not self-caught) — check it every single pass
    without being asked, not just when James notices first.
-5. Review docs/INSTRUCTION_COVERAGE.md and update it.
-6. Review the task/progress list and decide the next batch of tests to generate.
+6. Review docs/INSTRUCTION_COVERAGE.md and update it.
+7. Review the task/progress list and decide the next batch of tests to generate.
    James, 2026-08-25: "Don't just fill up the minimum 60 test roster with
    filler work. I always ask for more before tests start anyway." The
    60-file floor is not a quota to pad toward — every file in a batch must
@@ -105,11 +129,12 @@ order, every single time — do not skip steps, do not wait to be re-asked:
    in under 60, ship it at that size; James will ask for a bigger batch
    himself if he wants one. Don't manufacture variations just to hit a
    number.
-7. Only after 1-6 are actually done (not deferred, not summarized as "will
+8. Only after 1-7 are actually done (not deferred, not summarized as "will
    check later") — send James a summary of what changed, what's now
-   closed/resolved as a direct result, and what's genuinely still open with
-   the full-depth reasoning already applied, not left for him to trigger.
-8. Wait for his explicit acknowledgement before pushing (standing rule: never
+   closed/resolved as a direct result, what's genuinely still open with the
+   full-depth reasoning already applied, AND the conversion-failure log from
+   step 2 (not left for him to trigger).
+9. Wait for his explicit acknowledgement before pushing (standing rule: never
    push without being told it's okay, every time, no blanket authorization
    carries forward).
 
