@@ -161,13 +161,36 @@ _L7X_INFERRED = {"1756-L73", "1756-L74"}
 _L7X_CATALOGS = list(_L7X_PRODUCT_CODES)
 
 # CompactLogix 5370 (1769-Lxx) -- re-added 2026-08-30 (James: AHK capture
-# now works for this family, same fix as L7x). All 9 real ProductCodes
-# already confirmed in wrapper.py's own _PRODUCT_CODES (James's own
-# fw_baseline exports) -- no separate table needed here, _product_code()
-# already checks _PRODUCT_CODES first.
+# now works for this family, same fix as L7x).
+#
+# NARROWED BACK DOWN 2026-08-30 (James: "Failed to set the 'Size' property
+# (Chassis size exceeds the allowable size for a chassis.)" on his own
+# minimal hand-built 1769-L24ER-QB1B repro file, Bus Size="6" -- then
+# "you f'd up most chassis sizes" / "seems like you shouldnt be guessing
+# chassis sizes and actually use ones that were referenced"). The Bus
+# Size values for L24ER-QB1B/L24ER-QBFC1B/L27ERM-QBFC1B/L30ERM/L33ERM
+# below were EXTRACTED from the fw_baseline reference files, not
+# independently real-confirmed -- and those reference files themselves
+# carry the "MANUAL ENTRY... clicking Estimate" caveat (built by
+# switching ProcessorType in Controller Properties from a base project,
+# never proven to have round-tripped through l5xgit import). Extraction
+# from a plausible-looking-but-unverified source is still a guess, and
+# it was wrong (proven wrong for L24ER-QB1B by the real chassis-size
+# error above). The ONLY real, independently-confirmed 1769 Compact-bus
+# Bus Size in the whole corpus is L33ERMS=17 (samples/local/DnR_Personal/
+# TOYOTA_135453_20221024.L5X, a genuine customer file -- see
+# wrapper.py's _1769_BUS_SIZE_BY_MODEL) -- and even that catalog is
+# included in James's "L24..L27 and the L3 series fail" report, so its
+# failure has some OTHER unconfirmed cause even though its Bus Size
+# specifically checks out. Per the same principle already applied to
+# 1756-L85ES and 1756-L9x (OQ-BASELINE-PROCFW): don't re-guess and burn
+# another test cycle, pull the whole unconfirmed group back out until
+# real per-catalog data (or a real, unambiguous root cause) exists.
+# Keeping only the 4 PointIO-bus catalogs, which are empirically
+# confirmed working (James's live batch: L16ER/L18ER/L18ERM/L19ER all
+# "ok" at v33). See docs/OPEN_QUESTIONS.md OQ-BASELINE-PROCFW.
 _1769_CATALOGS = [
     "1769-L16ER-BB1B", "1769-L18ER-BB1B", "1769-L18ERM-BB1B", "1769-L19ER-BB1B",
-    "1769-L24ER-QB1B", "1769-L24ER-QBFC1B", "1769-L27ERM-QBFC1B", "1769-L30ERM", "1769-L33ERM",
 ]
 
 # Real per-catalog <Modules> block, extracted VERBATIM from James's own

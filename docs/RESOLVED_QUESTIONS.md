@@ -1343,6 +1343,33 @@ project already uses elsewhere for unmodeled predefined structures.
 All 54 1769 files (9 catalogs x 6 firmware) regenerated. Full corpus
 re-swept (1847 files): 0 crashes. 140/140 tests.
 
+**CORRECTION, same day, a few hours later: this fix was itself wrong for
+5 of the 9 catalogs, and has been un-wired.** James's own minimal
+hand-built repro file (`ProcessorType="1769-L24ER-QB1B"`) hit the exact
+same real Studio 5000 error this section describes fixing -- "Failed to
+set the 'Size' property (Chassis size exceeds the allowable size for a
+chassis.)" -- with `Bus Size="6"`, the value extracted verbatim above
+from `fw_baseline/v35_l24er.L5X`. Then: "you f'd up most chassis sizes" /
+"seems like you shouldnt be guessing chassis sizes and actually use ones
+that were referenced." The mistake: treating the `fw_baseline` reference
+files as ground truth because they're genuine Rockwell exports checked
+into the repo, without noticing that those specific files carry their
+own "MANUAL ENTRY... clicking Estimate" caveat (built by switching
+ProcessorType in Controller Properties from a base project to read
+Capacity manually) -- which proves the *Capacity-read* step was manual,
+but never proved the *content* had round-tripped through l5xgit import.
+Extracting "real-looking" content from an unverified source is still a
+guess, and this one was wrong. The only Bus Size value anywhere in the
+corpus with independent real confirmation is L33ERMS=17
+(`samples/local/DnR_Personal/TOYOTA_135453_20221024.L5X`, a genuine
+customer file) -- and even that catalog is included in James's "L24..L27
+and the L3 series fail" report, so something else about it is still
+unconfirmed too. See OQ-BASELINE-PROCFW in `docs/OPEN_QUESTIONS.md`:
+`_1769_CATALOGS` is back down to the 4 PointIO-bus catalogs only
+(empirically proven working in James's live batch), and the other 5 are
+pulled from automated generation -- 30 files and manifest rows removed --
+until real per-catalog data exists. Not re-guessing.
+
 ## 1756-L85ES removed from the automated matrix, 2026-08-30
 
 James, live testing: "l85es fails on line 1 of the l5x for multiple

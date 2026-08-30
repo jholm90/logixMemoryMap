@@ -36,10 +36,31 @@ the matching footnote at the bottom, not inline.
    code review): every 1769 catalog used a single guessed Bus Size (17,
    only confirmed for L33ERM) and was missing a real embedded
    `Discrete_IO` module entirely (L16ER–L27ERM-QBFC1B all have one;
-   L30ERM/L33ERM genuinely don't) — see RESOLVED_QUESTIONS.md for the
-   full fix (real per-catalog Modules blocks extracted verbatim from
-   the 9 already-real `fw_baseline` reference exports). 54 files
-   regenerated, awaiting capture.[^baseline]
+   L30ERM/L33ERM genuinely don't) — fixed by extracting the real
+   per-catalog Modules block verbatim from the 9 `fw_baseline` reference
+   exports. **That fix was itself wrong and has been narrowed back out,
+   same day** (James: real chassis-size error from his own minimal
+   1769-L24ER-QB1B repro file, Bus Size="6" — "you f'd up most chassis
+   sizes" / "seems like you shouldnt be guessing chassis sizes and
+   actually use ones that were referenced"). The extracted Bus Size
+   values were never independently real-confirmed — they came from the
+   `fw_baseline` reference files, which themselves carry a "MANUAL
+   ENTRY... clicking Estimate" caveat (built by switching ProcessorType
+   in Controller Properties from a base project, never proven to have
+   round-tripped through l5xgit import). The ONLY independently real-
+   confirmed 1769 Compact-bus Bus Size anywhere in the corpus is
+   L33ERMS=17 (`samples/local/DnR_Personal/TOYOTA_135453_20221024.L5X`,
+   a genuine customer file) — and even that catalog is included in
+   James's "L24..L27 and the L3 series fail" report, so its failure has
+   some other, still-unidentified cause even though its Bus Size checks
+   out. `_1769_CATALOGS` is back down to just the 4 PointIO-bus catalogs
+   (L16ER-BB1B/L18ER-BB1B/L18ERM-BB1B/L19ER-BB1B), empirically confirmed
+   working in James's live batch (all "ok" at v33). L24ER-QB1B,
+   L24ER-QBFC1B, L27ERM-QBFC1B, L30ERM, and L33ERM are pulled from
+   automated generation — 30 generated files and their manifest rows
+   removed — until real per-catalog data (or an unambiguous root cause)
+   exists, same treatment as 1756-L85ES/1756-L9x below. Not guessing
+   again.[^baseline]
 
 2. **OQ-CMPCPTLAYOUT** — down to one thread. Uniform, T1+T2, T1T3/T2T3,
    and (as of 2026-08-29) the all-3-tier mix are ALL solved and wired,
