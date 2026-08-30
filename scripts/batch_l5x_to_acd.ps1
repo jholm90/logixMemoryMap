@@ -49,6 +49,15 @@
   - l5xgit.exe built from https://github.com/RockwellAutomation/ra-logix-designer-vcs-custom-tools
     (dotnet build against .NET 10 SDK) and either on PATH or passed via -L5xGitPath
 
+.NOTES
+  samples/known_conversion_failures.csv (2026-08-30): files listed there are
+  skipped unconditionally by filename, regardless of content hash -- every
+  sample regeneration stamps a fresh ExportDate even when nothing about the
+  actual import-blocking bug changed, so the hash-gated skip below can't be
+  trusted for anything short of a real fix. Claude maintains that CSV and
+  removes a row the same commit a real fix for that file lands; James never
+  needs to hand-edit it.
+
 .EXAMPLE
   # First run after upgrading to this version (adopts everything already
   # converted instead of paying for a full reconvert):
@@ -68,6 +77,7 @@ param(
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 $logPath = Join-Path $OutputDir "convert_log.csv"
 $canonicalHeader = "l5x_path,acd_path,status,message,l5x_hash"
+$repoRoot = Split-Path $PSScriptRoot -Parent
 
 if (Test-Path $logPath) {
     # A log from v1/v2 has an l5x_mtime header instead -- Import-Csv names
@@ -148,9 +158,28 @@ $permanentlyFailedHash = @{}
 $prunedRows | Where-Object { $_.status -eq "FAILED" -and $_.message -match $UNSUPPORTED_SDK_VERSION_PATTERN -and $_.l5x_hash } |
     ForEach-Object { $permanentlyFailedHash[$_.l5x_path] = $_.l5x_hash }
 
+# Claude, 2026-08-30: James: "i refuse to run so many failed tests multiple
+# times" -- every generated-sample generator run stamps a fresh ExportDate
+# on every file it touches (wrapper.py's build_l5x), so a file's content
+# hash changes even when nothing about its actual import-blocking bug was
+# fixed. That defeats the $permanentlyFailedHash hash-gated skip above for
+# anything whose failure isn't the single SDK-version pattern it checks --
+# the file gets retried every pass forever even though Claude has already
+# root-caused (or explicitly given up on root-causing, pending real
+# Designer error-log detail from James) that specific file and knows it
+# isn't fixed yet. Unlike the hash-gated skip, this one is unconditional by
+# filename -- Claude is on the hook to remove a row from that CSV the same
+# commit a real fix lands, not rely on the hash to self-clear.
+$knownConversionFailuresPath = Join-Path $repoRoot "samples\known_conversion_failures.csv"
+$knownBrokenNames = @{}
+if (Test-Path $knownConversionFailuresPath) {
+    Import-Csv $knownConversionFailuresPath | ForEach-Object { $knownBrokenNames[$_.l5x_filename] = $true }
+}
+
 # Files this pass actually needs to run through l5xgit for.
 $files = $allFiles | Where-Object {
     $acdPath = Join-Path $OutputDir ($_.BaseName + ".ACD")
+    if ($knownBrokenNames.ContainsKey($_.Name)) { return $false }  # Claude has already root-cause-attempted this file and it's still not fixed -- see samples/known_conversion_failures.csv
     $knownBadHash = $permanentlyFailedHash[$_.FullName]
     if ($knownBadHash -and $knownBadHash -eq $currentHash[$_.FullName]) { return $false }  # same content that's already known SDK-unsupported -- don't retry
     if (-not (Test-Path $acdPath)) { return $true }  # never converted -- needs it
@@ -159,7 +188,13 @@ $files = $allFiles | Where-Object {
     return $recorded -ne $currentHash[$_.FullName]  # true if the content actually changed
 }
 
+$skippedKnownBrokenFile = $allFiles | Where-Object { $knownBrokenNames.ContainsKey($_.Name) }
+if ($skippedKnownBrokenFile.Count -gt 0) {
+    Write-Host "Skipping $($skippedKnownBrokenFile.Count) file(s) marked known-broken/undiagnosed in samples/known_conversion_failures.csv (Claude removes a file from that list the same commit it's actually fixed): $($skippedKnownBrokenFile.Name -join ', ')"
+}
+
 $skippedKnownBad = $allFiles | Where-Object {
+    if ($knownBrokenNames.ContainsKey($_.Name)) { return $false }  # already counted above, don't double-count
     $knownBadHash = $permanentlyFailedHash[$_.FullName]
     $knownBadHash -and $knownBadHash -eq $currentHash[$_.FullName]
 }
@@ -179,8 +214,8 @@ if ($AdoptExisting) {
     }
 }
 
-$upToDateCount = $allFiles.Count - $files.Count - $adopted.Count - $skippedKnownBad.Count
-Write-Host "Found $($allFiles.Count) L5X file(s) under $InputDir; $upToDateCount already converted and up to date; $($adopted.Count) adopted as-is (no reconversion); $($skippedKnownBad.Count) skipped (known permanent SDK-unsupported failure); $($files.Count) to convert this pass."
+$upToDateCount = $allFiles.Count - $files.Count - $adopted.Count - $skippedKnownBad.Count - $skippedKnownBrokenFile.Count
+Write-Host "Found $($allFiles.Count) L5X file(s) under $InputDir; $upToDateCount already converted and up to date; $($adopted.Count) adopted as-is (no reconversion); $($skippedKnownBad.Count) skipped (known permanent SDK-unsupported failure); $($skippedKnownBrokenFile.Count) skipped (known-broken/undiagnosed, see samples/known_conversion_failures.csv); $($files.Count) to convert this pass."
 
 # James, 2026-08-30: list every file before starting, not just the count --
 # a batch review before committing to a long run, especially after a
@@ -274,7 +309,6 @@ if (-not $stopRequested) {
 # copy/paste from powershell everytime") -- $OutputDir/convert_log.csv lives
 # outside the repo (it's next to the .ACD binaries), so without this Claude
 # never sees conversion failures unless they're pasted in by hand.
-$repoRoot = Split-Path $PSScriptRoot -Parent
 $repoLogPath = Join-Path $repoRoot "samples\convert_log.csv"
 Copy-Item -Path $logPath -Destination $repoLogPath -Force
 . (Join-Path $PSScriptRoot "_autopush.ps1")
