@@ -278,17 +278,11 @@ $repoRoot = Split-Path $PSScriptRoot -Parent
 $repoLogPath = Join-Path $repoRoot "samples\convert_log.csv"
 Copy-Item -Path $logPath -Destination $repoLogPath -Force
 . (Join-Path $PSScriptRoot "_autopush.ps1")
-Push-RepoFile -RepoRoot $repoRoot -FilePath $repoLogPath -CommitMessage "Log L5X->ACD conversion results"
 
-# James, 2026-08-30: "the ahk file is my file and i edit it when i want and
-# dont want any side effects" -- auto-push it the same way convert_log.csv/
-# manifest.csv already are, so a local edit gets committed+pushed straight
-# to origin/main as part of the normal batch-run flow instead of sitting
-# as an uncommitted change that has to be manually synced later (that's
-# what caused the main/feature-branch merge mess earlier today). No-op if
-# the file hasn't changed this run (Push-RepoFile checks for a real diff
-# first).
-$ahkPath = Join-Path $repoRoot "scripts\logix_build_capture.ahk"
-if (Test-Path $ahkPath) {
-    Push-RepoFile -RepoRoot $repoRoot -FilePath $ahkPath -CommitMessage "Update AHK capture script"
-}
+# James, 2026-08-30: "you should cover ALL files in that project
+# directory" -- widened from just convert_log.csv (and the earlier
+# ahk-specific addition) to everything dirty in the working tree, so
+# nothing (the ahk script, a stray edit, a new file) is ever left
+# sitting uncommitted needing a manual sync. See Push-AllChanges in
+# _autopush.ps1 for what this does and does not protect against.
+Push-AllChanges -RepoRoot $repoRoot -CommitMessage "Log L5X->ACD conversion results"

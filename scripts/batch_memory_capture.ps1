@@ -313,12 +313,9 @@ Write-Host "Done for now."
 # Auto-push (James, 2026-08-20: "so i dont have to ask").
 . (Join-Path $PSScriptRoot "_autopush.ps1")
 $repoRoot = Split-Path $PSScriptRoot -Parent
-Push-RepoFile -RepoRoot $repoRoot -FilePath $ManifestPath -CommitMessage "Log real memory capture + build/verify results"
 
-# James, 2026-08-30: "the ahk file is my file and i edit it when i want and
-# dont want any side effects" -- same reasoning as batch_l5x_to_acd.ps1's
-# equivalent block. No-op if unchanged this run.
-$ahkPath = Join-Path $repoRoot "scripts\logix_build_capture.ahk"
-if (Test-Path $ahkPath) {
-    Push-RepoFile -RepoRoot $repoRoot -FilePath $ahkPath -CommitMessage "Update AHK capture script"
-}
+# James, 2026-08-30: "you should cover ALL files in that project
+# directory" -- same widening as batch_l5x_to_acd.ps1's equivalent
+# change. See Push-AllChanges in _autopush.ps1 for what this does and
+# does not protect against.
+Push-AllChanges -RepoRoot $repoRoot -CommitMessage "Log real memory capture + build/verify results"
