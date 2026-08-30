@@ -318,6 +318,18 @@ measure the same (which would falsify the promotion-point hypothesis
 itself, not just leave it uncalibrated). Built, lint-clean, zero engine
 errors, awaiting capture — 6 CPT probe files on file total now, not 4.
 
+**James, 2026-08-30: "have you got enough tests to fully close this?"**
+— honest answer: no, still not guaranteed. The adjacent/spread pair only
+disambiguates 1-vs-2 REAL operands; it says nothing about whether the
+non-monotonic dip continues, reverses, or was specific to exactly 2.
+Added `cptmix_real3_adjacent` (3 REAL operands, slots 1-3, same shape) to
+extend the count sequence 1→2→3. Even with this, two things stay
+untested and are flagged honestly rather than silently assumed closed:
+whether REAL-count and float-literal effects compose when both are
+present at varying counts/positions together, and whether a different
+expression tree shape (not just this flat 6-slot layout) changes the
+answer. 7 CPT probe files on file now.
+
 **Cross-validated at scale, 2026-08-29** (full manifest.csv audit):
 `randommix_07_n19811rungs_24types` (`logic_random_mix` category, real
 capture) was off by +39,959 -- traced to its 208 real CPT calls, which

@@ -517,6 +517,16 @@ def group_real_pair_adjacency_probe() -> int:
          "2 REAL operands SPREAD to opposite ends (slots 1 and 6 of 6) -- same total REAL-operand "
          "count as real2_adjacent, more promotion-point crossings if the layout matters; companion "
          "to real2_adjacent"),
+        # James, 2026-08-30: "have you got enough tests to fully close this?"
+        # -- no, the adjacent/spread pair only disambiguates 1-vs-2 REAL
+        # operands; it can't say whether the non-monotonic dip continues,
+        # reverses, or was a one-time artifact of exactly 2. Extends the
+        # count sequence (1 via real1_pos_first, 2 via real2_adjacent) to 3,
+        # same adjacent-grouping convention, same 6-slot shape.
+        ("real3_adjacent", "(R0+R1)*R2-L3/L4+L5",
+         "3 REAL operands ADJACENT (slots 1-3 of 6) -- extends the real1_pos_first (1 REAL) / "
+         "real2_adjacent (2 REAL) count sequence to 3, to tell whether the documented 1-vs-2 "
+         "non-monotonic dip continues as a real trend or was specific to exactly 2 operands"),
     ]
     for name, expr, desc in variants:
         _one_rung_file(expr, f"CptMix{name.title().replace('_', '')}", f"cptmix_{name}", desc, dest="DestR")
