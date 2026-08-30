@@ -127,9 +127,10 @@ unable to build it at all):
   original 152-file batch.
 - 5× ControlLogix 5570 (1756-L7x, L71/L72/L75 real ProductCode 92/93/96,
   L73/L74 INFERRED 94/95 from the sequential pattern — flagged per-file).
-- 5× GuardLogix 5580 safety-rated (1756-L8xES, L81ES real ProductCode 164,
-  L82ES-L85ES INFERRED 165-168 from the single confirmed ES/E pairing —
-  flagged per-file). Each gets a real `SafetyTask`/`SafetyProgram` pair
+- 5× GuardLogix 5580 safety-rated (1756-L8xES — real ProductCodes
+  CORRECTED 2026-08-30, see below: L81ES=211, L84ES=214 both real,
+  L82ES/L83ES/L85ES=212/213/215 INFERRED from that 2-point sequential
+  pattern — flagged per-file). Each gets a real `SafetyTask`/`SafetyProgram` pair
   with `Class="Safety"` on both elements (the real marker, confirmed
   against Gormley/Bender corpus — NOT the element name) plus a populated
   `<SafetyInfo SafetyLevel="SIL2/PLd" .../>`.

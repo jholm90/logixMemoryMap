@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="38.02" TargetName="FwMatrix381756L81ES" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Aug 30 12:33:10 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="FwMatrix381756L81ES" ProcessorType="1756-L81ES" MajorRev="38" MinorRev="11" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Sun Aug 30 12:33:10 2026" LastModifiedDate="Sun Aug 30 12:33:10 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="false" WebServerEnabled="false" DataExchangeId="{F9D0D321-445B-49C9-8A8E-B1E7F5A7FFD5}">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="38.02" TargetName="FwMatrix381756L81ES" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Aug 30 14:20:01 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="FwMatrix381756L81ES" ProcessorType="1756-L81ES" MajorRev="38" MinorRev="11" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Sun Aug 30 14:20:01 2026" LastModifiedDate="Sun Aug 30 14:20:01 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="false" WebServerEnabled="false" DataExchangeId="{5729D828-42B5-4CD8-9680-3F0F79FE4CC5}">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo SafetyLocked="false" SignatureRunModeProtect="false" ConfigureSafetyIOAlways="true" SafetyLevel="SIL2/PLd"/>
 <DataTypes/>
 <Modules>
-<Module Name="Local" CatalogNumber="1756-L81ES" Vendor="1" ProductType="14" ProductCode="164" Major="38" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<Module Name="Local" CatalogNumber="1756-L81ES" Vendor="1" ProductType="14" ProductCode="211" Major="38" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
 <EKey State="Disabled"/>
 <Ports>
 <Port Id="1" Address="0" Type="ICP" Upstream="false" SafetyNetwork="16#0000_1005_0001_0001">

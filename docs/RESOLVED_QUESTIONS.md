@@ -1207,6 +1207,40 @@ project's own established convention (every other per-instruction rate
 here scales linearly with rung/call count), not independently confirmed
 at a 2nd rung count for this specific formula.
 
+## Third real generator bug: GuardLogix 5580 (L8xES) wrong ProductCode, fixed 2026-08-30
+
+James: "this file fails to convert to acd as well" (`fwmatrix_v35_1756_
+l85es.L5X`) — reported AFTER the SafetyLocked and SafetyNetwork fixes
+above had already landed and been pushed, ruling both out as the cause
+for this file (confirmed directly: `SafetyLocked="false"` already present
+in the file he named). Root cause was a third, independent bug: `gen_
+fw_catalog_matrix.py`'s `_L8XS_PRODUCT_CODES` assumed "L81ES uses the
+SAME ProductCode as plain L81E" (164) — a same-hardware plausibility
+argument, never actually checked against a real L81ES corpus file.
+
+Real corpus grep across 5 independent real files (`SJ_Gormley_
+20251112_r02.L5X`, `Bender134053_201104.L5X` — 2 copies —, `RobbinsGrn_
+2026_05_13r00.L5X`, `FlareFunction_311D_240731.L5X`) shows GuardLogix
+5580 ProductCodes live in a COMPLETELY SEPARATE numbering space from the
+non-safety L8x: `1756-L81ES` is real `ProductCode="211"` (4 files agree),
+`1756-L84ES` is real `ProductCode="214"` (`FlareFunction_311D` — never
+found by this project until this investigation). 211→214 across
+L81ES→L84ES is exactly +1 per catalog step, so L82ES/L83ES/L85ES are now
+inferred as 212/213/215 — the same sequential-pattern convention this
+project already uses elsewhere, but now anchored to 2 real confirmed
+points on the CORRECT numbering space instead of 1 guess built on a
+wrong one.
+
+Fixed in `gen_fw_catalog_matrix.py`'s `_L8XS_PRODUCT_CODES`. All 30
+L8xES `fw_catalog_matrix` files regenerated (174-file full matrix
+re-run to keep everything in sync). `_L8XS_INFERRED` updated to drop
+L84ES (now confirmed, no longer inferred). Full corpus re-swept (1793
+generated+real files): 0 crashes. Full test suite: 140/140.
+
+This is the reason the L8xES batch has never had a single successful
+capture, on top of (not instead of) the two SafetyLocked/SafetyNetwork
+bugs above — all three needed fixing before any L8xES file could import.
+
 ## OQ-LEGACYNETOVERHEAD, CLOSED as deliberate scope exclusion, 2026-08-30
 
 James: "I thought we were excluding controlnet" / "And all legacy

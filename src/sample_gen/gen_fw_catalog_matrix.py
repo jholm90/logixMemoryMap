@@ -151,19 +151,30 @@ _L7X_INFERRED = {"1756-L73", "1756-L74"}
 _L7X_CATALOGS = list(_L7X_PRODUCT_CODES)
 
 # GuardLogix 5580 safety-rated (James, 2026-08-25: "L8 needs safety
-# processors too"). L81ES's ProductCode (164) is confirmed real and
-# IDENTICAL to plain L81E's -- same physical hardware, safety unlocked in
-# firmware, not a different Module signature. L82ES-L85ES are INFERRED
-# on that same same-as-non-S basis (165/166/167/168), not independently
-# confirmed -- flagged in their own manifest notes.
+# processors too"). REAL BUG FOUND AND FIXED 2026-08-30 (James: "this file
+# fails to convert to acd" on fwmatrix_v35_1756_l85es -- direct real-world
+# proof, not a code-review catch): the "L81ES uses the SAME ProductCode as
+# plain L81E" assumption below was never actually checked against a real
+# L81ES corpus file -- it was a same-hardware plausibility argument, not
+# data. Real corpus grep (5 independent real files: SJ_Gormley_20251112_r02,
+# Bender134053_201104 x2 copies, RobbinsGrn_2026_05_13r00,
+# FlareFunction_311D_240731) shows GuardLogix 5580 ProductCodes live in a
+# COMPLETELY SEPARATE numbering space from the non-safety L8x: L81ES=211
+# (4 real files agree) and L84ES=214 (1 real file, FlareFunction_311D --
+# never found by this project until now). 211->214 across L81ES->L84ES is
+# exactly +1 per catalog step, the same sequential pattern this project
+# already uses elsewhere for an unconfirmed run -- L82ES/L83ES/L85ES are
+# still not independently confirmed, but now inferred from TWO real
+# anchor points on the CORRECT numbering space, not one guess built on a
+# wrong anchor.
 _L8XS_PRODUCT_CODES = {
-    "1756-L81ES": "164",
-    "1756-L82ES": "165",  # INFERRED, not directly confirmed
-    "1756-L83ES": "166",  # INFERRED, not directly confirmed
-    "1756-L84ES": "167",  # INFERRED, not directly confirmed
-    "1756-L85ES": "168",  # INFERRED, not directly confirmed
+    "1756-L81ES": "211",
+    "1756-L82ES": "212",  # INFERRED, not directly confirmed
+    "1756-L83ES": "213",  # INFERRED, not directly confirmed
+    "1756-L84ES": "214",
+    "1756-L85ES": "215",  # INFERRED, not directly confirmed
 }
-_L8XS_INFERRED = {"1756-L82ES", "1756-L83ES", "1756-L84ES", "1756-L85ES"}
+_L8XS_INFERRED = {"1756-L82ES", "1756-L83ES", "1756-L85ES"}
 _L8XS_CATALOGS = list(_L8XS_PRODUCT_CODES)
 
 ALL_CATALOGS = _L8X_CATALOGS + _5069_CATALOGS + _L7X_CATALOGS
