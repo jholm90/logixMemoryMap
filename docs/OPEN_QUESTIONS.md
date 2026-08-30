@@ -22,8 +22,15 @@ the matching footnote at the bottom, not inline.
    1769-series catalogs were re-added to the automated `fw_catalog_matrix`
    2026-08-30 (James: AHK capture now works for this family, same as
    L7x) — previously only ever built as single-firmware/v35
-   `fw_baseline` files; now part of the full 6-firmware sweep too,
-   54 new files awaiting capture.[^baseline]
+   `fw_baseline` files; now part of the full 6-firmware sweep too. Real
+   bugs found in the re-add, same day, from live James testing (not
+   code review): every 1769 catalog used a single guessed Bus Size (17,
+   only confirmed for L33ERM) and was missing a real embedded
+   `Discrete_IO` module entirely (L16ER–L27ERM-QBFC1B all have one;
+   L30ERM/L33ERM genuinely don't) — see RESOLVED_QUESTIONS.md for the
+   full fix (real per-catalog Modules blocks extracted verbatim from
+   the 9 already-real `fw_baseline` reference exports). 54 files
+   regenerated, awaiting capture.[^baseline]
 
 2. **OQ-CMPCPTLAYOUT** — down to one thread. Uniform, T1+T2, T1T3/T2T3,
    and (as of 2026-08-29) the all-3-tier mix are ALL solved and wired,
