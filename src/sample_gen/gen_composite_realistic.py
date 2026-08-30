@@ -118,24 +118,45 @@ def _udt_specs(profile: Profile) -> tuple[str, list[tuple[str, list[MemberSpec]]
     """Returns (combined DataTypes XML, [(name, members)]) for this
     profile's UDT count -- UDT 0 is always nested (contains UDT 1) when
     udt_count >= 2, matching the real-corpus "mixed and garbled" nesting
-    pattern already established in gen_axis_composite.py."""
-    types_xml_parts = []
-    udts: list[tuple[str, list[MemberSpec]]] = []
-    for u in range(profile.udt_count):
-        name = f"Comp{profile.index:02d}Udt{u}"
-        members = [
+    pattern already established in gen_axis_composite.py.
+
+    Real bug caught in review before this batch was sent for testing: the
+    "Nested" member on UDT 0 was built with only a bare data_type=<UDT 1's
+    name> and no `nested_members` -- MemberSpec.nested_members is what
+    _udt_structure_body_xml (builders.py) actually needs to recurse into a
+    nested UDT's real Structure content when an INSTANCE of the containing
+    UDT gets rendered; without it, that render path falls through to a
+    bare "<!-- unsupported member ... -->" comment instead of real
+    content. UDT 1's own member list has to exist BEFORE UDT 0's wrapper
+    member can reference it here (build order matters), so UDT 1 (and
+    every plain, non-nested UDT) is built first, then UDT 0 wraps it."""
+    plain_members: dict[int, list[MemberSpec]] = {}
+    for u in range(1, profile.udt_count):
+        plain_members[u] = [
             MemberSpec(f"D{k}", "DINT") for k in range(3 + (u % 3))
         ] + [
             MemberSpec(f"I{k}", "INT") for k in range(2)
         ] + [
             MemberSpec(f"B{k}", "BOOL") for k in range(4)
         ]
-        if u == 0 and profile.udt_count >= 2:
-            # Nested: first member is the previous UDT built (UDT 1)
-            nested_name = f"Comp{profile.index:02d}Udt1"
-            members = [MemberSpec("Nested", nested_name)] + members
-        udts.append((name, members))
-        types_xml_parts.append(udt_xml(name, members))
+
+    udt0_own_members = [
+        MemberSpec("D0", "DINT"), MemberSpec("D1", "DINT"), MemberSpec("D2", "DINT"),
+        MemberSpec("I0", "INT"), MemberSpec("I1", "INT"),
+        MemberSpec("B0", "BOOL"), MemberSpec("B1", "BOOL"), MemberSpec("B2", "BOOL"), MemberSpec("B3", "BOOL"),
+    ]
+    if profile.udt_count >= 2:
+        nested_name = f"Comp{profile.index:02d}Udt1"
+        nested_target_members = plain_members[1]
+        udt0_members = [MemberSpec("Nested", nested_name, nested_members=tuple(nested_target_members))] + udt0_own_members
+    else:
+        udt0_members = udt0_own_members
+
+    udts: list[tuple[str, list[MemberSpec]]] = [(f"Comp{profile.index:02d}Udt0", udt0_members)]
+    for u in range(1, profile.udt_count):
+        udts.append((f"Comp{profile.index:02d}Udt{u}", plain_members[u]))
+
+    types_xml_parts = [udt_xml(name, members) for name, members in udts]
     return "\n".join(types_xml_parts), udts
 
 
@@ -198,10 +219,13 @@ def _build(profile: Profile) -> tuple[str, str]:
         t = _ATOMIC_TYPES[j % len(_ATOMIC_TYPES)]
         tags_parts.append(tag_xml(f"Arr{j}", t, dimensions=(size,)))
 
-    # One array-of-UDT (last UDT defined)
-    last_udt_name, last_udt_members = udts[-1]
+    # One array-of-UDT -- targets UDT 0 (the nested one, when udt_count >= 2)
+    # so the nested-UDT instance render path (StructureMember recursing
+    # into the Nested member's own real content) actually gets exercised,
+    # not just declared and left unused.
+    array_udt_name, array_udt_members = udts[0]
     tags_parts.append(tag_xml(
-        f"UdtArr", last_udt_name, dimensions=(profile.udt_array_len,), udt_members=last_udt_members,
+        f"UdtArr", array_udt_name, dimensions=(profile.udt_array_len,), udt_members=array_udt_members,
     ))
 
     # TIMER/COUNTER tags
