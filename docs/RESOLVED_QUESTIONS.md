@@ -785,3 +785,18 @@ itself (previously tagged KNOWN) -- see OQ-AOIBOOLPACK-PAIRING in
 OPEN_QUESTIONS.md; confidence downgraded to FITTED pending new capture
 data (`gen_aoi_boolpack_pairing.py`, 23 files, generated but not yet
 captured).
+
+## OQ-INSTRFIRSTPASS, CLOSED 2026-08-30
+
+34/36 real instruction weights confirmed and wired. SCP/FBC/PID were the
+2 remaining gaps -- SCP had no second real example to validate a weight
+against, FBC and PID had zero real examples at all (PID also needs its
+own structure tag, never built). Deprioritized 2026-08-25 (James: "move
+to safety related feature"); explicitly closed as out-of-scope 2026-08-30
+(James: doesn't care about closing these) rather than left open
+indefinitely awaiting data that isn't coming.
+
+Small residual not worth reopening the question over: a flat +12 byte
+gap (corrected from a misrecorded +6) across all 64 clean `instrfirst_*`
+files, ~0.06% of file total, narrowed to an interaction effect among the
+7 shared tag types the pool declares but not isolated to which one.

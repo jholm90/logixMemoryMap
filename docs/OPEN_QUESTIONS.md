@@ -4,9 +4,9 @@ Every unresolved question gets an ID (OQ-xxx). Resolved items move to
 `docs/RESOLVED_QUESTIONS.md`. One line each here — full derivation is in
 the matching footnote at the bottom, not inline.
 
-1. **OQ-INSTRFIRSTPASS** — 34/36 instruction weights confirmed and wired.
-   SCP/FBC/PID deprioritized (no 2nd real example to test against);
-   effort redirected to safety work per James.[^instrfirstpass]
+1. **OQ-INSTRFIRSTPASS — CLOSED 2026-08-30.** 34/36 instruction weights
+   confirmed and wired. SCP/FBC/PID explicitly out of scope (James: don't
+   care about closing these, no real 2nd example exists anyway).[^instrfirstpass]
 
 2. **OQ-BASELINE-PROCFW** — partially wired 2026-08-29. Firmware-version
    (v30/v31/v32/v33), 5069-safety-capable-model, and (found the same day
@@ -116,17 +116,16 @@ the matching footnote at the bottom, not inline.
 ---
 
 [^instrfirstpass]: CROUT (safety-only) and MAPC resolved separately
-(RESOLVED_QUESTIONS.md). Still untested: SCP (no 2nd real example), FBC
-(0 real examples), PID (0 real examples, needs its own structure tag) —
-deprioritized 2026-08-25 (James: "move to safety related feature"), no
-point manufacturing synthetic points with nothing real to validate
-against. Also open, low priority: a flat **+12** byte gap (corrected from
-a misrecorded +6) across all 64 clean `instrfirst_*` files, independent
-of instruction and rung count — narrowed to an interaction effect among
-the 7 distinct tag types the shared pool declares (each individually
-confirmed exact on its own; likely a per-distinct-type registry cost).
-Needs one reduced-pool variant to isolate which type, ~0.06% of file
-total.
+(RESOLVED_QUESTIONS.md). SCP (no 2nd real example), FBC (0 real
+examples), PID (0 real examples, needs its own structure tag) —
+deprioritized 2026-08-25 (James: "move to safety related feature"),
+**explicitly closed as out-of-scope 2026-08-30 (James: doesn't care about
+these)** rather than left open awaiting data that was never coming.
+Small residual noted for the record, not blocking closure: a flat
+**+12** byte gap (corrected from a misrecorded +6) across all 64 clean
+`instrfirst_*` files (~0.06% of file total), narrowed to an interaction
+effect among the 7 distinct tag types the shared pool declares but not
+isolated to which one.
 
 [^baseline]: `empty_project_baseline=13,296` only confirmed for
 1756-L81E/fw 35.05 — real variance found so far: firmware 30→33 adds a
