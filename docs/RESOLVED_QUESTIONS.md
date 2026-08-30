@@ -800,3 +800,34 @@ Small residual not worth reopening the question over: a flat +12 byte
 gap (corrected from a misrecorded +6) across all 64 clean `instrfirst_*`
 files, ~0.06% of file total, narrowed to an interaction effect among the
 7 shared tag types the pool declares but not isolated to which one.
+
+## Real generator bug: SafetyLocked="true" with no SafetySignature, fixed 2026-08-30
+
+James: "your L8 safety failed to generate acd files. You should have
+known that." Root cause found by cross-checking all 9 real corpus files
+carrying a `SafetyInfo` element: every one with `SafetyLocked="true"`
+ALSO carries a real `SafetySignature` attribute (a GUID hash + timestamp
+from Studio 5000's actual sign/lock workflow); every one with
+`SafetyLocked="false"` has none -- 9/9, zero exceptions. Every generator
+in this project hardcoded `SafetyLocked="true"` with no signature at
+all -- a combination that appears in zero real files and is almost
+certainly what Studio 5000 rejects on import, since a locked safety
+program is a claim that real signing happened.
+
+Fixed in both places this template is built: `wrapper.py`'s `build_l5x`
+SIL2/SIL3 branches and `gen_fw_catalog_matrix.py`'s `_build_xml` (the
+L8xES GuardLogix safety-catalog matrix). Since none of these generated
+files ever perform a real sign/lock, `SafetyLocked="false"` is the
+correct value, matching every real unsigned file.
+
+Regenerated all 30 L8xES safety-catalog matrix files and all files
+downstream of `wrapper.py`'s safety template (`gen_module_bender_full.py`,
+`gen_module_sweep.py`, `gen_module_sweep_gap.py`,
+`gen_module_sweep_variants.py` -- 117 files total, re-run through their
+own generators). 13 additional files with no live generator reference
+anymore (orphaned from an earlier iteration of the module-sweep scripts,
+2 of which — `modulesweep_1734_ob8s_a/b` — carry real captured
+`actual_bytes` that must not be disturbed) were patched directly in
+place (string substitution only, doesn't touch `predicted_bytes` --
+`SafetyInfo` has no sizing weight). Full 1707+ file corpus re-swept: 0
+crashes, 0 remaining `SafetyLocked="true"` instances anywhere.
