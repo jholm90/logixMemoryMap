@@ -51,6 +51,20 @@ from dataclasses import dataclass, field
 # shape) -- so BOOL sizes as the standalone/unpacked 4 bytes, not packed.
 _ATOMIC_BYTES = {"SINT": 1, "INT": 2, "DINT": 4, "LINT": 8, "REAL": 4, "BOOL": 4}
 
+# James, 2026-08-30: "I thought we were excluding controlnet" / "And all
+# legacy networks" -- a bridge module onto a pre-EtherNet/IP network
+# (ControlNet, DeviceNet, DH+/DH-485, Remote I/O) gets the same treatment
+# as a rack-aliased or processor-embedded module in report.py: zero real
+# capture data exists for this shape's overhead cost (the one real point,
+# modulesweep_1756_cnb_d, came from a file outside the current samples/
+# local/ real corpus -- see OQ-LEGACYNETOVERHEAD), and the current real
+# corpus has zero ControlNet/DeviceNet/DH+/RIO Port Types anywhere, so
+# fitting a per-catalog byte value here would be a pure guess dressed up
+# as ASSUMED. Detected off the module's own <Ports><Port Type="..."/>
+# attributes (confirmed real shape: "ControlNet", "DeviceNet", "RIO" --
+# see gen_module_sweep.py's 1756-CNB/D, 1756-DHRIO/E, 1756-DNB fixtures).
+_LEGACY_NETWORK_PORT_TYPES = frozenset({"ControlNet", "DeviceNet", "DH+", "DH-485", "RIO"})
+
 
 @dataclass(frozen=True)
 class ModuleInfo:
@@ -93,6 +107,18 @@ class ModuleInfo:
     # to a rack-aliased module: zero real data exists yet for whether its
     # incremental cost looks anything like a normal module's.
     uses_rack_connection: bool = False
+    # Port Type values off this module's own <Ports><Port> elements (e.g.
+    # "ICP", "Ethernet", "ControlNet", "DeviceNet", "RIO") -- see
+    # _LEGACY_NETWORK_PORT_TYPES above. Kept as the raw set rather than a
+    # collapsed bool so report.py can name which network in its SizeError.
+    port_types: frozenset[str] = field(default_factory=frozenset)
+
+    @property
+    def is_legacy_network(self) -> bool:
+        """True if any of this module's own ports bridge onto a
+        pre-EtherNet/IP network (ControlNet/DeviceNet/DH+/DH-485/RIO) --
+        see _LEGACY_NETWORK_PORT_TYPES."""
+        return bool(self.port_types & _LEGACY_NETWORK_PORT_TYPES)
 
     @property
     def stated_total_bytes(self) -> int:
@@ -175,6 +201,7 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
         catalog = module_el.get("CatalogNumber", "")
 
         slot: int | None = None
+        port_types: set[str] = set()
         ports_el = module_el.find("Ports")
         if ports_el is not None:
             port_el = ports_el.find("Port")
@@ -183,6 +210,10 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
                     slot = int(port_el.get("Address"))
                 except ValueError:
                     slot = None
+            for p_el in ports_el.findall("Port"):
+                p_type = p_el.get("Type")
+                if p_type:
+                    port_types.add(p_type)
 
         input_bytes = 0
         output_bytes = 0
@@ -260,5 +291,6 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
             input_profile=input_profile, output_profile=output_profile, config_profile=config_profile,
             module_defined_bytes=module_defined_bytes, unknown_member_types=tuple(unknown_types),
             uses_rack_connection=uses_rack_connection, config_script_bytes=config_script_bytes,
+            port_types=frozenset(port_types),
         ))
     return result

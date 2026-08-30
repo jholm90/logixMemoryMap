@@ -1206,3 +1206,48 @@ tag shape (BOOL XIC legs); linearity with rung count is assumed by this
 project's own established convention (every other per-instruction rate
 here scales linearly with rung/call count), not independently confirmed
 at a 2nd rung count for this specific formula.
+
+## OQ-LEGACYNETOVERHEAD, CLOSED as deliberate scope exclusion, 2026-08-30
+
+James: "I thought we were excluding controlnet" / "And all legacy
+networks." Earlier the same day this had been wrongly reopened as a data
+gap: `modulesweep_1756_cnb_d` (a real ControlNet bridge module,
+genericized from real corpus, 2026-08-24 capture) shows a real +448 byte
+gap against the live engine, and got briefly wired as a flat
+`module_overhead_by_catalog['1756-CNB/D']` entry (2,120 bytes) before
+James's correction landed -- reverted.
+
+Decision: ControlNet, DeviceNet, DH+, DH-485, and Remote I/O (RIO) bridge
+modules are excluded from sizing entirely, the same treatment this
+project already gives rack-aliased (`RackConnection`/`InAliasTag`) and
+processor-embedded (`CatalogNumber="Embedded"`) modules -- no
+`module_overhead` charged, `module_defined_bytes` not summed into the
+total, a `SizeError` flags it as unmodeled-but-visible instead of
+silently guessed or flat-fitted.
+
+Implementation:
+- `parser/modules.py`: `ModuleInfo.port_types` (new field) captures every
+  `<Ports><Port Type="...">` value off the module itself.
+  `ModuleInfo.is_legacy_network` is true when that set intersects
+  `_LEGACY_NETWORK_PORT_TYPES = {"ControlNet", "DeviceNet", "DH+",
+  "DH-485", "RIO"}` -- real Port Type strings confirmed against
+  gen_module_sweep.py's 1756-CNB/D ("ControlNet"), 1756-DHRIO/E ("RIO"),
+  and 1756-DNB ("DeviceNet") fixtures, themselves sourced from real
+  corpus captures.
+- `sizing/report.py`: the existing `if module.uses_rack_connection or
+  module.catalog_number == "Embedded":` exclusion block extended with
+  `or module.is_legacy_network`, naming the matched Port Type(s) in the
+  SizeError message.
+- `sizing/memory_model.yaml`: removed the two other pre-existing flat
+  `module_overhead_by_catalog` entries for this class that predate this
+  decision -- `1756-DHRIO/E` (1,390 bytes) and `1756-DNB` (6,440 bytes) --
+  both were ASSUMED-confidence guesses, not confirmed real per-catalog
+  points, same problem as the briefly-wired `1756-CNB/D` entry.
+
+Real corpus evidence backing this as correct, not just deferral: a full
+grep of all 64 files in `samples/local/` (the real-capture reference
+corpus) for Port `Type=` attributes finds ZERO ControlNet, DeviceNet,
+DH+, or RIO entries anywhere -- the one real data point on hand
+(`RobbinsGrn_2026_05_13r00.L5X`) isn't even part of that corpus set.
+Nothing to isolate or decompose further unless a real project of James's
+starts using one of these networks.

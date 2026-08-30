@@ -337,11 +337,20 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # processor-integrated I/O block costs the same, so it stays fully
         # unmodeled (same treatment as a rack-aliased module below) rather
         # than guessing module_overhead applies unchanged.
-        if module.uses_rack_connection or module.catalog_number == "Embedded":
-            reason = (
-                "rack-aliased (RackConnection/InAliasTag)" if module.uses_rack_connection
-                else "processor-embedded I/O (CatalogNumber=\"Embedded\")"
-            )
+        # 2026-08-30, James: "I thought we were excluding controlnet" / "And
+        # all legacy networks" -- a ControlNet/DeviceNet/DH+/DH-485/RIO
+        # bridge module gets the same unmodeled treatment as a rack-aliased
+        # or processor-embedded module, not a fitted module_overhead_by_
+        # catalog byte value: zero real corpus data exists for these
+        # networks (see parser/modules.py's _LEGACY_NETWORK_PORT_TYPES
+        # comment and OQ-LEGACYNETOVERHEAD).
+        if module.uses_rack_connection or module.catalog_number == "Embedded" or module.is_legacy_network:
+            if module.uses_rack_connection:
+                reason = "rack-aliased (RackConnection/InAliasTag)"
+            elif module.catalog_number == "Embedded":
+                reason = "processor-embedded I/O (CatalogNumber=\"Embedded\")"
+            else:
+                reason = f"legacy-network bridge (Port Type={sorted(module.port_types)})"
             errors.append(SizeError(
                 path=f"modules/{label}",
                 message=(

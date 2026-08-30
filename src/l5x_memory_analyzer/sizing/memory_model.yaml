@@ -406,8 +406,6 @@ module_overhead_by_catalog:
   '1734-AENT/B': { bytes: 1608, confidence: ASSUMED }
   '1734-AENT/C': { bytes: 1604, confidence: ASSUMED }
   '1734-AENTR/B': { bytes: 1606, confidence: ASSUMED }
-  '1756-DHRIO/E': { bytes: 1390, confidence: ASSUMED }
-  '1756-DNB': { bytes: 6440, confidence: ASSUMED }
   '1756-EN4TR': { bytes: 3608, confidence: ASSUMED }
   '1756-ENBT/A': { bytes: 2580, confidence: ASSUMED }
   '1756-HSC/A': { bytes: 2759, confidence: ASSUMED }

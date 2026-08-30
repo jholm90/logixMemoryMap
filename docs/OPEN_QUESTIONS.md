@@ -71,29 +71,7 @@ the matching footnote at the bottom, not inline.
    1st), and a handful of catalogs with real connection-variant-dependent
    overhead.[^moduleio]
 
-7. **OQ-LEGACYNETOVERHEAD** — real data DOES exist, corrected 2026-08-30
-   (was wrongly claiming none). `modulesweep_1756_cnb_d` (a real
-   ControlNet bridge module, genericized from real corpus, 2026-08-24
-   capture) shows a real +448 byte gap against the live engine — the
-   catalog isn't in `module_overhead_by_catalog` at all. Deliberately not
-   wired as a flat per-catalog value yet: `1756-CNB/D` is a bridge/adapter
-   module, the same class this project already excludes from the flat
-   per-catalog table on purpose (overhead may scale with the downstream
-   rack it carries, not be a fixed constant — same open question as
-   OQ-MODULEIO's multi-module/connection-variant threads). Checked whether
-   the SAME 1756-CNB/D bridge appears in other already-captured module-
-   sweep files (it does, as the required parent scaffold for 8 different
-   1794-series ControlNet adapters) — those show wildly different deltas
-   (662 to 4,660), which rules out a simple flat bridge constant, but
-   every one of those 1794-series catalogs is ALSO unconfirmed in
-   `module_overhead_by_catalog`, so nothing here is decomposable into
-   "bridge's own share" vs. "downstream catalog's own share" from data on
-   hand — genuinely entangled, not just under-tested. Needs a dedicated
-   isolation batch (same downstream catalog, varying bridge presence/
-   absence, or the same bridge with a downstream catalog that's already
-   independently confirmed) — not built yet.
-
-8. **OQ-JSRPARAMCOST** — reopened 2026-08-29 for one small residual.
+7. **OQ-JSRPARAMCOST** — reopened 2026-08-29 for one small residual.
     Output/return-param call-site cost is now wired and confirmed
     (see RESOLVED_QUESTIONS.md). The callee's own one-time `A(n)`
     Parameters-block cost almost certainly ALSO needs an output-param
@@ -104,7 +82,7 @@ the matching footnote at the bottom, not inline.
     output-param counts, input count held constant) to isolate A(n)'s
     real output term cleanly.
 
-9. **OQ-EVENTTRIGGER** — new, real. task_extra (+700) was derived only
+8. **OQ-EVENTTRIGGER** — new, real. task_extra (+700) was derived only
     from CONTINUOUS+PERIODIC tasks; EVENT-type tasks are completely
     untested, and so is trigger-source (Axis Watch vs. EVENT-instruction)
     within EVENT. Two files built, awaiting capture.[^eventtrigger]

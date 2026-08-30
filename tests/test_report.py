@@ -326,15 +326,17 @@ def _root_with_module(catalog_number: str) -> ET.Element:
 
 
 def test_module_overhead_uses_real_per_catalog_value_when_known():
-    # OQ-MODULEIO, wired 2026-08-29: 1756-DNB has a real n=1 capture point
-    # (memory_model.yaml module_overhead_by_catalog) -- 6440, not the flat
-    # cross-catalog FITTED default (1672).
-    root = _root_with_module("1756-DNB")
+    # OQ-MODULEIO, wired 2026-08-29: 1756-IB16 has a real n=1 capture point
+    # (memory_model.yaml module_overhead_by_catalog) -- 1684, not the flat
+    # cross-catalog FITTED default (1672). (1756-DNB was removed from this
+    # table 2026-08-30, OQ-LEGACYNETOVERHEAD -- see
+    # test_legacy_network_module_excluded_from_sizing below.)
+    root = _root_with_module("1756-IB16")
     entries, errors = build_report(root, MODEL)
     assert errors == []
     module_entry = next(e for e in entries if e.category == "module_io")
     assert module_entry.basis == "ASSUMED"
-    assert module_entry.bytes == 4 + 6440  # module_defined_bytes(4) + real 1756-DNB overhead
+    assert module_entry.bytes == 4 + 1684  # module_defined_bytes(4) + real 1756-IB16 overhead
 
 
 def test_module_overhead_falls_back_to_flat_default_for_unknown_catalog():
@@ -344,3 +346,55 @@ def test_module_overhead_falls_back_to_flat_default_for_unknown_catalog():
     module_entry = next(e for e in entries if e.category == "module_io")
     assert module_entry.basis == MODEL.module_overhead_confidence
     assert module_entry.bytes == 4 + MODEL.module_overhead_bytes
+
+
+def _root_with_legacy_network_module(port_type: str) -> ET.Element:
+    xml = f"""
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test">
+        <DataTypes/>
+        <AddOnInstructionDefinitions/>
+        <Tags/>
+        <Programs/>
+        <Modules>
+          <Module Name="Local" CatalogNumber="1756-L81E">
+            <Ports><Port Id="1" Address="0" Type="ICP" Upstream="false"/></Ports>
+          </Module>
+          <Module Name="TestBridge" CatalogNumber="1756-CNB/D">
+            <Ports>
+              <Port Id="1" Address="3" Type="ICP" Upstream="true"/>
+              <Port Id="2" Address="1" Type="{port_type}" Upstream="false"/>
+            </Ports>
+            <Communications>
+              <Connections>
+                <Connection Name="Standard" RPI="10000" Type="Input" InputSize="4" OutputSize="0">
+                  <InputTag ExternalAccess="Read/Write">
+                    <Data Format="Decorated">
+                      <Structure DataType="AB:5000_DI16:I:0">
+                        <DataValueMember Name="Fault" DataType="DINT" Value="0"/>
+                      </Structure>
+                    </Data>
+                  </InputTag>
+                </Connection>
+              </Connections>
+            </Communications>
+          </Module>
+        </Modules>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    return ET.fromstring(xml)
+
+
+def test_legacy_network_module_excluded_from_sizing():
+    # OQ-LEGACYNETOVERHEAD, CLOSED 2026-08-30 as a deliberate scope
+    # exclusion (James: "I thought we were excluding controlnet" / "And
+    # all legacy networks") -- a ControlNet/DeviceNet/DH+/DH-485/RIO
+    # bridge module gets no module_overhead charged, same treatment as a
+    # rack-aliased or processor-embedded module, flagged via SizeError
+    # instead.
+    for port_type in ("ControlNet", "DeviceNet", "DH+", "DH-485", "RIO"):
+        root = _root_with_legacy_network_module(port_type)
+        entries, errors = build_report(root, MODEL)
+        assert not any(e.category == "module_io" for e in entries), port_type
+        assert any("legacy-network" in e.message for e in errors), port_type
