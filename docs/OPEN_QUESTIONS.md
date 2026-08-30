@@ -160,6 +160,24 @@ the matching footnote at the bottom, not inline.
    moderate utility AOI and the other has the same AOI declared but never
    instantiated), awaiting capture.[^aoiorphan]
 
+10. **OQ-BLOCKBYTE** — new, very serious if real. James, 2026-08-30:
+    Studio 5000's Capacity readout is labeled "bytes" for 1769/L7x
+    processors but "blocks" for 5069/L8x processors — and this project has
+    treated `actual_bytes` as one uniform unit across the whole
+    `manifest.csv` corpus regardless of which family captured it, with
+    1756-L81E (L8x, "blocks"-labeled) as the dominant baseline processor
+    for nearly the entire history of this project. If "block" isn't
+    numerically identical to "byte", essentially every formula in
+    `memory_model.yaml` fit against L81E/5069 data needs rescaling by
+    whatever the real conversion factor turns out to be. Two-file test
+    built to check it directly: `blockbytetest_dint120000` (1756-L81E) and
+    `blockbytetest_l71_dint120000` (1756-L71, same firmware 35.05/35.11),
+    byte-identical content — a single 120,000-element DINT array tag,
+    nothing else, both predicting 498,236 (480,000 of that is exactly
+    120,000×4, zero packing ambiguity). Any real conversion factor will
+    show up as an obvious clean ratio between the two files' real Capacity
+    readings. Awaiting capture on both.[^blockbyte]
+
 ---
 
 [^instrfirstpass]: CROUT (safety-only) and MAPC resolved separately
@@ -833,3 +851,22 @@ that 204-byte delta is actually the FULL real difference (current
 file's real Capacity is meaningfully higher than baseline (orphaned AOI
 definitions do cost real memory, and the gating is a genuine under-count
 bug affecting every real project with unused/library AOI definitions).
+
+[^blockbyte]: `gen_blockbyte_l71.py` (the 1756-L71 half) plus the earlier
+`blockbytetest_dint120000` (1756-L81E, `sample_gen.cli tags --type DINT
+--dims 120000`). Deliberately the simplest possible content: one DINT[
+120000] tag, no other tags, minimal empty-shell program/task/routine, so
+the predicted total decomposes into pieces that are all independently
+verifiable by hand — 480,000 (120,000×4, atomic array sizing has zero
+packing ambiguity per this project's own established rule) + 13,296
+(project_baseline) + 4,816 (per-routine fixed_base) + 16 (single NOP rung)
+= 498,236. Both files predict exactly that number by construction (same
+content, same firmware 35.05/35.11, only `ProcessorType`/`ProductCode`
+differ: 1756-L81E/164 vs 1756-L71/92). If both real Capacity readings
+come back ~498,236, "block" and "byte" are the same unit, just a
+different UI word per processor generation — no corpus-wide fix needed.
+If they diverge, the ratio between them (almost certainly a clean
+divisor/multiple of the 480,000 array-content portion, since that's the
+overwhelming majority of the total) is the real block size, and every
+formula in `memory_model.yaml` derived from L81E/5069-family data needs
+rescaling by it — which is most of this project's real corpus.
