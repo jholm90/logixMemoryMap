@@ -220,7 +220,7 @@ Status(msg) {
 					Sleep 20
 						ErrorValue := ExtractCount(ControlGetText("Button25", "A"))
 						WarningValue := ExtractCount(ControlGetText("Button26", "A"))
-						MessageValue := ExtractCount(ControlGetText("Button27", "A"))
+						;MessageValue := ExtractCount(ControlGetText("Button27", "A"))
 				}
 				
         Status("Errors/Warnings/Message: " ErrorValue ", " WarningValue ", " MessageValue " | " WindowTitle)
@@ -259,10 +259,22 @@ Status(msg) {
         Sleep 20
         OCDValue := StripCommas(Trim(ControlGetText("Edit3", "A")))
         Status("Read OCD value: " OCDValue)
-        Sleep 50
+        Sleep 500
+				
+				if OCDValue = "0" {
+					Status("Reading 1769 Edit3 value")
+											Sleep 50
+							Send "{Tab}"
+							Sleep 50
+							Send "{Tab}"
+							Sleep 50
+							Send "{Enter}"
+							Sleep 2500
+							OCDValue := StripCommas(Trim(ControlGetText("Edit3", "A")))
+				}
 				
 				
-				if OCDValue = "" OR OCDValue = "0" {
+				if OCDValue = "" OR OCDValue = "0" OR !IsNumber(OCDValue){
 					Status("Reading Static23 value")
 					Sleep 20
 					OCDValue := StripCommas(Trim(ControlGetText("Static23", "A")))
