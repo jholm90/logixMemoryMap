@@ -342,14 +342,21 @@ def build_l5x(
             f'<Port Id="2" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
         )
         local_product_code = _PRODUCT_CODES.get(processor_type, _PRODUCT_CODE)
+    # REAL BUG FOUND 2026-08-30 (James: "your L8 safety failed to generate
+    # acd files. You should have known that"). SafetyLocked="true" with no
+    # SafetySignature attribute is an invalid combination -- see the same
+    # fix in gen_fw_catalog_matrix.py's _build_xml for the full real-corpus
+    # cross-check (9/9 files: every SafetyLocked="true" carries a real
+    # signature, every "false" has none). These generated files never sign
+    # a real safety application, so SafetyLocked="false" is correct.
     if safety_level == "SIL3":
         safety_info_xml = (
-            '<SafetyInfo SafetyLocked="true" SignatureRunModeProtect="false" '
+            '<SafetyInfo SafetyLocked="false" SignatureRunModeProtect="false" '
             'ConfigureSafetyIOAlways="true" SafetyLevel="SIL3/PLe"/>'
         )
     elif safety_level == "SIL2":
         safety_info_xml = (
-            '<SafetyInfo SafetyLocked="true" SignatureRunModeProtect="false" '
+            '<SafetyInfo SafetyLocked="false" SignatureRunModeProtect="false" '
             'ConfigureSafetyIOAlways="true" SafetyLevel="SIL2/PLd"/>'
         )
     else:

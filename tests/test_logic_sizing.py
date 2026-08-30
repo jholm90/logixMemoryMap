@@ -243,6 +243,52 @@ def test_jsr_param_cost_a_charged_once_even_with_two_call_sites():
     assert main.bytes == 5096 + 72 * 2 + 44 * 2
 
 
+def test_jsr_output_param_cost_charged_per_call_site():
+    # OQ-JSRPARAMCOST, wired 2026-08-29: trailing return-value args
+    # (`JSR(name, N_in, in_1..in_N, out_1..out_M)`) were completely
+    # unmodeled -- real jsr_mixedio_5in_2out/jsr_multiret_n04 capture data
+    # showed ~20/output-arg, same rate as an input arg. N_in=1 (arg "A"),
+    # 2 trailing output args (B, C) -> m_out=2.
+    xml = """
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test">
+        <DataTypes/>
+        <AddOnInstructionDefinitions/>
+        <Tags/>
+        <Programs>
+          <Program Name="MainProgram">
+            <Tags/>
+            <Routines>
+              <Routine Name="MainRoutine" Type="RLL">
+                <RLLContent>
+                  <Rung Number="0" Type="N"><Text><![CDATA[JSR(SubTest,1,A,B,C);]]></Text></Rung>
+                </RLLContent>
+              </Routine>
+              <Routine Name="SubTest" Type="RLL">
+                <RLLContent>
+                  <Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+                </RLLContent>
+              </Routine>
+            </Routines>
+          </Program>
+        </Programs>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    root = ET.fromstring(xml)
+    entries, errors = build_report(root, MODEL)
+    assert errors == []
+    logic_entries = [e for e in entries if e.tier == ESTIMATED]
+    by_path = {e.path: e for e in logic_entries}
+    main = by_path["program:MainProgram/MainRoutine"]
+    # jsr_fixed_base(5096) + JSR weight(72) + B(1)=4+20=24 + output_param_cost(20)*2
+    assert main.bytes == 5096 + 72 + 24 + 20 * 2
+    sub = by_path["program:MainProgram/SubTest"]
+    # A(1) unaffected by output param count (not yet adjusted -- see
+    # OPEN_QUESTIONS.md OQ-JSRPARAMCOST)
+    assert sub.bytes == 104 + 20
+
+
 # ---------------------------------------------------------------------------
 # CPT expression-aware cost -- 2026-08-26, OQ-CMPCPTLAYOUT. CPT is
 # deliberately absent from the flat `weights` table now (real data: its
@@ -334,14 +380,46 @@ def test_cpt_pow_tier_mix_solved_for_t1t3_and_t2t3():
     assert model.cpt_expression.cost_for(["+", "**"]) == model.cpt_expression.cost_for(["*", "**"])
 
 
-def test_cpt_all_three_tiers_falls_back_to_additive_sum():
-    # All 3 tiers present in one expression isn't solved yet -- still the
-    # real-but-approximate additive sum (see memory_model.yaml
-    # cpt_expression's "Mixed-tier" note: real data shows this case doesn't
-    # fit any simple base+rate model from the 4 points on file, not force-fit
-    # into a formula as if confirmed).
+def test_cpt_all_three_tiers_applies_remainder_correction():
+    # All 3 tiers present in one expression, CLOSED 2026-08-29
+    # (OQ-CMPCPTLAYOUT): the plain additive sum plus a real correction
+    # keyed on operator_count % 3 -- confirmed 0 residual across all 9
+    # real all-3-tier data points on file (see memory_model.yaml
+    # cpt_expression). 3 operators -> remainder 0, 1 POW operand:
+    # base_by_remainder[0](72) + per_pow_operand(4)*1 = 76.
     model = MODEL.logic_instructions
-    assert model.cpt_expression.cost_for(["+", "*", "**"]) == 88 + 36 + 52 + 116
+    assert model.cpt_expression.cost_for(["+", "*", "**"]) == 88 + 36 + 52 + 116 + 76
+
+
+def test_cpt_three_tier_remainder_correction_matches_real_capture_points():
+    # Real cptmix_threetier_* / cptmix_threetier_rem2_* capture data
+    # (OQ-CMPCPTLAYOUT closeout, 2026-08-29): 3-tier alternating
+    # [+,*,**] expressions at operand counts 5/6/9/10 (operator counts
+    # 4/5/8/9), covering all 3 remainder classes with a real, exact
+    # match at each.
+    model = MODEL.logic_instructions
+    tiers = ["+", "*", "**"]
+
+    def ops(operator_count):
+        return [tiers[i % 3] for i in range(operator_count)]
+
+    # 4 operators (remainder 1, T1=2/T2=1/T3=1): real delta +120 over
+    # the plain additive sum.
+    plain = 88 + sum(model.cpt_expression.operator_tier_costs[op] for op in ops(4))
+    assert model.cpt_expression.cost_for(ops(4)) == plain + 120
+
+    # 5 operators (remainder 2, T1=2/T2=2/T3=1): real delta +148.
+    plain = 88 + sum(model.cpt_expression.operator_tier_costs[op] for op in ops(5))
+    assert model.cpt_expression.cost_for(ops(5)) == plain + 148
+
+    # 8 operators (remainder 2, T3=2): real delta +152.
+    plain = 88 + sum(model.cpt_expression.operator_tier_costs[op] for op in ops(8))
+    assert model.cpt_expression.cost_for(ops(8)) == plain + 152
+
+    # 9 operators (remainder 0, T1=T2=T3=3): real delta +84, the one
+    # remainder-0 point on file.
+    plain = 88 + sum(model.cpt_expression.operator_tier_costs[op] for op in ops(9))
+    assert model.cpt_expression.cost_for(ops(9)) == plain + 84
 
 
 def test_cpt_costed_per_call_not_via_flat_weights_table():
@@ -497,3 +575,55 @@ def test_cmp_float_literal_adds_surcharge_int_literal_does_not():
     int_bytes, _ = compute_routine_logic_bytes(int_routine, MODEL.logic_instructions)
     assert float_bytes == base + 72
     assert int_bytes == base
+
+
+# ---------------------------------------------------------------------------
+# OQ-BRANCHDEPTH: real branch-bracket cost, wired 2026-08-30. A branch with
+# L legs compiles to L+1 real BST/NXB/BND-family instructions (1 BST +
+# (L-1) NXB + 1 BND); nested/staggered branches recurse. Confirmed exact
+# against 16/16 real capture points (branchdepthc_legs*/branchdepthstag_d*).
+# ---------------------------------------------------------------------------
+
+def test_no_branch_costs_nothing_extra():
+    routine = _one_rung_routine("XIC(L0)OTE(L1);")
+    assert routine.branch_bracket_instruction_count == 0
+    bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions)
+    base = (
+        MODEL.logic_instructions.fixed_base_per_routine
+        + MODEL.logic_instructions.weights["XIC"]
+        + MODEL.logic_instructions.weights["OTE"]
+    )
+    assert bytes_ == base
+
+
+def test_flat_branch_costs_legs_plus_one_instructions():
+    # 3-leg branch -> 1 BST + 2 NXB + 1 BND = 4 real instructions.
+    routine = _one_rung_routine("[XIC(L0),XIC(L1),XIC(L2)]OTE(L3);")
+    assert routine.branch_bracket_instruction_count == 4
+    bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions)
+    base = (
+        MODEL.logic_instructions.fixed_base_per_routine
+        + 3 * MODEL.logic_instructions.weights["XIC"]
+        + MODEL.logic_instructions.weights["OTE"]
+    )
+    assert bytes_ == base + 4 * MODEL.logic_instructions.branch_bracket_cost_per_instruction
+
+
+def test_nested_branch_sums_recursively():
+    # Outer: [leg1[nested], leg2] = 2 legs -> 3 instructions.
+    # Nested: [leg1, leg2] = 2 legs -> 3 instructions. Total = 6.
+    routine = _one_rung_routine("[XIC(L0)[XIC(L1),XIC(L2)],XIC(L3)]OTE(L4);")
+    assert routine.branch_bracket_instruction_count == 6
+    bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions)
+    base = (
+        MODEL.logic_instructions.fixed_base_per_routine
+        + 4 * MODEL.logic_instructions.weights["XIC"]
+        + MODEL.logic_instructions.weights["OTE"]
+    )
+    assert bytes_ == base + 6 * MODEL.logic_instructions.branch_bracket_cost_per_instruction
+
+
+def test_array_index_bracket_not_counted_as_branch():
+    # "Arr[5]" is an array index, not a branch -- must not be misclassified.
+    routine = _one_rung_routine("MOV(Arr[5],Dest);")
+    assert routine.branch_bracket_instruction_count == 0

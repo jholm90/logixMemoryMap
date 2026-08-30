@@ -181,6 +181,22 @@ if ($AdoptExisting) {
 
 $upToDateCount = $allFiles.Count - $files.Count - $adopted.Count - $skippedKnownBad.Count
 Write-Host "Found $($allFiles.Count) L5X file(s) under $InputDir; $upToDateCount already converted and up to date; $($adopted.Count) adopted as-is (no reconversion); $($skippedKnownBad.Count) skipped (known permanent SDK-unsupported failure); $($files.Count) to convert this pass."
+
+# James, 2026-08-30: list every file before starting, not just the count --
+# a batch review before committing to a long run, especially after a
+# regenerated batch (a real bug fix touching dozens/hundreds of files at
+# once shouldn't run unattended without a chance to eyeball the list first).
+if ($files.Count -gt 0) {
+    Write-Host ""
+    Write-Host "Files to convert this pass ($($files.Count)):"
+    $n = 0
+    foreach ($f in $files) {
+        $n++
+        Write-Host ("  [{0}/{1}] {2}" -f $n, $files.Count, $f.FullName)
+    }
+    Write-Host ""
+}
+
 Write-Host "Press any key at any time to stop cleanly after the current file (resume later by re-running)."
 
 if ($adopted.Count -gt 0) {
@@ -262,4 +278,11 @@ $repoRoot = Split-Path $PSScriptRoot -Parent
 $repoLogPath = Join-Path $repoRoot "samples\convert_log.csv"
 Copy-Item -Path $logPath -Destination $repoLogPath -Force
 . (Join-Path $PSScriptRoot "_autopush.ps1")
-Push-RepoFile -RepoRoot $repoRoot -FilePath $repoLogPath -CommitMessage "Log L5X->ACD conversion results"
+
+# James, 2026-08-30: "you should cover ALL files in that project
+# directory" -- widened from just convert_log.csv (and the earlier
+# ahk-specific addition) to everything dirty in the working tree, so
+# nothing (the ahk script, a stray edit, a new file) is ever left
+# sitting uncommitted needing a manual sync. See Push-AllChanges in
+# _autopush.ps1 for what this does and does not protect against.
+Push-AllChanges -RepoRoot $repoRoot -CommitMessage "Log L5X->ACD conversion results"

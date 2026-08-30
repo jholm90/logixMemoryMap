@@ -4,38 +4,61 @@ Every unresolved question gets an ID (OQ-xxx). Resolved items move to
 `docs/RESOLVED_QUESTIONS.md`. One line each here — full derivation is in
 the matching footnote at the bottom, not inline.
 
-1. **OQ-INSTRFIRSTPASS** — 34/36 instruction weights confirmed and wired.
-   SCP/FBC/PID deprioritized (no 2nd real example to test against);
-   effort redirected to safety work per James.[^instrfirstpass]
+1. **OQ-BASELINE-PROCFW** — partially wired 2026-08-29. Firmware-version
+   (v30/v31/v32/v33), 5069-safety-capable-model, and (found the same day
+   via a full manifest.csv audit) 1769-series per-catalog baseline deltas
+   are now real, confirmed, and wired into `report.py`/`memory_model.yaml`
+   — validated against all 50 real (untainted) `fw_catalog_matrix` rows
+   plus 8 real 1769-series and 2 more `fw_baseline` points, every one now
+   predicts within 32 bytes (was off by up to 80,832 for 1769). Still
+   genuinely open: v38 (only real capture is WINDOW-TITLE-MISMATCH-
+   flagged, awaiting the batch script's automatic retry), v36/v37 (no real
+   sample at all), and any 1769 catalog beyond the 9 exact ProcessorType
+   strings now confirmed (real data shows a single suffix character
+   changes the value by 13,000+ bytes, so unconfirmed catalogs correctly
+   stay unmodeled rather than guessed). L7x/L8xES catalogs in the matrix
+   still await their own capture (L8xES additionally needed a real
+   ProductCode fix 2026-08-30, see RESOLVED_QUESTIONS.md). The 9
+   1769-series catalogs were re-added to the automated `fw_catalog_matrix`
+   2026-08-30 (James: AHK capture now works for this family, same as
+   L7x) — previously only ever built as single-firmware/v35
+   `fw_baseline` files; now part of the full 6-firmware sweep too,
+   54 new files awaiting capture.[^baseline]
 
-2. **OQ-BASELINE-PROCFW** — real, large, genuinely open. Baseline varies
-   hugely by processor/firmware; a full 152-file catalog x firmware matrix
-   (19 catalogs × v31-38) now covers this, all awaiting capture — that's
-   the next step, not more generation.[^baseline]
+2. **OQ-CMPCPTLAYOUT** — down to one thread. Uniform, T1+T2, T1T3/T2T3,
+   and (as of 2026-08-29) the all-3-tier mix are ALL solved and wired,
+   confirmed exact on every real data point on file. Only the REAL-
+   operand/float-literal interaction remains open, and it's now a harder
+   problem than "assumed linear, awaiting more points" — real new data
+   shows it's genuinely NOT monotonic in operand count, ruling out any
+   simple per-count model.[^cmpcpt]
 
-3. **OQ-CMPCPTLAYOUT** — mostly closed. Uniform, T1+T2, and T1T3/T2T3
-   mixed-tier CPT are solved and wired. Two threads left, both narrowed
-   substantially this pass; new diagnostic files await capture.[^cmpcpt]
+3. **OQ-AOIBOOLPACK-PAIRING** — split off the now-closed OQ-AOIDEF's old
+    "BOOL-array-packing-boundary" thread once its 27 already-captured
+    points got reconciled. The `aoi_array` per-instance formula was tagged
+    KNOWN ("confirmed exact... 15 real points") but that claim was only
+    ever checked at 3 widely-spaced instance counts per shape (n=1/10/25)
+    — real dense data disproves it. Confidence downgraded to FITTED.
+    Genuinely open, new dense/isolating test files generated (not yet
+    captured).[^aoiboolpackpairing]
 
-4. **OQ-AOIDEF** — wired for the common case. Required/Visible flags
-   closed (no real effect). Name-length and BOOL-array-packing-boundary
-   probes await capture.[^aoidef]
+4. **OQ-SAFETYSCOPE-SIZING** — real, unresolved product decision, split
+   out 2026-08-30 from the now-closed OQ-PREDEFINED (moved to
+   RESOLVED_QUESTIONS.md — the byte-value derivation for all 195 known
+   predefined structure types is done; this is a separate policy
+   question, not a data gap). The tool already warns rather than refuses
+   on a Safety-rated project (`is_safety_project`, cli.py/ui/server.py),
+   but within a warned-and-still-processed project, resolvable
+   Safety-classed content (`DCI_STOP`, real corpus evidence, 80 bytes;
+   `CONFIGURABLE_ROUT`, wired 52 bytes but Safety-family by name-root) is
+   currently left unsized by convention, not by any code that actually
+   enforces the exclusion. Needs a call from James: exclude Safety-class
+   tags from sizing everywhere by design (and wire that exclusion
+   explicitly instead of it being incidental), or size everything
+   resolvable including Safety content and adjust the warning
+   wording.[^safetyscope]
 
-5. **OQ-PREDEFINED (MESSAGE + siblings)** — 8-MessageType + 2-ALMD test
-   batches built, both awaiting capture. SFC_STEP/SFC_ACTION/FBD_TIMER/
-   RATE_LIMITER/SCALE/FBD_ONESHOT/FBD_MATH wired 2026-08-27 (real, ASSUMED —
-   read directly off real Decorated-XML L5K data, not yet capture-confirmed);
-   closed 523 of 1,277 real tag-sizing errors. MESSAGE and ALARM_DIGITAL's
-   full real member lists are now sourced directly from RM018A (2026-08-27,
-   see below) — genuinely new, primary-source information — but neither has
-   an exact byte TOTAL yet: both are confirmed dead ends for the L5K-array
-   technique (every real instance in `samples/local/` uses a specialized
-   semantic `Data Format="Message"`/`"Alarm"` view, never raw Decorated/L5K),
-   so a real capture is the only path forward, same as TIMER/COUNTER/CONTROL.
-   COUNTER cross-checked exact against RM018A — no change, already correct.
-   DCI_STOP/CONFIGURABLE_ROUT remain fully unmodeled.[^predefined]
-
-6. **OQ-AOIARRAYDIMENSION** — real parser bug fixed 2026-08-27:
+5. **OQ-AOIARRAYDIMENSION** — real parser bug fixed 2026-08-27:
    `<Parameter>`/`<LocalTag>` array size is a "Dimensions" (plural)
    attribute, not "Dimension" (singular, correct only for a plain UDT
    `<Member>`) — was silently sizing every array-dimensioned AOI local/
@@ -44,17 +67,27 @@ the matching footnote at the bottom, not inline.
    behavior by coincidence, not the array behavior they were meant
    to.[^aoiarraydimension]
 
-7. **OQ-MODULEIO** — wired, LOW CONFIDENCE (n=2). 141 files awaiting
-   capture; that's the next step, not more generation.[^moduleio]
+6. **OQ-MODULEIO** — mostly closed 2026-08-29. 126 real module captures
+   were sitting unreconciled in manifest.csv; 51 catalogs now have a real
+   per-catalog overhead value (exact-match rate on real data went from
+   1/126 to 54/126). Two real sub-threads remain, both needing
+   architecture work not more generation: multi-module marginal cost
+   (adding a 2nd/3rd of the same module doesn't cost the same as the
+   1st), and a handful of catalogs with real connection-variant-dependent
+   overhead.[^moduleio]
 
-8. **OQ-BRANCHDEPTH** — confirmed real (branch structure costs memory
-   beyond leg instructions). Two independent test batches — leg-count
-   width and staggered/nested depth — await capture.[^branchdepth]
+7. **OQ-JSRPARAMCOST** — reopened 2026-08-29 for one small residual.
+    Output/return-param call-site cost is now wired and confirmed
+    (see RESOLVED_QUESTIONS.md). The callee's own one-time `A(n)`
+    Parameters-block cost almost certainly ALSO needs an output-param
+    term (real Parameters blocks include both Input and Output entries)
+    — `jsr_multiret_n04` still off by +332 after the call-site fix, too
+    small relative to a 1-distinct-target sample to isolate from noise.
+    Needs a dedicated small file (2+ distinct targets with different
+    output-param counts, input count held constant) to isolate A(n)'s
+    real output term cleanly.
 
-9. **OQ-LEGACYNETOVERHEAD** — reminder flag only. No real corpus, no
-   capture data, nothing to size against yet.
-
-10. **OQ-EVENTTRIGGER** — new, real. task_extra (+700) was derived only
+8. **OQ-EVENTTRIGGER** — new, real. task_extra (+700) was derived only
     from CONTINUOUS+PERIODIC tasks; EVENT-type tasks are completely
     untested, and so is trigger-source (Axis Watch vs. EVENT-instruction)
     within EVENT. Two files built, awaiting capture.[^eventtrigger]
@@ -62,17 +95,16 @@ the matching footnote at the bottom, not inline.
 ---
 
 [^instrfirstpass]: CROUT (safety-only) and MAPC resolved separately
-(RESOLVED_QUESTIONS.md). Still untested: SCP (no 2nd real example), FBC
-(0 real examples), PID (0 real examples, needs its own structure tag) —
-deprioritized 2026-08-25 (James: "move to safety related feature"), no
-point manufacturing synthetic points with nothing real to validate
-against. Also open, low priority: a flat **+12** byte gap (corrected from
-a misrecorded +6) across all 64 clean `instrfirst_*` files, independent
-of instruction and rung count — narrowed to an interaction effect among
-the 7 distinct tag types the shared pool declares (each individually
-confirmed exact on its own; likely a per-distinct-type registry cost).
-Needs one reduced-pool variant to isolate which type, ~0.06% of file
-total.
+(RESOLVED_QUESTIONS.md). SCP (no 2nd real example), FBC (0 real
+examples), PID (0 real examples, needs its own structure tag) —
+deprioritized 2026-08-25 (James: "move to safety related feature"),
+**explicitly closed as out-of-scope 2026-08-30 (James: doesn't care about
+these)** rather than left open awaiting data that was never coming.
+Small residual noted for the record, not blocking closure: a flat
+**+12** byte gap (corrected from a misrecorded +6) across all 64 clean
+`instrfirst_*` files (~0.06% of file total), narrowed to an interaction
+effect among the 7 distinct tag types the shared pool declares but not
+isolated to which one.
 
 [^baseline]: `empty_project_baseline=13,296` only confirmed for
 1756-L81E/fw 35.05 — real variance found so far: firmware 30→33 adds a
@@ -100,9 +132,10 @@ unable to build it at all):
   original 152-file batch.
 - 5× ControlLogix 5570 (1756-L7x, L71/L72/L75 real ProductCode 92/93/96,
   L73/L74 INFERRED 94/95 from the sequential pattern — flagged per-file).
-- 5× GuardLogix 5580 safety-rated (1756-L8xES, L81ES real ProductCode 164,
-  L82ES-L85ES INFERRED 165-168 from the single confirmed ES/E pairing —
-  flagged per-file). Each gets a real `SafetyTask`/`SafetyProgram` pair
+- 5× GuardLogix 5580 safety-rated (1756-L8xES — real ProductCodes
+  CORRECTED 2026-08-30, see below: L81ES=211, L84ES=214 both real,
+  L82ES/L83ES/L85ES=212/213/215 INFERRED from that 2-point sequential
+  pattern — flagged per-file). Each gets a real `SafetyTask`/`SafetyProgram` pair
   with `Class="Safety"` on both elements (the real marker, confirmed
   against Gormley/Bender corpus — NOT the element name) plus a populated
   `<SafetyInfo SafetyLevel="SIL2/PLd" .../>`.
@@ -162,28 +195,154 @@ corpus examples, not yet requested by James. Building either without a
 real sample risks fabricating a ProductCode/Module shape that fails
 Studio 5000 import outright.
 
+**1769-series real per-catalog baseline + v30 wired 2026-08-29** (found
+during a full manifest.csv audit, James: "make another in-depth pass" —
+these 9 real points had been sitting in the `fw_baseline` category,
+MANUAL ENTRY, since before this project even had a `firmware_baseline_
+delta` mechanism to wire them into, and were never revisited). 8 real
+1769-series (CompactLogix 5370) blank-baseline captures, all v35.05 —
+real total baseline runs 69,600-98,944 against a flat 18,112 predicted
+for everything else, previously documented as "not modeled at all."
+Wired as `catalog_baseline_delta` (memory_model.yaml), keyed by the
+EXACT `ProcessorType` string (not prefix/suffix-matched like
+`safety_capable_baseline_delta`) — real data shows a single expansion-
+module suffix character changes the value by 13,000+ bytes
+(`1769-L24ER-QB1B`=67,160 vs `1769-L24ER-QBFC1B`=80,832), so any
+catalog beyond the 9 exact strings now confirmed correctly stays
+unmodeled. Firmware-independence assumed (same convention as
+`firmware_baseline_delta`) but genuinely unconfirmed — zero 1769 data
+exists at any firmware besides v35. Separately, `l81_v30` (real MANUAL
+ENTRY point, James read Capacity directly off a real v30 controller —
+this project's SDK can't build/convert v30 exports at all) added to
+`firmware_baseline_delta` at +11,160, ASSUMED confidence (single point).
+All 29 real `fw_baseline`-category rows now checked: 17 exact, 6 within
+the small per-file noise band (<=16 bytes), 3 already-documented small
+per-model variance (+32 bytes, `l306er`/`l306erm`/`l320er`), and 3
+already-documented Safety-Task-bearing-file gap (`l306erms2`/`erms3`/
+`ers2`, -1,424 — real Safety Task/Program content this tool doesn't
+size, see this same footnote's `v35_l306erms2`/`v35_l306erms3` note
+further below for the root cause).
+
 [^cmpcpt]: T1T3/T2T3 wired 2026-08-25: real capture data existed
 unreconciled since 2026-08-24; `pow_tier_mix_base=160,
 pow_tier_mix_per_operator=64` is exact at 4 of 5 points, and T1T3/T2T3
 give IDENTICAL real bytes at every point (T1-vs-T2 stops mattering once
 POW is present). See `sizing/constants.py` `CptExpressionModel.cost_for`.
-**All-3-tier mixes**: a per-tier-count linear model
-(`delta = 44*T1 - 116*T2 + 76*T3 + 72`, fit from 4 points) lands EXACT on
-5 of 6 real points (n=3/5/8/10/11) — only n=15 misses, by 144. n=15 is the
-only point at operator-cycle remainder 2 (every other point is remainder
-0 or 1); `cptmix_threetier_rem2_n06/n09/n12` (3 points, not 2 — enough to
-tell a flat remainder-2 bonus apart from one that scales with count in
-one capture round) test whether that specific remainder is the trigger.
-**REAL-operand/float-literal interaction**: isolated per-factor rates
-from existing captures (~118/REAL-operand, ~122/float-literal, both
-assuming linearity across n=2); combining both terms additively over-
-predicts the real corpus shape by 158 (a genuine negative interaction).
-`cptmix_disentangle_real1_noliteral/float1_noreal/real2_float2_noint` get
-the missing n=1 points and a full 2-REAL+2-float point to fit the
-2-variable surface; `real1_float1` (1 of each, not 2) is a genuine cross-
-check point none of the fitting data directly tests. 7 diagnostic files
-total, all built and awaiting capture — additive fallback stays the
-honest default until each formula lands.
+**All-3-tier mixes: CLOSED 2026-08-29.** The 3
+`cptmix_threetier_rem2_n06/n09/n12` files (plus the 4 disentangle files
+below) had real capture data from 2026-08-27 sitting unreconciled in
+manifest.csv this whole time — found and fixed the same day James pushed
+on why this wasn't closed already. The earlier `44*T1-116*T2+76*T3+72`
+attempt was wrong (not just "misses n=15" — checked directly, it doesn't
+reproduce the n=3/5/8/10/11 points it was supposedly fit from either).
+Correct formula, confirmed 0 residual across ALL 9 real all-3-tier points
+on file (operator counts 4-14): `base_by_remainder[operator_count % 3] +
+4 * pow_operand_count`, `base_by_remainder = {0: 72, 1: 116, 2: 144}`.
+remainder=1 exact at 3/3 points, remainder=2 exact at 4/4 points
+(including the original n=15 outlier AND the 3 new rem2 probe files —
+confirms the remainder-2 trigger hypothesis exactly, and that it's NOT a
+flat bonus, it scales at +4/POW-operand same as the other two remainder
+classes). remainder=0 rests on a single point (n=10) — same slope,
+extrapolated base, one point short of independent confirmation. Wired in
+`sizing/constants.py` `CptExpressionModel.cost_for` / `memory_model.yaml`
+cpt_expression.
+
+**REAL-operand/float-literal interaction: investigated 2026-08-29, still
+open — now for a more specific and more interesting reason than "not
+enough points."** The 4 disentangle files' real data (also from
+2026-08-27, also unreconciled) rules out any simple per-operand-count
+model: extra cost at R=1 REAL operand (276) is HIGHER than at R=2 (236),
+and the same pattern holds for float literals (F=1: 280, F=2: 244) — going
+from 1 to 2 of the same factor makes the file SMALLER, not bigger. That's
+not sub-linear/saturating, it's genuinely non-monotonic, and it holds
+identically for both factors, which rules out coincidence/noise. No
+formula wired — CLAUDE.md's ground-truth discipline means not force-
+fitting a linear or bilinear surface onto data that demonstrably isn't
+one. Real hypothesis worth testing next: cost may track the number of
+DINT→REAL type-PROMOTION points in the expression tree (a structural
+property of where mixed-type sub-expressions meet), not the raw REAL-
+operand/float-literal COUNT — needs files that vary operand/literal
+POSITION at a fixed count, not just count alone. Additive fallback (no
+surcharge) stays the honest default. Full data: 9 total points across the
+`cptmix_stacked_*` (5, already on file 2026-08-24) and `cptmix_
+disentangle_*` (4, captured 2026-08-27) sample sets.
+
+**Position-probe files built 2026-08-29** (`gen_cpt_mixed_operators.py`
+`group_real_float_position_probe`, James: "generate new tests... they
+have been dragging on for far too long" -- fair, the hypothesis above had
+sat undertested since it was written). 4 new files, all built/lint-clean/
+zero engine errors, awaiting real capture: `cptmix_real1_pos_first`/
+`cptmix_real1_pos_last` (1 REAL operand at slot 1 vs slot 6 of the same
+6-operand T1+T2 shape, "middle" position already on file as
+`cptmix_disentangle_real1_noliteral`) and `cptmix_float1_pos_first`/
+`cptmix_float1_pos_divisor` (1 float literal at slot 1 vs the divisor
+slot, "last" position already on file as `cptmix_disentangle_
+float1_noreal`). Once captured: if all 3 positions per factor land on the
+same real delta, position is ruled out (points back to an unexplained
+pure-count effect); if they differ, the pattern across first/middle/last
+tells us whether edge positions (fewer operator-adjacency "boundaries")
+cost less, which would directly support the type-promotion-point
+hypothesis.
+
+**James, 2026-08-30: "are you sure you only need 4 tests for cpt?" —
+correct, no.** The 4 position-probe files above hold REAL-operand/
+float-literal COUNT fixed at 1 and only vary where that single factor
+sits — they can't touch the actual anomaly this whole thread exists to
+explain (2 REAL operands costing LESS than 1, non-monotonic in count).
+Added `group_real_pair_adjacency_probe`: `cptmix_real2_adjacent` (2 REAL
+operands at slots 1-2, adjacent) vs `cptmix_real2_spread` (2 REAL operands
+at slots 1 and 6, same count, spread to opposite ends of the same 6-slot
+shape) — directly tests whether adjacency (fewer DINT↔REAL promotion-point
+crossings) is what drives the count anomaly, or whether the two layouts
+measure the same (which would falsify the promotion-point hypothesis
+itself, not just leave it uncalibrated). Built, lint-clean, zero engine
+errors, awaiting capture — 6 CPT probe files on file total now, not 4.
+
+**James, 2026-08-30: "have you got enough tests to fully close this?"**
+— honest answer: no, still not guaranteed. The adjacent/spread pair only
+disambiguates 1-vs-2 REAL operands; it says nothing about whether the
+non-monotonic dip continues, reverses, or was specific to exactly 2.
+Added `cptmix_real3_adjacent` (3 REAL operands, slots 1-3, same shape) to
+extend the count sequence 1→2→3. Even with this, two things stay
+untested and are flagged honestly rather than silently assumed closed:
+whether REAL-count and float-literal effects compose when both are
+present at varying counts/positions together, and whether a different
+expression tree shape (not just this flat 6-slot layout) changes the
+answer.
+
+**James, 2026-08-30: "add more tests to fully close this instead of
+guessing."** Both remaining gaps now have dedicated files instead of
+being left untested:
+- **REAL-count x float-literal composition**: `cptmix_real1_float1`,
+  `real2_adjacent_float1`, `real3_adjacent_float1` -- same shapes as
+  real1_pos_first/real2_adjacent/real3_adjacent with the trailing slot
+  replaced by the float literal 1.5, so the marginal float-literal cost
+  can be read directly by subtraction at each REAL count (constant
+  across n = additive/no interaction; varies = real interaction).
+- **Alternate expression tree shape**: `cptmix_real1_nested`,
+  `real2_nested` -- same operand/operator multiset as
+  real1_pos_first/real2_adjacent but deeply right-nested instead of a
+  flat left-to-right chain, REAL operand(s) at the innermost position.
+  Tests whether the type-promotion-point hypothesis holds once tree
+  structure (not just flat token position) changes.
+
+12 CPT probe files on file now, covering count (1/2/3), position
+(first/last/divisor), adjacency (adjacent/spread), float composition, and
+tree shape. This is the full hypothesis space as currently understood --
+not claiming it's exhaustive of every possible expression shape, but
+every specific mechanism proposed so far now has a real test.
+
+**Cross-validated at scale, 2026-08-29** (full manifest.csv audit):
+`randommix_07_n19811rungs_24types` (`logic_random_mix` category, real
+capture) was off by +39,959 -- traced to its 208 real CPT calls, which
+all use `gen_logic_sweep.py`'s exact `(D+D)*R-R/2+1.5` shape (2 REAL
+operands, 1 float literal) -- the SAME `original_shape` this thread
+already covers. 208 x the already-known ~200/call gives ~41,600, close
+to the real 39,959 (the small gap is plausibly the rotating tag pool's
+per-call operand variety, not a new effect). Confirms this is the same
+open thread recurring at volume, not a separate bug -- no new formula
+needed or wired, consistent with the additive-fallback default already
+in place.
 
 [^aoidef]: Per-type declared-item rate table (BOOL=16, SINT/INT=18,
 DINT/REAL=20, LINT=24/item, base=1184) wired for single-type defs;
@@ -193,152 +352,128 @@ exact, 52 within 1%, 1 at 2.10%. Full derivation: `docs/AOI_KNOWLEDGE_MAP.md`.
 Required/Visible/Hidden flag combinations: CLOSED 2026-08-25 — real
 2026-08-23 capture data was sitting unreconciled, deltas land within a
 32-block band with no direction tied to flag config (noise, not a real
-effect). Still open: AOI type-name length doesn't follow the uniform
-`8*ceil(len/8)` step other formulas use (`aoiname_len09/16/25` probe the
-gap, awaiting capture). AOI-instance-array element cost: 3 distinct real
-per-element rates depending on member composition (pure-atomic ≈124,
-pure-BOOL ≈4 not cleanly linear across an unresolved n=32 boundary, 50/50
-mix = exactly 64) — `aoipack_bool_dense_array_n16-40` (brackets n=32) and
-`aoipack_mix25_75/mix75_25` (new BOOL:non-BOOL ratios) await capture.
+effect).
 
-[^predefined]: CAM is resolved and wired. MESSAGE's own byte cost stays
-unmodeled — `gen_msg_typesweep.py` built 7 new files (one per real
-MessageType found grepping the full `samples/local/` corpus: CIP Data
-Table Read/Write, PLC5 Typed Read/Write, PLC5 Word Range Write, SLC Typed
-Read/Write, every attribute copied verbatim, never guessed), plus the
-existing CIP Generic file — 8 types total. A flat size across all 8 would
-confirm James's axis-tag-style hypothesis ("lots of config, always the
-same data size"); a spread ties cost to attribute-set complexity instead.
-MSG's own LOGIC weight (48/rung) is separately resolved and wired.
+**Name-length CLOSED 2026-08-30**: `aoiname_len08/09/13/16/20/25/30_def_only`
+(7 real points, all sitting unreconciled) confirmed exact against
+`8*max(0,(len-8)//4) - 8` — wired into `AoiDefinitionModel.name_length_bytes`.
+A real off-by-one bug was found and fixed along the way: the first version
+wired (divisor `(len-7)//4`, chosen because it also reproduces all 7 of the
+same points) put len=19 one bucket too high. Caught by cross-checking two
+real AOI-array-packing captures that only differ in AOI type name length —
+`AoiPureBoolDense` (16 chars) and `AoiPureBoolBoundary` (19 chars), both 10
+BOOL In/10 BOOL Out/10 BOOL Local, both array of 16 instances — which must
+land on the identical total byte count if the shared shape is identical,
+but disagreed by exactly 8 bytes under the old divisor. `(len-8)//4`
+reproduces all 7 originally-tested lengths identically (none of them sit at
+len%4==3, the only residue class where the two divisors disagree) and
+resolves the cross-check to 0 bytes apart. AOI-instance-array element cost
+split off as its own item, OQ-AOIBOOLPACK-PAIRING, below.
 
-**Sibling native-structure gap, found 2026-08-27** verifying drill-down
-completeness (James: "confirm we can browse down to base structure level
-for all UDT/AOI"). Drill-down itself is fully confirmed for everything the
-engine CAN size — a recursive walk of all 2,780 UDT/AOI definitions across
-James's real 64-file corpus reached 4,502,812 true leaves with zero bad
-leaves and zero silent dead-ends. A real, separate gap surfaced along the
-way: any tag whose type transitively includes a member typed SFC_STEP/
-SFC_ACTION/FBD_TIMER/SCALE/CAM_PROFILE/DCI_STOP/RATE_LIMITER/
-CONFIGURABLE_ROUT/ALARM_DIGITAL/FBD_ONESHOT/FBD_MATH — confirmed present
-in 0 of 64 real files' own `<DataType>`/`<AddOnInstructionDefinition>`
-blocks, same as MESSAGE — couldn't be sized at all (`UnknownDataTypeError`,
-caught cleanly by report.py, so the whole file doesn't break, but that tag
-was silently excluded from the treemap/list, only showing up in the small
-errors footer). 1,277 tag-sizing errors across 24/64 real files traced to
-this.
+[^aoiboolpackpairing]: The `aoi_array` model's "confirmed exact, 15 real
+points" claim (mc=10/20/30/60, but only ever checked at n=1/10/25 per
+shape) doesn't survive dense n. Reconciling 27 already-captured points that
+were sitting unreconciled proved it: for a single-packed-word AOI
+(bool_count<=32), real array bytes follow `8*ceil(n/2) + B` — an odd-length
+array costs 4 bytes MORE than the even-length prediction the current
+formula makes, a term the formula has no place for at all. B itself is
+real and flat per shape but does NOT extrapolate cleanly across bool_count:
+B=20 for 10-BOOL-all-Input (`aoipack_mc10_b10_array_n01/10/25`, 3/3 exact),
+B=44 for 20-BOOL-all-Input (`aoipack_mc20_b20_array_n01/10/25`, 3/3 exact),
+B=28 for the original 30-BOOL/3-way-split shape — 10 In+10 Out+10 Local —
+(`aoipack_bool_array_n01/05/10/25/50` + `aoipack_bool_boundary_n16-96` +
+`aoipack_bool_dense_array_n16-40`, 18/18 exact). Since B doesn't scale
+linearly with bool_count across those three, and the only structural
+difference between the 30-BOOL case and the 10/20-BOOL cases is the 3-way
+section split (the current parser only tracks a flat total bool_count, not
+per-section In/Out/Local counts), the section split itself may be what
+actually drives B — untested directly until now.
 
-**Wired 2026-08-27** (James: "You should know all of those native
-instructions data types ... look for Rockwell instruction manual for data
-layout"): rather than trust an instruction-manual citation blind (this
-project's own ground-truth discipline — CLAUDE.md — wants a real capture
-or real corpus evidence first), checked whether the real corpus itself
-already reveals the layout via `Data Format="Decorated"` — it does.
-Bender134053_201104.L5X alone has 272 real `SFC_STEP` and 97 real
-`SFC_ACTION` tag instances with full decorated field lists; other files
-had real (if sparser) evidence for the rest. The mechanism: a predefined
-structure's real `Data Format="L5K"` raw value array is one scalar per
-DINT-sized field (same convention that already gives TIMER's 3-element/
-12-byte L5K array its real shape) — so the array's length × 4 bytes IS
-the real total, independent of how many of those DINTs are further
-bit-packed status flags. Confirmed zero-variance across every real
-instance checked: 272/272 SFC_STEP (28 bytes: Status+PRE+T+TMax+Count+
-LimitLow+LimitHigh, 7 DINT), 97/97 SFC_ACTION (16 bytes: Status+PRE+T+
-Count, 4 DINT), 5/5 FBD_TIMER (48 bytes), 4/4 FBD_ONESHOT (12 bytes), 2/2
-FBD_MATH (16 bytes); RATE_LIMITER (92 bytes) and SCALE (52 bytes) only
-1 real instance each so far. Wired into `memory_model.yaml`
-`predefined_structures` at ASSUMED confidence (real and zero-variance,
-but not yet independently confirmed against an actual controller
-memory-capture delta the way TIMER/COUNTER/CONTROL are) — closed 523 of
-the 1,277 errors. `sizing/tree.py` deliberately does NOT extend the
-generic TIMER/COUNTER/CONTROL 3-way-split drill-down to these — their
-field counts vary (SFC_STEP has 7, SFC_ACTION has 4, RATE_LIMITER has
-23) and only the TOTAL is confirmed, not a per-field byte attribution,
-so a fabricated even split would be worse than staying a correctly-sized,
-non-drillable leaf (`_THREE_FIELD_PREDEFINED` set).
+The 60-BOOL case (2 packed words/instance, `aoipack_mc60_b60_array_n01/10/25`)
+is worse: all 3 points show a flat +148-byte miss with **no** odd/even
+signal at all against the old formula, but do not fit `8*ceil(n/2)+const`
+either when checked directly — multi-word packing is a materially
+different, still-open shape from the 3 points on file.
 
-**DCI_STOP** (35 errors) has real decorated evidence (SJ_Gormley_20251112_
-r02.L5X, 80 bytes/20 DINT) but is deliberately NOT wired yet — every real
-instance found carries `Class="Safety"` on the Tag itself, and this
-project's Safety content is currently NOT sized by design (OQ-SAFETY, the
-UI's red warning banner) even though nothing in the code actually enforces
-that exclusion per-tag today — it just happens that Safety AOI types are
-mostly unresolvable native structures. Wiring DCI_STOP would make
-Safety-scoped totals partially counted for the first time, which needs
-a decision from James (exclude Safety-class tags by design everywhere,
-or size everything resolvable including Safety and adjust the warning
-wording) before it's just silently changed. **CONFIGURABLE_ROUT** remains
-fully unmodeled — not yet read in RM018A, no real corpus evidence either.
+Confidence downgraded `aoi_array`: KNOWN → FITTED (`memory_model.yaml`,
+2026-08-30) — the formula is left un-replaced rather than guessing a
+generalized fix from underdetermined data (this project already ate one
+overfit formula this session, the CPT three-tier bug — not repeating it).
+New dense/isolating test files generated instead, not yet captured:
+`gen_aoi_boolpack_pairing.py` → `aoibp_dense_bc{10,20,60}_n{02,03,04,06,08,12}`
+(18 files, dense n right where the pairing period would show, including
+the FIRST dense points at all for bool_count=60) and
+`aoibp_split_allinput30_n{01,05,10,16,25}` (5 files, same bool_count=30 as
+the already-solved 3-way-split shape but all-Input/single-section, at the
+same n values, to directly test the section-split hypothesis). 23 files
+total — not padded to the 60-file floor (James, 2026-08-25: not a quota).
 
-**MESSAGE and ALARM_DIGITAL member lists sourced from RM018A, 2026-08-27**
-(James: "you need to size all of these instruction data types... look for
-Rockwell instruction manual for data layout", scoped down to 1756-RM018A
-specifically per his follow-up clarification). Read directly from the real
-manual PDF James pushed (`samples/1756-rm018_-en-p.pdf`, 927 pages, via
-`pdftotext -layout` + form-feed page-indexed navigation), not guessed.
+**Wider dataset surfaced 2026-08-30** (James: "review open questions...
+full depth... no possible open items" — a full manifest.csv reconciliation
+sweep against the live engine, not just the mc10/20/60 family already
+covered above). **Correction to an initial write-up of this same finding**
+(James caught it directly: "are there new tests for all of those points"
+— checking the claim while answering surfaced the error): this is NOT the
+3-way-split shape (10 In + 10 Out + 10 Local) the original `aoipack_bool_*`
+finding used. `aoipack_ratio_01b29a` through `_29b01a`
+(`gen_batch3_followups.py` `group_b_ratio_sweep`, 6 BOOL:DINT ratios x
+n=1/10/25/50, 24 real points) is SINGLE-SECTION (all-Input, mixing BOOL
+and DINT in one Parameters list) — structurally the SAME family as
+mc10/mc20 above, just with a fixed 30-member total and a MIXED (not pure)
+type composition. It shows a real, different residual shape from mc10/
+mc20 anyway: FLAT per ratio, **no** odd/even n-parity signal at all
+(01b29a=+52 at every n, 05b25a=+36 at every n, 10b20a=+12 to +16,
+20b10a=-24 to -28, 25b05a=-44 at every n, 29b01a=-60 at every n, all flat
+within measurement) — where mc10/mc20 (single-section, PURE BOOL, no DINT
+at all) show real odd/even pairing. A separate non-atomic-type variant
+(`aoipack_nonatomic_real/sint_10b20a/20b10a`, 8 real points, REAL/SINT
+non-BOOL operands instead of DINT) shows smaller, still-flat-ish deltas
+(-66 to +8). Neither dataset was previously reconciled against the live
+engine.
 
-*MESSAGE* (RM018A pages 142-147): real member list — `.FLAGS` INT (bit-
-mapped status word: bit 2=.EW, 4=.ER, 5=.DN, 6=.ST, 7=.EN, 8=.TO, 9=.EN_CC —
-confirmed by the manual's own bit table that these 7 BOOL "members" are
-aliased VIEWS into `.FLAGS`, not separate storage, exactly the same pattern
-already established for TIMER's `.EN`/`.TT`/`.DN`), `.ERR`/`.EXERR`/
-`.REQ_LEN`/`.DN_LEN` INT, `.ERR_SRC` SINT, `.DestinationLink`/
-`.DestinationNode`/`.SourceLink`/`.Class`/`.Attribute` INT, `.Instance`/
-`.LocalIndex` DINT, `.Channel`/`.Rack`/`.Group`/`.Slot` SINT, `.Path` STRING,
-`.RemoteIndex` DINT, `.RemoteElement` STRING, `.UnconnectedTimeout`/
-`.ConnectionRate` DINT, `.TimeoutMultiplier` SINT. Non-STRING fields sum to
-a KNOWN 46 bytes (10 INT×2 + 6 SINT×1 + 5 DINT×4) under this project's
-already-confirmed tight-packing/no-alignment rule for structure members —
-**but the total stays unwired**: RM018A never states `.Path`/
-`.RemoteElement`'s real STRING capacity (searched the manual text directly,
-not found), and guessing the default 82-char built-in STRING size would be
-exactly the kind of fabrication CLAUDE.md forbids. `gen_msg_typesweep.py`'s
-8 files (already built, awaiting capture) are still the right path to the
-real total — once captured, the confirmed 46-byte non-STRING subtotal lets
-the STRING length be backed out exactly rather than assumed.
+This reframes the open question precisely: within the SAME single-section
+structural family, a PURE-BOOL declared-member list (mc10/mc20) shows real
+2-instance pairing quantization, but a MIXED BOOL+non-BOOL list (the ratio
+family, same family, same section shape) does not — suggesting the
+pairing mechanism may specifically depend on whether every declared
+member is BOOL, not just on section layout. Untested directly until the
+`aoibp_puremix_*` isolation batch below.
 
-*ALARM_DIGITAL/ALMD* (RM018A pages 53-64): real member list — 23 Input
-BOOL (EnableIn/In/InFault/Condition/AckRequired/Latched/ProgAck/OperAck/
-ProgReset/OperReset/ProgSuppress/OperSuppress/ProgUnsuppress/
-OperUnsuppress/OperShelve/ProgUnshelve/OperUnshelve/ProgDisable/
-OperDisable/ProgEnable/OperEnable/AlarmCountReset/UseProgTime), 1 Input
-LINT (ProgTime), 4 Input DINT (Severity/MinDurationPRE/ShelveDuration/
-MaxShelveDuration), 8 Output BOOL (EnableOut/InAlarm/Acked/InAlarmUnack/
-Suppressed/Shelved/Disabled/Commissioned), 3 Output DINT (MinDurationACC/
-AlarmCount/Status — Status.0/.1/.2 = InstructFault/InFaulted/SeverityInv
-are bit-aliases of the Status word, same pattern as MESSAGE/TIMER, NOT
-separate storage), 6 Output LINT (InAlarmTime/AckTime/RetToNormalTime/
-AlarmCountResetTime/ShelveTime/UnshelveTime). Cross-validated exactly
-against the real `Comms_Bus1_ALMD` tag in `samples/local/L5X_Samples/
-MRFP_Edger_2026_06_01_r00.L5X` — every real `<AlarmDigitalParameters>`
-attribute name matches the manual's Input Parameter table verbatim.
-**Two genuine unknowns block a total**: (1) whether the 31 scalar BOOL
-members bit-pack 8-per-hidden-SINT (the confirmed convention for ordinary
-UDTs) or take a full byte/word each in this controller-native structure —
-unconfirmed, native structures go through different firmware than user
-UDTs; (2) real ALMD tags always carry an `<AlarmConfig>` message/class-text
-block alongside the base structure (confirmed: both real corpus files with
-ALMD tags have it) — unknown whether that text counts toward the tag's own
-byte cost or is stored/compiled separately. `gen_almd_singletag.py` built
-2026-08-27 (2 files: `almd_minimal` isolates the base structure with
-1-char message/class text, `almd_realtext` uses real-length text copied
-from `Comms_Bus1_ALMD` to test question (2) directly) — awaiting capture,
-mirrors the MESSAGE sweep's isolate-one-variable-at-a-time approach.
+[^safetyscope]: `DCI_STOP` (35 errors) has real decorated evidence
+(SJ_Gormley_20251112_r02.L5X, 80 bytes/20 DINT) but is deliberately NOT
+wired -- every real instance found carries `Class="Safety"` on the Tag
+itself, and this project's Safety content is currently NOT sized by
+design (the UI's red warning banner) even though nothing in the code
+actually enforces that exclusion per-tag today -- it just happens that
+Safety AOI types are mostly unresolvable native structures. Wiring
+DCI_STOP would make Safety-scoped totals partially counted for the first
+time, which needs a decision from James (exclude Safety-class tags by
+design everywhere, or size everything resolvable including Safety and
+adjust the warning wording) before it's just silently changed.
 
-*COUNTER cross-check* (RM018A pages 92-93): `.CD`/`.DN`/`.OV`/`.UN` BOOL
-(bit-aliased status word) + `.PRE`/`.ACC` DINT — matches the already-wired
-3-DINT/12-byte model exactly. No change needed; first time this project's
-COUNTER model has been confirmed against a real Rockwell primary source
-rather than only empirical black-box capture.
+`CONFIGURABLE_ROUT` -- CORRECTED 2026-08-29, an earlier pass had this
+wrong: it DOES have real capture data and IS wired (52 bytes, see
+RESOLVED_QUESTIONS.md OQ-PREDEFINED) -- not read in RM018A, but that's
+moot now that a real Capacity-based value exists directly. Falls under
+the same Safety-scope decision as DCI_STOP (name root matches `CROUT`,
+the confirmed Safety-only instruction).
 
-**Negative finding, saves future effort**: the L5K-raw-array-length
-technique that solved SFC_STEP/SFC_ACTION/FBD_TIMER/etc. (real `Data
-Format="L5K"` value-array length × 4 bytes = real total) does NOT work for
-either MESSAGE or ALARM_DIGITAL — grepped every real instance of both types
-across the full `samples/local/` corpus (not just James's 64-file subset)
-and confirmed zero use `Format="Decorated"` or `Format="L5K"`; Rockwell's
-export tooling always uses a specialized semantic view (`Format="Message"`/
-`Format="Alarm"`) for these two types instead. Don't re-attempt that
-technique on these two — go straight to a real capture.
+**AOI array "anomaly" investigated 2026-08-29, was contaminated data, not
+a real formula problem.** Of the 5 AOI array files re-captured after the
+real Dimension/Dimensions bug fix, 4 show a modest positive delta (+400/
++404/+60/+64, plausibly a small remaining formula gap, still genuinely
+open) but `aoi_array_param_def_only`'s row was flagged
+`WINDOW TITLE MISMATCH` in manifest.csv (window title read back
+"ProbeDciStop" -- a completely different file from the predefined-
+structure probe batch, not this one) -- the "-1,044 byte overshoot" a
+previous pass reported was that mismatched file's real bytes, not this
+one's. Per CLAUDE.md's standing rule that row's capture columns are
+cleared, not trusted; `aoi_array_param_def_only` is back to needing a
+real, clean capture (still in the same NEEDS-RE-CAPTURE bucket the
+Dimension/Dimensions bug fix already put it in -- see
+[^aoiarraydimension] below, this was never actually re-captured cleanly).
+No engine change made or needed here -- AOI array PARAMETER sizing is
+UNTESTED, not confirmed broken.
 
 [^aoiarraydimension]: James, 2026-08-27: "be sure you are handling the bit
 mapped bools from hidden sints" prompted a broader audit of AOI-local
@@ -385,6 +520,31 @@ array-of-atomic/array-of-UDT member cost formula being assumed to apply
 unchanged to an AOI's own Parameter/LocalTag members too, which was never
 actually tested end-to-end against a real capture.
 
+**Real import-failure bug found and fixed, 2026-08-29** (James: "the file
+does not open, regenerate it"). `aoi_array_param_def_only` itself
+wouldn't import into Studio 5000 at all -- a real, separate bug from the
+Dimension/Dimensions one above, not just a bad capture read. Root cause:
+`sample_gen/builders.py` `_aoi_parameter_xml` used the generic
+`Required="false" Visible="false"` default for the array Input Parameter
+(`InputBuffer`, `Dimensions="50"`). Zero real corpus evidence supports
+false/false on an array Parameter of any Usage -- the only two real
+array-Parameter examples this project has (`LOG_HMIDisplay
+Dimensions="25"`, `BitArray Dimensions="1024"`, both from real customer
+files) are both `Usage="InOut"` and both `Required="true" Visible="true"`,
+already-confirmed for InOut specifically but never independently tested
+for Input/Output. Fixed by forcing `Required="true" Visible="true"` on
+ANY dimensioned Input/Output Parameter, extending the one confirmed
+real pattern (this is a hypothesis-driven fix given the available
+evidence, not a positively-confirmed Input-array real example --
+flagged here, not silently treated as certain). File regenerated,
+lint-clean, zero engine errors; Required/Visible flag choice doesn't
+affect the sizing formula itself (already confirmed no real effect,
+see the Required/Visible closure note above), so predicted_bytes is
+unchanged (19,332). Still needs a real capture -- was never actually
+captured cleanly (first attempt hit the Dimension/Dimensions bug, second
+attempt hit WINDOW TITLE MISMATCH, and the underlying file itself was
+broken this whole time under both attempts).
+
 [^moduleio]: `module_overhead = 1,672 bytes/module` (flat, mean of 2 real
 deltas), wired as ESTIMATED tier. 141 files in `samples/generated/modules/`:
 per-catalog sweep (119/119 real corpus catalogs), rack-level tests, a full
@@ -401,9 +561,54 @@ confirmed NOT affected); duplicate Ethernet IPs/AxisIDs; a slot collision;
 10" concern) audited and confirmed NOT a bug — module size reads
 exclusively from `ArrayMember/@Dimensions`, never slot number.
 Deliberately not charged `module_overhead`: rack-aliased modules,
-`CatalogNumber="Embedded"` I/O. Produced/consumed tags untouched
-(OQ-PRODCONS). PowerFlex 525 has multiple real I/O payload UDTs beyond
-the one profile covered — needs more real corpus examples, not guessed.
+`CatalogNumber="Embedded"` I/O. Produced/consumed tags: RESOLVED, see
+RESOLVED_QUESTIONS.md OQ-PRODCONS. PowerFlex 525 has multiple real I/O
+payload UDTs beyond the one profile covered — needs more real corpus
+examples, not guessed.
+
+**Real per-catalog overhead table wired 2026-08-29.** The 141-file batch
+above had real capture data landing since 2026-08-22 — 126 rows total, of
+which 90 were never checked against the live engine and stayed on the
+flat 1,672 estimate. Found the same way OQ-CMPCPTLAYOUT was: re-running
+every module-category manifest row through the current engine and
+diffing against real actual_bytes. Derived `module_overhead_by_catalog`
+(memory_model.yaml, `constants.py` `ModuleOverheadModel`) via the same
+subtraction methodology as `predefined_structures`:
+`real_catalog_overhead = 1,672 + (actual_bytes - engine_predicted)`, ONLY
+for real captures where the file's entire module list is exactly
+`[Local, one real module]` — strict on purpose, since several
+adapter/bridge catalogs (e.g. `1734-AENTR/C`) turned out to be absorbing
+a whole rack of aliased child I/O modules into their own single entry,
+which would have corrupted a looser per-catalog derivation with
+configuration-dependent numbers. 51 catalogs got a clean, unambiguous
+real value (real range: -793 to +10,497 — the flat 1,672 mean was a poor
+proxy for this much real spread). Real exact-match rate against the 126
+real module rows: 1/126 (before) -> 54/126 (after); full-manifest
+regression checked (89 rows affected, 12 multi-module files got
+marginally worse by 4-68 bytes each — all already inside the "not solved
+this pass" bucket below, net effect strongly positive).
+
+**6 catalogs show a real, unmodeled connection-variant effect** and were
+deliberately left off the table rather than force-averaged:
+`ETHERNET-MODULE`/`ETHERNET-PANELVIEW` (generic-catalog placeholders —
+real overhead scales with declared I/O size, not flat at all),
+`1734-AENTR/C` and `1756-EN2T` (real 1-conn vs 2-conn/rack-aliased
+variance, up to +2,156 apart for the "same" catalog), PowerFlex
+525/755-EENET (a smaller ~48-byte gap between two independent
+file-generation methods, ambiguous which is representative).
+
+**38 multi-module files reveal a real, distinct architecture gap: the
+per-module marginal cost is NOT flat.** `module_1756_ib16_n01/n03/n10`
+(1/3/10 identical 1756-IB16 modules in one file) show delta -4, -1,588,
+-7,160 against "N x flat-per-catalog-overhead" — the SAME catalog's 2nd,
+3rd, ... Nth instance costs LESS than the 1st, not the same. Rack files
+(`modulerack_*`) and zero-connection modules (several `_variant_noconn`
+files cost real nonzero bytes despite `module_defined_bytes=0` and
+getting silently skipped by the current `continue`-on-0/0 check) show the
+same class of gap. Needs its own marginal-vs-fixed decomposition, the
+same shape task_program_overhead already got for Task/Program/Routine
+counts — real architecture work, not a quick constant fix, so not rushed
+into this pass.
 
 **CORRECTION, 2026-08-28** (James: "did a super in-depth memory analysis
 on the last pushed file? ... review the last batch of l5x conversions,
@@ -541,16 +746,3 @@ both questions. `eventtask_axiswatch` also declares a real
 `AXIS_CIP_DRIVE` tag (EventTag must reference a real tag) — that tag has
 its own separately-modeled cost and will need subtracting from the raw
 capture delta before comparing trigger sources.
-
-[^branchdepth]: Real, sizeable, not modeled — the branch bracket
-structure itself (BST/NXB/BND, not modeled by this project's regex-based
-parser) costs real memory beyond the sum of leg instructions: legs01 (no
-branch) is exact, legs03 under-predicted by 16/rung, legs05 by 24/rung,
-not linear in leg count. `gen_branchdepth_closeout.py` adds 8 more
-leg-count points (2-30, matching James's own "30 deep" example literally)
-to fit the WIDTH curve. Separately, `gen_branchdepth_staggered.py` tests
-a genuinely different axis James asked for — DEPTH: always 2 legs per
-level, but each level's first leg recurses into another 2-leg branch,
-cascading (root[2] → leg1 contains nested[2] → nested's leg1 contains
-nested-nested[2] → ...), depths 1-6. Real nested-bracket syntax confirmed
-against 624 real rungs in `samples/local/`.

@@ -442,6 +442,164 @@ def group_real_float_literal_disentangle() -> int:
     return n
 
 
+# ---------------------------------------------------------------------------
+# L. REAL-operand / float-literal POSITION probe (2026-08-29, OQ-CMPCPTLAYOUT
+# follow-up). group_real_float_literal_disentangle above proved count alone
+# doesn't explain the real data -- 1 REAL operand costs MORE than 2 (and
+# same for float literals), ruled out as noise since it holds identically
+# for both factors. Real hypothesis: the cost tracks WHERE the REAL
+# operand/float literal sits in the expression (a structural
+# type-promotion-boundary effect), not how many there are. These files
+# hold everything else fixed (same 6-operand, T1+T2 operator sequence
+# +,*,-,/,+ as real1_noliteral/float1_noreal above) and move ONLY the
+# REAL operand's (or float literal's) position -- first, middle, last.
+# "middle" for the REAL-operand axis is already on file
+# (cptmix_disentangle_real1_noliteral, R at slot 2 of 6) -- not rebuilt
+# here, just cross-referenced. Same for the float-literal axis: existing
+# cptmix_disentangle_float1_noreal already has the float literal LAST
+# (the trailing addend) -- "first" and "divisor" positions are new here.
+# ---------------------------------------------------------------------------
+
+def group_real_float_position_probe() -> int:
+    n = 0
+    real_variants = [
+        ("real1_pos_first", "(R0+L1)*L2-L3/L4+L5",
+         "1 REAL operand at the FIRST slot (position 1 of 6) -- position-probe companion to "
+         "real1_noliteral (REAL at slot 3, already on file) and real1_pos_last, isolating "
+         "whether WHERE a REAL operand sits (not how many) drives the real non-monotonic cost"),
+        ("real1_pos_last", "(L0+L1)*L2-L3/L4+R5",
+         "1 REAL operand at the LAST slot (position 6 of 6) -- position-probe companion to "
+         "real1_noliteral (REAL at slot 3, already on file) and real1_pos_first"),
+    ]
+    for name, expr, desc in real_variants:
+        _one_rung_file(expr, f"CptMix{name.title().replace('_', '')}", f"cptmix_{name}", desc, dest="DestR")
+        n += 1
+
+    float_variants = [
+        ("float1_pos_first", "1.5+L0*L1-L2/2+L3",
+         "1 float literal FIRST (position 1 of 6), int literal stays as the divisor -- "
+         "position-probe companion to float1_noreal (float literal LAST, already on file) and "
+         "float1_pos_divisor"),
+        ("float1_pos_divisor", "(L0+L1)*L2-L3/1.5+2",
+         "1 float literal as the DIVISOR (position 4 of 6), int literal moved to the trailing "
+         "addend -- position-probe companion to float1_noreal (float literal LAST, already on "
+         "file) and float1_pos_first"),
+    ]
+    for name, expr, desc in float_variants:
+        _one_rung_file(expr, f"CptMix{name.title().replace('_', '')}", f"cptmix_{name}", desc, dest="DestR")
+        n += 1
+    return n
+
+
+# ---------------------------------------------------------------------------
+# I. 2-REAL-operand adjacency probe (James, 2026-08-30: "are you sure you
+# only need 4 tests for cpt?" -- correct, 4 wasn't enough. The position
+# probe above only ever varies ONE lone operand's position at fixed
+# count=1; it can't touch the actual documented anomaly this whole thread
+# exists to explain -- 2 REAL operands costing LESS than 1 (non-monotonic
+# in count). This directly tests the leading hypothesis for THAT anomaly:
+# adjacent REAL operands (one DINT->REAL transition, one REAL->DINT
+# transition -- 2 promotion-point crossings) vs the same 2 REALs spread to
+# opposite ends of the same 6-slot shape (REAL->DINT->REAL->DINT -- up to
+# 4 crossings). If promotion POINTS (not raw REAL count) drive cost,
+# adjacent and spread should differ; if they measure the same, the
+# type-promotion-point hypothesis itself is wrong, not just uncalibrated.
+# ---------------------------------------------------------------------------
+
+def group_real_pair_adjacency_probe() -> int:
+    n = 0
+    variants = [
+        ("real2_adjacent", "(R0+R1)*L2-L3/L4+L5",
+         "2 REAL operands ADJACENT (slots 1-2 of 6) -- tests whether adjacency (fewer DINT<->REAL "
+         "promotion-point crossings) explains the documented anomaly that 2 REAL operands cost LESS "
+         "than 1 REAL operand does (non-monotonic in raw count); companion to real2_spread"),
+        ("real2_spread", "(R0+L1)*L2-L3/L4+R5",
+         "2 REAL operands SPREAD to opposite ends (slots 1 and 6 of 6) -- same total REAL-operand "
+         "count as real2_adjacent, more promotion-point crossings if the layout matters; companion "
+         "to real2_adjacent"),
+        # James, 2026-08-30: "have you got enough tests to fully close this?"
+        # -- no, the adjacent/spread pair only disambiguates 1-vs-2 REAL
+        # operands; it can't say whether the non-monotonic dip continues,
+        # reverses, or was a one-time artifact of exactly 2. Extends the
+        # count sequence (1 via real1_pos_first, 2 via real2_adjacent) to 3,
+        # same adjacent-grouping convention, same 6-slot shape.
+        ("real3_adjacent", "(R0+R1)*R2-L3/L4+L5",
+         "3 REAL operands ADJACENT (slots 1-3 of 6) -- extends the real1_pos_first (1 REAL) / "
+         "real2_adjacent (2 REAL) count sequence to 3, to tell whether the documented 1-vs-2 "
+         "non-monotonic dip continues as a real trend or was specific to exactly 2 operands"),
+    ]
+    for name, expr, desc in variants:
+        _one_rung_file(expr, f"CptMix{name.title().replace('_', '')}", f"cptmix_{name}", desc, dest="DestR")
+        n += 1
+    return n
+
+
+# ---------------------------------------------------------------------------
+# J. REAL-count x float-literal composition (James, 2026-08-30: "add more
+# tests to fully close this instead of guessing"). The real production
+# shape (`cptmix_stacked_original_shape`, "(L0+L1)*R1-R2/2+1.5") has 2 REAL
+# operands AND a float literal together -- but every REAL-count probe so
+# far (real1_pos_first/real2_adjacent/real3_adjacent) has zero float
+# literal, so there's no way yet to tell whether the float-literal cost is
+# a constant additive term on top of the REAL-count effect, or whether the
+# two interact. Same real1/real2_adjacent/real3_adjacent shapes, trailing
+# L5 slot replaced by the float literal 1.5 -- single-variable change (add
+# 1 float literal), holding REAL count/position identical to the existing
+# no-float points so the marginal float cost can be read directly by
+# subtraction at each REAL count.
+# ---------------------------------------------------------------------------
+
+def group_real_count_float_composition() -> int:
+    n = 0
+    variants = [
+        ("real1_float1", "(R0+L1)*L2-L3/L4+1.5",
+         "1 REAL operand + 1 float literal (trailing slot) -- float-literal companion to "
+         "real1_pos_first (same shape, no float), isolates the marginal float-literal cost at "
+         "REAL count=1 for direct comparison against real2_adjacent_float1/real3_adjacent_float1"),
+        ("real2_adjacent_float1", "(R0+R1)*L2-L3/L4+1.5",
+         "2 REAL operands adjacent + 1 float literal -- float-literal companion to real2_adjacent "
+         "(same shape, no float), closely matches the real production shape "
+         "(cptmix_stacked_original_shape) structurally"),
+        ("real3_adjacent_float1", "(R0+R1)*R2-L3/L4+1.5",
+         "3 REAL operands adjacent + 1 float literal -- float-literal companion to real3_adjacent "
+         "(same shape, no float), completes the REAL-count x float-literal composition matrix"),
+    ]
+    for name, expr, desc in variants:
+        _one_rung_file(expr, f"CptMix{name.title().replace('_', '')}", f"cptmix_{name}", desc, dest="DestR")
+        n += 1
+    return n
+
+
+# ---------------------------------------------------------------------------
+# K. Alternate expression tree shape (James, 2026-08-30, same ask). Every
+# probe so far uses ONE flat left-to-right 6-slot shape -- position-probe
+# tests WHERE in that flat token order an operand sits, but never whether
+# the type-promotion-point hypothesis holds for a structurally different
+# tree (deep right-nesting instead of a flat chain). Same operand
+# multiset and same operator multiset (2x '+', 1x '*', 1x '-', 1x '/') as
+# real1_pos_first/real2_adjacent, just deeply parenthesized right-to-left
+# instead of flat, putting the REAL operand(s) at the innermost position
+# instead of the first flat slot.
+# ---------------------------------------------------------------------------
+
+def group_alternate_tree_shape() -> int:
+    n = 0
+    variants = [
+        ("real1_nested", "L5+(L4-(L3/(L2*(R0+L1))))",
+         "1 REAL operand at the INNERMOST position of a deeply right-nested expression -- same "
+         "operand/operator multiset as real1_pos_first (flat shape), tests whether nesting depth "
+         "(not just flat left-to-right position) changes the single-REAL-operand cost"),
+        ("real2_nested", "L5+(L4-(L3/(L2*(R0+R1))))",
+         "2 REAL operands adjacent at the INNERMOST position of the same nested structure -- "
+         "nested companion to real2_adjacent, tests whether the 1-vs-2 REAL non-monotonic "
+         "anomaly still shows up once the flat left-to-right shape is replaced by deep nesting"),
+    ]
+    for name, expr, desc in variants:
+        _one_rung_file(expr, f"CptMix{name.title().replace('_', '')}", f"cptmix_{name}", desc, dest="DestR")
+        n += 1
+    return n
+
+
 if __name__ == "__main__":
     total = 0
     total += group_pairwise_tier_mix()
@@ -454,4 +612,8 @@ if __name__ == "__main__":
     total += group_t1t3_t2t3_scaling()
     total += group_three_tier_remainder_probe()
     total += group_real_float_literal_disentangle()
+    total += group_real_float_position_probe()
+    total += group_real_pair_adjacency_probe()
+    total += group_real_count_float_composition()
+    total += group_alternate_tree_shape()
     print(f"\nTotal files: {total}")

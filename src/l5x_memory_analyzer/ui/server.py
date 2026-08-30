@@ -15,7 +15,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from flask import Flask, jsonify, request
+from flask import Flask, Response, jsonify, request
 
 from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
 from l5x_memory_analyzer.parser.datatypes import DataTypeDef, parse_data_types
@@ -25,7 +25,8 @@ from l5x_memory_analyzer.parser.tags import parse_tags
 from l5x_memory_analyzer.parser.tasks import program_to_task_map
 from l5x_memory_analyzer.sizing.constants import MemoryModel, load_memory_model
 from l5x_memory_analyzer.sizing.controller_budgets import load_controller_budgets
-from l5x_memory_analyzer.sizing.report import build_report
+from l5x_memory_analyzer.sizing.export import write_csv, write_xlsx
+from l5x_memory_analyzer.sizing.report import SizeEntry, SizeError, build_report
 from l5x_memory_analyzer.sizing.tree import (
     NotDrillableError,
     expand_children,
@@ -49,6 +50,8 @@ class DocState:
     data_types: dict[str, DataTypeDef]
     tag_index: dict[str, tuple[str, tuple[int, ...]]]
     report_json: dict
+    entries: list[SizeEntry]
+    errors: list[SizeError]
 
 
 def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
@@ -121,7 +124,8 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         "budget_confidence": budget.confidence if budget else None,
     }
 
-    return DocState(doc=doc, model=model, data_types=data_types, tag_index=tag_index, report_json=report_json)
+    return DocState(doc=doc, model=model, data_types=data_types, tag_index=tag_index,
+                     report_json=report_json, entries=entries, errors=errors)
 
 
 def create_app(l5x_path: str | Path | None = None) -> Flask:
@@ -150,6 +154,33 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
             return jsonify({"error": str(exc)}), 400
         app.config["state"] = state
         return jsonify(state.report_json)
+
+    @app.get("/api/export.csv")
+    def export_csv():
+        state: DocState | None = app.config["state"]
+        if state is None:
+            return jsonify({"error": "no file loaded"}), 400
+        csv_text = write_csv(state.entries, state.errors)
+        download_name = Path(state.doc.path.name).stem + "_report.csv"
+        return Response(
+            csv_text, mimetype="text/csv",
+            headers={"Content-Disposition": f'attachment; filename="{download_name}"'},
+        )
+
+    @app.get("/api/export.xlsx")
+    def export_xlsx():
+        state: DocState | None = app.config["state"]
+        if state is None:
+            return jsonify({"error": "no file loaded"}), 400
+        try:
+            data = write_xlsx(state.entries, state.errors)
+        except ImportError as exc:
+            return jsonify({"error": str(exc)}), 501
+        download_name = Path(state.doc.path.name).stem + "_report.xlsx"
+        return Response(
+            data, mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f'attachment; filename="{download_name}"'},
+        )
 
     @app.get("/api/node")
     def node():

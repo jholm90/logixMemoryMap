@@ -17,6 +17,16 @@ nothing:
   - CompactLogix 5380 (5069-Lxxx): 14 catalogs across the L306/L310/L320/
     L330/L340/L3100 tiers and their M/S2/S3 safety-suffix variants -- same
     source.
+  - CompactLogix 5370 (1769-Lxx): 9 catalogs, real ProductCodes already in
+    wrapper.py's `_PRODUCT_CODES` (James's own fw_baseline exports).
+    RE-ADDED 2026-08-30 (James: "I got the L7 ahk stuff working and it's
+    the same for the 1769 processors, please re-add the 1769 processors
+    to the l5x test generation list") -- previously left out of this
+    automated multi-firmware matrix entirely (only ever built as 9
+    single-firmware/v35 `fw_baseline` files) because the AHK capture
+    pipeline couldn't read a 1769's Capacity value without a manual
+    "Estimate" button click first; now that's resolved on James's end,
+    same fix as ControlLogix 5570 (L7x).
 
 NOT included, flagged rather than guessed:
   - ControlLogix 5570 (1756-L7x): only L71 has a confirmed real
@@ -87,7 +97,7 @@ from datetime import datetime
 from pathlib import Path
 
 from sample_gen.manifest import append_manifest_row, write_sample
-from sample_gen.wrapper import _5069_bus_size, _ICP_BUS_SIZE, _PRODUCT_CODES
+from sample_gen.wrapper import _1769_bus_size, _5069_bus_size, _ICP_BUS_SIZE, _PRODUCT_CODES
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "fw_catalog_matrix"
 
@@ -150,23 +160,44 @@ _L7X_PRODUCT_CODES = {
 _L7X_INFERRED = {"1756-L73", "1756-L74"}
 _L7X_CATALOGS = list(_L7X_PRODUCT_CODES)
 
+# CompactLogix 5370 (1769-Lxx) -- re-added 2026-08-30 (James: AHK capture
+# now works for this family, same fix as L7x). All 9 real ProductCodes
+# already confirmed in wrapper.py's own _PRODUCT_CODES (James's own
+# fw_baseline exports) -- no separate table needed here, _product_code()
+# already checks _PRODUCT_CODES first.
+_1769_CATALOGS = [
+    "1769-L16ER-BB1B", "1769-L18ER-BB1B", "1769-L18ERM-BB1B", "1769-L19ER-BB1B",
+    "1769-L24ER-QB1B", "1769-L24ER-QBFC1B", "1769-L27ERM-QBFC1B", "1769-L30ERM", "1769-L33ERM",
+]
+
 # GuardLogix 5580 safety-rated (James, 2026-08-25: "L8 needs safety
-# processors too"). L81ES's ProductCode (164) is confirmed real and
-# IDENTICAL to plain L81E's -- same physical hardware, safety unlocked in
-# firmware, not a different Module signature. L82ES-L85ES are INFERRED
-# on that same same-as-non-S basis (165/166/167/168), not independently
-# confirmed -- flagged in their own manifest notes.
+# processors too"). REAL BUG FOUND AND FIXED 2026-08-30 (James: "this file
+# fails to convert to acd" on fwmatrix_v35_1756_l85es -- direct real-world
+# proof, not a code-review catch): the "L81ES uses the SAME ProductCode as
+# plain L81E" assumption below was never actually checked against a real
+# L81ES corpus file -- it was a same-hardware plausibility argument, not
+# data. Real corpus grep (5 independent real files: SJ_Gormley_20251112_r02,
+# Bender134053_201104 x2 copies, RobbinsGrn_2026_05_13r00,
+# FlareFunction_311D_240731) shows GuardLogix 5580 ProductCodes live in a
+# COMPLETELY SEPARATE numbering space from the non-safety L8x: L81ES=211
+# (4 real files agree) and L84ES=214 (1 real file, FlareFunction_311D --
+# never found by this project until now). 211->214 across L81ES->L84ES is
+# exactly +1 per catalog step, the same sequential pattern this project
+# already uses elsewhere for an unconfirmed run -- L82ES/L83ES/L85ES are
+# still not independently confirmed, but now inferred from TWO real
+# anchor points on the CORRECT numbering space, not one guess built on a
+# wrong anchor.
 _L8XS_PRODUCT_CODES = {
-    "1756-L81ES": "164",
-    "1756-L82ES": "165",  # INFERRED, not directly confirmed
-    "1756-L83ES": "166",  # INFERRED, not directly confirmed
-    "1756-L84ES": "167",  # INFERRED, not directly confirmed
-    "1756-L85ES": "168",  # INFERRED, not directly confirmed
+    "1756-L81ES": "211",
+    "1756-L82ES": "212",  # INFERRED, not directly confirmed
+    "1756-L83ES": "213",  # INFERRED, not directly confirmed
+    "1756-L84ES": "214",
+    "1756-L85ES": "215",  # INFERRED, not directly confirmed
 }
-_L8XS_INFERRED = {"1756-L82ES", "1756-L83ES", "1756-L84ES", "1756-L85ES"}
+_L8XS_INFERRED = {"1756-L82ES", "1756-L83ES", "1756-L85ES"}
 _L8XS_CATALOGS = list(_L8XS_PRODUCT_CODES)
 
-ALL_CATALOGS = _L8X_CATALOGS + _5069_CATALOGS + _L7X_CATALOGS
+ALL_CATALOGS = _L8X_CATALOGS + _5069_CATALOGS + _L7X_CATALOGS + _1769_CATALOGS
 SAFETY_CATALOGS = _L8XS_CATALOGS
 ALL_INFERRED = _L7X_INFERRED | _L8XS_INFERRED
 
@@ -183,7 +214,34 @@ def _product_code(catalog: str) -> str:
     raise KeyError(f"No confirmed real ProductCode for {catalog!r} -- refusing to guess")
 
 
-def _local_ports_xml(catalog: str) -> str:
+def _local_ports_xml(catalog: str, is_safety: bool = False) -> str:
+    if is_safety:
+        # REAL BUG FOUND 2026-08-30 (James: "your L8 safety failed to
+        # generate acd files" -- watched the conversion fail directly).
+        # A Safety-capable CPU's own Local module Ports need a
+        # SafetyNetwork attribute on EVERY port, not just the Task/Program
+        # Class="Safety" markers this generator already had. Confirmed
+        # against samples/local/SJ_Gormley_20251112_r02.L5X, whose
+        # Controller CatalogNumber is literally "1756-L81ES" -- the exact
+        # family reported failing -- real Local module: both Port 1 (ICP)
+        # and Port 2 (Ethernet) carry SafetyNetwork. This generator never
+        # added it at all for the L8xES catalogs (SAFETY_CATALOGS), a
+        # completely separate code path from wrapper.py's build_l5x,
+        # which already got the analogous SIL2/SIL3 module-sweep fix
+        # 2026-08-28 and was never cross-applied here. Real SafetyNetwork
+        # values are device-unique (confirmed real corpus values are
+        # effectively random 64-bit hex, not sequential) -- this project
+        # has no way to fabricate a "real" one, so uses the same
+        # synthetic-but-correctly-formatted placeholder convention
+        # wrapper.py already established, one distinct value per port.
+        return (
+            f'<Port Id="1" Address="0" Type="ICP" Upstream="false" '
+            f'SafetyNetwork="16#0000_1005_0001_0001">\n'
+            f'<Bus Size="{_ICP_BUS_SIZE}"/>\n'
+            f'</Port>\n'
+            f'<Port Id="2" Type="Ethernet" Upstream="false" '
+            f'SafetyNetwork="16#0000_1005_0002_0002">\n<Bus/>\n</Port>'
+        )
     if catalog.startswith("5069"):
         return (
             f'<Port Id="1" Address="0" Type="5069" Upstream="false">\n'
@@ -207,6 +265,21 @@ def _local_ports_xml(catalog: str) -> str:
         # the same physical ControlLogix 5570 form factor so treated the
         # same, not independently confirmed per-catalog.
         return f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n<Bus Size="4"/>\n</Port>'
+    if catalog.startswith("1769"):
+        # CompactLogix 5370 real shape, same source/derivation as wrapper.
+        # py's _1769_bus_size (samples/local/DnR_Personal/TOYOTA_135453_
+        # 20221024.L5X, ProcessorType="1769-L33ERMS"): Port Type="Compact"
+        # (distinct from both 1756's "ICP" and 5069's "5069"), single
+        # Ethernet port -- same single-Ethernet shape as 1756/L7x, unlike
+        # 5069's dual-Ethernet. Only L33 has a confirmed real bus size
+        # (17); every other 1769 catalog falls back to that same value,
+        # unconfirmed for its own model specifically.
+        return (
+            f'<Port Id="1" Address="0" Type="Compact" Upstream="false">\n'
+            f'<Bus Size="{_1769_bus_size(catalog)}"/>\n'
+            f'</Port>\n'
+            f'<Port Id="2" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
+        )
     return (
         f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n'
         f'<Bus Size="{_ICP_BUS_SIZE}"/>\n'
@@ -223,7 +296,7 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
         guid = "{" + str(uuid.uuid4()).upper() + "}"
         extra_attrs = extra_attrs.replace("{DATAEXCHANGEID}", guid)
     product_code = _product_code(catalog)
-    local_ports_xml = _local_ports_xml(catalog)
+    local_ports_xml = _local_ports_xml(catalog, is_safety=is_safety)
     # Real shape confirmed 2026-08-25 against samples/local/SJ_Gormley_
     # 20251112_r02.L5X and DnR_Personal/Bender134053_201104.L5X (James:
     # "Safety processor needs a safety task. You don't have to put in a
@@ -233,7 +306,19 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
     # MainRoutine, no real safety content) per James's "don't have to put
     # in a safety program" -- but a Task always schedules a real Program
     # in both real references, so the pairing itself is kept, just empty.
-    safety_info_xml = '<SafetyInfo SafetyLocked="true" SignatureRunModeProtect="false" ConfigureSafetyIOAlways="true" SafetyLevel="SIL2/PLd"/>' if is_safety else '<SafetyInfo/>'
+    # REAL BUG FOUND 2026-08-30 (James: "your L8 safety failed to generate
+    # acd files. You should have known that"). SafetyLocked="true" with no
+    # SafetySignature attribute is an invalid combination -- checked all
+    # 9 real corpus files with a SafetyInfo element: every one of the 4
+    # with SafetyLocked="true" ALSO carries a real SafetySignature (a GUID
+    # hash + timestamp, generated by Studio 5000's actual sign/lock
+    # workflow); every one of the 5 with SafetyLocked="false" has none.
+    # This generator hardcoded locked=true with no signature at all --
+    # zero real files ever show that combination. Since the safety program
+    # here is deliberately minimal (a bare NOP, no real signing performed),
+    # the correct real value is SafetyLocked="false", matching every real
+    # file that similarly has no signature.
+    safety_info_xml = '<SafetyInfo SafetyLocked="false" SignatureRunModeProtect="false" ConfigureSafetyIOAlways="true" SafetyLevel="SIL2/PLd"/>' if is_safety else '<SafetyInfo/>'
     safety_program_xml = (
         '<Program Name="SafetyProgram" TestEdits="false" MainRoutineName="MainRoutine" '
         'Disabled="false" Class="Safety" UseAsFolder="false">\n<Tags/>\n<Routines>\n'

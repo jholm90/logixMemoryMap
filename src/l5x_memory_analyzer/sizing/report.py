@@ -195,8 +195,8 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # first count seen for a name is trusted.
     jsr_target_param_counts: dict[str, int] = {}
     for routine in all_routines:
-        for target, n in routine.jsr_calls:
-            jsr_target_param_counts.setdefault(target, n)
+        for target, n_in, _m_out in routine.jsr_calls:
+            jsr_target_param_counts.setdefault(target, n_in)
 
     logic_entries: list[tuple[str, str, str, int, str]] = []
     n_plain_routines = 0
@@ -337,11 +337,20 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # processor-integrated I/O block costs the same, so it stays fully
         # unmodeled (same treatment as a rack-aliased module below) rather
         # than guessing module_overhead applies unchanged.
-        if module.uses_rack_connection or module.catalog_number == "Embedded":
-            reason = (
-                "rack-aliased (RackConnection/InAliasTag)" if module.uses_rack_connection
-                else "processor-embedded I/O (CatalogNumber=\"Embedded\")"
-            )
+        # 2026-08-30, James: "I thought we were excluding controlnet" / "And
+        # all legacy networks" -- a ControlNet/DeviceNet/DH+/DH-485/RIO
+        # bridge module gets the same unmodeled treatment as a rack-aliased
+        # or processor-embedded module, not a fitted module_overhead_by_
+        # catalog byte value: zero real corpus data exists for these
+        # networks (see parser/modules.py's _LEGACY_NETWORK_PORT_TYPES
+        # comment and OQ-LEGACYNETOVERHEAD).
+        if module.uses_rack_connection or module.catalog_number == "Embedded" or module.is_legacy_network:
+            if module.uses_rack_connection:
+                reason = "rack-aliased (RackConnection/InAliasTag)"
+            elif module.catalog_number == "Embedded":
+                reason = "processor-embedded I/O (CatalogNumber=\"Embedded\")"
+            else:
+                reason = f"legacy-network bridge (Port Type={sorted(module.port_types)})"
             errors.append(SizeError(
                 path=f"modules/{label}",
                 message=(
@@ -352,9 +361,14 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                 ),
             ))
             continue
-        module_bytes = module.module_defined_bytes + model.module_overhead_bytes
+        # 2026-08-29, OQ-MODULEIO: real per-catalog overhead (memory_model.yaml
+        # module_overhead_by_catalog) replaces the flat cross-catalog FITTED
+        # average for any catalog with an unambiguous real capture point;
+        # falls back to the same flat default otherwise.
+        overhead_bytes, overhead_basis = model.module_overhead_by_catalog.overhead_for(module.catalog_number)
+        module_bytes = module.module_defined_bytes + overhead_bytes
         module_entries.append((f"modules/{label}", "module_io", module.catalog_number,
-                                module_bytes, model.module_overhead_confidence))
+                                module_bytes, overhead_basis))
         if module.unknown_member_types:
             errors.append(SizeError(
                 path=f"modules/{label}",
@@ -382,6 +396,65 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     if module_total and total_bytes:
         entries = [
             e if e.path.startswith("modules/") else
+            SizeEntry(path=e.path, category=e.category, data_type=e.data_type, bytes=e.bytes,
+                      pct_of_total=(e.bytes / total_bytes * 100), tier=e.tier, basis=e.basis)
+            for e in entries
+        ]
+
+    # Firmware-version + safety-capable-model + per-catalog baseline
+    # corrections (OQ-BASELINE-PROCFW, wired 2026-08-29 -- see
+    # memory_model.yaml firmware_baseline_delta / safety_capable_baseline_
+    # delta / catalog_baseline_delta for the full derivation). All three
+    # are real per-file structural deltas layered on top of the
+    # already-confirmed flat empty_project_baseline -- same class of
+    # correction as module_overhead above (FITTED/ASSUMED from real
+    # capture data, not yet KNOWN-grade), so ESTIMATED tier for the same
+    # reason. catalog_baseline_delta (added same day) is the 1769-series
+    # thread: real per-catalog baseline is enormous (+51,488 to +80,832)
+    # and exact-string-keyed only, unlike the other two. Category
+    # "project_baseline" (not a new category) deliberately reuses the
+    # existing NON_TAG_GROUPS "Project Overhead" grouping in ui/hierarchy.py
+    # -- these are structural scaffolding costs, not a new kind of thing.
+    controller_el = root.find("Controller")
+    software_revision = root.get("SoftwareRevision")
+    processor_type = controller_el.get("ProcessorType") if controller_el is not None else None
+
+    baseline_delta_entries: list[tuple[str, str, str, int, str]] = []
+    fw_bytes, fw_basis = model.firmware_baseline_delta.delta_for(software_revision)
+    if fw_bytes:
+        fw_major = software_revision.split(".")[0] if software_revision else "?"
+        baseline_delta_entries.append((
+            "firmware_baseline_delta", "project_baseline", f"FW_V{fw_major}_BASELINE",
+            fw_bytes, fw_basis,
+        ))
+    if model.safety_capable_baseline_delta.applies_to(processor_type):
+        baseline_delta_entries.append((
+            "safety_capable_baseline_delta", "project_baseline", "SAFETY_CAPABLE_BASELINE",
+            model.safety_capable_baseline_delta.bytes,
+            model.safety_capable_baseline_delta.confidence,
+        ))
+    catalog_delta = model.catalog_baseline_delta.delta_for(processor_type)
+    if catalog_delta is not None:
+        catalog_bytes, catalog_basis = catalog_delta
+        baseline_delta_entries.append((
+            "catalog_baseline_delta", "project_baseline", "CATALOG_BASELINE",
+            catalog_bytes, catalog_basis,
+        ))
+
+    if baseline_delta_entries:
+        baseline_delta_total = sum(size for _, _, _, size, _ in baseline_delta_entries)
+        total_bytes += baseline_delta_total
+        new_paths = {path for path, _, _, _, _ in baseline_delta_entries}
+        entries += [
+            SizeEntry(
+                path=path, category=category, data_type=data_type, bytes=size,
+                pct_of_total=(size / total_bytes * 100) if total_bytes else 0.0,
+                tier=ESTIMATED, basis=basis,
+            )
+            for path, category, data_type, size, basis in baseline_delta_entries
+        ]
+        entries = [
+            e if e.path in new_paths else
             SizeEntry(path=e.path, category=e.category, data_type=e.data_type, bytes=e.bytes,
                       pct_of_total=(e.bytes / total_bytes * 100), tier=e.tier, basis=e.basis)
             for e in entries

@@ -78,19 +78,23 @@ type-name length (immediately above) and array-of-STRING padding
 Firmware-native structures referenced by name in L5X Tag/Member DataType
 attributes but never given a member list in `Controller/DataTypes` --
 Logix Designer resolves them internally, so there's nothing to recurse.
-Only types with a real, evidence-backed layout are modeled here; MESSAGE,
-DCI_STOP, CONFIGURABLE_ROUT, and ALARM_DIGITAL are deliberately left
-unsized rather than guessed (DCI_STOP has real evidence but is withheld
-pending a Safety-scope product decision, see OPEN_QUESTIONS.md
-OQ-PREDEFINED). MESSAGE and ALARM_DIGITAL's full real member lists/types
-ARE now known (sourced directly from RM018A, 2026-08-27) but neither has a
-confirmed byte TOTAL -- see OPEN_QUESTIONS.md OQ-PREDEFINED for the field
-list, the confirmed 46-byte MESSAGE non-STRING subtotal, and the two named
-unknowns blocking each (STRING field length; native-structure BOOL packing
-convention). CONFIGURABLE_ROUT remains fully unread/unmodeled. TIMER/
-COUNTER/CONTROL below are now cross-checked exact against RM018A (pages
-92-93 for COUNTER) -- first time confirmed against a real Rockwell primary
-source rather than only empirical capture.
+**2026-08-29: 174 more wired in one batch**, real single-capture-each data
+from James's own conversion+capture pipeline against `gen_predefined_probe.py`'s
+184-file blank-tag discovery batch (see OPEN_QUESTIONS.md OQ-PREDEFINED for
+the full derivation method and per-type table) -- MESSAGE (688 bytes) and
+ALARM_DIGITAL (973 bytes) are now resolved, both previously genuinely
+blocked. DCI_STOP (76 bytes) and the rest of the Safety-Instructions-family
+types also now have real values, but stay subject to the same pending
+Safety-scope product decision as before (see OPEN_QUESTIONS.md) -- the
+VALUE is real and wired, the display/inclusion POLICY for Safety-scoped
+tags is a separate, still-open question. CONFIGURABLE_ROUT -- CORRECTED
+2026-08-29, this line was wrong: its probe DID capture real data (actual
+18,264) and IS wired (52 bytes) -- also Safety-family (name root matches
+`CROUT`), same pending scope decision as DCI_STOP above. All 195 known
+predefined types are now wired with a real value. TIMER/COUNTER/
+CONTROL below are cross-checked exact against RM018A (pages 92-93 for
+COUNTER) -- first time confirmed against a real Rockwell primary source
+rather than only empirical capture.
 
 | Type | Bytes | Notes |
 |---|---|---|
@@ -157,16 +161,32 @@ has its own constant.
 
 **CAVEAT, James 2026-08-23: "your empty project baseline is not a constant
 and will change based on processor and firmware. You need to be aware of
-this."** Not yet tested against any other processor or firmware revision
--- see `docs/OPEN_QUESTIONS.md` OQ-BASELINE-PROCFW. A ~30-file per-
-processor blank-project batch and a same-processor/different-firmware
-batch are coming to isolate both components separately. Once that lands,
-this needs to become a lookup keyed on (processor_type, firmware_rev),
-likely living in `controller_budgets.yaml` next to the existing per-
-processor memory-budget table, not a bare scalar in this file. Until then,
-**13,296 is only valid for 1756-L81E/35.05-class projects** -- do not
-apply it to a report for any other processor without flagging that
-explicitly.
+this."** Confirmed true, and **partially wired 2026-08-29** -- see
+`docs/OPEN_QUESTIONS.md` OQ-BASELINE-PROCFW for the full derivation. Rather
+than replace `empty_project_baseline` itself with a lookup, `report.py`
+applies two additional real, additive corrections on top of it (both in
+`memory_model.yaml`, ESTIMATED tier like `module_overhead` -- FITTED from
+real data, not yet KNOWN-grade):
+
+- **`firmware_baseline_delta`** -- keyed on the L5X root's own
+  `SoftwareRevision` major version. v31/v32 add a real +11,240; v33 adds
+  +14,248; v34/v35 (the already-confirmed 13,296 baseline itself) and any
+  unlisted/unconfirmed major (v36, v37, v38, ...) add 0 (no adjustment).
+- **`safety_capable_baseline_delta`** -- +296, applied when
+  `Controller/@ProcessorType` ends in `S2`/`S3` (the 5069 Motion+Safety
+  catalog suffix), independent of whether real Safety content exists in
+  the file at all.
+
+Validated against all 50 real (untainted) `fw_catalog_matrix` capture rows
+across v31-v35, 1756/5069, safety and non-safety: every one now predicts
+within 16 bytes. **Still genuinely unconfirmed:** v38 (its only capture is
+`WINDOW TITLE MISMATCH`-flagged, not trusted), v36/v37 (no real sample at
+all), the full 1769-series baseline (real range 69,600-98,944, not modeled
+at all), and 1756-L7x/L8xES catalogs in the matrix (built, not yet
+captured). **13,296 remains the correct base for 1756-L81E/35.05-class
+projects specifically** -- the two deltas above are corrections layered on
+top of it for the firmware/catalog combinations they cover, not a
+replacement lookup table.
 
 ## Alias tags (KNOWN, corrected 2026-08-25)
 
@@ -363,27 +383,64 @@ alongside another type — a naive per-type sum under-predicts that file by
 80 bytes, while the flat rate matches it exactly. Live-recomputed against
 all 85 captured AOI manifest rows: 32 exact, 52 within 1%, 1 at 2.10%
 (a separate array-vs-definition-cost interaction, not a def-cost miss —
-see AOI_KNOWLEDGE_MAP.md item 3). Still open, both small (<2% of a file's
-total bytes at the tested extremes): AOI name length's non-uniform
-stepping effect, and Required/Visible/Hidden's small ±16 swing (recapture
-batch awaiting capture). See `memory_model.yaml`'s `aoi_definition` block
-for the full derivation and `docs/AOI_KNOWLEDGE_MAP.md` for history.
+see AOI_KNOWLEDGE_MAP.md item 3).
+
+**AOI type-name-length step, CLOSED 2026-08-30 (OQ-AOIDEF):** the AOI type
+name itself adds `8*max(0,(len(name)-8)//4) - 8` bytes to the definition
+cost, confirmed 7/7 exact against real `aoiname_len08/09/13/16/20/25/30`
+points. Wired as `AoiDefinitionModel.name_length_bytes`. See
+`docs/RESOLVED_QUESTIONS.md` for the off-by-one bucket-boundary bug found
+and fixed while closing this (the first divisor tried, `(len-7)//4`,
+reproduced the same 7 points but put len=19 one bucket too high, caught
+by cross-checking two AOI-array-packing files that only differed in AOI
+type name length).
+
+Required/Visible/Hidden's small ±16 swing was CLOSED 2026-08-25 (confirmed
+noise, no real effect tied to flag config). See `memory_model.yaml`'s
+`aoi_definition` block for the full derivation and
+`docs/AOI_KNOWLEDGE_MAP.md` for history.
+
+**Array-of-AOI-instances element cost (DOWNGRADED KNOWN → FITTED,
+2026-08-30, OQ-AOIBOOLPACK-PAIRING):** the `aoi_array` formula's earlier
+"confirmed exact, 15 real points" claim was only ever checked at 3 sparse
+instance counts per shape (n=1/10/25). Dense/consecutive real data (27
+points sitting unreconciled) disproves it: for a single-packed-word AOI
+(bool_count≤32), real array bytes follow `8*ceil(n/2) + B` — an odd-length
+array costs 4 bytes more than this formula predicts, and B (a flat,
+per-shape offset the formula has no term for) doesn't extrapolate cleanly
+across bool_count. See `docs/OPEN_QUESTIONS.md` OQ-AOIBOOLPACK-PAIRING for
+the full data table; new test files generated (`gen_aoi_boolpack_pairing.py`)
+but not yet captured.
 
 ## Module / I/O tag sizing
 
-**Wired 2026-08-27 (n=2, FITTED, LOW CONFIDENCE — see OQ-MODULEIO for the
-full derivation).** `module_defined_bytes` (real, computed from the
+**Wired 2026-08-27, per-catalog table added 2026-08-29 — see OQ-MODULEIO
+for the full derivation.** `module_defined_bytes` (real, computed from the
 module's own auto-generated "Module-Defined" data type — InputTag/
 OutputTag/ConfigTag Structure content, sized the same way as any UDT) +
-`module_overhead` (1,672 bytes/module flat, the mean of 2 real captured
-deltas: 1756-IB16=1,684, 1734-AENTR/C=1,660 — ~98% of a module's real cost
-either way). Wired as ESTIMATED tier, not EXACT — 2 real points doesn't
-earn tag/UDT/AOI-level confidence yet. NOT charged to a rack-aliased
-module (`RackConnection`/`InAliasTag`) or a `CatalogNumber="Embedded"`
+a real per-catalog overhead when one exists (`module_overhead_by_catalog`,
+51 catalogs, real range -793 to +10,497, ASSUMED confidence, derived the
+same subtraction way as `predefined_structures`), else the flat
+`module_overhead` (1,672 bytes/module, the mean of the original 2 real
+captured deltas) as a fallback for any catalog with no real data yet.
+Both stay ESTIMATED tier, not EXACT. NOT charged to a rack-aliased module
+(`RackConnection`/`InAliasTag`) or a `CatalogNumber="Embedded"`
 processor-integrated I/O block (CompactLogix 5370 "ER" family) — zero real
-data for either shape, stays fully unmodeled rather than guessed.
-- Produced/Consumed: **UNKNOWN — OQ-PRODCONS**. Overhead formula not yet
-  isolated from base connection cost vs. payload cost vs. consumer count.
+data for either shape, stays fully unmodeled rather than guessed. Real,
+still-open gaps: a module's 2nd/3rd/... instance of the SAME catalog in
+one file costs LESS than the 1st (not flat per-instance — real
+`module_1756_ib16_n01/n03/n10` deltas are -4/-1,588/-7,160 against a flat
+per-instance assumption), and a handful of catalogs (generic Ethernet
+placeholders, a couple of adapter/bridge catalogs) show real
+connection-variant-dependent overhead not yet decomposed — see
+OPEN_QUESTIONS.md OQ-MODULEIO.
+- Produced/Consumed: **RESOLVED — OQ-PRODCONS**. No special connection-
+  overhead formula needed — a correctly-built produced/consumed tag's
+  DataType already includes a `CONNECTION_STATUS`-typed member, so
+  ordinary UDT-member recursion covers it; `CONNECTION_STATUS` itself is
+  now a wired `predefined_structures` entry (4 bytes, 2026-08-29 batch).
+  Zero produced/consumed tags in the real corpus so far. See
+  RESOLVED_QUESTIONS.md.
 - Motion/Kinetix (2198-series) and VFD (PowerFlex) module shapes:
   **UNKNOWN**, deliberately untouched — need their own real-shape
   research, not a safe reuse of the backplane/Point-I/O shapes above.
@@ -586,6 +643,26 @@ cost, charged once per distinct target by `report.py`, never per call
 site). Verified end-to-end against all 6 real `jsr_paramcount_n05/08/10_
 r00100/r01000` points: 4 exact, 2 (both n=8) off by the same small +8
 universal noise seen elsewhere in this project.
+
+**Branch bracket cost — WIRED 2026-08-30 (OQ-BRANCHDEPTH).** A branch
+(`[...]`) is compiled to real BST/NXB/BND-family instructions -- one BST +
+one NXB per extra leg + one BND, i.e. `(leg_count + 1)` instructions per
+bracket group -- and every one of those instructions costs a flat **4
+bytes**. Nested/staggered branches recurse: a branch nested inside a leg
+adds its own `(leg_count + 1)` on top. `parser/logic.py`'s
+`_branch_bracket_instruction_count` does a real bracket-matching scan
+(not a naive regex) to count these, correctly distinguishing a branch-open
+`[` from an array-index `Tag[5]` bracket by the character immediately
+before it, and correctly ignores commas inside an instruction's own
+argument list (paren-depth tracked) so a multi-arg call inside a leg
+doesn't get miscounted as extra legs. Verified exact against all 17 real
+`branchdepth_legs01/03/05` / `branchdepthc_legs02-30` /
+`branchdepthstag_d01-06` points (10 flat leg-count + 6 nested-depth + the
+1 trivial no-branch point) -- the SAME 4-bytes/instruction rate explains
+both independently-built datasets, not two separate curve fits. FITTED,
+not KNOWN -- only tested at n=1000 rungs and one tag shape (BOOL XIC
+legs). See `docs/RESOLVED_QUESTIONS.md` OQ-BRANCHDEPTH for the full
+derivation.
 | LIM | 68 | **52** (LIM+OTE combined) | 4,816 | 5 | 0.00% |
 | ONS | 56 | **36** (XIC+ONS+OTE combined) | 4,816 | 5 | 0.00% |
 | MUL | 56 | 56 (solo rung) | 4,816 | 5 | 0.00% |
@@ -772,3 +849,75 @@ there's a record of *why* a number is what it is, not just what it currently is.
   regression across all 1,059 captured manifest rows went from 279 to 292
   exact matches with zero real regressions (see OPEN_QUESTIONS.md
   OQ-TASKOVERHEAD for the full derivation and regression numbers).
+- **2026-08-29** — Firmware-version + 5069-safety-capable-model baseline
+  deltas wired (OQ-BASELINE-PROCFW; see "Empty-project baseline" above for
+  the full formula). New `memory_model.yaml` sections
+  `firmware_baseline_delta` (v31/v32=+11,240, v33=+14,248, v34/v35/
+  unlisted=+0) and `safety_capable_baseline_delta` (+296, gated on
+  `ProcessorType` ending `S2`/`S3`), both ESTIMATED tier, read via
+  `report.py` off the L5X root's `SoftwareRevision`/`Controller/
+  @ProcessorType`. Validated against all 50 real (untainted)
+  `fw_catalog_matrix` rows: every one now predicts within 16 bytes, down
+  from errors up to 14,552. **Correction, same day:** a prior pass had
+  claimed a real "+304 v38 delta" and a real "-1,044 byte AOI-array-
+  parameter overshoot anomaly" — both were misreadings of
+  `WINDOW TITLE MISMATCH`-flagged manifest rows (contaminated capture
+  data, wrong file's numbers), not real engine gaps. Both rows' capture
+  columns cleared per CLAUDE.md's standing rule; neither claim is wired,
+  both stay open awaiting real (clean) capture.
+- **2026-08-29, same day** — Found and fixed a real process gap: 7
+  OQ-CMPCPTLAYOUT diagnostic CPT files had real capture data from
+  2026-08-27 sitting unreconciled in manifest.csv, never wired. Closed the
+  all-3-tier-mix CPT thread: `base_by_remainder[operator_count % 3] +
+  4 * pow_operand_count` (`base_by_remainder = {0: 72, 1: 116, 2: 144}`),
+  confirmed 0 residual across all 9 real all-3-tier data points on file
+  (operator counts 4-14) — corrects and replaces an earlier
+  `44*T1-116*T2+76*T3+72` attempt that, checked directly, didn't actually
+  reproduce the points it was claimed to fit. Wired in
+  `CptExpressionModel.cost_for`/`memory_model.yaml` cpt_expression. The
+  REAL-operand/float-literal thread stays open — investigated with the
+  other 4 files' real data and found genuinely non-monotonic (1 REAL
+  operand costs MORE than 2), ruling out any simple per-count formula; see
+  OPEN_QUESTIONS.md OQ-CMPCPTLAYOUT for the full finding and a real
+  hypothesis (type-promotion-point count, not operand count) for the next
+  probe batch.
+- **2026-08-29, same day, full manifest.csv audit** (James: "make another
+  in-depth pass"). Re-ran every category with real capture data through
+  the live engine, not just the categories a previous pass happened to
+  check. Found 90 of 126 `modules`-category rows were never checked
+  against the engine at all despite having real data since 2026-08-22.
+  Wired `module_overhead_by_catalog` (51 catalogs, real range -793 to
+  +10,497, replacing the flat 1,672 FITTED-from-2-points estimate for
+  those catalogs) — see "Module / I/O tag sizing" above. Real exact-match
+  rate on the 126 real module rows: 1/126 -> 54/126. Two real threads
+  left open, both genuine architecture gaps (non-flat multi-module
+  marginal cost; a few connection-variant-dependent catalogs), documented
+  in OPEN_QUESTIONS.md OQ-MODULEIO rather than force-fit.
+- **2026-08-29, same audit, JSR output/return-param cost.** OQ-JSRPARAMCOST
+  had been marked "fully wired" (2026-08-25), but that only ever covered
+  INPUT params -- the calibration data's RET() was always empty, so
+  output/return-value args were never modeled at all. Two real captures
+  (`jsr_mixedio_5in_2out_r01000`, `jsr_multiret_n04_r01000`, both from
+  2026-08-23) sat unreconciled, off by +40,040 and +40,332. Both isolate
+  to ~20/output-arg, matching `b_per_param` exactly -- wired as
+  `output_param_cost=20`, charged per output arg per call site.
+  `jsr_paramcount_n05/08/10_r01000` (input-only, unaffected) stay exact/
+  near-exact; `jsr_mixedio` now off by +40 (noise-band); `jsr_multiret`
+  by +332 (the callee's one-time `A(n)` cost almost certainly also needs
+  an output-param term, too small to isolate from a single sample --
+  reopened as OQ-JSRPARAMCOST in OPEN_QUESTIONS.md rather than left
+  silently wrong in RESOLVED_QUESTIONS.md).
+- **2026-08-29, same audit, 1769-series real baseline + v30.** 9 more
+  real `fw_baseline`-category points (8 real 1769-series CompactLogix
+  5370 captures + 1 real v30 point) sat unreconciled. Wired
+  `catalog_baseline_delta` (exact-`ProcessorType`-string keyed, real
+  range +51,488 to +80,832 -- a single expansion-module suffix character
+  changes the value by 13,000+ bytes, e.g. `1769-L24ER-QB1B` vs
+  `-QBFC1B`, so kept exact-match only, no prefix/suffix generalization)
+  and added `"30"` to `firmware_baseline_delta` (+11,160, single real
+  MANUAL ENTRY point -- this project's SDK can't build v30 exports at
+  all, so there's no automated capture path). All 29 real `fw_baseline`
+  rows now checked: 17 exact, 6 within the small per-file noise band
+  (<=16 bytes), 3 already-documented small catalog-model variance
+  (+32 bytes), 3 already-documented Safety-Task-bearing-file gap
+  (see "Empty-project baseline" above).

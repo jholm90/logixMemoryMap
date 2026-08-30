@@ -203,6 +203,19 @@ tolerance bands. This is the real payoff of the whole sweep: the
 individually-confirmed constants compose correctly in a realistic mixed
 file, not just in isolation.
 
+**Re-checked against the current (2026-08-29) engine, full manifest.csv
+audit:** `large_mixed_100tags` (+136, 0.49%) and `large_mixed_1100tags`
+(+1,336, 1.07%) still land comfortably inside band. `large_mixed_
+1000tags_arrays` now shows +4,416 (~3.38% of predicted) — drifted
+slightly above the 2.6% figure quoted above and right at the edge of
+James's "acceptable" ceiling, most likely because array-dimension/
+UDT-array formulas have changed since this was originally resolved
+(2026-08-22-era). Not re-investigated this pass (single data point, no
+isolation of which specific array/UDT-array formula moved) — flagged
+here rather than left silently stale; a fresh `large_mixed_*`-style
+composite file would confirm whether this is real drift or just this one
+file's specific tag mix.
+
 **OQ-AXISSTRUCT (numbers, not the combo test).** Real reference exports
 confirmed these use `Data Format="Axis"` with a flat `AxisParameters`
 attribute list — structurally nothing like UDT/AOI, totally unmodeled by
@@ -719,3 +732,556 @@ other 2 (both n=8) off by the same small +8 universal noise seen
 elsewhere in this project. Two new unit tests cover the not-double-
 counted case (single call) and the multiple-call-sites-to-one-target case
 (A(n) charged once, not per call site).
+
+**CORRECTION, 2026-08-29: "fully wired" was wrong — this covered INPUT
+params only.** `group_param_count`'s calibration files always called
+`RET()` empty (no return value), so B(n)/A(n) never saw a single real
+byte of output/return-param cost — a real, sizeable gap silently
+undetected until a full manifest.csv audit (James: "make another in-depth
+pass") found `jsr_mixedio_5in_2out_r01000`/`jsr_multiret_n04_r01000` (real
+captures from 2026-08-23) sitting unreconciled, both off by +40,040 and
++40,332 respectively. Both isolate to ~20/output-arg (2 output args each,
+matching `b_per_param` exactly) — wired as `output_param_cost=20`,
+charged once per output arg per call site (`_jsr_calls()` now returns
+`(target, n_in, m_out)`, `m_out` computed from the real
+`JSR(name, N_in, in_1..in_N, out_1..out_M)` syntax). `jsr_mixedio` now off
+by +40 (noise-band), `jsr_multiret` by +332 — the callee's own one-time
+`A(n)` Parameters-block cost almost certainly also needs an output-param
+term (real target-routine Parameters blocks include both Input and Output
+entries), but that effect is too small relative to a 1-distinct-target
+sample to isolate from noise here — flagged as OQ-JSRPARAMCOST in
+OPEN_QUESTIONS.md rather than force-fit or silently left uncorrected in
+this file.
+
+## OQ-AOIDEF name-length step formula, CLOSED 2026-08-30
+
+An AOI type name's contribution to its own definition cost follows
+`8*max(0,(len(name)-8)//4) - 8` -- confirmed exact against all 7 real
+`aoiname_len08/09/13/16/20/25/30_def_only` points, which had been sitting
+unreconciled. Wired into `AoiDefinitionModel.name_length_bytes` (used by
+`compute_aoi_definition_cost` in `sizing/udt.py`), with a matching
+`.namelen` breakdown row added to `tree.py`'s `_expand_aoi_definition` so
+the UI drill-down sum stays consistent with the total.
+
+The first version wired used divisor `(len-7)//4` instead of `(len-8)//4`
+-- both reproduce all 7 tested points identically (none of the 7 sit at
+`len % 4 == 3`, the one residue class where the two divisors disagree), so
+the bug was invisible against that dataset alone. Caught by cross-checking
+two already-captured, unreconciled AOI-array-packing files that differ
+ONLY in AOI type name length and are otherwise byte-identical in shape (10
+BOOL In/10 BOOL Out/10 BOOL Local, array of 16 instances):
+`aoipack_bool_dense_array_n16` (`AoiPureBoolDense`, 16 chars) and
+`aoipack_bool_boundary_n16` (`AoiPureBoolBoundary`, 19 chars). Same shape,
+same array length -- real captured bytes must be identical once the
+(separately confirmed) array-of-instances cost is subtracted out, but the
+old divisor put len=19 one bucket higher than len=16, producing a genuine
+8-byte prediction mismatch between two files that should have predicted
+the same total. `(len-8)//4` resolves it to 0 bytes apart while leaving
+all 7 originally-tested points exact.
+
+Investigating that cross-check further turned up a second, larger,
+**still-open** issue with the array-of-AOI-instances per-element formula
+itself (previously tagged KNOWN) -- see OQ-AOIBOOLPACK-PAIRING in
+OPEN_QUESTIONS.md; confidence downgraded to FITTED pending new capture
+data (`gen_aoi_boolpack_pairing.py`, 23 files, generated but not yet
+captured).
+
+## OQ-INSTRFIRSTPASS, CLOSED 2026-08-30
+
+34/36 real instruction weights confirmed and wired. SCP/FBC/PID were the
+2 remaining gaps -- SCP had no second real example to validate a weight
+against, FBC and PID had zero real examples at all (PID also needs its
+own structure tag, never built). Deprioritized 2026-08-25 (James: "move
+to safety related feature"); explicitly closed as out-of-scope 2026-08-30
+(James: doesn't care about closing these) rather than left open
+indefinitely awaiting data that isn't coming.
+
+Small residual not worth reopening the question over: a flat +12 byte
+gap (corrected from a misrecorded +6) across all 64 clean `instrfirst_*`
+files, ~0.06% of file total, narrowed to an interaction effect among the
+7 shared tag types the pool declares but not isolated to which one.
+
+## Real generator bug: SafetyLocked="true" with no SafetySignature, fixed 2026-08-30
+
+James: "your L8 safety failed to generate acd files. You should have
+known that." Root cause found by cross-checking all 9 real corpus files
+carrying a `SafetyInfo` element: every one with `SafetyLocked="true"`
+ALSO carries a real `SafetySignature` attribute (a GUID hash + timestamp
+from Studio 5000's actual sign/lock workflow); every one with
+`SafetyLocked="false"` has none -- 9/9, zero exceptions. Every generator
+in this project hardcoded `SafetyLocked="true"` with no signature at
+all -- a combination that appears in zero real files and is almost
+certainly what Studio 5000 rejects on import, since a locked safety
+program is a claim that real signing happened.
+
+Fixed in both places this template is built: `wrapper.py`'s `build_l5x`
+SIL2/SIL3 branches and `gen_fw_catalog_matrix.py`'s `_build_xml` (the
+L8xES GuardLogix safety-catalog matrix). Since none of these generated
+files ever perform a real sign/lock, `SafetyLocked="false"` is the
+correct value, matching every real unsigned file.
+
+Regenerated all 30 L8xES safety-catalog matrix files and all files
+downstream of `wrapper.py`'s safety template (`gen_module_bender_full.py`,
+`gen_module_sweep.py`, `gen_module_sweep_gap.py`,
+`gen_module_sweep_variants.py` -- 117 files total, re-run through their
+own generators). 13 additional files with no live generator reference
+anymore (orphaned from an earlier iteration of the module-sweep scripts,
+2 of which — `modulesweep_1734_ob8s_a/b` — carry real captured
+`actual_bytes` that must not be disturbed) were patched directly in
+place (string substitution only, doesn't touch `predicted_bytes` --
+`SafetyInfo` has no sizing weight). Full 1707+ file corpus re-swept: 0
+crashes, 0 remaining `SafetyLocked="true"` instances anywhere.
+
+## OQ-PREDEFINED, CLOSED for all 195 known types
+
+James's own conversion+capture pipeline ran the full 184-file
+`gen_predefined_probe.py` blank-tag discovery batch; 174 imported clean
+and got a real Capacity delta. Wired all 174 into `memory_model.yaml` in
+one batch (ASSUMED, n=1 real capture each). MESSAGE (688 bytes) and
+ALARM_DIGITAL (973 bytes) -- the two longest-standing genuinely-blocked
+types -- are now resolved with real totals. SFC_STOP (wired 2026-08-28
+from real L5K data) matched the new real capture EXACTLY (0 residual),
+independently confirming the derivation method itself, not just that one
+type.
+
+**`CONFIGURABLE_ROUT` was WRONGLY documented as unmodeled** -- its real
+capture (`predefprobe_configurable_rout`, actual 18,264) was on file in
+manifest.csv the whole time and IS wired (52 bytes, same value as
+`BUS_OBJ`'s real capture, plausible for a small structure, not a
+data-entry error -- cross-checked directly). The commit that wired the
+other 174 said "CONFIGURABLE_ROUT remains unmodeled" while its own diff
+actually included it correctly -- the prose was wrong, the code wasn't.
+It's very likely Safety-family (name root matches `CROUT`, the
+already-confirmed Safety-only instruction) -- see OPEN_QUESTIONS.md
+OQ-SAFETYSCOPE-SIZING for the still-open display-policy question this
+raises (not a data question).
+
+**Note on MessageType variance, still a minor open thread**: MESSAGE's
+688-byte total was captured against ONE real MessageType (CIP Generic).
+`gen_msg_typesweep.py` built 8 files (one per real MessageType found in
+the corpus: CIP Generic, CIP Data Table Read/Write, PLC5 Typed
+Read/Write, PLC5 Word Range Write, SLC Typed Read/Write) to test whether
+688 holds flat across all 8 (confirming the axis-tag-style "lots of
+config, always the same data size" pattern already seen elsewhere in
+this project) or varies by attribute-set complexity. Built, awaiting
+capture -- low priority given the strong flat-regardless-of-config
+precedent this project has seen repeatedly (AOI Required/Visible flags,
+etc.), but not yet directly confirmed for MESSAGE specifically.
+
+**Sibling native-structure gap, found 2026-08-27** verifying drill-down
+completeness (James: "confirm we can browse down to base structure level
+for all UDT/AOI"). Drill-down itself is fully confirmed for everything the
+engine CAN size -- a recursive walk of all 2,780 UDT/AOI definitions across
+James's real 64-file corpus reached 4,502,812 true leaves with zero bad
+leaves and zero silent dead-ends. A real, separate gap surfaced along the
+way: any tag whose type transitively includes a member typed SFC_STEP/
+SFC_ACTION/FBD_TIMER/SCALE/CAM_PROFILE/DCI_STOP/RATE_LIMITER/
+CONFIGURABLE_ROUT/ALARM_DIGITAL/FBD_ONESHOT/FBD_MATH -- confirmed present
+in 0 of 64 real files' own `<DataType>`/`<AddOnInstructionDefinition>`
+blocks, same as MESSAGE -- couldn't be sized at all (`UnknownDataTypeError`,
+caught cleanly by report.py, so the whole file doesn't break, but that tag
+was silently excluded from the treemap/list, only showing up in the small
+errors footer). 1,277 tag-sizing errors across 24/64 real files traced to
+this.
+
+**Wired 2026-08-27** (James: "You should know all of those native
+instructions data types ... look for Rockwell instruction manual for data
+layout"): rather than trust an instruction-manual citation blind (this
+project's own ground-truth discipline -- CLAUDE.md -- wants a real capture
+or real corpus evidence first), checked whether the real corpus itself
+already reveals the layout via `Data Format="Decorated"` -- it does.
+Bender134053_201104.L5X alone has 272 real `SFC_STEP` and 97 real
+`SFC_ACTION` tag instances with full decorated field lists; other files
+had real (if sparser) evidence for the rest. The mechanism: a predefined
+structure's real `Data Format="L5K"` raw value array is one scalar per
+DINT-sized field (same convention that already gives TIMER's 3-element/
+12-byte L5K array its real shape) -- so the array's length x 4 bytes IS
+the real total, independent of how many of those DINTs are further
+bit-packed status flags. Confirmed zero-variance across every real
+instance checked: 272/272 SFC_STEP (28 bytes: Status+PRE+T+TMax+Count+
+LimitLow+LimitHigh, 7 DINT), 97/97 SFC_ACTION (16 bytes: Status+PRE+T+
+Count, 4 DINT), 5/5 FBD_TIMER (48 bytes), 4/4 FBD_ONESHOT (12 bytes), 2/2
+FBD_MATH (16 bytes); RATE_LIMITER (92 bytes) and SCALE (52 bytes) only
+1 real instance each so far. Wired into `memory_model.yaml`
+`predefined_structures` at ASSUMED confidence (real and zero-variance,
+but not yet independently confirmed against an actual controller
+memory-capture delta the way TIMER/COUNTER/CONTROL are) -- closed 523 of
+the 1,277 errors. `sizing/tree.py` deliberately does NOT extend the
+generic TIMER/COUNTER/CONTROL 3-way-split drill-down to these -- their
+field counts vary (SFC_STEP has 7, SFC_ACTION has 4, RATE_LIMITER has
+23) and only the TOTAL is confirmed, not a per-field byte attribution,
+so a fabricated even split would be worse than staying a correctly-sized,
+non-drillable leaf (`_THREE_FIELD_PREDEFINED` set).
+
+**MESSAGE and ALARM_DIGITAL member lists sourced from RM018A, 2026-08-27**
+(James: "you need to size all of these instruction data types... look for
+Rockwell instruction manual for data layout", scoped down to 1756-RM018A
+specifically per his follow-up clarification). Read directly from the real
+manual PDF James pushed (`samples/1756-rm018_-en-p.pdf`, 927 pages, via
+`pdftotext -layout` + form-feed page-indexed navigation), not guessed.
+
+*MESSAGE* (RM018A pages 142-147): real member list — `.FLAGS` INT (bit-
+mapped status word: bit 2=.EW, 4=.ER, 5=.DN, 6=.ST, 7=.EN, 8=.TO, 9=.EN_CC —
+confirmed by the manual's own bit table that these 7 BOOL "members" are
+aliased VIEWS into `.FLAGS`, not separate storage, exactly the same pattern
+already established for TIMER's `.EN`/`.TT`/`.DN`), `.ERR`/`.EXERR`/
+`.REQ_LEN`/`.DN_LEN` INT, `.ERR_SRC` SINT, `.DestinationLink`/
+`.DestinationNode`/`.SourceLink`/`.Class`/`.Attribute` INT, `.Instance`/
+`.LocalIndex` DINT, `.Channel`/`.Rack`/`.Group`/`.Slot` SINT, `.Path` STRING,
+`.RemoteIndex` DINT, `.RemoteElement` STRING, `.UnconnectedTimeout`/
+`.ConnectionRate` DINT, `.TimeoutMultiplier` SINT. Non-STRING fields sum to
+a KNOWN 46 bytes (10 INT×2 + 6 SINT×1 + 5 DINT×4) under this project's
+already-confirmed tight-packing/no-alignment rule for structure members —
+**but the total stays unwired**: RM018A never states `.Path`/
+`.RemoteElement`'s real STRING capacity (searched the manual text directly,
+not found), and guessing the default 82-char built-in STRING size would be
+exactly the kind of fabrication CLAUDE.md forbids. `gen_msg_typesweep.py`'s
+8 files (already built, awaiting capture) are still the right path to the
+real total — once captured, the confirmed 46-byte non-STRING subtotal lets
+the STRING length be backed out exactly rather than assumed.
+
+*ALARM_DIGITAL/ALMD* (RM018A pages 53-64): real member list — 23 Input
+BOOL (EnableIn/In/InFault/Condition/AckRequired/Latched/ProgAck/OperAck/
+ProgReset/OperReset/ProgSuppress/OperSuppress/ProgUnsuppress/
+OperUnsuppress/OperShelve/ProgUnshelve/OperUnshelve/ProgDisable/
+OperDisable/ProgEnable/OperEnable/AlarmCountReset/UseProgTime), 1 Input
+LINT (ProgTime), 4 Input DINT (Severity/MinDurationPRE/ShelveDuration/
+MaxShelveDuration), 8 Output BOOL (EnableOut/InAlarm/Acked/InAlarmUnack/
+Suppressed/Shelved/Disabled/Commissioned), 3 Output DINT (MinDurationACC/
+AlarmCount/Status — Status.0/.1/.2 = InstructFault/InFaulted/SeverityInv
+are bit-aliases of the Status word, same pattern as MESSAGE/TIMER, NOT
+separate storage), 6 Output LINT (InAlarmTime/AckTime/RetToNormalTime/
+AlarmCountResetTime/ShelveTime/UnshelveTime). Cross-validated exactly
+against the real `Comms_Bus1_ALMD` tag in `samples/local/L5X_Samples/
+MRFP_Edger_2026_06_01_r00.L5X` — every real `<AlarmDigitalParameters>`
+attribute name matches the manual's Input Parameter table verbatim.
+**Two genuine unknowns block a total**: (1) whether the 31 scalar BOOL
+members bit-pack 8-per-hidden-SINT (the confirmed convention for ordinary
+UDTs) or take a full byte/word each in this controller-native structure —
+unconfirmed, native structures go through different firmware than user
+UDTs; (2) real ALMD tags always carry an `<AlarmConfig>` message/class-text
+block alongside the base structure (confirmed: both real corpus files with
+ALMD tags have it) — unknown whether that text counts toward the tag's own
+byte cost or is stored/compiled separately. `gen_almd_singletag.py` built
+2026-08-27 (2 files: `almd_minimal` isolates the base structure with
+1-char message/class text, `almd_realtext` uses real-length text copied
+from `Comms_Bus1_ALMD` to test question (2) directly) — awaiting capture,
+mirrors the MESSAGE sweep's isolate-one-variable-at-a-time approach.
+
+*COUNTER cross-check* (RM018A pages 92-93): `.CD`/`.DN`/`.OV`/`.UN` BOOL
+(bit-aliased status word) + `.PRE`/`.ACC` DINT — matches the already-wired
+3-DINT/12-byte model exactly. No change needed; first time this project's
+COUNTER model has been confirmed against a real Rockwell primary source
+rather than only empirical black-box capture.
+
+**Negative finding, saves future effort**: the L5K-raw-array-length
+technique that solved SFC_STEP/SFC_ACTION/FBD_TIMER/etc. (real `Data
+Format="L5K"` value-array length × 4 bytes = real total) does NOT work for
+either MESSAGE or ALARM_DIGITAL — grepped every real instance of both types
+across the full `samples/local/` corpus (not just James's 64-file subset)
+and confirmed zero use `Format="Decorated"` or `Format="L5K"`; Rockwell's
+export tooling always uses a specialized semantic view (`Format="Message"`/
+`Format="Alarm"`) for these two types instead. Don't re-attempt that
+technique on these two — go straight to a real capture.
+
+**RESOLVED 2026-08-29, real capture batch closes 174 of 184 probe files.**
+James's own conversion+capture pipeline ran the full `gen_predefined_probe.py`
+batch. Derivation method: the live engine, run fresh against each probe
+file, predicts a uniform `18128` for every still-unmodeled type (real
+`empty_project_baseline`(13296) + `task_program_shell`(4816) +
+`routine_logic`(16, the file's own default NOP rung) — the unresolvable
+`Probe1` tag itself contributes 0 and raises one caught `SizeError`, which
+is exactly the uniform "1 error" every one of these rows showed). So
+`real_structure_bytes = real_actual_bytes - 18128 - tag_overhead(84,
+real "Probe1" 6-char name)`. Validated against `SFC_STOP`, the one type
+already wired from real L5K data before this batch landed: the new real
+capture matched the live prediction EXACTLY (0 residual) — confirms the
+derivation method itself, not just that one type. All 174 resolved values
+wired into `memory_model.yaml` `predefined_structures` at ASSUMED
+confidence (n=1 real capture each). Full real values, sorted:
+
+```
+4:    ALARM_SET_CONTROL, CONNECTION_STATUS, PHASE_INSTRUCTION,
+      RAC_ITF_DVC_PWRDISCRETE_CMD/SET, RAC_ITF_DVC_PWRMOTION_CMD/INF/SET,
+      RAC_ITF_DVC_PWRVELOCITY_CMD/SET, SEQ_BOOL, SEQ_INT, SEQ_SINT
+12:   DATALOG_INSTRUCTION, DOMINANT_RESET, DOMINANT_SET,
+      EXT_ROUTINE_PARAMETERS, FBD_BOOLEAN_XOR, FBD_COMPARE, FBD_CONVERT,
+      FBD_LIMIT, FBD_LOGICAL, FBD_MASK_EQUAL, FBD_MATH_ADVANCED,
+      FBD_TRUNCATE, FLIP_FLOP_D, FLIP_FLOP_JK, ODOMETER,
+      P_INTERLOCK_BANK_STATUS, P_STRAPPING_TABLE_ROW, SEQ_DINT, SEQ_REAL,
+      SEQ_TRANSITION, SERIAL_PORT_CONTROL, SIGNED_ODOMETER
+20-28: CAM_EXTENDED, FBD_COUNTER, FBD_MASKED_MOVE, P_COMMAND_SOURCE,
+      SELECT, SELECTABLE_NEGATE, STRING_16 (20); FBD_BIT_FIELD_DISTRIBUTE,
+      HMIBC, MANUAL_VALVE_CONTROL, MAXIMUM_CAPTURE, MINIMUM_CAPTURE,
+      OUTPUT_CAM, OUTPUT_COMPENSATION, P_LEAD_LAG_STANDBY_MOTOR, PHASE,
+      POSITION_DATA, SAFE_DIRECTION, UP_DOWN_ACCUM (28)
+MESSAGE: 688. ALARM_DIGITAL: 973 (both previously genuinely blocked --
+      see the negative finding above). ALARM_ANALOG: 2461. PID: 180.
+      PID_ENHANCED: 396. PIDE_AUTOTUNE: 972.
+Full table (all 174): see memory_model.yaml predefined_structures,
+      block dated 2026-08-28/29.
+```
+
+Note: `ALARM_ANALOG`(2461), `ALARM_DIGITAL`(973), `ENERGY_BASE`/
+`ENERGY_ELECTRICAL`(107 each) are the only 4 values not a multiple of 4 —
+checked, not a bug in the subtraction (every other value is a clean
+multiple of 4/8/12): plausibly genuine odd-byte real internal padding for
+those 4 specific structures (several mix SINT/STRING content with DINT
+content, unlike the mostly-DINT-uniform structures that land on round
+numbers). `CONFIGURABLE_ROUT`: CORRECTED 2026-08-29 — this line was
+wrong. `predefprobe_configurable_rout` DID capture real data (actual
+18,264, same as `BUS_OBJ`'s real capture) and IS wired at 52 bytes,
+already included in the 174-count and the "all 195" total in item 5
+above. Full table: 175 real-derived types now, not 174.
+
+**Safety-scope note applies to this whole new batch, not just DCI_STOP.**
+Several of the 174 (`DCI_*`, `SAFE_*`/`SAFELY_*`, `MUTING_*`,
+`LIGHT_CURTAIN`, `TWO_HAND_RUN_STATION`, `EMERGENCY_STOP`,
+`REDUNDANT_INPUT`/`OUTPUT`, `ENABLE_PENDANT`, `DIVERSE_INPUT`,
+`SAFETY_MAT`, `SAFETY_FEEDBACK_INTERFACE`, `DOMINANT_SET`/`RESET`, and
+`CONFIGURABLE_ROUT` — added 2026-08-29, James: "seems like a safety
+instruction," and he's right, its name root matches `CROUT`, the
+already-confirmed Safety-only instruction requiring a GuardLogix/Safety
+CPU) are Safety-Instructions-family types. The VALUES are real and
+wired; whether Safety-scoped tags should be included in the displayed
+total at all is the same still-open product decision flagged for
+DCI_STOP originally — not re-decided here, just now applying to a much
+bigger list of types.
+
+**Two findings from this same batch, WIRED 2026-08-29** (`report.py`
+`build_report` now reads `SoftwareRevision`/`ProcessorType` straight off
+the L5X root/Controller element; constants in `memory_model.yaml`
+`firmware_baseline_delta`/`safety_capable_baseline_delta`, ESTIMATED tier
+like `module_overhead`, never hardcoded inline per CLAUDE.md):
+
+1. **Real per-firmware-version baseline deltas.** 1756-L8x/5069 (non-
+   safety-suffix) on v34/v35 both confirm the already-known 18,112 exact
+   (0 residual, unchanged -- v34/v35 stay on the default/no-adjustment
+   path). v31/v32 land IDENTICAL at +11,240 (1756 catalogs; actual
+   ≈29,368-29,376) and v33 at +14,248 (actual≈32,376-32,384) -- both now
+   wired, keyed off the firmware major parsed from `SoftwareRevision`.
+   **Correction:** the "v38 shows a real +304" claim from the prior pass
+   was wrong -- that row (`fwmatrix_v38_1756_l81e`) is
+   `WINDOW TITLE MISMATCH`-flagged in manifest.csv (its 18,416 actual_bytes
+   belongs to a different file, `fwmatrix_v35_5069_l340ers2`), so it was
+   never real v38 evidence. Manifest row cleared per CLAUDE.md's standing
+   rule; v38 stays unadjusted (default_bytes=0) until a real capture
+   lands.
+2. **Real 5069-safety-model baseline overhead, independent of SafetyInfo
+   content.** The 5069 Motion+Safety-suffix catalogs (`L330ERMS2`,
+   `L340ERS2`) show a real +296 byte baseline over their non-safety
+   siblings (`L330ER`, `L340ER`) on the SAME firmware (18,416 vs 18,120 at
+   v34/v35; the identical +296 gap reproduces independently at v31/v32 and
+   v33, confirming no firmware x safety interaction term is needed) --
+   the mere fact of being a safety-CAPABLE processor model costs real
+   memory before any actual safety configuration exists. n=2 real
+   catalogs directly confirmed, now wired and applied to the whole 5069
+   safety-suffix family (`ProcessorType` ending `S2`/`S3`) on the same
+   "same physical family" extrapolation basis this project already uses
+   for L72-L75 vs. L71.
+
+Validated against all 50 real (untainted) `fw_catalog_matrix` rows: every
+one now predicts within 16 bytes of its real actual_bytes (the same small
+per-file noise band already accepted at v34/v35), down from errors as
+large as 14,552 bytes before this fix. Cross-checked against 5 more real
+points from an earlier, separate `fw_baseline` batch (different generator,
+same real capture discipline): `l81_v31`/`v32`/`v33` (blank 1756-L81E)
+land within 16 bytes too, independently confirming the firmware delta
+outside the `fw_catalog_matrix` batch it was fitted from.
+
+**One real caveat surfaced by that same cross-check, not a regression:**
+`v35_l306erms2`/`v35_l306erms3` (also from the `fw_baseline` batch) are
+`5069-L306ERMS2`/`MS3` -- safety-suffix, so they now correctly get the new
++296 delta -- but unlike every `fw_catalog_matrix` safety file, these two
+ALSO carry a real populated `SafetyTask`/`SafetyProgram` pair
+(`SafetyLevel="SIL2/PLd"`, 0 real rungs). Prediction is now 1,424 off
+(was 1,128 off before this fix, so not newly broken, just already
+inaccurate) -- `task_program_overhead`'s `task_extra`/`program_extra`
+(fitted from ordinary Standard-class extra tasks/programs) doesn't
+correctly model a Safety-class task/program pair's real marginal shell
+cost, a distinct, already-known, already-out-of-scope gap
+(`is_safety_project` fires its red warning banner for both files, so the
+user is never shown this total without the caveat). `firmware_baseline_delta`
+and `safety_capable_baseline_delta` themselves are validated only against
+BLANK safety-capable-processor files (no real Safety Task/Program content)
+-- accurate for that case, not claimed accurate once real (unsized)
+Safety Task/Program content is also present in the same file.
+
+**Also from this same push: real evidence AlarmConfig message/class text
+length adds to ALMD's real cost**, confirming the open question from
+`gen_almd_singletag.py`'s own docstring. `almd_minimal` (1-char text):
+19,719. `almd_realtext` (real-length text copied from `Comms_Bus1_ALMD`):
+19,754 -- a real +35 byte delta for the longer real text, on top of the
+instruction-call + real ALMD structure content these two files also
+carry (not directly comparable to the bare-tag 973-byte ALARM_DIGITAL
+figure above, which isolates the structure alone).
+
+
+## Second real generator bug: L8xES Local module ports missing SafetyNetwork, fixed 2026-08-30
+
+James: "your generation of safety modules fails wildly when watching the
+conversion process... redo your module generator... does not require me
+to help with that process." Found this one without needing an error
+message -- same methodology as the SafetyLocked fix above, systematic
+attribute-by-attribute diff of a generated GuardLogix-ES file against a
+real one.
+
+`samples/local/SJ_Gormley_20251112_r02.L5X`'s own Controller
+`ProcessorType` is literally `1756-L81ES` -- the exact catalog family
+reported failing. Its real Local module's Ports (`Port Id="1"` ICP and
+`Port Id="2"` Ethernet) BOTH carry a `SafetyNetwork="16#0000_..."`
+attribute. `gen_fw_catalog_matrix.py`'s `_local_ports_xml` had zero
+awareness of `is_safety` at all -- it only ever added `Class="Safety"` to
+the Task/Program, never touched the CPU's own Local module Ports. This
+is a completely separate code path from `wrapper.py`'s `build_l5x`,
+which already got the analogous SIL2/SIL3 SafetyNetwork fix on
+2026-08-28 for its module-sweep files -- that fix was never cross-applied
+to the L8xES safety-catalog matrix generator.
+
+Real SafetyNetwork values are device-unique (confirmed real corpus
+values are effectively random 64-bit hex, not sequential or derivable) --
+no way to fabricate a "real" one, so this uses the same
+synthetic-but-correctly-formatted placeholder convention `wrapper.py`
+already established, one distinct value per port. Regenerated all 30
+L8xES safety-catalog matrix files. Full corpus re-swept: 0 crashes.
+
+Checked the rest of the Controller-level attributes for other
+differences (`AutoDiagsEnabled`, `TimeSlice`/`ShareUnusedTimeSlice`) --
+both differ from the real Gormley reference but neither is
+Safety-specific or newly found; `TimeSlice` was already established
+2026-08-28 as Studio-5000-optional (real files import fine with or
+without it), and `AutoDiagsEnabled` is plausible per-project variance,
+not a structural gap.
+
+## OQ-BRANCHDEPTH, CLOSED 2026-08-30
+
+James: "I know I asked you to do these tests last week, why were they not
+decompiled yet?" -- correct catch, same recurring pattern as CPT/1769/AOI
+this session: 16 real capture points (`branchdepth_legs01/03/05`,
+`branchdepthc_legs02/04/06/08/10/15/20/30`, `branchdepthstag_d01-06`) were
+sitting in manifest.csv with real `actual_bytes` -- "Reconciled from
+James's local branch (james-capture-aug24)" -- unreconciled into the
+sizing engine this whole time.
+
+The real mechanism, once understood rather than curve-fit blind: every
+real branch (`[...]`) compiles to real BST/NXB/BND-family instructions --
+one BST + one NXB per extra leg + one BND, i.e. `(leg_count + 1)`
+instructions per bracket group, and **every one of those instructions
+costs a flat 4 bytes**. Confirmed on BOTH independently-generated
+datasets with the SAME rate, not two separate fits:
+
+- Flat leg-count width (`branchdepthc_legsN`, N=2..30, single level):
+  `4 * (N + 1)` bytes/rung. 10/10 real points exact.
+- Staggered/nested depth (`branchdepthstag_dD`, D=1..6, always 2 legs per
+  level, D nested levels): `4 * 3 * D` bytes/rung (3 instructions/level x
+  D levels). 6/6 real points exact.
+- `legs01` (a single leg -- i.e. no real branch at all) correctly costs 0,
+  the degenerate case, not a formula exception.
+
+Wired end-to-end: `parser/logic.py`'s new `_branch_bracket_instruction_
+count`/`_parse_branch_group` (a real bracket-matching scan, not a naive
+regex -- correctly distinguishes a branch-open `[` from an array-index
+`Tag[5]` bracket by checking the character immediately before it, and
+correctly recurses through nested/staggered branches, counting legs only
+at paren-depth 0 so a multi-arg instruction inside a leg like `MOV(A,B)`
+doesn't get miscounted as two legs). `RoutineLogic.branch_bracket_
+instruction_count` carries the total; `sizing/logic.py` multiplies it by
+the new `branch_bracket_cost_per_instruction=4` constant
+(`memory_model.yaml logic_instructions`), additive on top of every leg's
+own already-counted instruction weight.
+
+Verified end-to-end (not just hand-derived): all 17 real files predict
+EXACTLY through the live `build_report` pipeline, zero delta. Full
+1707-file generated corpus AND all 64 real `samples/local/` corpus files
+re-swept: 0 crashes (the real corpus files have genuinely complex nested
+branches -- 41,603 `[` characters in one real file alone -- so this is a
+meaningful stress test of the bracket-matching parser, not just the
+synthetic calibration shapes). 4 new unit tests added
+(`tests/test_logic_sizing.py`): no-branch is a no-op, flat branch costs
+legs+1 instructions, nested branch sums recursively, array-index bracket
+is never miscounted as a branch.
+
+Confidence: FITTED, not KNOWN -- only ever tested at n=1000 rungs and one
+tag shape (BOOL XIC legs); linearity with rung count is assumed by this
+project's own established convention (every other per-instruction rate
+here scales linearly with rung/call count), not independently confirmed
+at a 2nd rung count for this specific formula.
+
+## Third real generator bug: GuardLogix 5580 (L8xES) wrong ProductCode, fixed 2026-08-30
+
+James: "this file fails to convert to acd as well" (`fwmatrix_v35_1756_
+l85es.L5X`) — reported AFTER the SafetyLocked and SafetyNetwork fixes
+above had already landed and been pushed, ruling both out as the cause
+for this file (confirmed directly: `SafetyLocked="false"` already present
+in the file he named). Root cause was a third, independent bug: `gen_
+fw_catalog_matrix.py`'s `_L8XS_PRODUCT_CODES` assumed "L81ES uses the
+SAME ProductCode as plain L81E" (164) — a same-hardware plausibility
+argument, never actually checked against a real L81ES corpus file.
+
+Real corpus grep across 5 independent real files (`SJ_Gormley_
+20251112_r02.L5X`, `Bender134053_201104.L5X` — 2 copies —, `RobbinsGrn_
+2026_05_13r00.L5X`, `FlareFunction_311D_240731.L5X`) shows GuardLogix
+5580 ProductCodes live in a COMPLETELY SEPARATE numbering space from the
+non-safety L8x: `1756-L81ES` is real `ProductCode="211"` (4 files agree),
+`1756-L84ES` is real `ProductCode="214"` (`FlareFunction_311D` — never
+found by this project until this investigation). 211→214 across
+L81ES→L84ES is exactly +1 per catalog step, so L82ES/L83ES/L85ES are now
+inferred as 212/213/215 — the same sequential-pattern convention this
+project already uses elsewhere, but now anchored to 2 real confirmed
+points on the CORRECT numbering space instead of 1 guess built on a
+wrong one.
+
+Fixed in `gen_fw_catalog_matrix.py`'s `_L8XS_PRODUCT_CODES`. All 30
+L8xES `fw_catalog_matrix` files regenerated (174-file full matrix
+re-run to keep everything in sync). `_L8XS_INFERRED` updated to drop
+L84ES (now confirmed, no longer inferred). Full corpus re-swept (1793
+generated+real files): 0 crashes. Full test suite: 140/140.
+
+This is the reason the L8xES batch has never had a single successful
+capture, on top of (not instead of) the two SafetyLocked/SafetyNetwork
+bugs above — all three needed fixing before any L8xES file could import.
+
+## OQ-LEGACYNETOVERHEAD, CLOSED as deliberate scope exclusion, 2026-08-30
+
+James: "I thought we were excluding controlnet" / "And all legacy
+networks." Earlier the same day this had been wrongly reopened as a data
+gap: `modulesweep_1756_cnb_d` (a real ControlNet bridge module,
+genericized from real corpus, 2026-08-24 capture) shows a real +448 byte
+gap against the live engine, and got briefly wired as a flat
+`module_overhead_by_catalog['1756-CNB/D']` entry (2,120 bytes) before
+James's correction landed -- reverted.
+
+Decision: ControlNet, DeviceNet, DH+, DH-485, and Remote I/O (RIO) bridge
+modules are excluded from sizing entirely, the same treatment this
+project already gives rack-aliased (`RackConnection`/`InAliasTag`) and
+processor-embedded (`CatalogNumber="Embedded"`) modules -- no
+`module_overhead` charged, `module_defined_bytes` not summed into the
+total, a `SizeError` flags it as unmodeled-but-visible instead of
+silently guessed or flat-fitted.
+
+Implementation:
+- `parser/modules.py`: `ModuleInfo.port_types` (new field) captures every
+  `<Ports><Port Type="...">` value off the module itself.
+  `ModuleInfo.is_legacy_network` is true when that set intersects
+  `_LEGACY_NETWORK_PORT_TYPES = {"ControlNet", "DeviceNet", "DH+",
+  "DH-485", "RIO"}` -- real Port Type strings confirmed against
+  gen_module_sweep.py's 1756-CNB/D ("ControlNet"), 1756-DHRIO/E ("RIO"),
+  and 1756-DNB ("DeviceNet") fixtures, themselves sourced from real
+  corpus captures.
+- `sizing/report.py`: the existing `if module.uses_rack_connection or
+  module.catalog_number == "Embedded":` exclusion block extended with
+  `or module.is_legacy_network`, naming the matched Port Type(s) in the
+  SizeError message.
+- `sizing/memory_model.yaml`: removed the two other pre-existing flat
+  `module_overhead_by_catalog` entries for this class that predate this
+  decision -- `1756-DHRIO/E` (1,390 bytes) and `1756-DNB` (6,440 bytes) --
+  both were ASSUMED-confidence guesses, not confirmed real per-catalog
+  points, same problem as the briefly-wired `1756-CNB/D` entry.
+
+Real corpus evidence backing this as correct, not just deferral: a full
+grep of all 64 files in `samples/local/` (the real-capture reference
+corpus) for Port `Type=` attributes finds ZERO ControlNet, DeviceNet,
+DH+, or RIO entries anywhere -- the one real data point on hand
+(`RobbinsGrn_2026_05_13r00.L5X`) isn't even part of that corpus set.
+Nothing to isolate or decompose further unless a real project of James's
+starts using one of these networks.

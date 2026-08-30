@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="32.04" TargetName="FwMatrix321756L85ES" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Aug 28 11:08:22 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="FwMatrix321756L85ES" ProcessorType="1756-L85ES" MajorRev="32" MinorRev="11" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Aug 28 11:08:22 2026" LastModifiedDate="Fri Aug 28 11:08:22 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="32.04" TargetName="FwMatrix321756L85ES" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Aug 30 16:08:02 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="FwMatrix321756L85ES" ProcessorType="1756-L85ES" MajorRev="32" MinorRev="11" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Sun Aug 30 16:08:02 2026" LastModifiedDate="Sun Aug 30 16:08:02 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
-<SafetyInfo SafetyLocked="true" SignatureRunModeProtect="false" ConfigureSafetyIOAlways="true" SafetyLevel="SIL2/PLd"/>
+<SafetyInfo SafetyLocked="false" SignatureRunModeProtect="false" ConfigureSafetyIOAlways="true" SafetyLevel="SIL2/PLd"/>
 <DataTypes/>
 <Modules>
-<Module Name="Local" CatalogNumber="1756-L85ES" Vendor="1" ProductType="14" ProductCode="168" Major="32" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<Module Name="Local" CatalogNumber="1756-L85ES" Vendor="1" ProductType="14" ProductCode="215" Major="32" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
 <EKey State="Disabled"/>
 <Ports>
-<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Port Id="1" Address="0" Type="ICP" Upstream="false" SafetyNetwork="16#0000_1005_0001_0001">
 <Bus Size="17"/>
 </Port>
-<Port Id="2" Type="Ethernet" Upstream="false">
+<Port Id="2" Type="Ethernet" Upstream="false" SafetyNetwork="16#0000_1005_0002_0002">
 <Bus/>
 </Port>
 </Ports>

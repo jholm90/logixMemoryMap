@@ -7,6 +7,7 @@ hardcode them inline -- see CLAUDE.md working agreement.
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -105,8 +106,11 @@ class AoiDefinitionModel:
     per_declared_item: int
     per_type_rate: dict[str, int]
     confidence: str
+    name_length_bucket_bytes: int
+    name_length_floor_bytes: int
+    name_length_bucket_confidence: str
 
-    def bytes_for(self, type_counts: dict[str, int]) -> int:
+    def bytes_for(self, type_counts: dict[str, int], name: str = "") -> int:
         # per_type_rate only applies when every declared item shares the
         # SAME type -- confirmed real that per-type rates do NOT compose
         # additively once BOOL sits alongside another type (see
@@ -117,8 +121,39 @@ class AoiDefinitionModel:
         if len(type_counts) == 1:
             (only_type,) = type_counts
             rate = self.per_type_rate.get(only_type, self.per_declared_item)
-            return self.base + rate * total_items
-        return self.base + self.per_declared_item * total_items
+            total = self.base + rate * total_items
+        else:
+            total = self.base + self.per_declared_item * total_items
+        return total + self.name_length_bytes(name)
+
+    def name_length_bytes(self, name: str) -> int:
+        # OQ-AOIDEF closeout, wired 2026-08-29 -- real data
+        # (aoiname_len08/09/13/16/20/25/30) confirmed 7/7 exact against
+        # `8*max(0,(len-8)//4) - 8`. Unlike UDT-definition's own
+        # 8*ceil(len/8) step, an AOI type name's cost isn't purely
+        # length-driven: there's a flat -8 floor (matching the same
+        # -8-byte universal per-file residual seen throughout this
+        # project) that any name length 8-9 hits, THEN +8 every 4
+        # characters beyond that -- see memory_model.yaml aoi_definition
+        # for the full derivation. Not confirmed below len=8 (no real
+        # data there), but the bucket floors at the same -8 rather than
+        # extrapolating further negative for very short names.
+        #
+        # Bucket boundary fixed 2026-08-30: the original `(len-7)//4`
+        # divisor (chosen to fit only the 7 tested lengths, which happen
+        # to skip every len==3 (mod 4)) put len=19 one bucket too high.
+        # Cross-checked against real captures of two same-shape (10 BOOL
+        # In/10 BOOL Out/10 BOOL Local) AOI array-packing files that only
+        # differ by AOI type name length -- AoiPureBoolDense (16 chars,
+        # confirmed bucket2) and AoiPureBoolBoundary (19 chars) -- every
+        # count point (n=16) lands on the exact same total byte count
+        # under `(len-8)//4` (bucket2 for both) but disagreed by 8 bytes
+        # under the old divisor (which put len=19 in bucket3). The 7
+        # originally-tested lengths (8,9,13,16,20,25,30) are all
+        # unaffected by this change; only len%4==3 (11,15,19,23,27,...)
+        # shifts down one bucket.
+        bucket = max(0, (len(name) - 8) // 4)
+        return self.name_length_bucket_bytes * bucket + self.name_length_floor_bytes
 
 
 @dataclass(frozen=True)
@@ -164,6 +199,8 @@ class CptExpressionModel:
     two_tier_mix_per_operator: int
     pow_tier_mix_base: int
     pow_tier_mix_per_operator: int
+    three_tier_mix_base_by_remainder: dict[int, int]
+    three_tier_mix_per_pow_operand: int
 
     def cost_for(self, operators: list[str]) -> int:
         """Real per-call CPT cost from its expression's operator tokens
@@ -195,16 +232,22 @@ class CptExpressionModel:
         file-specific quirk, not a per-formula one. See memory_model.yaml
         cpt_expression for the full derivation.
 
-        Any OTHER mixed-tier combination (all 3 tiers present in one
-        expression) falls back to a simple per-operator-tier sum -- a real
-        but WEAK approximation: off by ~150 bytes/call on a real
-        5-operator/3-tier/mixed-literal corpus expression, and REAL-typed
-        operands or a float literal each add real extra cost that does NOT
-        compose additively with anything else (confirmed 2026-08-26, see
-        memory_model.yaml). See memory_model.yaml cpt_expression for why
-        the all-3-tier case isn't patched further yet (needs its own
-        operand-count sweep the way T1T2/T1T3/T2T3 each got, not force-fit
-        from 4 points that don't fit any simple base+rate model).
+        A mix using ALL 3 tiers together (ADD/SUB + MUL/DIV/MOD + POW) is
+        ALSO exact now, 2026-08-29 (OQ-CMPCPTLAYOUT closeout): a real
+        correction on top of the plain per-operator-tier sum,
+        `three_tier_mix_base_by_remainder[operator_count % 3] +
+        three_tier_mix_per_pow_operand * pow_operand_count`. Confirmed 0
+        residual across all 9 real all-3-tier data points spanning
+        operator counts 4-14 (the original n=3/5/8/10/11/15 sweep plus 3
+        new remainder-2 probes at n=6/9/12) -- see memory_model.yaml
+        cpt_expression for the full derivation. `operator_count % 3`
+        determines the class deterministically from the [+,*,**]-cycling
+        construction any real alternating 3-tier expression follows: which
+        of the 3 tiers ends up with one extra operator. remainder=0
+        (T1==T2==T3) rests on a single real point (n=10) -- same slope as
+        the other two remainder classes (independently confirmed at 3 and
+        4 points each), just one point short of independent confirmation
+        for its own base constant.
         """
         if not operators:
             return self.base_read
@@ -218,7 +261,11 @@ class CptExpressionModel:
             return self.two_tier_mix_base + self.two_tier_mix_per_operator * len(operators)
         if set(tiers) in ({add_tier, pow_tier}, {mul_tier, pow_tier}):
             return self.pow_tier_mix_base + self.pow_tier_mix_per_operator * len(operators)
-        return self.base_read + sum(tiers)
+        pow_operand_count = tiers.count(pow_tier)
+        remainder = len(operators) % 3
+        correction = self.three_tier_mix_base_by_remainder[remainder] + \
+            self.three_tier_mix_per_pow_operand * pow_operand_count
+        return self.base_read + sum(tiers) + correction
 
 
 @dataclass(frozen=True)
@@ -268,12 +315,17 @@ class JsrParamCostModel:
     once per distinct target routine regardless of call-site count) and
     `B(n) = b_base + b_per_param*n` (the true per-call-site marginal
     rate). Confirmed exact at 3 real (n,B) points (n=5,8,10) -- see
-    memory_model.yaml jsr_param_cost for the derivation."""
+    memory_model.yaml jsr_param_cost for the derivation. output_param_cost
+    (wired 2026-08-29): the per-call cost of each trailing RETURN-value
+    argument a JSR passes back, charged once per output arg per call site
+    -- a real, previously completely unmodeled cost (see
+    memory_model.yaml jsr_param_cost for the 2-file derivation)."""
     a_base: int
     a_per_param: int
     b_base: int
     b_per_param: int
     confidence: str
+    output_param_cost: int
 
     def a_cost(self, n: int) -> int:
         return self.a_base + self.a_per_param * n
@@ -294,6 +346,89 @@ class LogicInstructionModel:
     cmp_surcharge: CmpSurchargeModel
     task_program_overhead: TaskProgramOverheadModel
     jsr_param_cost: JsrParamCostModel
+    branch_bracket_cost_per_instruction: int
+    branch_bracket_confidence: str
+
+
+@dataclass(frozen=True)
+class FirmwareBaselineDeltaModel:
+    """Real per-firmware-major-version delta over the confirmed v34/v35
+    baseline (OQ-BASELINE-PROCFW, wired 2026-08-29) -- see memory_model.yaml
+    firmware_baseline_delta for the full derivation and which manifest.csv
+    rows it's fitted from. Keyed by the integer major version parsed out of
+    the L5X root's own SoftwareRevision attribute (e.g. "31.02" -> "31");
+    any major not in the table (including v34/v35 themselves, and any
+    firmware with no real sample) falls back to default_bytes/
+    default_confidence -- i.e. no adjustment."""
+    by_major_version: dict[str, tuple[int, str]]
+    default_bytes: int
+    default_confidence: str
+
+    def delta_for(self, software_revision: str | None) -> tuple[int, str]:
+        if not software_revision:
+            return self.default_bytes, self.default_confidence
+        major = software_revision.split(".")[0]
+        return self.by_major_version.get(major, (self.default_bytes, self.default_confidence))
+
+
+@dataclass(frozen=True)
+class SafetyCapableBaselineDeltaModel:
+    """Real 5069 safety-CAPABLE processor baseline overhead, independent of
+    actual SafetyInfo/SafetyTask content (OQ-BASELINE-PROCFW, wired
+    2026-08-29) -- see memory_model.yaml safety_capable_baseline_delta for
+    the full derivation (n=2 real catalogs, extended to the whole
+    safety-suffix family the same way this project already extends L71's
+    confirmed shape to L72-L75). catalog_suffix_pattern is matched against
+    the L5X Controller element's own ProcessorType attribute."""
+    bytes: int
+    confidence: str
+    catalog_suffix_pattern: str
+
+    def applies_to(self, processor_type: str | None) -> bool:
+        if not processor_type:
+            return False
+        return bool(re.search(self.catalog_suffix_pattern, processor_type))
+
+
+@dataclass(frozen=True)
+class ModuleOverheadModel:
+    """Real per-catalog module overhead (OQ-MODULEIO, wired 2026-08-29) --
+    see memory_model.yaml module_overhead_by_catalog for the full
+    derivation and which catalogs were deliberately left off (adapter/
+    bridge catalogs that may be absorbing a rack of aliased children,
+    generic-catalog placeholders whose overhead scales with declared I/O
+    size, and a few real connection-variant-dependent cases). Any catalog
+    not in the table falls back to the flat default_bytes/
+    default_confidence -- the same flat FITTED-from-2-points estimate this
+    project used everywhere before this table existed."""
+    by_catalog: dict[str, tuple[int, str]]
+    default_bytes: int
+    default_confidence: str
+
+    def overhead_for(self, catalog_number: str | None) -> tuple[int, str]:
+        if not catalog_number:
+            return self.default_bytes, self.default_confidence
+        return self.by_catalog.get(catalog_number, (self.default_bytes, self.default_confidence))
+
+
+@dataclass(frozen=True)
+class CatalogBaselineDeltaModel:
+    """Real per-catalog baseline delta for processor families whose real
+    empty-project baseline diverges enormously from the flat
+    empty_project_baseline (OQ-BASELINE-PROCFW, 1769-series thread, wired
+    2026-08-29) -- see memory_model.yaml catalog_baseline_delta for the
+    full derivation. Exact ProcessorType string match only, deliberately
+    NOT prefix/suffix-pattern-matched like safety_capable_baseline_delta
+    -- real data shows a single expansion-module suffix character (e.g.
+    `-QB1B` vs `-QBFC1B`) changes the real value by over 13,000 bytes, so
+    extrapolating beyond an exact confirmed catalog string would be a
+    guess, not a real value."""
+    by_processor_type: dict[str, tuple[int, str]]
+
+    def delta_for(self, processor_type: str | None) -> tuple[int, str] | None:
+        if not processor_type:
+            return None
+        return self.by_processor_type.get(processor_type)
 
 
 @dataclass(frozen=True)
@@ -316,6 +451,10 @@ class MemoryModel:
     empty_project_baseline_confidence: str
     module_overhead_bytes: int
     module_overhead_confidence: str
+    module_overhead_by_catalog: ModuleOverheadModel
+    firmware_baseline_delta: FirmwareBaselineDeltaModel
+    safety_capable_baseline_delta: SafetyCapableBaselineDeltaModel
+    catalog_baseline_delta: CatalogBaselineDeltaModel
 
 
 def load_memory_model(path: str | Path | None = None) -> MemoryModel:
@@ -339,6 +478,10 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
     s = raw["string"]
     baseline = raw["empty_project_baseline"]
     module_overhead = raw["module_overhead"]
+    module_overhead_by_catalog = raw.get("module_overhead_by_catalog", {})
+    fw_delta = raw["firmware_baseline_delta"]
+    safety_delta = raw["safety_capable_baseline_delta"]
+    catalog_delta = raw.get("catalog_baseline_delta", {})
     return MemoryModel(
         atomic_types=atomic_types,
         predefined_structures=predefined_structures,
@@ -347,6 +490,33 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
         empty_project_baseline_confidence=baseline["confidence"],
         module_overhead_bytes=module_overhead["bytes"],
         module_overhead_confidence=module_overhead["confidence"],
+        module_overhead_by_catalog=ModuleOverheadModel(
+            by_catalog={
+                catalog: (v["bytes"], v["confidence"])
+                for catalog, v in module_overhead_by_catalog.items()
+            },
+            default_bytes=module_overhead["bytes"],
+            default_confidence=module_overhead["confidence"],
+        ),
+        firmware_baseline_delta=FirmwareBaselineDeltaModel(
+            by_major_version={
+                major: (v["bytes"], v["confidence"])
+                for major, v in fw_delta["by_major_version"].items()
+            },
+            default_bytes=fw_delta["default_bytes"],
+            default_confidence=fw_delta["default_confidence"],
+        ),
+        safety_capable_baseline_delta=SafetyCapableBaselineDeltaModel(
+            bytes=safety_delta["bytes"],
+            confidence=safety_delta["confidence"],
+            catalog_suffix_pattern=safety_delta["catalog_suffix_pattern"],
+        ),
+        catalog_baseline_delta=CatalogBaselineDeltaModel(
+            by_processor_type={
+                proc_type: (v["bytes"], v["confidence"])
+                for proc_type, v in catalog_delta.items()
+            },
+        ),
         bool=BoolModel(
             standalone_tag_bytes=b["standalone_tag_bytes"],
             standalone_confidence=b["standalone_confidence"],
@@ -396,6 +566,9 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             per_declared_item=raw["aoi_definition"]["per_declared_item"],
             per_type_rate=raw["aoi_definition"].get("per_type_rate", {}),
             confidence=raw["aoi_definition"]["confidence"],
+            name_length_bucket_bytes=raw["aoi_definition"]["name_length_bucket_bytes"],
+            name_length_floor_bytes=raw["aoi_definition"]["name_length_floor_bytes"],
+            name_length_bucket_confidence=raw["aoi_definition"]["name_length_bucket_confidence"],
         ),
         tag_overhead=TagOverheadModel(
             flat_base=raw["tag_overhead"]["flat_base"],
@@ -427,6 +600,10 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 two_tier_mix_per_operator=raw["cpt_expression"]["two_tier_mix_per_operator"],
                 pow_tier_mix_base=raw["cpt_expression"]["pow_tier_mix_base"],
                 pow_tier_mix_per_operator=raw["cpt_expression"]["pow_tier_mix_per_operator"],
+                three_tier_mix_base_by_remainder={
+                    int(k): v for k, v in raw["cpt_expression"]["three_tier_mix_base_by_remainder"].items()
+                },
+                three_tier_mix_per_pow_operand=raw["cpt_expression"]["three_tier_mix_per_pow_operand"],
             ),
             operand_type_surcharge=OperandTypeSurchargeModel(
                 confidence=raw["operand_type_surcharge"]["confidence"],
@@ -458,6 +635,9 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 b_base=raw["jsr_param_cost"]["b_base"],
                 b_per_param=raw["jsr_param_cost"]["b_per_param"],
                 confidence=raw["jsr_param_cost"]["confidence"],
+                output_param_cost=raw["jsr_param_cost"]["output_param_cost"],
             ),
+            branch_bracket_cost_per_instruction=raw["logic_instructions"]["branch_bracket_cost_per_instruction"],
+            branch_bracket_confidence=raw["logic_instructions"]["branch_bracket_confidence"],
         ),
     )

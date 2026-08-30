@@ -77,14 +77,17 @@ instruction table almost did.
    (`BasicAOI`/`RealisticAOI50`) already sits within 1-2% of. See
    memory_model.yaml's `aoi_definition` comment for the full derivation.
 
-   Still genuinely open, both small (<2% of a file's total predicted
-   bytes at the tested extremes):
-   - AOI name length has a real but non-uniform stepping effect
-     (`aoiname_len08/13/20/30_def_only`: +0/+8/+16/+32 vs a fixed
-     DINT:4 baseline) — not the clean `8*ceil(len/8)` bucket the UDT/
-     tag_overhead formulas use, not force-fit into a guess.
-   - Required/Visible/Hidden's small +-16 definition-cost swing —
-     recapture batch (BOOL+InOut AXIS shape) still awaiting capture.
+   **AOI name length — CLOSED 2026-08-30.** Follows
+   `8*max(0,(len(name)-8)//4) - 8`, confirmed 7/7 exact against real
+   `aoiname_len08/09/13/16/20/25/30_def_only`. Wired as
+   `AoiDefinitionModel.name_length_bytes`. A real off-by-one bucket-
+   boundary bug (first divisor tried, `(len-7)//4`, put len=19 one bucket
+   too high — invisible against the 7 tested points, caught by cross-
+   checking two AOI-array-packing files that only differ in name length)
+   was found and fixed along the way — see RESOLVED_QUESTIONS.md.
+
+   Required/Visible/Hidden's small +-16 definition-cost swing —
+   CLOSED 2026-08-25, confirmed noise, no real effect.
 
    Original per-item-count/type-scaling questions this item used to track
    (now folded into the wired formula above), kept for history:
@@ -203,14 +206,23 @@ instruction table almost did.
    which piece. Solving #1 first would make #2's numbers much easier to
    trust.
 
-4. **Nested/composite AOIs — very thin data.** An AOI containing another
-   AOI, or an AOI with an InOut `AXIS_CIP_DRIVE`/UDT parameter, has only
-   2-3 real data points (`aoi_deepnest3_*`, `nested_aoi_*`,
-   `aoi_realistic_composite_*`) — small clean-looking gaps (2,000-3,600
-   range) but not enough points to fit anything, and these gaps are
-   plausibly just the same unresolved definition-cost gap (#1) showing up
-   again, not a separate nesting-specific effect. Not independently
-   confirmed either way.
+4. **Nested/composite AOIs — small residual, re-checked 2026-08-30.**
+   Stale as of this update: the "2,000-3,600 byte gap" figure below was
+   written before the AOI definition-cost formula (base + per-type-rate +
+   name-length) existed at all — re-run against the CURRENT engine, that
+   gap has almost entirely closed. `aoi_nested_inout_1_instance`=+275,
+   `aoi_nested_inout_10_instance`=+204, `aoi_boolpack_interspersed20_
+   1_instance`=-100, `aoi_realistic_50_instance_1`/`aoi_realistic_
+   composite_1_instance`=-92 each, `aoi_boolpack_consecutive20_
+   1_instance`=-92, `aoi_boolpack_clean_alternating_def_only`=-56,
+   `aoi_boolpack_clean_grouped_def_only`=-48 — all now under 1.5% of file
+   total, most of it plausibly the same small universal per-file noise
+   band already accepted throughout this project (±8 to ±32), not a
+   distinct nesting-specific effect. Still genuinely open (not yet
+   confirmed as pure noise vs. a small real residual), but the scale of
+   the question has changed completely from what this section used to
+   say — worth a fresh look once more real captures land, not treated as
+   settled either way.
 
 ## Questions where James's own knowledge would help most
 
@@ -250,12 +262,24 @@ answers below.**
 
 ## Where this leaves the "100% accuracy" goal
 
+**2026-08-30 update: the BOOL-array-packing "KNOWN, confirmed exact"
+claim below was wrong — downgraded to FITTED.** It was only ever checked
+at 3 sparse instance counts per shape (n=1/10/25); 27 real dense points
+that were sitting unreconciled prove the formula misses by a real,
+n-parity-dependent amount for single-packed-word AOIs (`8*ceil(n/2)+B`,
+not the wired linear form) and diverges further for the 2-word (60-BOOL)
+case. See OPEN_QUESTIONS.md OQ-AOIBOOLPACK-PAIRING for the full data and
+`gen_aoi_boolpack_pairing.py` for the 23 new files generated (not yet
+captured) to close it properly. AOI type-name length, separately, IS now
+closed — see OQ-AOIDEF.
+
 **2026-08-26 update: both unknown #1 (definition cost) and the BOOL-array-
 packing mechanism are now WIRED into `memory_model.yaml`, closing the
 "nothing wired yet" gap the 2026-08-25 update below still had.**
 BOOL-array-packing: `aoi_array` (flat_discount=4, bool_word_size=32,
-bool_word_extra=4), confidence KNOWN — confirmed across 4 member counts,
-see RESOLVED (this doc's own earlier sections). Definition cost:
+bool_word_extra=4) — confirmed across 4 member counts at 3 sparse n
+each, see RESOLVED (this doc's own earlier sections); **confidence
+downgraded KNOWN → FITTED 2026-08-30, see update above.** Definition cost:
 `aoi_definition` (base=1184, per_declared_item=20), confidence FITTED, NOT
 KNOWN — confirmed exact on 2 independent axes (local-tag count, param
 count) but DINT-rate only; a real localtype/paramtype sweep already shows

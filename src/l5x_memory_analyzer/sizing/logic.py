@@ -99,13 +99,27 @@ def compute_routine_logic_bytes(
         if has_float_literal:
             total += model.cmp_surcharge.float_literal_cost
 
-    # JSR per-param B(n) surcharge (OQ-JSRPARAMCOST) -- additive per real
+    # JSR per-param B(n_in) surcharge (OQ-JSRPARAMCOST) -- additive per real
     # call site, on top of the flat JSR:72/rung weight already summed via
     # instruction_counts above. The one-time A(n) cost (the callee's own
     # Parameters-block declaration) is charged separately, once per
     # distinct target routine, by report.py -- not here, since it isn't a
-    # property of any one calling routine or call site.
-    for _target, n in routine.jsr_calls:
-        total += model.jsr_param_cost.b_cost(n)
+    # property of any one calling routine or call site. output_param_cost
+    # (wired 2026-08-29): the trailing return-value args a JSR call passes
+    # back (`JSR(name, N_in, in_1..in_N, out_1..out_M)`) were completely
+    # unmodeled until real jsr_mixedio_5in_2out/jsr_multiret_n04 capture
+    # data (2026-08-23, sat unreconciled) showed ~40/call for m=2 output
+    # args, matching the SAME per-param rate as input args -- see
+    # memory_model.yaml jsr_param_cost.
+    for _target, n_in, m_out in routine.jsr_calls:
+        total += model.jsr_param_cost.b_cost(n_in) + model.jsr_param_cost.output_param_cost * m_out
+
+    # Branch-bracket cost (OQ-BRANCHDEPTH) -- additive per real BST/NXB/BND-
+    # family instruction the parser found (parser/logic.py
+    # _branch_bracket_instruction_count), on top of every leg's own
+    # instruction weight already summed via instruction_counts above. See
+    # memory_model.yaml logic_instructions.branch_bracket_cost_per_instruction
+    # for the derivation.
+    total += routine.branch_bracket_instruction_count * model.branch_bracket_cost_per_instruction
 
     return total, model.confidence

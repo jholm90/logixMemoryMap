@@ -71,37 +71,54 @@ files; PID and ASCII-module instructions dropped (zero real occurrences).
 - ✅ Per-part-number memory budget (`controller_budgets.yaml`, prefix-
       matched against `Controller/@ProcessorType`, unknown types show
       "budget unknown" rather than a guess)
-- 🔴 Export report (CSV/XLSX)
+- ✅ Export report (CSV/XLSX)[^export]
 
 ---
 
 [^moduleio]: `parser/modules.py` reads Connection/ConfigTag/ConfigScript
-sizes straight off the L5X (Logix Designer states them directly). A flat
-`module_overhead` constant is wired but only from n=2 real deltas — see
-OPEN_QUESTIONS.md OQ-MODULEIO for the 141-file test batch and its status.
-Produced/consumed tags (OQ-PRODCONS) still untouched.
+sizes straight off the L5X (Logix Designer states them directly). Real
+per-catalog overhead (51 catalogs, `module_overhead_by_catalog`) replaced
+the flat n=2 `module_overhead` estimate for those catalogs 2026-08-29 —
+see OPEN_QUESTIONS.md OQ-MODULEIO. Two real threads remain (multi-module
+marginal cost, a few connection-variant-dependent catalogs), both need
+their own architecture work, not more test generation.
+Produced/consumed tags (OQ-PRODCONS) RESOLVED — no special formula needed,
+ordinary UDT-member recursion already covers a produced/consumed tag's
+`CONNECTION_STATUS`-typed member, which is itself now a wired
+`predefined_structures` entry (4 bytes, 2026-08-29 batch). See
+RESOLVED_QUESTIONS.md.
 
 [^aoidef]: `sizing/udt.py` `compute_aoi_definition_cost()`, FITTED not
-KNOWN. Two small threads remain — see OPEN_QUESTIONS.md OQ-AOIDEF.
+KNOWN. AOI type-name-length step CLOSED 2026-08-30 (7/7 exact). The
+separate array-of-AOI-instances element-cost formula (`aoi_array`,
+downgraded KNOWN→FITTED 2026-08-30) is now its own open item — see
+OPEN_QUESTIONS.md OQ-AOIBOOLPACK-PAIRING.
 
 [^branchdepth]: Real cost confirmed (branch bracket structure costs real
 memory beyond leg instructions), formula not yet fit — see
 OPEN_QUESTIONS.md OQ-BRANCHDEPTH for the leg-count and staggered/nested
 test batches now awaiting capture.
 
-[^cmpcpt]: Everything except CPT is CONFIRMED. CPT's uniform-tier, T1+T2,
-and T1T3/T2T3 mixed cases are solved and wired
-(`sizing/constants.py` `CptExpressionModel`). Two threads remain (all-3-
-tier mixes, REAL-operand/float-literal interaction) — see OPEN_QUESTIONS.md
-OQ-CMPCPTLAYOUT for the diagnostic batch now awaiting capture. CMP's own
-weight and OQ-OPERANDTYPE's per-type surcharge are both resolved and wired.
+[^cmpcpt]: Everything except one CPT thread is CONFIRMED. CPT's
+uniform-tier, T1+T2, T1T3/T2T3, and (2026-08-29) all-3-tier mixed cases
+are all solved and wired (`sizing/constants.py` `CptExpressionModel`,
+confirmed 0 residual on every real data point on file). One thread
+remains — the REAL-operand/float-literal interaction is real data
+demonstrating genuinely non-monotonic behavior, not yet a wireable
+formula — see OPEN_QUESTIONS.md OQ-CMPCPTLAYOUT. CMP's own weight and
+OQ-OPERANDTYPE's per-type surcharge are both resolved and wired.
 
 [^jsrparam]: JSR's own flat weight (72/rung) and per-param cost
 (`B(n)=4+20n` per call site, `A(n)=104+20n` once per distinct target)
 both wired 2026-08-25. `parser/logic.py`'s `_jsr_calls()` reads the param
 count off each real call's own 2nd argument. Verified end-to-end against
 all 6 real capture points: 4 exact, 2 off by the same small +8 noise seen
-elsewhere. See RESOLVED_QUESTIONS.md OQ-JSRPARAMCOST.
+elsewhere. **Output/return-param cost added 2026-08-29** —
+`output_param_cost=20`/arg, charged per call site — see
+RESOLVED_QUESTIONS.md OQ-JSRPARAMCOST for the full correction (the
+original wiring only ever saw input-only calibration data) and
+OPEN_QUESTIONS.md OQ-JSRPARAMCOST for the one small remaining residual
+(A(n) not yet output-param-adjusted).
 
 [^holdout]: 10 real captured files never used to fit anything (random
 instruction-type combinations) checked against the current engine: 7/10
@@ -118,3 +135,13 @@ there only.
 `Controller/SafetyInfo/@SafetyLevel`. Doesn't size Safety Task/Program
 content — just warns the total is understated on a safety-rated project,
 per the OQ-SAFETY decision (RESOLVED_QUESTIONS.md).
+
+[^export]: `sizing/export.py`, same flat SizeEntry/SizeError contract as
+the CLI `size` command and the UI, just serialized differently — no new
+sizing logic. CSV is stdlib-only, always available; XLSX needs `openpyxl`
+(optional `[xlsx]` extra, pyproject.toml) and degrades to a clear error
+(CLI: message + exit 1; UI: 501 JSON error) rather than a broken file if
+it's missing. CLI: `l5x-memory-analyzer export <l5x_path> <output_path>`,
+format inferred from the output extension. UI: two toolbar buttons next to
+File Open, `/api/export.csv` and `/api/export.xlsx`, downloading the
+currently-loaded file's report.

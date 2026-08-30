@@ -41,6 +41,7 @@ function renderAll() {
     document.getElementById("file-info").textContent = "No file loaded";
     document.getElementById("export-warning").classList.add("hidden");
     document.getElementById("safety-warning").classList.add("hidden");
+    document.getElementById("export-buttons").classList.add("hidden");
     return;
   }
 
@@ -49,6 +50,7 @@ function renderAll() {
   if (REPORT.processor_type) infoParts.push(REPORT.processor_type);
   document.getElementById("file-info").textContent =
     `${REPORT.file_name}  (${infoParts.join(", ")})`;
+  document.getElementById("export-buttons").classList.remove("hidden");
 
   const safetyWarn = document.getElementById("safety-warning");
   if (REPORT.is_safety_project) {

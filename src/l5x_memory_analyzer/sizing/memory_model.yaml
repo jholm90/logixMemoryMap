@@ -111,6 +111,194 @@ predefined_structures:
   FBD_BOOLEAN_AND: { bytes: 12, confidence: ASSUMED }
   FBD_BOOLEAN_OR: { bytes: 12, confidence: ASSUMED }
   FBD_BOOLEAN_NOT: { bytes: 12, confidence: ASSUMED }
+  # Real capture batch, 2026-08-28/29 (James: "pushed the last round of tests"),
+  # James's own conversion pipeline built + captured all 184 predefprobe_*.L5X
+  # blank-tag discovery files (see gen_predefined_probe.py) -- 174 of 184 imported
+  # clean and got a real Capacity delta (SFC_STOP already wired above matched
+  # exactly, 0 residual, confirming the derivation method itself). Real total per
+  # type = real actual_bytes - live-engine-predicted (baseline+task_shell+routine,
+  # the unresolvable tag contributes 0) - tag_overhead(84, real "Probe1" name).
+  # n=1 real capture each -- ASSUMED, not KNOWN, same tier as the RM018A/L5K-
+  # derived types above. Several (DCI_*, SAFE_*/SAFELY_*, MUTING_*, LIGHT_CURTAIN,
+  # TWO_HAND_RUN_STATION, EMERGENCY_STOP, REDUNDANT_INPUT/OUTPUT, ENABLE_PENDANT,
+  # DIVERSE_INPUT, SAFETY_MAT, SAFETY_FEEDBACK_INTERFACE, DOMINANT_SET/RESET) are
+  # Safety-Instructions-family types -- real values, but see OPEN_QUESTIONS.md
+  # OQ-PREDEFINED's Safety-scope note (same pending policy gate as DCI_STOP,
+  # applies to the whole family now, not just DCI_STOP).
+  ALARM: { bytes: 92, confidence: ASSUMED }
+  ALARM_ANALOG: { bytes: 2461, confidence: ASSUMED }
+  ALARM_DIGITAL: { bytes: 973, confidence: ASSUMED }
+  ALARM_SET_CONTROL: { bytes: 4, confidence: ASSUMED }
+  AUX_VALVE_CONTROL: { bytes: 68, confidence: ASSUMED }
+  AXIS_CONSUMED: { bytes: 16796, confidence: ASSUMED }
+  AXIS_GENERIC: { bytes: 16796, confidence: ASSUMED }
+  AXIS_GENERIC_DRIVE: { bytes: 17356, confidence: ASSUMED }
+  AXIS_SERVO_DRIVE: { bytes: 17356, confidence: ASSUMED }
+  BUS_OBJ: { bytes: 52, confidence: ASSUMED }
+  CAMSHAFT_MONITOR: { bytes: 92, confidence: ASSUMED }
+  CAM_EXTENDED: { bytes: 20, confidence: ASSUMED }
+  CAM_PROFILE_EXTENDED: { bytes: 52, confidence: ASSUMED }
+  CB_CONTINUOUS_MODE: { bytes: 52, confidence: ASSUMED }
+  CB_CRANKSHAFT_POS_MONITOR: { bytes: 44, confidence: ASSUMED }
+  CB_INCH_MODE: { bytes: 44, confidence: ASSUMED }
+  CB_SINGLE_STROKE_MODE: { bytes: 36, confidence: ASSUMED }
+  CC: { bytes: 8692, confidence: ASSUMED }
+  CONFIGURABLE_ROUT: { bytes: 52, confidence: ASSUMED }
+  CONNECTION_STATUS: { bytes: 4, confidence: ASSUMED }
+  DATALOG_INSTRUCTION: { bytes: 12, confidence: ASSUMED }
+  DCAF_INPUT: { bytes: 108, confidence: ASSUMED }
+  DCA_INPUT: { bytes: 108, confidence: ASSUMED }
+  DCI_MONITOR: { bytes: 68, confidence: ASSUMED }
+  DCI_START: { bytes: 76, confidence: ASSUMED }
+  DCI_STOP: { bytes: 76, confidence: ASSUMED }
+  DCI_STOP_TEST: { bytes: 92, confidence: ASSUMED }
+  DCI_STOP_TEST_LOCK: { bytes: 92, confidence: ASSUMED }
+  DCI_STOP_TEST_MUTE: { bytes: 100, confidence: ASSUMED }
+  DEADTIME: { bytes: 108, confidence: ASSUMED }
+  DERIVATIVE: { bytes: 84, confidence: ASSUMED }
+  DISCRETE_2STATE: { bytes: 36, confidence: ASSUMED }
+  DISCRETE_3STATE: { bytes: 44, confidence: ASSUMED }
+  DIVERSE_INPUT: { bytes: 52, confidence: ASSUMED }
+  DOMINANT_RESET: { bytes: 12, confidence: ASSUMED }
+  DOMINANT_SET: { bytes: 12, confidence: ASSUMED }
+  DYNAMICS_DATA: { bytes: 44, confidence: ASSUMED }
+  EIGHT_POS_MODE_SELECTOR: { bytes: 44, confidence: ASSUMED }
+  EMERGENCY_STOP: { bytes: 52, confidence: ASSUMED }
+  ENABLE_PENDANT: { bytes: 52, confidence: ASSUMED }
+  ENERGY_BASE: { bytes: 107, confidence: ASSUMED }
+  ENERGY_ELECTRICAL: { bytes: 107, confidence: ASSUMED }
+  EXT_ROUTINE_CONTROL: { bytes: 132, confidence: ASSUMED }
+  EXT_ROUTINE_PARAMETERS: { bytes: 12, confidence: ASSUMED }
+  FBD_BIT_FIELD_DISTRIBUTE: { bytes: 28, confidence: ASSUMED }
+  FBD_BOOLEAN_XOR: { bytes: 12, confidence: ASSUMED }
+  FBD_COMPARE: { bytes: 12, confidence: ASSUMED }
+  FBD_CONVERT: { bytes: 12, confidence: ASSUMED }
+  FBD_COUNTER: { bytes: 20, confidence: ASSUMED }
+  FBD_LIMIT: { bytes: 12, confidence: ASSUMED }
+  FBD_LOGICAL: { bytes: 12, confidence: ASSUMED }
+  FBD_MASKED_MOVE: { bytes: 20, confidence: ASSUMED }
+  FBD_MASK_EQUAL: { bytes: 12, confidence: ASSUMED }
+  FBD_MATH_ADVANCED: { bytes: 12, confidence: ASSUMED }
+  FBD_TRUNCATE: { bytes: 12, confidence: ASSUMED }
+  FILTER_HIGH_PASS: { bytes: 156, confidence: ASSUMED }
+  FILTER_LOW_PASS: { bytes: 156, confidence: ASSUMED }
+  FILTER_NOTCH: { bytes: 180, confidence: ASSUMED }
+  FIVE_POS_MODE_SELECTOR: { bytes: 36, confidence: ASSUMED }
+  FLIP_FLOP_D: { bytes: 12, confidence: ASSUMED }
+  FLIP_FLOP_JK: { bytes: 12, confidence: ASSUMED }
+  FUNCTION_GENERATOR: { bytes: 52, confidence: ASSUMED }
+  HL_LIMIT: { bytes: 36, confidence: ASSUMED }
+  HMIBC: { bytes: 28, confidence: ASSUMED }
+  IMC: { bytes: 4316, confidence: ASSUMED }
+  INTEGRATOR: { bytes: 84, confidence: ASSUMED }
+  LEAD_LAG: { bytes: 132, confidence: ASSUMED }
+  LEAD_LAG_SEC_ORDER: { bytes: 172, confidence: ASSUMED }
+  LIGHT_CURTAIN: { bytes: 52, confidence: ASSUMED }
+  MAIN_VALVE_CONTROL: { bytes: 52, confidence: ASSUMED }
+  MANUAL_VALVE_CONTROL: { bytes: 28, confidence: ASSUMED }
+  MAXIMUM_CAPTURE: { bytes: 28, confidence: ASSUMED }
+  MESSAGE: { bytes: 688, confidence: ASSUMED }
+  MINIMUM_CAPTURE: { bytes: 28, confidence: ASSUMED }
+  MMC: { bytes: 16388, confidence: ASSUMED }
+  MOVING_AVERAGE: { bytes: 52, confidence: ASSUMED }
+  MOVING_STD_DEV: { bytes: 60, confidence: ASSUMED }
+  MULTIPLEXER: { bytes: 60, confidence: ASSUMED }
+  MUTING_FOUR_SENSOR_BIDIR: { bytes: 100, confidence: ASSUMED }
+  MUTING_TWO_SENSOR_ASYM: { bytes: 100, confidence: ASSUMED }
+  MUTING_TWO_SENSOR_SYM: { bytes: 100, confidence: ASSUMED }
+  ODOMETER: { bytes: 12, confidence: ASSUMED }
+  OUTPUT_CAM: { bytes: 28, confidence: ASSUMED }
+  OUTPUT_COMPENSATION: { bytes: 28, confidence: ASSUMED }
+  PATH_DATA: { bytes: 68, confidence: ASSUMED }
+  PHASE: { bytes: 28, confidence: ASSUMED }
+  PHASE_INSTRUCTION: { bytes: 4, confidence: ASSUMED }
+  PID: { bytes: 180, confidence: ASSUMED }
+  PIDE_AUTOTUNE: { bytes: 972, confidence: ASSUMED }
+  PID_ENHANCED: { bytes: 396, confidence: ASSUMED }
+  POSITION_DATA: { bytes: 28, confidence: ASSUMED }
+  POSITION_PROP: { bytes: 124, confidence: ASSUMED }
+  PROP_INT: { bytes: 132, confidence: ASSUMED }
+  PULSE_MULTIPLIER: { bytes: 44, confidence: ASSUMED }
+  P_ANALOG_FANOUT: { bytes: 444, confidence: ASSUMED }
+  P_ANALOG_HART: { bytes: 404, confidence: ASSUMED }
+  P_ANALOG_INPUT: { bytes: 708, confidence: ASSUMED }
+  P_ANALOG_INPUT_DUAL: { bytes: 268, confidence: ASSUMED }
+  P_ANALOG_INPUT_MULTI: { bytes: 492, confidence: ASSUMED }
+  P_ANALOG_OUTPUT: { bytes: 428, confidence: ASSUMED }
+  P_BOOLEAN_LOGIC: { bytes: 476, confidence: ASSUMED }
+  P_COMMAND_SOURCE: { bytes: 20, confidence: ASSUMED }
+  P_DEADBAND: { bytes: 396, confidence: ASSUMED }
+  P_DISCRETE_4STATE: { bytes: 284, confidence: ASSUMED }
+  P_DISCRETE_INPUT: { bytes: 172, confidence: ASSUMED }
+  P_DISCRETE_MIX_PROOF: { bytes: 316, confidence: ASSUMED }
+  P_DISCRETE_N_POSITION: { bytes: 356, confidence: ASSUMED }
+  P_DISCRETE_OUTPUT: { bytes: 300, confidence: ASSUMED }
+  P_DOSING: { bytes: 484, confidence: ASSUMED }
+  P_HART_CODE_DESC_STATUS: { bytes: 44, confidence: ASSUMED }
+  P_HIGH_LOW_SELECT: { bytes: 164, confidence: ASSUMED }
+  P_INTERLOCK: { bytes: 204, confidence: ASSUMED }
+  P_INTERLOCK_BANK_STATUS: { bytes: 12, confidence: ASSUMED }
+  P_LEAD_LAG_STANDBY: { bytes: 1284, confidence: ASSUMED }
+  P_LEAD_LAG_STANDBY_MOTOR: { bytes: 28, confidence: ASSUMED }
+  P_MOTOR_DISCRETE: { bytes: 508, confidence: ASSUMED }
+  P_PERMISSIVE: { bytes: 36, confidence: ASSUMED }
+  P_PID: { bytes: 812, confidence: ASSUMED }
+  P_PRESS_TEMP_COMPENSATED: { bytes: 60, confidence: ASSUMED }
+  P_RESTART_INHIBIT: { bytes: 172, confidence: ASSUMED }
+  P_RUN_TIME: { bytes: 68, confidence: ASSUMED }
+  P_STRAPPING_TABLE_ROW: { bytes: 12, confidence: ASSUMED }
+  P_TANK_STRAPPING_TABLE: { bytes: 108, confidence: ASSUMED }
+  P_VALVE_DISCRETE: { bytes: 484, confidence: ASSUMED }
+  P_VALVE_STATISTICS: { bytes: 460, confidence: ASSUMED }
+  P_VARIABLE_SPEED_DRIVE: { bytes: 652, confidence: ASSUMED }
+  RAC_CODE_DESCRIPTION: { bytes: 92, confidence: ASSUMED }
+  RAC_EVENT: { bytes: 148, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRDISCRETE_CMD: { bytes: 4, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRDISCRETE_SET: { bytes: 4, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRDISCRETE_STS: { bytes: 316, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRMOTION_CMD: { bytes: 4, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRMOTION_INF: { bytes: 4, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRMOTION_SET: { bytes: 4, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRMOTION_STS: { bytes: 316, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRVELOCITY_CMD: { bytes: 4, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRVELOCITY_SET: { bytes: 4, confidence: ASSUMED }
+  RAC_ITF_DVC_PWRVELOCITY_STS: { bytes: 324, confidence: ASSUMED }
+  RAMP_SOAK: { bytes: 108, confidence: ASSUMED }
+  REDUNDANT_INPUT: { bytes: 52, confidence: ASSUMED }
+  REDUNDANT_OUTPUT: { bytes: 36, confidence: ASSUMED }
+  SAFELY_LIMITED_POSITION: { bytes: 52, confidence: ASSUMED }
+  SAFELY_LIMITED_SPEED: { bytes: 36, confidence: ASSUMED }
+  SAFETY_FEEDBACK_INTERFACE: { bytes: 100, confidence: ASSUMED }
+  SAFETY_MAT: { bytes: 44, confidence: ASSUMED }
+  SAFE_BRAKE_CONTROL: { bytes: 52, confidence: ASSUMED }
+  SAFE_DIRECTION: { bytes: 28, confidence: ASSUMED }
+  SAFE_OPERATING_STOP: { bytes: 60, confidence: ASSUMED }
+  SAFE_STOP_1: { bytes: 76, confidence: ASSUMED }
+  SAFE_STOP_2: { bytes: 132, confidence: ASSUMED }
+  SEC_ORDER_CONTROLLER: { bytes: 172, confidence: ASSUMED }
+  SELECT: { bytes: 20, confidence: ASSUMED }
+  SELECTABLE_NEGATE: { bytes: 20, confidence: ASSUMED }
+  SELECTED_SUMMER: { bytes: 84, confidence: ASSUMED }
+  SELECT_ENHANCED: { bytes: 60, confidence: ASSUMED }
+  SEQUENCE: { bytes: 140, confidence: ASSUMED }
+  SEQ_BOOL: { bytes: 4, confidence: ASSUMED }
+  SEQ_DINT: { bytes: 12, confidence: ASSUMED }
+  SEQ_INT: { bytes: 4, confidence: ASSUMED }
+  SEQ_REAL: { bytes: 12, confidence: ASSUMED }
+  SEQ_SINT: { bytes: 4, confidence: ASSUMED }
+  SEQ_STEP: { bytes: 60, confidence: ASSUMED }
+  SEQ_STRING: { bytes: 268, confidence: ASSUMED }
+  SEQ_TRANSITION: { bytes: 12, confidence: ASSUMED }
+  SERIAL_PORT_CONTROL: { bytes: 12, confidence: ASSUMED }
+  SIGNED_ODOMETER: { bytes: 12, confidence: ASSUMED }
+  SPLIT_RANGE: { bytes: 108, confidence: ASSUMED }
+  STRING_16: { bytes: 20, confidence: ASSUMED }
+  STRING_32: { bytes: 36, confidence: ASSUMED }
+  S_CURVE: { bytes: 116, confidence: ASSUMED }
+  THRS_ENHANCED: { bytes: 92, confidence: ASSUMED }
+  TOTALIZER: { bytes: 116, confidence: ASSUMED }
+  TWO_HAND_RUN_STATION: { bytes: 44, confidence: ASSUMED }
+  UP_DOWN_ACCUM: { bytes: 28, confidence: ASSUMED }
 
 # Predefined structures whose real cost is base + per_element*array_length
 # rather than a flat scalar -- CAM_PROFILE is always used as an array in
@@ -176,6 +364,182 @@ empty_project_baseline:
 module_overhead:
   bytes: 1672
   confidence: FITTED
+
+# Real per-catalog module overhead (OQ-MODULEIO, wired 2026-08-29). 126
+# real module capture rows from manifest.csv sat unreconciled -- the flat
+# 1672 above (FITTED from only 2 points) is a poor approximation; real
+# per-catalog values vary from -793 to +10,497. Derived via the same
+# subtraction methodology as memory_model.yaml predefined_structures:
+# real_catalog_overhead = 1672 + (actual_bytes - engine_predicted_total),
+# for every real capture where the file's ENTIRE module list is exactly
+# [Local, one real module] -- no rack-aliased children hidden underneath
+# that could be absorbing extra real cost into the wrong catalog's number
+# (a real risk: several adapter/bridge catalogs, e.g. 1734-AENTR/C, show
+# wildly different "overhead" across files because a rack of child I/O
+# modules is folded into the adapter's own entry -- those stay on the
+# flat default below, not force-assigned a value from one arbitrary
+# rack composition). ASSUMED confidence (n=1 real capture per catalog,
+# same tier as the 174-type predefined_structures batch), n=2-3 for a
+# handful (1756-IB16, 2198-P208) where independent near-identical repeats
+# happened to land in the corpus already.
+#
+# 6 catalogs show a REAL, not-yet-modeled connection-variant effect
+# (different real overhead for the same catalog depending on connection
+# count/type) and are deliberately left OFF this table rather than
+# force-averaged: ETHERNET-MODULE/ETHERNET-PANELVIEW (generic-catalog
+# placeholders, overhead scales with declared I/O size -- not flat at
+# all), 1734-AENTR/C and 1756-EN2T (real 1conn vs 2conn/rackaliased
+# variance), PowerFlex 525/755-EENET (small ~48-byte gap between two
+# independent file-generation methods, inside plausible noise but not
+# confirmed which is representative). All 6 fall through to the flat
+# 1672 default, same as any catalog with zero real data.
+#
+# module_defined_bytes + module_overhead_by_catalog.get(catalog, 1672) is
+# still ESTIMATED tier, not EXACT -- a real per-catalog n=1 point is a
+# much better estimate than a flat cross-catalog average, but not yet the
+# same confidence as tag/UDT/AOI sizing.
+module_overhead_by_catalog:
+  '150 SMC Flex-E': { bytes: 6614, confidence: ASSUMED }
+  '1732E-IB16M12DR/A': { bytes: 2126, confidence: ASSUMED }
+  '1732E-IB16M12R/A': { bytes: 1422, confidence: ASSUMED }
+  '1732E-OB16M12R/A': { bytes: 1802, confidence: ASSUMED }
+  '1734-AENT/B': { bytes: 1608, confidence: ASSUMED }
+  '1734-AENT/C': { bytes: 1604, confidence: ASSUMED }
+  '1734-AENTR/B': { bytes: 1606, confidence: ASSUMED }
+  '1756-EN4TR': { bytes: 3608, confidence: ASSUMED }
+  '1756-ENBT/A': { bytes: 2580, confidence: ASSUMED }
+  '1756-HSC/A': { bytes: 2759, confidence: ASSUMED }
+  '1756-HSC/B': { bytes: 2759, confidence: ASSUMED }
+  '1756-HYD02': { bytes: 2280, confidence: ASSUMED }
+  '1756-IA16': { bytes: 1684, confidence: ASSUMED }
+  '1756-IA32/A': { bytes: 1688, confidence: ASSUMED }
+  '1756-IB16': { bytes: 1684, confidence: ASSUMED }
+  '1756-IB16IF/A': { bytes: 4952, confidence: ASSUMED }
+  '1756-IB32/B': { bytes: 1688, confidence: ASSUMED }
+  '1756-IF8/A': { bytes: 3415, confidence: ASSUMED }
+  '1756-OA16': { bytes: 2108, confidence: ASSUMED }
+  '1756-OA16I': { bytes: 1848, confidence: ASSUMED }
+  '1756-OB16E': { bytes: 2108, confidence: ASSUMED }
+  '1756-OB32': { bytes: 1848, confidence: ASSUMED }
+  '1756-OF4/A': { bytes: 3870, confidence: ASSUMED }
+  '1756-OF8/B': { bytes: 5066, confidence: ASSUMED }
+  '1794-AENT': { bytes: 1612, confidence: ASSUMED }
+  '2097-V34PR5-LM': { bytes: 3633, confidence: ASSUMED }
+  '2198-C4004-ERS': { bytes: 4065, confidence: ASSUMED }
+  '2198-D012-ERS3': { bytes: 10497, confidence: ASSUMED }
+  '2198-D020-ERS3': { bytes: 10497, confidence: ASSUMED }
+  '2198-D032-ERS3': { bytes: 10497, confidence: ASSUMED }
+  '2198-D057-ERS3': { bytes: 10497, confidence: ASSUMED }
+  '2198-H008-ERS': { bytes: 3629, confidence: ASSUMED }
+  '2198-P031': { bytes: 3613, confidence: ASSUMED }
+  '2198-P070': { bytes: 3613, confidence: ASSUMED }
+  '2198-P141': { bytes: 3613, confidence: ASSUMED }
+  '2198-P208': { bytes: 3589, confidence: ASSUMED }
+  '2198-RP200': { bytes: 3617, confidence: ASSUMED }
+  '2198-S086-ERS3': { bytes: 7377, confidence: ASSUMED }
+  '2198-S130-ERS3': { bytes: 7341, confidence: ASSUMED }
+  '2702782': { bytes: -16, confidence: ASSUMED }
+  '440C-CR30-22BBB/A': { bytes: 4388, confidence: ASSUMED }
+  '842E-CM-M': { bytes: 3633, confidence: ASSUMED }
+  '843E-MIPxxBAx/A': { bytes: 2966, confidence: ASSUMED }
+  'AL1122': { bytes: -793, confidence: ASSUMED }
+  'AL1222': { bytes: -793, confidence: ASSUMED }
+  'EX260-SEN1/A': { bytes: 1430, confidence: ASSUMED }
+  'EX260-SEN3/A': { bytes: 1432, confidence: ASSUMED }
+  'PowerFlex 755-EENET-CM': { bytes: 3613, confidence: ASSUMED }
+  'PowerFlex 755-EENET-CM-S': { bytes: 3621, confidence: ASSUMED }
+
+# Real per-firmware-major-version delta over the confirmed v34/v35 baseline
+# (OQ-BASELINE-PROCFW, wired 2026-08-29). 40 real fw_catalog_matrix
+# captures (10 catalogs x v31/v32/v33, 1756-L8x + 5069 non-safety, all real
+# Capacity deltas, zero WINDOW-TITLE-MISMATCH flags in manifest.csv) show a
+# real, distinct jump over the already-confirmed v34/v35 baseline
+# (empty_project_baseline + task_program_shell + routine_logic = 18,128
+# predicted / 18,112 actual, -16 known noise): v31 and v32 land IDENTICAL
+# at +11,240 (1756 catalogs) -- firmware 31->32 changed nothing
+# baseline-relevant; v33 jumps further to +14,248. Applied uniformly across
+# catalog family: the small 1756-vs-5069 8-byte spread (11,240 vs 11,248,
+# 14,248 vs 14,256) already falls inside this project's existing accepted
+# per-file noise band (same -16/-8 spread already present at the confirmed
+# v34/v35 baseline itself), not modeled as a separate firmware x family
+# interaction term. v38's only real capture (fwmatrix_v38_1756_l81e) is
+# WINDOW-TITLE-MISMATCH-flagged in manifest.csv (actual_bytes 18,416
+# belongs to a different file's window, fwmatrix_v35_5069_l340ers2) -- per
+# CLAUDE.md's standing rule that row's capture columns are not trusted, so
+# v38 is NOT wired here and stays on default_bytes (no adjustment) until
+# the batch script's automatic retry produces a real v38 capture. v36/v37
+# have no real sample at all (removed from the generation batch entirely,
+# 2026-08-28) so they also fall through to default_bytes. Keyed by the
+# integer major version parsed from the L5X root's own SoftwareRevision
+# (e.g. "31.02" -> "31"). v30 added 2026-08-29 (found during a full
+# manifest.csv audit): one real MANUAL ENTRY point (James read Capacity
+# directly off a real v30 controller -- this project's own SDK can't
+# build/convert v30 exports at all, so there's no automated capture path
+# and never will be), delta +11,160, close to but not exactly matching
+# v31/v32's +11,240 -- ASSUMED confidence (single point, no independent
+# cross-check possible).
+firmware_baseline_delta:
+  by_major_version:
+    "30": { bytes: 11160, confidence: ASSUMED }
+    "31": { bytes: 11240, confidence: FITTED }
+    "32": { bytes: 11240, confidence: FITTED }
+    "33": { bytes: 14248, confidence: FITTED }
+  default_bytes: 0
+  default_confidence: KNOWN
+
+# Real 5069 safety-CAPABLE processor baseline overhead, independent of
+# actual SafetyInfo/SafetyTask content (OQ-BASELINE-PROCFW, wired
+# 2026-08-29). 5069-L330ERMS2 and 5069-L340ERS2 (the only 2 safety-suffix
+# catalogs with a real capture so far) show a real +296 byte baseline over
+# their non-safety siblings (5069-L330ER/L340ER) on the SAME firmware --
+# actual 18,416 (safety) vs 18,120 (non-safety) at v34/v35, and the
+# identical +296 gap reproduces independently at v31/v32 (29,672 vs
+# 29,376) and v33 (32,680 vs 32,384), confirming no firmware x safety
+# interaction term is needed -- this delta stacks additively with
+# firmware_baseline_delta above. The mere fact of being a
+# safety-CAPABLE processor model costs real memory before any safety
+# configuration exists: gen_fw_catalog_matrix.py doesn't populate real
+# SafetyInfo/Class="Safety" content for these catalogs at all, so this is
+# a pure baseline effect, not double-counted Safety Task/Program content
+# (which this project doesn't size regardless -- see OQ-SAFETY). n=2 real
+# catalogs directly confirmed; applied to the whole 5069 safety-suffix
+# family (catalog ProcessorType ends "S2" or "S3" -- L306ERMS2/MS3,
+# L306ERS2, L310ERS2, L320ERMS2/MS3, L330ERMS2, L340ERS2) on the same
+# "same physical family, not independently confirmed per-catalog" basis
+# this project already uses for L72-L75 vs L71 and L82ES-L85ES vs L81ES.
+safety_capable_baseline_delta:
+  bytes: 296
+  confidence: FITTED
+  catalog_suffix_pattern: 'S[23]$'
+
+# Real per-catalog baseline for processor families whose baseline diverges
+# enormously from the flat empty_project_baseline, keyed by the L5X
+# Controller element's own EXACT ProcessorType string (OQ-BASELINE-PROCFW,
+# 1769-series thread, wired 2026-08-29 -- found during a full manifest.csv
+# audit, James: "make another in-depth pass"). 8 real 1769-series
+# (CompactLogix 5370) blank-baseline captures (all v35.05, all MANUAL
+# ENTRY -- Studio 5000's own "Estimate" button click requirement for this
+# family, see docs/TESTING_PLAN.md) sat unreconciled, previously
+# documented as "not modeled at all": real total baseline runs
+# 69,600-98,944, vs the flat 18,112 predicted for everything else.
+# Deliberately EXACT-string keyed, not prefix/suffix-pattern-matched like
+# safety_capable_baseline_delta above -- a single expansion-module suffix
+# character changes the real value by over 13,000 bytes
+# (1769-L24ER-QB1B=85,272 vs 1769-L24ER-QBFC1B=98,944), so extrapolating
+# beyond an exact confirmed catalog string would be a guess. Firmware-
+# independence assumed (same convention as everywhere else in this
+# section) but genuinely UNCONFIRMED -- zero 1769 data exists at any
+# firmware other than v35.
+catalog_baseline_delta:
+  '1769-L16ER-BB1B': { bytes: 51488, confidence: ASSUMED }
+  '1769-L18ER-BB1B': { bytes: 51488, confidence: ASSUMED }
+  '1769-L18ERM-BB1B': { bytes: 51488, confidence: ASSUMED }
+  '1769-L19ER-BB1B': { bytes: 51488, confidence: ASSUMED }
+  '1769-L24ER-QB1B': { bytes: 67160, confidence: ASSUMED }
+  '1769-L24ER-QBFC1B': { bytes: 80832, confidence: ASSUMED }
+  '1769-L27ERM-QBFC1B': { bytes: 80832, confidence: ASSUMED }
+  '1769-L30ERM': { bytes: 64736, confidence: ASSUMED }
+  '1769-L33ERM': { bytes: 64736, confidence: ASSUMED }
 
 bool:
   # Standalone BOOL controller/program tags: allocated as a full DINT, not
@@ -399,11 +763,36 @@ array:
 # (definition-level, not per-instance) cost for interspersed vs grouped --
 # separate finding, not yet wired (small, definition-cost-bucket effect,
 # same undecided architecture question as OQ-AOIDEF).
+#
+# CONFIDENCE DOWNGRADED 2026-08-30 (OQ-AOIBOOLPACK-PAIRING): the "15 real
+# points, exact fit throughout" claim above was checked only at 3 array-
+# instance counts per member-count (n=1/10/25) -- never dense/consecutive
+# n. 27 real points that were sitting unreconciled (aoipack_bool_array_n*,
+# aoipack_bool_boundary_n16-96, aoipack_bool_dense_array_n16-40, plus the
+# generalization batch's mc10/mc20/mc60 n=1/10/25 triples) prove this
+# formula is NOT exact once n varies densely: for the single-word case
+# (bool_count<=32), real bytes follow `8*ceil(n/2) + B` -- an odd-n array
+# costs 4 bytes MORE than the even-n prediction below -- where B is a
+# flat, n-independent offset this formula has no term for at all (B=20 for
+# a 10-BOOL/all-Input AOI, B=44 for 20-BOOL/all-Input, B=28 for the
+# original 30-BOOL/3-way-split [10 In+10 Out+10 Local] shape -- confirmed
+# exact against 3, 3, and 18 real points respectively, but B does NOT
+# extrapolate linearly across those three, so it is NOT simply a function
+# of bool_count alone; the 3-way section split likely matters and the
+# current parser only tracks a flat bool_count, not per-section counts).
+# The 60-BOOL/all-Input case (2 packed words/instance) is worse: all 3
+# real points (n=1/10/25) sit at ~8/instance on average but do NOT fit
+# `8*ceil(n/2)+const` at all -- multi-word packing is a materially
+# different, still-unsolved shape. NOT fixed here: guessing a generalized
+# replacement risks the same overfit mistake this project has already hit
+# once this session (the CPT three-tier formula). New dense/isolating test
+# files generated instead (gen_aoi_boolpack_pairing.py) -- see
+# OPEN_QUESTIONS.md OQ-AOIBOOLPACK-PAIRING for the full real-data table.
 aoi_array:
   flat_discount: 4
   bool_word_size: 32
   bool_word_extra: 4
-  confidence: KNOWN
+  confidence: FITTED
 
 # AOI *definition* cost (the AOI's own Parameters/LocalTags declaration,
 # separate from any tag that instantiates it) -- OQ-AOIDEF, wired 2026-08-26
@@ -469,6 +858,24 @@ aoi_definition:
     INT: 18
     LINT: 24
   confidence: FITTED
+  # AOI type-NAME length cost, OQ-AOIDEF closeout, wired 2026-08-29 (found
+  # during a full manifest.csv audit -- James: "AOI should have been
+  # closed by now" -- fair, `aoiname_len08/09/13/16/20/25/30` had real
+  # capture data since 2026-08-22/27 sitting unreconciled). Unlike
+  # UDT-definition's own 8*ceil(len/8) step, an AOI type name does NOT
+  # follow that convention: real actual bytes at len=8/9/13/16/20/25/30
+  # are 19384/19384/19392/19400/19408/19416/19424 -- confirmed 7/7 exact
+  # against `name_length_bytes = name_length_bucket_bytes *
+  # max(0,(len(name)-7)//4) + name_length_floor_bytes` (constants.py
+  # AoiDefinitionModel). name_length_floor_bytes(-8) matches the same
+  # -8-byte universal per-file residual seen throughout this project --
+  # any name length 8-9 hits this floor with zero incremental bucket
+  # cost, then +8/4-chars beyond that. Not confirmed below len=8 (no real
+  # data there), but the bucket floors at 0 so the formula never
+  # extrapolates further negative for a very short name.
+  name_length_bucket_bytes: 8
+  name_length_floor_bytes: -8
+  name_length_bucket_confidence: FITTED
 
 # Per-tag flat overhead: every top-level <Tag> entry (Controller/Tags or
 # Program/Tags) costs this ON TOP OF its own raw data size (from
@@ -692,6 +1099,25 @@ cpt_expression:
   # OPEN_QUESTIONS.md OQ-CMPCPTLAYOUT), fall back to the additive-sum path.
   pow_tier_mix_base: 160
   pow_tier_mix_per_operator: 64
+  # All-3-tier mix (ADD/SUB + MUL/DIV/MOD + POW all present), CLOSED
+  # 2026-08-29 (OQ-CMPCPTLAYOUT closeout). Real correction on top of the
+  # plain per-operator-tier sum: base_by_remainder[operator_count % 3] +
+  # per_pow_operand * pow_operand_count. Confirmed 0 residual across all 9
+  # real all-3-tier data points on file (operator counts 4-14):
+  # remainder=1 EXACT at 3/3 points (k=4,7,10 -> POW count 1,2,3),
+  # remainder=2 EXACT at 4/4 points (k=5,8,11,14 -> POW count 1,2,3,4,
+  # including the original n=15 outlier that broke the first linear-model
+  # attempt AND the 3 new gen_cpt_mixed_operators.py
+  # group_three_tier_remainder_probe files that closed this). remainder=0
+  # rests on a single real point (k=9, POW count 3, base solved as
+  # 84 - 4*3 = 72) -- same +4/POW-operand slope as the other two
+  # remainder classes (independently confirmed twice), just one point
+  # short of its own independent confirmation.
+  three_tier_mix_base_by_remainder:
+    0: 72
+    1: 116
+    2: 144
+  three_tier_mix_per_pow_operand: 4
 
 # Operand-type surcharge (OQ-OPERANDTYPE, wired 2026-08-26, James: "touch
 # these and finalize them now"). Every weight in `logic_instructions.
@@ -858,11 +1284,55 @@ jsr_param_cost:
   b_base: 4
   b_per_param: 20
   confidence: FITTED
+  # Real per-call cost of a trailing RETURN-value argument
+  # (`JSR(name, N_in, in_1..in_N, out_1..out_M)`), wired 2026-08-29
+  # (OQ-JSRPARAMCOST, found during a full manifest.csv audit -- James:
+  # "make another in-depth pass"). Completely unmodeled before this: the
+  # original a_base/a_per_param/b_base/b_per_param fit (2026-08-25) only
+  # used group_param_count's pure-input files, where RET() is always
+  # empty -- zero real output-arg data went into that formula. Two
+  # independent real files (jsr_mixedio_5in_2out_r01000: delta +40,040 at
+  # 1000 calls/2 output args; jsr_multiret_n04_r01000, a totally different
+  # subroutine shape -- 4 RET points instead of 1 -- but the SAME 2 output
+  # args at the call site: delta +40,332) both landed 2026-08-23 and sat
+  # unreconciled. Both isolate to ~20/output-arg -- 40,040/1000/2=20.02,
+  # 40,332/1000/2=20.17 -- matching b_per_param exactly, i.e. an output arg
+  # costs the same per-arg rate as an input arg, just without a separate
+  # per-call base. Charged once per output arg per call site
+  # (sizing/logic.py). NOT yet applied to A(n)'s one-time callee
+  # Parameters-block cost (see OPEN_QUESTIONS.md OQ-JSRPARAMCOST) -- that
+  # effect is real too but too small relative to a 1-distinct-target
+  # sample to isolate from noise.
+  output_param_cost: 20
 
 logic_instructions:
   fixed_base_per_routine: 4816
   jsr_fixed_base_per_routine: 5096  # JSR's routine also declares the target subroutine
   confidence: FITTED
+  # OQ-BRANCHDEPTH, wired 2026-08-30 -- real data (branchdepth_legs01/03/05,
+  # branchdepthc_legs02/04/06/08/10/15/20/30, branchdepthstag_d01-06, all
+  # n=1000 rungs) had been sitting unreconciled since James's own local
+  # branch capture on 2026-08-24 -- 16/16 real points, EXACT, once the real
+  # mechanism is understood rather than curve-fit blind: every real branch
+  # ("[...]") compiles to real BST/NXB/BND-family instructions, one BST +
+  # one NXB per extra leg + one BND -- i.e. (leg_count + 1) instructions
+  # per bracket group, summed recursively across nested/staggered branches.
+  # Confirmed: flat branchdepthc_legsN (N=2..30, single level) matches
+  # 4 * (N + 1) bytes/rung exactly; branchdepthstag_dD (D=1..6, 2 legs per
+  # level, D nested levels) matches 4 * 3 * D bytes/rung exactly (3
+  # instructions/level x D levels) -- the SAME per-instruction rate (4
+  # bytes) explains both independently-generated datasets, not two
+  # separate curve fits. legs01 (a single leg, i.e. no real branch at all)
+  # correctly costs 0 -- degenerate case, not a formula exception.
+  # sizing/logic.py multiplies branch_bracket_cost_per_instruction by
+  # RoutineLogic.branch_bracket_instruction_count (parser/logic.py
+  # _branch_bracket_instruction_count), additive on top of every leg's own
+  # instruction weight (already counted normally). Only ever tested at
+  # n=1000 rungs and one tag shape (BOOL XIC legs) -- FITTED not KNOWN,
+  # linearity with rung count assumed by project convention, not
+  # independently confirmed at a 2nd rung count for this specific formula.
+  branch_bracket_cost_per_instruction: 4
+  branch_bracket_confidence: FITTED
   weights:
     ABS: 120
     XPY: 116
