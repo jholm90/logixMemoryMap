@@ -206,14 +206,23 @@ instruction table almost did.
    which piece. Solving #1 first would make #2's numbers much easier to
    trust.
 
-4. **Nested/composite AOIs — very thin data.** An AOI containing another
-   AOI, or an AOI with an InOut `AXIS_CIP_DRIVE`/UDT parameter, has only
-   2-3 real data points (`aoi_deepnest3_*`, `nested_aoi_*`,
-   `aoi_realistic_composite_*`) — small clean-looking gaps (2,000-3,600
-   range) but not enough points to fit anything, and these gaps are
-   plausibly just the same unresolved definition-cost gap (#1) showing up
-   again, not a separate nesting-specific effect. Not independently
-   confirmed either way.
+4. **Nested/composite AOIs — small residual, re-checked 2026-08-30.**
+   Stale as of this update: the "2,000-3,600 byte gap" figure below was
+   written before the AOI definition-cost formula (base + per-type-rate +
+   name-length) existed at all — re-run against the CURRENT engine, that
+   gap has almost entirely closed. `aoi_nested_inout_1_instance`=+275,
+   `aoi_nested_inout_10_instance`=+204, `aoi_boolpack_interspersed20_
+   1_instance`=-100, `aoi_realistic_50_instance_1`/`aoi_realistic_
+   composite_1_instance`=-92 each, `aoi_boolpack_consecutive20_
+   1_instance`=-92, `aoi_boolpack_clean_alternating_def_only`=-56,
+   `aoi_boolpack_clean_grouped_def_only`=-48 — all now under 1.5% of file
+   total, most of it plausibly the same small universal per-file noise
+   band already accepted throughout this project (±8 to ±32), not a
+   distinct nesting-specific effect. Still genuinely open (not yet
+   confirmed as pure noise vs. a small real residual), but the scale of
+   the question has changed completely from what this section used to
+   say — worth a fresh look once more real captures land, not treated as
+   settled either way.
 
 ## Questions where James's own knowledge would help most
 

@@ -405,6 +405,25 @@ the already-solved 3-way-split shape but all-Input/single-section, at the
 same n values, to directly test the section-split hypothesis). 23 files
 total — not padded to the 60-file floor (James, 2026-08-25: not a quota).
 
+**Wider dataset surfaced 2026-08-30** (James: "review open questions...
+full depth... no possible open items" — a full manifest.csv reconciliation
+sweep against the live engine, not just the mc10/20/60 family already
+covered above): the original "6-ratio/4-count mc=30 sweep" this whole
+formula was first found on (`aoipack_ratio_01b29a` through `_29b01a`, 6
+BOOL:non-BOOL DINT ratios x n=1/10/25/50, 24 real points) shows a
+DIFFERENT residual shape from the mc-family above — FLAT per ratio,
+**no** odd/even n-parity signal at all (01b29a=+52 at every n, 05b25a=+36
+at every n, 10b20a=+12 to +16, 20b10a=-24 to -28, 25b05a=-44 at every n,
+29b01a=-60 at every n, all flat within measurement). A separate
+non-atomic-type variant (`aoipack_nonatomic_real/sint_10b20a/20b10a`, 8
+real points, REAL/SINT non-BOOL operands instead of DINT) shows smaller,
+still-flat-ish deltas (-66 to +8). Neither dataset was previously
+reconciled against the live engine. Confirms the residual is real and
+shape-dependent in more than one way (parity-dependent for pure/near-pure
+BOOL shapes, flat-but-ratio-dependent for balanced BOOL:non-BOOL mixes) —
+consistent with "not yet safe to generalize," not a contradiction of the
+mc-family finding above.
+
 [^safetyscope]: `DCI_STOP` (35 errors) has real decorated evidence
 (SJ_Gormley_20251112_r02.L5X, 80 bytes/20 DINT) but is deliberately NOT
 wired -- every real instance found carries `Class="Safety"` on the Tag
