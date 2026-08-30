@@ -65,7 +65,23 @@ the matching footnote at the bottom, not inline.
    param as a scalar. 5 existing test files need a fresh real capture;
    their prior "confirmed" numbers almost certainly tested scalar
    behavior by coincidence, not the array behavior they were meant
-   to.[^aoiarraydimension]
+   to. Second real bug, found 2026-08-30 (James: `aoi_array_param_def_
+   only.L5X` still fails to import — `XMLSrv_E_IMPORT_ABORTED_NO_CHANGES`
+   — even after the earlier Required/Visible fix): the generator omitted
+   `<DefaultData>` entirely for ANY dimensioned Parameter, conflating
+   "is an array" with "is InOut" the same way the Required/Visible bug
+   did (`BitArray`/`LOG_HMIDisplay`, the only 2 real array-Parameter
+   examples on file, are both InOut AND dimensioned, so the array case
+   alone was never actually isolated). Real corpus check confirms every
+   non-InOut Parameter with `ExternalAccess` also carries `<DefaultData>`
+   (scalar `WindowStart`/`WindowEnd`/etc., `TS_TrackSts` AOI) — InOut
+   params are the only ones that go bare. Fixed: a dimensioned atomic
+   Input/Output Parameter now gets a real `<Array>`/`<Element>`
+   DefaultData body (same convention `_array_body_xml` already uses for
+   an ordinary array Tag) plus a bracketed-list L5K default. No real
+   corpus example of an array Input/Output Parameter exists anywhere to
+   confirm this exact shape — still ASSUMED, generalized from adjacent
+   confirmed conventions, not independently verified.[^aoiarraydimension]
 
 6. **OQ-MODULEIO** — mostly closed 2026-08-29. 126 real module captures
    were sitting unreconciled in manifest.csv; 51 catalogs now have a real

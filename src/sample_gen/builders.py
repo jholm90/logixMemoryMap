@@ -345,6 +345,38 @@ def _aoi_default_data_xml(m: "MemberSpec") -> str:
     )
 
 
+def _aoi_array_default_data_xml(m: "MemberSpec") -> str:
+    """DefaultData for a DIMENSIONED atomic Parameter/LocalTag (an array
+    Input/Output param, or a non-InOut array LocalTag) -- real bug found
+    2026-08-30 (James: aoi_array_param_def_only.L5X fails to import with
+    XMLSrv_E_IMPORT_ABORTED_NO_CHANGES, even after the earlier Required/
+    Visible fix). Real corpus check (SJ_Gormley_20251112_r02.L5X,
+    TS_TrackSts AOI): every non-InOut Parameter that carries ExternalAccess
+    ALSO carries <DefaultData> (WindowStart/WindowEnd/ConsecTest/ER/EM/
+    StartBit/EndBit, all scalar) -- InOut params (BitArray, PkgSts) are the
+    only ones that go bare with no DefaultData at all. The generator's own
+    `default = "" if m.dimension else ...` rule conflated "is an array"
+    with "is InOut" the same way the Required/Visible bug did -- BitArray
+    happens to be both InOut AND dimensioned in every real example on
+    file, so the array case was never actually tested independent of
+    InOut. No real corpus example of an array Input/Output Parameter
+    exists to confirm the array DefaultData's own internal shape, so this
+    follows the same <Array>/<Element> convention this project's own
+    _array_body_xml already uses for an ordinary array Tag's Data body
+    (real shape, confirmed against BaillieLeitchField_Edger), and the same
+    bracketed-list L5K convention _aoi_nested_default_data_xml already
+    uses for a nested-UDT LocalTag's default -- both ASSUMED to generalize
+    here, not independently confirmed for this exact combination."""
+    val = _default_value(m.data_type)
+    radix = "Float" if m.data_type in _FLOAT_TYPES else "Decimal"
+    l5k_vals = ",".join([val] * m.dimension)
+    array_body = _array_body_xml(m.data_type, m.dimension, radix=radix)
+    return (
+        f'<DefaultData Format="L5K"><![CDATA[[{l5k_vals}]]]></DefaultData>'
+        f'<DefaultData Format="Decorated">{array_body}</DefaultData>'
+    )
+
+
 def _aoi_nested_default_data_xml(m: "MemberSpec") -> str:
     """DefaultData for a LocalTag whose type is a nested UDT/AOI -- real
     shape confirmed 2026-08-20 (James's Aoi_Nested.L5X, LocalTag
@@ -423,7 +455,12 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
     dim_attr = f' Dimensions="{m.dimension}"' if m.dimension else ""
     radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
     external_access = "Read Only" if usage == "Output" else "Read/Write"
-    default = "" if m.dimension else _aoi_default_data_xml(m)
+    if m.dimension and m.nested_members is None:
+        default = _aoi_array_default_data_xml(m)
+    elif m.dimension:
+        default = ""  # nested-UDT array param -- genuinely unexplored, not this bug's scope
+    else:
+        default = _aoi_default_data_xml(m)
     # 2026-08-29 real-world bug report (James: "aoi_array_param_def_only
     # does not open"): this file used the false/false Required/Visible
     # default on a DIMENSIONED (array) Input Parameter. The only real
