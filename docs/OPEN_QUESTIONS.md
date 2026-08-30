@@ -17,8 +17,13 @@ the matching footnote at the bottom, not inline.
    strings now confirmed (real data shows a single suffix character
    changes the value by 13,000+ bytes, so unconfirmed catalogs correctly
    stay unmodeled rather than guessed). L7x/L8xES catalogs in the matrix
-   still await their own
-   capture.[^baseline]
+   still await their own capture (L8xES additionally needed a real
+   ProductCode fix 2026-08-30, see RESOLVED_QUESTIONS.md). The 9
+   1769-series catalogs were re-added to the automated `fw_catalog_matrix`
+   2026-08-30 (James: AHK capture now works for this family, same as
+   L7x) — previously only ever built as single-firmware/v35
+   `fw_baseline` files; now part of the full 6-firmware sweep too,
+   54 new files awaiting capture.[^baseline]
 
 2. **OQ-CMPCPTLAYOUT** — down to one thread. Uniform, T1+T2, T1T3/T2T3,
    and (as of 2026-08-29) the all-3-tier mix are ALL solved and wired,

@@ -17,6 +17,16 @@ nothing:
   - CompactLogix 5380 (5069-Lxxx): 14 catalogs across the L306/L310/L320/
     L330/L340/L3100 tiers and their M/S2/S3 safety-suffix variants -- same
     source.
+  - CompactLogix 5370 (1769-Lxx): 9 catalogs, real ProductCodes already in
+    wrapper.py's `_PRODUCT_CODES` (James's own fw_baseline exports).
+    RE-ADDED 2026-08-30 (James: "I got the L7 ahk stuff working and it's
+    the same for the 1769 processors, please re-add the 1769 processors
+    to the l5x test generation list") -- previously left out of this
+    automated multi-firmware matrix entirely (only ever built as 9
+    single-firmware/v35 `fw_baseline` files) because the AHK capture
+    pipeline couldn't read a 1769's Capacity value without a manual
+    "Estimate" button click first; now that's resolved on James's end,
+    same fix as ControlLogix 5570 (L7x).
 
 NOT included, flagged rather than guessed:
   - ControlLogix 5570 (1756-L7x): only L71 has a confirmed real
@@ -87,7 +97,7 @@ from datetime import datetime
 from pathlib import Path
 
 from sample_gen.manifest import append_manifest_row, write_sample
-from sample_gen.wrapper import _5069_bus_size, _ICP_BUS_SIZE, _PRODUCT_CODES
+from sample_gen.wrapper import _1769_bus_size, _5069_bus_size, _ICP_BUS_SIZE, _PRODUCT_CODES
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "fw_catalog_matrix"
 
@@ -150,6 +160,16 @@ _L7X_PRODUCT_CODES = {
 _L7X_INFERRED = {"1756-L73", "1756-L74"}
 _L7X_CATALOGS = list(_L7X_PRODUCT_CODES)
 
+# CompactLogix 5370 (1769-Lxx) -- re-added 2026-08-30 (James: AHK capture
+# now works for this family, same fix as L7x). All 9 real ProductCodes
+# already confirmed in wrapper.py's own _PRODUCT_CODES (James's own
+# fw_baseline exports) -- no separate table needed here, _product_code()
+# already checks _PRODUCT_CODES first.
+_1769_CATALOGS = [
+    "1769-L16ER-BB1B", "1769-L18ER-BB1B", "1769-L18ERM-BB1B", "1769-L19ER-BB1B",
+    "1769-L24ER-QB1B", "1769-L24ER-QBFC1B", "1769-L27ERM-QBFC1B", "1769-L30ERM", "1769-L33ERM",
+]
+
 # GuardLogix 5580 safety-rated (James, 2026-08-25: "L8 needs safety
 # processors too"). REAL BUG FOUND AND FIXED 2026-08-30 (James: "this file
 # fails to convert to acd" on fwmatrix_v35_1756_l85es -- direct real-world
@@ -177,7 +197,7 @@ _L8XS_PRODUCT_CODES = {
 _L8XS_INFERRED = {"1756-L82ES", "1756-L83ES", "1756-L85ES"}
 _L8XS_CATALOGS = list(_L8XS_PRODUCT_CODES)
 
-ALL_CATALOGS = _L8X_CATALOGS + _5069_CATALOGS + _L7X_CATALOGS
+ALL_CATALOGS = _L8X_CATALOGS + _5069_CATALOGS + _L7X_CATALOGS + _1769_CATALOGS
 SAFETY_CATALOGS = _L8XS_CATALOGS
 ALL_INFERRED = _L7X_INFERRED | _L8XS_INFERRED
 
@@ -245,6 +265,21 @@ def _local_ports_xml(catalog: str, is_safety: bool = False) -> str:
         # the same physical ControlLogix 5570 form factor so treated the
         # same, not independently confirmed per-catalog.
         return f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n<Bus Size="4"/>\n</Port>'
+    if catalog.startswith("1769"):
+        # CompactLogix 5370 real shape, same source/derivation as wrapper.
+        # py's _1769_bus_size (samples/local/DnR_Personal/TOYOTA_135453_
+        # 20221024.L5X, ProcessorType="1769-L33ERMS"): Port Type="Compact"
+        # (distinct from both 1756's "ICP" and 5069's "5069"), single
+        # Ethernet port -- same single-Ethernet shape as 1756/L7x, unlike
+        # 5069's dual-Ethernet. Only L33 has a confirmed real bus size
+        # (17); every other 1769 catalog falls back to that same value,
+        # unconfirmed for its own model specifically.
+        return (
+            f'<Port Id="1" Address="0" Type="Compact" Upstream="false">\n'
+            f'<Bus Size="{_1769_bus_size(catalog)}"/>\n'
+            f'</Port>\n'
+            f'<Port Id="2" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
+        )
     return (
         f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n'
         f'<Bus Size="{_ICP_BUS_SIZE}"/>\n'
