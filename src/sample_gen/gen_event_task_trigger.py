@@ -30,11 +30,32 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from sample_gen.builders import program_xml, tag_xml, task_xml
-from sample_gen.manifest import append_manifest_row, write_sample
+from sample_gen.builders import program_xml, task_xml
+from sample_gen.gen_axis_composite import _AXIS_TAG_XML
+from sample_gen.manifest import append_manifest_row, write_sample, write_sample_unmodeled
 from sample_gen.wrapper import build_l5x
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "logic"
+
+# Real AXIS_CIP_DRIVE + companion MOTION_GROUP tag pair (see
+# gen_axis_composite.py's _AXIS_TAG_XML docstring for provenance), renamed
+# from "Axis_Cip_Drive" to "WatchedAxis" so the EventTag reference below
+# resolves. REAL BUG FOUND 2026-08-30 (James, live testing: "Line 33:
+# Invalid display style" + "Line 70: Tag being used for event task does
+# not exist" -- then, pointedly: "if you set it for axis watch then you
+# should have generated an axis - does this not sound very obvious?"):
+# this file previously built WatchedAxis with the generic tag_xml() scalar
+# helper (a bare Format="Decorated"/<DataValue DataType="AXIS_CIP_DRIVE"
+# Value="0"/>), which is not how AXIS_CIP_DRIVE is ever really represented
+# -- it needs the full Format="Axis"/<AxisParameters> structure plus its
+# required MotionGroup companion tag, exactly like every other real
+# AXIS_CIP_DRIVE use in this project (gen_axis_composite.py). Fixed by
+# reusing that already-real, already-proven shape instead of re-deriving
+# it. The chassis "Size" error also reported in that same run (Bus
+# Size="32" on 5069-L306ER) is very likely a downstream artifact of this
+# same malformed-tag import abort, not an independent bug -- hundreds of
+# other 5069-L306ER files use that identical Bus Size and import fine.
+_WATCHED_AXIS_TAG_XML = _AXIS_TAG_XML.replace('Name="Axis_Cip_Drive"', 'Name="WatchedAxis"')
 
 
 def _write(l5x: str, out_name: str, description: str) -> None:
@@ -42,6 +63,16 @@ def _write(l5x: str, out_name: str, description: str) -> None:
     bytes_ = write_sample(l5x, out_path)
     append_manifest_row(out_name, description, "task_overhead", out_path, bytes_)
     print(f"Wrote {out_path} (predicted {bytes_} bytes)")
+
+
+def _write_unmodeled(l5x: str, out_name: str, description: str) -> None:
+    """Like _write, but for the AXIS_CIP_DRIVE-bearing file -- unmodeled
+    predefined structure (OQ-AXISSTRUCT), same convention as
+    gen_axis_composite.py's _write_unmodeled."""
+    out_path = OUT_ROOT / f"{out_name}.L5X"
+    write_sample_unmodeled(l5x, out_path)
+    append_manifest_row(out_name, f"{description} (unmodeled predefined structure)", "task_overhead", out_path, 0)
+    print(f"Wrote {out_path} (predicted N/A -- unmodeled axis structure)")
 
 
 def main() -> None:
@@ -69,16 +100,15 @@ def main() -> None:
     # Axis Watch is the real task-level trigger MAW (Motion Axis Watch)
     # corresponds to; there's no other real EVENT-trigger shape in the
     # corpus to test against.
-    axis_tag = tag_xml("WatchedAxis", "AXIS_CIP_DRIVE")
     extra_program2 = program_xml("EventProgram1")
     extra_task2 = task_xml("EventTask1", "EventProgram1", task_type="EVENT",
                             event_trigger="Axis Watch", event_tag="WatchedAxis")
     l5x2 = build_l5x(
-        target_name="EventTaskAxisWatch", tags_xml=axis_tag, processor_type="5069-L306ER",
+        target_name="EventTaskAxisWatch", tags_xml=_WATCHED_AXIS_TAG_XML, processor_type="5069-L306ER",
         major_rev="35", minor_rev="11", software_revision="35.05",
         extra_programs_xml=extra_program2, extra_tasks_xml=extra_task2,
     )
-    _write(
+    _write_unmodeled(
         l5x2, "eventtask_axiswatch",
         "1 Continuous + 1 EVENT Task (EventTrigger=\"Axis Watch\", EventTag pointing at a real "
         "AXIS_CIP_DRIVE controller-scope tag, real corpus shape confirmed against SJ_Gormley's "
