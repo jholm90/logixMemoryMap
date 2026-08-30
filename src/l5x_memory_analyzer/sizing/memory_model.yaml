@@ -11,6 +11,18 @@ atomic_types:
   DINT: { bytes: 4, confidence: KNOWN }
   LINT: { bytes: 8, confidence: KNOWN }
   REAL: { bytes: 4, confidence: KNOWN }
+  # Unsigned counterparts -- James, 2026-08-30, real gap found reviewing a
+  # confidential customer project (not committed, never named here): "UINT
+  # is the same as INT with the last bit being unsigned and disabling the
+  # INT from having a negative value. you should assume INT/UINT are the
+  # same size SINT/USINT same size DINT/UDINT same size." Same storage
+  # width as the signed type, sign interpretation only -- ULINT follows
+  # the same rule (not explicitly named by James, but that project's own
+  # logic used a UDT with ULINT members directly, same pattern).
+  USINT: { bytes: 1, confidence: KNOWN }
+  UINT: { bytes: 2, confidence: KNOWN }
+  UDINT: { bytes: 4, confidence: KNOWN }
+  ULINT: { bytes: 8, confidence: KNOWN }
 
 # Firmware-native structure types referenced by name in L5X (never appear in
 # Controller/DataTypes -- there's no member list to recurse, Logix Designer

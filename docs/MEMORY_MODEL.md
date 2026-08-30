@@ -18,12 +18,25 @@ Every entry is tagged with a confidence level:
 | BOOL (standalone tag) | 4 | ASSUMED — allocated as DINT, not bit-packed. See OQ-BOOLPACK. |
 | BOOL (UDT member) | 1/8 (bit-packed) | Packs 8 per backing SINT byte. See UDT rules below. |
 | SINT | 1 | |
+| USINT | 1 | Unsigned counterpart of SINT -- same storage width, sign interpretation only. |
 | INT | 2 | |
+| UINT | 2 | Unsigned counterpart of INT -- same storage width, sign interpretation only. |
 | DINT | 4 | |
+| UDINT | 4 | Unsigned counterpart of DINT -- same storage width, sign interpretation only. |
 | LINT | 8 | |
+| ULINT | 8 | Unsigned counterpart of LINT -- same storage width, sign interpretation only. |
 | REAL | 4 | |
 | STRING (built-in) | 4 + 82 = 86 | 4-byte LEN (DINT) + 82-byte DATA (SINT[82]) default |
 | Custom string type (scalar) | 4 + nearest8(N) | 4-byte LEN + DATA rounded to the NEAREST multiple of 8 (round DOWN at the tie, remainder 4) -- see below, KNOWN 2026-08-25 |
+
+**Unsigned atomic types, added 2026-08-30.** James, reviewing a real
+confidential customer project (not committed, never named here) that
+this engine couldn't fully size: "UINT is the same as INT with the last
+bit being unsigned and disabling the INT from having a negative value.
+you should assume INT/UINT are the same size SINT/USINT same size
+DINT/UDINT same size." Real corpus confirmation: that same project's own
+logic used a UDT with UINT and ULINT members directly -- these are real,
+in-use native atomic types, not something to keep leaving unmodeled.
 
 **Custom string type-definition cost (KNOWN, re-derived 2026-08-25, made
 name-length-aware 2026-08-26).** Separate from the per-instance size
