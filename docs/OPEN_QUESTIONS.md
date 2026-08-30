@@ -145,6 +145,21 @@ the matching footnote at the bottom, not inline.
     untested, and so is trigger-source (Axis Watch vs. EVENT-instruction)
     within EVENT. Two files built, awaiting capture.[^eventtrigger]
 
+9. **OQ-AOIORPHAN** — new, real, found 2026-08-30 reviewing a real
+   confidential customer project (not committed, never named here). 12 of
+   that project's 39 declared AOI definitions had zero real tag anywhere
+   (even transitively) instantiating them — confirmed by raw grep,
+   independent of this project's own parser. `report.py`'s definition-cost
+   pass only counts a UDT/AOI reachable from an actually-sized tag
+   (`referenced_udts`), so an orphaned AOI predicts $0 extra, no error.
+   Whether Logix Designer's compiler actually reserves memory for an AOI
+   definition that's never instantiated anywhere, or drops it entirely, is
+   genuinely unknown — not derivable from the L5X alone. Two-file test
+   built to isolate it (`aoi_orphaned_referenced`/`aoi_orphaned_
+   unreferenced`, byte-identical except one has a live instance+call of a
+   moderate utility AOI and the other has the same AOI declared but never
+   instantiated), awaiting capture.[^aoiorphan]
+
 ---
 
 [^instrfirstpass]: CROUT (safety-only) and MAPC resolved separately
@@ -799,3 +814,22 @@ both questions. `eventtask_axiswatch` also declares a real
 `AXIS_CIP_DRIVE` tag (EventTag must reference a real tag) — that tag has
 its own separately-modeled cost and will need subtracting from the raw
 capture delta before comparing trigger sources.
+
+[^aoiorphan]: `gen_aoi_orphaned_def.py`. Both files declare the identical
+`UtilOrphanTest` AOI (2 DINT Input params, 1 BOOL Output param, 5 DINT
+LocalTags — a moderate utility-AOI shape, roughly matching the real
+orphaned AOIs found in the source review, not a trivial single-param
+stub). `aoi_orphaned_referenced` additionally declares a `UtilInstance`
+tag of that type and one rung calling it
+(`UtilOrphanTest(UtilInstance,0,0,OutBit);`); `aoi_orphaned_unreferenced`
+has neither — same AOI definition, zero instances, zero calls, otherwise
+byte-identical (same processor/firmware baseline, same empty-shell
+structure). Current engine predicts 19,676 bytes for the referenced file
+and 19,472 for the unreferenced one (a 204-byte delta covering the
+instance tag + call-rung logic + this project's already-wired AOI
+definition+instance formula) — real Capacity on both isolates whether
+that 204-byte delta is actually the FULL real difference (current
+`referenced_udts`-gated behavior is correct) or whether the "unreferenced"
+file's real Capacity is meaningfully higher than baseline (orphaned AOI
+definitions do cost real memory, and the gating is a genuine under-count
+bug affecting every real project with unused/library AOI definitions).
