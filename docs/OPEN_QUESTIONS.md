@@ -60,7 +60,47 @@ the matching footnote at the bottom, not inline.
    automated generation — 30 generated files and their manifest rows
    removed — until real per-catalog data (or an unambiguous root cause)
    exists, same treatment as 1756-L85ES/1756-L9x below. Not guessing
-   again.[^baseline]
+   again.
+
+   2026-08-30 update, `samples/convert_log.csv` reconciled (James's
+   L5X->ACD conversion log, real per-file build outcomes, not guesswork):
+   confirms L24ER-QB1B/L24ER-QBFC1B/L27ERM-QBFC1B/L30ERM genuinely never
+   produce an ACD at any firmware version (`XMLSrv_E_IMPORT_ABORTED_
+   NO_CHANGES`), settling that removal independent of the Bus Size
+   question. But L33ERM — also pulled at the same time — actually DOES
+   convert cleanly (`status=ok`, all 6 firmware versions, real per-file
+   window titles) and carried 6 real manifest rows in James's push;
+   restored those rows into `manifest.csv` this merge (files themselves
+   NOT yet regenerated — `gen_fw_catalog_matrix.py` still excludes it,
+   needs a deliberate re-add if this is worth pursuing further).
+
+   Both L33ERM's restored captures and the 4 kept PointIO catalogs'
+   real captures show a genuinely strange pattern worth flagging before
+   trusting either: L33ERM's `actual_bytes` is the exact same 6,640
+   across all 6 firmware versions despite predicted ranging 94,104-97,112
+   (a real, huge, -93%-ish gap); the 4 PointIO catalogs' `actual_bytes`
+   is the exact same 2,976 across all 4 catalogs and all firmware
+   versions despite predicted ranging 69,616-83,864 (a real, ~-2,200%
+   to -2,700% gap). Both sets have clean per-file window titles matching
+   the file under test and 0 logged errors/warnings — not an obvious
+   window-title-mismatch artifact. A real, error-free capture landing on
+   the exact same tiny value regardless of which distinct file was open
+   looks like a capture-tooling or units issue rather than 5+ independent
+   sizing-formula bugs that all happen to collapse to the same constant —
+   ties into OQ-BLOCKBYTE below (all captures here are 1769/L7x-family,
+   the "bytes"-labeled side of that question), though the ratios aren't a
+   single clean constant across the two groups (94104/6640≈14.2 vs
+   80856/2976≈27.2), so it isn't simply a fixed blocks-to-bytes scale
+   factor either. Needs James to manually eyeball what Studio 5000 is
+   actually showing on one of these two specific capture batches before
+   either set gets trusted as real data.
+
+   Separately, and more plausibly real: the 1756-L81ES/L82ES/L83ES/L84ES
+   (GuardLogix safety) rows across the same push show small, consistent,
+   real deltas — -3.91% (v31/v32), -3.55% (v33), -6.38% (v34/v35/v38) —
+   same magnitude within each firmware group, genuinely error-free
+   captures, a plausible real safety-baseline refinement rather than a
+   capture artifact. Not yet derived/wired.[^baseline]
 
 2. **OQ-CMPCPTLAYOUT** — down to one thread. Uniform, T1+T2, T1T3/T2T3,
    and (as of 2026-08-29) the all-3-tier mix are ALL solved and wired,
@@ -68,7 +108,13 @@ the matching footnote at the bottom, not inline.
    operand/float-literal interaction remains open, and it's now a harder
    problem than "assumed linear, awaiting more points" — real new data
    shows it's genuinely NOT monotonic in operand count, ruling out any
-   simple per-count model.[^cmpcpt]
+   simple per-count model. 2026-08-30: the 12 `cptmix_*` probe files
+   (float1/real1/real2/real3 position/adjacency/nesting variants) got
+   real captures in James's latest push — all land within 0.7-1.3% (188-272
+   bytes on ~20,500-byte totals), small and real but too tight/consistent
+   across position/nesting variants on their own to isolate a clean new
+   term from; still needs the dedicated architecture work, not more raw
+   points.[^cmpcpt]
 
 3. **OQ-AOIBOOLPACK-PAIRING** — split off the now-closed OQ-AOIDEF's old
     "BOOL-array-packing-boundary" thread once its 27 already-captured
@@ -76,8 +122,19 @@ the matching footnote at the bottom, not inline.
     KNOWN ("confirmed exact... 15 real points") but that claim was only
     ever checked at 3 widely-spaced instance counts per shape (n=1/10/25)
     — real dense data disproves it. Confidence downgraded to FITTED.
-    Genuinely open, new dense/isolating test files generated (not yet
-    captured).[^aoiboolpackpairing]
+    2026-08-30: the dense/isolating files got real captures in James's
+    latest push. Pattern is now clearer, not yet closed: each `bc<N>`
+    family (bit-count-per-element family, presumably) carries its OWN
+    fixed offset that's constant across instance count within that family
+    but differs BETWEEN families — `aoibp_dense_bc10_*` off by a flat
+    ~20-24 bytes regardless of n (2 through 12), `bc20_*` flat ~36-40,
+    `bc60_*` flat 140, while `aoibp_puremix_8b2a_*` is flat ~-8 to -12 and
+    `aoibp_split_allinput30_*` flat ~60-64. A per-family fixed offset that
+    doesn't scale with instance count points at a missing per-
+    boundary-crossing term (something tied to WHICH bit/byte boundary the
+    packed BOOLs cross, not how many instances exist) rather than a
+    missing per-instance term — real, promising lead, not yet
+    derived/wired.[^aoiboolpackpairing]
 
 4. **OQ-SAFETYSCOPE-SIZING** — real, unresolved product decision, split
    out 2026-08-30 from the now-closed OQ-PREDEFINED (moved to
@@ -138,7 +195,19 @@ the matching footnote at the bottom, not inline.
     small relative to a 1-distinct-target sample to isolate from noise.
     Needs a dedicated small file (2+ distinct targets with different
     output-param counts, input count held constant) to isolate A(n)'s
-    real output term cleanly.
+    real output term cleanly. 2026-08-30: `jsr_multiret_n02_r01000` came
+    back within 0.09% (140/155,272), consistent with the wired call-site
+    fix. But two NEW real, larger, param-TYPE-specific gaps showed up in
+    the same push: `jsr_paramtype_string_n05_r00100` is off by +4,096
+    (9.76%) and `jsr_paramtype_udt_n05_r00100` by +4,048 (9.78%) — both
+    5-param/100-call files, both off by almost exactly the same amount,
+    while the plain-DINT/REAL paramtype files in the same batch
+    (`jsr_paramcount_*`, `jsr_paramtype_real_n05_r00100`) land within
+    0.04%. Points at a real, currently-unwired per-call-site surcharge
+    specifically for STRING/UDT-typed JSR parameters (not a flat A(n)
+    definition-cost issue, since it scales with something in this file
+    that plain-atomic-typed params don't have) — genuinely new, not yet
+    derived.
 
 8. **OQ-EVENTTRIGGER** — new, real. task_extra (+700) was derived only
     from CONTINUOUS+PERIODIC tasks; EVENT-type tasks are completely
@@ -181,7 +250,19 @@ the matching footnote at the bottom, not inline.
     nothing else, both predicting 498,236 (480,000 of that is exactly
     120,000×4, zero packing ambiguity). Any real conversion factor will
     show up as an obvious clean ratio between the two files' real Capacity
-    readings. Awaiting capture on both.[^blockbyte]
+    readings. Awaiting capture on both (not yet in James's tooling as of
+    2026-08-30 — only just pushed this session).
+
+    Circumstantial evidence surfaced 2026-08-30 in OQ-BASELINE-PROCFW
+    above: two different 1769/L7x-family capture batches (the restored
+    L33ERM rows and the kept PointIO catalog rows) both landed on a
+    single tiny constant value regardless of which distinct file was
+    captured, with clean window titles and 0 errors. Doesn't confirm or
+    rule out a units mismatch on its own (the two groups' implied ratios
+    don't match each other), but it's a second, independent hint that
+    something about how 1769/L7x-family Capacity gets read may not be
+    behaving the same as the L81E/5069 baseline this project is built
+    on.[^blockbyte]
 
 11. **OQ-COMPOSITESCALE** — new, real, James 2026-08-30 directive after
     the confidential-project review found a >20% real gap: "I expect at
