@@ -94,9 +94,43 @@ def group_section_split_isolation() -> int:
     return n
 
 
+# ---------------------------------------------------------------------------
+# C. Pure-BOOL vs mixed BOOL+DINT isolation, James 2026-08-30: "are there
+# new tests for all of those points?" -- caught while answering that a
+# prior write-up mischaracterized aoipack_ratio_XXbYYa as a 3-way-split
+# shape; it's actually the SAME single-section family as mc10/mc20 above,
+# just with a fixed 30-member total and a MIXED (not pure) type
+# composition. mc10/mc20 (pure BOOL, single-section) show real odd/even
+# pairing; the ratio family (mixed BOOL+DINT, single-section) shows a flat
+# residual with no pairing signal at all. This directly tests whether
+# "pure BOOL" vs "mixed" is what flips the pattern: same dense n range and
+# member count as the confirmed mc10 pairing data (10 total, single
+# section), but swap 2 of the 10 BOOL members for DINT (bool_count=8,
+# atomic_count=2) -- the smallest possible perturbation from the
+# already-confirmed pure case.
+# ---------------------------------------------------------------------------
+
+def group_pure_vs_mixed_isolation() -> int:
+    n = 0
+    aoi_name = "AoiBpMixed8b2a"
+    inputs = ([MemberSpec(f"InB{i}", "BOOL") for i in range(8)]
+              + [MemberSpec(f"InA{i}", "DINT") for i in range(2)])
+    definition, storage = aoi_xml(aoi_name, inputs, [], [], [])
+    for count in DENSE_COUNTS:
+        tag = tag_xml("TestInstanceArray", aoi_name, dimensions=(count,), udt_members=storage)
+        l5x = build_l5x(target_name=aoi_name, tags_xml=tag, extra_aoi_xml=definition)
+        n += _write(l5x, f"aoibp_puremix_8b2a_n{count:02d}",
+                    f"AOI, 8 BOOL + 2 DINT Input params (single section, 10 total), array of {count} "
+                    f"instances -- OQ-AOIBOOLPACK-PAIRING pure-vs-mixed isolation: same total member "
+                    f"count and dense-n range as the confirmed pure-BOOL mc10 pairing data "
+                    f"(aoibp_dense_bc10_n*), smallest possible perturbation (swap 2 of 10 BOOL for "
+                    f"DINT) to test whether pairing requires ALL-BOOL or survives any mixed type")
+    return n
+
+
 def main() -> None:
     total = 0
-    for fn in [group_dense_membercount, group_section_split_isolation]:
+    for fn in [group_dense_membercount, group_section_split_isolation, group_pure_vs_mixed_isolation]:
         count = fn()
         print(f"{fn.__name__}: {count} file(s)")
         total += count

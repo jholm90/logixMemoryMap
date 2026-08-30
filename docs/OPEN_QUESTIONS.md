@@ -408,21 +408,33 @@ total — not padded to the 60-file floor (James, 2026-08-25: not a quota).
 **Wider dataset surfaced 2026-08-30** (James: "review open questions...
 full depth... no possible open items" — a full manifest.csv reconciliation
 sweep against the live engine, not just the mc10/20/60 family already
-covered above): the original "6-ratio/4-count mc=30 sweep" this whole
-formula was first found on (`aoipack_ratio_01b29a` through `_29b01a`, 6
-BOOL:non-BOOL DINT ratios x n=1/10/25/50, 24 real points) shows a
-DIFFERENT residual shape from the mc-family above — FLAT per ratio,
-**no** odd/even n-parity signal at all (01b29a=+52 at every n, 05b25a=+36
-at every n, 10b20a=+12 to +16, 20b10a=-24 to -28, 25b05a=-44 at every n,
-29b01a=-60 at every n, all flat within measurement). A separate
-non-atomic-type variant (`aoipack_nonatomic_real/sint_10b20a/20b10a`, 8
-real points, REAL/SINT non-BOOL operands instead of DINT) shows smaller,
-still-flat-ish deltas (-66 to +8). Neither dataset was previously
-reconciled against the live engine. Confirms the residual is real and
-shape-dependent in more than one way (parity-dependent for pure/near-pure
-BOOL shapes, flat-but-ratio-dependent for balanced BOOL:non-BOOL mixes) —
-consistent with "not yet safe to generalize," not a contradiction of the
-mc-family finding above.
+covered above). **Correction to an initial write-up of this same finding**
+(James caught it directly: "are there new tests for all of those points"
+— checking the claim while answering surfaced the error): this is NOT the
+3-way-split shape (10 In + 10 Out + 10 Local) the original `aoipack_bool_*`
+finding used. `aoipack_ratio_01b29a` through `_29b01a`
+(`gen_batch3_followups.py` `group_b_ratio_sweep`, 6 BOOL:DINT ratios x
+n=1/10/25/50, 24 real points) is SINGLE-SECTION (all-Input, mixing BOOL
+and DINT in one Parameters list) — structurally the SAME family as
+mc10/mc20 above, just with a fixed 30-member total and a MIXED (not pure)
+type composition. It shows a real, different residual shape from mc10/
+mc20 anyway: FLAT per ratio, **no** odd/even n-parity signal at all
+(01b29a=+52 at every n, 05b25a=+36 at every n, 10b20a=+12 to +16,
+20b10a=-24 to -28, 25b05a=-44 at every n, 29b01a=-60 at every n, all flat
+within measurement) — where mc10/mc20 (single-section, PURE BOOL, no DINT
+at all) show real odd/even pairing. A separate non-atomic-type variant
+(`aoipack_nonatomic_real/sint_10b20a/20b10a`, 8 real points, REAL/SINT
+non-BOOL operands instead of DINT) shows smaller, still-flat-ish deltas
+(-66 to +8). Neither dataset was previously reconciled against the live
+engine.
+
+This reframes the open question precisely: within the SAME single-section
+structural family, a PURE-BOOL declared-member list (mc10/mc20) shows real
+2-instance pairing quantization, but a MIXED BOOL+non-BOOL list (the ratio
+family, same family, same section shape) does not — suggesting the
+pairing mechanism may specifically depend on whether every declared
+member is BOOL, not just on section layout. Untested directly until the
+`aoibp_puremix_*` isolation batch below.
 
 [^safetyscope]: `DCI_STOP` (35 errors) has real decorated evidence
 (SJ_Gormley_20251112_r02.L5X, 80 bytes/20 DINT) but is deliberately NOT
