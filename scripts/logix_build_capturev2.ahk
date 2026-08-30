@@ -152,38 +152,6 @@ Status(msg) {
         ; know what changes on screen when load finishes -- file size will
         ; vary this just like Build does, same reasoning as the Build popup.
         Sleep 2000
-				
-				
-				Timeout := 120000  ; 2 min
-				Start := A_TickCount
-				Loop {
-						if WinExist("Logix Designer")
-								break
-						if (A_TickCount - Start > Timeout) {
-								MsgBox "Timed out waiting for LogixDesigner window, dumbass."
-								ExitApp
-						}
-						Sleep 250
-				}
-				; window found, continue here
-				
-				;ErrorValue := ExtractCount(ControlGetText("Button10", "A"))
-				;WinActivate
-				;sleep 20
-				
-				
-				Timeout := 120000  ; 2 min
-				Start := A_TickCount
-				Loop {
-						if WinExist("Logix Designer")
-								break
-						if (A_TickCount - Start > Timeout) {
-								MsgBox "Timed out waiting for LogixDesigner window, dumbass."
-								ExitApp
-						}
-						Sleep 250
-				}
-				; window found, continue here
 
         ; --- Build ---
         Status("Alt")
@@ -204,7 +172,6 @@ Status(msg) {
         }
 
         Sleep 250
-				ErrorValue := ExtractCount(ControlGetText("Button10", "A"))
         ; Captured at the same moment as Error/Warning/Message -- the
         ; window title has the open .ACD filename baked in (James, 2026-08-22:
         ; "window title is valid there with the filename.acd present inside"),
@@ -214,15 +181,6 @@ Status(msg) {
         ErrorValue := ExtractCount(ControlGetText("Button10", "A"))
         WarningValue := ExtractCount(ControlGetText("Button11", "A"))
         MessageValue := ExtractCount(ControlGetText("Button12", "A"))
-				
-				if ErrorValue = "" AND WarningValue = ""{
-					Status("Reading Static23 value")
-					Sleep 20
-						ErrorValue := ExtractCount(ControlGetText("Button25", "A"))
-						WarningValue := ExtractCount(ControlGetText("Button26", "A"))
-						;MessageValue := ExtractCount(ControlGetText("Button27", "A"))
-				}
-				
         Status("Errors/Warnings/Message: " ErrorValue ", " WarningValue ", " MessageValue " | " WindowTitle)
 
         ; --- Controller Properties -> Capacity (OCD value) ---
@@ -259,64 +217,22 @@ Status(msg) {
         Sleep 20
         OCDValue := StripCommas(Trim(ControlGetText("Edit3", "A")))
         Status("Read OCD value: " OCDValue)
-        Sleep 500
-				
-				if OCDValue = "0" {
-					Status("Reading 1769 Edit3 value")
-											Sleep 50
-							Send "{Tab}"
-							Sleep 50
-							Send "{Tab}"
-							Sleep 50
-							Send "{Enter}"
-							Sleep 2500
-							OCDValue := StripCommas(Trim(ControlGetText("Edit3", "A")))
-				}
-				
-				
-				if OCDValue = "" OR OCDValue = "0" OR !IsNumber(OCDValue){
-					Status("Reading Static23 value")
-					Sleep 20
-					OCDValue := StripCommas(Trim(ControlGetText("Static23", "A")))
-					Status("Read Static23 value: {{" OCDValue "}}")
-					
-					Sleep 20
-					
-					; L7 or 1769
-					if OCDValue = "" OR !IsNumber(OCDValue) OR OCDValue = "0" {
-							Status("Read 1769 series OCD value: " OCDValue)
-							Sleep 50
-							Send "{Right}"
-							Sleep 50   
-							Send "{Right}"
-							Sleep 50
-							Send "{Tab}"
-							Sleep 50
-							Send "{Tab}"
-							Sleep 50
-							Send "{Enter}"
-							Sleep 2500
-							OCDValue := StripCommas(Trim(ControlGetText("Edit3", "A")))
-					}					
-				}
-				
-        Status("~ Read OCD value: " OCDValue)
+        Sleep 5
 
+				Status("~~~ Read OCD value: " OCDValue)
+				
         Send "!{F4}"
         Sleep 25
 
         ; A second save-changes prompt can appear here too, after closing
         ; Controller Properties -- same dismissal, discard and move on.
-        ; Disabled 2026-08-22 -- James found it wasn't actually firing at
-        ; this point in practice; left in place, commented, in case it
-        ; resurfaces on a different file shape.
         ;if WinWait(, "Save the changes?", 2) {
         ;    Send "n"
         ;    Sleep 250
         ;}
 
-        Status("Write Changes to manifest file")
-        Sleep 5
+				Status("Write Changes to manifest file")
+				sleep 5
 
         ; --- Hand results back to PowerShell ---
         handoffFile := FileOpen(HANDOFF_PATH, "w")
