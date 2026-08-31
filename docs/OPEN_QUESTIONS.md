@@ -306,13 +306,34 @@ the matching footnote at the bottom, not inline.
     formula: stop `continue`-ing past JSR target routines in `report.py`
     and weigh their instructions with the SAME per-instruction-type table
     already confirmed for every other routine, rather than treating target
-    content as a special zero-cost case. Not wired yet — needs a check
-    against `gen_jsr_target_content_scale.py`'s exact instruction mix to
-    confirm the average lines up with 18/instr before touching
-    `report.py`'s `is_jsr_target` branch, and a check that this doesn't
-    double-count anything already folded into the existing `A(n)`/`B(n)`
-    call-site formulas (those were fit assuming target content contributes
-    $0, so removing that assumption changes what `A(n)` is allowed to mean).
+    content as a special zero-cost case.
+
+    **WIRED 2026-08-31.** `report.py`'s `is_jsr_target` branch now calls
+    `compute_routine_logic_bytes(routine, model.logic_instructions,
+    tag_types, charge_shell=False)` on the target's own content (using the
+    REAL per-instruction weight table already confirmed for ordinary
+    routines, not a new guessed 18/instr constant) and adds it to the A(n)
+    entry, merged into one `logic_entries` tuple per routine path (two
+    separate tuples sharing a path would have silently collided in any
+    by-path grouping — caught and fixed before committing). `charge_shell=
+    False` confirms the target still doesn't pay its own
+    `fixed_base_per_routine` — that stays folded into the caller's
+    `jsr_fixed_base_per_routine` as before. Re-validated against the real
+    capture data with the new code: residuals dropped from 0.39%/4.11%/
+    8.72%/13.37% (n=10/50/100/150) to **-0.81%/-2.13%/-3.47%/-4.75%** —
+    max error cut from 13.37% to 4.75%, using only already-trusted
+    weights, no new constant. `jsr_midchain_real_chain`/`_leaf_control`
+    also improved: predicted delta went from 144 (old, wrong) to 276 (new),
+    against a real delta of 332 — most of the previously-reported 188-byte
+    "midchain" gap was actually THIS SAME target-content gap, not a
+    separate outbound-call cost; only 56 bytes remain unexplained now (down
+    from 188), too small to isolate a per-outbound-call rate from one data
+    point. 3 pre-existing tests in `test_logic_sizing.py` had hardcoded the
+    old (now-disproven) "target content is free" expectation — updated to
+    the correct values, plus a new dedicated regression test
+    (`test_jsr_target_content_scales_with_instruction_count`) added.
+    Remaining small negative residual (grows to -4.75% at n=150) is a new,
+    much smaller, separate open thread — not urgent at this magnitude.
 
     Same review also found `is_jsr_target` is checked BEFORE whether that
     routine itself makes further JSR calls (`continue`s immediately) — a
@@ -664,16 +685,23 @@ the matching footnote at the bottom, not inline.
       (`_10/_11/_22/_34/_36/_46/_47/_48`) remain blocked on the separate
       CIP-Safety-catalog import bug, still no real data for them.
 
-      **Candidate for the ~3% residual now identified, 2026-08-31:** the
-      OQ-JSRPARAMCOST target-content finding and OQ-AOIINTERNALLOGIC above
-      (both landed this same push) confirm that JSR-target logic content
-      and AOI-internal Logic-routine content are BOTH currently priced at
-      $0 — and every composite file's design deliberately includes AOI
-      calls with real internal logic and (in some) JSR targets with real
-      content. This is now the leading, evidenced explanation for the
-      composite batch's small one-directional underprediction, not just a
-      guess — once those two are wired, re-check whether the ~3% residual
-      shrinks correspondingly.
+      **Candidate hypothesis proposed 2026-08-31, RULED OUT same day once
+      wired.** The OQ-JSRPARAMCOST target-content fix and OQ-AOIINTERNAL-
+      LOGIC fix above were both wired and re-checked directly against
+      these 18 composite files: **the residual is completely unchanged,
+      byte-for-byte, before and after both fixes** (mean still +3.28%,
+      same range -0.45% to +5.55%). Root cause: despite the composite
+      generator's own docstring claiming "AOI calls... mixing... AOI-
+      calls," `gen_composite_realistic.py`'s AOI definitions still use the
+      OLD hardcoded self-closing `<Routine Name="Logic" Type="RLL"/>`
+      shape (never updated to pass `aoi_xml()`'s `logic_rungs_xml` param,
+      the same gap OQ-AOIINTERNALLOGIC found everywhere else) — so there's
+      no internal AOI content to weigh in these files either way. Same for
+      JSR: the composite generator doesn't appear to declare any JSR-
+      target routines with real content. **The composite batch's ~3%
+      residual remains genuinely unexplained** — this was a real, testable
+      hypothesis, tested directly against real data, and it didn't hold;
+      not left as an untested guess.
 
       **6 more real captures landed 2026-08-31** for composites that fall
       back to unmodeled (`predicted_bytes=0`): `composite_realistic_
@@ -737,11 +765,36 @@ the matching footnote at the bottom, not inline.
     the same per-instruction model as ordinary routine logic (same fix
     direction as the JSR-target-content finding above), not treated as
     zero-cost; the per-routine-count dimension can be dropped from the
-    model entirely — real data shows it doesn't matter.** Not wired yet —
-    same architecture-care caveat as the JSR-target fix: needs a check
-    that `AoiDefinitionModel`'s existing param/localtag cost isn't already
-    silently absorbing part of this before the instruction-weighing hook
-    is added.
+    model entirely — real data shows it doesn't matter.**
+
+    **WIRED 2026-08-31.** New `parser/logic.py` function,
+    `parse_aoi_internal_logic()`: walks `Controller/
+    AddOnInstructionDefinitions/AddOnInstructionDefinition/Routines/
+    Routine` for every AOI definition and aggregates ALL of its internal
+    RLL routines' rung text into ONE pseudo-`RoutineLogic` per AOI name
+    (deliberately not tracked per-routine, matching the confirmed "routine
+    count doesn't matter" finding). `report.py`'s AOI-definition-cost path
+    now calls `compute_routine_logic_bytes(..., charge_shell=False)` on
+    that aggregate and adds it to the existing param/localtag declaration
+    cost (`AoiDefinitionModel` untouched — confirmed via the n=0 file
+    landing at an exact 0.00% match, so no double-counting). Re-validated
+    against real data: residuals dropped from 0.00%/1.21%/6.07%/12.02%
+    (n=0/10/50/100) to **0.00%/0.00%/-0.29%/-0.55%** — essentially exact
+    at every point tested, max error cut from 12.02% to 0.55%.
+    `aoi_multiroutine_control` (2 internal routines, same total content as
+    `_050`) now predicts identically to `_050` as designed (-0.29%);
+    `aoi_multiroutine_real` (literal HomeToTorque content) lands at +1.02%,
+    a small real instruction-mix difference, not a routine-count effect.
+    **Checked against `gen_composite_realistic.py`'s AOI calls: this fix
+    does NOT move the composite batch's ~3% residual at all** — that
+    generator still uses the old hardcoded self-closing `<Routine
+    Name="Logic" Type="RLL"/>` shape (never updated to use `aoi_xml()`'s
+    new `logic_rungs_xml` param), so its AOIs have zero internal content to
+    weigh either way. **Correcting the composite-residual hypothesis
+    written earlier this session** (see OQ-COMPOSITESCALE below): neither
+    this fix nor the JSR-target-content fix explains the composite
+    batch's residual, since composite files don't currently exercise
+    either gap — that residual's real source is still unidentified.
 
 13. **OQ-IDENTNAMELEN** — new, real, found 2026-08-31 in the same push as
     James's "5/10/15/20/50 subroutines... different routine name lengths"

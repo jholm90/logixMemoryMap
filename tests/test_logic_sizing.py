@@ -138,12 +138,14 @@ def test_paired_instruction_weights_dont_double_count_companion_instruction():
 
 def test_jsr_target_routine_not_double_counted():
     # Regression test for the 2026-08-22 fix: a JSR target routine's own
-    # cost is already folded into the caller's jsr_fixed_base_per_routine
-    # constant (confirmed against real data for instr_jsr_n*.L5X -- the
-    # target's content stayed fixed across the whole calibration sweep, so
-    # its cost got absorbed into that constant rather than needing its own
-    # separate charge). Before this fix the engine also charged SubTest its
-    # own full fixed_base_per_routine, overcounting every JSR-using program.
+    # FIXED SHELL cost is already folded into the caller's jsr_fixed_base_
+    # per_routine constant -- before that fix the engine also charged
+    # SubTest its own full fixed_base_per_routine, overcounting every
+    # JSR-using program. That part still holds (charge_shell=False for a
+    # JSR target). What's NO LONGER true (2026-08-31, real data at real
+    # scale disproved it -- see OPEN_QUESTIONS.md OQ-JSRPARAMCOST) is that
+    # the target's own CONTENT was also free: it's now weighed with the
+    # normal per-instruction model, same as any other routine.
     xml = """
     <RSLogix5000Content SchemaRevision="1.0">
       <Controller Name="Test">
@@ -185,18 +187,21 @@ def test_jsr_target_routine_not_double_counted():
     assert errors == []
     logic_entries = [e for e in entries if e.tier == ESTIMATED]
     # MainRoutine gets its own entry (its content, never double-counted
-    # with SubTest's own content). SubTest, being a JSR target, gets ONLY
-    # its A(n) Parameters-block one-time cost (OQ-JSRPARAMCOST) -- not its
-    # own fixed_base/content, which stays folded into the caller's
-    # jsr_fixed_base_per_routine as before this feature existed.
+    # with SubTest's own content). SubTest, being a JSR target, gets its
+    # A(n) Parameters-block one-time cost (OQ-JSRPARAMCOST) PLUS its own
+    # instruction content weighed normally (2026-08-31) -- just not its
+    # own fixed_base_per_routine shell, which stays folded into the
+    # caller's jsr_fixed_base_per_routine as before this feature existed.
     assert len(logic_entries) == 2
     by_path = {e.path: e for e in logic_entries}
     main = by_path["program:MainProgram/MainRoutine"]
     sub = by_path["program:MainProgram/SubTest"]
     # jsr_fixed_base_per_routine(5096) + JSR's own weight(72)*1 + B(0)=4 = 5172
     assert main.bytes == 5096 + 72 + 4
-    # A(0) = a_base(104) + a_per_param(20)*0 = 104
-    assert sub.bytes == 104
+    # A(0) = a_base(104) + a_per_param(20)*0 = 104, plus SubTest's own
+    # content (one NOP rung, weight 16) -- no fixed_base_per_routine (that
+    # stays folded into MainRoutine's jsr_fixed_base_per_routine above).
+    assert sub.bytes == 104 + 16
 
 
 def test_jsr_param_cost_a_charged_once_even_with_two_call_sites():
@@ -236,8 +241,11 @@ def test_jsr_param_cost_a_charged_once_even_with_two_call_sites():
     logic_entries = [e for e in entries if e.tier == ESTIMATED]
     by_path = {e.path: e for e in logic_entries}
     sub = by_path["program:MainProgram/SubTest"]
-    # A(2) = 104 + 20*2 = 144 -- charged exactly once, not twice for the 2 call sites.
-    assert sub.bytes == 144
+    # A(2) = 104 + 20*2 = 144 -- charged exactly once, not twice for the 2
+    # call sites, plus SubTest's own content (one NOP rung, weight 16) --
+    # also charged exactly once regardless of call-site count, since it's
+    # the target routine's own content, not a per-call cost.
+    assert sub.bytes == 144 + 16
     main = by_path["program:MainProgram/MainRoutine"]
     # jsr_fixed_base(5096) + JSR weight(72)*2 calls + B(2)=4+20*2=44 *2 calls
     assert main.bytes == 5096 + 72 * 2 + 44 * 2
@@ -285,8 +293,60 @@ def test_jsr_output_param_cost_charged_per_call_site():
     assert main.bytes == 5096 + 72 + 24 + 20 * 2
     sub = by_path["program:MainProgram/SubTest"]
     # A(1) unaffected by output param count (not yet adjusted -- see
-    # OPEN_QUESTIONS.md OQ-JSRPARAMCOST)
-    assert sub.bytes == 104 + 20
+    # OPEN_QUESTIONS.md OQ-JSRPARAMCOST), plus SubTest's own content (one
+    # NOP rung, weight 16).
+    assert sub.bytes == 104 + 20 + 16
+
+
+def test_jsr_target_content_scales_with_instruction_count():
+    # 2026-08-31: real data (jsr_target_content_scale_{010,050,100,150})
+    # disproved the old "target content is free" assumption -- see
+    # OPEN_QUESTIONS.md OQ-JSRPARAMCOST. This is the direct regression test
+    # for that fix: a target with more real content must predict MORE
+    # bytes than an otherwise-identical target with less, and the target
+    # must NOT pay its own fixed_base_per_routine (that stays folded into
+    # the caller's jsr_fixed_base_per_routine).
+    def build(target_rungs: str) -> int:
+        xml = f"""
+        <RSLogix5000Content SchemaRevision="1.0">
+          <Controller Name="Test">
+            <DataTypes/>
+            <AddOnInstructionDefinitions/>
+            <Tags/>
+            <Programs>
+              <Program Name="MainProgram">
+                <Tags/>
+                <Routines>
+                  <Routine Name="MainRoutine" Type="RLL">
+                    <RLLContent>
+                      <Rung Number="0" Type="N"><Text><![CDATA[JSR(SubTest,0);]]></Text></Rung>
+                    </RLLContent>
+                  </Routine>
+                  <Routine Name="SubTest" Type="RLL">
+                    <RLLContent>{target_rungs}</RLLContent>
+                  </Routine>
+                </Routines>
+              </Program>
+            </Programs>
+          </Controller>
+        </RSLogix5000Content>
+        """
+        root = ET.fromstring(xml)
+        entries, errors = build_report(root, MODEL)
+        assert errors == []
+        by_path = {e.path: e for e in entries if e.tier == ESTIMATED}
+        return by_path["program:MainProgram/SubTest"].bytes
+
+    one_nop = '<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>'
+    two_nop = (
+        '<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>'
+        '<Rung Number="1" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>'
+    )
+    # A(0)=104 shared by both; content must differ by exactly one more
+    # NOP's weight (16), and neither pays fixed_base_per_routine (4816) --
+    # that would swamp this small a difference if it leaked in.
+    assert build(one_nop) == 104 + 16
+    assert build(two_nop) == 104 + 16 * 2
 
 
 # ---------------------------------------------------------------------------

@@ -18,7 +18,7 @@ from dataclasses import dataclass
 
 from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
 from l5x_memory_analyzer.parser.datatypes import parse_data_types
-from l5x_memory_analyzer.parser.logic import parse_rll_routines
+from l5x_memory_analyzer.parser.logic import parse_aoi_internal_logic, parse_rll_routines
 from l5x_memory_analyzer.parser.modules import parse_modules
 from l5x_memory_analyzer.parser.tags import CONTROLLER_SCOPE, parse_tags
 from l5x_memory_analyzer.parser.tasks import parse_tasks
@@ -66,6 +66,15 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     aoi_types = parse_aoi_definitions(root)
     data_types = {**udt_types, **aoi_types}
     tags = parse_tags(root)
+    # AOI name -> its internal Logic-routine(s) content, aggregated across
+    # however many internal routines it declares (2026-08-31, OQ-
+    # AOIINTERNALLOGIC -- real data confirms routine count doesn't matter,
+    # only total content does). tag_types isn't available yet at this
+    # point in the function and wouldn't resolve an AOI's own internal
+    # Parameter/LocalTag operand names anyway (they're not in the
+    # file-wide tag table), so the operand-type surcharge is skipped for
+    # this content, same as any other caller that omits tag_types.
+    aoi_internal_logic = parse_aoi_internal_logic(root)
 
     sized: list[tuple[str, str, str, int, str]] = []
     errors: list[SizeError] = []
@@ -137,6 +146,19 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             # under-predicted). Checked before the udt_types string-family
             # branch below since an AOI name is never also a udt_types key.
             def_bytes, def_basis = compute_aoi_definition_cost(name, data_types, model)
+            internal_routine = aoi_internal_logic.get(name)
+            if internal_routine is not None:
+                # Real, confirmed 2026-08-31 (OQ-AOIINTERNALLOGIC): an AOI's
+                # internal Logic-routine content is NOT free -- weighed with
+                # the same per-instruction model as ordinary routine logic.
+                # charge_shell=False: the internal routine doesn't pay its
+                # own fixed_base_per_routine (that's a separate, already-
+                # confirmed cost the aoi_definition base already covers).
+                content_bytes, content_basis = compute_routine_logic_bytes(
+                    internal_routine, model.logic_instructions, charge_shell=False
+                )
+                def_bytes += content_bytes
+                def_basis = weakest(def_basis, content_basis)
             definition_entries.append((
                 f"udt_definitions/{name}", "udt_definition", name, def_bytes, def_basis,
             ))
@@ -202,22 +224,41 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     n_plain_routines = 0
     for routine in all_routines:
         if routine.is_jsr_target:
-            # Confirmed 2026-08-22 against real data: a JSR target routine's
-            # own CONTENT cost is already folded into the caller's
-            # jsr_fixed_base_per_routine constant -- see RoutineLogic.
-            # is_jsr_target's docstring. Emitting a separate entry for that
-            # content here would double-count it. The target's own
-            # Parameters-block declaration cost (A(n), OQ-JSRPARAMCOST) is
-            # a real, SEPARATE one-time cost this project didn't used to
-            # charge at all -- charged here instead, once per distinct
-            # target, since it belongs to the callee, not the caller.
+            # 2026-08-22's "target content is already folded into the
+            # caller's jsr_fixed_base_per_routine" finding only ever held
+            # for a trivial 1-NOP-rung stub target -- see RoutineLogic.
+            # is_jsr_target's docstring. Real data, 2026-08-31
+            # (jsr_target_content_scale_{010,050,100,150}), disproves it at
+            # real scale: predicted stayed flat regardless of target size
+            # while real Capacity grew cleanly with it (see OPEN_QUESTIONS.md
+            # OQ-JSRPARAMCOST). jsr_fixed_base_per_routine is a flat constant
+            # (the caller's own one-time cost of declaring/having a target
+            # subroutine exist), not content-scaled, so it was never actually
+            # capable of absorbing variable content -- the old confirmation
+            # just never varied content size enough to notice. Fixed: weigh
+            # the target's own instructions with the same per-instruction
+            # model as any other routine (charge_shell=False -- the target
+            # doesn't pay its own fixed_base_per_routine; the caller's
+            # jsr_fixed_base_per_routine already covers the one-time cost of
+            # the target existing, this only adds its CONTENT). The target's
+            # own Parameters-block declaration cost (A(n), OQ-JSRPARAMCOST)
+            # is a separate, one-time cost, charged once per distinct target
+            # since it belongs to the callee, not the caller.
             n = jsr_target_param_counts.get(routine.routine_name)
-            if n is not None:
-                a_cost = model.logic_instructions.jsr_param_cost.a_cost(n)
-                logic_entries.append((
-                    routine.path, "routine_logic", "RLL", a_cost,
-                    model.logic_instructions.jsr_param_cost.confidence,
-                ))
+            a_cost = model.logic_instructions.jsr_param_cost.a_cost(n) if n is not None else 0
+            a_basis = model.logic_instructions.jsr_param_cost.confidence
+            content_bytes, content_basis = compute_routine_logic_bytes(
+                routine, model.logic_instructions, tag_types, charge_shell=False
+            )
+            target_bytes = a_cost + content_bytes
+            if target_bytes:
+                # One entry per routine.path, same convention as every other
+                # routine below -- two separate tuples sharing a path would
+                # silently collide in any by-path grouping (hierarchy.py,
+                # tests) since only the total sum, not per-path dedup, is
+                # done downstream.
+                target_basis = a_basis if content_bytes == 0 else (content_basis if a_cost == 0 else weakest(a_basis, content_basis))
+                logic_entries.append((routine.path, "routine_logic", "RLL", target_bytes, target_basis))
             continue
         # 2026-08-27, Task/Program/Routine shell decomposition (OQ-
         # TASKOVERHEAD, see memory_model.yaml task_program_overhead): a

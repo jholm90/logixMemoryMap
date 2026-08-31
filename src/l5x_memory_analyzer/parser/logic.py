@@ -287,15 +287,17 @@ class RoutineLogic:
     # routine (a rung with "XIC(A)XIC(B)OTE(C);" counts XIC twice, OTE once).
     instruction_counts: dict[str, int] = field(default_factory=dict)
     # True if some OTHER routine in the same program JSRs to this one.
-    # Confirmed 2026-08-22 against real data (instr_jsr_n*.L5X): the target
-    # routine's own fixed-base-and-content cost is already fully absorbed
-    # into the calling routine's jsr_fixed_base_per_routine constant (that
-    # constant was fit while the target's content stayed fixed across the
-    # whole sweep) -- charging it AGAIN as an independent routine
-    # double-counts. sizing/logic.py uses this flag to skip such routines
-    # entirely when computing the program's total. Only confirmed for a
-    # trivial (1-NOP-rung) target; a substantial JSR target routine's real
-    # behavior is unconfirmed, see docs/MEMORY_MODEL.md.
+    # 2026-08-22: confirmed the target's own fixed shell cost (fixed_base_
+    # per_routine) is already absorbed into the caller's jsr_fixed_base_
+    # per_routine, so sizing/report.py never charges it again for a JSR
+    # target -- that part still holds. The target's own CONTENT cost is a
+    # separate matter: 2026-08-22's finding only ever tested a trivial
+    # 1-NOP-rung stub target, and real data at real scale (2026-08-31,
+    # jsr_target_content_scale_{010,050,100,150}, see OPEN_QUESTIONS.md
+    # OQ-JSRPARAMCOST) disproved the "content is free too" part of the old
+    # claim -- report.py now weighs a JSR target's own instructions with
+    # the normal per-instruction model (charge_shell=False, so only its
+    # fixed shell stays excluded).
     is_jsr_target: bool = False
     # One entry per real CPT(...) call in this routine, each the ordered
     # list of top-level operator tokens found in that call's expression --
@@ -493,3 +495,62 @@ def parse_rll_routines(root: ET.Element) -> list[RoutineLogic]:
             ))
 
     return routines
+
+
+def parse_aoi_internal_logic(root: ET.Element) -> dict[str, RoutineLogic]:
+    """AOI definition name -> ONE aggregate RoutineLogic combining the rung
+    text of every internal RLL routine that AOI declares (its Logic routine
+    plus any additional ones, e.g. a real AOI like HomeToTorque has both
+    Logic and EnableInFalse).
+
+    Real data (2026-08-31, aoi_multiroutine_control vs aoi_multiroutine_real,
+    see OPEN_QUESTIONS.md OQ-AOIINTERNALLOGIC) confirms splitting the SAME
+    content across 2 internal routines instead of 1 costs identically to
+    keeping it in one -- so this deliberately aggregates all of an AOI's
+    internal routines into a single pseudo-routine rather than tracking them
+    separately; the per-routine-count dimension doesn't matter, only total
+    content does. sizing/udt.py weighs this the same way as ordinary routine
+    logic via compute_routine_logic_bytes(charge_shell=False) -- an AOI's
+    internal routine doesn't pay its own fixed_base_per_routine; that's a
+    separate, already-confirmed cost the aoi_definition formula's base
+    already covers.
+
+    Not JSR-aware (is_jsr_target/jsr_calls/jsr_target_names left at their
+    defaults) -- an AOI calling JSR internally, or being itself invoked
+    in a way that interacts with the JSR-target machinery, is untested
+    territory, not something this function guesses at."""
+    result: dict[str, RoutineLogic] = {}
+    aois_el = root.find("Controller/AddOnInstructionDefinitions")
+    if aois_el is None:
+        return result
+
+    for aoi_el in aois_el.findall("AddOnInstructionDefinition"):
+        name = aoi_el.get("Name")
+        routines_el = aoi_el.find("Routines")
+        if routines_el is None:
+            continue
+        rung_texts: list[str] = []
+        for routine_el in routines_el.findall("Routine"):
+            if routine_el.get("Type") != "RLL":
+                continue
+            rll_content = routine_el.find("RLLContent")
+            if rll_content is None:
+                continue
+            for rung_el in rll_content.findall("Rung"):
+                text_el = rung_el.find("Text")
+                if text_el is not None and text_el.text:
+                    rung_texts.append(text_el.text)
+        if not rung_texts:
+            continue
+        result[name] = RoutineLogic(
+            program_name="",
+            routine_name=name,
+            rung_count=len(rung_texts),
+            instruction_counts=_count_instructions(rung_texts),
+            cpt_calls=_cpt_calls(rung_texts),
+            typed_calls=_typed_instruction_calls(rung_texts),
+            indirect_index_kinds=_indirect_index_kinds(rung_texts),
+            cmp_calls=_cmp_calls(rung_texts),
+            branch_bracket_instruction_count=_branch_bracket_instruction_count(rung_texts),
+        )
+    return result
