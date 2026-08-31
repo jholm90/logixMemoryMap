@@ -1397,3 +1397,35 @@ generated until a real sample or its real ProductCode surfaces. The
 6 already-generated L85ES files (one per firmware version) and their
 manifest.csv rows were deleted, not left orphaned. Full corpus
 re-swept (1841 files): 0 crashes. 140/140 tests.
+
+**OQ-AOIORPHAN.** Real confidential-customer-project grep (2026-08-30,
+not committed, never named) found 12 of 39 declared AOI definitions with
+zero real tag anywhere (even transitively) instantiating them.
+`report.py`'s definition-cost pass only counts a UDT/AOI reachable from
+an actually-sized tag (`referenced_udts`), so an orphaned AOI predicted
+$0 extra with no error raised — but whether Logix Designer's compiler
+actually reserves memory for a never-instantiated AOI definition, or
+drops it entirely, was not derivable from the L5X alone. A minimal pair
+(`aoi_orphaned_referenced`/`aoi_orphaned_unreferenced`, byte-identical
+except one has a live instance+call of a moderate utility AOI and the
+other declares the same AOI but never instantiates it) was captured
+2026-08-31. `aoi_orphaned_unreferenced`: predicted 19472, real 19480 --
+an 8-byte residual (0.04%), essentially exact. `aoi_orphaned_referenced`:
+predicted 19676, real 19936 -- a 260-byte residual (1.3%, consistent with
+the same small systematic underprediction seen across the composite
+batch, not orphan-specific). Real delta between the two (referenced
+minus unreferenced) = 456 bytes; this engine's own predicted delta is
+204 bytes -- the gap is fully explained by that same ~250-byte residual
+on the referenced side, not by the orphan/unreferenced side being wrong.
+**Conclusion: `report.py`'s existing rule (a UDT/AOI definition
+unreachable from any actually-sized tag predicts $0 extra) is confirmed
+correct by real data, not just assumed** -- Logix genuinely does not
+reserve real memory for an AOI definition that's declared but never
+instantiated anywhere. 18 of the 50-file `gen_composite_realistic.py`
+extension (each declares its own orphaned AOI at varying complexity) are
+now captured too, all landing within the same small ~3% band, no
+orphan-specific outlier among them -- corroborating, not just the
+minimal pair. The core question (does an orphaned AOI definition cost
+real memory) is closed. Still open, tracked separately under
+OQ-COMPOSITESCALE: capturing the remaining composite files (8 blocked on
+an unrelated CIP-Safety-catalog import bug, the rest not yet run).

@@ -302,45 +302,17 @@ the matching footnote at the bottom, not inline.
     untested, and so is trigger-source (Axis Watch vs. EVENT-instruction)
     within EVENT. Two files built, awaiting capture.[^eventtrigger]
 
-9. **OQ-AOIORPHAN** — new, real, found 2026-08-30 reviewing a real
-   confidential customer project (not committed, never named here). 12 of
-   that project's 39 declared AOI definitions had zero real tag anywhere
-   (even transitively) instantiating them — confirmed by raw grep,
-   independent of this project's own parser. `report.py`'s definition-cost
-   pass only counts a UDT/AOI reachable from an actually-sized tag
-   (`referenced_udts`), so an orphaned AOI predicts $0 extra, no error.
-   Whether Logix Designer's compiler actually reserves memory for an AOI
-   definition that's never instantiated anywhere, or drops it entirely, is
-   genuinely unknown — not derivable from the L5X alone. Two-file test
-   built to isolate it (`aoi_orphaned_referenced`/`aoi_orphaned_
-   unreferenced`, byte-identical except one has a live instance+call of a
-   moderate utility AOI and the other has the same AOI declared but never
-   instantiated), awaiting capture.[^aoiorphan] Extended 2026-08-30 with 50
-   more real data points at realistic project scale/composition (see
-   `gen_composite_realistic.py` below) — every one of the 50 composite
-   files declares at least one orphaned AOI alongside several referenced
-   ones, so once captured this closes with a much larger, varied sample
-   than the original minimal pair, not just confirms it.
-
-   **Minimal pair captured, 2026-08-31 — core question answered, real
-   data confirms the current model.** `aoi_orphaned_unreferenced`:
-   predicted 19472, real 19480 — an 8-byte residual (0.04%), essentially
-   exact. `aoi_orphaned_referenced`: predicted 19676, real 19936 — a
-   260-byte residual (1.3%, consistent with the same small systematic
-   underprediction seen across the composite batch, not orphan-specific).
-   Real delta between the two (referenced minus unreferenced) = 456
-   bytes; this engine's own predicted delta is 204 bytes — the gap is
-   fully explained by that same ~250-byte residual on the referenced
-   side, not by the orphan/unreferenced side being wrong. **Conclusion:
-   `report.py`'s existing rule (a UDT/AOI definition unreachable from
-   any actually-sized tag predicts $0 extra) is confirmed correct by
-   real data, not just assumed** — Logix genuinely does not reserve
-   real memory for an AOI definition that's declared but never
-   instantiated anywhere. Still awaiting real capture on the 50-file
-   composite extension (each declares its own orphaned AOI at varying
-   complexity) for a larger, varied confirmation — 18 of those are now
-   captured too (see OQ-COMPOSITESCALE below), all landing within the
-   same small ~3% band, no orphan-specific outlier among them.
+9. **OQ-AOIORPHAN** — **RESOLVED 2026-08-31, moved to
+   RESOLVED_QUESTIONS.md.** Core question (does an orphaned/never-
+   instantiated AOI definition cost real memory) is closed: minimal-pair
+   real capture confirms `report.py`'s existing $0-extra rule is correct,
+   not just assumed (8-byte residual on the unreferenced file, 0.04%).
+   See RESOLVED_QUESTIONS.md for the full writeup. The only piece still
+   genuinely open is tracked under OQ-COMPOSITESCALE below: real capture
+   on the remaining `gen_composite_realistic.py` files (32 of 50 not yet
+   captured, 8 of those blocked on an unrelated CIP-Safety-catalog import
+   bug) — a larger/varied corroboration, not a reopening of the core
+   question.
 
 10. **OQ-BLOCKBYTE** — new, very serious if real. James, 2026-08-30:
     Studio 5000's Capacity readout is labeled "bytes" for 1769/L7x
@@ -1293,25 +1265,6 @@ change. Removed from `known_conversion_failures.csv`. `eventtask_axiswatch`
 got the same fix (same override removed) even though it wasn't in this
 failure batch, since it shares the identical root cause. Needs a real
 reconversion pass to confirm — not independently verifiable from here.
-
-[^aoiorphan]: `gen_aoi_orphaned_def.py`. Both files declare the identical
-`UtilOrphanTest` AOI (2 DINT Input params, 1 BOOL Output param, 5 DINT
-LocalTags — a moderate utility-AOI shape, roughly matching the real
-orphaned AOIs found in the source review, not a trivial single-param
-stub). `aoi_orphaned_referenced` additionally declares a `UtilInstance`
-tag of that type and one rung calling it
-(`UtilOrphanTest(UtilInstance,0,0,OutBit);`); `aoi_orphaned_unreferenced`
-has neither — same AOI definition, zero instances, zero calls, otherwise
-byte-identical (same processor/firmware baseline, same empty-shell
-structure). Current engine predicts 19,676 bytes for the referenced file
-and 19,472 for the unreferenced one (a 204-byte delta covering the
-instance tag + call-rung logic + this project's already-wired AOI
-definition+instance formula) — real Capacity on both isolates whether
-that 204-byte delta is actually the FULL real difference (current
-`referenced_udts`-gated behavior is correct) or whether the "unreferenced"
-file's real Capacity is meaningfully higher than baseline (orphaned AOI
-definitions do cost real memory, and the gating is a genuine under-count
-bug affecting every real project with unused/library AOI definitions).
 
 [^blockbyte]: `gen_blockbyte_l71.py` (the 1756-L71 half) plus the earlier
 `blockbytetest_dint120000` (1756-L81E, `sample_gen.cli tags --type DINT
