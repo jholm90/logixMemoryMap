@@ -322,6 +322,26 @@ the matching footnote at the bottom, not inline.
    ones, so once captured this closes with a much larger, varied sample
    than the original minimal pair, not just confirms it.
 
+   **Minimal pair captured, 2026-08-31 — core question answered, real
+   data confirms the current model.** `aoi_orphaned_unreferenced`:
+   predicted 19472, real 19480 — an 8-byte residual (0.04%), essentially
+   exact. `aoi_orphaned_referenced`: predicted 19676, real 19936 — a
+   260-byte residual (1.3%, consistent with the same small systematic
+   underprediction seen across the composite batch, not orphan-specific).
+   Real delta between the two (referenced minus unreferenced) = 456
+   bytes; this engine's own predicted delta is 204 bytes — the gap is
+   fully explained by that same ~250-byte residual on the referenced
+   side, not by the orphan/unreferenced side being wrong. **Conclusion:
+   `report.py`'s existing rule (a UDT/AOI definition unreachable from
+   any actually-sized tag predicts $0 extra) is confirmed correct by
+   real data, not just assumed** — Logix genuinely does not reserve
+   real memory for an AOI definition that's declared but never
+   instantiated anywhere. Still awaiting real capture on the 50-file
+   composite extension (each declares its own orphaned AOI at varying
+   complexity) for a larger, varied confirmation — 18 of those are now
+   captured too (see OQ-COMPOSITESCALE below), all landing within the
+   same small ~3% band, no orphan-specific outlier among them.
+
 10. **OQ-BLOCKBYTE** — new, very serious if real. James, 2026-08-30:
     Studio 5000's Capacity readout is labeled "bytes" for 1769/L7x
     processors but "blocks" for 5069/L8x processors — and this project has
@@ -371,6 +391,50 @@ the matching footnote at the bottom, not inline.
     to confirm the fix actually imports clean — not independently
     verifiable from here.
 
+    **Circumstantial evidence now essentially CONFIRMED, 2026-08-31**
+    (James's real capture batch, merged into `manifest.csv` this pass).
+    The full 1756-L7x/1769 firmware x catalog matrix came back with real
+    Capacity numbers — and every one of them is flat, content- and
+    firmware-independent:
+      - All 25 `fwmatrix_v{31,32,34,35,38}_1756_l{71,72,73,74,75}` rows
+        (5 distinct catalogs × 5 firmware versions, genuinely different
+        ProductCode/Major-rev content each) read the exact same
+        `actual_bytes = 30152`. Zero variance.
+      - All 20 `fwmatrix_v{31,32,34,35,38}_1769_l{16er,18er,18erm,19er}`
+        rows (4 distinct catalogs with real, different embedded
+        Discrete_IO module content, 5 firmware versions) read the exact
+        same `actual_bytes = 2976`. Zero variance.
+      - All 5 `fwmatrix_v{31,32,34,35,38}_1769_l33erm` rows read the
+        exact same `actual_bytes = 6640`. Zero variance.
+      Three different real numbers, but each one is IDENTICAL across
+      every firmware version and (for the two multi-catalog groups)
+      every distinct catalog within its family — genuinely different
+      project content (different ProductCode, different real embedded
+      module XML for the 1769 tier) cannot legitimately compile to a
+      byte-identical Capacity reading. This isn't proof of the original
+      "blocks vs bytes" unit-scale theory specifically (the three flat
+      values don't relate to each other or to this engine's own
+      predictions by any obvious clean ratio — 30152/2976 ≈ 10.13,
+      30152/6640 ≈ 4.54, neither a round conversion factor), but it is
+      now very strong, repeated (three independent capture groups
+      across two sessions) evidence that the 1756-L7x/1769 real-capture
+      *pipeline itself* is not reading genuine per-project memory usage
+      for these two families — it's returning some fixed/default/stub
+      reading regardless of content. Matches the tooling's own known
+      quirk (`docs/TESTING_PLAN.md`: "the AHK capture pipeline couldn't
+      read a 1769's Capacity value without a manual 'Estimate' button
+      click first... now resolved on James's end" — this data suggests
+      that fix may not actually be reading the real value, just no
+      longer erroring). **None of this 45-row batch should be treated as
+      real ground truth or used to tune any formula** until James can
+      confirm what the AHK script is actually reading for these two
+      families (a live screenshot/manual cross-check against Controller
+      Properties → Capacity in Studio 5000 for one single 1769/L7x file
+      would settle it immediately). `blockbytetest_l71_dint120000` (the
+      dedicated two-file isolation test, now import-fixed but not yet
+      reconverted) remains the cleanest real test of this once a
+      trustworthy capture is available.
+
 11. **OQ-COMPOSITESCALE** — new, real, James 2026-08-30 directive after
     the confidential-project review found a >20% real gap: "I expect at
     least 50 large programs with io and logic to test your generation
@@ -386,10 +450,11 @@ the matching footnote at the bottom, not inline.
     feeds OQ-AOIORPHAN), 3-6 large atomic arrays + 1 UDT array,
     TIMER/COUNTER, 2-4 real I/O modules (cycled from `gen_module_sweep.
     py`'s 86 real catalog blocks), 150-900 rungs mixing XIC/OTE/MOV/ADD/
-    CPT/TON/CTU/AOI-calls. All on 5069-L306ER/fw35.11 (the processor-
-    family question is isolated separately, OQ-BLOCKBYTE, to keep this
-    batch's findings unambiguous). 26 of the 50 have a fully-predicted
-    total; 24 hit an already-known unmodeled real I/O module shape
+    CPT/TON/CTU/AOI-calls. All on the wrapper's default 1756-L81E/fw35.05
+    (corrected 2026-08-31; the processor-family question is isolated
+    separately, OQ-BLOCKBYTE, to keep this batch's findings unambiguous).
+    26 of the 50 have a fully-predicted total; 24 hit an already-known
+    unmodeled real I/O module shape
     (rack-aliased connections, legacy-network bridges, a handful of
     modules with unrecognized nested member types) and fall back to
     predicted_bytes=0/unmodeled, same convention as elsewhere in this
@@ -479,6 +544,30 @@ the matching footnote at the bottom, not inline.
       catalog-explained-broken filenames in `known_conversion_failures.csv`
       were updated to their new `_r2` names alongside this rename so
       they stay correctly flagged.
+
+      **Real capture landed, 2026-08-31 — the core question is
+      essentially answered, and it's good news.** James's batch
+      captured real Capacity for 36 of the old-named files; 18 of those
+      are among the 26 fully-predicted (not catalog-explained-broken,
+      not unmodeled) composites — mapped onto the current `_r2` rows
+      (confirmed safe: predicted_bytes is identical before/after the
+      AOI-arg/XIC-OTE fixes for every index checked). Real vs predicted
+      across those 18: **mean +3.15% underprediction, range -0.46% to
+      +5.25%**, only one file (`_03`, -0.46%) overpredicted. This is a
+      dramatically better result than the >20% real gap on the
+      confidential project that started this whole OQ — at realistic
+      project scale/density (multiple UDTs/AOIs/arrays/modules/rungs
+      combined), the individually-confirmed formulas ARE essentially
+      additive; no interaction effect blew up the total the way the
+      confidential-project review worried it might. The remaining ~3%
+      is small but real and consistently one-directional (17/18 files
+      underpredict, not scattered noise) — worth a future investigation
+      into which specific residual bucket accounts for it (candidates:
+      the still-ESTIMATED-tier logic-content weighting, or a small
+      per-file baseline this project hasn't isolated yet), but not
+      urgent at this magnitude. The other 8 fully-predicted composites
+      (`_10/_11/_22/_34/_36/_46/_47/_48`) remain blocked on the separate
+      CIP-Safety-catalog import bug, still no real data for them.
 
 12. **OQ-AOIINTERNALLOGIC** — new, real, corpus-wide gap, James 2026-08-31:
     "So you closed aois but never put logic inside? All aois have one
