@@ -262,7 +262,7 @@ Status(msg) {
         Sleep 500
 				
 				if OCDValue = "0" {
-					Status("Reading 1769 Edit3 value")
+					Status("Reading 1769 Edit8 value")
 											Sleep 50
 							Send "{Tab}"
 							Sleep 50
@@ -270,7 +270,7 @@ Status(msg) {
 							Sleep 50
 							Send "{Enter}"
 							Sleep 2500
-							OCDValue := StripCommas(Trim(ControlGetText("Edit3", "A")))
+							OCDValue := StripCommas(Trim(ControlGetText("Edit8", "A")))
 				}
 				
 				
@@ -284,7 +284,7 @@ Status(msg) {
 					
 					; L7 or 1769
 					if OCDValue = "" OR !IsNumber(OCDValue) OR OCDValue = "0" {
-							Status("Read 1769 series OCD value: " OCDValue)
+							Status("Read 1769 series Edit8 OCD value: " OCDValue)
 							Sleep 50
 							Send "{Right}"
 							Sleep 50   
@@ -296,7 +296,7 @@ Status(msg) {
 							Sleep 50
 							Send "{Enter}"
 							Sleep 2500
-							OCDValue := StripCommas(Trim(ControlGetText("Edit3", "A")))
+							OCDValue := StripCommas(Trim(ControlGetText("Edit8", "A")))
 					}					
 				}
 				
