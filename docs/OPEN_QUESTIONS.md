@@ -175,7 +175,30 @@ the matching footnote at the bottom, not inline.
    tags from sizing everywhere by design (and wire that exclusion
    explicitly instead of it being incidental), or size everything
    resolvable including Safety content and adjust the warning
-   wording.[^safetyscope]
+   wording.
+
+   2026-08-31, concrete new evidence (James: "what are you going to do
+   about the L8 guardlogix?"): traced the real -3.55% to -6.38% GuardLogix
+   ES gap from the last review to its exact source. It is NOT a missing
+   catalog-suffix baseline delta (tried wiring one at the real +312-byte
+   safety/non-safety delta derived from `fwmatrix_v3x_1756_l81e` vs
+   `l81es` actuals — made the prediction WORSE, caught by testing before
+   committing, reverted). The real cause: `task_program_shell` charges the
+   SafetyTask's shell/container the SAME full weight as an ordinary task
+   (4,816 -> 6,272, a real +1,456-byte jump) even though its actual
+   Program/Routine CONTENT is correctly left unsized (SafetyProgram's
+   MainRoutine only contributes 16 bytes) — this is exactly the "left
+   unsized by convention, not by code" gap the policy question above
+   already names, just showing up in the task/program SHELL specifically
+   rather than tag content. Real total safety/non-safety delta is only
+   +312 (confirmed flat across v31-v35, +296 at v38) — nowhere near the
+   +1,472 the engine currently produces. Not fixing until James decides
+   the policy question: if Safety Task/Program shells are meant to be
+   excluded from sizing the same as their content, `task_program_shell`
+   needs a Safety-task carve-out; if shells ARE meant to count (a
+   SafetyTask genuinely does reserve its own container in the controller
+   independent of its logic), the shell weight itself needs a real
+   Safety-specific value, not the ordinary-task one it's using now.[^safetyscope]
 
 5. **OQ-AOIARRAYDIMENSION** — real parser bug fixed 2026-08-27:
    `<Parameter>`/`<LocalTag>` array size is a "Dimensions" (plural)
