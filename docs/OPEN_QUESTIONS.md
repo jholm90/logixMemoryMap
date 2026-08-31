@@ -257,6 +257,46 @@ the matching footnote at the bottom, not inline.
     that plain-atomic-typed params don't have) — genuinely new, not yet
     derived.
 
+    2026-08-31, real, structurally important: `report.py`'s `is_jsr_target`
+    branch treats a JSR target's own logic content as fully absorbed into
+    the flat `jsr_fixed_base_per_routine`/`A(n)` cost, `continue`s past it,
+    and never weighs its instructions at all — confirmed 2026-08-22, but
+    only ever tested against a trivial `SBR(...)NOP();RET();` stub target.
+    Real AccuTally review (confidential, not committed) found 123 real
+    JSR-target routines averaging 85 real instructions each (one has 201)
+    — 10,488 total real instructions currently contribute $0. Built
+    `jsr_target_content_scale_{010,050,100,150}` (target content as the
+    only variable, 13-153 real instructions) to test this directly — the
+    engine predicts the identical 19,452 bytes regardless of target size,
+    proving the model treats content as irrelevant; awaiting real capture
+    to prove whether that's actually true.
+
+    Same review also found `is_jsr_target` is checked BEFORE whether that
+    routine itself makes further JSR calls (`continue`s immediately) — a
+    routine that's both a target and a caller (mid-chain) has its own
+    outbound call cost dropped too. 29 real AccuTally routines are
+    mid-chain; one makes 10 real JSR calls of its own. Built
+    `jsr_midchain_real_chain`/`jsr_midchain_leaf_control` to isolate this
+    (predicted delta is 144, fully explained by the leaf's own A(2)
+    declaration cost and nothing for the mid-chain call — any real delta
+    beyond 144 proves the gap).
+
+    James, 2026-08-31, real, caught reviewing the target-content-scale
+    files: "if there was no jsr parameters then there is no sbr/ret
+    instructions inside the called subroutine." Checked against all 8
+    real customer L5X files in `samples/local/` (2,534 unique real JSR
+    targets): 2,314/2,315 zero-param targets have NO SBR at all,
+    2,218/2,315 (95.8%) have no RET either — essentially a hard rule.
+    Every EXISTING JSR calibration file in this project uses nonzero
+    params (1/5/7/8/9/10/15) and correctly includes SBR/RET (126/128 real
+    nonzero-param targets DO have SBR, confirming that whole existing
+    calibration set is representative). Only the two brand-new
+    target-content-scale files (0 params) had this bug — fixed by
+    removing the forced SBR()/RET(), now just ordinary logic rungs
+    matching the real, dominant, previously-untested case (AccuTally: 77%
+    of real JSR calls are 0-param, and all 103 of its real 0-param
+    targets have zero SBR/RET, matching the corpus norm exactly).
+
 8. **OQ-EVENTTRIGGER** — new, real. task_extra (+700) was derived only
     from CONTINUOUS+PERIODIC tasks; EVENT-type tasks are completely
     untested, and so is trigger-source (Axis Watch vs. EVENT-instruction)
