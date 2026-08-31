@@ -100,7 +100,32 @@ the matching footnote at the bottom, not inline.
    real deltas — -3.91% (v31/v32), -3.55% (v33), -6.38% (v34/v35/v38) —
    same magnitude within each firmware group, genuinely error-free
    captures, a plausible real safety-baseline refinement rather than a
-   capture artifact. Not yet derived/wired.[^baseline]
+   capture artifact. Not yet derived/wired.
+
+   2026-08-31, MYSTERY SOLVED (James, self-caught, real bug on his side):
+   his AHK/PowerShell capture pipeline was reading Studio 5000's I/O
+   memory field, not the logical (program) memory field this project
+   actually sizes, for EVERY 1756-L7x (L71-L75) and 1769-family capture —
+   confirmed directly: `fwmatrix_v31_1769_l33erm.ACD` real Logic
+   memory=71,968 bytes (out of a 2,097,152-byte total budget for that
+   controller) vs the 6,640 that was sitting in `manifest.csv`. This
+   fully explains the "suspiciously tiny, near-identical value across
+   different files" pattern flagged above — I/O memory for these
+   near-empty test files legitimately IS small and similar regardless of
+   content, since it's logic/tags (not I/O config) that actually varies
+   between them. All 60 real `manifest.csv` rows captured against an
+   L7x/1769 processor (the full historical corpus, not just this push —
+   found via window_title regex, not the unreliable controller_model
+   field) had their capture columns cleared 2026-08-31, not just the
+   handful flagged above — 9 of the 60 were additionally garbled
+   (`actual_bytes` values like `"Revision:"`/`"Type:"`, a second real
+   symptom of the same wrong-field capture). James: "I NEED ALL THE
+   1769/L7 files to re-test with new data" — awaiting his re-run with the
+   fixed pipeline. Also flagged a caveat on `catalog_baseline_delta` in
+   `memory_model.yaml` (the 8 real 1769-series ASSUMED baseline deltas) —
+   different capture METHOD (manual "Estimate" click, not this AHK
+   automation) so unconfirmed whether the same bug applies there, not
+   changed numerically, but worth asking James directly.[^baseline]
 
 2. **OQ-CMPCPTLAYOUT** — down to one thread. Uniform, T1+T2, T1T3/T2T3,
    and (as of 2026-08-29) the all-3-tier mix are ALL solved and wired,

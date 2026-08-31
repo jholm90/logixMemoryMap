@@ -141,6 +141,18 @@ _5069_CATALOGS = [
     "5069-L330ER", "5069-L330ERMS2", "5069-L340ER", "5069-L340ERS2", "5069-L3100ERM",
 ]
 
+# James, 2026-08-31, real: "fwmatrix_v31_5069_l306erms3.L5X does not
+# support v31 firmware for the record ... all SIL3 requires v32 or
+# higher (5069-l320erms3... etc)." SIL3 catalogs are the "MS3"-suffixed
+# ones (as opposed to SIL2's "MS2"/"S2" suffixes, which ARE v31-capable
+# per the real safety_capable_baseline_delta data already confirmed at
+# v31/v32 in memory_model.yaml). v31 removed for these two catalogs only
+# -- the v31 files that already existed on disk for them were real
+# import failures, not modeled data, and are removed along with their
+# manifest rows.
+_SIL3_CATALOGS = {"5069-L306ERMS3", "5069-L320ERMS3"}
+_SIL3_MIN_FIRMWARE_MAJOR = "32"
+
 # ControlLogix 5570 (James, 2026-08-25: "L7 is good all the way").
 # Real confirmed ProductCodes for L71/L72/L75 (92/93/96, from
 # samples/local/L7_v21_Sample.L5X, L5X_Samples/Sorter1_20260722r00.L5X,
@@ -540,6 +552,10 @@ def main() -> None:
     all_catalogs = ALL_CATALOGS + SAFETY_CATALOGS
     for major_rev, software_revision, extra_attrs, assumed in FIRMWARE_TABLE:
         for catalog in all_catalogs:
+            if catalog in _SIL3_CATALOGS and major_rev < _SIL3_MIN_FIRMWARE_MAJOR:
+                print(f"Skipping fwmatrix_v{major_rev}_{catalog.lower().replace('-', '_')} "
+                      f"-- SIL3 requires firmware v{_SIL3_MIN_FIRMWARE_MAJOR}+ (James, 2026-08-31, real).")
+                continue
             is_safety = catalog in SAFETY_CATALOGS
             slug = catalog.lower().replace("-", "_")
             out_name = f"fwmatrix_v{major_rev}_{slug}"

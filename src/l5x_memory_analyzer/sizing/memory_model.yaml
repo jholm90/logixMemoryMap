@@ -524,6 +524,15 @@ safety_capable_baseline_delta:
   confidence: FITTED
   catalog_suffix_pattern: 'S[23]$'
 
+# James, 2026-08-31, real, for the record: SIL3-suffixed catalogs
+# ("MS3" -- 5069-L306ERMS3, 5069-L320ERMS3) do not support firmware v31
+# at all -- SIL3 requires v32 or higher. Does NOT apply to SIL2 ("MS2"/
+# "S2" suffix), which IS confirmed v31-capable (real safety_capable_
+# baseline_delta data above includes v31/v32 points for those). Not a
+# sizing-formula question -- gen_fw_catalog_matrix.py skips generating a
+# v31 file for SIL3 catalogs entirely rather than modeling a
+# firmware/catalog combination that can't exist on real hardware.
+
 # Real per-catalog baseline for processor families whose baseline diverges
 # enormously from the flat empty_project_baseline, keyed by the L5X
 # Controller element's own EXACT ProcessorType string (OQ-BASELINE-PROCFW,
@@ -542,6 +551,17 @@ safety_capable_baseline_delta:
 # independence assumed (same convention as everywhere else in this
 # section) but genuinely UNCONFIRMED -- zero 1769 data exists at any
 # firmware other than v35.
+# CAVEAT added 2026-08-31: James found a real bug in his AHK/PowerShell
+# capture pipeline -- every 1756-L7x/1769-family automated capture was
+# reading Studio 5000's I/O memory field, not the logical (program) memory
+# field this project actually sizes (confirmed via fwmatrix_v31_1769_l33erm:
+# real Logic memory=71,968 vs the 6,640 that was in manifest.csv). The 8
+# real captures below came from a DIFFERENT method (manual "Estimate"
+# button click, not the AHK automation) so they may or may not share the
+# same bug -- genuinely unknown, not yet asked. Values below are already
+# the lowest confidence tier (ASSUMED) so no numeric change made, but this
+# is a second, independent reason not to trust them beyond that tier until
+# confirmed. See OPEN_QUESTIONS.md OQ-BASELINE-PROCFW/OQ-BLOCKBYTE.
 catalog_baseline_delta:
   '1769-L16ER-BB1B': { bytes: 51488, confidence: ASSUMED }
   '1769-L18ER-BB1B': { bytes: 51488, confidence: ASSUMED }
