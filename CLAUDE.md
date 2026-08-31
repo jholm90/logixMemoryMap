@@ -20,6 +20,30 @@ confidence levels exist here and the code/docs must never blur them:
   real sample data), not a formula derived from first principles. Every UI number
   for logic size must be visually flagged as "estimated."
 
+## North star (James, 2026-08-31, "draw a line in the sand" — supersedes any
+## other priority framing in this file)
+**#1 and only real goal: any real controller-exported L5X, run through this
+tool, predicts total memory used within <1% of the real value.** Everything
+else is a distant #10, not worth time until #1 is met. Before doing ANY task,
+ask: does this move total prediction error toward <1% on a real file? If not,
+it waits. Anything outside 2% on a real file is not "an open question," it's
+a broken estimator that needs fixing now.
+
+Standing loop, no other shape: James pushes a batch of real captured L5X
+(complex, realistic programs) → Claude checks how close current predictions
+already land on them → if a gap is real, find and fix the actual estimation
+code (not just document the gap) → generate new targeted test files that
+isolate the fix → repeat. Data collection is over — atomic type sizes,
+instruction inventory, and packing rules are known. This is now a code-fixing
+problem, not a data-gathering one.
+
+James, 2026-08-31: responses in chat should be SHORT. Spend the effort on
+getting the estimator right and on keeping docs/OPEN_QUESTIONS.md,
+docs/RESOLVED_QUESTIONS.md, and docs/TASKS.md honestly current — not on long
+chat explanations. Before repeating any investigation, check those docs first
+— repeating a mistake or a check already documented there wastes James's time
+and is called out explicitly as a real problem, not a hypothetical one.
+
 ## Working agreement
 - **James, 2026-08-30, standing rule, no exceptions: MAIN/ROOT ONLY. NO
   BRANCHES.** All development happens directly on `main`. Never create, work
