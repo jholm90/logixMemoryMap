@@ -381,6 +381,37 @@ the matching footnote at the bottom, not inline.
     interaction effect (or a formula that only breaks at
     scale/density) invisible to every prior isolated test.[^compositescale]
 
+12. **OQ-AOIINTERNALLOGIC** — new, real, corpus-wide gap, James 2026-08-31:
+    "So you closed aois but never put logic inside? All aois have one
+    subroutine but they can have more, see the HomeToTorque aoi."
+    `aoi_xml()` (builders.py) has hardcoded a self-closing
+    `<Routine Name="Logic" Type="RLL"/>` for EVERY AOI test file this
+    project has ever generated — $0 real internal-logic content has ever
+    been exercised in ANY AOI calibration file, and the shared builder
+    never supported more than one internal routine. The existing
+    `aoi_definition` formula (base + per_declared_item*count +
+    name-length term) is purely a Parameter/LocalTag declaration-cost
+    model — it has never been tested against real Logic-routine content
+    or a second internal routine, both of which are common in real AOIs.
+    Real confidential-project review (not committed, never named beyond
+    this generic description) confirms this is a real, material gap: 39
+    real AOI definitions there have 573 total real rungs of internal
+    logic (111,507 chars) — 100% currently unsized anywhere in this
+    project — and 8 of the 39 have 2 internal RLL routines, not 1 (e.g.
+    HomeToTorque: Logic 21 rungs + EnableInFalse 1 rung). Fixed the
+    builder (`logic_rungs_xml`/`extra_routines_xml` params, both default
+    `""`, confirmed byte-identical output for every existing caller) and
+    built `aoi_logic_scale_{000,010,050,100}` (Logic-content-scale sweep)
+    plus `aoi_multiroutine_control`/`aoi_multiroutine_real` (mirrors
+    HomeToTorque's real 2-routine shape exactly) — all 6 predict the
+    identical 19,440 bytes regardless of Logic content size or
+    second-routine presence, confirming both are currently zero-weighted.
+    Awaiting real capture; if either scales with real Capacity, this is a
+    second, independent, currently-unmodeled cost category on top of
+    OQ-JSRPARAMCOST's target-content finding — real AccuTally logic
+    content (routine + AOI-internal combined) may be substantially larger
+    than this project has ever priced.
+
 ---
 
 [^instrfirstpass]: CROUT (safety-only) and MAPC resolved separately
