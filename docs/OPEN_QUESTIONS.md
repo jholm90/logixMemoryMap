@@ -161,6 +161,26 @@ the matching footnote at the bottom, not inline.
     missing per-instance term — real, promising lead, not yet
     derived/wired.[^aoiboolpackpairing]
 
+    **Real capture landed 2026-08-31 for the dedicated boundary-crossing
+    isolation sweep** (`aoibp_boundary_bc{16,24,31,32,33,40,48}_n{02,04,
+    08}_iso2`, bit-count families straddling several byte/dword
+    boundaries, each at 3 instance counts) — and it sharpens the lead into
+    a precise one. Five of the seven bit-count families (16, 24, 33, 40,
+    48) show a flat delta across all 3 instance counts (+36, +52, +92,
+    +108, +124 respectively) — confirming the fixed-per-family-offset
+    pattern already found. But the two families AT the 32-bit/DWORD
+    boundary — bc31 and bc32 — do NOT stay flat: bc31 goes 92→100→116
+    (n=2/4/8) and bc32 goes 100→108→124, both a clean +4 bytes/instance
+    on top of their own fixed offset. **Every other tested boundary is a
+    pure fixed one-time cost; only the 32-bit/DWORD boundary specifically
+    also carries a real per-instance term.** This pinpoints exactly which
+    boundary crossing needs the extra term (the DWORD one) rather than
+    leaving it as "some boundary, not derived" — genuine progress toward
+    a wireable formula, though still needs the "why 32-bit specifically"
+    mechanism nailed down (likely a real DINT-alignment packing rule) and
+    a check of whether bc63/64 (the next DWORD-adjacent pair up) shows the
+    same +4/instance signature before generalizing.
+
 4. **OQ-SAFETYSCOPE-SIZING** — real, unresolved product decision, split
    out 2026-08-30 from the now-closed OQ-PREDEFINED (moved to
    RESOLVED_QUESTIONS.md — the byte-value derivation for all 195 known
@@ -271,6 +291,29 @@ the matching footnote at the bottom, not inline.
     proving the model treats content as irrelevant; awaiting real capture
     to prove whether that's actually true.
 
+    **Real capture landed 2026-08-31 — confirmed, and cleanly linear.**
+    File suffix is the real instruction count (010=10, 050=50, 100=100,
+    150=150 instructions). Real deltas: n=10 → +76 (0.39%), n=50 → +800
+    (4.11%), n=100 → +1,696 (8.72%), n=150 → +2,600 (13.37%) — escalating
+    smoothly with content size exactly as hypothesized, proving JSR-target
+    logic content is NOT free. Fitting `delta(n) = a + b*n` against the two
+    most separated points (n=50, n=150) gives `b=18, a=-100`; checked
+    against n=10 and n=100, both land within 4 bytes of that line (a clean
+    4-point linear fit, no residual pattern left over). **18 bytes/
+    instruction is suspiciously close to this project's own already-
+    confirmed weighted-average instruction cost for ordinary routine
+    logic** — consistent with the real fix being architectural, not a new
+    formula: stop `continue`-ing past JSR target routines in `report.py`
+    and weigh their instructions with the SAME per-instruction-type table
+    already confirmed for every other routine, rather than treating target
+    content as a special zero-cost case. Not wired yet — needs a check
+    against `gen_jsr_target_content_scale.py`'s exact instruction mix to
+    confirm the average lines up with 18/instr before touching
+    `report.py`'s `is_jsr_target` branch, and a check that this doesn't
+    double-count anything already folded into the existing `A(n)`/`B(n)`
+    call-site formulas (those were fit assuming target content contributes
+    $0, so removing that assumption changes what `A(n)` is allowed to mean).
+
     Same review also found `is_jsr_target` is checked BEFORE whether that
     routine itself makes further JSR calls (`continue`s immediately) — a
     routine that's both a target and a caller (mid-chain) has its own
@@ -280,6 +323,33 @@ the matching footnote at the bottom, not inline.
     (predicted delta is 144, fully explained by the leaf's own A(2)
     declaration cost and nothing for the mid-chain call — any real delta
     beyond 144 proves the gap).
+
+    **Real capture landed 2026-08-31 — the gap is real.** Predicted delta
+    (real_chain minus leaf_control) = 144, as expected. Real delta = 332
+    (19,068 vs 18,736) — **188 bytes beyond what the leaf's own A(2)
+    declaration cost explains**, confirming a genuine, previously-
+    unmodeled cost for a routine that is both a JSR target AND itself
+    issues an outbound JSR call. Only one data point (a single real_chain
+    file, one outbound call) — enough to confirm the gap is real, not
+    enough to isolate a per-outbound-call rate yet; needs an n-scale sweep
+    (2/5/10 outbound calls from the same mid-chain routine, matching the
+    real AccuTally routine that makes 10) before this is wireable.
+
+    **STRING/UDT per-call surcharge — extended 2026-08-31 with n=1/3/5
+    disentangle points** (`jsr_paramtype_{udt,string}_n{01,03,05}_
+    r00100_iso2`, 100 calls each, param count as the only variable). Real
+    deltas: UDT n=1→+428 (1.5%), n=3→+2,448 (7.44%), n=5→+4,064 (10.89%);
+    STRING n=1→+428 (1.5%), n=3→+2,464 (7.43%), n=5→+4,096 (10.81%). Two
+    findings: (1) STRING and UDT deltas are nearly identical at every n
+    (within 16-32 bytes) — the surcharge looks like a general "non-atomic-
+    typed JSR param" cost, not type-specific. (2) It is NOT cleanly linear
+    in n — fitting `a+b*n` off n=1/n=5 predicts 2,246 at n=3 against a real
+    2,448 (202 off, 8.3% miss), a real, non-trivial deviation from a
+    straight line. Genuine progress (3x the data of the original single-n
+    anchor), but the functional form isn't nailed down yet — needs either
+    one more n point or the exact per-call-site byte breakdown to
+    distinguish a fixed-plus-linear form from something else before
+    wiring anything.
 
     James, 2026-08-31, real, caught reviewing the target-content-scale
     files: "if there was no jsr parameters then there is no sbr/ret
@@ -301,6 +371,15 @@ the matching footnote at the bottom, not inline.
     from CONTINUOUS+PERIODIC tasks; EVENT-type tasks are completely
     untested, and so is trigger-source (Axis Watch vs. EVENT-instruction)
     within EVENT. Two files built, awaiting capture.[^eventtrigger]
+
+    **`eventtask_instronly` real capture landed 2026-08-31 — the task-TYPE
+    question is closed.** Predicted 19,600, real 19,600 — exact, 0.00%
+    residual. `task_extra`'s existing formula (derived only from
+    CONTINUOUS/PERIODIC before now) extends cleanly to an EVENT-type task
+    with no separate term needed. Still open: `eventtask_axiswatch` (the
+    trigger-SOURCE sub-question, Axis Watch vs. EVENT-instruction) has no
+    real capture yet — that comparison is the only piece of this OQ still
+    genuinely awaiting data.
 
 9. **OQ-AOIORPHAN** — **RESOLVED 2026-08-31, moved to
    RESOLVED_QUESTIONS.md.** Core question (does an orphaned/never-
@@ -371,7 +450,19 @@ the matching footnote at the bottom, not inline.
       - All 25 `fwmatrix_v{31,32,34,35,38}_1756_l{71,72,73,74,75}` rows
         (5 distinct catalogs × 5 firmware versions, genuinely different
         ProductCode/Major-rev content each) read the exact same
-        `actual_bytes = 30152`. Zero variance.
+        `actual_bytes = 30152`. Zero variance. **Extended 2026-08-31 with
+        a 2nd push:** `fwmatrix_v31_1756_l{71,72,73,74}` (4 rows, `l75`
+        missing from this group) all read `actual_bytes = 78312`, and
+        `fwmatrix_v33_1756_l{71,72,73,74,75}` (full 5-catalog group) all
+        read `actual_bytes = 87888` — two MORE flat values, same defect
+        signature. Every one of these 30 L7x rows (old batch and new)
+        ALSO has `controller_model` permanently stuck at `"5069-L306ER"`
+        instead of the real L7x catalog it claims to test — direct
+        evidence the capture window/project was never actually reloaded
+        between these specific conversions, not merely a units question.
+        Five distinct flat values across five capture groups now (30152,
+        2976, 6640, 78312, 87888), none relating to each other or to this
+        engine's predictions by a clean ratio.
       - All 20 `fwmatrix_v{31,32,34,35,38}_1769_l{16er,18er,18erm,19er}`
         rows (4 distinct catalogs with real, different embedded
         Discrete_IO module content, 5 firmware versions) read the exact
@@ -402,10 +493,42 @@ the matching footnote at the bottom, not inline.
       confirm what the AHK script is actually reading for these two
       families (a live screenshot/manual cross-check against Controller
       Properties → Capacity in Studio 5000 for one single 1769/L7x file
-      would settle it immediately). `blockbytetest_l71_dint120000` (the
-      dedicated two-file isolation test, now import-fixed but not yet
-      reconverted) remains the cleanest real test of this once a
-      trustworthy capture is available.
+      would settle it immediately).
+
+      **`blockbytetest_l71_dint120000` real capture landed 2026-08-31 —
+      and it changes the conclusion.** This is the dedicated, clean,
+      isolated two-file test (byte-identical content: one DINT[120000]
+      tag, nothing else) that this whole OQ was built to settle, and it
+      is NOT contaminated by the fw_catalog_matrix pipeline defect above
+      (distinct real Capacity value, `controller_model` correctly reads
+      the right family for its own row, 0 errors, clean window title).
+      Both halves of the pair:
+        - `blockbytetest_dint120000` (1756-L81E): predicted 498,236,
+          real 498,240 — 4-byte residual, essentially exact.
+        - `blockbytetest_l71_dint120000` (1756-L71, byte-identical
+          content): predicted 498,236 (same), real 569,336 — **+71,100
+          bytes (14.27%) more than the identical L81E file.**
+      The ratio (569336/498236 ≈ 1.143) is not a clean unit-conversion
+      factor (not 2x, 10x, or anything round) — ruling out the original
+      "blocks vs bytes" unit-SCALING theory this OQ was named for. What
+      it looks like instead is a real, ADDITIVE per-family baseline
+      difference: 1756-L71 (pre-5580 ControlLogix, same architecture
+      generation as 1769/CompactLogix 5370) genuinely consumes more real
+      memory than 1756-L81E (5580) for identical content — consistent
+      with, and now corroborating, the already-documented `[^baseline]`
+      finding that "1769-series runs 69,600-98,944, far above the flat
+      prediction." **Revised conclusion: this is very likely a real
+      pre-5580-family baseline/overhead gap, not a unit-labeling bug** —
+      James's "bytes" vs "blocks" label difference may be a real Studio
+      5000 UI distinction, but it doesn't appear to be *why* the L7x/1769
+      numbers run high; a real per-family baseline term (analogous to the
+      already-wired firmware-version baseline deltas) is the more likely
+      fix once more clean (non-contaminated) L7x data points exist to fit
+      it. Still needs at least one more clean L7x data point (ideally a
+      near-empty-baseline file, to isolate the constant term from the
+      content-scaling term) before wiring anything — one point can locate
+      a family-level gap but can't separate "baseline is bigger" from "per
+      element is bigger" on its own.
 
 11. **OQ-COMPOSITESCALE** — new, real, James 2026-08-30 directive after
     the confidential-project review found a >20% real gap: "I expect at
@@ -541,6 +664,25 @@ the matching footnote at the bottom, not inline.
       (`_10/_11/_22/_34/_36/_46/_47/_48`) remain blocked on the separate
       CIP-Safety-catalog import bug, still no real data for them.
 
+      **Candidate for the ~3% residual now identified, 2026-08-31:** the
+      OQ-JSRPARAMCOST target-content finding and OQ-AOIINTERNALLOGIC above
+      (both landed this same push) confirm that JSR-target logic content
+      and AOI-internal Logic-routine content are BOTH currently priced at
+      $0 — and every composite file's design deliberately includes AOI
+      calls with real internal logic and (in some) JSR targets with real
+      content. This is now the leading, evidenced explanation for the
+      composite batch's small one-directional underprediction, not just a
+      guess — once those two are wired, re-check whether the ~3% residual
+      shrinks correspondingly.
+
+      **6 more real captures landed 2026-08-31** for composites that fall
+      back to unmodeled (`predicted_bytes=0`): `composite_realistic_
+      {02,07,19,31,43,44}_r2` now have real Capacity on file (69,048 /
+      108,712 / 175,528 / 235,272 / 300,976 / 274,882) but aren't usable
+      for tuning anything — no predicted total to compare against. Kept on
+      record for whenever the unmodeled real-I/O-module shapes these files
+      hit get real formulas of their own.
+
 12. **OQ-AOIINTERNALLOGIC** — new, real, corpus-wide gap, James 2026-08-31:
     "So you closed aois but never put logic inside? All aois have one
     subroutine but they can have more, see the HomeToTorque aoi."
@@ -571,6 +713,79 @@ the matching footnote at the bottom, not inline.
     OQ-JSRPARAMCOST's target-content finding — real AccuTally logic
     content (routine + AOI-internal combined) may be substantially larger
     than this project has ever priced.
+
+    **Real capture landed 2026-08-31 — confirmed, AOI internal logic
+    content is NOT free, and multi-routine vs single-routine content of
+    the same size costs the same.** All 6 files share predicted 19,440
+    (the model still doesn't weigh AOI-internal logic at all). Real
+    results: `aoi_logic_scale_000` (0 rungs) → 19,440, exact 0.00% —
+    confirms the empty-shell baseline itself is right. `_010` → 19,676
+    (+236, 1.21%), `_050` → 20,620 (+1,180, 6.07%), `_100` → 21,776
+    (+2,336, 12.02%) — a clean, escalating, real cost that scales with
+    logic-content size, same shape as the JSR-target-content finding
+    above. `aoi_multiroutine_control` (HomeToTorque's real 2-routine
+    shape, same total content as `_050`) reads the exact same 20,620 as
+    `_050` — **splitting the same content across 2 internal routines
+    instead of 1 costs identically to keeping it in one routine**, so the
+    per-routine count itself isn't a separate cost driver, only total
+    content is. `aoi_multiroutine_real` (the literal HomeToTorque content,
+    not a synthetic same-size stand-in) reads 20,912 (+1,472, 7.57%) —
+    close to but not identical to `_control`, the gap presumably from real
+    instruction-mix differences (HomeToTorque's real rungs vs the
+    synthetic control's), not the routine-count structure. **Architectural
+    conclusion: AOI internal Logic-routine content should be weighed with
+    the same per-instruction model as ordinary routine logic (same fix
+    direction as the JSR-target-content finding above), not treated as
+    zero-cost; the per-routine-count dimension can be dropped from the
+    model entirely — real data shows it doesn't matter.** Not wired yet —
+    same architecture-care caveat as the JSR-target fix: needs a check
+    that `AoiDefinitionModel`'s existing param/localtag cost isn't already
+    silently absorbing part of this before the instruction-weighing hook
+    is added.
+
+13. **OQ-IDENTNAMELEN** — new, real, found 2026-08-31 in the same push as
+    James's "5/10/15/20/50 subroutines... different routine name lengths"
+    directive. `gen_jsr_multi_distinct_targets_scale.py`'s
+    `group_name_length` (10 fixed JSR targets, name length swept 4/8/16/
+    32/40 chars — 40 capped per Rockwell's real Logix identifier limit,
+    see that generator's own comment) and `gen_program_multi_distinct_
+    scale.py`'s matching `group_name_length` (10 fixed extra Programs,
+    same length sweep) both currently predict a FLAT total regardless of
+    name length — neither `jsr_target_param_counts`' `A(n)` nor
+    `task_program_shell`'s `program_extra` has a name-length term, unlike
+    tags/UDTs/AOI definitions (all confirmed real name-length bucket
+    costs already).
+
+    **Real capture landed 2026-08-31 for both sweeps at namelen04/08/16/
+    32 (namelen40 not yet captured — that variant failed import under the
+    old, invalid namelen48; see this session's fix) — and the two
+    independent sweeps show the SAME real pattern.** Deltas (against the
+    flat predicted baseline, so pure name-length signal) at len 4/8/16/32,
+    10 items per file:
+      - JSR targets: +1,440 / +1,520 / +1,600 / +1,760 (7.13% / 7.53% /
+        7.92% / 8.72%)
+      - Programs: -160 / -80 / 0 / +160 (-0.62% / -0.31% / 0.00% / 0.62%)
+    (JSR shows a large constant offset because its predicted baseline is
+    already under-costed by the separate, still-open target-content and
+    per-param findings above; Programs' baseline is exact at len=16 so its
+    deltas read as pure signal directly.) Per-item, both sweeps show the
+    IDENTICAL step shape: +8/item from len4→len8 (a 4-char step), +8/item
+    from len8→len16 (an 8-char step — HALF the per-char rate of the first
+    step), +16/item from len16→len32 (a 16-char step — same per-char rate
+    as the second step). Expressed relative to a 4-char name: `extra_bytes
+    (len) = 2*(min(len,8)-4)` for `4<=len<=8`, `= len` for `len>8` — fits
+    all 8 real data points (both sweeps) within rounding. The doubled rate
+    in the first 4-char step, then a steady ~1 byte/char/item above that,
+    is consistent with a real 8-byte-aligned minimum name-field allocation
+    (matches the shape, though not the exact constants, of the already-
+    wired AOI type-name-length bucket formula). **Real, general, and
+    reproducible across two independent identifier classes (JSR target
+    routine names, Program names) — genuinely new, not previously known,
+    and NOT yet wired.** Needs the len=40 capture (in flight) to confirm
+    the fit holds at the real Rockwell maximum before committing to
+    exact constants, and a decision on whether this generalizes to
+    Routine names too (untested) or is specific to JSR-target/Program
+    identifiers.
 
 ---
 

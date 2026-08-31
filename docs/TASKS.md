@@ -92,7 +92,13 @@ RESOLVED_QUESTIONS.md.
 KNOWN. AOI type-name-length step CLOSED 2026-08-30 (7/7 exact). The
 separate array-of-AOI-instances element-cost formula (`aoi_array`,
 downgraded KNOWN→FITTED 2026-08-30) is now its own open item — see
-OPEN_QUESTIONS.md OQ-AOIBOOLPACK-PAIRING.
+OPEN_QUESTIONS.md OQ-AOIBOOLPACK-PAIRING. **New, real, confirmed
+2026-08-31 — an AOI's own internal Logic-routine content (and any 2nd/
+3rd internal routine) is currently priced at $0**, matching the same gap
+just found for JSR targets; real capture shows a clean escalating real
+cost with content size, with routine-count itself not mattering (splitting
+the same content across 2 routines costs identically to 1). Not wired —
+see OPEN_QUESTIONS.md OQ-AOIINTERNALLOGIC.
 
 [^branchdepth]: Real cost confirmed (branch bracket structure costs real
 memory beyond leg instructions), formula not yet fit — see
@@ -117,8 +123,12 @@ elsewhere. **Output/return-param cost added 2026-08-29** —
 `output_param_cost=20`/arg, charged per call site — see
 RESOLVED_QUESTIONS.md OQ-JSRPARAMCOST for the full correction (the
 original wiring only ever saw input-only calibration data) and
-OPEN_QUESTIONS.md OQ-JSRPARAMCOST for the one small remaining residual
-(A(n) not yet output-param-adjusted).
+OPEN_QUESTIONS.md OQ-JSRPARAMCOST for the remaining residuals: A(n) not
+yet output-param-adjusted, a STRING/UDT-specific per-call surcharge (not
+cleanly linear yet, 3 real n-points on file), and — real, structurally
+larger, confirmed 2026-08-31 — a JSR target routine's own logic content
+is currently priced at $0 (`continue`s past it entirely); real capture
+shows a clean ~18 bytes/instruction cost that isn't wired.
 
 [^holdout]: 10 real captured files never used to fit anything (random
 instruction-type combinations) checked against the current engine: 7/10
