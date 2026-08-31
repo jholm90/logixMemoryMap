@@ -359,10 +359,16 @@ def build_l5x(
     elif is_pre5580_1756:
         # See is_pre5580_1756's definition above for the real corpus
         # evidence -- ICP-only, no embedded Ethernet Port, matching
-        # samples/local/L7_v21_Sample.L5X exactly.
+        # samples/local/L7_v21_Sample.L5X exactly, including the real Bus
+        # Size=4 (NOT the generic _ICP_BUS_SIZE=17 default -- that's an
+        # L8xE-family value, this project's OTHER independent 1756-L7x
+        # implementation, gen_fw_catalog_matrix.py, already uses the real
+        # 4 from the same reference file; using 17 here would have been a
+        # guess where a real value was already sitting in this repo).
+        _L7X_ICP_BUS_SIZE = "4"
         local_ports_xml = (
             f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n'
-            f'<Bus Size="{_ICP_BUS_SIZE}"/>\n'
+            f'<Bus Size="{_L7X_ICP_BUS_SIZE}"/>\n'
             f'</Port>'
         )
         local_product_code = _PRODUCT_CODES.get(processor_type, _PRODUCT_CODE)
