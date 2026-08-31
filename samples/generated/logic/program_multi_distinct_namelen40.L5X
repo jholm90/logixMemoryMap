@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="ProgScale10" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 31 03:03:37 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="ProgScale10" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 31 03:03:37 2026" LastModifiedDate="Mon Aug 31 03:03:37 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="ProgScale10" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 31 18:01:44 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="ProgScale10" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 31 18:01:44 2026" LastModifiedDate="Mon Aug 31 18:01:44 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -41,7 +41,7 @@
 
 </Routines>
 </Program>
-<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX0" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX0" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
 <Tags>
 
 </Tags>
@@ -53,7 +53,7 @@
 </Routine>
 </Routines>
 </Program>
-<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
 <Tags>
 
 </Tags>
@@ -65,7 +65,7 @@
 </Routine>
 </Routines>
 </Program>
-<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
 <Tags>
 
 </Tags>
@@ -77,7 +77,7 @@
 </Routine>
 </Routines>
 </Program>
-<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
 <Tags>
 
 </Tags>
@@ -89,7 +89,7 @@
 </Routine>
 </Routines>
 </Program>
-<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
 <Tags>
 
 </Tags>
@@ -101,7 +101,7 @@
 </Routine>
 </Routines>
 </Program>
-<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX5" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX5" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
 <Tags>
 
 </Tags>
@@ -113,7 +113,7 @@
 </Routine>
 </Routines>
 </Program>
-<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX6" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX6" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
 <Tags>
 
 </Tags>
@@ -125,7 +125,7 @@
 </Routine>
 </Routines>
 </Program>
-<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX7" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX7" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
 <Tags>
 
 </Tags>
@@ -137,7 +137,7 @@
 </Routine>
 </Routines>
 </Program>
-<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX8" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX8" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
 <Tags>
 
 </Tags>
@@ -149,7 +149,7 @@
 </Routine>
 </Routines>
 </Program>
-<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX9" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Program Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX9" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
 <Tags>
 
 </Tags>
@@ -166,16 +166,16 @@
 <Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
 <ScheduledPrograms>
 <ScheduledProgram Name="MainProgram"/>
-<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX0"/>
-<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1"/>
-<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2"/>
-<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3"/>
-<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4"/>
-<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX5"/>
-<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX6"/>
-<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX7"/>
-<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX8"/>
-<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX9"/>
+<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX0"/>
+<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1"/>
+<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2"/>
+<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3"/>
+<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4"/>
+<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX5"/>
+<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX6"/>
+<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX7"/>
+<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX8"/>
+<ScheduledProgram Name="PXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX9"/>
 </ScheduledPrograms>
 </Task>
 

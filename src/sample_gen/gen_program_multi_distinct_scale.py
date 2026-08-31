@@ -23,9 +23,10 @@ Two groups, same shape as gen_jsr_multi_distinct_targets_scale.py:
      length held fixed (16 chars) across the whole group.
 
   B. group_name_length -- Program count held fixed at 10 extra Programs,
-     Program name length swept (4/8/16/32/48 chars) instead, isolating
-     whether Program name length alone carries a real per-program cost
-     the way it does for tags/UDTs/AOI definitions.
+     Program name length swept (4/8/16/32/40 chars -- 40 is Rockwell's
+     real Logix identifier length cap) instead, isolating whether
+     Program name length alone carries a real per-program cost the way
+     it does for tags/UDTs/AOI definitions.
 
 Run: python -m sample_gen.gen_program_multi_distinct_scale
 """
@@ -41,7 +42,16 @@ from sample_gen.wrapper import build_l5x
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "logic"
 
 N_PROGRAMS_SCALE = (5, 10, 15, 20, 50)
-NAME_LENGTHS = (4, 8, 16, 32, 48)
+# 40 is Rockwell's real Logix identifier length cap (tag/routine/program/AOI
+# names all share it) -- NOT a round-number choice. Originally 48 here;
+# James's real l5x2acd run (2026-08-31) failed to import both namelen48
+# files (this one and gen_jsr_multi_distinct_targets_scale.py's) with the
+# generic XMLSrv_E_IMPORT_ABORTED_NO_CHANGES wrapper, no per-file detail,
+# while every other length (4/8/16/32, all <=40) converted clean --
+# consistent with a silent identifier-length rejection, not a random
+# flake. 40 is used as the top point instead of dropped entirely so the
+# sweep still covers the real maximum a project could ever use.
+NAME_LENGTHS = (4, 8, 16, 32, 40)
 FIXED_COUNT_FOR_NAMELEN = 10
 
 
