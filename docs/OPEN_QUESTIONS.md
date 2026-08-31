@@ -352,6 +352,17 @@ the matching footnote at the bottom, not inline.
     behaving the same as the L81E/5069 baseline this project is built
     on.[^blockbyte]
 
+    **Import failure, 2026-08-30.** `blockbytetest_l71_dint120000` itself
+    fails to import (`XMLSrv_E_IMPORT_ABORTED_NO_CHANGES`, generic wrapper
+    text only) — the L71 counterpart can't even be tested yet, so this
+    question's two-file comparison is currently one-sided
+    (`blockbytetest_dint120000`, L81E, is not reported failing). No known
+    cause identified; added to `samples/known_conversion_failures.csv`.
+    Needs the real Studio 5000 error-log line before any fix can be
+    attempted — could be an L71-processor-specific structural gap in
+    `wrapper.py` unrelated to the array content this test is trying to
+    isolate.
+
 11. **OQ-COMPOSITESCALE** — new, real, James 2026-08-30 directive after
     the confidential-project review found a >20% real gap: "I expect at
     least 50 large programs with io and logic to test your generation
@@ -380,6 +391,49 @@ the matching footnote at the bottom, not inline.
     formulas really are additive; any real divergence pinpoints an
     interaction effect (or a formula that only breaks at
     scale/density) invisible to every prior isolated test.[^compositescale]
+
+    **Import failures, 2026-08-30 (James's l5x2acd run) — 14 of the 50
+    fail, not just "awaiting capture."** All 14 hit the same generic
+    `XMLSrv_E_IMPORT_ABORTED_NO_CHANGES` wrapper text, no per-file detail.
+    Cross-referenced every file's module catalog mix (deterministic,
+    computed via `_profile_for_index`) against
+    `samples/known_conversion_failures.csv`'s already-known-bad catalog
+    list:
+      - **8 fully explained** — each includes at least one already-known-
+        bad catalog baked into its module mix, no separate cause:
+        `composite_realistic_10` (5069-OB16/B, 5069-OBV8S/A),
+        `_11` (FANUC Robot R30iB Plus/A), `_22` (5069-IY4/A, 5069-OB16/A,
+        5069-OB16/B), `_34` (5069-IB16/A, 5069-IB8S/A, 5069-IY4/A),
+        `_36` (PowerFlex 527-STO CIP Safety), `_46` (442G-MABLB-UR-
+        E0JP4679/A, 5069-IB16/A), `_47` (5069-OBV8S/A), `_48` (FANUC
+        Robot R30iB Plus/A).
+      - **6 genuinely new and unexplained** — module mix contains NO
+        already-known-bad catalog, so this is a real, separate,
+        undiagnosed cause: `composite_realistic_07` (1794-OE4/B,
+        1794-OW8/A, 1794-VHSC/A), `_19` (1794-IR8/A, 1794-OA8/A,
+        1794-OE4/B), `_31` (1794-IB16XOB16P/A, 1794-IB32/A, 1794-IR8/A),
+        `_32` (193-ECM-ETR/A, 193-ECM-ETR/B, 2097-V34PR5-LM,
+        2198-C4004-ERS), `_43` (1794-IA16/A, 1794-IB16/A,
+        1794-IB16XOB16P/A), `_44` (1794-OW8/A, 1794-VHSC/A,
+        193-ECM-ETR/A, 193-ECM-ETR/B). Could be a composite-specific
+        structural issue (a UDT/AOI/array combination, a naming
+        collision from the deterministic profile schedule) rather than
+        module-related at all — genuinely not narrowed down yet. Real
+        Studio 5000 error-log detail needed on at least one of these six
+        to make any further progress; not guessing at a fix without it.
+      All 14 added to `samples/known_conversion_failures.csv` so future
+      `batch_l5x_to_acd.ps1` runs skip them rather than re-attempting a
+      doomed conversion. Cross-checked against which of the 50 have a
+      fully-predicted total (predicted_bytes != 0 in manifest.csv, 26
+      files) vs which fell back to unmodeled (predicted_bytes=0, 24
+      files): 8 of the 14 failures (`_10`, `_11`, `_22`, `_32`, `_34`,
+      `_36`, `_46`, `_48`) are among the 26 fully-predicted files — real
+      capture data this OQ actually needs, currently blocked — leaving
+      **18** of the 26 fully-predicted composites still able to reach
+      real capture once James runs the conversion again. The other 6
+      failures (`_07`, `_19`, `_31`, `_43`, `_44`, `_47`) were already
+      unmodeled/$0, so their import failure doesn't cost this OQ anything
+      — moot for capture purposes either way.
 
 12. **OQ-AOIINTERNALLOGIC** — new, real, corpus-wide gap, James 2026-08-31:
     "So you closed aois but never put logic inside? All aois have one
@@ -865,6 +919,21 @@ captured cleanly (first attempt hit the Dimension/Dimensions bug, second
 attempt hit WINDOW TITLE MISMATCH, and the underlying file itself was
 broken this whole time under both attempts).
 
+**Correction, 2026-08-31: the 2026-08-29 Required/Visible fix did NOT
+actually resolve the import failure.** James's 2026-08-30 l5x2acd run
+shows `aoi_array_param_def_only` still failing with the identical
+`XMLSrv_E_IMPORT_ABORTED_NO_CHANGES` generic wrapper text, on the
+regenerated (post-fix) file. The `Required="true" Visible="true"` change
+was a hypothesis extended from the two real InOut-array examples in the
+corpus, explicitly flagged above as "not positively confirmed for
+Input/Output" — that hypothesis is now disproven, or at least insufficient
+on its own; there's still a real, separate import blocker. Task list
+previously (wrongly) marked this fixed — corrected here. Root cause
+remains unknown; the wrapper text carries no per-file detail, so guessing
+further isn't productive. Added to `samples/known_conversion_failures.csv`.
+Need the real Studio 5000 error-log line from James to make any further
+progress on this file.
+
 [^moduleio]: `module_overhead = 1,672 bytes/module` (flat, mean of 2 real
 deltas), wired as ESTIMATED tier. 141 files in `samples/generated/modules/`:
 per-catalog sweep (119/119 real corpus catalogs), rack-level tests, a full
@@ -1066,6 +1135,17 @@ both questions. `eventtask_axiswatch` also declares a real
 `AXIS_CIP_DRIVE` tag (EventTag must reference a real tag) — that tag has
 its own separately-modeled cost and will need subtracting from the raw
 capture delta before comparing trigger sources.
+
+**Import failure, 2026-08-30 (James's l5x2acd run).** `eventtask_instronly`
+fails to import: `XMLSrv_E_IMPORT_ABORTED_NO_CHANGES`, the generic SDK
+wrapper text only, no real Studio 5000 error-log detail available. Neither
+this file's own generator source nor any prior review flagged a known
+cause — genuinely new and unexplained (added to
+`samples/known_conversion_failures.csv` so it isn't re-attempted blind).
+`eventtask_axiswatch` has not yet been through a conversion pass, so
+whether the same failure hits the Axis-Watch variant, or is specific to
+the plain instruction-trigger shape, is unknown. Need the real error-log
+line from James before guessing at a fix.
 
 [^aoiorphan]: `gen_aoi_orphaned_def.py`. Both files declare the identical
 `UtilOrphanTest` AOI (2 DINT Input params, 1 BOOL Output param, 5 DINT
