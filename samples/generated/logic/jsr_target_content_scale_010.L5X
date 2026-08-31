@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="JsrTargetContentScale010" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 31 02:40:56 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="JsrTargetContentScale010" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 31 02:40:56 2026" LastModifiedDate="Mon Aug 31 02:40:56 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="JsrTargetContentScale010" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 31 02:50:36 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="JsrTargetContentScale010" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 31 02:50:36 2026" LastModifiedDate="Mon Aug 31 02:50:36 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -70,34 +70,28 @@
 </RLLContent>
 </Routine>
 <Routine Name="JsrTargetContentScale010Target" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
-                <Text><![CDATA[SBR()NOP();]]></Text>
+                <Text><![CDATA[MOV(TC0,TC1);]]></Text>
               </Rung>
               <Rung Number="1" Type="N">
-                <Text><![CDATA[MOV(TC0,TC1);]]></Text>
+                <Text><![CDATA[XIC(TC2)OTE(TC3);]]></Text>
               </Rung>
               <Rung Number="2" Type="N">
-                <Text><![CDATA[XIC(TC2)OTE(TC3);]]></Text>
+                <Text><![CDATA[CLR(TC4);]]></Text>
               </Rung>
               <Rung Number="3" Type="N">
-                <Text><![CDATA[CLR(TC4);]]></Text>
-              </Rung>
-              <Rung Number="4" Type="N">
                 <Text><![CDATA[ADD(TC5,TC6,TC7);]]></Text>
               </Rung>
-              <Rung Number="5" Type="N">
+              <Rung Number="4" Type="N">
                 <Text><![CDATA[EQU(TC8,TC9);]]></Text>
               </Rung>
-              <Rung Number="6" Type="N">
+              <Rung Number="5" Type="N">
                 <Text><![CDATA[MOV(TC0,TC1);]]></Text>
               </Rung>
-              <Rung Number="7" Type="N">
+              <Rung Number="6" Type="N">
                 <Text><![CDATA[XIC(TC2)OTE(TC3);]]></Text>
               </Rung>
-              <Rung Number="8" Type="N">
+              <Rung Number="7" Type="N">
                 <Text><![CDATA[CLR(TC4);]]></Text>
-              </Rung>
-              <Rung Number="9" Type="N">
-                <Text><![CDATA[RET();]]></Text>
               </Rung></RLLContent></Routine>
 </Routines>
 </Program>

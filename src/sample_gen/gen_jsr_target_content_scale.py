@@ -8,30 +8,37 @@ The "a JSR target routine's own CONTENT cost is already folded into the
 caller's jsr_fixed_base_per_routine constant" finding (report.py,
 confirmed 2026-08-22) is real, but EVERY JSR-target test file this project
 has ever built (gen_jsr_sbr_ret.py, gen_jsr_decompose.py, gen_jsr_
-paramcost_closeout.py, gen_jsr_paramtype_isolation*.py) uses the exact
-same trivial target shape: `SBR(...)NOP();RET();` -- 2-3 instructions,
-nothing else. That confirmation has never been tested against a target
-routine with REAL substantial logic content.
+paramcost_closeout.py, gen_jsr_paramtype_isolation*.py) calls its target
+with a NONZERO param count (1/5/7/8/9/10/15) and always includes SBR/RET.
+That's real and representative for the nonzero-param case: checked
+against every real L5X already in samples/local/ (2,534 unique real JSR
+targets across 8 genuine customer files), 126/128 nonzero-param targets
+DO have a real SBR instruction.
 
-Real AccuTally data (confidential, not committed) makes this urgent: 123
-of its 142 real JSR-target routines average 85 real instructions each (one
-has 201) -- 10,488 total real instruction occurrences currently contribute
-ZERO bytes beyond the flat one-time jsr_fixed_base_per_routine/A(n)
-constants. If target content really is free beyond a certain point (e.g.
-Logix compiles the subroutine's own logic into the SAME per-routine slot
-regardless of size, unlike a plain routine), current behavior is right and
-Capacity should stay FLAT across this sweep. If it isn't free, Capacity
-should scale with the target's own instruction count, proving a real,
-currently-unmodeled cost this project has been silently zeroing out on
-every real project since 2026-08-22 -- a plausible major piece of the
-18% AccuTally gap, since routine content this large dwarfs every other
-open residual bucket combined.
+James, 2026-08-31, real, caught in review: "if there was no jsr parameters
+then there is no sbr/ret instructions inside the called subroutine." Also
+confirmed against the same real corpus: 2,314/2,315 ZERO-param targets
+have NO SBR at all, and 2,218/2,315 (95.8%) have no RET either. This
+file's first draft called its target with 0 params but still forced
+SBR()/RET() into it -- a real generator bug, not representative of any
+real 0-param subroutine, now fixed by omitting both. This matters more
+than it might look: AccuTally's real JSR calls are 77% zero-param
+(117/152), and every one of its real 0-param targets has zero SBR/RET,
+matching the corpus norm exactly.
 
 4 files, target-routine instruction count as the only variable (10/50/
 100/150 real instructions, a realistic mix matching AccuTally's own top
-mnemonics: MOV/XIC/OTE/CLR/ADD/EQU), single call site, single distinct
+mnemonics: MOV/XIC/OTE/CLR/ADD/EQU), single call site, 0 params, no SBR/
+RET (the representative real shape for a 0-param target), single distinct
 target, everything else held fixed and minimal so any Capacity change is
-unambiguously attributable to target content size alone.
+unambiguously attributable to target content size alone. If target
+content really is free beyond jsr_fixed_base_per_routine even in this
+correctly-shaped case, current behavior is right and Capacity should stay
+FLAT across this sweep; if it isn't free, Capacity should scale with the
+target's own instruction count -- a real, currently-unmodeled cost this
+project has silently zeroed out on every real project since 2026-08-22,
+a plausible major piece of the 18% AccuTally gap since 10,488 real
+unweighted instructions dwarfs every other open residual bucket combined.
 
 Run: python -m sample_gen.gen_jsr_target_content_scale
 """
@@ -64,21 +71,23 @@ def _write(out_name: str, l5x: str, description: str) -> None:
 def main() -> None:
     for instr_count in TARGET_INSTR_COUNTS:
         target_name = f"JsrTargetContentScale{instr_count:03d}Target"
-        sbr_rung = rung_xml(0, "SBR()NOP();")
+        # No SBR, no RET -- the real, representative shape for a 0-param
+        # JSR target (James, 2026-08-31; confirmed 99.96%/95.8% against
+        # the real corpus in samples/local/). The target routine is just
+        # ordinary logic rungs, same as any plain routine.
         pieces = []
-        rung_idx = 1
+        rung_idx = 0
         total = 0
         while total < instr_count:
-            piece = _MIX[(rung_idx - 1) % len(_MIX)]
+            piece = _MIX[rung_idx % len(_MIX)]
             n_instr_this_piece = piece.count("(")
             text = piece.format(t="TC") + ";"
             pieces.append(rung_xml(rung_idx, text))
             total += n_instr_this_piece
             rung_idx += 1
-        ret_rung = rung_xml(rung_idx, "RET();")
         target_xml = (
             f'<Routine Name="{target_name}" Type="RLL">'
-            f"<RLLContent>{sbr_rung}\n" + "\n".join(pieces) + f"\n{ret_rung}</RLLContent>"
+            f"<RLLContent>" + "\n".join(pieces) + "</RLLContent>"
             "</Routine>"
         )
 
@@ -93,11 +102,14 @@ def main() -> None:
             l5x,
             f"JSR to a single target routine containing ~{instr_count} real instructions "
             f"(realistic MOV/XIC/OTE/CLR/ADD/EQU mix matching AccuTally's real JSR-target "
-            f"composition), single call site, 0 params -- OQ-JSRPARAMCOST target-content-scale "
-            f"isolation: does the target's own logic content really stay folded into the flat "
-            f"jsr_fixed_base_per_routine cost at real scale, or does Capacity actually grow with "
-            f"target size (a real, currently-unmodeled cost this project has silently zeroed out "
-            f"since 2026-08-22, confirmed only against trivial SBR/NOP/RET stub targets)?",
+            f"composition), single call site, 0 params, NO SBR/RET (the real, representative "
+            f"shape for a 0-param target, James 2026-08-31 -- confirmed against the real corpus "
+            f"in samples/local/, 99.96% of real 0-param targets have no SBR) -- OQ-JSRPARAMCOST "
+            f"target-content-scale isolation: does the target's own logic content really stay "
+            f"folded into the flat jsr_fixed_base_per_routine cost at real scale, or does "
+            f"Capacity actually grow with target size (a real, currently-unmodeled cost this "
+            f"project has silently zeroed out since 2026-08-22, confirmed only against trivial "
+            f"SBR/NOP/RET stub targets with nonzero params)?",
         )
 
 
