@@ -76,7 +76,8 @@ _INSTRUCTION_CALL = re.compile(r"\b([A-Z][A-Z0-9_]*)\(")
 
 @dataclass(frozen=True)
 class LintFinding:
-    kind: str  # "missing_array_subscript" | "unrecognized_instruction"
+    kind: str  # "missing_array_subscript" | "unrecognized_instruction" |
+    # "duplicate_module_slot" | "chassis_size_exceeded"
     detail: str
 
 
@@ -108,9 +109,115 @@ def _all_rung_texts(root: ET.Element) -> list[str]:
     return texts
 
 
+def _module_slot_findings(root: ET.Element) -> list[LintFinding]:
+    """James, 2026-08-31: "Are you sure you are validating chassis size
+    and duplicated slots? I explicitly remember asking you to check this
+    when you were generating these 50 tests" -- a real gap, not a false
+    alarm: this project's own lint pre-flight NEVER actually checked
+    either one before this. A prior commit (e57fe42) claimed a "self-audit
+    against every real failure class... (chassis size...)" came back clean
+    on all 50 composite files; that claim was wrong -- it missed the exact
+    slot-collision bug real Studio 5000 later caught in composite_
+    realistic_07 (see gen_composite_realistic.py's _remap_local_icp_slot).
+    This is the real, automated check that should have existed from the
+    start, run against every generated file from now on (write_sample's
+    lint_or_raise), not a one-off manual read-through.
+
+    Two things, both fully derivable from the XML alone with no external
+    Rockwell catalog knowledge needed:
+
+    1. duplicate_module_slot -- two different Modules both claiming the
+       identical (ParentModule, ParentModPortId, Address) connection
+       point. Real Studio 5000 rejects this outright ("Slot number in use
+       by another module") -- confirmed via James's real error on
+       composite_realistic_07. Covers both a physical backplane slot
+       collision (numeric Address) and a duplicate network address
+       collision (Address as an IP string) -- either way, two devices
+       can't occupy the same connection point on the same parent port.
+
+    2. chassis_size_exceeded -- a Module's own upstream Port declares a
+       numeric Address that is >= the Bus Size its parent module declared
+       on the matching port. Real Studio 5000 rejects this too ("Chassis
+       size exceeds the allowable size for a chassis") -- confirmed via
+       James's real error on both fwmatrix_v31_1769_l30erm (RESOLVED_
+       QUESTIONS.md) and eventtask_instronly (bare 5069-L306ER, OPEN_
+       QUESTIONS.md OQ item 10). This only catches an INTERNALLY
+       inconsistent file (we declared Bus Size=9 but also plugged
+       something into slot 12) -- it can't independently verify that our
+       own declared Bus Size is Rockwell's real per-catalog limit, which
+       still needs real corpus/capture confirmation same as always.
+    """
+    findings: list[LintFinding] = []
+    modules_by_name: dict[str, ET.Element] = {}
+    for mod_el in root.iter("Module"):
+        name = mod_el.get("Name")
+        if name:
+            modules_by_name[name] = mod_el
+
+    # slot_key -> list of (module_name) claiming it
+    slot_claims: dict[tuple[str, str, str], list[str]] = {}
+
+    for mod_el in root.iter("Module"):
+        name = mod_el.get("Name")
+        parent_module = mod_el.get("ParentModule")
+        parent_port_id = mod_el.get("ParentModPortId")
+        if not name or not parent_module or parent_port_id is None:
+            continue
+        # The upstream Port is this module's own connection point INTO its
+        # parent -- its Address is what must be unique among siblings on
+        # the same parent port, and (if numeric) within the parent's own
+        # declared Bus Size for that port.
+        ports_el = mod_el.find("Ports")
+        if ports_el is None:
+            continue
+        upstream_port = None
+        for port_el in ports_el.findall("Port"):
+            if port_el.get("Upstream") == "true":
+                upstream_port = port_el
+                break
+        if upstream_port is None:
+            continue
+        address = upstream_port.get("Address")
+        if address is None:
+            continue
+
+        key = (parent_module, parent_port_id, address)
+        slot_claims.setdefault(key, []).append(name)
+
+        if address.isdigit() and parent_module in modules_by_name:
+            parent_el = modules_by_name[parent_module]
+            parent_ports_el = parent_el.find("Ports")
+            if parent_ports_el is not None:
+                for parent_port_el in parent_ports_el.findall("Port"):
+                    if parent_port_el.get("Id") != parent_port_id:
+                        continue
+                    bus_el = parent_port_el.find("Bus")
+                    bus_size = bus_el.get("Size") if bus_el is not None else None
+                    if bus_size and bus_size.isdigit() and int(address) >= int(bus_size):
+                        findings.append(LintFinding(
+                            "chassis_size_exceeded",
+                            f"Module '{name}' Address={address} on parent '{parent_module}' Port "
+                            f"Id={parent_port_id}, but that parent Port's own Bus Size={bus_size} "
+                            f"(valid Address range is 0..{int(bus_size) - 1})",
+                        ))
+                    break
+
+    for (parent_module, parent_port_id, address), claimants in slot_claims.items():
+        if len(set(claimants)) > 1:
+            findings.append(LintFinding(
+                "duplicate_module_slot",
+                f"{len(claimants)} Modules ({', '.join(claimants)}) all claim ParentModule="
+                f"'{parent_module}' Port Id={parent_port_id} Address='{address}'",
+            ))
+
+    return findings
+
+
 def lint_l5x(l5x_text: str) -> list[LintFinding]:
     root = ET.fromstring(l5x_text)
     findings: list[LintFinding] = []
+
+    findings.extend(_module_slot_findings(root))
 
     array_tags = _array_tag_names(root)
     aoi_names = _declared_aoi_names(root)
