@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="PtIORackA" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 24 21:09:57 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="PtIORackA" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 24 21:09:57 2026" LastModifiedDate="Mon Aug 24 21:09:57 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="PtIORackA" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 31 11:31:32 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="PtIORackA" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 31 11:31:32 2026" LastModifiedDate="Mon Aug 31 11:31:32 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -143,7 +143,7 @@
 <Module Name="PtIORackA_1734IE2CC" CatalogNumber="1734-IE2C/C" Vendor="1" ProductType="115" ProductCode="24" Major="3" Minor="1" ParentModule="PtIORackA_Adapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Address="3" Type="PointIO" Upstream="true" />
+<Port Id="1" Address="2" Type="PointIO" Upstream="true" />
 </Ports>
 <Communications CommMethod="536870913">
 <ConfigTag ConfigSize="42" ExternalAccess="Read/Write">
@@ -213,7 +213,7 @@
 <Module Name="PtIORackA_1734IB8C" CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PtIORackA_Adapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Address="4" Type="PointIO" Upstream="true" />
+<Port Id="1" Address="3" Type="PointIO" Upstream="true" />
 </Ports>
 <Communications CommMethod="1073741824">
 <ConfigTag ConfigSize="36" ExternalAccess="Read/Write">
@@ -251,7 +251,7 @@
 <Module Name="PtIORackA_1734OE2CC" CatalogNumber="1734-OE2C/C" Vendor="1" ProductType="115" ProductCode="25" Major="3" Minor="1" ParentModule="PtIORackA_Adapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Address="7" Type="PointIO" Upstream="true" />
+<Port Id="1" Address="4" Type="PointIO" Upstream="true" />
 </Ports>
 <Communications CommMethod="536870913">
 <ConfigTag ConfigSize="40" ExternalAccess="Read/Write">
@@ -322,7 +322,7 @@
 <Module Name="PtIORackA_1734OB8EC" CatalogNumber="1734-OB8E/C" Vendor="1" ProductType="7" ProductCode="218" Major="3" Minor="1" ParentModule="PtIORackA_Adapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Address="8" Type="PointIO" Upstream="true" />
+<Port Id="1" Address="5" Type="PointIO" Upstream="true" />
 </Ports>
 <Communications CommMethod="1073741824">
 <ConfigTag ConfigSize="12" ExternalAccess="Read/Write">

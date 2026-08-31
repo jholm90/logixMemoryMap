@@ -10,10 +10,25 @@ real files repeat several catalogs many times over -- a rack test needs
 each TYPE once, not every physical instance, same anti-padding discipline
 as everywhere else in this project). Genericized the same way as
 gen_module_sweep.py: Name -> RackId_<Catalog>, Ethernet Address ->
-placeholder, ExtendedProperties/Description/Comments stripped. Every
-module's own real slot Address (its position on the point-bus) is kept
-AS-IS from the real file -- already collision-free within each adapter's
-own real rack, confirmed before writing this.
+placeholder, ExtendedProperties/Description/Comments stripped.
+
+CORRECTED 2026-08-31 (James, after noticing isolated cards/big gaps in
+the two racks: "you will always position the card's slot number
+dynamically during project creation. the slot number is a variable that
+is meant to be modified by the creation of the module and is not tied to
+the card itself like firmware or io count etc."). This file previously
+kept each module's real source-file slot Address "AS-IS," treating it as
+meaningful real corpus data -- wrong: slot position is an installation-
+time choice, not a catalog fact, so preserving it just reproduced
+whatever gaps the ORIGINAL real rack happened to have (worse here, since
+dedup to one-representative-per-catalog dropped the modules that would
+have filled those gaps in the real file -- e.g. Rack A ended up with
+modules at slots 1/3/4/7/8, Rack B at 1/2/3/5/6/11, both looking like an
+implausibly sparse physical rack even though each individual number
+really did come from a real file). Every child module's own Port Address
+is now assigned sequentially (1, 2, 3, ...) at generation time instead
+-- see _reslot_children below, same mechanism already real-Studio-5000-
+confirmed safe in gen_module_rack_1756local.py/gen_composite_realistic.py.
 
   - PtIORackA: DnR_Personal/Bender134053_201104.L5X, adapter "JB"
     (1734-AENTR/C) -- 5 distinct real child catalogs (IB8S/B safety input,
@@ -36,6 +51,7 @@ Run: python -m sample_gen.gen_module_rack_pointio
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from sample_gen.manifest import append_manifest_row, write_sample_unmodeled
@@ -890,8 +906,43 @@ _RACK_B_XML = """\
 """
 
 
+_CHILD_PORT_RE = re.compile(r'(<Port Id="1" Address=")\d+("\s*Type="PointIO"\s*Upstream="true"\s*/>)')
+
+
+def _reslot_children(xml: str) -> str:
+    """James, 2026-08-31 (after "one io card in slot 6" review): "you will
+    always position the card's slot number dynamically during project
+    creation. the slot number is a variable that is meant to be modified
+    by the creation of the module and is not tied to the card itself like
+    firmware or io count etc." Real correction, not a stylistic one --
+    this file's earlier docstring claimed preserving each child's real
+    source-file slot Address was itself meaningful real corpus data worth
+    keeping ("kept AS-IS from the real file"); that was wrong. Slot
+    position is an installation-time choice, not a catalog fact, so
+    preserving it just reproduced whatever gaps the ORIGINAL real rack
+    happened to have (made worse here since dedup to one-representative-
+    per-catalog dropped the modules that would have filled those gaps) --
+    a rack with isolated cards and big empty runs that looks physically
+    implausible even though each individual number was technically real.
+    Renumbers every child module's own Port Address sequentially
+    (1, 2, 3, ...) in document order instead -- same mechanism as
+    gen_module_rack_1756local.py's _reslot and gen_composite_realistic.py's
+    _remap_local_icp_slot, both already real-Studio-5000-confirmed safe.
+    Only the Port Address changes; the adapter's own combined-connection
+    diagnostic data (SlotStatusBits/Data ArrayMember) is left untouched --
+    that's runtime diagnostic content, not something Studio 5000 cross-
+    validates against configured child slots at plain project import."""
+    counter = [0]
+
+    def _next(_m: re.Match) -> str:
+        counter[0] += 1
+        return f'<Port Id="1" Address="{counter[0]}" Type="PointIO" Upstream="true" />'
+
+    return _CHILD_PORT_RE.sub(_next, xml)
+
+
 def main() -> None:
-    l5x_a = build_l5x(target_name="PtIORackA", tags_xml="", extra_modules_xml=_RACK_A_XML)
+    l5x_a = build_l5x(target_name="PtIORackA", tags_xml="", extra_modules_xml=_reslot_children(_RACK_A_XML))
     _write_unmodeled(
         l5x_a, "modulerack_pointio_a",
         "Point I/O rack test A: real 1734-AENTR/C adapter + 5 distinct real child module "
@@ -900,7 +951,7 @@ def main() -> None:
         "genericized from DnR_Personal/Bender134053_201104.L5X adapter 'JB', deduplicated "
         "to one representative module per real catalog. See OQ-MODULEIO.",
     )
-    l5x_b = build_l5x(target_name="PtIORackB", tags_xml="", extra_modules_xml=_RACK_B_XML)
+    l5x_b = build_l5x(target_name="PtIORackB", tags_xml="", extra_modules_xml=_reslot_children(_RACK_B_XML))
     _write_unmodeled(
         l5x_b, "modulerack_pointio_b",
         "Point I/O rack test B: a SECOND, different real 1734-AENTR/C adapter + 6 distinct "
