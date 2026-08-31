@@ -57,6 +57,32 @@ OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "logi
 # other 5069-L306ER files use that identical Bus Size and import fine.
 _WATCHED_AXIS_TAG_XML = _AXIS_TAG_XML.replace('Name="Axis_Cip_Drive"', 'Name="WatchedAxis"')
 
+# REAL BUG FOUND 2026-08-31 (James, real Studio 5000 error on
+# eventtask_instronly.L5X): "Failed to set the 'Size' property (Chassis
+# size exceeds the allowable size for a chassis.)" on the Local module's
+# own backplane Bus, with NO axis tag involved at all -- proving the
+# earlier 2026-08-30 dismissal of this same error class as "very likely a
+# downstream artifact of the malformed-tag import abort" (see
+# _WATCHED_AXIS_TAG_XML's comment above) was wrong; it's a real,
+# independent bug. Root cause: "5069-L306ER" (bare, no S2/M/MS2/MS3
+# suffix) is the ONLY place in this entire project that ever used that
+# exact catalog string -- every other 5069 file uses a specific suffixed
+# variant. wrapper.py's _5069_BUS_SIZE_BY_MODEL buckets ALL L306 variants
+# (bare ER, ERS2, ERM, ERMS2, ERMS3) under the same Bus Size=9, an
+# assumption confirmed ONLY against L306ERS2_Sample.L5X (a Safety+Motion
+# variant) and never independently checked against the bare non-suffixed
+# model -- this real error shows that assumption doesn't hold for the
+# bare "ER" tier. Rather than guess a corrected bus size with zero real
+# corpus evidence for the bare catalog, switch to the wrapper's own
+# default processor (1756-L81E) -- which also fixes a separate, real
+# mismatch: this file's docstring claims it's a "direct mirror of
+# taskoverhead_n02tasks (... same 5069-L306ER/fw35.11 baseline)", but
+# gen_task_overhead.py never actually passes a processor_type override,
+# so taskoverhead_n02tasks is really 1756-L81E all along -- these files
+# were never actually on the same processor they claimed to be compared
+# against. Dropping the override fixes both problems with one real,
+# evidenced change, not a guess.
+
 
 def _write(l5x: str, out_name: str, description: str) -> None:
     out_path = OUT_ROOT / f"{out_name}.L5X"
@@ -82,16 +108,17 @@ def main() -> None:
     extra_task = task_xml("EventTask0", "EventProgram0", task_type="EVENT",
                            event_trigger="EVENT Instruction Only")
     l5x = build_l5x(
-        target_name="EventTaskInstrOnly", tags_xml="", processor_type="5069-L306ER",
-        major_rev="35", minor_rev="11", software_revision="35.05",
+        target_name="EventTaskInstrOnly", tags_xml="",
         extra_programs_xml=extra_program, extra_tasks_xml=extra_task,
     )
     _write(
         l5x, "eventtask_instronly",
         "1 Continuous + 1 EVENT Task (EventTrigger=\"EVENT Instruction Only\", real corpus shape "
         "confirmed against SJ_Gormley's BoardAndLugID task) -- direct mirror of taskoverhead_n02tasks "
-        "(1 Continuous + 1 Periodic) with only the 2nd Task's Type/trigger changed, isolating "
-        "PERIODIC-vs-EVENT cost. No existing calibration file has ever used Type=\"EVENT\".",
+        "(1 Continuous + 1 Periodic), same default 1756-L81E/fw35.11 processor (see the bare-"
+        "\"5069-L306ER\" chassis-size bug note above -- that catalog is untested/broken, this file "
+        "now matches taskoverhead_n02tasks's REAL processor instead of a claimed-but-wrong one), "
+        "isolating PERIODIC-vs-EVENT cost. No existing calibration file has ever used Type=\"EVENT\".",
     )
 
     # EventTrigger="Axis Watch" -- needs a real controller-scope
@@ -104,8 +131,7 @@ def main() -> None:
     extra_task2 = task_xml("EventTask1", "EventProgram1", task_type="EVENT",
                             event_trigger="Axis Watch", event_tag="WatchedAxis")
     l5x2 = build_l5x(
-        target_name="EventTaskAxisWatch", tags_xml=_WATCHED_AXIS_TAG_XML, processor_type="5069-L306ER",
-        major_rev="35", minor_rev="11", software_revision="35.05",
+        target_name="EventTaskAxisWatch", tags_xml=_WATCHED_AXIS_TAG_XML,
         extra_programs_xml=extra_program2, extra_tasks_xml=extra_task2,
     )
     _write_unmodeled(

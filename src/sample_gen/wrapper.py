@@ -134,6 +134,7 @@ _PRODUCT_CODES = {
     "1756-L83E": "166",
     "1756-L84E": "167",
     "1756-L85E": "168",
+    "1756-L71": "92",
     "1769-L16ER-BB1B": "153",
     "1769-L18ER-BB1B": "154",
     "1769-L18ERM-BB1B": "155",
@@ -234,6 +235,27 @@ def build_l5x(
     )
     is_1769 = processor_type.startswith("1769")
     is_5069 = processor_type.startswith("5069")
+    # REAL BUG FOUND 2026-08-31 (James, real Studio 5000 error on
+    # blockbytetest_l71_dint120000.L5X): "Name collision: imported Module
+    # 'Local' renamed to 'Local1'" + "Required property 'Port' was missing"
+    # + "Requested item could not be found" on Controller/EthernetPorts.
+    # Root cause: this project's default ("else") branch below assumes
+    # every non-1769/non-5069 processor is Ethernet-embedded like the L8xE
+    # (ControlLogix5580) family this project is built around -- wrong for
+    # the OLDER pre-5580 ControlLogix line (1756-L6x/ControlLogix5560,
+    # 1756-L7x/ControlLogix5570), which has NO embedded network port at
+    # all (needs a separate 1756-ENxT/EN2T module in another slot for any
+    # network path). Confirmed against a real reference export already in
+    # this repo, samples/local/L7_v21_Sample.L5X (ProcessorType=
+    # "1756-L71"): its own Local module has exactly ONE Port (ICP, Bus
+    # Size="4" -- that specific number is this one customer's chassis
+    # choice, not asserted as a per-model constant), no second Ethernet
+    # Port, and the file has NO Controller-level <EthernetPorts> element
+    # at all. Only 1756-L71 itself is confirmed this way; L72-L75 (same
+    # ControlLogix5570 product line) and the L6x/ControlLogix5560 line are
+    # assumed to share the same no-embedded-Ethernet shape by product
+    # family, not independently confirmed.
+    is_pre5580_1756 = bool(re.match(r"1756-L[67]\d", processor_type))
     if is_1769:
         # See _1769_bus_size's docstring above for the real corpus source.
         # SafetyNetwork handling mirrors the SIL2/is_5069 fix (same real
@@ -334,6 +356,16 @@ def build_l5x(
             f'<Port Id="2" Type="Ethernet" Upstream="false" SafetyNetwork="16#0000_1002_0002_0002">\n<Bus/>\n</Port>'
         )
         local_product_code = _PRODUCT_CODES.get(processor_type, _PRODUCT_CODE)
+    elif is_pre5580_1756:
+        # See is_pre5580_1756's definition above for the real corpus
+        # evidence -- ICP-only, no embedded Ethernet Port, matching
+        # samples/local/L7_v21_Sample.L5X exactly.
+        local_ports_xml = (
+            f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n'
+            f'<Bus Size="{_ICP_BUS_SIZE}"/>\n'
+            f'</Port>'
+        )
+        local_product_code = _PRODUCT_CODES.get(processor_type, _PRODUCT_CODE)
     else:
         local_ports_xml = (
             f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n'
@@ -375,6 +407,12 @@ def build_l5x(
     # only a 5069 processor has (1756/1769 have at most one embedded
     # port), so it's correctly omitted for every other family.
     ethernet_ip_mode_attr = ' EtherNetIPMode="A1/A2: Dual-IP"' if is_5069 else ""
+    # See is_pre5580_1756's definition above: samples/local/L7_v21_Sample.L5X
+    # (real 1756-L71 export) has no Controller-level <EthernetPorts> element
+    # at all -- this CPU has no embedded network port to describe.
+    ethernet_ports_xml = "" if is_pre5580_1756 else (
+        '<EthernetPorts>\n<EthernetPort Port="1" Label="1" PortEnabled="true"/>\n</EthernetPorts>\n'
+    )
     return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="{software_revision}" TargetName="{target_name}" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="{now}" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
 <Controller Use="Target" Name="{target_name}" ProcessorType="{processor_type}" MajorRev="{major_rev}" MinorRev="{minor_rev}" ProjectCreationDate="{now}" LastModifiedDate="{now}" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false"{ethernet_ip_mode_attr} AutoDiagsEnabled="true" WebServerEnabled="false">
@@ -429,10 +467,7 @@ def build_l5x(
 <Trends/>
 <DataLogs/>
 <TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
-<EthernetPorts>
-<EthernetPort Port="1" Label="1" PortEnabled="true"/>
-</EthernetPorts>
-</Controller>
+{ethernet_ports_xml}</Controller>
 </RSLogix5000Content>
 """
 

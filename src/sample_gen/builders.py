@@ -216,10 +216,28 @@ def string_array_tag_xml(name: str, count: int, max_len: int = 82, data_type: st
 
 
 def tag_xml(
-    name: str, data_type: str, dimensions: tuple[int, ...] = (), radix: str = "Decimal",
+    name: str, data_type: str, dimensions: tuple[int, ...] = (), radix: str | None = None,
     description: str | None = None, udt_members: list["MemberSpec"] | None = None,
     string_max_len: int | None = None, constant: bool = False,
 ) -> str:
+    # REAL BUG FOUND 2026-08-31 (James, real Studio 5000 warning on
+    # composite_realistic_07.L5X): "A warning occurred while setting
+    # 'Radix' property (Invalid display style.)" on a REAL-typed array tag
+    # (Arr2). This function defaulted radix="Decimal" for every atomic
+    # type including REAL -- wrong; real REAL tags use Radix="Float"
+    # (already confirmed and used correctly elsewhere in this project's
+    # own module-config XML, e.g. builders.py's axis Master/Slave
+    # DataValueMembers and gen_module_sweep.py's RTD/AI config blocks --
+    # this generic tag_xml() helper just never matched that for a
+    # top-level Tag). Non-fatal (a warning, not an import-blocking error;
+    # Radix is a display-format property, doesn't change a tag's real
+    # storage size), so it didn't invalidate any prior REAL-tag capture
+    # data, but every one of the many existing callers that build a REAL
+    # tag via the plain tag_xml(name, "REAL") call (no radix override) was
+    # silently hitting this same warning. Fixed by defaulting per-type
+    # instead of one universal literal -- explicit caller radix still wins.
+    if radix is None:
+        radix = "Float" if data_type == "REAL" else "Decimal"
     dims_attr = f' Dimensions="{" ".join(str(d) for d in dimensions)}"' if dimensions else ""
     desc_xml = f"\n        <Description><![CDATA[{description}]]></Description>" if description else ""
     constant_attr = "true" if constant else "false"

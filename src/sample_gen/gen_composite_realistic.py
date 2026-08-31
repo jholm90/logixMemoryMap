@@ -31,11 +31,14 @@ shape with a number swapped -- every file combines, at real-world scale:
     XIC/OTE/MOV/ADD/CPT/TON/CTU/AOI-call instructions, not just NOP
     filler.
 
-All 50 stay on 5069-L306ER/fw35.11 (this project's dominant, most-tested
-baseline) -- the processor-family question (blocks vs bytes) is already
-isolated separately by gen_blockbyte_l71.py/OQ-BLOCKBYTE, and mixing that
-confound into this batch would make any interaction-effect findings here
-ambiguous.
+All 50 stay on the wrapper's default processor (1756-L81E/fw35.05,
+DEFAULT_PROCESSOR_TYPE in wrapper.py -- corrected 2026-08-31, this
+docstring previously claimed "5069-L306ER" but build_l5x() below never
+actually receives a processor_type override, so every file has always
+really been on the default) -- the processor-family question (blocks vs
+bytes) is already isolated separately by gen_blockbyte_l71.py/
+OQ-BLOCKBYTE, and mixing that confound into this batch would make any
+interaction-effect findings here ambiguous.
 
 The composition scales across the 50 files via a deterministic index-based
 schedule (documented in _profile_for_index below), not randomness -- every
@@ -178,6 +181,36 @@ def _aoi_specs(profile: Profile) -> list[tuple[str, str, list[MemberSpec]]]:
     return out
 
 
+_LOCAL_ICP_SLOT_RE = re.compile(
+    r'(ParentModule="Local".*?<Port Id="1" Address=")\d+("\s*Type="ICP"\s*Upstream="true"\s*/>)',
+    re.DOTALL,
+)
+
+
+def _remap_local_icp_slot(xml: str, slot: int) -> str:
+    """James, 2026-08-31, real Studio 5000 error on composite_realistic_07
+    (module mix: 1794-OE4/B, 1794-OW8/A, 1794-VHSC/A): "Slot number in use
+    by another module" + "Failed to set the 'ParentModule' property
+    (Requested item could not be found.)" for the chain's downstream
+    modules. Root cause: all three of those catalogs' _MODULE_CHAINS
+    blocks were extracted from the SAME real reference export
+    (RobbinsGrn_2026_05_13r00.L5X) and each one's own root module (a
+    1756-CNB/D ControlNet bridge, ParentModule="Local") independently
+    claims the identical real physical backplane slot that one customer's
+    rack actually used (Address="3" on its ICP Port) -- correct for a
+    single standalone catalog test, but a genuine collision the instant 2+
+    such catalogs land in the same composite file, exactly like the IP
+    collision _modules_xml_unique_ips (below) already fixes for Ethernet
+    addresses. The downstream 'ParentModule not found' errors are a
+    cascade: once the slot-colliding root module fails to import, its
+    children (which reference it by name) can't resolve their parent
+    either. Remaps ONLY the root module's own ICP-backplane Port Address
+    to a given unique slot -- a catalog with no Local-parented ICP module
+    at all (e.g. already Ethernet-only) is left untouched (no match, no
+    collision risk)."""
+    return _LOCAL_ICP_SLOT_RE.sub(rf"\g<1>{slot}\g<2>", xml, count=1)
+
+
 def _modules_xml_unique_ips(catalogs: list[str]) -> str:
     """James, 2026-08-30, real bug caught by self-audit before any file was
     sent for testing: each catalog's block in gen_module_sweep.py's
@@ -194,7 +227,11 @@ def _modules_xml_unique_ips(catalogs: list[str]) -> str:
     remapping ONLY those literal address strings, preserving each catalog's
     own internal relative offset between its addresses (a 2-IP catalog
     keeps using two DIFFERENT addresses, just shifted to a block nobody
-    else in the file is using) -- nothing else in any block is touched."""
+    else in the file is using) -- nothing else in any block is touched.
+
+    2026-08-31: also remaps each catalog's own Local-parented ICP
+    backplane slot to a unique value per catalog in the file -- see
+    _remap_local_icp_slot's docstring for the real error this fixes."""
     parts = []
     for i, cat in enumerate(catalogs):
         xml, _source, _chain_len = _MODULE_CHAINS[cat]
@@ -203,6 +240,7 @@ def _modules_xml_unique_ips(catalogs: list[str]) -> str:
         mapping = {ip: f"192.168.1.{base + j}" for j, ip in enumerate(real_ips)}
         for old, new in mapping.items():
             xml = xml.replace(old, new)
+        xml = _remap_local_icp_slot(xml, slot=2 + i)
         parts.append(xml)
     return "\n".join(parts)
 
