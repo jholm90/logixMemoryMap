@@ -465,6 +465,21 @@ the matching footnote at the bottom, not inline.
       without a byte comparison. Needs a real reconversion pass to
       confirm any of this — not independently verifiable from here.
 
+      **Renamed with a "_r2" suffix, 2026-08-31** (James: "confirm that
+      you will have different filenames for the 50 tests and abandon the
+      old ones" — real Studio 5000 verify errors found separately, see
+      OQ item covering aoi_call_arg_count_mismatch/XIC-OTE-data-type,
+      meant every one of the 50 composite files changed real content
+      again after James had already pushed an l5x2acd batch against the
+      names above). All references to `composite_realistic_NN` in this
+      section are the OLD, now-deleted filenames, describing what was
+      diagnosed against them at the time — the CURRENT files are
+      `composite_realistic_NN_r2.L5X` (same index numbers, same
+      per-file composition/catalog mix, just fixed content). The 9 still
+      catalog-explained-broken filenames in `known_conversion_failures.csv`
+      were updated to their new `_r2` names alongside this rename so
+      they stay correctly flagged.
+
 12. **OQ-AOIINTERNALLOGIC** — new, real, corpus-wide gap, James 2026-08-31:
     "So you closed aois but never put logic inside? All aois have one
     subroutine but they can have more, see the HomeToTorque aoi."

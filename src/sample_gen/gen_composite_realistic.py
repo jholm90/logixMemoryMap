@@ -354,17 +354,30 @@ def _build(profile: Profile) -> tuple[str, str]:
         f"points at varying AOI complexity), {len(profile.array_sizes)} atomic arrays "
         f"(sizes {profile.array_sizes}) + 1 UDT array ({profile.udt_array_len} elements), TIMER+COUNTER, "
         f"{len(profile.module_catalogs)} real I/O modules ({', '.join(profile.module_catalogs)}), "
-        f"{profile.rung_count} rungs mixed XIC/OTE/MOV/ADD/CPT/TON/CTU/AOI-call. 5069-L306ER/fw35.11 "
-        f"(processor-family question isolated separately, OQ-BLOCKBYTE)."
+        f"{profile.rung_count} rungs mixed XIC/OTE/MOV/ADD/CPT/TON/CTU/AOI-call. 1756-L81E/fw35.05 "
+        f"(default processor, corrected 2026-08-31 -- see this file's module docstring; the "
+        f"processor-family question is isolated separately, OQ-BLOCKBYTE)."
     )
     return l5x, description
 
 
+# James, 2026-08-31: "confirm that you will have different filenames for
+# the 50 tests and abandon the old ones" -- every one of the 50 original
+# composite_realistic_NN files changed real content this session (AOI
+# Required=true fix, XIC/OTE bit-subscript fix, and for 5 files the
+# backplane-slot-collision fix), after James had already pushed a real
+# l5x2acd/capture batch against the OLD names. Renamed with a "_r2" suffix
+# (matching this project's established convention for a regenerated-after-
+# real-bug-fix batch, e.g. modulesweep_2198_*_variant_4conn_r2) so his
+# next batch run can't conflate the two. The old composite_realistic_NN.L5X
+# files (no "_r2") are deleted -- zero of them ever had real actual_bytes
+# captured (confirmed against manifest.csv before deleting), so nothing
+# real is lost by abandoning them.
 def main() -> None:
     for i in range(1, 51):
         profile = _profile_for_index(i)
         l5x, description = _build(profile)
-        _write(l5x, f"composite_realistic_{i:02d}", description)
+        _write(l5x, f"composite_realistic_{i:02d}_r2", description)
 
 
 if __name__ == "__main__":
