@@ -518,6 +518,8 @@ def aoi_xml(
     output_params: list["MemberSpec"] | None = None,
     inout_params: list["MemberSpec"] | None = None,
     local_tags: list["MemberSpec"] | None = None,
+    logic_rungs_xml: str = "",
+    extra_routines_xml: str = "",
 ) -> tuple[str, list["MemberSpec"]]:
     """AddOnInstructionDefinition + the "storage member list" for generating
     an instance tag of it. Real shape confirmed 2026-08-20 against James's
@@ -536,6 +538,29 @@ def aoi_xml(
     the returned storage list is EnableIn/EnableOut + input/output params +
     local tags, usable directly with tag_xml(udt_members=...) the same way
     a UDT instance is.
+
+    logic_rungs_xml/extra_routines_xml (2026-08-31, James: "you closed
+    aois but never put logic inside?" -- real, corpus-wide gap: every AOI
+    test file this project has ever generated used the hardcoded
+    self-closing `<Routine Name="Logic" Type="RLL"/>` below, meaning $0
+    real internal-logic content was EVER exercised in any AOI calibration
+    file -- the existing aoi_definition formula (base + per_declared_item
+    * count + name-length term) is purely a Parameter/LocalTag
+    declaration-cost model, never tested against real Logic-routine
+    content. logic_rungs_xml (default "", preserves the exact prior
+    self-closing shape byte-for-byte) lets a caller supply real
+    `<Rung>...</Rung>` content for the Logic routine.
+
+    James also, same message: "All aois have one subroutine but they can
+    have more, see the HomeToTorque aoi" -- real, confirmed 2026-08-31
+    against a real confidential project (not committed, never named
+    beyond this generic description): 8 of 39 real AOI definitions there
+    have 2 internal RLL routines (Logic + a second, e.g. HomeToTorque's
+    "EnableInFalse"), not the 1-routine shape every AOI generator in this
+    project has ever produced. extra_routines_xml (default "") lets a
+    caller append complete additional `<Routine>...</Routine>` blocks
+    (build with rung_xml/a manual RLLContent wrapper) after Logic, inside
+    the same <Routines> container.
     """
     input_params = input_params or []
     output_params = output_params or []
@@ -553,6 +578,13 @@ def aoi_xml(
     local_parts = [_aoi_local_tag_xml(m) for m in local_tags]
     locals_xml = ("<LocalTags>\n" + "\n".join(local_parts) + "\n      </LocalTags>") if local_parts else "<LocalTags/>"
 
+    logic_routine_xml = (
+        f'        <Routine Name="Logic" Type="RLL"><RLLContent>{logic_rungs_xml}</RLLContent></Routine>\n'
+        if logic_rungs_xml else
+        '        <Routine Name="Logic" Type="RLL"/>\n'
+    )
+    extra_routines_block = f"{extra_routines_xml}\n" if extra_routines_xml else ""
+
     definition = (
         f'    <AddOnInstructionDefinition Name="{name}" Revision="1.0" Vendor="LogixMemoryMap" '
         f'ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" '
@@ -561,7 +593,8 @@ def aoi_xml(
         f'      <Parameters>\n' + "\n".join(param_parts) + "\n      </Parameters>\n"
         f'      {locals_xml}\n'
         f'      <Routines>\n'
-        f'        <Routine Name="Logic" Type="RLL"/>\n'
+        f'{logic_routine_xml}'
+        f'{extra_routines_block}'
         f'      </Routines>\n'
         f"    </AddOnInstructionDefinition>"
     )
