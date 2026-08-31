@@ -67,7 +67,13 @@ def _write(l5x: str, out_name: str, description: str) -> None:
 
 
 def main() -> None:
-    fault_reset = MemberSpec("FaultReset", "BOOL")
+    # REAL BUG FOUND 2026-08-31 (James's real Studio 5000 verify errors +
+    # lint.py's new aoi_call_arg_count_mismatch check, same root cause as
+    # gen_aoi_orphaned_def.py/gen_composite_realistic.py): required=False/
+    # visible=False (the MemberSpec default) makes a param HIDDEN from
+    # the instruction's own call signature, but both rungs below wire a
+    # real tag into FaultReset's slot anyway. Fixed with required=True.
+    fault_reset = MemberSpec("FaultReset", "BOOL", required=True)
     drive_axis = MemberSpec("Drive_Axis", "AXIS_CIP_DRIVE")
     definition, storage = aoi_xml("DriveAxisNestTest", input_params=[fault_reset], inout_params=[drive_axis])
 

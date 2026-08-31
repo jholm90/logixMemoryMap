@@ -17,7 +17,7 @@ authoritative check for the specific classes of error already found the
 hard way, run against every file before it ships instead of after James
 spends real capture time on it.
 
-Two checks:
+Checks:
   1. Array-typed tag referenced without a [index] subscript anywhere it's
      used as an instruction operand in rung text (the CPS/COP/FLL/BTD bug).
      SIZE is a confirmed exception (James's real COP_Samples.L5X, 2026-08-22:
@@ -27,11 +27,27 @@ Two checks:
      name isn't a known native instruction AND doesn't match any
      AddOnInstructionDefinition actually declared in the same file (the
      T_ADD bug).
+  3. duplicate_module_slot / chassis_size_exceeded (see _module_slot_findings)
+     -- James, 2026-08-31: "Are you sure you are validating chassis size
+     and duplicated slots?"
+  4. aoi_call_arg_count_mismatch -- James, 2026-08-31, real Studio 5000
+     verify error on composite_realistic_02/03.ACD ("Invalid number of
+     arguments for instruction" on every AOI call rung): a declared AOI's
+     Input/Output Parameters with Required="false" Visible="false" are
+     HIDDEN from its own instruction call signature entirely (real Logix
+     semantics, confirmed against samples/local/SJ_Gormley_20251112_r02.L5X's
+     real PTimer calls -- see gen_aoi_required_visible.py's docstring) --
+     only Required and/or Visible params are real call-argument slots.
+     Checks the actual argument count at each call site against
+     [count(Required), count(Required or Visible)] -- outside that range is
+     a real, checkable mismatch. Does not model the exact-position nuance of
+     which specific trailing optional params can be omitted (heuristic, not
+     authoritative -- matches this file's existing scope).
 
 Explicitly NOT a substitute for real Studio 5000 verification -- it can't
-catch type mismatches, wrong argument counts, bad instance-tag wiring, or
-anything semantic. It only catches the two specific real mistakes this
-project has already made, plus close relatives of them.
+catch every type mismatch or bad instance-tag wiring. It only catches the
+specific real mistakes this project has already made, plus close
+relatives of them.
 """
 
 from __future__ import annotations
@@ -71,7 +87,23 @@ _KNOWN_NATIVE_INSTRUCTIONS = {
     "AVE", "FAL", "FSC", "MDW", "MASD", "MGSD", "MGSR", "CROUT",
 }
 
-_INSTRUCTION_CALL = re.compile(r"\b([A-Z][A-Z0-9_]*)\(")
+# REAL BUG FOUND 2026-08-31, self-audit while adding the aoi_call_arg_
+# count_mismatch check below: this pattern required EVERY character after
+# the first to be uppercase/digit/underscore -- fine for native
+# instructions (XIC, OTE, CPT, all genuinely all-caps in real Logix), but
+# it silently never matched ANY mixed-case AOI instance call, which is
+# the norm for AOI naming across this entire project's own generators
+# (e.g. "Comp02Aoi0(...)", "ReqVisAllhidden(...)", real corpus "PTimer(
+# ...)"). The unrecognized_instruction check (T_ADD bug) and this new
+# arg-count check were BOTH silently blind to every AOI call in every
+# file this project has ever generated -- confirmed by testing the old
+# pattern directly: `re.findall(r"\b([A-Z][A-Z0-9_]*)\(", "Comp02Aoi0(
+# Inst,0,OutBit);")` returns [] (should return the call). Fixed to match
+# any valid Logix identifier (starts with a letter/underscore, not
+# case-restricted) immediately followed by "(" -- still correctly
+# excludes non-identifier parens (a CPT expression's grouping "(" is
+# never immediately preceded by a bare identifier without an operator).
+_INSTRUCTION_CALL = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\(")
 
 
 @dataclass(frozen=True)
@@ -99,6 +131,87 @@ def _declared_aoi_names(root: ET.Element) -> set[str]:
         if name:
             names.add(name)
     return names
+
+
+def _aoi_call_arg_bounds(root: ET.Element) -> dict[str, tuple[int, int]]:
+    """aoi_name -> (min_args, max_args): min = count of Required="true"
+    Input/Output Parameters, max = count of (Required="true" OR
+    Visible="true") Input/Output Parameters, both in declaration order,
+    excluding EnableIn/EnableOut/InOut (InOut params are always required
+    and always present -- real semantics, see builders.py's aoi_xml
+    docstring -- so they always count toward BOTH bounds)."""
+    bounds = {}
+    for aoi_el in root.iter("AddOnInstructionDefinition"):
+        name = aoi_el.get("Name")
+        if not name:
+            continue
+        min_args = 0
+        max_args = 0
+        params_el = aoi_el.find("Parameters")
+        if params_el is None:
+            bounds[name] = (0, 0)
+            continue
+        for p_el in params_el.findall("Parameter"):
+            usage = p_el.get("Usage")
+            if usage not in ("Input", "Output", "InOut"):
+                continue
+            if p_el.get("Name") in ("EnableIn", "EnableOut"):
+                continue
+            required = p_el.get("Required") == "true"
+            visible = p_el.get("Visible") == "true"
+            if usage == "InOut" or required:
+                min_args += 1
+                max_args += 1
+            elif visible:
+                max_args += 1
+        bounds[name] = (min_args, max_args)
+    return bounds
+
+
+def _split_top_level_args(s: str) -> list[str]:
+    """Splits a comma-separated argument list, respecting nested ()/[]
+    (e.g. an array-index or bit-subscript operand shouldn't fracture the
+    split). Returns [] for an empty/whitespace-only string."""
+    s = s.strip()
+    if not s:
+        return []
+    parts = []
+    depth = 0
+    current = []
+    for ch in s:
+        if ch in "([":
+            depth += 1
+        elif ch in ")]":
+            depth -= 1
+        if ch == "," and depth == 0:
+            parts.append("".join(current))
+            current = []
+        else:
+            current.append(ch)
+    parts.append("".join(current))
+    return parts
+
+
+def _call_sites(text: str) -> list[tuple[str, str]]:
+    """Finds every "NAME(...)" call in rung text and returns (name,
+    args_string) pairs, args_string being everything between the matching
+    parens (balanced against nested brackets/parens inside, e.g. an
+    array-index operand)."""
+    sites = []
+    for m in _INSTRUCTION_CALL.finditer(text):
+        name = m.group(1)
+        start = m.end()  # just past the opening "("
+        depth = 1
+        i = start
+        while i < len(text) and depth > 0:
+            if text[i] in "([":
+                depth += 1
+            elif text[i] in ")]":
+                depth -= 1
+            i += 1
+        if depth == 0:
+            sites.append((name, text[start:i - 1]))
+    return sites
 
 
 def _all_rung_texts(root: ET.Element) -> list[str]:
@@ -221,6 +334,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
 
     array_tags = _array_tag_names(root)
     aoi_names = _declared_aoi_names(root)
+    aoi_call_arg_bounds = _aoi_call_arg_bounds(root)
     rung_texts = _all_rung_texts(root)
 
     for text in rung_texts:
@@ -239,8 +353,24 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
                     f"array-typed tag '{tag}' referenced without a [index] subscript in rung text: {text.strip()!r}",
                 ))
 
-        for mnemonic in _INSTRUCTION_CALL.findall(text):
-            if mnemonic in _KNOWN_NATIVE_INSTRUCTIONS or mnemonic in aoi_names:
+        for mnemonic, args_str in _call_sites(text):
+            if mnemonic in aoi_names:
+                # First arg is always the instance tag, not a Parameter --
+                # everything after it maps 1:1 to non-hidden Parameters in
+                # declaration order. See _aoi_call_arg_bounds's docstring.
+                args = _split_top_level_args(args_str)
+                param_arg_count = max(len(args) - 1, 0)
+                min_args, max_args = aoi_call_arg_bounds.get(mnemonic, (0, 0))
+                if not (min_args <= param_arg_count <= max_args):
+                    findings.append(LintFinding(
+                        "aoi_call_arg_count_mismatch",
+                        f"'{mnemonic}(' called with {param_arg_count} parameter argument(s) (plus the "
+                        f"instance tag), but its declaration allows {min_args}..{max_args} "
+                        f"(Required-count..Required-or-Visible-count non-hidden Input/Output params): "
+                        f"{text.strip()!r}",
+                    ))
+                continue
+            if mnemonic in _KNOWN_NATIVE_INSTRUCTIONS:
                 continue
             findings.append(LintFinding(
                 "unrecognized_instruction",

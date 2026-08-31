@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite08" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 31 09:53:52 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite08" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 31 09:53:52 2026" LastModifiedDate="Mon Aug 31 09:53:52 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite08" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 31 11:21:58 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite08" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 31 11:21:58 2026" LastModifiedDate="Mon Aug 31 11:21:58 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -280,8 +280,8 @@
       <Parameters>
 <Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
 <Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
-<Parameter Name="In0" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="Out0" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="In0" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Out0" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
       </Parameters>
       <LocalTags>
 <LocalTag Name="Wrk0" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
@@ -295,10 +295,10 @@
       <Parameters>
 <Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
 <Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
-<Parameter Name="In0" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="In1" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="Out0" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="Out1" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="In0" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="In1" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Out0" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Out1" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
       </Parameters>
       <LocalTags>
 <LocalTag Name="Wrk0" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
@@ -313,10 +313,10 @@
       <Parameters>
 <Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
 <Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
-<Parameter Name="In0" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="In1" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="In2" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="Out0" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="In0" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="In1" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="In2" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Out0" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
       </Parameters>
       <LocalTags>
 <LocalTag Name="Wrk0" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
@@ -332,9 +332,9 @@
       <Parameters>
 <Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
 <Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
-<Parameter Name="In0" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="Out0" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="Out1" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="In0" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Out0" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Out1" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
       </Parameters>
       <LocalTags>
 <LocalTag Name="Wrk0" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
@@ -348,9 +348,9 @@
       <Parameters>
 <Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
 <Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
-<Parameter Name="In0" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="In1" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="Out0" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="false" Visible="false" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="In0" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="In1" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Out0" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
       </Parameters>
       <LocalTags>
 <LocalTag Name="Wrk0" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
@@ -420,7 +420,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="6" Type="N">
-                <Text><![CDATA[XIC(Arr0[6])OTE(Arr1[6]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[6].0)OTE(Arr1[6].0);]]></Text>
               </Rung>
               <Rung Number="7" Type="N">
                 <Text><![CDATA[MOV(Arr0[7],Arr2[7]);]]></Text>
@@ -438,7 +438,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="12" Type="N">
-                <Text><![CDATA[XIC(Arr0[12])OTE(Arr1[12]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[12].0)OTE(Arr1[12].0);]]></Text>
               </Rung>
               <Rung Number="13" Type="N">
                 <Text><![CDATA[MOV(Arr0[13],Arr2[13]);]]></Text>
@@ -456,7 +456,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="18" Type="N">
-                <Text><![CDATA[XIC(Arr0[18])OTE(Arr1[18]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[18].0)OTE(Arr1[18].0);]]></Text>
               </Rung>
               <Rung Number="19" Type="N">
                 <Text><![CDATA[MOV(Arr0[19],Arr2[19]);]]></Text>
@@ -474,7 +474,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="24" Type="N">
-                <Text><![CDATA[XIC(Arr0[24])OTE(Arr1[24]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[24].0)OTE(Arr1[24].0);]]></Text>
               </Rung>
               <Rung Number="25" Type="N">
                 <Text><![CDATA[MOV(Arr0[25],Arr2[25]);]]></Text>
@@ -492,7 +492,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="30" Type="N">
-                <Text><![CDATA[XIC(Arr0[30])OTE(Arr1[30]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[30].0)OTE(Arr1[30].0);]]></Text>
               </Rung>
               <Rung Number="31" Type="N">
                 <Text><![CDATA[MOV(Arr0[31],Arr2[31]);]]></Text>
@@ -510,7 +510,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="36" Type="N">
-                <Text><![CDATA[XIC(Arr0[36])OTE(Arr1[36]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[36].0)OTE(Arr1[36].0);]]></Text>
               </Rung>
               <Rung Number="37" Type="N">
                 <Text><![CDATA[MOV(Arr0[37],Arr2[37]);]]></Text>
@@ -528,7 +528,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="42" Type="N">
-                <Text><![CDATA[XIC(Arr0[42])OTE(Arr1[42]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[42].0)OTE(Arr1[42].0);]]></Text>
               </Rung>
               <Rung Number="43" Type="N">
                 <Text><![CDATA[MOV(Arr0[43],Arr2[43]);]]></Text>
@@ -546,7 +546,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="48" Type="N">
-                <Text><![CDATA[XIC(Arr0[48])OTE(Arr1[48]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[48].0)OTE(Arr1[48].0);]]></Text>
               </Rung>
               <Rung Number="49" Type="N">
                 <Text><![CDATA[MOV(Arr0[49],Arr2[49]);]]></Text>
@@ -564,7 +564,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="54" Type="N">
-                <Text><![CDATA[XIC(Arr0[54])OTE(Arr1[54]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[54].0)OTE(Arr1[54].0);]]></Text>
               </Rung>
               <Rung Number="55" Type="N">
                 <Text><![CDATA[MOV(Arr0[55],Arr2[55]);]]></Text>
@@ -582,7 +582,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="60" Type="N">
-                <Text><![CDATA[XIC(Arr0[60])OTE(Arr1[60]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[60].0)OTE(Arr1[60].0);]]></Text>
               </Rung>
               <Rung Number="61" Type="N">
                 <Text><![CDATA[MOV(Arr0[61],Arr2[61]);]]></Text>
@@ -600,7 +600,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="66" Type="N">
-                <Text><![CDATA[XIC(Arr0[66])OTE(Arr1[66]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[66].0)OTE(Arr1[66].0);]]></Text>
               </Rung>
               <Rung Number="67" Type="N">
                 <Text><![CDATA[MOV(Arr0[67],Arr2[67]);]]></Text>
@@ -618,7 +618,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="72" Type="N">
-                <Text><![CDATA[XIC(Arr0[72])OTE(Arr1[72]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[72].0)OTE(Arr1[72].0);]]></Text>
               </Rung>
               <Rung Number="73" Type="N">
                 <Text><![CDATA[MOV(Arr0[73],Arr2[73]);]]></Text>
@@ -636,7 +636,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="78" Type="N">
-                <Text><![CDATA[XIC(Arr0[78])OTE(Arr1[78]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[78].0)OTE(Arr1[78].0);]]></Text>
               </Rung>
               <Rung Number="79" Type="N">
                 <Text><![CDATA[MOV(Arr0[79],Arr2[79]);]]></Text>
@@ -654,7 +654,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="84" Type="N">
-                <Text><![CDATA[XIC(Arr0[84])OTE(Arr1[84]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[84].0)OTE(Arr1[84].0);]]></Text>
               </Rung>
               <Rung Number="85" Type="N">
                 <Text><![CDATA[MOV(Arr0[85],Arr2[85]);]]></Text>
@@ -672,7 +672,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="90" Type="N">
-                <Text><![CDATA[XIC(Arr0[90])OTE(Arr1[90]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[90].0)OTE(Arr1[90].0);]]></Text>
               </Rung>
               <Rung Number="91" Type="N">
                 <Text><![CDATA[MOV(Arr0[91],Arr2[91]);]]></Text>
@@ -690,7 +690,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="96" Type="N">
-                <Text><![CDATA[XIC(Arr0[96])OTE(Arr1[96]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[96].0)OTE(Arr1[96].0);]]></Text>
               </Rung>
               <Rung Number="97" Type="N">
                 <Text><![CDATA[MOV(Arr0[97],Arr2[97]);]]></Text>
@@ -708,7 +708,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="102" Type="N">
-                <Text><![CDATA[XIC(Arr0[102])OTE(Arr1[102]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[102].0)OTE(Arr1[102].0);]]></Text>
               </Rung>
               <Rung Number="103" Type="N">
                 <Text><![CDATA[MOV(Arr0[103],Arr2[103]);]]></Text>
@@ -726,7 +726,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="108" Type="N">
-                <Text><![CDATA[XIC(Arr0[108])OTE(Arr1[108]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[108].0)OTE(Arr1[108].0);]]></Text>
               </Rung>
               <Rung Number="109" Type="N">
                 <Text><![CDATA[MOV(Arr0[109],Arr2[109]);]]></Text>
@@ -744,7 +744,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="114" Type="N">
-                <Text><![CDATA[XIC(Arr0[114])OTE(Arr1[114]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[114].0)OTE(Arr1[114].0);]]></Text>
               </Rung>
               <Rung Number="115" Type="N">
                 <Text><![CDATA[MOV(Arr0[115],Arr2[115]);]]></Text>
@@ -762,7 +762,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="120" Type="N">
-                <Text><![CDATA[XIC(Arr0[120])OTE(Arr1[120]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[120].0)OTE(Arr1[120].0);]]></Text>
               </Rung>
               <Rung Number="121" Type="N">
                 <Text><![CDATA[MOV(Arr0[121],Arr2[121]);]]></Text>
@@ -780,7 +780,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="126" Type="N">
-                <Text><![CDATA[XIC(Arr0[126])OTE(Arr1[126]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[126].0)OTE(Arr1[126].0);]]></Text>
               </Rung>
               <Rung Number="127" Type="N">
                 <Text><![CDATA[MOV(Arr0[127],Arr2[127]);]]></Text>
@@ -798,7 +798,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="132" Type="N">
-                <Text><![CDATA[XIC(Arr0[132])OTE(Arr1[132]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[132].0)OTE(Arr1[132].0);]]></Text>
               </Rung>
               <Rung Number="133" Type="N">
                 <Text><![CDATA[MOV(Arr0[133],Arr2[133]);]]></Text>
@@ -816,7 +816,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="138" Type="N">
-                <Text><![CDATA[XIC(Arr0[138])OTE(Arr1[138]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[138].0)OTE(Arr1[138].0);]]></Text>
               </Rung>
               <Rung Number="139" Type="N">
                 <Text><![CDATA[MOV(Arr0[139],Arr2[139]);]]></Text>
@@ -834,7 +834,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="144" Type="N">
-                <Text><![CDATA[XIC(Arr0[144])OTE(Arr1[144]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[144].0)OTE(Arr1[144].0);]]></Text>
               </Rung>
               <Rung Number="145" Type="N">
                 <Text><![CDATA[MOV(Arr0[145],Arr2[145]);]]></Text>
@@ -852,7 +852,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="150" Type="N">
-                <Text><![CDATA[XIC(Arr0[150])OTE(Arr1[150]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[150].0)OTE(Arr1[150].0);]]></Text>
               </Rung>
               <Rung Number="151" Type="N">
                 <Text><![CDATA[MOV(Arr0[151],Arr2[151]);]]></Text>
@@ -870,7 +870,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="156" Type="N">
-                <Text><![CDATA[XIC(Arr0[156])OTE(Arr1[156]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[156].0)OTE(Arr1[156].0);]]></Text>
               </Rung>
               <Rung Number="157" Type="N">
                 <Text><![CDATA[MOV(Arr0[157],Arr2[157]);]]></Text>
@@ -888,7 +888,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="162" Type="N">
-                <Text><![CDATA[XIC(Arr0[162])OTE(Arr1[162]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[162].0)OTE(Arr1[162].0);]]></Text>
               </Rung>
               <Rung Number="163" Type="N">
                 <Text><![CDATA[MOV(Arr0[163],Arr2[163]);]]></Text>
@@ -906,7 +906,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="168" Type="N">
-                <Text><![CDATA[XIC(Arr0[168])OTE(Arr1[168]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[168].0)OTE(Arr1[168].0);]]></Text>
               </Rung>
               <Rung Number="169" Type="N">
                 <Text><![CDATA[MOV(Arr0[169],Arr2[169]);]]></Text>
@@ -924,7 +924,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="174" Type="N">
-                <Text><![CDATA[XIC(Arr0[174])OTE(Arr1[174]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[174].0)OTE(Arr1[174].0);]]></Text>
               </Rung>
               <Rung Number="175" Type="N">
                 <Text><![CDATA[MOV(Arr0[175],Arr2[175]);]]></Text>
@@ -942,7 +942,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="180" Type="N">
-                <Text><![CDATA[XIC(Arr0[180])OTE(Arr1[180]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[180].0)OTE(Arr1[180].0);]]></Text>
               </Rung>
               <Rung Number="181" Type="N">
                 <Text><![CDATA[MOV(Arr0[181],Arr2[181]);]]></Text>
@@ -960,7 +960,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="186" Type="N">
-                <Text><![CDATA[XIC(Arr0[186])OTE(Arr1[186]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[186].0)OTE(Arr1[186].0);]]></Text>
               </Rung>
               <Rung Number="187" Type="N">
                 <Text><![CDATA[MOV(Arr0[187],Arr2[187]);]]></Text>
@@ -978,7 +978,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="192" Type="N">
-                <Text><![CDATA[XIC(Arr0[192])OTE(Arr1[192]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[192].0)OTE(Arr1[192].0);]]></Text>
               </Rung>
               <Rung Number="193" Type="N">
                 <Text><![CDATA[MOV(Arr0[193],Arr2[193]);]]></Text>
@@ -996,7 +996,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="198" Type="N">
-                <Text><![CDATA[XIC(Arr0[198])OTE(Arr1[198]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[198].0)OTE(Arr1[198].0);]]></Text>
               </Rung>
               <Rung Number="199" Type="N">
                 <Text><![CDATA[MOV(Arr0[199],Arr2[199]);]]></Text>
@@ -1014,7 +1014,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="204" Type="N">
-                <Text><![CDATA[XIC(Arr0[204])OTE(Arr1[204]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[204].0)OTE(Arr1[204].0);]]></Text>
               </Rung>
               <Rung Number="205" Type="N">
                 <Text><![CDATA[MOV(Arr0[205],Arr2[205]);]]></Text>
@@ -1032,7 +1032,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="210" Type="N">
-                <Text><![CDATA[XIC(Arr0[210])OTE(Arr1[210]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[210].0)OTE(Arr1[210].0);]]></Text>
               </Rung>
               <Rung Number="211" Type="N">
                 <Text><![CDATA[MOV(Arr0[211],Arr2[211]);]]></Text>
@@ -1050,7 +1050,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="216" Type="N">
-                <Text><![CDATA[XIC(Arr0[216])OTE(Arr1[216]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[216].0)OTE(Arr1[216].0);]]></Text>
               </Rung>
               <Rung Number="217" Type="N">
                 <Text><![CDATA[MOV(Arr0[217],Arr2[217]);]]></Text>
@@ -1068,7 +1068,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="222" Type="N">
-                <Text><![CDATA[XIC(Arr0[222])OTE(Arr1[222]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[222].0)OTE(Arr1[222].0);]]></Text>
               </Rung>
               <Rung Number="223" Type="N">
                 <Text><![CDATA[MOV(Arr0[223],Arr2[223]);]]></Text>
@@ -1086,7 +1086,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="228" Type="N">
-                <Text><![CDATA[XIC(Arr0[228])OTE(Arr1[228]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[228].0)OTE(Arr1[228].0);]]></Text>
               </Rung>
               <Rung Number="229" Type="N">
                 <Text><![CDATA[MOV(Arr0[229],Arr2[229]);]]></Text>
@@ -1104,7 +1104,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="234" Type="N">
-                <Text><![CDATA[XIC(Arr0[234])OTE(Arr1[234]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[234].0)OTE(Arr1[234].0);]]></Text>
               </Rung>
               <Rung Number="235" Type="N">
                 <Text><![CDATA[MOV(Arr0[235],Arr2[235]);]]></Text>
@@ -1122,7 +1122,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="240" Type="N">
-                <Text><![CDATA[XIC(Arr0[240])OTE(Arr1[240]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[240].0)OTE(Arr1[240].0);]]></Text>
               </Rung>
               <Rung Number="241" Type="N">
                 <Text><![CDATA[MOV(Arr0[241],Arr2[241]);]]></Text>
@@ -1140,7 +1140,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="246" Type="N">
-                <Text><![CDATA[XIC(Arr0[246])OTE(Arr1[246]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[246].0)OTE(Arr1[246].0);]]></Text>
               </Rung>
               <Rung Number="247" Type="N">
                 <Text><![CDATA[MOV(Arr0[247],Arr2[247]);]]></Text>
@@ -1158,7 +1158,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="252" Type="N">
-                <Text><![CDATA[XIC(Arr0[252])OTE(Arr1[252]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[252].0)OTE(Arr1[252].0);]]></Text>
               </Rung>
               <Rung Number="253" Type="N">
                 <Text><![CDATA[MOV(Arr0[253],Arr2[253]);]]></Text>
@@ -1176,7 +1176,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="258" Type="N">
-                <Text><![CDATA[XIC(Arr0[258])OTE(Arr1[258]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[258].0)OTE(Arr1[258].0);]]></Text>
               </Rung>
               <Rung Number="259" Type="N">
                 <Text><![CDATA[MOV(Arr0[259],Arr2[259]);]]></Text>
@@ -1194,7 +1194,7 @@
                 <Text><![CDATA[CTU(MainCtr,?,?);]]></Text>
               </Rung>
               <Rung Number="264" Type="N">
-                <Text><![CDATA[XIC(Arr0[264])OTE(Arr1[264]);]]></Text>
+                <Text><![CDATA[XIC(Arr0[264].0)OTE(Arr1[264].0);]]></Text>
               </Rung>
               <Rung Number="265" Type="N">
                 <Text><![CDATA[MOV(Arr0[265],Arr2[265]);]]></Text>

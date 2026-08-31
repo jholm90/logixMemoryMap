@@ -1,4 +1,6 @@
+from sample_gen.builders import MemberSpec, aoi_xml, rung_xml, tag_xml
 from sample_gen.lint import lint_l5x
+from sample_gen.wrapper import build_l5x
 
 _WRAPPER = """
 <RSLogix5000Content SchemaRevision="1.0">
@@ -115,3 +117,70 @@ def test_does_not_flag_module_address_within_parent_bus_size():
     modules = _module_xml("InBounds", "3")
     findings = lint_l5x(_MODULE_WRAPPER.format(modules=modules))
     assert not any(f.kind == "chassis_size_exceeded" for f in findings)
+
+
+# James, 2026-08-31: real Studio 5000 verify errors on composite_realistic_
+# 02/03.ACD, "Invalid number of arguments for instruction" on every AOI
+# call rung -- a hidden (Required=false/Visible=false) Input/Output
+# Parameter isn't a real call-argument slot, but the generator supplied
+# one anyway. Found while fixing this that _INSTRUCTION_CALL's own regex
+# was ALSO silently blind to any mixed-case AOI name (only matched
+# ALL-CAPS mnemonics) -- both are covered here.
+
+def test_instruction_call_regex_matches_mixed_case_aoi_names():
+    # Real bug: the old pattern (\b[A-Z][A-Z0-9_]*\() never matched
+    # "Comp02Aoi0(" or any other mixed-case AOI call at all.
+    definition, storage = aoi_xml("MixedCaseAoi", input_params=[MemberSpec("In0", "DINT", required=True)])
+    tag = tag_xml("Inst", "MixedCaseAoi", udt_members=storage)
+    rung = rung_xml(0, "MixedCaseAoi(Inst,0);")
+    l5x = build_l5x(target_name="T", tags_xml=tag, extra_aoi_xml=definition, extra_rungs_xml=rung)
+    # A wrong arg count would still be caught below -- this call is
+    # correct (1 required param, 1 arg supplied), so expect no findings.
+    assert lint_l5x(l5x) == []
+
+
+def test_flags_aoi_call_with_hidden_param_supplied_an_argument():
+    definition, storage = aoi_xml(
+        "HiddenParamAoi",
+        input_params=[MemberSpec("In0", "DINT")],  # required=False, visible=False -> hidden
+        output_params=[MemberSpec("Out0", "BOOL")],
+    )
+    tag = tag_xml("Inst", "HiddenParamAoi", udt_members=storage)
+    rung = rung_xml(0, "HiddenParamAoi(Inst,0,OutBit);")
+    l5x = build_l5x(
+        target_name="T", tags_xml=tag + "\n" + tag_xml("OutBit", "BOOL"),
+        extra_aoi_xml=definition, extra_rungs_xml=rung,
+    )
+    assert any(f.kind == "aoi_call_arg_count_mismatch" for f in lint_l5x(l5x))
+
+
+def test_does_not_flag_aoi_call_with_required_params_correctly_wired():
+    definition, storage = aoi_xml(
+        "RequiredParamAoi",
+        input_params=[MemberSpec("In0", "DINT", required=True)],
+        output_params=[MemberSpec("Out0", "BOOL", required=True)],
+    )
+    tag = tag_xml("Inst", "RequiredParamAoi", udt_members=storage)
+    rung = rung_xml(0, "RequiredParamAoi(Inst,0,OutBit);")
+    l5x = build_l5x(
+        target_name="T", tags_xml=tag + "\n" + tag_xml("OutBit", "BOOL"),
+        extra_aoi_xml=definition, extra_rungs_xml=rung,
+    )
+    assert not any(f.kind == "aoi_call_arg_count_mismatch" for f in lint_l5x(l5x))
+
+
+def test_does_not_flag_aoi_call_omitting_trailing_visible_optional_param():
+    # Real corpus precedent (PTimer, samples/local/SJ_Gormley_20251112_
+    # r02.L5X): a Required=false/Visible=true param CAN be omitted from
+    # the end of the call entirely.
+    definition, storage = aoi_xml(
+        "OptionalParamAoi",
+        input_params=[
+            MemberSpec("In0", "DINT", required=True),
+            MemberSpec("In1", "DINT", required=False, visible=True),
+        ],
+    )
+    tag = tag_xml("Inst", "OptionalParamAoi", udt_members=storage)
+    rung = rung_xml(0, "OptionalParamAoi(Inst,0);")  # omits In1
+    l5x = build_l5x(target_name="T", tags_xml=tag, extra_aoi_xml=definition, extra_rungs_xml=rung)
+    assert not any(f.kind == "aoi_call_arg_count_mismatch" for f in lint_l5x(l5x))

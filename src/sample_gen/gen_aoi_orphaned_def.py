@@ -62,10 +62,20 @@ def _utility_aoi() -> tuple[str, list[MemberSpec]]:
     5 DINT local scratch tags. Rough scale-match to the real orphaned AOIs
     found in the source review (small date/utility helpers), not a
     trivial single-param stub."""
+    # REAL BUG FOUND 2026-08-31 (James, real Studio 5000 verify error
+    # class found via composite_realistic_02/03.ACD, same root cause
+    # found here by lint.py's new aoi_call_arg_count_mismatch check):
+    # these params defaulted required=False/visible=False (MemberSpec's
+    # own default), which real Logix treats as HIDDEN from the
+    # instruction's own call signature entirely -- but group_referenced
+    # below calls UtilOrphanTest with 3 real arguments anyway
+    # ("UtilOrphanTest(UtilInstance,0,0,OutBit);"), a genuine argument-
+    # count mismatch. Fixed with required=True (accepts either a
+    # hardcoded value or a tag, matching this file's own call args).
     return aoi_xml(
         "UtilOrphanTest",
-        input_params=[MemberSpec("InA", "DINT"), MemberSpec("InB", "DINT")],
-        output_params=[MemberSpec("OutFlag", "BOOL")],
+        input_params=[MemberSpec("InA", "DINT", required=True), MemberSpec("InB", "DINT", required=True)],
+        output_params=[MemberSpec("OutFlag", "BOOL", required=True)],
         local_tags=[
             MemberSpec("Wrk1", "DINT"), MemberSpec("Wrk2", "DINT"), MemberSpec("Wrk3", "DINT"),
             MemberSpec("Wrk4", "DINT"), MemberSpec("Wrk5", "DINT"),

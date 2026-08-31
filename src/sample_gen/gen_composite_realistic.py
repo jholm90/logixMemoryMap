@@ -173,8 +173,27 @@ def _aoi_specs(profile: Profile) -> list[tuple[str, str, list[MemberSpec]]]:
         name = f"Comp{profile.index:02d}Aoi{a}"
         def_xml, storage = aoi_xml(
             name,
-            input_params=[MemberSpec(f"In{k}", "DINT") for k in range(1 + a % 3)],
-            output_params=[MemberSpec(f"Out{k}", "BOOL") for k in range(1 + a % 2)],
+            # REAL BUG FOUND 2026-08-31 (James, real Studio 5000 verify
+            # error on composite_realistic_02/03.ACD, "Invalid number of
+            # arguments for instruction" on every referenced-AOI call
+            # rung): "Your AOIs have input and output parameters but they
+            # need to be marked as required or visible to put them in the
+            # ladder logic instance. if required then it needs a
+            # hard-coded value or tag." MemberSpec defaults
+            # required=False/visible=False -- _aoi_parameter_xml (see
+            # builders.py) correctly renders that as Required="false"
+            # Visible="false" for a plain (non-array) Input/Output
+            # Parameter, which real Studio 5000 treats as HIDDEN from the
+            # instruction's own call signature (not a real argument slot
+            # at all). But _build() below always supplies a literal "0"/
+            # tag "OutBit" argument for every In/Out param regardless,
+            # so the actual call always has more operands than the real
+            # (hidden) signature allows -- an argument-count mismatch.
+            # Fixed with required=True, which real Studio 5000 accepts
+            # either a hardcoded value or a tag reference for (matches
+            # this file's own call-argument construction exactly).
+            input_params=[MemberSpec(f"In{k}", "DINT", required=True) for k in range(1 + a % 3)],
+            output_params=[MemberSpec(f"Out{k}", "BOOL", required=True) for k in range(1 + a % 2)],
             local_tags=[MemberSpec(f"Wrk{k}", "DINT") for k in range(2 + a % 3)],
         )
         out.append((name, def_xml, storage))
@@ -292,7 +311,17 @@ def _build(profile: Profile) -> tuple[str, str]:
             return call_instrs[i]
         kind = i % 6
         if kind == 0:
-            return f"XIC(Arr0[{i % profile.array_sizes[0]}])OTE(Arr1[{i % profile.array_sizes[1]}]);"
+            # REAL BUG FOUND 2026-08-31 (James, real Studio 5000 verify
+            # error on composite_realistic_02/03.ACD): "you can only have
+            # OTE for BOOL or BIT within INT/DINT/SINT -- a OTE on a INT
+            # is an ERROR." Arr0 is always DINT and Arr1 is always INT
+            # (fixed j=0/j=1 position in _ATOMIC_TYPES's cycling, every
+            # file) -- XIC/OTE directly on a whole DINT/INT array element
+            # (no bit subscript) is invalid; both instructions need a
+            # BOOL or a bit-level ".N" reference into an integer. Fixed
+            # with an explicit ".0" bit subscript -- valid on both DINT
+            # and INT regardless of which specific type Arr0/Arr1 land on.
+            return f"XIC(Arr0[{i % profile.array_sizes[0]}].0)OTE(Arr1[{i % profile.array_sizes[1]}].0);"
         if kind == 1:
             return f"MOV(Arr0[{i % profile.array_sizes[0]}],Arr2[{i % profile.array_sizes[min(2, len(profile.array_sizes) - 1)]}]);"
         if kind == 2:
