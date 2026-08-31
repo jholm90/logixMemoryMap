@@ -352,16 +352,24 @@ the matching footnote at the bottom, not inline.
     behaving the same as the L81E/5069 baseline this project is built
     on.[^blockbyte]
 
-    **Import failure, 2026-08-30.** `blockbytetest_l71_dint120000` itself
-    fails to import (`XMLSrv_E_IMPORT_ABORTED_NO_CHANGES`, generic wrapper
-    text only) — the L71 counterpart can't even be tested yet, so this
-    question's two-file comparison is currently one-sided
-    (`blockbytetest_dint120000`, L81E, is not reported failing). No known
-    cause identified; added to `samples/known_conversion_failures.csv`.
-    Needs the real Studio 5000 error-log line before any fix can be
-    attempted — could be an L71-processor-specific structural gap in
-    `wrapper.py` unrelated to the array content this test is trying to
-    isolate.
+    **Import failure, 2026-08-30 — root-caused and fixed 2026-08-31.**
+    `blockbytetest_l71_dint120000` failed to import; James pulled the real
+    Studio 5000 error-log detail this time ("Name collision: imported
+    Module 'Local' renamed to 'Local1'" / "Required property 'Port' was
+    missing" / Controller/EthernetPorts "Requested item could not be
+    found"). Root cause: `wrapper.py`'s default branch assumed every
+    non-1769/non-5069 processor is Ethernet-embedded like the L8xE family
+    this project is built around — wrong for the older pre-5580
+    ControlLogix line (1756-L6x/L7x), confirmed against a real reference
+    export already in this repo (`samples/local/L7_v21_Sample.L5X`,
+    ProcessorType="1756-L71"): its Local module has exactly one ICP Port,
+    no embedded Ethernet Port, and the file has no Controller-level
+    `<EthernetPorts>` element at all. Fixed with a dedicated
+    `is_pre5580_1756` branch (ICP-only Local, no `<EthernetPorts>`) plus
+    the real ProductCode (92) for 1756-L71. Regenerated, removed from
+    `known_conversion_failures.csv`. Still needs a real reconversion pass
+    to confirm the fix actually imports clean — not independently
+    verifiable from here.
 
 11. **OQ-COMPOSITESCALE** — new, real, James 2026-08-30 directive after
     the confidential-project review found a >20% real gap: "I expect at
@@ -407,33 +415,55 @@ the matching footnote at the bottom, not inline.
         `_36` (PowerFlex 527-STO CIP Safety), `_46` (442G-MABLB-UR-
         E0JP4679/A, 5069-IB16/A), `_47` (5069-OBV8S/A), `_48` (FANUC
         Robot R30iB Plus/A).
-      - **6 genuinely new and unexplained** — module mix contains NO
-        already-known-bad catalog, so this is a real, separate,
-        undiagnosed cause: `composite_realistic_07` (1794-OE4/B,
-        1794-OW8/A, 1794-VHSC/A), `_19` (1794-IR8/A, 1794-OA8/A,
-        1794-OE4/B), `_31` (1794-IB16XOB16P/A, 1794-IB32/A, 1794-IR8/A),
-        `_32` (193-ECM-ETR/A, 193-ECM-ETR/B, 2097-V34PR5-LM,
+      - **6 genuinely new and unexplained (at the time)** — module mix
+        contains NO already-known-bad catalog: `composite_realistic_07`
+        (1794-OE4/B, 1794-OW8/A, 1794-VHSC/A), `_19` (1794-IR8/A,
+        1794-OA8/A, 1794-OE4/B), `_31` (1794-IB16XOB16P/A, 1794-IB32/A,
+        1794-IR8/A), `_32` (193-ECM-ETR/A, 193-ECM-ETR/B, 2097-V34PR5-LM,
         2198-C4004-ERS), `_43` (1794-IA16/A, 1794-IB16/A,
         1794-IB16XOB16P/A), `_44` (1794-OW8/A, 1794-VHSC/A,
-        193-ECM-ETR/A, 193-ECM-ETR/B). Could be a composite-specific
-        structural issue (a UDT/AOI/array combination, a naming
-        collision from the deterministic profile schedule) rather than
-        module-related at all — genuinely not narrowed down yet. Real
-        Studio 5000 error-log detail needed on at least one of these six
-        to make any further progress; not guessing at a fix without it.
-      All 14 added to `samples/known_conversion_failures.csv` so future
-      `batch_l5x_to_acd.ps1` runs skip them rather than re-attempting a
-      doomed conversion. Cross-checked against which of the 50 have a
+        193-ECM-ETR/A, 193-ECM-ETR/B).
+
+        **Root-caused and fixed, 2026-08-31** (James pulled the real
+        Studio 5000 error-log detail for `_07`): "Slot number in use by
+        another module" + "Failed to set the 'ParentModule' property
+        (Requested item could not be found.)". All three of `_07`'s
+        catalogs were extracted from the SAME real reference export
+        (`RobbinsGrn_2026_05_13r00.L5X`) and each independently claims the
+        identical real backplane slot that one customer's rack actually
+        used — fine standalone, a genuine collision once 2+ such catalogs
+        land in the same composite file (same class of bug as the IP
+        collision `_modules_xml_unique_ips` already fixed 2026-08-30, just
+        a different attribute). Fixed by also remapping each catalog's own
+        Local-parented ICP slot to a unique value per file
+        (`_remap_local_icp_slot`, `gen_composite_realistic.py`). `_19`,
+        `_31`, `_43`, `_44` share the same "2+ catalogs from the same real
+        1794-family source rack" pattern and are very likely fixed by the
+        same change (not independently confirmed each, but the mechanism
+        is generic, not `_07`-specific) — removed from
+        `known_conversion_failures.csv` alongside `_07`. `_32` has NO
+        1794-family catalog in its mix at all, so this fix doesn't apply
+        to it — stays in `known_conversion_failures.csv`, genuinely still
+        unexplained, still needs its own real error-log line.
+
+      All 8 catalog-explained failures (`_10`, `_11`, `_22`, `_34`, `_36`,
+      `_46`, `_47`, `_48`) remain in `known_conversion_failures.csv` —
+      unrelated bug class (the still-undiagnosed CIP-Safety-connection
+      failure shared with the standalone modulesweep files), not touched
+      by this fix. Cross-checked against which of the 50 have a
       fully-predicted total (predicted_bytes != 0 in manifest.csv, 26
       files) vs which fell back to unmodeled (predicted_bytes=0, 24
-      files): 8 of the 14 failures (`_10`, `_11`, `_22`, `_32`, `_34`,
-      `_36`, `_46`, `_48`) are among the 26 fully-predicted files — real
-      capture data this OQ actually needs, currently blocked — leaving
-      **18** of the 26 fully-predicted composites still able to reach
-      real capture once James runs the conversion again. The other 6
-      failures (`_07`, `_19`, `_31`, `_43`, `_44`, `_47`) were already
-      unmodeled/$0, so their import failure doesn't cost this OQ anything
-      — moot for capture purposes either way.
+      files): 8 of the 14 original failures (`_10`, `_11`, `_22`, `_32`,
+      `_34`, `_36`, `_46`, `_48`) are among the 26 fully-predicted files.
+      Of those 8, only `_32` is still blocked — the other 7 remain fully
+      catalog-explained and still blocked by the separate CIP-Safety bug,
+      so real capture on this OQ is still gated on that unrelated fix
+      too. `_07`, `_19`, `_31`, `_43`, `_44` were already unmodeled/$0,
+      so fixing their import doesn't add real-capture value to this OQ
+      directly, but does let them serve as clean structural validation
+      (does the file import and match the real module count/shape) even
+      without a byte comparison. Needs a real reconversion pass to
+      confirm any of this — not independently verifiable from here.
 
 12. **OQ-AOIINTERNALLOGIC** — new, real, corpus-wide gap, James 2026-08-31:
     "So you closed aois but never put logic inside? All aois have one
@@ -1136,16 +1166,29 @@ both questions. `eventtask_axiswatch` also declares a real
 its own separately-modeled cost and will need subtracting from the raw
 capture delta before comparing trigger sources.
 
-**Import failure, 2026-08-30 (James's l5x2acd run).** `eventtask_instronly`
-fails to import: `XMLSrv_E_IMPORT_ABORTED_NO_CHANGES`, the generic SDK
-wrapper text only, no real Studio 5000 error-log detail available. Neither
-this file's own generator source nor any prior review flagged a known
-cause — genuinely new and unexplained (added to
-`samples/known_conversion_failures.csv` so it isn't re-attempted blind).
-`eventtask_axiswatch` has not yet been through a conversion pass, so
-whether the same failure hits the Axis-Watch variant, or is specific to
-the plain instruction-trigger shape, is unknown. Need the real error-log
-line from James before guessing at a fix.
+**Import failure, 2026-08-30 — root-caused and fixed 2026-08-31.**
+`eventtask_instronly` failed to import; James pulled the real error this
+time: "Failed to set the 'Size' property (Chassis size exceeds the
+allowable size for a chassis.)" on the Local module's own backplane Bus —
+with NO axis tag involved, which disproves the earlier (2026-08-30)
+dismissal of this exact error class as a downstream artifact of the
+WatchedAxis tag bug (see that comment above); it's a real, independent
+bug. Root cause: `processor_type="5069-L306ER"` (bare, no S2/M/MS2/MS3
+suffix) was used ONLY in this one file in the entire project — every
+other 5069 generator uses a specific suffixed variant — so
+`_5069_BUS_SIZE_BY_MODEL`'s assumption that all L306 variants share Bus
+Size=9 (confirmed only against the Safety+Motion `L306ERS2_Sample.L5X`)
+was never actually tested against the bare model. Also found: this file's
+docstring claimed it mirrors `taskoverhead_n02tasks`'s "5069-L306ER"
+baseline, but `gen_task_overhead.py` never passes a `processor_type`
+override either — that file is really 1756-L81E, so the comparison was
+never actually apples-to-apples. Fixed by dropping the processor_type
+override entirely (uses the wrapper default, 1756-L81E) — fixes the
+untested/broken bus size AND the baseline mismatch in one real, evidenced
+change. Removed from `known_conversion_failures.csv`. `eventtask_axiswatch`
+got the same fix (same override removed) even though it wasn't in this
+failure batch, since it shares the identical root cause. Needs a real
+reconversion pass to confirm — not independently verifiable from here.
 
 [^aoiorphan]: `gen_aoi_orphaned_def.py`. Both files declare the identical
 `UtilOrphanTest` AOI (2 DINT Input params, 1 BOOL Output param, 5 DINT
