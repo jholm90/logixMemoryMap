@@ -101,6 +101,8 @@ Status(msg) {
         global WarningValue := ""
         global MessageValue := ""
         global WindowTitle := ""
+				global ButtonTest := ""
+				global active_title := ""
 
         ; --- Wait for PowerShell's next-file handoff (file existence = "go") ---
         Status("Waiting for next file from PowerShell...")
@@ -152,6 +154,13 @@ Status(msg) {
         ; know what changes on screen when load finishes -- file size will
         ; vary this just like Build does, same reasoning as the Build popup.
         Sleep 2000
+				
+				active_title := WinGetTitle("A")
+				
+				Status("Active Title: " active_title)
+				
+				sleep 2000
+				
 				
 				
 				Timeout := 120000  ; 2 min
@@ -258,10 +267,13 @@ Status(msg) {
         Status("Reading Edit3 value")
         Sleep 20
         OCDValue := StripCommas(Trim(ControlGetText("Edit3", "A")))
+				ButtonTest := ControlGetText("Button1", "A")
         Status("Read OCD value: " OCDValue)
-        Sleep 500
+        Sleep 2000
+				Status("Read Test value: " ButtonTest)
+        Sleep 2000
 				
-				if OCDValue = "0" {
+				if OCDValue = "0" AND ButtonTest != "Redundancy Enabled"{
 					Status("Reading 1769 Edit8 value")
 											Sleep 50
 							Send "{Tab}"
@@ -280,12 +292,12 @@ Status(msg) {
 					OCDValue := StripCommas(Trim(ControlGetText("Static23", "A")))
 					Status("Read Static23 value: {{" OCDValue "}}")
 					
-					Sleep 20
+					Sleep 2000
 					
 					; L7 or 1769
 					if OCDValue = "" OR !IsNumber(OCDValue) OR OCDValue = "0" {
 							Status("Read 1769 series Edit8 OCD value: " OCDValue)
-							Sleep 50
+							Sleep 2000
 							Send "{Right}"
 							Sleep 50   
 							Send "{Right}"
@@ -294,7 +306,24 @@ Status(msg) {
 							Sleep 50
 							Send "{Tab}"
 							Sleep 50
-							Send "{Enter}"
+							
+							
+							
+
+								try isEnabled := ControlGetEnabled("Button2", "A")
+								catch
+										isEnabled := 0
+
+								if (isEnabled) {
+										Send("{Enter}")
+								} 
+						
+
+
+							
+							
+							
+							;Send "{Enter}"
 							Sleep 2500
 							OCDValue := StripCommas(Trim(ControlGetText("Edit8", "A")))
 					}					
