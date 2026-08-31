@@ -103,6 +103,16 @@ def _5069_bus_size(processor_type: str) -> str:
 # data point exists so far (L33ERMS -> 17); every other 1769 catalog's
 # real max is UNCONFIRMED -- same 17 kept only as a fallback, not
 # asserted as correct for other models the way the 5069 table is.
+#
+# NARROWER THAN IT LOOKS (found 2026-08-31, see build_l5x's
+# _1769_NEEDS_DISCRETE_IO check below): this Type="Compact"/bare-Local
+# shape is only actually real for the L30ERM/L33ERM(S) tier -- the SAME
+# real corpus this L33ERMS evidence comes from. 7 of the other 9
+# confirmed 1769 catalogs (L16-L27 tier) need a real embedded Discrete_IO
+# module this function has never built, and 4 of THOSE also use Port
+# Type="PointIO", not "Compact" -- see gen_fw_catalog_matrix.py's
+# _1769_MODULES_XML for the real, verbatim per-catalog data. build_l5x()
+# raises for those catalogs rather than silently building a wrong file.
 _1769_BUS_SIZE_BY_MODEL = {
     "L33": "17",  # confirmed, TOYOTA_135453_20221024.L5X (1769-L33ERMS)
 }
@@ -235,6 +245,41 @@ def build_l5x(
     )
     is_1769 = processor_type.startswith("1769")
     is_5069 = processor_type.startswith("5069")
+    # REAL GAP FOUND 2026-08-31, self-audit prompted by James ("validate
+    # there are no other issues with missing porting for the other
+    # variations and hardware") after the 1756-L71 Ethernet-port bug:
+    # gen_fw_catalog_matrix.py's real, verbatim per-catalog Modules blocks
+    # (extracted from genuine Rockwell exports, samples/generated/
+    # fw_baseline/v35_*.L5X) show 7 of the 9 real 1769 catalogs this
+    # project has a confirmed real ProductCode for ALSO require a real
+    # embedded "Discrete_IO" CatalogNumber="Embedded" module (built-in I/O
+    # points) that this generic build_l5x() path has NEVER emitted --
+    # confirmed via real Studio 5000 rejection (XMLSrv_E_IMPORT_ABORTED_
+    # NO_CHANGES on every one of them before that module was added, see
+    # gen_fw_catalog_matrix.py's _1769_MODULES_XML docstring). 4 of those
+    # 7 (the PointIO-bus tier) ALSO use Port Type="PointIO", not the
+    # "Compact" this function hardcodes below (sourced from a single real
+    # example, 1769-L33ERMS, which happens to be in the OTHER, safe tier).
+    # Only 1769-L30ERM/L33ERM (and by extension L33ERMS) are real,
+    # confirmed-bare processor-only units with no embedded I/O -- this
+    # function can only build THOSE correctly. Rather than silently ship
+    # a wrong/incomplete file the way blockbytetest_l71 did for 1756-L71,
+    # raise loudly here: the real per-catalog Modules content already
+    # exists in gen_fw_catalog_matrix.py's _1769_MODULES_XML, it just
+    # isn't something this generic function can reasonably inline (large,
+    # catalog-specific verbatim blocks, not a small parametrized shape).
+    _1769_NEEDS_DISCRETE_IO = {
+        "1769-L16ER-BB1B", "1769-L18ER-BB1B", "1769-L18ERM-BB1B", "1769-L19ER-BB1B",
+        "1769-L24ER-QB1B", "1769-L24ER-QBFC1B", "1769-L27ERM-QBFC1B",
+    }
+    if processor_type in _1769_NEEDS_DISCRETE_IO:
+        raise ValueError(
+            f"build_l5x() cannot correctly build {processor_type!r} -- this catalog needs a real "
+            f"embedded Discrete_IO module (and possibly Port Type=\"PointIO\" instead of \"Compact\") "
+            f"that this generic function has never implemented. Use gen_fw_catalog_matrix.py's "
+            f"_1769_MODULES_XML (real, verbatim per-catalog Modules content) instead -- see this "
+            f"check's comment in wrapper.py for the full real corpus evidence."
+        )
     # REAL BUG FOUND 2026-08-31 (James, real Studio 5000 error on
     # blockbytetest_l71_dint120000.L5X): "Name collision: imported Module
     # 'Local' renamed to 'Local1'" + "Required property 'Port' was missing"
