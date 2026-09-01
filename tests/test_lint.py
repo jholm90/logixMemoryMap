@@ -184,3 +184,44 @@ def test_does_not_flag_aoi_call_omitting_trailing_visible_optional_param():
     rung = rung_xml(0, "OptionalParamAoi(Inst,0);")  # omits In1
     l5x = build_l5x(target_name="T", tags_xml=tag, extra_aoi_xml=definition, extra_rungs_xml=rung)
     assert not any(f.kind == "aoi_call_arg_count_mismatch" for f in lint_l5x(l5x))
+
+
+def test_flags_bit_level_instruction_on_bare_dint_tag():
+    tag = tag_xml("MyDint", "DINT")
+    rung = rung_xml(0, "XIC(MyDint)OTE(MyDint);")
+    l5x = build_l5x(target_name="T", tags_xml=tag, extra_rungs_xml=rung)
+    findings = [f for f in lint_l5x(l5x) if f.kind == "bit_level_instruction_on_non_bool_operand"]
+    assert len(findings) == 2
+
+
+def test_does_not_flag_bit_level_instruction_on_bool_tag():
+    tag = tag_xml("MyBool", "BOOL")
+    rung = rung_xml(0, "XIC(MyBool)OTE(MyBool);")
+    l5x = build_l5x(target_name="T", tags_xml=tag, extra_rungs_xml=rung)
+    assert not any(f.kind == "bit_level_instruction_on_non_bool_operand" for f in lint_l5x(l5x))
+
+
+def test_does_not_flag_bit_level_instruction_with_bit_subscript():
+    tag = tag_xml("MyDint", "DINT")
+    rung = rung_xml(0, "XIC(MyDint.0)OTE(MyDint.1);")
+    l5x = build_l5x(target_name="T", tags_xml=tag, extra_rungs_xml=rung)
+    assert not any(f.kind == "bit_level_instruction_on_non_bool_operand" for f in lint_l5x(l5x))
+
+
+def test_flags_rung_with_only_conditional_instructions():
+    tag = tag_xml("MyDint", "DINT")
+    rung = rung_xml(0, "EQU(MyDint,1);")
+    l5x = build_l5x(target_name="T", tags_xml=tag, extra_rungs_xml=rung)
+    assert any(f.kind == "rung_missing_output_instruction" for f in lint_l5x(l5x))
+
+
+def test_does_not_flag_rung_ending_in_output_instruction():
+    tags = tag_xml("MyDint", "DINT") + "\n" + tag_xml("MyBool", "BOOL")
+    rung = rung_xml(0, "EQU(MyDint,1)OTE(MyBool);")
+    l5x = build_l5x(target_name="T", tags_xml=tags, extra_rungs_xml=rung)
+    assert not any(f.kind == "rung_missing_output_instruction" for f in lint_l5x(l5x))
+
+
+def test_does_not_flag_empty_rung_as_missing_output():
+    l5x = build_l5x(target_name="T", tags_xml="", extra_rungs_xml=rung_xml(0, ""))
+    assert not any(f.kind == "rung_missing_output_instruction" for f in lint_l5x(l5x))

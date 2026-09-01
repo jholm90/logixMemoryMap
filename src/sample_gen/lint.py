@@ -43,6 +43,27 @@ Checks:
      a real, checkable mismatch. Does not model the exact-position nuance of
      which specific trailing optional params can be omitted (heuristic, not
      authoritative -- matches this file's existing scope).
+  5. bit_level_instruction_on_non_bool_operand -- James, 2026-08-31, real,
+     caught TWICE on his own re-conversion: "SINT/INT/DINT cannot be used
+     for bit level instructions like XIO,XIC,OTE,OTU,OTL,ONS only bools
+     and .Bits of SINT/INT/DINT." A bit-level instruction's operand must
+     be BOOL or a bit-subscripted (".N") SINT/INT/DINT reference -- flags
+     a bare non-BOOL operand with no subscript. Only checks operands this
+     project's own generators can actually resolve a type for (see
+     _resolve_operand_type); an unresolvable operand is silently skipped,
+     not flagged.
+  6. rung_missing_output_instruction -- James, 2026-08-31, real: "you also
+     have conditional instructions like EQU with no operand at the end of
+     the rung or a NOP() instruction. this is basic ladder logic." A rung
+     whose every instruction is a pure condition/test
+     (_PURE_CONDITION_INSTRUCTIONS) with no real output instruction has no
+     effect and real Studio 5000 rejects it.
+
+These last two were added the same day their bug class was found TWICE --
+once fixed by hand in the one generator that hit it, then reintroduced
+fresh in 3 more files written the same session. Hand-fixing a generator
+when a real bug is found is not enough; the check has to be enforced here
+so a FUTURE generator can't make the identical mistake silently.
 
 Explicitly NOT a substitute for real Studio 5000 verification -- it can't
 catch every type mismatch or bad instance-tag wiring. It only catches the
@@ -109,7 +130,9 @@ _INSTRUCTION_CALL = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\(")
 @dataclass(frozen=True)
 class LintFinding:
     kind: str  # "missing_array_subscript" | "unrecognized_instruction" |
-    # "duplicate_module_slot" | "chassis_size_exceeded"
+    # "duplicate_module_slot" | "chassis_size_exceeded" |
+    # "aoi_call_arg_count_mismatch" | "bit_level_instruction_on_non_bool_operand" |
+    # "rung_missing_output_instruction"
     detail: str
 
 
@@ -220,6 +243,116 @@ def _all_rung_texts(root: ET.Element) -> list[str]:
         if text_el.text:
             texts.append(text_el.text)
     return texts
+
+
+# James, 2026-08-31, real, caught TWICE this same session on his own
+# re-conversion after I'd already fixed the first occurrence: "SINT/INT/
+# DINT cannot be used for bit level instructions like XIO,XIC,OTE,OTU,OTL,
+# ONS only bools and .Bits of SINT/INT/DINT" and "conditional instructions
+# like EQU with no operand at the end of the rung or a NOP() instruction."
+# Both fixed by hand in the specific generators that hit them (3 files),
+# but hand-fixing individual generators is exactly what already failed
+# once -- a FUTURE generator can make the identical mistake and nothing
+# catches it before it reaches James. These two checks are the real,
+# structural fix: enforced automatically on every generated file, same as
+# every other lint check here.
+_BIT_LEVEL_INSTRUCTIONS = {"XIC", "XIO", "OTE", "OTU", "OTL", "ONS"}
+# Instructions that only TEST a condition, with no side effect of their
+# own -- if every instruction call in a rung belongs to this set, the rung
+# has no real output/effect and real Studio 5000 rejects it outright.
+_PURE_CONDITION_INSTRUCTIONS = {
+    "XIC", "XIO", "EQU", "NEQ", "GRT", "GEQ", "LES", "LEQ", "LIM", "MEQ", "CMP",
+}
+_BIT_SUBSCRIPT_RE = re.compile(r"\.\d+$")
+_BASE_TAG_NAME_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)")
+
+
+def _tag_types_from(container_el: ET.Element, tag_element_name: str = "Tag") -> dict[str, str]:
+    """bare tag/param/localtag name -> DataType, from every <Tag>/
+    <Parameter>/<LocalTag> element found anywhere under container_el.
+    Deliberately the same "last one wins on a bare-name collision"
+    simplification already used by sizing/logic.py's own tag_types dict
+    (report.py) -- not scope-correct in the face of a genuine same-name
+    collision across programs, but no real calibration data in this
+    project exercises that collision, and being conservative (a false
+    negative) is safer here than a false positive on a file that's
+    actually fine."""
+    types: dict[str, str] = {}
+    for el in container_el.iter(tag_element_name):
+        name = el.get("Name")
+        data_type = el.get("DataType")
+        if name and data_type:
+            types[name] = data_type
+    return types
+
+
+def _resolve_operand_type(operand: str, tag_types: dict[str, str]) -> str | None:
+    """Best-effort DataType for a rung operand -- only handles the simple,
+    common shapes this project's generators actually produce (a bare tag,
+    or one level of [index]/.Member off it); anything more complex (a
+    UDT-member chain, an indirect/tag-driven index) is deliberately left
+    unresolved (None) rather than guessed at, matching sizing/logic.py's
+    own _resolve_call_type conservative bias."""
+    operand = operand.strip()
+    m = _BASE_TAG_NAME_RE.match(operand)
+    if not m:
+        return None
+    base = m.group(1)
+    return tag_types.get(base)
+
+
+def _bit_level_findings(rung_texts: list[str], tag_types: dict[str, str]) -> list[LintFinding]:
+    """James, 2026-08-31: "SINT/INT/DINT cannot be used for bit level
+    instructions like XIO,XIC,OTE,OTU,OTL,ONS only bools and .Bits of
+    SINT/INT/DINT." Flags a bit-level instruction call whose single
+    operand (a) does NOT already end in a ".N" bit subscript, AND (b)
+    resolves (via _resolve_operand_type) to a non-BOOL atomic type. An
+    operand that can't be resolved (AOI-internal member access, an
+    indirect index, etc.) is silently skipped -- not flagged -- same
+    conservative bias as every other type-sensitive check in this
+    project."""
+    findings = []
+    for text in rung_texts:
+        for mnemonic, args_str in _call_sites(text):
+            if mnemonic not in _BIT_LEVEL_INSTRUCTIONS:
+                continue
+            args = _split_top_level_args(args_str)
+            if len(args) != 1:
+                continue
+            operand = args[0].strip()
+            if _BIT_SUBSCRIPT_RE.search(operand):
+                continue  # already bit-subscripted, valid regardless of type
+            resolved_type = _resolve_operand_type(operand, tag_types)
+            if resolved_type and resolved_type != "BOOL":
+                findings.append(LintFinding(
+                    "bit_level_instruction_on_non_bool_operand",
+                    f"'{mnemonic}({operand})' -- operand resolves to {resolved_type}, not BOOL, and "
+                    f"has no '.N' bit subscript. XIC/XIO/OTE/OTU/OTL/ONS require a BOOL operand or a "
+                    f"bit-subscripted SINT/INT/DINT reference: {text.strip()!r}",
+                ))
+    return findings
+
+
+def _rung_missing_output_findings(rung_texts: list[str]) -> list[LintFinding]:
+    """James, 2026-08-31: "conditional instructions like EQU with no
+    operand at the end of the rung or a NOP() instruction. this is basic
+    ladder logic." Flags a rung where every instruction call found is a
+    pure condition/test instruction (_PURE_CONDITION_INSTRUCTIONS) with no
+    real output/effect instruction anywhere in the rung -- real Studio
+    5000 rejects a rung with no terminating output. A rung with ZERO
+    instruction calls (blank/comment-only) is not flagged -- that's a
+    different, already-confirmed-real shape (comments cost 0 blocks at
+    any length), not this bug."""
+    findings = []
+    for text in rung_texts:
+        mnemonics = [name for name, _args in _call_sites(text)]
+        if mnemonics and all(m in _PURE_CONDITION_INSTRUCTIONS for m in mnemonics):
+            findings.append(LintFinding(
+                "rung_missing_output_instruction",
+                f"every instruction in this rung is a pure condition/test ({', '.join(sorted(set(mnemonics)))}) "
+                f"with no real output instruction (or NOP()) terminating the rung: {text.strip()!r}",
+            ))
+    return findings
 
 
 def _module_slot_findings(root: ET.Element) -> list[LintFinding]:
@@ -336,6 +469,21 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     aoi_names = _declared_aoi_names(root)
     aoi_call_arg_bounds = _aoi_call_arg_bounds(root)
     rung_texts = _all_rung_texts(root)
+
+    # bit_level_instruction_on_non_bool_operand / rung_missing_output_
+    # instruction need to know each rung's OWN scope's tag types -- an
+    # AOI-internal routine's operands are its own Parameters/LocalTags,
+    # not the file-wide Tags table, and vice versa. Checked per-scope
+    # rather than globally so a Program rung is never resolved against an
+    # AOI's internal-only names or vice versa.
+    global_tag_types = _tag_types_from(root, "Tag")
+    findings.extend(_rung_missing_output_findings(rung_texts))
+    for program_el in root.iter("Program"):
+        findings.extend(_bit_level_findings(_all_rung_texts(program_el), global_tag_types))
+    for aoi_el in root.iter("AddOnInstructionDefinition"):
+        aoi_tag_types = _tag_types_from(aoi_el, "Parameter")
+        aoi_tag_types.update(_tag_types_from(aoi_el, "LocalTag"))
+        findings.extend(_bit_level_findings(_all_rung_texts(aoi_el), aoi_tag_types))
 
     for text in rung_texts:
         for tag in array_tags:
