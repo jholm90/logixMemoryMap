@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite21V2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 31 23:54:09 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite21V2" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 31 23:54:09 2026" LastModifiedDate="Mon Aug 31 23:54:09 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite21V2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Tue Sep 01 00:18:29 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite21V2" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Tue Sep 01 00:18:29 2026" LastModifiedDate="Tue Sep 01 00:18:29 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -64,74 +64,29 @@
 </Port>
 </Ports>
 </Module>
-<Module Name="TestMod1_2198RP200" CatalogNumber="2198-RP200" Vendor="1" ProductType="48" ProductCode="9" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
-<EKey State="CompatibleModule" />
+<Module Name="TestMod1_PowerFlex755EENETCM" CatalogNumber="PowerFlex 755-EENET-CM" Vendor="1" ProductType="37" ProductCode="21" Major="12" Minor="2" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="Disabled" />
 <Ports>
 <Port Id="2" Address="192.168.1.70" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
-<ConfigData ConfigSize="452">
-<Data Format="L5K">
-[456,6,257,9,25165831,2,10000,131588,0,0,0,0,0,0,0,0,0,-1027080192,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,16843009,16843009,16777216
-		,0,512,1045220557,0,0,0,0,1120403456,1120403456,0,1120403456,1124859904,0,0,1120403456,0,0,0,0,0,0,0,0,0,0
-		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-</Data>
-</ConfigData>
-<Connections>
-<Connection Name="A_MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:MotionDevice_Diagnostics:S:0">
-<DataValueMember Name="LostControllerToDeviceTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LateControllerToDeviceTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LostDeviceToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LateDeviceToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ControllerToDeviceConnectionSize" DataType="INT" Radix="Decimal" Value="40" />
-<DataValueMember Name="DeviceToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="68" />
-<DataValueMember Name="NominalControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="NominalDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="2000" />
-</Structure>
-</Data>
-</InputTag>
-</Connection>
-<Connection Name="B_MotionSync" RPI="10000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
-</Connections>
-</Communications>
-</Module>
-
-<Module Name="TestMod1_2198S130ERS3" CatalogNumber="2198-S130-ERS3" Vendor="1" ProductType="45" ProductCode="8" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false">
-<EKey State="Disabled" />
-<Ports>
-<Port Id="2" Address="192.168.1.80" Type="Ethernet" Upstream="true" />
-</Ports>
-<Communications>
 <ConfigData ConfigSize="448">
 <Data Format="L5K">
-[452,5,1793,8,165675015,0,10000,131588,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,131,0,2,0,256,0,0,0,0,0,0,0,0,0,1176256512
-		,0,0,0,2,2,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,257,0,0,0,8192000,8192125,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-		,0]
+[452,4,1,1124073812,31506279,4,10000,131588,1,0,0,0,0,0,0,0,0,-1035468800,0,0,0,0,0,0,0,524296000,524296000,524296000
+		,524296000,0,0,1,0,65536,230,256,1065353216,1099694080,0,1109393408,0,1120403456,1120403456,0,1120403456
+		,1124859904,1115815936,0,1120403456,1,1,0,0,0,0,0,0,0,8608,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,67108864,16778240
+		,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 </Data>
 </ConfigData>
 <Connections>
-<Connection Name="A_MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
+<Connection Name="MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:Motion_Diagnostics:S:1">
-<DataValueMember Name="LostControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="1" />
-<DataValueMember Name="LateControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="1" />
+<DataValueMember Name="LostControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="34" />
+<DataValueMember Name="LateControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="0" />
 <DataValueMember Name="LostDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LateDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="5" />
 <DataValueMember Name="LastControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
 <DataValueMember Name="AverageControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
 <DataValueMember Name="MaximumControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
@@ -143,7 +98,54 @@
 <DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
 <DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="0" />
 <DataValueMember Name="ControllerToDriveConnectionSize" DataType="INT" Radix="Decimal" Value="48" />
-<DataValueMember Name="DriveToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="100" />
+<DataValueMember Name="DriveToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="72" />
+<DataValueMember Name="NominalControllerToDriveTime" DataType="INT" Radix="Decimal" Value="2500" />
+<DataValueMember Name="NominalDriveToControllerTime" DataType="INT" Radix="Decimal" Value="2500" />
+<DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="5000" />
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+<Connection Name="MotionSync" RPI="5000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod1_PowerFlex755EENETCMS" CatalogNumber="PowerFlex 755-EENET-CM-S" Vendor="1" ProductType="37" ProductCode="22" Major="20" Minor="3" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="2" Address="192.168.1.80" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications>
+<ConfigData ConfigSize="448">
+<Data Format="L5K">
+[452,4,257,49,31506279,4,10000,131588,1,0,0,0,0,0,0,0,0,-1010302976,0,0,0,0,0,0,0,524296000,524296000,524296000
+		,524296000,0,0,129,0,65536,0,256,1085213245,1146060800,0,1107820544,0,1120403456,1120403456,0,1120403456
+		,1124859904,1115815936,0,1120403456,1,3,0,0,0,0,0,0,0,8608,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,67108864,16778240
+		,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+</Data>
+</ConfigData>
+<Connections>
+<Connection Name="MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:Motion_Diagnostics:S:1">
+<DataValueMember Name="LostControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="24" />
+<DataValueMember Name="LateControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="20535" />
+<DataValueMember Name="LostDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="11786" />
+<DataValueMember Name="LastControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ControllerToDriveConnectionSize" DataType="INT" Radix="Decimal" Value="48" />
+<DataValueMember Name="DriveToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="76" />
 <DataValueMember Name="NominalControllerToDriveTime" DataType="INT" Radix="Decimal" Value="1000" />
 <DataValueMember Name="NominalDriveToControllerTime" DataType="INT" Radix="Decimal" Value="1000" />
 <DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="2000" />
@@ -151,7 +153,7 @@
 </Data>
 </InputTag>
 </Connection>
-<Connection Name="B_MotionSync2" RPI="2000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
+<Connection Name="MotionSync" RPI="2000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
 </Connections>
 </Communications>
 </Module>

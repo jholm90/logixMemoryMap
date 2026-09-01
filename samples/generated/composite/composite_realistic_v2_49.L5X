@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite49V2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 31 23:54:16 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite49V2" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 31 23:54:16 2026" LastModifiedDate="Mon Aug 31 23:54:16 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite49V2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Tue Sep 01 00:18:36 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite49V2" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Tue Sep 01 00:18:36 2026" LastModifiedDate="Tue Sep 01 00:18:36 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -109,130 +109,60 @@
 </Port>
 </Ports>
 </Module>
-<Module Name="TestMod1_RHINOBPDRIVEPERIPHER" CatalogNumber="PowerFlex 755-EENET" Vendor="1" ProductType="143" ProductCode="2192" Major="14" Minor="5" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" DrivesADCMode="true" DrivesADCEnabled="false" SafetyEnabled="false">
-<EKey State="Disabled" />
+<Module Name="TestMod1_1794IB16XOB16PA" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="50" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" ControlNetSignature="16#bb2b_890b">
+<EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Address="0" Type="RhinoBP" Upstream="false">
+<Port Id="1" Address="2" Type="ICP" Upstream="true" />
+<Port Id="2" Address="1" Type="ControlNet" Upstream="false">
 <Bus />
 </Port>
-<Port Id="13" Address="192.168.1.70" Type="Ethernet" Upstream="true" />
 </Ports>
-<Communications CommMethod="536870913">
-<ConfigData ConfigSize="356">
-<Data Format="L5K">
-[360,0,6,0,1,0,340,17152,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-</Data>
-</ConfigData>
-<ConfigScript Size="2204">
-<Data Format="L5K">
-[-104,8,0,0,4,0,0,0,0,0,0,0,0,0,0,0,25,0,0,0,8,-106,0,0,0,1,0,0,0,1,0,0,0,8,0,0,0,75,2,32,-110,36,0,-1,-1,0,0,0,-53,7,0,0,8,30,0,0,0,1,0,0,0,1,0
-		,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,2,0,3,0,0,2,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-		,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,3,0,3,44,1,9,4,0,0,0,0,4,0,0,0,0,4,1,0,0,0,0,3,49,1,9,4,1,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,4,0,47,0,0,5,1,1,0,3,0,0,1,2,0,0,0,1,0,0,2,1,0,0,2,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0
-		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,5,0,3,0,0,2,1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,6,0,1,0,0,31,36,2,0,16,0,80,0,111,0,119,0
-		,101,0,114,0,70,0,108,0,101,0,120,0,32,0,55,0,53,0,53,0,32,0,32,0,32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32
-		,-98,36,1,48,5,7,0,6,1,0,6,24,7,0,100,0,2,0,8,0,65,0,109,0,112,0,115,0,32,0,32,0,32,0,32,0,0,6,2,0,6,24,11,0,100,0,2,0,8,0,66,0,117,0,115
-		,0,32,0,86,0,68,0,67,0,32,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,8,0,6,3,0,6,24,8,0,100,0,2,0,8,0,79,0,117,0,116,0,32,0,86,0,108
-		,0,116,0,115,0,0,6,4,0,6,24,9,0,100,0,2,0,8,0,79,0,117,0,116,0,32,0,80,0,119,0,114,0,32,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48
-		,5,9,0,6,5,0,6,24,14,0,100,0,2,0,8,0,69,0,108,0,112,0,32,0,107,0,87,0,72,0,114,0,0,6,6,0,6,24,5,0,100,0,2,0,8,0,84,0,114,0,113,0,32,0,67
-		,0,117,0,114,0,32,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,10,0,3,70,0,9,4,1,0,0,0,0,3,25,0,9,4,0,0,-26,67,4,0,0,-128,64,4,0,0,112
-		,66,4,0,0,-36,68,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,11,0,3,30,0,9,4,0,0,64,64,0,3,71
-		,0,9,4,0,0,72,66,0,3,73,0,9,4,0,0,-32,64,4,0,0,0,0,4,-92,112,17,65,4,0,0,0,64,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98
-		,36,1,48,5,12,0,3,77,0,9,4,0,0,0,0,4,0,0,0,0,4,0,0,-32,64,0,3,81,0,9,4,0,0,0,0,4,0,0,0,0,0,3,86,0,9,4,102,102,-8,65,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-		,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,13,0,3,87,0,9,4,0,0,-32,64,4,123,20,-96,65,4,123,20,-96,65,0,3,93,0,9,4,-123,-21,65
-		,64,0,3,110,0,9,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,14,0,3,120,0,9,4,123,20,-96,65
-		,0,3,109,2,9,4,0,0,-16,65,0,3,36,0,9,4,0,0,-26,67,4,0,0,2,67,4,0,0,-128,64,0,3,43,0,9,4,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16
-		,3,32,-98,36,1,48,5,15,0,3,44,0,9,4,-57,41,58,62,0,3,60,0,9,4,0,0,-32,64,4,0,0,-32,64,4,0,0,-26,66,4,0,0,112,65,0,3,8,2,9,4,0,0,112,66
-		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,16,0,3,9,2,9,4,0,0,112,-62,0,3,73,1,9,4,0,0,112,66,0,3,119,1,9,4
-		,-35,-124,59,68,0,3,127,1,9,4,0,0,-8,65,0,3,-118,1,9,4,0,0,8,66,0,3,-90,1,9,4,0,0,76,66,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5
-		,17,0,3,-89,1,9,4,0,0,76,66,0,3,-76,1,9,4,0,0,8,66,0,3,-73,1,9,4,0,0,8,66,0,3,-61,1,9,4,0,0,52,67,0,3,-58,1,9,4,0,0,52,67,0,3,-51,1,9,4,0,0,-106
-		,67,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,18,0,3,-45,1,9,4,0,0,-128,64,0,3,12,2,9,4,0,0,32,65,4,-113,-62,117,61,0,3,35,2,9,4
-		,0,0,112,66,0,3,40,2,9,4,0,0,112,66,0,3,44,2,9,4,0,0,32,65,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,19,0,3,45,2,9,4,0,0,32,65
-		,0,3,52,2,9,4,0,0,112,66,0,3,59,2,9,4,0,0,-96,64,4,0,0,32,65,4,0,0,-96,65,4,0,0,-16,65,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16
-		,3,32,-98,36,1,48,5,20,0,3,63,2,9,4,0,0,32,66,4,0,0,72,66,4,0,0,112,66,0,3,90,2,9,4,0,0,112,66,0,3,94,2,9,4,0,0,112,66,0,3,125,0,9,4,-119
-		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,21,0,3,126,0,9,4,3,0,0,0,0,3,124,2,9,4,0,0,32,65,0,3,-122,2,9,4,0,-128
-		,59,69,0,3,-128,0,9,4,-119,0,0,0,4,3,0,0,0,0,3,-120,2,9,4,0,0,32,65,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,22,0,3,-33,2
-		,9,4,0,0,-64,64,0,3,17,3,9,4,0,0,-16,65,4,0,0,-16,-63,0,3,56,3,9,4,-102,-103,-103,62,0,3,81,4,9,4,-119,65,0,64,0,3,87,4,9,4,-119,65
-		,0,64,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,23,0,3,3,6,9,4,0,0,0,64,4,0,0,32,65,0,3,7,6,9,4,-51,-52,76,63,4,0,0,0,63,4,0,0
-		,-120,65,0,3,25,6,9,4,-102,-103,25,62,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,24,0,3,26,6,9,4,-113
-		,-62,117,61,0,3,57,6,9,4,0,0,-16,65,4,0,0,-16,-63,0,3,93,6,9,4,0,0,112,66,0,3,105,6,9,4,0,0,112,66,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
-		,0,0,0,74,0,0,0,16,3,32,-98,36,1,48,5,25,0,3,23,2,9,4,0,0,-64,63,0,3,25,2,9,4,0,0,-64,63,0,3,33,2,9,4,109,3,0,0,0,3,-110,6,9,4,0,0,-64,64
-		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,10,0,0,0,16,3,32,-101,36,0,48,7,71,0,0,45,0,0,0,8,100,0,0,0,1,0,0,0,6,0,0,0,24,0,0,0,16,3
-		,32,-110,36,0,48,38,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,34,0,0,0,8,61,0,0,0,1,0,0,0,1,0,0,0,9,0,0,0,16,3,32,-105,36,0,48,3,3,3,0,0,0,-120
-		,19,0,0,0,0,23,0,0,0,8,62,0,0,0,1,0,0,0,1,0,0,0,6,0,0,0,75,2,32,-105,36,0,0,29,0,0,0,0,100,0,0,0,2,0,0,0,-128,0,0,0,122,-34,8,-21,-76,-46
-		,-17,17,-70,-98,-84,116,-79,12,-70,106,0,0,0]
-</Data>
-</ConfigScript>
+</Module>
+
+<Module Name="TestMod2_1794IB16XOB16PA" CatalogNumber="1794-ACN15/C" Vendor="1" ProductType="12" ProductCode="36" Major="4" Minor="1" ParentModule="TestMod1_1794IB16XOB16PA" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Type="Flex" Upstream="false">
+<Bus Size="8" />
+</Port>
+<Port Id="2" Address="12" Type="ControlNet" Upstream="true" />
+</Ports>
+<Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output" RPI="20000" Type="Output" InputCxnPoint="1" OutputCxnPoint="2" OutputSize="8" InputSize="12" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="false">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:PowerFlex755_EENET_Drive:I:0">
-<DataValueMember Name="DriveStatus" DataType="DINT" Radix="Binary" Value="2#0010_0001_0000_0000_0000_0100_0000_1100" />
-<DataValueMember Name="DriveStatus_Ready" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Active" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_CommandDir" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_ActualDir" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_Accelerating" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Decelerating" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Alarm" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Faulted" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_AtSpeed" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Manual" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpdRefBit0" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_SpdRefBit1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpdRefBit2" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpdRefBit3" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpdRefBit4" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Running" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Jogging" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Stopping" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_DCBraking" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_DBActive" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpeedMode" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_PositionMode" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_TorqueMode" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_AtZeroSpeed" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_AtHome" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_AtLimit" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_CurrLimit" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_BusFrqReg" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_EnableOn" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_MotorOL" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Regen" DataType="BOOL" Value="0" />
-<DataValueMember Name="Feedback" DataType="REAL" Radix="Float" Value="0.0" />
+<Structure DataType="AB:1794_ACN15_8SLOT:I:0">
+<DataValueMember Name="SlotStatusBits" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#0101_0010_1010_1010" />
+<Element Index="[1]" Value="2#1010_1010_1010_1010" />
+<Element Index="[2]" Value="2#1010_1010_1110_1010" />
+<Element Index="[3]" Value="2#0000_0000_0000_0000" />
+<Element Index="[4]" Value="2#0000_0000_0000_0001" />
+<Element Index="[5]" Value="2#0000_0000_0000_0000" />
+<Element Index="[6]" Value="2#0000_0000_0000_0000" />
+<Element Index="[7]" Value="2#0000_0000_0000_0000" />
+</ArrayMember>
 </Structure>
 </Data>
 </InputTag>
 <OutputTag ExternalAccess="Read/Write">
 <Data Format="L5K">
-[1,7.50000000e+001]
+[[22816,-32513,8191,0,0,0,0,0]]
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:PowerFlex755_EENET_Drive:O:0">
-<DataValueMember Name="LogicCommand" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0001" />
-<DataValueMember Name="LogicCommand_Stop" DataType="BOOL" Value="1" />
-<DataValueMember Name="LogicCommand_Start" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Jog1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_ClearFaults" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Forward" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Reverse" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Manual" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_AccelTime1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_AccelTime2" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_DecelTime1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_DecelTime2" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_SpdRefSel0" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_SpdRefSel1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_SpdRefSel2" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_CoastStop" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_CLimitStop" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Run" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Jog2" DataType="BOOL" Value="0" />
-<DataValueMember Name="Reference" DataType="REAL" Radix="Float" Value="75.0" />
+<Structure DataType="AB:1794_ACN15_8SLOT:O:0">
+<ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#0101_1001_0010_0000" />
+<Element Index="[1]" Value="2#1000_0000_1111_1111" />
+<Element Index="[2]" Value="2#0001_1111_1111_1111" />
+<Element Index="[3]" Value="2#0000_0000_0000_0000" />
+<Element Index="[4]" Value="2#0000_0000_0000_0000" />
+<Element Index="[5]" Value="2#0000_0000_0000_0000" />
+<Element Index="[6]" Value="2#0000_0000_0000_0000" />
+<Element Index="[7]" Value="2#0000_0000_0000_0000" />
+</ArrayMember>
 </Structure>
 </Data>
 </OutputTag>
@@ -241,83 +171,122 @@
 </Communications>
 </Module>
 
-<Module CatalogNumber="RHINOBP-DRIVE-PERIPHERAL-MODULE" Vendor="1" ProductType="0" ProductCode="28" Major="1" Minor="1" UserDefinedVendor="1" UserDefinedProductType="143" UserDefinedProductCode="32928" UserDefinedMajor="1" UserDefinedMinor="1" ParentModule="TestMod1_RHINOBPDRIVEPERIPHER" ParentModPortId="1" Inhibited="false" MajorFault="false" ShutdownParentOnFault="false" DrivesADCMode="true" DrivesADCEnabled="false" UserDefinedCatalogNumber="EtherNet/IP">
+<Module Name="TestMod3_1794IB16XOB16PA" CatalogNumber="1794-IB16XOB16P/A" Vendor="1" ProductType="7" ProductCode="155" Major="1" Minor="1" ParentModule="TestMod2_1794IB16XOB16PA" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="2" Address="13" Type="RhinoBP" Upstream="true" />
+<Port Id="1" Address="0" Type="Flex" Upstream="true" />
 </Ports>
-<Communications>
-<ConfigData ConfigSize="4">
+<Communications CommMethod="1073741824">
+<ConfigTag ConfigSize="36" ExternalAccess="Read/Write">
 <Data Format="L5K">
-[8,6,1]
-</Data>
-</ConfigData>
-<ConfigScript Size="628">
-<Data Format="L5K">
-[112,2,0,0,4,0,0,0,0,0,0,0,0,0,0,0,25,0,0,0,8,-106,0,0,0,1,0,0,0,1,0,0,0,8,0,0,0,75,2,32,-110,36,0,-1,-1,0,0,0,-93,1,0,0,8,31,0,0,0,1,0,0,0,1,0,0
-		,0,74,0,0,0,16,3,32,-96,36,1,48,5,2,0,3,0,0,2,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-		,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-96,36,1,48,5,3,0,1,0,0,31,36,2,0,16,0,32,0,32,0,32,0,32,0,32,0,32,0,32,0,32,0,32,0,32,0,32,0,32,0,32,0
-		,32,0,32,0,32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-96,36,1,48,5,4,0,3,36,0,9,4,0,0,0,0,0,3,38,0,9,4,-64,0,0,0,4
-		,-88,0,0,0,4,60,0,0,0,4,114,0,0,0,4,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-96,36,1,48,5,5,0,3,43,0,9,4
-		,-1,0,0,0,4,-1,0,0,0,4,0,0,0,0,4,0,0,0,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,74,0,0,0,16,3,32,-96,36,1
-		,48,5,6,0,3,49,0,9,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,45,0,0,0,8,100,0
-		,0,0,1,0,0,0,6,0,0,0,24,0,0,0,16,3,32,-110,36,0,48,38,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,34,0,0,0,8,61,0,0,0,1,0,0,0,1,0,0,0,9,0,0,0,16,3
-		,32,-105,36,0,48,3,3,3,0,0,0,-120,19,0,0,0,0,23,0,0,0,8,62,0,0,0,1,0,0,0,1,0,0,0,6,0,0,0,75,2,32,-105,36,0,0,29,0,0,0,0,100,0,0,0,2,0,0,0,-128
-		,0,0,0,-49,125,-79,92,-113,-46,-17,17,-124,-18,24,38,73,109,58,37,0,0,0]
-</Data>
-</ConfigScript>
-<Connections />
-</Communications>
-</Module>
-
-<Module Name="TestMod1_1732EIB16M12DRA" CatalogNumber="1732E-IB16M12DR/A" Vendor="1" ProductType="7" ProductCode="355" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
-<EKey State="CompatibleModule" />
-<Ports>
-<Port Id="1" Address="192.168.1.80" Type="Ethernet" Upstream="true" />
-</Ports>
-<Communications>
-<ConfigTag ConfigSize="10" ExternalAccess="Read/Write">
-<Data Format="L5K">
-[14,107,1,1000,1000,0]
+[40,3,1,2,16,125,12,4,16,125,10,0,125,11,8,8191,0,1,0,1,1,0,0]
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:1732_D16Diag:C:0">
-<DataValueMember Name="FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt00_01OpenWireEn" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt02_03OpenWireEn" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt04_05OpenWireEn" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt06_07OpenWireEn" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt08_09OpenWireEn" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt10_11OpenWireEn" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt12_13OpenWireEn" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt14_15OpenWireEn" DataType="BOOL" Value="0" />
+<Structure DataType="AB:1794_IB16XOB16P:C:0">
+<DataValueMember Name="Filter_0" DataType="BOOL" Value="0" />
+<DataValueMember Name="Filter_1" DataType="BOOL" Value="0" />
+<DataValueMember Name="Filter_2" DataType="BOOL" Value="0" />
+<DataValueMember Name="SSData" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000" />
 </Structure>
 </Data>
 </ConfigTag>
 <Connections>
-<Connection Name="OutputData" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<RackConnection>
+<InAliasTag />
+<OutAliasTag />
+</RackConnection>
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod1_1794IB32A" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="50" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" ControlNetSignature="16#bb2b_890b">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="3" Type="ICP" Upstream="true" />
+<Port Id="2" Address="1" Type="ControlNet" Upstream="false">
+<Bus />
+</Port>
+</Ports>
+</Module>
+
+<Module Name="TestMod2_1794IB32A" CatalogNumber="1794-ACN15/C" Vendor="1" ProductType="12" ProductCode="36" Major="4" Minor="1" ParentModule="TestMod1_1794IB32A" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Type="Flex" Upstream="false">
+<Bus Size="8" />
+</Port>
+<Port Id="2" Address="11" Type="ControlNet" Upstream="true" />
+</Ports>
+<Communications CommMethod="805306369">
+<Connections>
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="false">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:1732_DI16Diag:I:0">
+<Structure DataType="AB:1794_ACN15_8SLOT:I:0">
+<DataValueMember Name="SlotStatusBits" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0100_0100_0100" />
+<Element Index="[1]" Value="2#0001_0000_0011_1110" />
+<Element Index="[2]" Value="2#0000_0000_0000_0000" />
+<Element Index="[3]" Value="2#0000_0000_0000_0000" />
+<Element Index="[4]" Value="2#0000_0000_0000_0000" />
+<Element Index="[5]" Value="2#0000_0000_0000_0000" />
+<Element Index="[6]" Value="2#0000_0000_0000_0000" />
+<Element Index="[7]" Value="2#0000_0000_0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[[0,0,1,0,0,0,0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1794_ACN15_8SLOT:O:0">
+<ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000_0000_0000" />
+<Element Index="[1]" Value="2#0000_0000_0000_0000" />
+<Element Index="[2]" Value="2#0000_0000_0000_0001" />
+<Element Index="[3]" Value="2#0000_0000_0000_0000" />
+<Element Index="[4]" Value="2#0000_0000_0000_0000" />
+<Element Index="[5]" Value="2#0000_0000_0000_0000" />
+<Element Index="[6]" Value="2#0000_0000_0000_0000" />
+<Element Index="[7]" Value="2#0000_0000_0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod3_1794IB32A" CatalogNumber="1794-IB32/A" Vendor="1" ProductType="7" ProductCode="156" Major="1" Minor="1" ParentModule="TestMod2_1794IB32A" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="0" Type="Flex" Upstream="true" />
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="34" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[38,3,1,2,0,125,12,4,32,125,10,0,125,11,7,8191,0,2,0,0,1,0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1794_IB32:C:0">
+<DataValueMember Name="Config" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000" />
+<DataValueMember Name="Filter_8" DataType="BOOL" Value="0" />
+<DataValueMember Name="Filter_9" DataType="BOOL" Value="0" />
+<DataValueMember Name="Filter_10" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="InputData" RPI="5000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="false">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1794_IB32:I:0">
 <DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data" DataType="INT" Radix="Binary" Value="2#0000_1111_1101_1100" />
-<DataValueMember Name="Pt00_01OpenWire" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt02_03OpenWire" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt04_05OpenWire" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt06_07OpenWire" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt08_09OpenWire" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt10_11OpenWire" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt12_13OpenWire" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt14_15OpenWire" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt00_01ShortCircuit" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt02_03ShortCircuit" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt04_05ShortCircuit" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt06_07ShortCircuit" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt08_09ShortCircuit" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt10_11ShortCircuit" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt12_13ShortCircuit" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt14_15ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#1111_1100_0010_0000_0000_0100_0100_0100" ForceValue="2#1..._...._...._...._...._...._...._...." />
 </Structure>
 </Data>
 </InputTag>
@@ -326,30 +295,173 @@
 </Communications>
 </Module>
 
-<Module Name="TestMod1_1732EIB16M12RA" CatalogNumber="1732E-IB16M12R/A" Vendor="1" ProductType="7" ProductCode="369" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<Module Name="TestMod1_1794IR8A" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="50" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" ControlNetSignature="16#bb2b_890b">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Address="192.168.1.90" Type="Ethernet" Upstream="true" />
+<Port Id="1" Address="4" Type="ICP" Upstream="true" />
+<Port Id="2" Address="1" Type="ControlNet" Upstream="false">
+<Bus />
+</Port>
 </Ports>
-<Communications>
-<ConfigTag ConfigSize="8" ExternalAccess="Read/Write">
+</Module>
+
+<Module Name="TestMod2_1794IR8A" CatalogNumber="1794-ACN15/C" Vendor="1" ProductType="12" ProductCode="36" Major="4" Minor="1" ParentModule="TestMod1_1794IR8A" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Type="Flex" Upstream="false">
+<Bus Size="8" />
+</Port>
+<Port Id="2" Address="13" Type="ControlNet" Upstream="true" />
+</Ports>
+<Communications CommMethod="805306369">
+<Connections>
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="false">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1794_ACN15_8SLOT:I:0">
+<DataValueMember Name="SlotStatusBits" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000_0000_0000" />
+<Element Index="[1]" Value="2#0000_0000_0000_0000" />
+<Element Index="[2]" Value="2#0000_0000_0000_0000" />
+<Element Index="[3]" Value="2#0000_0000_0000_0000" />
+<Element Index="[4]" Value="2#0000_0000_0000_0000" />
+<Element Index="[5]" Value="2#0000_0000_0000_0000" />
+<Element Index="[6]" Value="2#0000_0000_0000_0000" />
+<Element Index="[7]" Value="2#0000_0000_0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
 <Data Format="L5K">
-[12,101,1,1000,1000]
+[[0,0,0,0,0,65,0,2]]
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:1732_DI16:C:0">
-<DataValueMember Name="FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<Structure DataType="AB:1794_ACN15_8SLOT:O:0">
+<ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000_0000_0000" />
+<Element Index="[1]" Value="2#0000_0000_0000_0000" />
+<Element Index="[2]" Value="2#0000_0000_0000_0000" />
+<Element Index="[3]" Value="2#0000_0000_0000_0000" />
+<Element Index="[4]" Value="2#0000_0000_0000_0000" />
+<Element Index="[5]" Value="2#0000_0000_0100_0001" />
+<Element Index="[6]" Value="2#0000_0000_0000_0000" />
+<Element Index="[7]" Value="2#0000_0000_0000_0010" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod3_1794IR8A" CatalogNumber="1794-IR8/A" Vendor="1" ProductType="10" ProductCode="27" Major="1" Minor="1" ParentModule="TestMod2_1794IR8A" ParentModPortId="1" Inhibited="false" MajorFault="false" AutoDiagsEnabled="true">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="6" Type="Flex" Upstream="true" />
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="40" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[44,3,1,2,0,125,12,4,144,125,10,32,125,11,10,8191,0,9,2,0,4,5,0,13107,13107,0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1794_IR8:C:0">
+<DataValueMember Name="Config1" DataType="SINT" Radix="Binary" Value="2#0000_0101" />
+<DataValueMember Name="ModuleDataType0" DataType="BOOL" Value="1" />
+<DataValueMember Name="ModuleDataType1" DataType="BOOL" Value="0" />
+<DataValueMember Name="EnhancedMode" DataType="BOOL" Value="1" />
+<DataValueMember Name="NotchFrequency3" DataType="BOOL" Value="0" />
+<DataValueMember Name="NotchFrequency4" DataType="BOOL" Value="0" />
+<DataValueMember Name="NotchFrequency5" DataType="BOOL" Value="0" />
+<DataValueMember Name="GainOffsetCalibration" DataType="BOOL" Value="0" />
+<DataValueMember Name="CalibrationClock" DataType="BOOL" Value="0" />
+<DataValueMember Name="CalibrationMaskCh0" DataType="BOOL" Value="0" />
+<DataValueMember Name="CalibrationMaskCh1" DataType="BOOL" Value="0" />
+<DataValueMember Name="CalibrationMaskCh2" DataType="BOOL" Value="0" />
+<DataValueMember Name="CalibrationMaskCh3" DataType="BOOL" Value="0" />
+<DataValueMember Name="CalibrationMaskCh4" DataType="BOOL" Value="0" />
+<DataValueMember Name="CalibrationMaskCh5" DataType="BOOL" Value="0" />
+<DataValueMember Name="CalibrationMaskCh6" DataType="BOOL" Value="0" />
+<DataValueMember Name="CalibrationMaskCh7" DataType="BOOL" Value="0" />
+<DataValueMember Name="Config2" DataType="INT" Radix="Binary" Value="2#0011_0011_0011_0011" />
+<DataValueMember Name="Ch0RTDType0" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch0RTDType1" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch0RTDType2" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0RTDType3" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1RTDType4" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch1RTDType5" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch1RTDType6" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1RTDType7" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch2RTDType8" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch2RTDType9" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch2RTDType10" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch2RTDType11" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch3RTDType12" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch3RTDType13" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch3RTDType14" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch3RTDType15" DataType="BOOL" Value="0" />
+<DataValueMember Name="Config3" DataType="INT" Radix="Binary" Value="2#0011_0011_0011_0011" />
+<DataValueMember Name="Ch4RTDType0" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch4RTDType1" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch4RTDType2" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch4RTDType3" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch5RTDType4" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch5RTDType5" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch5RTDType6" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch5RTDType7" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch6RTDType8" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch6RTDType9" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch6RTDType10" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch6RTDType11" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch7RTDType12" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch7RTDType13" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch7RTDType14" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch7RTDType15" DataType="BOOL" Value="0" />
 </Structure>
 </Data>
 </ConfigTag>
 <Connections>
-<Connection Name="InputData" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="InputData" RPI="50000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="false">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:1732_DI16:I:0">
+<Structure DataType="AB:1794_IR8:I:0">
 <DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data" DataType="INT" Radix="Binary" Value="2#0011_1111_0000_0000" />
+<DataValueMember Name="Ch0Data" DataType="INT" Radix="Decimal" Value="683" />
+<DataValueMember Name="Ch1Data" DataType="INT" Radix="Decimal" Value="618" />
+<DataValueMember Name="Ch2Data" DataType="INT" Radix="Decimal" Value="11660" />
+<DataValueMember Name="Ch3Data" DataType="INT" Radix="Decimal" Value="11660" />
+<DataValueMember Name="Ch4Data" DataType="INT" Radix="Decimal" Value="11660" />
+<DataValueMember Name="Ch5Data" DataType="INT" Radix="Decimal" Value="11660" />
+<DataValueMember Name="Ch6Data" DataType="INT" Radix="Decimal" Value="11660" />
+<DataValueMember Name="Ch7Data" DataType="INT" Radix="Decimal" Value="11660" />
+<DataValueMember Name="Alarms" DataType="INT" Radix="Binary" Value="2#1111_1100_0000_0000" />
+<DataValueMember Name="Ch0UnderrangeAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1UnderrangeAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch2UnderrangeAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch3UnderrangeAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch4UnderrangeAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch5UnderrangeAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch6UnderrangeAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch7UnderrangeAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0OverrangeAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1OverrangeAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch2OverrangeAlarm" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch3OverrangeAlarm" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch4OverrangeAlarm" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch5OverrangeAlarm" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch6OverrangeAlarm" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch7OverrangeAlarm" DataType="BOOL" Value="1" />
+<DataValueMember Name="Status" DataType="INT" Radix="Binary" Value="2#0000_0000_1000_0000" />
+<DataValueMember Name="PowerUp" DataType="BOOL" Value="0" />
+<DataValueMember Name="CriticalError4" DataType="BOOL" Value="0" />
+<DataValueMember Name="CriticalError5" DataType="BOOL" Value="0" />
+<DataValueMember Name="CriticalError6" DataType="BOOL" Value="0" />
+<DataValueMember Name="CalibrationOutOfRange" DataType="BOOL" Value="0" />
+<DataValueMember Name="CalibrationDone" DataType="BOOL" Value="0" />
+<DataValueMember Name="CalibrationBad" DataType="BOOL" Value="0" />
 </Structure>
 </Data>
 </InputTag>

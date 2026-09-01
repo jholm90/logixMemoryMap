@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite20V2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 31 23:54:08 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite20V2" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 31 23:54:08 2026" LastModifiedDate="Mon Aug 31 23:54:08 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite20V2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Tue Sep 01 00:18:29 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite20V2" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Tue Sep 01 00:18:29 2026" LastModifiedDate="Tue Sep 01 00:18:29 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -48,185 +48,1639 @@
 </Port>
 </Ports>
 </Module>
-<Module Name="TestMod1_2097V34PR5LM" CatalogNumber="2097-V34PR5-LM" Vendor="1" ProductType="37" ProductCode="37" Major="2" Minor="4" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<Module Name="TestMod1_AL1122" CatalogNumber="AL1122" Vendor="322" ProductType="12" ProductCode="1122" Major="1" Minor="5" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false">
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="2" Address="192.168.1.70" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
-<ConfigData ConfigSize="220">
+<ConfigTag ConfigSize="98" ExternalAccess="Read/Write">
 <Data Format="L5K">
-[224,1,257,37,37,0,10000,16908292,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8192005,8192125,67305985
-		,5,0,0,0,0,0,0]
+[102,4,3,4,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1]
 </Data>
-</ConfigData>
+<Data Format="Decorated">
+<Structure DataType="_0142:AL1122_C3657FB3:C:0">
+<DataValueMember Name="Communication_Profile" DataType="USINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Process_Data_Size" DataType="SINT" Radix="Decimal" Value="4" />
+<DataValueMember Name="Port_Mode_Port_1" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_1" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_1" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_1" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_1" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_1" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_1" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_1" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_2" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_2" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_2" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_2" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_2" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_2" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_2" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_2" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_3" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_3" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_3" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_3" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_3" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_3" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_3" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_3" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_4" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_4" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_4" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_4" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_4" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_4" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_4" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_4" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_5" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_5" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_5" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_5" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_5" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_5" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_5" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_5" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_6" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_6" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_6" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_6" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_6" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_6" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_6" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_6" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_7" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_7" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_7" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_7" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_7" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_7" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_7" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_7" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_8" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_8" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_8" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_8" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_8" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_8" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_8" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_8" DataType="SINT" Radix="Decimal" Value="1" />
+</Structure>
+</Data>
+</ConfigTag>
 <Connections>
-<Connection Name="MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
+<Connection Name="_200424C72C962C64" RPI="10000" Type="StandardDataDriven" OutputSize="302" InputSize="450" EventID="0" ProgrammaticallySendEventTrigger="false" Priority="Scheduled" InputConnectionType="Unicast" InputProductionTrigger="Cyclic" ConnectionPath="20 04 24 c7 2c 96 2c 64" InputTagSuffix="I1" OutputTagSuffix="O1">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:Motion_Diagnostics:S:1">
-<DataValueMember Name="LostControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LateControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LostDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LateDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ControllerToDriveConnectionSize" DataType="INT" Radix="Decimal" Value="44" />
-<DataValueMember Name="DriveToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="36" />
-<DataValueMember Name="NominalControllerToDriveTime" DataType="INT" Radix="Decimal" Value="2000" />
-<DataValueMember Name="NominalDriveToControllerTime" DataType="INT" Radix="Decimal" Value="2000" />
-<DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="4000" />
+<Structure DataType="_0142:AL1122_04852EE3:I:0">
+<DataValueMember Name="ConnectionFaulted" DataType="BOOL" Value="0" />
+<ArrayMember Name="Data" DataType="INT" Dimensions="223" Radix="Decimal">
+<Element Index="[0]" Value="0" />
+<Element Index="[1]" Value="0" />
+<Element Index="[2]" Value="0" />
+<Element Index="[3]" Value="0" />
+<Element Index="[4]" Value="0" />
+<Element Index="[5]" Value="0" />
+<Element Index="[6]" Value="0" />
+<Element Index="[7]" Value="0" />
+<Element Index="[8]" Value="0" />
+<Element Index="[9]" Value="0" />
+<Element Index="[10]" Value="0" />
+<Element Index="[11]" Value="0" />
+<Element Index="[12]" Value="0" />
+<Element Index="[13]" Value="0" />
+<Element Index="[14]" Value="0" />
+<Element Index="[15]" Value="0" />
+<Element Index="[16]" Value="0" />
+<Element Index="[17]" Value="0" />
+<Element Index="[18]" Value="0" />
+<Element Index="[19]" Value="0" />
+<Element Index="[20]" Value="0" />
+<Element Index="[21]" Value="0" />
+<Element Index="[22]" Value="0" />
+<Element Index="[23]" Value="0" />
+<Element Index="[24]" Value="0" />
+<Element Index="[25]" Value="0" />
+<Element Index="[26]" Value="0" />
+<Element Index="[27]" Value="0" />
+<Element Index="[28]" Value="0" />
+<Element Index="[29]" Value="0" />
+<Element Index="[30]" Value="0" />
+<Element Index="[31]" Value="0" />
+<Element Index="[32]" Value="0" />
+<Element Index="[33]" Value="0" />
+<Element Index="[34]" Value="0" />
+<Element Index="[35]" Value="0" />
+<Element Index="[36]" Value="0" />
+<Element Index="[37]" Value="0" />
+<Element Index="[38]" Value="0" />
+<Element Index="[39]" Value="0" />
+<Element Index="[40]" Value="0" />
+<Element Index="[41]" Value="0" />
+<Element Index="[42]" Value="0" />
+<Element Index="[43]" Value="0" />
+<Element Index="[44]" Value="0" />
+<Element Index="[45]" Value="0" />
+<Element Index="[46]" Value="0" />
+<Element Index="[47]" Value="0" />
+<Element Index="[48]" Value="0" />
+<Element Index="[49]" Value="0" />
+<Element Index="[50]" Value="0" />
+<Element Index="[51]" Value="0" />
+<Element Index="[52]" Value="0" />
+<Element Index="[53]" Value="0" />
+<Element Index="[54]" Value="0" />
+<Element Index="[55]" Value="0" />
+<Element Index="[56]" Value="0" />
+<Element Index="[57]" Value="0" />
+<Element Index="[58]" Value="0" />
+<Element Index="[59]" Value="0" />
+<Element Index="[60]" Value="0" />
+<Element Index="[61]" Value="0" />
+<Element Index="[62]" Value="0" />
+<Element Index="[63]" Value="0" />
+<Element Index="[64]" Value="0" />
+<Element Index="[65]" Value="0" />
+<Element Index="[66]" Value="0" />
+<Element Index="[67]" Value="0" />
+<Element Index="[68]" Value="0" />
+<Element Index="[69]" Value="0" />
+<Element Index="[70]" Value="0" />
+<Element Index="[71]" Value="0" />
+<Element Index="[72]" Value="0" />
+<Element Index="[73]" Value="0" />
+<Element Index="[74]" Value="0" />
+<Element Index="[75]" Value="0" />
+<Element Index="[76]" Value="0" />
+<Element Index="[77]" Value="0" />
+<Element Index="[78]" Value="0" />
+<Element Index="[79]" Value="0" />
+<Element Index="[80]" Value="0" />
+<Element Index="[81]" Value="0" />
+<Element Index="[82]" Value="0" />
+<Element Index="[83]" Value="0" />
+<Element Index="[84]" Value="0" />
+<Element Index="[85]" Value="0" />
+<Element Index="[86]" Value="0" />
+<Element Index="[87]" Value="0" />
+<Element Index="[88]" Value="0" />
+<Element Index="[89]" Value="0" />
+<Element Index="[90]" Value="0" />
+<Element Index="[91]" Value="0" />
+<Element Index="[92]" Value="0" />
+<Element Index="[93]" Value="0" />
+<Element Index="[94]" Value="0" />
+<Element Index="[95]" Value="0" />
+<Element Index="[96]" Value="0" />
+<Element Index="[97]" Value="0" />
+<Element Index="[98]" Value="0" />
+<Element Index="[99]" Value="0" />
+<Element Index="[100]" Value="0" />
+<Element Index="[101]" Value="0" />
+<Element Index="[102]" Value="0" />
+<Element Index="[103]" Value="0" />
+<Element Index="[104]" Value="0" />
+<Element Index="[105]" Value="0" />
+<Element Index="[106]" Value="0" />
+<Element Index="[107]" Value="0" />
+<Element Index="[108]" Value="0" />
+<Element Index="[109]" Value="0" />
+<Element Index="[110]" Value="0" />
+<Element Index="[111]" Value="0" />
+<Element Index="[112]" Value="0" />
+<Element Index="[113]" Value="0" />
+<Element Index="[114]" Value="0" />
+<Element Index="[115]" Value="0" />
+<Element Index="[116]" Value="0" />
+<Element Index="[117]" Value="0" />
+<Element Index="[118]" Value="0" />
+<Element Index="[119]" Value="0" />
+<Element Index="[120]" Value="0" />
+<Element Index="[121]" Value="0" />
+<Element Index="[122]" Value="0" />
+<Element Index="[123]" Value="0" />
+<Element Index="[124]" Value="0" />
+<Element Index="[125]" Value="0" />
+<Element Index="[126]" Value="0" />
+<Element Index="[127]" Value="0" />
+<Element Index="[128]" Value="0" />
+<Element Index="[129]" Value="0" />
+<Element Index="[130]" Value="0" />
+<Element Index="[131]" Value="0" />
+<Element Index="[132]" Value="0" />
+<Element Index="[133]" Value="0" />
+<Element Index="[134]" Value="0" />
+<Element Index="[135]" Value="0" />
+<Element Index="[136]" Value="0" />
+<Element Index="[137]" Value="0" />
+<Element Index="[138]" Value="0" />
+<Element Index="[139]" Value="0" />
+<Element Index="[140]" Value="0" />
+<Element Index="[141]" Value="0" />
+<Element Index="[142]" Value="0" />
+<Element Index="[143]" Value="0" />
+<Element Index="[144]" Value="0" />
+<Element Index="[145]" Value="0" />
+<Element Index="[146]" Value="0" />
+<Element Index="[147]" Value="0" />
+<Element Index="[148]" Value="0" />
+<Element Index="[149]" Value="0" />
+<Element Index="[150]" Value="0" />
+<Element Index="[151]" Value="0" />
+<Element Index="[152]" Value="0" />
+<Element Index="[153]" Value="0" />
+<Element Index="[154]" Value="0" />
+<Element Index="[155]" Value="0" />
+<Element Index="[156]" Value="0" />
+<Element Index="[157]" Value="0" />
+<Element Index="[158]" Value="0" />
+<Element Index="[159]" Value="0" />
+<Element Index="[160]" Value="0" />
+<Element Index="[161]" Value="0" />
+<Element Index="[162]" Value="0" />
+<Element Index="[163]" Value="0" />
+<Element Index="[164]" Value="0" />
+<Element Index="[165]" Value="0" />
+<Element Index="[166]" Value="0" />
+<Element Index="[167]" Value="0" />
+<Element Index="[168]" Value="0" />
+<Element Index="[169]" Value="0" />
+<Element Index="[170]" Value="0" />
+<Element Index="[171]" Value="0" />
+<Element Index="[172]" Value="0" />
+<Element Index="[173]" Value="0" />
+<Element Index="[174]" Value="0" />
+<Element Index="[175]" Value="0" />
+<Element Index="[176]" Value="0" />
+<Element Index="[177]" Value="0" />
+<Element Index="[178]" Value="0" />
+<Element Index="[179]" Value="0" />
+<Element Index="[180]" Value="0" />
+<Element Index="[181]" Value="0" />
+<Element Index="[182]" Value="0" />
+<Element Index="[183]" Value="0" />
+<Element Index="[184]" Value="0" />
+<Element Index="[185]" Value="0" />
+<Element Index="[186]" Value="0" />
+<Element Index="[187]" Value="0" />
+<Element Index="[188]" Value="0" />
+<Element Index="[189]" Value="0" />
+<Element Index="[190]" Value="0" />
+<Element Index="[191]" Value="0" />
+<Element Index="[192]" Value="0" />
+<Element Index="[193]" Value="0" />
+<Element Index="[194]" Value="0" />
+<Element Index="[195]" Value="0" />
+<Element Index="[196]" Value="0" />
+<Element Index="[197]" Value="0" />
+<Element Index="[198]" Value="0" />
+<Element Index="[199]" Value="0" />
+<Element Index="[200]" Value="0" />
+<Element Index="[201]" Value="0" />
+<Element Index="[202]" Value="0" />
+<Element Index="[203]" Value="0" />
+<Element Index="[204]" Value="0" />
+<Element Index="[205]" Value="0" />
+<Element Index="[206]" Value="0" />
+<Element Index="[207]" Value="0" />
+<Element Index="[208]" Value="0" />
+<Element Index="[209]" Value="0" />
+<Element Index="[210]" Value="0" />
+<Element Index="[211]" Value="0" />
+<Element Index="[212]" Value="0" />
+<Element Index="[213]" Value="0" />
+<Element Index="[214]" Value="0" />
+<Element Index="[215]" Value="0" />
+<Element Index="[216]" Value="0" />
+<Element Index="[217]" Value="0" />
+<Element Index="[218]" Value="0" />
+<Element Index="[219]" Value="0" />
+<Element Index="[220]" Value="0" />
+<Element Index="[221]" Value="0" />
+<Element Index="[222]" Value="0" />
+</ArrayMember>
 </Structure>
 </Data>
 </InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="_0142:AL1122_23FE281C:O:0">
+<ArrayMember Name="Data" DataType="INT" Dimensions="151" Radix="Decimal">
+<Element Index="[0]" Value="0" />
+<Element Index="[1]" Value="0" />
+<Element Index="[2]" Value="0" />
+<Element Index="[3]" Value="0" />
+<Element Index="[4]" Value="0" />
+<Element Index="[5]" Value="0" />
+<Element Index="[6]" Value="0" />
+<Element Index="[7]" Value="0" />
+<Element Index="[8]" Value="0" />
+<Element Index="[9]" Value="0" />
+<Element Index="[10]" Value="0" />
+<Element Index="[11]" Value="0" />
+<Element Index="[12]" Value="0" />
+<Element Index="[13]" Value="0" />
+<Element Index="[14]" Value="0" />
+<Element Index="[15]" Value="0" />
+<Element Index="[16]" Value="0" />
+<Element Index="[17]" Value="0" />
+<Element Index="[18]" Value="0" />
+<Element Index="[19]" Value="0" />
+<Element Index="[20]" Value="0" />
+<Element Index="[21]" Value="0" />
+<Element Index="[22]" Value="0" />
+<Element Index="[23]" Value="0" />
+<Element Index="[24]" Value="0" />
+<Element Index="[25]" Value="0" />
+<Element Index="[26]" Value="0" />
+<Element Index="[27]" Value="0" />
+<Element Index="[28]" Value="0" />
+<Element Index="[29]" Value="0" />
+<Element Index="[30]" Value="0" />
+<Element Index="[31]" Value="0" />
+<Element Index="[32]" Value="0" />
+<Element Index="[33]" Value="0" />
+<Element Index="[34]" Value="0" />
+<Element Index="[35]" Value="0" />
+<Element Index="[36]" Value="0" />
+<Element Index="[37]" Value="0" />
+<Element Index="[38]" Value="0" />
+<Element Index="[39]" Value="0" />
+<Element Index="[40]" Value="0" />
+<Element Index="[41]" Value="0" />
+<Element Index="[42]" Value="0" />
+<Element Index="[43]" Value="0" />
+<Element Index="[44]" Value="0" />
+<Element Index="[45]" Value="0" />
+<Element Index="[46]" Value="0" />
+<Element Index="[47]" Value="0" />
+<Element Index="[48]" Value="0" />
+<Element Index="[49]" Value="0" />
+<Element Index="[50]" Value="0" />
+<Element Index="[51]" Value="0" />
+<Element Index="[52]" Value="0" />
+<Element Index="[53]" Value="0" />
+<Element Index="[54]" Value="0" />
+<Element Index="[55]" Value="0" />
+<Element Index="[56]" Value="0" />
+<Element Index="[57]" Value="0" />
+<Element Index="[58]" Value="0" />
+<Element Index="[59]" Value="0" />
+<Element Index="[60]" Value="0" />
+<Element Index="[61]" Value="0" />
+<Element Index="[62]" Value="0" />
+<Element Index="[63]" Value="0" />
+<Element Index="[64]" Value="0" />
+<Element Index="[65]" Value="0" />
+<Element Index="[66]" Value="0" />
+<Element Index="[67]" Value="0" />
+<Element Index="[68]" Value="0" />
+<Element Index="[69]" Value="0" />
+<Element Index="[70]" Value="0" />
+<Element Index="[71]" Value="0" />
+<Element Index="[72]" Value="0" />
+<Element Index="[73]" Value="0" />
+<Element Index="[74]" Value="0" />
+<Element Index="[75]" Value="0" />
+<Element Index="[76]" Value="0" />
+<Element Index="[77]" Value="0" />
+<Element Index="[78]" Value="0" />
+<Element Index="[79]" Value="0" />
+<Element Index="[80]" Value="0" />
+<Element Index="[81]" Value="0" />
+<Element Index="[82]" Value="0" />
+<Element Index="[83]" Value="0" />
+<Element Index="[84]" Value="0" />
+<Element Index="[85]" Value="0" />
+<Element Index="[86]" Value="0" />
+<Element Index="[87]" Value="0" />
+<Element Index="[88]" Value="0" />
+<Element Index="[89]" Value="0" />
+<Element Index="[90]" Value="0" />
+<Element Index="[91]" Value="0" />
+<Element Index="[92]" Value="0" />
+<Element Index="[93]" Value="0" />
+<Element Index="[94]" Value="0" />
+<Element Index="[95]" Value="0" />
+<Element Index="[96]" Value="0" />
+<Element Index="[97]" Value="0" />
+<Element Index="[98]" Value="0" />
+<Element Index="[99]" Value="0" />
+<Element Index="[100]" Value="0" />
+<Element Index="[101]" Value="0" />
+<Element Index="[102]" Value="0" />
+<Element Index="[103]" Value="0" />
+<Element Index="[104]" Value="0" />
+<Element Index="[105]" Value="0" />
+<Element Index="[106]" Value="0" />
+<Element Index="[107]" Value="0" />
+<Element Index="[108]" Value="0" />
+<Element Index="[109]" Value="0" />
+<Element Index="[110]" Value="0" />
+<Element Index="[111]" Value="0" />
+<Element Index="[112]" Value="0" />
+<Element Index="[113]" Value="0" />
+<Element Index="[114]" Value="0" />
+<Element Index="[115]" Value="0" />
+<Element Index="[116]" Value="0" />
+<Element Index="[117]" Value="0" />
+<Element Index="[118]" Value="0" />
+<Element Index="[119]" Value="0" />
+<Element Index="[120]" Value="0" />
+<Element Index="[121]" Value="0" />
+<Element Index="[122]" Value="0" />
+<Element Index="[123]" Value="0" />
+<Element Index="[124]" Value="0" />
+<Element Index="[125]" Value="0" />
+<Element Index="[126]" Value="0" />
+<Element Index="[127]" Value="0" />
+<Element Index="[128]" Value="0" />
+<Element Index="[129]" Value="0" />
+<Element Index="[130]" Value="0" />
+<Element Index="[131]" Value="0" />
+<Element Index="[132]" Value="0" />
+<Element Index="[133]" Value="0" />
+<Element Index="[134]" Value="0" />
+<Element Index="[135]" Value="0" />
+<Element Index="[136]" Value="0" />
+<Element Index="[137]" Value="0" />
+<Element Index="[138]" Value="0" />
+<Element Index="[139]" Value="0" />
+<Element Index="[140]" Value="0" />
+<Element Index="[141]" Value="0" />
+<Element Index="[142]" Value="0" />
+<Element Index="[143]" Value="0" />
+<Element Index="[144]" Value="0" />
+<Element Index="[145]" Value="0" />
+<Element Index="[146]" Value="0" />
+<Element Index="[147]" Value="0" />
+<Element Index="[148]" Value="0" />
+<Element Index="[149]" Value="0" />
+<Element Index="[150]" Value="0" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
 </Connection>
-<Connection Name="MotionSync" RPI="4000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
 </Connections>
 </Communications>
 </Module>
 
-<Module Name="TestMod1_2198C4004ERS" CatalogNumber="2198-C4004-ERS" Vendor="1" ProductType="37" ProductCode="78" Major="13" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<Module Name="TestMod1_AL1222" CatalogNumber="AL1222" Vendor="322" ProductType="12" ProductCode="1222" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false">
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="2" Address="192.168.1.80" Type="Ethernet" Upstream="true" />
 </Ports>
 <Communications>
-<ConfigData ConfigSize="468">
+<ConfigTag ConfigSize="98" ExternalAccess="Read/Write">
 <Data Format="L5K">
-[472,7,257,78,32113775,16,10000,33686020,1,0,0,0,0,0,0,0,0,-1027080192,0,0,0,0,0,0,0,0,0,0,0,0,0,16843009,16843009
-		,0,0,33554432,230,-65536,1045220557,0,0,0,0,1120403456,1120403456,0,1120403456,1124859904,0,0,1120403456
-		,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,257,0,0,0,8192000,8192125,67305984,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-		,0,0,0,0,778,0,10,0]
+[102,4,3,4,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1]
 </Data>
-</ConfigData>
+<Data Format="Decorated">
+<Structure DataType="_0142:AL1222_C3657FB3:C:0">
+<DataValueMember Name="Communication_Profile" DataType="USINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Process_Data_Size" DataType="SINT" Radix="Decimal" Value="4" />
+<DataValueMember Name="Port_Mode_Port_1" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_1" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_1" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_1" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_1" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_1" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_1" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_1" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_2" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_2" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_2" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_2" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_2" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_2" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_2" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_2" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_3" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_3" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_3" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_3" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_3" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_3" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_3" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_3" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_4" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_4" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_4" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_4" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_4" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_4" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_4" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_4" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_5" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_5" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_5" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_5" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_5" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_5" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_5" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_5" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_6" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_6" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_6" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_6" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_6" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_6" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_6" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_6" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_7" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_7" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_7" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_7" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_7" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_7" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_7" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_7" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_8" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_8" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_8" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_8" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_8" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_8" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_8" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_8" DataType="SINT" Radix="Decimal" Value="1" />
+</Structure>
+</Data>
+</ConfigTag>
 <Connections>
-<Connection Name="A_MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
+<Connection Name="_200424C72C962C64" RPI="10000" Type="StandardDataDriven" OutputSize="302" InputSize="450" EventID="0" ProgrammaticallySendEventTrigger="false" Priority="Scheduled" InputConnectionType="Unicast" InputProductionTrigger="Cyclic" ConnectionPath="20 04 24 c7 2c 96 2c 64" InputTagSuffix="I1" OutputTagSuffix="O1">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:Motion_Diagnostics:S:1">
-<DataValueMember Name="LostControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LateControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LostDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LateDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ControllerToDriveConnectionSize" DataType="INT" Radix="Decimal" Value="44" />
-<DataValueMember Name="DriveToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="40" />
-<DataValueMember Name="NominalControllerToDriveTime" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="NominalDriveToControllerTime" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="2000" />
+<Structure DataType="_0142:AL1222_90D03083:I:0">
+<DataValueMember Name="ConnectionFaulted" DataType="BOOL" Value="0" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="446" Radix="Decimal">
+<Element Index="[0]" Value="0" />
+<Element Index="[1]" Value="0" />
+<Element Index="[2]" Value="0" />
+<Element Index="[3]" Value="0" />
+<Element Index="[4]" Value="0" />
+<Element Index="[5]" Value="0" />
+<Element Index="[6]" Value="0" />
+<Element Index="[7]" Value="0" />
+<Element Index="[8]" Value="0" />
+<Element Index="[9]" Value="0" />
+<Element Index="[10]" Value="0" />
+<Element Index="[11]" Value="0" />
+<Element Index="[12]" Value="0" />
+<Element Index="[13]" Value="0" />
+<Element Index="[14]" Value="0" />
+<Element Index="[15]" Value="0" />
+<Element Index="[16]" Value="0" />
+<Element Index="[17]" Value="0" />
+<Element Index="[18]" Value="0" />
+<Element Index="[19]" Value="0" />
+<Element Index="[20]" Value="0" />
+<Element Index="[21]" Value="0" />
+<Element Index="[22]" Value="0" />
+<Element Index="[23]" Value="0" />
+<Element Index="[24]" Value="0" />
+<Element Index="[25]" Value="0" />
+<Element Index="[26]" Value="0" />
+<Element Index="[27]" Value="0" />
+<Element Index="[28]" Value="0" />
+<Element Index="[29]" Value="0" />
+<Element Index="[30]" Value="0" />
+<Element Index="[31]" Value="0" />
+<Element Index="[32]" Value="0" />
+<Element Index="[33]" Value="0" />
+<Element Index="[34]" Value="0" />
+<Element Index="[35]" Value="0" />
+<Element Index="[36]" Value="0" />
+<Element Index="[37]" Value="0" />
+<Element Index="[38]" Value="0" />
+<Element Index="[39]" Value="0" />
+<Element Index="[40]" Value="0" />
+<Element Index="[41]" Value="0" />
+<Element Index="[42]" Value="0" />
+<Element Index="[43]" Value="0" />
+<Element Index="[44]" Value="0" />
+<Element Index="[45]" Value="0" />
+<Element Index="[46]" Value="7" />
+<Element Index="[47]" Value="0" />
+<Element Index="[48]" Value="0" />
+<Element Index="[49]" Value="0" />
+<Element Index="[50]" Value="0" />
+<Element Index="[51]" Value="0" />
+<Element Index="[52]" Value="0" />
+<Element Index="[53]" Value="0" />
+<Element Index="[54]" Value="0" />
+<Element Index="[55]" Value="0" />
+<Element Index="[56]" Value="0" />
+<Element Index="[57]" Value="0" />
+<Element Index="[58]" Value="0" />
+<Element Index="[59]" Value="0" />
+<Element Index="[60]" Value="0" />
+<Element Index="[61]" Value="0" />
+<Element Index="[62]" Value="0" />
+<Element Index="[63]" Value="0" />
+<Element Index="[64]" Value="7" />
+<Element Index="[65]" Value="0" />
+<Element Index="[66]" Value="0" />
+<Element Index="[67]" Value="0" />
+<Element Index="[68]" Value="0" />
+<Element Index="[69]" Value="0" />
+<Element Index="[70]" Value="0" />
+<Element Index="[71]" Value="0" />
+<Element Index="[72]" Value="0" />
+<Element Index="[73]" Value="0" />
+<Element Index="[74]" Value="0" />
+<Element Index="[75]" Value="0" />
+<Element Index="[76]" Value="0" />
+<Element Index="[77]" Value="0" />
+<Element Index="[78]" Value="0" />
+<Element Index="[79]" Value="0" />
+<Element Index="[80]" Value="0" />
+<Element Index="[81]" Value="0" />
+<Element Index="[82]" Value="7" />
+<Element Index="[83]" Value="0" />
+<Element Index="[84]" Value="0" />
+<Element Index="[85]" Value="0" />
+<Element Index="[86]" Value="0" />
+<Element Index="[87]" Value="0" />
+<Element Index="[88]" Value="0" />
+<Element Index="[89]" Value="0" />
+<Element Index="[90]" Value="0" />
+<Element Index="[91]" Value="0" />
+<Element Index="[92]" Value="0" />
+<Element Index="[93]" Value="0" />
+<Element Index="[94]" Value="0" />
+<Element Index="[95]" Value="0" />
+<Element Index="[96]" Value="0" />
+<Element Index="[97]" Value="0" />
+<Element Index="[98]" Value="0" />
+<Element Index="[99]" Value="0" />
+<Element Index="[100]" Value="7" />
+<Element Index="[101]" Value="0" />
+<Element Index="[102]" Value="0" />
+<Element Index="[103]" Value="0" />
+<Element Index="[104]" Value="0" />
+<Element Index="[105]" Value="0" />
+<Element Index="[106]" Value="0" />
+<Element Index="[107]" Value="0" />
+<Element Index="[108]" Value="0" />
+<Element Index="[109]" Value="0" />
+<Element Index="[110]" Value="0" />
+<Element Index="[111]" Value="0" />
+<Element Index="[112]" Value="0" />
+<Element Index="[113]" Value="0" />
+<Element Index="[114]" Value="0" />
+<Element Index="[115]" Value="0" />
+<Element Index="[116]" Value="0" />
+<Element Index="[117]" Value="0" />
+<Element Index="[118]" Value="1" />
+<Element Index="[119]" Value="0" />
+<Element Index="[120]" Value="47" />
+<Element Index="[121]" Value="1" />
+<Element Index="[122]" Value="19" />
+<Element Index="[123]" Value="0" />
+<Element Index="[124]" Value="12" />
+<Element Index="[125]" Value="0" />
+<Element Index="[126]" Value="0" />
+<Element Index="[127]" Value="0" />
+<Element Index="[128]" Value="0" />
+<Element Index="[129]" Value="0" />
+<Element Index="[130]" Value="0" />
+<Element Index="[131]" Value="0" />
+<Element Index="[132]" Value="0" />
+<Element Index="[133]" Value="0" />
+<Element Index="[134]" Value="0" />
+<Element Index="[135]" Value="0" />
+<Element Index="[136]" Value="7" />
+<Element Index="[137]" Value="0" />
+<Element Index="[138]" Value="0" />
+<Element Index="[139]" Value="0" />
+<Element Index="[140]" Value="0" />
+<Element Index="[141]" Value="0" />
+<Element Index="[142]" Value="0" />
+<Element Index="[143]" Value="0" />
+<Element Index="[144]" Value="0" />
+<Element Index="[145]" Value="0" />
+<Element Index="[146]" Value="0" />
+<Element Index="[147]" Value="0" />
+<Element Index="[148]" Value="0" />
+<Element Index="[149]" Value="0" />
+<Element Index="[150]" Value="0" />
+<Element Index="[151]" Value="0" />
+<Element Index="[152]" Value="0" />
+<Element Index="[153]" Value="0" />
+<Element Index="[154]" Value="7" />
+<Element Index="[155]" Value="0" />
+<Element Index="[156]" Value="0" />
+<Element Index="[157]" Value="0" />
+<Element Index="[158]" Value="0" />
+<Element Index="[159]" Value="0" />
+<Element Index="[160]" Value="0" />
+<Element Index="[161]" Value="0" />
+<Element Index="[162]" Value="0" />
+<Element Index="[163]" Value="0" />
+<Element Index="[164]" Value="0" />
+<Element Index="[165]" Value="0" />
+<Element Index="[166]" Value="0" />
+<Element Index="[167]" Value="0" />
+<Element Index="[168]" Value="0" />
+<Element Index="[169]" Value="0" />
+<Element Index="[170]" Value="0" />
+<Element Index="[171]" Value="0" />
+<Element Index="[172]" Value="7" />
+<Element Index="[173]" Value="0" />
+<Element Index="[174]" Value="0" />
+<Element Index="[175]" Value="0" />
+<Element Index="[176]" Value="0" />
+<Element Index="[177]" Value="0" />
+<Element Index="[178]" Value="0" />
+<Element Index="[179]" Value="0" />
+<Element Index="[180]" Value="0" />
+<Element Index="[181]" Value="0" />
+<Element Index="[182]" Value="0" />
+<Element Index="[183]" Value="0" />
+<Element Index="[184]" Value="0" />
+<Element Index="[185]" Value="0" />
+<Element Index="[186]" Value="0" />
+<Element Index="[187]" Value="0" />
+<Element Index="[188]" Value="0" />
+<Element Index="[189]" Value="0" />
+<Element Index="[190]" Value="0" />
+<Element Index="[191]" Value="0" />
+<Element Index="[192]" Value="0" />
+<Element Index="[193]" Value="0" />
+<Element Index="[194]" Value="0" />
+<Element Index="[195]" Value="0" />
+<Element Index="[196]" Value="0" />
+<Element Index="[197]" Value="0" />
+<Element Index="[198]" Value="0" />
+<Element Index="[199]" Value="0" />
+<Element Index="[200]" Value="0" />
+<Element Index="[201]" Value="0" />
+<Element Index="[202]" Value="0" />
+<Element Index="[203]" Value="0" />
+<Element Index="[204]" Value="0" />
+<Element Index="[205]" Value="0" />
+<Element Index="[206]" Value="0" />
+<Element Index="[207]" Value="0" />
+<Element Index="[208]" Value="0" />
+<Element Index="[209]" Value="0" />
+<Element Index="[210]" Value="0" />
+<Element Index="[211]" Value="0" />
+<Element Index="[212]" Value="0" />
+<Element Index="[213]" Value="0" />
+<Element Index="[214]" Value="0" />
+<Element Index="[215]" Value="0" />
+<Element Index="[216]" Value="0" />
+<Element Index="[217]" Value="0" />
+<Element Index="[218]" Value="0" />
+<Element Index="[219]" Value="0" />
+<Element Index="[220]" Value="0" />
+<Element Index="[221]" Value="0" />
+<Element Index="[222]" Value="0" />
+<Element Index="[223]" Value="0" />
+<Element Index="[224]" Value="0" />
+<Element Index="[225]" Value="0" />
+<Element Index="[226]" Value="0" />
+<Element Index="[227]" Value="0" />
+<Element Index="[228]" Value="0" />
+<Element Index="[229]" Value="0" />
+<Element Index="[230]" Value="0" />
+<Element Index="[231]" Value="0" />
+<Element Index="[232]" Value="0" />
+<Element Index="[233]" Value="0" />
+<Element Index="[234]" Value="0" />
+<Element Index="[235]" Value="0" />
+<Element Index="[236]" Value="0" />
+<Element Index="[237]" Value="0" />
+<Element Index="[238]" Value="0" />
+<Element Index="[239]" Value="0" />
+<Element Index="[240]" Value="0" />
+<Element Index="[241]" Value="0" />
+<Element Index="[242]" Value="0" />
+<Element Index="[243]" Value="0" />
+<Element Index="[244]" Value="0" />
+<Element Index="[245]" Value="0" />
+<Element Index="[246]" Value="0" />
+<Element Index="[247]" Value="0" />
+<Element Index="[248]" Value="0" />
+<Element Index="[249]" Value="0" />
+<Element Index="[250]" Value="0" />
+<Element Index="[251]" Value="0" />
+<Element Index="[252]" Value="0" />
+<Element Index="[253]" Value="0" />
+<Element Index="[254]" Value="0" />
+<Element Index="[255]" Value="0" />
+<Element Index="[256]" Value="0" />
+<Element Index="[257]" Value="0" />
+<Element Index="[258]" Value="0" />
+<Element Index="[259]" Value="0" />
+<Element Index="[260]" Value="0" />
+<Element Index="[261]" Value="0" />
+<Element Index="[262]" Value="0" />
+<Element Index="[263]" Value="0" />
+<Element Index="[264]" Value="0" />
+<Element Index="[265]" Value="0" />
+<Element Index="[266]" Value="0" />
+<Element Index="[267]" Value="0" />
+<Element Index="[268]" Value="0" />
+<Element Index="[269]" Value="0" />
+<Element Index="[270]" Value="0" />
+<Element Index="[271]" Value="0" />
+<Element Index="[272]" Value="0" />
+<Element Index="[273]" Value="0" />
+<Element Index="[274]" Value="0" />
+<Element Index="[275]" Value="0" />
+<Element Index="[276]" Value="0" />
+<Element Index="[277]" Value="0" />
+<Element Index="[278]" Value="0" />
+<Element Index="[279]" Value="0" />
+<Element Index="[280]" Value="0" />
+<Element Index="[281]" Value="0" />
+<Element Index="[282]" Value="0" />
+<Element Index="[283]" Value="0" />
+<Element Index="[284]" Value="0" />
+<Element Index="[285]" Value="0" />
+<Element Index="[286]" Value="0" />
+<Element Index="[287]" Value="0" />
+<Element Index="[288]" Value="0" />
+<Element Index="[289]" Value="0" />
+<Element Index="[290]" Value="0" />
+<Element Index="[291]" Value="0" />
+<Element Index="[292]" Value="0" />
+<Element Index="[293]" Value="0" />
+<Element Index="[294]" Value="0" />
+<Element Index="[295]" Value="0" />
+<Element Index="[296]" Value="0" />
+<Element Index="[297]" Value="0" />
+<Element Index="[298]" Value="0" />
+<Element Index="[299]" Value="0" />
+<Element Index="[300]" Value="0" />
+<Element Index="[301]" Value="0" />
+<Element Index="[302]" Value="0" />
+<Element Index="[303]" Value="0" />
+<Element Index="[304]" Value="0" />
+<Element Index="[305]" Value="0" />
+<Element Index="[306]" Value="0" />
+<Element Index="[307]" Value="0" />
+<Element Index="[308]" Value="0" />
+<Element Index="[309]" Value="0" />
+<Element Index="[310]" Value="0" />
+<Element Index="[311]" Value="0" />
+<Element Index="[312]" Value="0" />
+<Element Index="[313]" Value="0" />
+<Element Index="[314]" Value="0" />
+<Element Index="[315]" Value="0" />
+<Element Index="[316]" Value="0" />
+<Element Index="[317]" Value="0" />
+<Element Index="[318]" Value="10" />
+<Element Index="[319]" Value="-93" />
+<Element Index="[320]" Value="0" />
+<Element Index="[321]" Value="0" />
+<Element Index="[322]" Value="0" />
+<Element Index="[323]" Value="0" />
+<Element Index="[324]" Value="0" />
+<Element Index="[325]" Value="0" />
+<Element Index="[326]" Value="0" />
+<Element Index="[327]" Value="0" />
+<Element Index="[328]" Value="0" />
+<Element Index="[329]" Value="0" />
+<Element Index="[330]" Value="0" />
+<Element Index="[331]" Value="0" />
+<Element Index="[332]" Value="0" />
+<Element Index="[333]" Value="0" />
+<Element Index="[334]" Value="0" />
+<Element Index="[335]" Value="0" />
+<Element Index="[336]" Value="0" />
+<Element Index="[337]" Value="0" />
+<Element Index="[338]" Value="0" />
+<Element Index="[339]" Value="0" />
+<Element Index="[340]" Value="0" />
+<Element Index="[341]" Value="0" />
+<Element Index="[342]" Value="0" />
+<Element Index="[343]" Value="0" />
+<Element Index="[344]" Value="0" />
+<Element Index="[345]" Value="0" />
+<Element Index="[346]" Value="0" />
+<Element Index="[347]" Value="0" />
+<Element Index="[348]" Value="0" />
+<Element Index="[349]" Value="0" />
+<Element Index="[350]" Value="0" />
+<Element Index="[351]" Value="0" />
+<Element Index="[352]" Value="0" />
+<Element Index="[353]" Value="0" />
+<Element Index="[354]" Value="0" />
+<Element Index="[355]" Value="0" />
+<Element Index="[356]" Value="0" />
+<Element Index="[357]" Value="0" />
+<Element Index="[358]" Value="0" />
+<Element Index="[359]" Value="0" />
+<Element Index="[360]" Value="0" />
+<Element Index="[361]" Value="0" />
+<Element Index="[362]" Value="0" />
+<Element Index="[363]" Value="0" />
+<Element Index="[364]" Value="0" />
+<Element Index="[365]" Value="0" />
+<Element Index="[366]" Value="0" />
+<Element Index="[367]" Value="0" />
+<Element Index="[368]" Value="0" />
+<Element Index="[369]" Value="0" />
+<Element Index="[370]" Value="0" />
+<Element Index="[371]" Value="0" />
+<Element Index="[372]" Value="0" />
+<Element Index="[373]" Value="0" />
+<Element Index="[374]" Value="0" />
+<Element Index="[375]" Value="0" />
+<Element Index="[376]" Value="0" />
+<Element Index="[377]" Value="0" />
+<Element Index="[378]" Value="0" />
+<Element Index="[379]" Value="0" />
+<Element Index="[380]" Value="0" />
+<Element Index="[381]" Value="0" />
+<Element Index="[382]" Value="0" />
+<Element Index="[383]" Value="0" />
+<Element Index="[384]" Value="0" />
+<Element Index="[385]" Value="0" />
+<Element Index="[386]" Value="0" />
+<Element Index="[387]" Value="0" />
+<Element Index="[388]" Value="0" />
+<Element Index="[389]" Value="0" />
+<Element Index="[390]" Value="0" />
+<Element Index="[391]" Value="0" />
+<Element Index="[392]" Value="0" />
+<Element Index="[393]" Value="0" />
+<Element Index="[394]" Value="0" />
+<Element Index="[395]" Value="0" />
+<Element Index="[396]" Value="0" />
+<Element Index="[397]" Value="0" />
+<Element Index="[398]" Value="0" />
+<Element Index="[399]" Value="0" />
+<Element Index="[400]" Value="0" />
+<Element Index="[401]" Value="0" />
+<Element Index="[402]" Value="0" />
+<Element Index="[403]" Value="0" />
+<Element Index="[404]" Value="0" />
+<Element Index="[405]" Value="0" />
+<Element Index="[406]" Value="0" />
+<Element Index="[407]" Value="0" />
+<Element Index="[408]" Value="0" />
+<Element Index="[409]" Value="0" />
+<Element Index="[410]" Value="0" />
+<Element Index="[411]" Value="0" />
+<Element Index="[412]" Value="0" />
+<Element Index="[413]" Value="0" />
+<Element Index="[414]" Value="0" />
+<Element Index="[415]" Value="0" />
+<Element Index="[416]" Value="0" />
+<Element Index="[417]" Value="0" />
+<Element Index="[418]" Value="0" />
+<Element Index="[419]" Value="0" />
+<Element Index="[420]" Value="0" />
+<Element Index="[421]" Value="0" />
+<Element Index="[422]" Value="0" />
+<Element Index="[423]" Value="0" />
+<Element Index="[424]" Value="0" />
+<Element Index="[425]" Value="0" />
+<Element Index="[426]" Value="0" />
+<Element Index="[427]" Value="0" />
+<Element Index="[428]" Value="0" />
+<Element Index="[429]" Value="0" />
+<Element Index="[430]" Value="0" />
+<Element Index="[431]" Value="0" />
+<Element Index="[432]" Value="0" />
+<Element Index="[433]" Value="0" />
+<Element Index="[434]" Value="0" />
+<Element Index="[435]" Value="0" />
+<Element Index="[436]" Value="0" />
+<Element Index="[437]" Value="0" />
+<Element Index="[438]" Value="0" />
+<Element Index="[439]" Value="0" />
+<Element Index="[440]" Value="0" />
+<Element Index="[441]" Value="0" />
+<Element Index="[442]" Value="0" />
+<Element Index="[443]" Value="0" />
+<Element Index="[444]" Value="0" />
+<Element Index="[445]" Value="0" />
+</ArrayMember>
 </Structure>
 </Data>
 </InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+		,0,0,0,0,0,0,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+		,1,1,1,1,1,1,1,1,1,1,1,1,1,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="_0142:AL1222_7C39EFE1:O:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="302" Radix="Decimal">
+<Element Index="[0]" Value="0" />
+<Element Index="[1]" Value="0" />
+<Element Index="[2]" Value="0" />
+<Element Index="[3]" Value="0" />
+<Element Index="[4]" Value="0" />
+<Element Index="[5]" Value="0" />
+<Element Index="[6]" Value="0" />
+<Element Index="[7]" Value="0" />
+<Element Index="[8]" Value="0" />
+<Element Index="[9]" Value="0" />
+<Element Index="[10]" Value="0" />
+<Element Index="[11]" Value="0" />
+<Element Index="[12]" Value="0" />
+<Element Index="[13]" Value="0" />
+<Element Index="[14]" Value="0" />
+<Element Index="[15]" Value="0" />
+<Element Index="[16]" Value="0" />
+<Element Index="[17]" Value="0" />
+<Element Index="[18]" Value="0" />
+<Element Index="[19]" Value="0" />
+<Element Index="[20]" Value="0" />
+<Element Index="[21]" Value="0" />
+<Element Index="[22]" Value="0" />
+<Element Index="[23]" Value="0" />
+<Element Index="[24]" Value="0" />
+<Element Index="[25]" Value="0" />
+<Element Index="[26]" Value="0" />
+<Element Index="[27]" Value="0" />
+<Element Index="[28]" Value="0" />
+<Element Index="[29]" Value="0" />
+<Element Index="[30]" Value="0" />
+<Element Index="[31]" Value="0" />
+<Element Index="[32]" Value="0" />
+<Element Index="[33]" Value="0" />
+<Element Index="[34]" Value="0" />
+<Element Index="[35]" Value="0" />
+<Element Index="[36]" Value="0" />
+<Element Index="[37]" Value="0" />
+<Element Index="[38]" Value="0" />
+<Element Index="[39]" Value="0" />
+<Element Index="[40]" Value="0" />
+<Element Index="[41]" Value="0" />
+<Element Index="[42]" Value="0" />
+<Element Index="[43]" Value="0" />
+<Element Index="[44]" Value="0" />
+<Element Index="[45]" Value="0" />
+<Element Index="[46]" Value="0" />
+<Element Index="[47]" Value="0" />
+<Element Index="[48]" Value="0" />
+<Element Index="[49]" Value="0" />
+<Element Index="[50]" Value="0" />
+<Element Index="[51]" Value="0" />
+<Element Index="[52]" Value="0" />
+<Element Index="[53]" Value="0" />
+<Element Index="[54]" Value="0" />
+<Element Index="[55]" Value="0" />
+<Element Index="[56]" Value="0" />
+<Element Index="[57]" Value="0" />
+<Element Index="[58]" Value="0" />
+<Element Index="[59]" Value="0" />
+<Element Index="[60]" Value="0" />
+<Element Index="[61]" Value="0" />
+<Element Index="[62]" Value="0" />
+<Element Index="[63]" Value="0" />
+<Element Index="[64]" Value="0" />
+<Element Index="[65]" Value="0" />
+<Element Index="[66]" Value="0" />
+<Element Index="[67]" Value="0" />
+<Element Index="[68]" Value="0" />
+<Element Index="[69]" Value="0" />
+<Element Index="[70]" Value="0" />
+<Element Index="[71]" Value="0" />
+<Element Index="[72]" Value="0" />
+<Element Index="[73]" Value="0" />
+<Element Index="[74]" Value="0" />
+<Element Index="[75]" Value="0" />
+<Element Index="[76]" Value="0" />
+<Element Index="[77]" Value="0" />
+<Element Index="[78]" Value="0" />
+<Element Index="[79]" Value="0" />
+<Element Index="[80]" Value="0" />
+<Element Index="[81]" Value="0" />
+<Element Index="[82]" Value="0" />
+<Element Index="[83]" Value="0" />
+<Element Index="[84]" Value="0" />
+<Element Index="[85]" Value="0" />
+<Element Index="[86]" Value="0" />
+<Element Index="[87]" Value="10" />
+<Element Index="[88]" Value="0" />
+<Element Index="[89]" Value="0" />
+<Element Index="[90]" Value="0" />
+<Element Index="[91]" Value="0" />
+<Element Index="[92]" Value="0" />
+<Element Index="[93]" Value="0" />
+<Element Index="[94]" Value="0" />
+<Element Index="[95]" Value="0" />
+<Element Index="[96]" Value="0" />
+<Element Index="[97]" Value="0" />
+<Element Index="[98]" Value="0" />
+<Element Index="[99]" Value="0" />
+<Element Index="[100]" Value="0" />
+<Element Index="[101]" Value="0" />
+<Element Index="[102]" Value="0" />
+<Element Index="[103]" Value="0" />
+<Element Index="[104]" Value="0" />
+<Element Index="[105]" Value="0" />
+<Element Index="[106]" Value="0" />
+<Element Index="[107]" Value="0" />
+<Element Index="[108]" Value="0" />
+<Element Index="[109]" Value="0" />
+<Element Index="[110]" Value="0" />
+<Element Index="[111]" Value="0" />
+<Element Index="[112]" Value="0" />
+<Element Index="[113]" Value="0" />
+<Element Index="[114]" Value="0" />
+<Element Index="[115]" Value="0" />
+<Element Index="[116]" Value="0" />
+<Element Index="[117]" Value="0" />
+<Element Index="[118]" Value="0" />
+<Element Index="[119]" Value="1" />
+<Element Index="[120]" Value="1" />
+<Element Index="[121]" Value="1" />
+<Element Index="[122]" Value="1" />
+<Element Index="[123]" Value="1" />
+<Element Index="[124]" Value="1" />
+<Element Index="[125]" Value="1" />
+<Element Index="[126]" Value="1" />
+<Element Index="[127]" Value="1" />
+<Element Index="[128]" Value="1" />
+<Element Index="[129]" Value="1" />
+<Element Index="[130]" Value="1" />
+<Element Index="[131]" Value="1" />
+<Element Index="[132]" Value="1" />
+<Element Index="[133]" Value="1" />
+<Element Index="[134]" Value="1" />
+<Element Index="[135]" Value="1" />
+<Element Index="[136]" Value="1" />
+<Element Index="[137]" Value="1" />
+<Element Index="[138]" Value="1" />
+<Element Index="[139]" Value="1" />
+<Element Index="[140]" Value="1" />
+<Element Index="[141]" Value="1" />
+<Element Index="[142]" Value="1" />
+<Element Index="[143]" Value="1" />
+<Element Index="[144]" Value="1" />
+<Element Index="[145]" Value="1" />
+<Element Index="[146]" Value="1" />
+<Element Index="[147]" Value="1" />
+<Element Index="[148]" Value="1" />
+<Element Index="[149]" Value="1" />
+<Element Index="[150]" Value="1" />
+<Element Index="[151]" Value="1" />
+<Element Index="[152]" Value="1" />
+<Element Index="[153]" Value="1" />
+<Element Index="[154]" Value="1" />
+<Element Index="[155]" Value="1" />
+<Element Index="[156]" Value="1" />
+<Element Index="[157]" Value="1" />
+<Element Index="[158]" Value="1" />
+<Element Index="[159]" Value="1" />
+<Element Index="[160]" Value="1" />
+<Element Index="[161]" Value="1" />
+<Element Index="[162]" Value="1" />
+<Element Index="[163]" Value="1" />
+<Element Index="[164]" Value="1" />
+<Element Index="[165]" Value="1" />
+<Element Index="[166]" Value="1" />
+<Element Index="[167]" Value="1" />
+<Element Index="[168]" Value="1" />
+<Element Index="[169]" Value="1" />
+<Element Index="[170]" Value="1" />
+<Element Index="[171]" Value="1" />
+<Element Index="[172]" Value="1" />
+<Element Index="[173]" Value="1" />
+<Element Index="[174]" Value="10" />
+<Element Index="[175]" Value="0" />
+<Element Index="[176]" Value="0" />
+<Element Index="[177]" Value="0" />
+<Element Index="[178]" Value="0" />
+<Element Index="[179]" Value="0" />
+<Element Index="[180]" Value="0" />
+<Element Index="[181]" Value="0" />
+<Element Index="[182]" Value="0" />
+<Element Index="[183]" Value="0" />
+<Element Index="[184]" Value="0" />
+<Element Index="[185]" Value="0" />
+<Element Index="[186]" Value="0" />
+<Element Index="[187]" Value="0" />
+<Element Index="[188]" Value="0" />
+<Element Index="[189]" Value="0" />
+<Element Index="[190]" Value="0" />
+<Element Index="[191]" Value="0" />
+<Element Index="[192]" Value="0" />
+<Element Index="[193]" Value="0" />
+<Element Index="[194]" Value="0" />
+<Element Index="[195]" Value="0" />
+<Element Index="[196]" Value="0" />
+<Element Index="[197]" Value="0" />
+<Element Index="[198]" Value="0" />
+<Element Index="[199]" Value="0" />
+<Element Index="[200]" Value="0" />
+<Element Index="[201]" Value="0" />
+<Element Index="[202]" Value="0" />
+<Element Index="[203]" Value="0" />
+<Element Index="[204]" Value="0" />
+<Element Index="[205]" Value="0" />
+<Element Index="[206]" Value="0" />
+<Element Index="[207]" Value="0" />
+<Element Index="[208]" Value="0" />
+<Element Index="[209]" Value="0" />
+<Element Index="[210]" Value="0" />
+<Element Index="[211]" Value="0" />
+<Element Index="[212]" Value="0" />
+<Element Index="[213]" Value="0" />
+<Element Index="[214]" Value="0" />
+<Element Index="[215]" Value="0" />
+<Element Index="[216]" Value="0" />
+<Element Index="[217]" Value="0" />
+<Element Index="[218]" Value="0" />
+<Element Index="[219]" Value="0" />
+<Element Index="[220]" Value="0" />
+<Element Index="[221]" Value="0" />
+<Element Index="[222]" Value="0" />
+<Element Index="[223]" Value="0" />
+<Element Index="[224]" Value="0" />
+<Element Index="[225]" Value="0" />
+<Element Index="[226]" Value="0" />
+<Element Index="[227]" Value="0" />
+<Element Index="[228]" Value="0" />
+<Element Index="[229]" Value="0" />
+<Element Index="[230]" Value="0" />
+<Element Index="[231]" Value="0" />
+<Element Index="[232]" Value="0" />
+<Element Index="[233]" Value="0" />
+<Element Index="[234]" Value="0" />
+<Element Index="[235]" Value="0" />
+<Element Index="[236]" Value="0" />
+<Element Index="[237]" Value="0" />
+<Element Index="[238]" Value="0" />
+<Element Index="[239]" Value="0" />
+<Element Index="[240]" Value="0" />
+<Element Index="[241]" Value="0" />
+<Element Index="[242]" Value="0" />
+<Element Index="[243]" Value="0" />
+<Element Index="[244]" Value="0" />
+<Element Index="[245]" Value="0" />
+<Element Index="[246]" Value="0" />
+<Element Index="[247]" Value="0" />
+<Element Index="[248]" Value="0" />
+<Element Index="[249]" Value="0" />
+<Element Index="[250]" Value="0" />
+<Element Index="[251]" Value="0" />
+<Element Index="[252]" Value="0" />
+<Element Index="[253]" Value="0" />
+<Element Index="[254]" Value="0" />
+<Element Index="[255]" Value="0" />
+<Element Index="[256]" Value="0" />
+<Element Index="[257]" Value="0" />
+<Element Index="[258]" Value="0" />
+<Element Index="[259]" Value="0" />
+<Element Index="[260]" Value="0" />
+<Element Index="[261]" Value="0" />
+<Element Index="[262]" Value="0" />
+<Element Index="[263]" Value="0" />
+<Element Index="[264]" Value="0" />
+<Element Index="[265]" Value="0" />
+<Element Index="[266]" Value="0" />
+<Element Index="[267]" Value="0" />
+<Element Index="[268]" Value="0" />
+<Element Index="[269]" Value="0" />
+<Element Index="[270]" Value="0" />
+<Element Index="[271]" Value="0" />
+<Element Index="[272]" Value="0" />
+<Element Index="[273]" Value="0" />
+<Element Index="[274]" Value="0" />
+<Element Index="[275]" Value="0" />
+<Element Index="[276]" Value="0" />
+<Element Index="[277]" Value="0" />
+<Element Index="[278]" Value="0" />
+<Element Index="[279]" Value="0" />
+<Element Index="[280]" Value="0" />
+<Element Index="[281]" Value="0" />
+<Element Index="[282]" Value="0" />
+<Element Index="[283]" Value="0" />
+<Element Index="[284]" Value="0" />
+<Element Index="[285]" Value="0" />
+<Element Index="[286]" Value="0" />
+<Element Index="[287]" Value="0" />
+<Element Index="[288]" Value="0" />
+<Element Index="[289]" Value="0" />
+<Element Index="[290]" Value="0" />
+<Element Index="[291]" Value="0" />
+<Element Index="[292]" Value="0" />
+<Element Index="[293]" Value="0" />
+<Element Index="[294]" Value="0" />
+<Element Index="[295]" Value="0" />
+<Element Index="[296]" Value="0" />
+<Element Index="[297]" Value="0" />
+<Element Index="[298]" Value="0" />
+<Element Index="[299]" Value="0" />
+<Element Index="[300]" Value="0" />
+<Element Index="[301]" Value="0" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
 </Connection>
-<Connection Name="B_MotionSync" RPI="2000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
 </Connections>
 </Communications>
 </Module>
 
-<Module Name="TestMod1_2198H008ERS" CatalogNumber="2198-H008-ERS" Vendor="1" ProductType="37" ProductCode="47" Major="7" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<Module Name="TestMod1_DSIDRIVEPERIPHERALMO" CatalogNumber="PowerFlex 525-EENET" Vendor="1" ProductType="150" ProductCode="9" Major="3" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" DrivesADCMode="true" DrivesADCEnabled="false" SafetyEnabled="false">
 <EKey State="CompatibleModule" />
 <Ports>
+<Port Id="1" Address="0" Type="DSI" Upstream="false">
+<Bus />
+</Port>
 <Port Id="2" Address="192.168.1.90" Type="Ethernet" Upstream="true" />
 </Ports>
-<Communications>
-<ConfigData ConfigSize="376">
+<Communications CommMethod="536870913">
+<ConfigData ConfigSize="58">
 <Data Format="L5K">
-[380,3,257,47,430572775,0,2565904,131588,1,0,0,0,0,0,0,0,0,-1027080192,0,0,0,0,0,0,0,524296000,524296000,524296000
-		,524296000,0,0,1,0,0,460,-65536,1045220557,0,0,0,0,1120403456,1120403456,0,1120403456,1124859904,0,0,1120403456
-		,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1,0,8192000,8192125,1034,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+[62,0,6,0,1,0,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 </Data>
 </ConfigData>
+<ConfigScript Size="8056">
+<Data Format="L5K">
+[116,31,0,0,4,0,0,0,0,0,0,0,0,0,0,0,25,0,0,0,8,-106,0,0,0,1,0,0,0,1,0,0,0,8,0,0,0,75,2,32,-110,36,0,-1,-1,0,0,0,-63,30,0,0,8,30,0,0,0,1,0,0,0,1
+		,0,0,0,9,0,0,0,16,3,32,-109,36,0,48,2,3,1,0,0,0,10,0,0,0,16,3,32,-109,36,30,48,9,1,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,31,48,9,-52,1,1,0
+		,0,0,10,0,0,0,16,3,32,-109,36,32,48,9,60,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,33,48,9,65,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,34,48,9,65
+		,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,35,48,9,4,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,36,48,9,-37,6,1,0,0,0,10,0,0,0,16,3,32,-109,36,37,48
+		,9,118,1,1,0,0,0,10,0,0,0,16,3,32,-109,36,39,48,9,1,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,41,48,9,50,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,42
+		,48,9,50,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,43,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,44,48,9,76,29,1,0,0,0,10,0,0,0,16,3,32,-109,36
+		,45,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,46,48,9,5,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,47,48,9,15,0,1,0,0,0,10,0,0,0,16,3,32,-109,36
+		,48,48,9,2,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,49,48,9,5,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,50,48,9,1,0,1,0,0,0,10,0,0,0,16,3,32,-109,36
+		,51,48,9,2,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,52,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,62,48,9,48,0,1,0,0,0,10,0,0,0,16,3,32,-109,36
+		,63,48,9,50,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,64,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,65,48,9,7,0,1,0,0,0,10,0,0,0,16,3,32,-109,36
+		,66,48,9,7,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,67,48,9,5,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,68,48,9,9,0,1,0,0,0,10,0,0,0,16,3,32,-109,36
+		,69,48,9,2,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,70,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,71,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36
+		,72,48,9,1,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,73,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,74,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36
+		,75,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,76,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,77,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36
+		,78,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,79,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,80,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36
+		,81,48,9,2,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,82,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,83,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36
+		,84,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,85,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,86,48,9,-56,0,1,0,0,0,10,0,0,0,16,3,32,-109
+		,36,87,48,9,-56,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,88,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,89,48,9,100,0,1,0,0,0,10,0,0,0,16,3,32
+		,-109,36,91,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,92,48,9,-24,3,1,0,0,0,10,0,0,0,16,3,32,-109,36,93,48,9,0,0,1,0,0,0,10,0,0,0,16,3
+		,32,-109,36,94,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,95,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,96,48,9,-24,3,1,0,0,0,10,0,0,0,16
+		,3,32,-109,36,97,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,98,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,99,48,9,0,0,1,0,0,0,10,0,0,0,16
+		,3,32,-109,36,100,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,101,48,9,100,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,102,48,9,0,0,1,0,0,0,10
+		,0,0,0,16,3,32,-109,36,103,48,9,-106,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,104,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,105,48,9,0,0
+		,1,0,0,0,10,0,0,0,16,3,32,-109,36,121,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,122,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,123,48
+		,9,3,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,124,48,9,100,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,125,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36
+		,126,48,9,50,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,127,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-128,48,9,1,0,1,0,0,0,10,0,0,0,16,3,32,-109
+		,36,-127,48,9,-64,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-126,48,9,-88,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-125,48,9,60,0,1,0,0,0,10,0
+		,0,0,16,3,32,-109,36,-124,48,9,73,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-123,48,9,-1,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-122,48,9,-1
+		,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-121,48,9,-1,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-120,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-119
+		,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-118,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-117,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109
+		,36,-116,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-115,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-113,48,9,0,0,1,0,0,0,10,0,0,0,16,3
+		,32,-109,36,-112,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-111,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-110,48,9,0,0,1,0,0,0,10
+		,0,0,0,16,3,32,-109,36,-109,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-108,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-107,48,9,0,0
+		,1,0,0,0,10,0,0,0,16,3,32,-109,36,-106,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-103,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-102
+		,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-101,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-100,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109
+		,36,-99,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-98,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-97,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109
+		,36,-96,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-95,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-94,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109
+		,36,-93,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-92,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-91,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109
+		,36,-90,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-89,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-88,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109
+		,36,-87,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-85,48,9,2,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-84,48,9,3,0,1,0,0,0,10,0,0,0,16,3,32,-109
+		,36,-83,48,9,4,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-82,48,9,5,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-81,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109
+		,36,-76,48,9,-15,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-75,48,9,-15,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-74,48,9,-15,0,1,0,0,0,10,0,0,0
+		,16,3,32,-109,36,-73,48,9,-15,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-72,48,9,-15,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-71,48,9,-15,0
+		,1,0,0,0,10,0,0,0,16,3,32,-109,36,-70,48,9,-15,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-69,48,9,-15,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-66
+		,48,9,44,1,1,0,0,0,10,0,0,0,16,3,32,-109,36,-65,48,9,44,1,1,0,0,0,10,0,0,0,16,3,32,-109,36,-64,48,9,44,1,1,0,0,0,10,0,0,0,16,3,32,-109
+		,36,-63,48,9,44,1,1,0,0,0,10,0,0,0,16,3,32,-109,36,-62,48,9,44,1,1,0,0,0,10,0,0,0,16,3,32,-109,36,-61,48,9,44,1,1,0,0,0,10,0,0,0,16,3
+		,32,-109,36,-60,48,9,44,1,1,0,0,0,10,0,0,0,16,3,32,-109,36,-59,48,9,44,1,1,0,0,0,10,0,0,0,16,3,32,-109,36,-56,48,9,0,0,1,0,0,0,10,0
+		,0,0,16,3,32,-109,36,-55,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-54,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-53,48,9,0,0,1,0,0,0
+		,10,0,0,0,16,3,32,-109,36,-52,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-51,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-50,48,9,0,0,1
+		,0,0,0,10,0,0,0,16,3,32,-109,36,-49,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-48,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-47,48,9
+		,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-46,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-45,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-44
+		,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-43,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,-42,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36
+		,-41,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-102,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-101,1,48,9,-12,1,1,0,0,0,12,0,0,0
+		,16,4,32,-109,37,0,-100,1,48,9,-24,3,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-99,1,48,9,-48,7,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-98,1
+		,48,9,-72,11,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-97,1,48,9,-96,15,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-96,1,48,9,-120,19,1,0,0,0,12
+		,0,0,0,16,4,32,-109,37,0,-95,1,48,9,112,23,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-94,1,48,9,112,23,1,0,0,0,12,0,0,0,16,4,32,-109,37,0
+		,-93,1,48,9,112,23,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-92,1,48,9,112,23,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-91,1,48,9,112,23,1,0,0
+		,0,12,0,0,0,16,4,32,-109,37,0,-90,1,48,9,112,23,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-89,1,48,9,112,23,1,0,0,0,12,0,0,0,16,4,32,-109
+		,37,0,-88,1,48,9,112,23,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-87,1,48,9,112,23,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-86,1,48,9,112,23
+		,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-85,1,48,9,112,23,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-84,1,48,9,1,0,1,0,0,0,12,0,0,0,16,4,32,-109
+		,37,0,-83,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-82,1,48,9,100,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-81,1,48,9,-24,3,1,0,0,0,12
+		,0,0,0,16,4,32,-109,37,0,-80,1,48,9,-24,3,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-79,1,48,9,-24,3,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-78
+		,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-77,1,48,9,5,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-76,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109
+		,37,0,-75,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-74,1,48,9,-24,3,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-73,1,48,9,0,0,1,0,0,0,12,0
+		,0,0,16,4,32,-109,37,0,-72,1,48,9,30,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-71,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-70,1,48
+		,9,-24,3,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-69,1,48,9,-24,3,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-68,1,48,9,-24,3,1,0,0,0,12,0,0,0,16,4
+		,32,-109,37,0,-67,1,48,9,-24,3,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-66,1,48,9,-24,3,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-65,1,48,9,-24
+		,3,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-64,1,48,9,50,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-63,1,48,9,30,0,1,0,0,0,12,0,0,0,16,4,32,-109
+		,37,0,-62,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-61,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-60,1,48,9,0,0,1,0,0,0,12,0,0,0
+		,16,4,32,-109,37,0,-59,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-58,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-57,1,48,9,0,0
+		,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-56,1,48,9,88,2,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-55,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37
+		,0,-54,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-53,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-52,1,48,9,0,0,1,0,0,0,12,0,0,0,16
+		,4,32,-109,37,0,-51,1,48,9,1,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-50,1,48,9,20,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-49,1,48,9,0,0,1
+		,0,0,0,12,0,0,0,16,4,32,-109,37,0,-48,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-47,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-46
+		,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-45,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-44,1,48,9,88,2,1,0,0,0,12,0,0,0,16,4,32
+		,-109,37,0,-43,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-42,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-41,1,48,9,0,0,1,0,0,0,12
+		,0,0,0,16,4,32,-109,37,0,-40,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-39,1,48,9,1,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-38,1,48
+		,9,20,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-37,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-36,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109
+		,37,0,-35,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-34,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-33,1,48,9,0,0,1,0,0,0,12,0,0,0
+		,16,4,32,-109,37,0,-31,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-30,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-29,1,48,9,0,4
+		,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-28,1,48,9,-98,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-27,1,48,9,116,0,1,0,0,0,12,0,0,0,16,4,32,-109
+		,37,0,-26,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-25,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-24,1,48,9,0,0,1,0,0,0,12,0,0,0
+		,16,4,32,-109,37,0,-23,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-22,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-21,1,48,9,0,0
+		,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-20,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-19,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0
+		,-18,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-17,1,48,9,3,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-16,1,48,9,51,0,1,0,0,0,12,0,0,0,16
+		,4,32,-109,37,0,-15,1,48,9,0,1,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-14,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-13,1,48,9,0,0,1,0
+		,0,0,12,0,0,0,16,4,32,-109,37,0,-12,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-3,1,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-2,1
+		,48,9,65,3,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,-1,1,48,9,10,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,0,2,48,9,-36,5,1,0,0,0,12,0,0,0,16,4,32,-109
+		,37,0,1,2,48,9,10,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,2,2,48,9,-48,7,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,3,2,48,9,10,0,1,0,0,0,12,0,0,0,16
+		,4,32,-109,37,0,9,2,48,9,-24,3,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,10,2,48,9,100,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,11,2,48,9,-24,3
+		,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,12,2,48,9,100,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,13,2,48,9,-24,3,1,0,0,0,12,0,0,0,16,4,32,-109,37
+		,0,14,2,48,9,100,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,18,2,48,9,7,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,19,2,48,9,25,0,1,0,0,0,12,0,0,0,16
+		,4,32,-109,37,0,20,2,48,9,-6,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,21,2,48,9,-106,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,22,2,48,9,-52
+		,1,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,23,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,24,2,48,9,0,4,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,25
+		,2,48,9,64,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,26,2,48,9,20,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,27,2,48,9,5,0,1,0,0,0,12,0,0,0,16,4,32,-109
+		,37,0,28,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,29,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,30,2,48,9,10,0,1,0,0,0,12,0,0,0,16
+		,4,32,-109,37,0,31,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,32,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,33,2,48,9,0,0,1,0,0,0,12
+		,0,0,0,16,4,32,-109,37,0,34,2,48,9,65,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,35,2,48,9,1,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,36,2,48,9,0
+		,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,37,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,38,2,48,9,1,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,40
+		,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,41,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,42,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109
+		,37,0,44,2,48,9,2,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,45,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,46,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4
+		,32,-109,37,0,47,2,48,9,0,16,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,48,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,49,2,48,9,0,0,1,0,0,0,12
+		,0,0,0,16,4,32,-109,37,0,50,2,48,9,100,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,51,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,52,2,48,9
+		,100,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,53,2,48,9,8,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,54,2,48,9,30,0,1,0,0,0,12,0,0,0,16,4,32,-109
+		,37,0,55,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,56,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,57,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4
+		,32,-109,37,0,58,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,59,2,48,9,0,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,60,2,48,9,100,0,1,0,0,0
+		,12,0,0,0,16,4,32,-109,37,0,61,2,48,9,3,0,1,0,0,0,12,0,0,0,16,4,32,-109,37,0,62,2,48,9,0,0,1,0,0,0,37,0,0,0,16,3,32,-99,36,1,48,1,-127
+		,0,99,42,0,17,1,1,0,1,0,16,0,67,117,115,116,111,109,32,71,114,111,117,112,32,32,32,32,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1
+		,48,7,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,8,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,9,0,0,0,0,1,0,0,0,14,0,0,0,16,4
+		,32,-108,37,0,17,1,48,10,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,11,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,12,0
+		,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,13,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,14,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32
+		,-108,37,0,17,1,48,15,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,16,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,17,0,0,0
+		,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,18,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,19,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108
+		,37,0,17,1,48,20,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,21,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,22,0,0,0,0,1,0,0
+		,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,23,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,24,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37
+		,0,17,1,48,25,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,26,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,27,0,0,0,0,1,0,0,0,14
+		,0,0,0,16,4,32,-108,37,0,17,1,48,28,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,29,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17
+		,1,48,30,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,31,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,32,0,0,0,0,1,0,0,0,14,0,0
+		,0,16,4,32,-108,37,0,17,1,48,33,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,34,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48
+		,35,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,36,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,37,0,0,0,0,1,0,0,0,14,0,0,0,16
+		,4,32,-108,37,0,17,1,48,38,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,39,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,40
+		,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,41,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,42,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32
+		,-108,37,0,17,1,48,43,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,44,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,45,0,0,0
+		,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,46,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,47,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108
+		,37,0,17,1,48,48,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,49,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,50,0,0,0,0,1,0,0
+		,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,51,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,52,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37
+		,0,17,1,48,53,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,54,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,55,0,0,0,0,1,0,0,0,14
+		,0,0,0,16,4,32,-108,37,0,17,1,48,56,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,57,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17
+		,1,48,58,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,59,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,60,0,0,0,0,1,0,0,0,14,0,0
+		,0,16,4,32,-108,37,0,17,1,48,61,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,62,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48
+		,63,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,64,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,65,0,0,0,0,1,0,0,0,14,0,0,0,16
+		,4,32,-108,37,0,17,1,48,66,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,67,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,68
+		,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,69,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,70,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32
+		,-108,37,0,17,1,48,71,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,72,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,73,0,0,0
+		,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,74,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,75,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108
+		,37,0,17,1,48,76,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,77,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,78,0,0,0,0,1,0,0
+		,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,79,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,80,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37
+		,0,17,1,48,81,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,82,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,83,0,0,0,0,1,0,0,0,14
+		,0,0,0,16,4,32,-108,37,0,17,1,48,84,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,85,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17
+		,1,48,86,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,87,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,88,0,0,0,0,1,0,0,0,14,0,0
+		,0,16,4,32,-108,37,0,17,1,48,89,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,90,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48
+		,91,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,92,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,93,0,0,0,0,1,0,0,0,14,0,0,0,16
+		,4,32,-108,37,0,17,1,48,94,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,95,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,96
+		,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,97,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,98,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32
+		,-108,37,0,17,1,48,99,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,100,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,101,0
+		,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,102,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,103,0,0,0,0,1,0,0,0,14,0,0,0,16,4
+		,32,-108,37,0,17,1,48,104,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,105,0,0,0,0,1,0,0,0,14,0,0,0,16,4,32,-108,37,0,17,1,48,106
+		,0,0,0,0,1,0,0,0,28,0,0,0,16,3,32,-110,36,0,48,31,1,0,16,0,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,0,0,0,45,0,0,0,8,100,0,0,0
+		,1,0,0,0,6,0,0,0,24,0,0,0,16,3,32,-110,36,0,48,38,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,34,0,0,0,8,61,0,0,0,1,0,0,0,1,0,0,0,9,0,0,0,16,3,32
+		,-105,36,0,48,3,3,3,0,0,0,-120,19,0,0,0,0,29,0,0,0,0,100,0,0,0,2,0,0,0,-128,0,0,0,-19,95,-107,106,86,4,-21,17,-65,-27,-44,59,4,-36
+		,-68,-105,0,0,0]
+</Data>
+</ConfigScript>
 <Connections>
-<Connection Name="MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
+<Connection Name="Standard" RPI="70000" Type="Output" InputCxnPoint="1" OutputCxnPoint="2" OutputSize="4" InputSize="8" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:Motion_Diagnostics:S:1">
-<DataValueMember Name="LostControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LateControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LostDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LateDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ControllerToDriveConnectionSize" DataType="INT" Radix="Decimal" Value="44" />
-<DataValueMember Name="DriveToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="36" />
-<DataValueMember Name="NominalControllerToDriveTime" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="NominalDriveToControllerTime" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="2000" />
+<Structure DataType="AB:PowerFlex525V_EENET_Drive:I:0">
+<DataValueMember Name="DriveStatus" DataType="INT" Radix="Binary" Value="2#0000_0110_0010_1111" />
+<DataValueMember Name="Ready" DataType="BOOL" Value="1" />
+<DataValueMember Name="Active" DataType="BOOL" Value="1" />
+<DataValueMember Name="CommandDir" DataType="BOOL" Value="1" />
+<DataValueMember Name="ActualDir" DataType="BOOL" Value="1" />
+<DataValueMember Name="Accelerating" DataType="BOOL" Value="0" />
+<DataValueMember Name="Decelerating" DataType="BOOL" Value="1" />
+<DataValueMember Name="Faulted" DataType="BOOL" Value="0" />
+<DataValueMember Name="AtReference" DataType="BOOL" Value="0" />
+<DataValueMember Name="CommFreqCnt" DataType="BOOL" Value="1" />
+<DataValueMember Name="CommLogicCnt" DataType="BOOL" Value="1" />
+<DataValueMember Name="ParmsLocked" DataType="BOOL" Value="0" />
+<DataValueMember Name="DigIn1Active" DataType="BOOL" Value="0" />
+<DataValueMember Name="DigIn2Active" DataType="BOOL" Value="0" />
+<DataValueMember Name="DigIn3Active" DataType="BOOL" Value="0" />
+<DataValueMember Name="DigIn4Active" DataType="BOOL" Value="0" />
+<DataValueMember Name="OutputFreq" DataType="INT" Radix="Decimal" Value="6577" />
 </Structure>
 </Data>
 </InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[18,5441]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:PowerFlex525V_EENET_Drive:O:0">
+<DataValueMember Name="LogicCommand" DataType="INT" Radix="Binary" Value="2#0000_0000_0001_0010" />
+<DataValueMember Name="Stop" DataType="BOOL" Value="0" />
+<DataValueMember Name="Start" DataType="BOOL" Value="1" />
+<DataValueMember Name="Jog" DataType="BOOL" Value="0" />
+<DataValueMember Name="ClearFaults" DataType="BOOL" Value="0" />
+<DataValueMember Name="Forward" DataType="BOOL" Value="1" />
+<DataValueMember Name="Reverse" DataType="BOOL" Value="0" />
+<DataValueMember Name="ForceKeypadCtrl" DataType="BOOL" Value="0" />
+<DataValueMember Name="MOPIncrement" DataType="BOOL" Value="0" />
+<DataValueMember Name="AccelRate1" DataType="BOOL" Value="0" />
+<DataValueMember Name="AccelRate2" DataType="BOOL" Value="0" />
+<DataValueMember Name="DecelRate1" DataType="BOOL" Value="0" />
+<DataValueMember Name="DecelRate2" DataType="BOOL" Value="0" />
+<DataValueMember Name="FreqSel01" DataType="BOOL" Value="0" />
+<DataValueMember Name="FreqSel02" DataType="BOOL" Value="0" />
+<DataValueMember Name="FreqSel03" DataType="BOOL" Value="0" />
+<DataValueMember Name="MOPDecrement" DataType="BOOL" Value="0" />
+<DataValueMember Name="FreqCommand" DataType="INT" Radix="Decimal" Value="5441" />
+</Structure>
+</Data>
+</OutputTag>
 </Connection>
-<Connection Name="MotionSync" RPI="2000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
 </Connections>
 </Communications>
 </Module>
 
-<Module Name="TestMod1_2198P031" CatalogNumber="2198-P031" Vendor="1" ProductType="48" ProductCode="1" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
-<EKey State="CompatibleModule" />
+<Module CatalogNumber="DSI-DRIVE-PERIPHERAL-MODULE" Vendor="1" ProductType="0" ProductCode="29" Major="1" Minor="1" UserDefinedVendor="1" UserDefinedProductType="150" UserDefinedProductCode="33279" UserDefinedMajor="3" UserDefinedMinor="1" ParentModule="TestMod1_DSIDRIVEPERIPHERALMO" ParentModPortId="1" Inhibited="false" MajorFault="false" ShutdownParentOnFault="false" DrivesADCMode="true" DrivesADCEnabled="false" UserDefinedCatalogNumber="22-HIM-A3 SER C">
+<EKey State="Disabled" />
 <Ports>
-<Port Id="2" Address="192.168.1.100" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="1" Type="DSI" Upstream="true" />
 </Ports>
 <Communications>
-<ConfigData ConfigSize="376">
+<ConfigData ConfigSize="4">
 <Data Format="L5K">
-[380,3,257,1,25822311,2,2565904,131588,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,-65280,0,0,0,0,0,1120403456,0,0,1120403456
-		,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+[8,6,1]
+</Data>
+</ConfigData>
+<ConfigScript Size="568">
+<Data Format="L5K">
+[52,2,0,0,4,0,0,0,0,0,0,0,0,0,0,0,25,0,0,0,8,-106,0,0,0,1,0,0,0,1,0,0,0,8,0,0,0,75,2,32,-110,36,0,-1,-1,0,0,0,-126,1,0,0,8,30,0,0,0,1,0,0,0,1,0,0
+		,0,9,0,0,0,16,3,32,-109,36,0,48,2,3,1,0,0,0,10,0,0,0,16,3,32,-109,36,1,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,2,48,9,1,0,1,0,0,0,10,0,0
+		,0,16,3,32,-109,36,4,48,9,3,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,5,48,9,5,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,6,48,9,1,0,1,0,0,0,10,0,0,0,16
+		,3,32,-109,36,7,48,9,50,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,8,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,9,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32
+		,-109,36,11,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,12,48,9,0,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,13,48,9,88,2,1,0,0,0,10,0,0,0,16,3,32
+		,-109,36,14,48,9,1,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,15,48,9,72,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,16,48,9,72,0,1,0,0,0,10,0,0,0,16,3
+		,32,-109,36,17,48,9,122,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,18,48,9,32,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,19,48,9,32,0,1,0,0,0,10,0,0
+		,0,16,3,32,-109,36,20,48,9,32,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,21,48,9,32,0,1,0,0,0,10,0,0,0,16,3,32,-109,36,22,48,9,32,0,0,0,45,0
+		,0,0,8,100,0,0,0,1,0,0,0,6,0,0,0,24,0,0,0,16,3,32,-110,36,0,48,38,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,34,0,0,0,8,61,0,0,0,1,0,0,0,1,0,0,0
+		,9,0,0,0,16,3,32,-105,36,0,48,3,3,3,0,0,0,-120,19,0,0,0,0,29,0,0,0,0,100,0,0,0,2,0,0,0,-128,0,0,0,-18,95,-107,106,86,4,-21,17,-65,-27
+		,-44,59,4,-36,-68,-105,0,0,0]
+</Data>
+</ConfigScript>
+<Connections />
+</Communications>
+</Module>
+
+<Module Name="TestMod1_EX260SEN1A" CatalogNumber="EX260-SEN1/A" Vendor="7" ProductType="27" ProductCode="156" Major="2" Minor="3" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="192.168.1.100" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications>
+<ConfigData ConfigSize="0">
+<Data Format="L5K">
+[4,105]
 </Data>
 </ConfigData>
 <Connections>
-<Connection Name="A_MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:MotionDevice_Diagnostics:S:0">
-<DataValueMember Name="LostControllerToDeviceTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LateControllerToDeviceTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LostDeviceToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LateDeviceToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ControllerToDeviceConnectionSize" DataType="INT" Radix="Decimal" Value="36" />
-<DataValueMember Name="DeviceToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="36" />
-<DataValueMember Name="NominalControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="2000" />
-<DataValueMember Name="NominalDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="2000" />
-<DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="4000" />
+<Structure DataType="SM:EX260_SEN1:I:0">
+<DataValueMember Name="InputArea" DataType="INT" Radix="Binary" Value="2#0000_1000_0000_0000" />
+<DataValueMember Name="SOLV_Status" DataType="BOOL" Value="1" />
 </Structure>
 </Data>
 </InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[[0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="SM:EX260_SEN1:O:0">
+<ArrayMember Name="OutputArea" DataType="INT" Dimensions="2" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000_0000_0000" />
+<Element Index="[1]" Value="2#0000_0000_0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
 </Connection>
-<Connection Name="B_MotionSync" RPI="4000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
 </Connections>
 </Communications>
 </Module>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite41V2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 31 23:54:13 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite41V2" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 31 23:54:13 2026" LastModifiedDate="Mon Aug 31 23:54:13 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite41V2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Tue Sep 01 00:18:34 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite41V2" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Tue Sep 01 00:18:34 2026" LastModifiedDate="Tue Sep 01 00:18:34 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -64,150 +64,167 @@
 </Port>
 </Ports>
 </Module>
-<Module Name="TestMod1_1756HSCB" CatalogNumber="1756-HSC/B" Vendor="1" ProductType="109" ProductCode="10" Major="3" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<Module Name="TestMod1_440CCR3022BBBA" CatalogNumber="440C-CR30-22BBB/A" Vendor="1" ProductType="154" ProductCode="1" Major="10" Minor="11" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Address="2" Type="ICP" Upstream="true" />
+<Port Id="2" Address="192.168.1.70" Type="Ethernet" Upstream="true" />
 </Ports>
-<Communications CommMethod="536870913">
-<ConfigTag ConfigSize="116" ExternalAccess="Read/Write">
+<Communications>
+<ConfigData ConfigSize="20">
 <Data Format="L5K">
-[120,3,0,0,0,[65535,65535],[0,0],[0,0],[2,2],[4,4],0,0,0,0,[[[0,0],[0,0],0,0,0,0],[[0,0],[0,0],0,0,0,0],[[0,0],[0,0],0,0,0,0],[[0,0],[0,0],0,0,0,0]]]
+[24,101,2053501260,1234361284,1289223558,1775907960,103]
 </Data>
-<Data Format="Decorated">
-<Structure DataType="AB:1756_HSC:C:0">
-<DataValueMember Name="ProgToFaultEn" DataType="BOOL" Value="0" />
-<ArrayMember Name="RollOver" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="65535" />
-<Element Index="[1]" Value="65535" />
-</ArrayMember>
-<ArrayMember Name="Preset" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="Scaler" DataType="INT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="OperationalMode" DataType="SINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="2" />
-<Element Index="[1]" Value="2" />
-</ArrayMember>
-<ArrayMember Name="StorageMode" DataType="SINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="4" />
-<Element Index="[1]" Value="4" />
-</ArrayMember>
-<DataValueMember Name="ZInvert" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FilterA" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FilterB" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FilterZ" DataType="SINT" Radix="Decimal" Value="0" />
-<ArrayMember Name="Output" DataType="AB:1756_HSC_Output:C:0" Dimensions="4">
-<Element Index="[0]">
-<Structure DataType="AB:1756_HSC_Output:C:0">
-<ArrayMember Name="ONValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="OFFValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<DataValueMember Name="ToThisCounter" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FaultMode" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ProgMode" DataType="SINT" Radix="Decimal" Value="0" />
-</Structure>
-</Element>
-<Element Index="[1]">
-<Structure DataType="AB:1756_HSC_Output:C:0">
-<ArrayMember Name="ONValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="OFFValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<DataValueMember Name="ToThisCounter" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FaultMode" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ProgMode" DataType="SINT" Radix="Decimal" Value="0" />
-</Structure>
-</Element>
-<Element Index="[2]">
-<Structure DataType="AB:1756_HSC_Output:C:0">
-<ArrayMember Name="ONValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="OFFValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<DataValueMember Name="ToThisCounter" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FaultMode" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ProgMode" DataType="SINT" Radix="Decimal" Value="0" />
-</Structure>
-</Element>
-<Element Index="[3]">
-<Structure DataType="AB:1756_HSC_Output:C:0">
-<ArrayMember Name="ONValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="OFFValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<DataValueMember Name="ToThisCounter" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FaultMode" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ProgMode" DataType="SINT" Radix="Decimal" Value="0" />
-</Structure>
-</Element>
-</ArrayMember>
-</Structure>
-</Data>
-</ConfigTag>
+</ConfigData>
 <Connections>
-<Connection Name="Standard" RPI="2000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="false">
+<Connection Name="Data" RPI="2000000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:1756_HSC:I:0">
-<DataValueMember Name="CommStatus" DataType="DINT" Radix="Decimal" Value="0" />
-<ArrayMember Name="PresentValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="336" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="StoredValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="2000" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<DataValueMember Name="WasReset" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="WasPreset" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="NewDataFlag" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="ZState" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="OutputState" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="IsOverridden" DataType="SINT" Radix="Decimal" Value="0" />
-<ArrayMember Name="CSTTimestamp" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="-1856297339" />
-<Element Index="[1]" Value="3075" />
-</ArrayMember>
+<Structure DataType="AB:440C_CR30:I:0">
+<DataValueMember Name="RunMode" DataType="BOOL" Value="1" />
+<DataValueMember Name="ConnectionFaulted" DataType="BOOL" Value="0" />
+<DataValueMember Name="MajorFault" DataType="BOOL" Value="0" />
+<DataValueMember Name="MinorFault" DataType="BOOL" Value="0" />
+<DataValueMember Name="VerificationID" DataType="INT" Radix="Decimal" Value="6508" />
+<DataValueMember Name="MajorFaultCode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MajorFaultType" DataType="SINT" Radix="Hex" Value="16#00" />
+<DataValueMember Name="MinorFaultInstance" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MinorFaultType" DataType="SINT" Radix="Hex" Value="16#00" />
+<DataValueMember Name="MinorFaultCode" DataType="INT" Radix="Hex" Value="16#0000" />
+<DataValueMember Name="Pt00Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt01Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt02Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt03Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt04Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt05Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt06Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt07Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt08Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt09Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt10Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt11Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt12Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt13Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt14Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt15Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt16Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt17Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt18Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt19Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt20Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt21Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="SMF01" DataType="BOOL" Value="1" />
+<DataValueMember Name="SMF02" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF03" DataType="BOOL" Value="1" />
+<DataValueMember Name="SMF04" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF05" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF06" DataType="BOOL" Value="1" />
+<DataValueMember Name="SMF07" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF08" DataType="BOOL" Value="1" />
+<DataValueMember Name="SMF09" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF10" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF11" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF12" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF13" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF14" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF15" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF16" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF17" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF18" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF19" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF20" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF21" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF22" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF23" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF24" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA01" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLA02" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA03" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA04" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA05" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA06" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA07" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLA08" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA09" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA10" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA11" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA12" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA13" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA14" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA15" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA16" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB01" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLB02" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLB03" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB04" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLB05" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLB06" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLB07" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB08" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB09" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB10" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB11" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB12" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB13" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB14" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB15" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB16" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF01" DataType="BOOL" Value="1" />
+<DataValueMember Name="SOF02" DataType="BOOL" Value="1" />
+<DataValueMember Name="SOF03" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF04" DataType="BOOL" Value="1" />
+<DataValueMember Name="SOF05" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF06" DataType="BOOL" Value="1" />
+<DataValueMember Name="SOF07" DataType="BOOL" Value="1" />
+<DataValueMember Name="SOF08" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF09" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF10" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF11" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF12" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF13" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF14" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF15" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF16" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF01ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF02ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF03ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF04ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF05ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF06ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF07ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF08ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF09ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF10ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF11ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF12ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF13ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF14ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF15ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF16ResetRequired" DataType="BOOL" Value="0" />
 </Structure>
 </Data>
 </InputTag>
 <OutputTag ExternalAccess="Read/Write">
 <Data Format="L5K">
-[0,0,0,0,[0,0,0,0]]
+[0,0]
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:1756_HSC:O:0">
-<DataValueMember Name="ResetCounter" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LoadPreset" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ResetNewDataFlag" DataType="SINT" Radix="Decimal" Value="0" />
-<ArrayMember Name="OutputControl" DataType="SINT" Dimensions="4" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-<Element Index="[2]" Value="0" />
-<Element Index="[3]" Value="0" />
-</ArrayMember>
+<Structure DataType="AB:440C_CR30:O:0">
+<DataValueMember Name="LogicDefinedData00" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData01" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData02" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData03" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData04" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData05" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData06" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData07" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData08" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData09" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData10" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData11" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData12" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData13" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData14" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData15" DataType="BOOL" Value="0" />
 </Structure>
 </Data>
 </OutputTag>
@@ -216,101 +233,588 @@
 </Communications>
 </Module>
 
-<Module Name="TestMod1_1756HYD02" CatalogNumber="1756-HYD02" Vendor="1" ProductType="16" ProductCode="17" Major="33" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
-<EKey State="Disabled" />
+<Module Name="TestMod1_842ECMM" CatalogNumber="842E-CM-M" Vendor="1" ProductType="37" ProductCode="53" Major="1" Minor="2" ParentModule="Local" ParentModPortId="2" Inhibited="true" MajorFault="false">
+<EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Address="3" Type="ICP" Upstream="true" />
+<Port Id="2" Address="192.168.1.80" Type="Ethernet" Upstream="true" />
 </Ports>
-<Communications CommMethod="536870913">
-<ConfigData ConfigSize="12">
+<Communications>
+<ConfigData ConfigSize="220">
 <Data Format="L5K">
-[16,0,0,0,3,0,0,0,1,0,0,0,4,0,0,0,-36,5,0,0]
+[224,1,1,53,39,0,10000,131588,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8192000,8192125,67305985
+		,5,0,0,0,0,0,0]
 </Data>
 </ConfigData>
 <Connections>
-<Connection Name="MotionAsync" RPI="25000" Type="MotionAsync" EventID="0" ProgrammaticallySendEventTrigger="false" />
-<Connection Name="MotionEvent" RPI="1000000" Type="MotionEvent" EventID="0" ProgrammaticallySendEventTrigger="false" />
-<Connection Name="MotionSync" RPI="6000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
+<Connection Name="MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:MotionDevice_Diagnostics:S:0">
+<DataValueMember Name="LostControllerToDeviceTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateControllerToDeviceTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LostDeviceToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateDeviceToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="ControllerToDeviceConnectionSize" DataType="INT" Radix="Decimal" Value="36" />
+<DataValueMember Name="DeviceToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="52" />
+<DataValueMember Name="NominalControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="2500" />
+<DataValueMember Name="NominalDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="2500" />
+<DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="5000" />
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+<Connection Name="MotionSync" RPI="20000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
 </Connections>
 </Communications>
 </Module>
 
-<Module Name="TestMod1_1756IA32A" CatalogNumber="1756-IA32/A" Vendor="1" ProductType="7" ProductCode="10" Major="3" Minor="4" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<Module Name="TestMod1_843EMIPxxBAxA" CatalogNumber="843E-MIPxxBAx/A" Vendor="1" ProductType="34" ProductCode="4" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Address="4" Type="ICP" Upstream="true" />
+<Port Id="2" Address="192.168.1.90" Type="Ethernet" Upstream="true" />
 </Ports>
-<Communications CommMethod="536870913">
-<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Communications>
+<ConfigData ConfigSize="84">
 <Data Format="L5K">
-[28,16,0,0,0,0,1,9,1,9,1,9,1,9,-1,-1]
+[88,884,11,2000,2000,0,4096,1,1,100,1,100,135405327,0,0,0,0,0,1999,655421536,0,0,4608]
 </Data>
-<Data Format="Decorated">
-<Structure DataType="AB:1756_DI:C:1">
-<DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="9" />
-<DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="9" />
-<DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="9" />
-<DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="9" />
-<DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-</Structure>
-</Data>
-</ConfigTag>
+</ConfigData>
 <Connections>
-<Connection Name="StandardInput" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<Connection Name="Data" RPI="1000" Type="StandardDataDriven" OutputSize="4" InputSize="24" EventID="0" ProgrammaticallySendEventTrigger="false" Priority="Scheduled" InputConnectionType="Unicast" InputProductionTrigger="Cyclic" ConnectionPath="20 04 25 00 74 03 2d 00 e8 03 2d 00 28 04" InputTagSuffix="I" OutputTagSuffix="O">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:1756_DI:I:0">
-<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<Structure DataType="AB:ENC1_DIAG:I:0">
+<DataValueMember Name="RunMode" DataType="BOOL" Value="1" />
+<DataValueMember Name="ConnectionFaulted" DataType="BOOL" Value="0" />
+<DataValueMember Name="DiagnosticActive" DataType="BOOL" Value="1" />
+<DataValueMember Name="DiagnosticSequenceCount" DataType="SINT" Radix="Decimal" Value="-70" />
+<StructureMember Name="Encoder" DataType="CHANNEL_ENC_DIAG:I:0">
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="Uncertain" DataType="BOOL" Value="0" />
+<DataValueMember Name="LVelocityAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="HVelocityAlarm" DataType="BOOL" Value="1" />
+<DataValueMember Name="LAccelAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="HAccelAlarm" DataType="BOOL" Value="1" />
+<DataValueMember Name="LPositionAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="HPositionAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="LTemperatureAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="HTemperatureAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Position" DataType="DINT" Radix="Decimal" Value="1522" />
+<DataValueMember Name="Velocity" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Acceleration" DataType="DINT" Radix="Decimal" Value="4" />
+<DataValueMember Name="TemperatureOutOfRange" DataType="BOOL" Value="0" />
+<DataValueMember Name="OverCurrentLED" DataType="BOOL" Value="0" />
+<DataValueMember Name="SystemPowerOutOfRange" DataType="BOOL" Value="0" />
+<DataValueMember Name="OverVelocity" DataType="BOOL" Value="0" />
+</StructureMember>
 </Structure>
 </Data>
 </InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[[0,0,0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:ENC1:O:0">
+<StructureMember Name="Encoder" DataType="CHANNEL_ENC:O:0">
+<DataValueMember Name="SetZeroPosition" DataType="BOOL" Value="0" />
+</StructureMember>
+</Structure>
+</Data>
+</OutputTag>
 </Connection>
 </Connections>
 </Communications>
 </Module>
 
-<Module Name="TestMod1_1756IB16" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<Module Name="TestMod1_AL1122" CatalogNumber="AL1122" Vendor="322" ProductType="12" ProductCode="1122" Major="1" Minor="5" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Address="5" Type="ICP" Upstream="true" />
+<Port Id="2" Address="192.168.1.100" Type="Ethernet" Upstream="true" />
 </Ports>
-<Communications CommMethod="536870913">
-<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Communications>
+<ConfigTag ConfigSize="98" ExternalAccess="Read/Write">
 <Data Format="L5K">
-[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]
+[102,4,3,4,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1,3,0,1,0,0,0,0,1]
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:1756_DI:C:0">
-<DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0" />
-<DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111" />
-<DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111" />
+<Structure DataType="_0142:AL1122_C3657FB3:C:0">
+<DataValueMember Name="Communication_Profile" DataType="USINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Process_Data_Size" DataType="SINT" Radix="Decimal" Value="4" />
+<DataValueMember Name="Port_Mode_Port_1" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_1" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_1" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_1" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_1" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_1" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_1" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_1" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_2" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_2" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_2" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_2" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_2" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_2" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_2" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_2" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_3" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_3" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_3" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_3" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_3" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_3" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_3" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_3" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_4" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_4" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_4" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_4" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_4" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_4" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_4" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_4" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_5" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_5" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_5" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_5" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_5" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_5" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_5" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_5" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_6" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_6" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_6" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_6" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_6" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_6" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_6" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_6" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_7" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_7" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_7" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_7" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_7" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_7" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_7" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_7" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Port_Mode_Port_8" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Port_Cycle_Time_Port_8" DataType="USINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Swap_Port_8" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Validation_Data_Storage_Port_8" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Vendor_ID_Port_8" DataType="UINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Device_ID_Port_8" DataType="UDINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Mode_Port_8" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Fail_Safe_Value_DO_Port_8" DataType="SINT" Radix="Decimal" Value="1" />
 </Structure>
 </Data>
 </ConfigTag>
 <Connections>
-<Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<Connection Name="_200424C72C962C64" RPI="10000" Type="StandardDataDriven" OutputSize="302" InputSize="450" EventID="0" ProgrammaticallySendEventTrigger="false" Priority="Scheduled" InputConnectionType="Unicast" InputProductionTrigger="Cyclic" ConnectionPath="20 04 24 c7 2c 96 2c 64" InputTagSuffix="I1" OutputTagSuffix="O1">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:1756_DI:I:0">
-<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_0000_0000_0001" />
+<Structure DataType="_0142:AL1122_04852EE3:I:0">
+<DataValueMember Name="ConnectionFaulted" DataType="BOOL" Value="0" />
+<ArrayMember Name="Data" DataType="INT" Dimensions="223" Radix="Decimal">
+<Element Index="[0]" Value="0" />
+<Element Index="[1]" Value="0" />
+<Element Index="[2]" Value="0" />
+<Element Index="[3]" Value="0" />
+<Element Index="[4]" Value="0" />
+<Element Index="[5]" Value="0" />
+<Element Index="[6]" Value="0" />
+<Element Index="[7]" Value="0" />
+<Element Index="[8]" Value="0" />
+<Element Index="[9]" Value="0" />
+<Element Index="[10]" Value="0" />
+<Element Index="[11]" Value="0" />
+<Element Index="[12]" Value="0" />
+<Element Index="[13]" Value="0" />
+<Element Index="[14]" Value="0" />
+<Element Index="[15]" Value="0" />
+<Element Index="[16]" Value="0" />
+<Element Index="[17]" Value="0" />
+<Element Index="[18]" Value="0" />
+<Element Index="[19]" Value="0" />
+<Element Index="[20]" Value="0" />
+<Element Index="[21]" Value="0" />
+<Element Index="[22]" Value="0" />
+<Element Index="[23]" Value="0" />
+<Element Index="[24]" Value="0" />
+<Element Index="[25]" Value="0" />
+<Element Index="[26]" Value="0" />
+<Element Index="[27]" Value="0" />
+<Element Index="[28]" Value="0" />
+<Element Index="[29]" Value="0" />
+<Element Index="[30]" Value="0" />
+<Element Index="[31]" Value="0" />
+<Element Index="[32]" Value="0" />
+<Element Index="[33]" Value="0" />
+<Element Index="[34]" Value="0" />
+<Element Index="[35]" Value="0" />
+<Element Index="[36]" Value="0" />
+<Element Index="[37]" Value="0" />
+<Element Index="[38]" Value="0" />
+<Element Index="[39]" Value="0" />
+<Element Index="[40]" Value="0" />
+<Element Index="[41]" Value="0" />
+<Element Index="[42]" Value="0" />
+<Element Index="[43]" Value="0" />
+<Element Index="[44]" Value="0" />
+<Element Index="[45]" Value="0" />
+<Element Index="[46]" Value="0" />
+<Element Index="[47]" Value="0" />
+<Element Index="[48]" Value="0" />
+<Element Index="[49]" Value="0" />
+<Element Index="[50]" Value="0" />
+<Element Index="[51]" Value="0" />
+<Element Index="[52]" Value="0" />
+<Element Index="[53]" Value="0" />
+<Element Index="[54]" Value="0" />
+<Element Index="[55]" Value="0" />
+<Element Index="[56]" Value="0" />
+<Element Index="[57]" Value="0" />
+<Element Index="[58]" Value="0" />
+<Element Index="[59]" Value="0" />
+<Element Index="[60]" Value="0" />
+<Element Index="[61]" Value="0" />
+<Element Index="[62]" Value="0" />
+<Element Index="[63]" Value="0" />
+<Element Index="[64]" Value="0" />
+<Element Index="[65]" Value="0" />
+<Element Index="[66]" Value="0" />
+<Element Index="[67]" Value="0" />
+<Element Index="[68]" Value="0" />
+<Element Index="[69]" Value="0" />
+<Element Index="[70]" Value="0" />
+<Element Index="[71]" Value="0" />
+<Element Index="[72]" Value="0" />
+<Element Index="[73]" Value="0" />
+<Element Index="[74]" Value="0" />
+<Element Index="[75]" Value="0" />
+<Element Index="[76]" Value="0" />
+<Element Index="[77]" Value="0" />
+<Element Index="[78]" Value="0" />
+<Element Index="[79]" Value="0" />
+<Element Index="[80]" Value="0" />
+<Element Index="[81]" Value="0" />
+<Element Index="[82]" Value="0" />
+<Element Index="[83]" Value="0" />
+<Element Index="[84]" Value="0" />
+<Element Index="[85]" Value="0" />
+<Element Index="[86]" Value="0" />
+<Element Index="[87]" Value="0" />
+<Element Index="[88]" Value="0" />
+<Element Index="[89]" Value="0" />
+<Element Index="[90]" Value="0" />
+<Element Index="[91]" Value="0" />
+<Element Index="[92]" Value="0" />
+<Element Index="[93]" Value="0" />
+<Element Index="[94]" Value="0" />
+<Element Index="[95]" Value="0" />
+<Element Index="[96]" Value="0" />
+<Element Index="[97]" Value="0" />
+<Element Index="[98]" Value="0" />
+<Element Index="[99]" Value="0" />
+<Element Index="[100]" Value="0" />
+<Element Index="[101]" Value="0" />
+<Element Index="[102]" Value="0" />
+<Element Index="[103]" Value="0" />
+<Element Index="[104]" Value="0" />
+<Element Index="[105]" Value="0" />
+<Element Index="[106]" Value="0" />
+<Element Index="[107]" Value="0" />
+<Element Index="[108]" Value="0" />
+<Element Index="[109]" Value="0" />
+<Element Index="[110]" Value="0" />
+<Element Index="[111]" Value="0" />
+<Element Index="[112]" Value="0" />
+<Element Index="[113]" Value="0" />
+<Element Index="[114]" Value="0" />
+<Element Index="[115]" Value="0" />
+<Element Index="[116]" Value="0" />
+<Element Index="[117]" Value="0" />
+<Element Index="[118]" Value="0" />
+<Element Index="[119]" Value="0" />
+<Element Index="[120]" Value="0" />
+<Element Index="[121]" Value="0" />
+<Element Index="[122]" Value="0" />
+<Element Index="[123]" Value="0" />
+<Element Index="[124]" Value="0" />
+<Element Index="[125]" Value="0" />
+<Element Index="[126]" Value="0" />
+<Element Index="[127]" Value="0" />
+<Element Index="[128]" Value="0" />
+<Element Index="[129]" Value="0" />
+<Element Index="[130]" Value="0" />
+<Element Index="[131]" Value="0" />
+<Element Index="[132]" Value="0" />
+<Element Index="[133]" Value="0" />
+<Element Index="[134]" Value="0" />
+<Element Index="[135]" Value="0" />
+<Element Index="[136]" Value="0" />
+<Element Index="[137]" Value="0" />
+<Element Index="[138]" Value="0" />
+<Element Index="[139]" Value="0" />
+<Element Index="[140]" Value="0" />
+<Element Index="[141]" Value="0" />
+<Element Index="[142]" Value="0" />
+<Element Index="[143]" Value="0" />
+<Element Index="[144]" Value="0" />
+<Element Index="[145]" Value="0" />
+<Element Index="[146]" Value="0" />
+<Element Index="[147]" Value="0" />
+<Element Index="[148]" Value="0" />
+<Element Index="[149]" Value="0" />
+<Element Index="[150]" Value="0" />
+<Element Index="[151]" Value="0" />
+<Element Index="[152]" Value="0" />
+<Element Index="[153]" Value="0" />
+<Element Index="[154]" Value="0" />
+<Element Index="[155]" Value="0" />
+<Element Index="[156]" Value="0" />
+<Element Index="[157]" Value="0" />
+<Element Index="[158]" Value="0" />
+<Element Index="[159]" Value="0" />
+<Element Index="[160]" Value="0" />
+<Element Index="[161]" Value="0" />
+<Element Index="[162]" Value="0" />
+<Element Index="[163]" Value="0" />
+<Element Index="[164]" Value="0" />
+<Element Index="[165]" Value="0" />
+<Element Index="[166]" Value="0" />
+<Element Index="[167]" Value="0" />
+<Element Index="[168]" Value="0" />
+<Element Index="[169]" Value="0" />
+<Element Index="[170]" Value="0" />
+<Element Index="[171]" Value="0" />
+<Element Index="[172]" Value="0" />
+<Element Index="[173]" Value="0" />
+<Element Index="[174]" Value="0" />
+<Element Index="[175]" Value="0" />
+<Element Index="[176]" Value="0" />
+<Element Index="[177]" Value="0" />
+<Element Index="[178]" Value="0" />
+<Element Index="[179]" Value="0" />
+<Element Index="[180]" Value="0" />
+<Element Index="[181]" Value="0" />
+<Element Index="[182]" Value="0" />
+<Element Index="[183]" Value="0" />
+<Element Index="[184]" Value="0" />
+<Element Index="[185]" Value="0" />
+<Element Index="[186]" Value="0" />
+<Element Index="[187]" Value="0" />
+<Element Index="[188]" Value="0" />
+<Element Index="[189]" Value="0" />
+<Element Index="[190]" Value="0" />
+<Element Index="[191]" Value="0" />
+<Element Index="[192]" Value="0" />
+<Element Index="[193]" Value="0" />
+<Element Index="[194]" Value="0" />
+<Element Index="[195]" Value="0" />
+<Element Index="[196]" Value="0" />
+<Element Index="[197]" Value="0" />
+<Element Index="[198]" Value="0" />
+<Element Index="[199]" Value="0" />
+<Element Index="[200]" Value="0" />
+<Element Index="[201]" Value="0" />
+<Element Index="[202]" Value="0" />
+<Element Index="[203]" Value="0" />
+<Element Index="[204]" Value="0" />
+<Element Index="[205]" Value="0" />
+<Element Index="[206]" Value="0" />
+<Element Index="[207]" Value="0" />
+<Element Index="[208]" Value="0" />
+<Element Index="[209]" Value="0" />
+<Element Index="[210]" Value="0" />
+<Element Index="[211]" Value="0" />
+<Element Index="[212]" Value="0" />
+<Element Index="[213]" Value="0" />
+<Element Index="[214]" Value="0" />
+<Element Index="[215]" Value="0" />
+<Element Index="[216]" Value="0" />
+<Element Index="[217]" Value="0" />
+<Element Index="[218]" Value="0" />
+<Element Index="[219]" Value="0" />
+<Element Index="[220]" Value="0" />
+<Element Index="[221]" Value="0" />
+<Element Index="[222]" Value="0" />
+</ArrayMember>
 </Structure>
 </Data>
 </InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+		,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="_0142:AL1122_23FE281C:O:0">
+<ArrayMember Name="Data" DataType="INT" Dimensions="151" Radix="Decimal">
+<Element Index="[0]" Value="0" />
+<Element Index="[1]" Value="0" />
+<Element Index="[2]" Value="0" />
+<Element Index="[3]" Value="0" />
+<Element Index="[4]" Value="0" />
+<Element Index="[5]" Value="0" />
+<Element Index="[6]" Value="0" />
+<Element Index="[7]" Value="0" />
+<Element Index="[8]" Value="0" />
+<Element Index="[9]" Value="0" />
+<Element Index="[10]" Value="0" />
+<Element Index="[11]" Value="0" />
+<Element Index="[12]" Value="0" />
+<Element Index="[13]" Value="0" />
+<Element Index="[14]" Value="0" />
+<Element Index="[15]" Value="0" />
+<Element Index="[16]" Value="0" />
+<Element Index="[17]" Value="0" />
+<Element Index="[18]" Value="0" />
+<Element Index="[19]" Value="0" />
+<Element Index="[20]" Value="0" />
+<Element Index="[21]" Value="0" />
+<Element Index="[22]" Value="0" />
+<Element Index="[23]" Value="0" />
+<Element Index="[24]" Value="0" />
+<Element Index="[25]" Value="0" />
+<Element Index="[26]" Value="0" />
+<Element Index="[27]" Value="0" />
+<Element Index="[28]" Value="0" />
+<Element Index="[29]" Value="0" />
+<Element Index="[30]" Value="0" />
+<Element Index="[31]" Value="0" />
+<Element Index="[32]" Value="0" />
+<Element Index="[33]" Value="0" />
+<Element Index="[34]" Value="0" />
+<Element Index="[35]" Value="0" />
+<Element Index="[36]" Value="0" />
+<Element Index="[37]" Value="0" />
+<Element Index="[38]" Value="0" />
+<Element Index="[39]" Value="0" />
+<Element Index="[40]" Value="0" />
+<Element Index="[41]" Value="0" />
+<Element Index="[42]" Value="0" />
+<Element Index="[43]" Value="0" />
+<Element Index="[44]" Value="0" />
+<Element Index="[45]" Value="0" />
+<Element Index="[46]" Value="0" />
+<Element Index="[47]" Value="0" />
+<Element Index="[48]" Value="0" />
+<Element Index="[49]" Value="0" />
+<Element Index="[50]" Value="0" />
+<Element Index="[51]" Value="0" />
+<Element Index="[52]" Value="0" />
+<Element Index="[53]" Value="0" />
+<Element Index="[54]" Value="0" />
+<Element Index="[55]" Value="0" />
+<Element Index="[56]" Value="0" />
+<Element Index="[57]" Value="0" />
+<Element Index="[58]" Value="0" />
+<Element Index="[59]" Value="0" />
+<Element Index="[60]" Value="0" />
+<Element Index="[61]" Value="0" />
+<Element Index="[62]" Value="0" />
+<Element Index="[63]" Value="0" />
+<Element Index="[64]" Value="0" />
+<Element Index="[65]" Value="0" />
+<Element Index="[66]" Value="0" />
+<Element Index="[67]" Value="0" />
+<Element Index="[68]" Value="0" />
+<Element Index="[69]" Value="0" />
+<Element Index="[70]" Value="0" />
+<Element Index="[71]" Value="0" />
+<Element Index="[72]" Value="0" />
+<Element Index="[73]" Value="0" />
+<Element Index="[74]" Value="0" />
+<Element Index="[75]" Value="0" />
+<Element Index="[76]" Value="0" />
+<Element Index="[77]" Value="0" />
+<Element Index="[78]" Value="0" />
+<Element Index="[79]" Value="0" />
+<Element Index="[80]" Value="0" />
+<Element Index="[81]" Value="0" />
+<Element Index="[82]" Value="0" />
+<Element Index="[83]" Value="0" />
+<Element Index="[84]" Value="0" />
+<Element Index="[85]" Value="0" />
+<Element Index="[86]" Value="0" />
+<Element Index="[87]" Value="0" />
+<Element Index="[88]" Value="0" />
+<Element Index="[89]" Value="0" />
+<Element Index="[90]" Value="0" />
+<Element Index="[91]" Value="0" />
+<Element Index="[92]" Value="0" />
+<Element Index="[93]" Value="0" />
+<Element Index="[94]" Value="0" />
+<Element Index="[95]" Value="0" />
+<Element Index="[96]" Value="0" />
+<Element Index="[97]" Value="0" />
+<Element Index="[98]" Value="0" />
+<Element Index="[99]" Value="0" />
+<Element Index="[100]" Value="0" />
+<Element Index="[101]" Value="0" />
+<Element Index="[102]" Value="0" />
+<Element Index="[103]" Value="0" />
+<Element Index="[104]" Value="0" />
+<Element Index="[105]" Value="0" />
+<Element Index="[106]" Value="0" />
+<Element Index="[107]" Value="0" />
+<Element Index="[108]" Value="0" />
+<Element Index="[109]" Value="0" />
+<Element Index="[110]" Value="0" />
+<Element Index="[111]" Value="0" />
+<Element Index="[112]" Value="0" />
+<Element Index="[113]" Value="0" />
+<Element Index="[114]" Value="0" />
+<Element Index="[115]" Value="0" />
+<Element Index="[116]" Value="0" />
+<Element Index="[117]" Value="0" />
+<Element Index="[118]" Value="0" />
+<Element Index="[119]" Value="0" />
+<Element Index="[120]" Value="0" />
+<Element Index="[121]" Value="0" />
+<Element Index="[122]" Value="0" />
+<Element Index="[123]" Value="0" />
+<Element Index="[124]" Value="0" />
+<Element Index="[125]" Value="0" />
+<Element Index="[126]" Value="0" />
+<Element Index="[127]" Value="0" />
+<Element Index="[128]" Value="0" />
+<Element Index="[129]" Value="0" />
+<Element Index="[130]" Value="0" />
+<Element Index="[131]" Value="0" />
+<Element Index="[132]" Value="0" />
+<Element Index="[133]" Value="0" />
+<Element Index="[134]" Value="0" />
+<Element Index="[135]" Value="0" />
+<Element Index="[136]" Value="0" />
+<Element Index="[137]" Value="0" />
+<Element Index="[138]" Value="0" />
+<Element Index="[139]" Value="0" />
+<Element Index="[140]" Value="0" />
+<Element Index="[141]" Value="0" />
+<Element Index="[142]" Value="0" />
+<Element Index="[143]" Value="0" />
+<Element Index="[144]" Value="0" />
+<Element Index="[145]" Value="0" />
+<Element Index="[146]" Value="0" />
+<Element Index="[147]" Value="0" />
+<Element Index="[148]" Value="0" />
+<Element Index="[149]" Value="0" />
+<Element Index="[150]" Value="0" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
 </Connection>
 </Connections>
 </Communications>

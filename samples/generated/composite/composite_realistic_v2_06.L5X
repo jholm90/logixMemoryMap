@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite06V2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 31 23:54:06 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite06V2" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 31 23:54:06 2026" LastModifiedDate="Mon Aug 31 23:54:06 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite06V2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Tue Sep 01 00:18:27 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite06V2" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Tue Sep 01 00:18:27 2026" LastModifiedDate="Tue Sep 01 00:18:27 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -64,24 +64,34 @@
 </Port>
 </Ports>
 </Module>
-<Module Name="TestMod1_1794AENT" CatalogNumber="1794-AENT" Vendor="1" ProductType="12" ProductCode="90" Major="4" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<Module Name="TestMod1_1794IB16A" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="50" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" ControlNetSignature="16#bb2b_890b">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="2" Type="ICP" Upstream="true" />
+<Port Id="2" Address="1" Type="ControlNet" Upstream="false">
+<Bus />
+</Port>
+</Ports>
+</Module>
+
+<Module Name="TestMod2_1794IB16A" CatalogNumber="1794-ACN15/C" Vendor="1" ProductType="12" ProductCode="36" Major="4" Minor="1" ParentModule="TestMod1_1794IB16A" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="1" Type="Flex" Upstream="false">
 <Bus Size="8" />
 </Port>
-<Port Id="2" Address="192.168.1.70" Type="Ethernet" Upstream="true" />
+<Port Id="2" Address="11" Type="ControlNet" Upstream="true" />
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="false">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:1794_AEN_8SLOT:I:0">
+<Structure DataType="AB:1794_ACN15_8SLOT:I:0">
 <DataValueMember Name="SlotStatusBits" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
 <ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
-<Element Index="[0]" Value="2#0000_0001_1111_0110" />
-<Element Index="[1]" Value="2#0000_0000_0000_0000" />
+<Element Index="[0]" Value="2#0000_0100_0100_0100" />
+<Element Index="[1]" Value="2#0001_0000_0011_1110" />
 <Element Index="[2]" Value="2#0000_0000_0000_0000" />
 <Element Index="[3]" Value="2#0000_0000_0000_0000" />
 <Element Index="[4]" Value="2#0000_0000_0000_0000" />
@@ -94,14 +104,14 @@
 </InputTag>
 <OutputTag ExternalAccess="Read/Write">
 <Data Format="L5K">
-[[0,127,0,0,0,0,0,0]]
+[[0,0,1,0,0,0,0,0]]
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:1794_AEN_8SLOT:O:0">
+<Structure DataType="AB:1794_ACN15_8SLOT:O:0">
 <ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000_0000_0000" />
-<Element Index="[1]" Value="2#0000_0000_0111_1111" />
-<Element Index="[2]" Value="2#0000_0000_0000_0000" />
+<Element Index="[1]" Value="2#0000_0000_0000_0000" />
+<Element Index="[2]" Value="2#0000_0000_0000_0001" />
 <Element Index="[3]" Value="2#0000_0000_0000_0000" />
 <Element Index="[4]" Value="2#0000_0000_0000_0000" />
 <Element Index="[5]" Value="2#0000_0000_0000_0000" />
@@ -116,84 +126,123 @@
 </Communications>
 </Module>
 
-<Module Name="TestMod1_1794IA16A" CatalogNumber="1794-AENT" Vendor="1" ProductType="12" ProductCode="90" Major="4" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<Module Name="TestMod3_1794IB16A" CatalogNumber="1794-IB16/A" Vendor="1" ProductType="7" ProductCode="34" Major="1" Minor="1" ParentModule="TestMod2_1794IB16A" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Type="Flex" Upstream="false">
-<Bus Size="8" />
-</Port>
-<Port Id="2" Address="192.168.1.80" Type="Ethernet" Upstream="true" />
-</Ports>
-<Communications CommMethod="805306369">
-<Connections>
-<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:1794_AEN_8SLOT:I:0">
-<DataValueMember Name="SlotStatusBits" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
-<Element Index="[0]" Value="2#0000_0001_1111_0110" />
-<Element Index="[1]" Value="2#0000_0000_0000_0000" />
-<Element Index="[2]" Value="2#0000_0000_0000_0000" />
-<Element Index="[3]" Value="2#0000_0000_0000_0000" />
-<Element Index="[4]" Value="2#0000_0000_0000_0000" />
-<Element Index="[5]" Value="2#0000_0000_0000_0000" />
-<Element Index="[6]" Value="2#0000_0000_0000_0000" />
-<Element Index="[7]" Value="2#0000_0000_0000_0000" />
-</ArrayMember>
-</Structure>
-</Data>
-</InputTag>
-<OutputTag ExternalAccess="Read/Write">
-<Data Format="L5K">
-[[0,127,0,0,0,0,0,0]]
-</Data>
-<Data Format="Decorated">
-<Structure DataType="AB:1794_AEN_8SLOT:O:0">
-<ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
-<Element Index="[0]" Value="2#0000_0000_0000_0000" />
-<Element Index="[1]" Value="2#0000_0000_0111_1111" />
-<Element Index="[2]" Value="2#0000_0000_0000_0000" />
-<Element Index="[3]" Value="2#0000_0000_0000_0000" />
-<Element Index="[4]" Value="2#0000_0000_0000_0000" />
-<Element Index="[5]" Value="2#0000_0000_0000_0000" />
-<Element Index="[6]" Value="2#0000_0000_0000_0000" />
-<Element Index="[7]" Value="2#0000_0000_0000_0000" />
-</ArrayMember>
-</Structure>
-</Data>
-</OutputTag>
-</Connection>
-</Connections>
-</Communications>
-</Module>
-
-<Module Name="TestMod2_1794IA16A" CatalogNumber="1794-IA16/A" Vendor="1" ProductType="7" ProductCode="51" Major="1" Minor="1" ParentModule="TestMod1_1794IA16A" ParentModPortId="1" Inhibited="false" MajorFault="false">
-<EKey State="CompatibleModule" />
-<Ports>
-<Port Id="1" Address="0" Type="Flex" Upstream="true" />
+<Port Id="1" Address="1" Type="Flex" Upstream="true" />
 </Ports>
 <Communications CommMethod="1073741824">
 <ConfigTag ConfigSize="34" ExternalAccess="Read/Write">
 <Data Format="L5K">
-[38,3,1,2,0,125,12,4,16,125,10,16,125,11,7,521,0,1,1,0,1,0]
+[38,3,1,2,0,125,12,4,16,125,10,16,125,11,7,8191,0,1,1,0,1,0]
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:1794_DI_Delay16:C:0">
+<Structure DataType="AB:1794_IB16:C:0">
 <DataValueMember Name="Config" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000" />
-<DataValueMember Name="DelayTime_0" DataType="BOOL" Value="0" />
-<DataValueMember Name="DelayTime_1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DelayTime_2" DataType="BOOL" Value="0" />
-<DataValueMember Name="DelayTime_3" DataType="BOOL" Value="0" />
-<DataValueMember Name="DelayTime_4" DataType="BOOL" Value="0" />
-<DataValueMember Name="DelayTime_5" DataType="BOOL" Value="0" />
+<DataValueMember Name="Filter0_00_11" DataType="BOOL" Value="0" />
+<DataValueMember Name="Filter1_00_11" DataType="BOOL" Value="0" />
+<DataValueMember Name="Filter2_00_11" DataType="BOOL" Value="0" />
+<DataValueMember Name="Filter3_12_15" DataType="BOOL" Value="0" />
+<DataValueMember Name="Filter4_12_15" DataType="BOOL" Value="0" />
+<DataValueMember Name="Filter5_12_15" DataType="BOOL" Value="0" />
+<DataValueMember Name="ResetCounter" DataType="BOOL" Value="0" />
+<DataValueMember Name="DisableFilter" DataType="BOOL" Value="0" />
 </Structure>
 </Data>
 </ConfigTag>
 <Connections>
 <RackConnection>
-<InAliasTag>
-</InAliasTag>
+<InAliasTag />
+</RackConnection>
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod1_1794IB16XOB16PA" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="50" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" ControlNetSignature="16#bb2b_890b">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="3" Type="ICP" Upstream="true" />
+<Port Id="2" Address="1" Type="ControlNet" Upstream="false">
+<Bus />
+</Port>
+</Ports>
+</Module>
+
+<Module Name="TestMod2_1794IB16XOB16PA" CatalogNumber="1794-ACN15/C" Vendor="1" ProductType="12" ProductCode="36" Major="4" Minor="1" ParentModule="TestMod1_1794IB16XOB16PA" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Type="Flex" Upstream="false">
+<Bus Size="8" />
+</Port>
+<Port Id="2" Address="12" Type="ControlNet" Upstream="true" />
+</Ports>
+<Communications CommMethod="805306369">
+<Connections>
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="false">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1794_ACN15_8SLOT:I:0">
+<DataValueMember Name="SlotStatusBits" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#0101_0010_1010_1010" />
+<Element Index="[1]" Value="2#1010_1010_1010_1010" />
+<Element Index="[2]" Value="2#1010_1010_1110_1010" />
+<Element Index="[3]" Value="2#0000_0000_0000_0000" />
+<Element Index="[4]" Value="2#0000_0000_0000_0001" />
+<Element Index="[5]" Value="2#0000_0000_0000_0000" />
+<Element Index="[6]" Value="2#0000_0000_0000_0000" />
+<Element Index="[7]" Value="2#0000_0000_0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[[22816,-32513,8191,0,0,0,0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1794_ACN15_8SLOT:O:0">
+<ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#0101_1001_0010_0000" />
+<Element Index="[1]" Value="2#1000_0000_1111_1111" />
+<Element Index="[2]" Value="2#0001_1111_1111_1111" />
+<Element Index="[3]" Value="2#0000_0000_0000_0000" />
+<Element Index="[4]" Value="2#0000_0000_0000_0000" />
+<Element Index="[5]" Value="2#0000_0000_0000_0000" />
+<Element Index="[6]" Value="2#0000_0000_0000_0000" />
+<Element Index="[7]" Value="2#0000_0000_0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod3_1794IB16XOB16PA" CatalogNumber="1794-IB16XOB16P/A" Vendor="1" ProductType="7" ProductCode="155" Major="1" Minor="1" ParentModule="TestMod2_1794IB16XOB16PA" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="0" Type="Flex" Upstream="true" />
+</Ports>
+<Communications CommMethod="1073741824">
+<ConfigTag ConfigSize="36" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[40,3,1,2,16,125,12,4,16,125,10,0,125,11,8,8191,0,1,0,1,1,0,0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1794_IB16XOB16P:C:0">
+<DataValueMember Name="Filter_0" DataType="BOOL" Value="0" />
+<DataValueMember Name="Filter_1" DataType="BOOL" Value="0" />
+<DataValueMember Name="Filter_2" DataType="BOOL" Value="0" />
+<DataValueMember Name="SSData" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000" />
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<RackConnection>
+<InAliasTag />
+<OutAliasTag />
 </RackConnection>
 </Connections>
 </Communications>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite05V2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 31 23:54:06 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite05V2" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 31 23:54:06 2026" LastModifiedDate="Mon Aug 31 23:54:06 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite05V2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Tue Sep 01 00:18:27 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite05V2" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Tue Sep 01 00:18:27 2026" LastModifiedDate="Tue Sep 01 00:18:27 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -48,105 +48,10 @@
 </Port>
 </Ports>
 </Module>
-<Module Name="TestMod1_1756OA16" CatalogNumber="1756-OA16" Vendor="1" ProductType="7" ProductCode="13" Major="2" Minor="3" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" AutoDiagsEnabled="true">
-<EKey State="CompatibleModule" />
-<Ports>
-<Port Id="1" Address="2" Type="ICP" Upstream="true" />
-</Ports>
-<Communications CommMethod="536870914">
-<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
-<Data Format="L5K">
-[28,18,1,0,0,0,0,0,0,0]
-</Data>
-<Data Format="Decorated">
-<Structure DataType="AB:1756_DO:C:0">
-<DataValueMember Name="ProgToFaultEn" DataType="BOOL" Value="0" />
-<DataValueMember Name="FaultMode" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="FaultValue" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="ProgMode" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="ProgValue" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-</Structure>
-</Data>
-</ConfigTag>
-<Connections>
-<Connection Name="Fused" RPI="10000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:1756_DO_Fused:I:0">
-<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<ArrayMember Name="CSTTimestamp" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="-2147483648" />
-</ArrayMember>
-<DataValueMember Name="FuseBlown" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-</Structure>
-</Data>
-</InputTag>
-<OutputTag ExternalAccess="Read/Write">
-<Data Format="L5K">
-[0]
-</Data>
-<Data Format="Decorated">
-<Structure DataType="AB:1756_DO:O:0">
-<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-</Structure>
-</Data>
-</OutputTag>
-</Connection>
-</Connections>
-</Communications>
-</Module>
-
-<Module Name="TestMod1_1756OA16I" CatalogNumber="1756-OA16I" Vendor="1" ProductType="7" ProductCode="7" Major="3" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
-<EKey State="CompatibleModule" />
-<Ports>
-<Port Id="1" Address="3" Type="ICP" Upstream="true" />
-</Ports>
-<Communications CommMethod="536870913">
-<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
-<Data Format="L5K">
-[28,18,0,0,0,0,0,0,0,0]
-</Data>
-<Data Format="Decorated">
-<Structure DataType="AB:1756_DO:C:0">
-<DataValueMember Name="ProgToFaultEn" DataType="BOOL" Value="0" />
-<DataValueMember Name="FaultMode" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="FaultValue" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="ProgMode" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="ProgValue" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-</Structure>
-</Data>
-</ConfigTag>
-<Connections>
-<Connection Name="Standard" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:1756_DO:I:0">
-<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0100" />
-</Structure>
-</Data>
-</InputTag>
-<OutputTag ExternalAccess="Read/Write">
-<Data Format="L5K">
-[4]
-</Data>
-<Data Format="Decorated">
-<Structure DataType="AB:1756_DO:O:0">
-<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0100" />
-</Structure>
-</Data>
-</OutputTag>
-</Connection>
-</Connections>
-</Communications>
-</Module>
-
 <Module Name="TestMod1_1756OF4A" CatalogNumber="1756-OF4/A" Vendor="1" ProductType="10" ProductCode="8" Major="1" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Address="4" Type="ICP" Upstream="true" />
+<Port Id="1" Address="2" Type="ICP" Upstream="true" />
 </Ports>
 <Communications CommMethod="536870913">
 <ConfigTag ConfigSize="180" ExternalAccess="Read/Write">
@@ -328,7 +233,7 @@
 <Module CatalogNumber="1756-OF8/B" Vendor="1" ProductType="10" ProductCode="9" Major="2" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Address="5" Type="ICP" Upstream="true" />
+<Port Id="1" Address="3" Type="ICP" Upstream="true" />
 </Ports>
 <Communications CommMethod="536870913">
 <ConfigTag ConfigSize="356" ExternalAccess="Read/Write">
@@ -671,6 +576,221 @@
 </Connection>
 </Connections>
 </Communications>
+</Module>
+
+<Module Name="TestMod1_1756OW16I" CatalogNumber="1756-EN2T" Vendor="1" ProductType="12" ProductCode="166" Major="11" Minor="2" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="13" />
+</Port>
+<Port Id="2" Address="192.168.1.90" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications CommMethod="805306369">
+<Connections>
+<Connection Name="Output" RPI="10000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1756_ENET_13SLOT:I:0">
+<DataValueMember Name="SlotStatusBits" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1110_0000_0000_0001" />
+<ArrayMember Name="Slot" DataType="AB:1756_ENET_SLOT:I:0" Dimensions="13">
+<Element Index="[0]">
+<Structure DataType="AB:1756_ENET_SLOT:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="AB:1756_ENET_SLOT:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0100_0000_0010_0000_1010" />
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="AB:1756_ENET_SLOT:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#1000_0011_0000_0000_0000_0000_0000_0000" />
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="AB:1756_ENET_SLOT:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0001_1011_1011_0000_0000_1000" />
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="AB:1756_ENET_SLOT:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0001_0000_0000" />
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="AB:1756_ENET_SLOT:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0010_0000_0000_1001" />
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="AB:1756_ENET_SLOT:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1000_0010_0110_0000" />
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="AB:1756_ENET_SLOT:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_1100_0000_1010" />
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="AB:1756_ENET_SLOT:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1110_0001_1110_1000" />
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="AB:1756_ENET_SLOT:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_1000_0000_0100" />
+</Structure>
+</Element>
+<Element Index="[10]">
+<Structure DataType="AB:1756_ENET_SLOT:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1001_0000" />
+</Structure>
+</Element>
+<Element Index="[11]">
+<Structure DataType="AB:1756_ENET_SLOT:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0010_0110_0000" />
+</Structure>
+</Element>
+<Element Index="[12]">
+<Structure DataType="AB:1756_ENET_SLOT:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1111_0100" />
+</Structure>
+</Element>
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[-8191,[[0],[0],[0],[1814536],[256],[0],[0],[0],[0],[2052],[144],[608],[244]]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1756_ENET_13SLOT:O:0">
+<ArrayMember Name="Slot" DataType="AB:1756_ENET_SLOT:O:0" Dimensions="13">
+<Element Index="[0]">
+<Structure DataType="AB:1756_ENET_SLOT:O:0">
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="AB:1756_ENET_SLOT:O:0">
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="AB:1756_ENET_SLOT:O:0">
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="AB:1756_ENET_SLOT:O:0">
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0001_1011_1011_0000_0000_1000" />
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="AB:1756_ENET_SLOT:O:0">
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0001_0000_0000" />
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="AB:1756_ENET_SLOT:O:0">
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="AB:1756_ENET_SLOT:O:0">
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="AB:1756_ENET_SLOT:O:0">
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="AB:1756_ENET_SLOT:O:0">
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="AB:1756_ENET_SLOT:O:0">
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_1000_0000_0100" />
+</Structure>
+</Element>
+<Element Index="[10]">
+<Structure DataType="AB:1756_ENET_SLOT:O:0">
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1001_0000" />
+</Structure>
+</Element>
+<Element Index="[11]">
+<Structure DataType="AB:1756_ENET_SLOT:O:0">
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0010_0110_0000" />
+</Structure>
+</Element>
+<Element Index="[12]">
+<Structure DataType="AB:1756_ENET_SLOT:O:0">
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1111_0100" />
+</Structure>
+</Element>
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod2_1756OW16I" CatalogNumber="1756-OW16I" Vendor="1" ProductType="7" ProductCode="30" Major="3" Minor="3" ParentModule="TestMod1_1756OW16I" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="4" Type="ICP" Upstream="true" />
+</Ports>
+<Communications CommMethod="1073741824">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[28,18,0,0,0,0,0,0,0,0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1756_DO:C:0">
+<DataValueMember Name="ProgToFaultEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="FaultMode" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="FaultValue" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="ProgMode" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="ProgValue" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<RackConnection>
+<InAliasTag />
+<OutAliasTag />
+</RackConnection>
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod1_1783NATR" CatalogNumber="1783-NATR" Vendor="1" ProductType="12" ProductCode="309" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="2" Address="192.168.1.100" Type="Ethernet" Upstream="true" />
+</Ports>
 </Module>
 
 </Modules>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite40V2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 31 23:54:13 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite40V2" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 31 23:54:13 2026" LastModifiedDate="Mon Aug 31 23:54:13 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite40V2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Tue Sep 01 00:18:34 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite40V2" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Tue Sep 01 00:18:34 2026" LastModifiedDate="Tue Sep 01 00:18:34 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -48,269 +48,139 @@
 </Port>
 </Ports>
 </Module>
-<Module Name="TestMod1_1734OB8SB" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<Module Name="TestMod1_2198P031" CatalogNumber="2198-P031" Vendor="1" ProductType="48" ProductCode="1" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Address="0" Type="PointIO" Upstream="false">
-<Bus Size="14" />
-</Port>
 <Port Id="2" Address="192.168.1.70" Type="Ethernet" Upstream="true" />
 </Ports>
-<Communications CommMethod="805306369">
-<Connections>
-<Connection Name="Output" RPI="5000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:1734_14SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_0000_0001_1111" />
-<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<ArrayMember Name="Data" DataType="SINT" Dimensions="14" Radix="Binary">
-<Element Index="[0]" Value="2#0000_0000" />
-<Element Index="[1]" Value="2#0000_0000" />
-<Element Index="[2]" Value="2#0000_0000" />
-<Element Index="[3]" Value="2#0000_0000" />
-<Element Index="[4]" Value="2#0000_0000" />
-<Element Index="[5]" Value="2#1010_1111" />
-<Element Index="[6]" Value="2#0000_0001" />
-<Element Index="[7]" Value="2#1100_0000" />
-<Element Index="[8]" Value="2#0000_0000" />
-<Element Index="[9]" Value="2#0000_0000" />
-<Element Index="[10]" Value="2#0000_0000" />
-<Element Index="[11]" Value="2#0000_0011" />
-<Element Index="[12]" Value="2#0000_0000" />
-<Element Index="[13]" Value="2#0000_0000" />
-</ArrayMember>
-</Structure>
-</Data>
-</InputTag>
-<OutputTag ExternalAccess="Read/Write">
-<Data Format="L5K">
-[-4065,-1,[0,0,0,0,0,0,0,0,0,8,6,0,0,0]]
-</Data>
-<Data Format="Decorated">
-<Structure DataType="AB:1734_14SLOT:O:0">
-<ArrayMember Name="Data" DataType="SINT" Dimensions="14" Radix="Binary">
-<Element Index="[0]" Value="2#0000_0000" />
-<Element Index="[1]" Value="2#0000_0000" />
-<Element Index="[2]" Value="2#0000_0000" />
-<Element Index="[3]" Value="2#0000_0000" />
-<Element Index="[4]" Value="2#0000_0000" />
-<Element Index="[5]" Value="2#0000_0000" />
-<Element Index="[6]" Value="2#0000_0000" />
-<Element Index="[7]" Value="2#0000_0000" />
-<Element Index="[8]" Value="2#0000_0000" />
-<Element Index="[9]" Value="2#0000_1000" />
-<Element Index="[10]" Value="2#0000_0110" />
-<Element Index="[11]" Value="2#0000_0000" />
-<Element Index="[12]" Value="2#0000_0000" />
-<Element Index="[13]" Value="2#0000_0000" />
-</ArrayMember>
-</Structure>
-</Data>
-</OutputTag>
-</Connection>
-</Connections>
-</Communications>
-</Module>
-
-<Module Name="TestMod2_1734OB8SB" CatalogNumber="1734-OB8S/B" Vendor="1" ProductType="35" ProductCode="16" Major="2" Minor="1" ParentModule="TestMod1_1734OB8SB" ParentModPortId="1" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_447d_042b_b261">
-<EKey State="CompatibleModule" />
-<Ports>
-<Port Id="1" Address="3" Type="PointIO" Upstream="true" />
-</Ports>
 <Communications>
-<ConfigData ConfigSize="26">
+<ConfigData ConfigSize="376">
 <Data Format="L5K">
-[30,864,1181255011,46978231,17651,16843752,16843009,16843009,257]
+[380,3,257,1,25822311,2,2565904,131588,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,-65280,0,0,0,0,0,1120403456,0,0,1120403456
+		,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 </Data>
 </ConfigData>
 <Connections>
-<Connection Name="Input" RPI="10000" Type="SafetyInput" EventID="0" ProgrammaticallySendEventTrigger="false" TimeoutMultiplier="2" NetworkDelayMultiplier="200" ReactionTimeLimit="40.064" MaxObservedNetworkDelay="0" Unicast="true">
+<Connection Name="A_MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:1734_OB8S_Safety1:I:0">
-<DataValueMember Name="RunMode" DataType="BOOL" Value="0" />
-<DataValueMember Name="ConnectionFaulted" DataType="BOOL" Value="1" />
-<DataValueMember Name="Pt00OutputStatus" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt01OutputStatus" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt02OutputStatus" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt03OutputStatus" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt04OutputStatus" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt05OutputStatus" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt06OutputStatus" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt07OutputStatus" DataType="BOOL" Value="0" />
+<Structure DataType="AB:MotionDevice_Diagnostics:S:0">
+<DataValueMember Name="LostControllerToDeviceTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateControllerToDeviceTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LostDeviceToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateDeviceToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ControllerToDeviceConnectionSize" DataType="INT" Radix="Decimal" Value="36" />
+<DataValueMember Name="DeviceToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="36" />
+<DataValueMember Name="NominalControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="2000" />
+<DataValueMember Name="NominalDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="2000" />
+<DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="4000" />
 </Structure>
 </Data>
 </InputTag>
 </Connection>
-<Connection Name="Output" RPI="20000" Type="SafetyOutput" EventID="0" ProgrammaticallySendEventTrigger="false" TimeoutMultiplier="2" NetworkDelayMultiplier="200" ReactionTimeLimit="60" MaxObservedNetworkDelay="0" Unicast="true">
-<OutputTag ExternalAccess="Read/Write">
-<Data Format="L5K">
-[0]
-</Data>
-<Data Format="Decorated">
-<Structure DataType="AB:1734_OB8S:O:0">
-<DataValueMember Name="Pt00Data" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt01Data" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt02Data" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt03Data" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt04Data" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt05Data" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt06Data" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt07Data" DataType="BOOL" Value="0" />
-</Structure>
-</Data>
-</OutputTag>
-</Connection>
+<Connection Name="B_MotionSync" RPI="4000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
 </Connections>
 </Communications>
 </Module>
 
-<Module Name="TestMod1_1734OE2CC" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<Module Name="TestMod1_2198P070" CatalogNumber="2198-P070" Vendor="1" ProductType="48" ProductCode="2" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Address="0" Type="PointIO" Upstream="false">
-<Bus Size="14" />
-</Port>
 <Port Id="2" Address="192.168.1.80" Type="Ethernet" Upstream="true" />
 </Ports>
-<Communications CommMethod="805306369">
+<Communications>
+<ConfigData ConfigSize="376">
+<Data Format="L5K">
+[380,3,257,2,25822311,2,2565904,131588,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,-65024,0,0,0,0,0,1120403456,0,0,1120403456
+		,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+</Data>
+</ConfigData>
 <Connections>
-<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="A_MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:1734_14SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1100_0000_1000_1111" />
-<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<ArrayMember Name="Data" DataType="SINT" Dimensions="14" Radix="Binary">
-<Element Index="[0]" Value="2#0000_0000" />
-<Element Index="[1]" Value="2#0000_0000" />
-<Element Index="[2]" Value="2#0000_0000" />
-<Element Index="[3]" Value="2#0000_0000" />
-<Element Index="[4]" Value="2#0000_0100" />
-<Element Index="[5]" Value="2#0001_1010" />
-<Element Index="[6]" Value="2#0000_0011" />
-<Element Index="[7]" Value="2#0000_0000" />
-<Element Index="[8]" Value="2#0000_0000" />
-<Element Index="[9]" Value="2#0000_0000" />
-<Element Index="[10]" Value="2#0000_0000" />
-<Element Index="[11]" Value="2#0000_0000" />
-<Element Index="[12]" Value="2#0110_0011" />
-<Element Index="[13]" Value="2#0000_0000" />
-</ArrayMember>
+<Structure DataType="AB:MotionDevice_Diagnostics:S:0">
+<DataValueMember Name="LostControllerToDeviceTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateControllerToDeviceTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LostDeviceToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateDeviceToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ControllerToDeviceConnectionSize" DataType="INT" Radix="Decimal" Value="36" />
+<DataValueMember Name="DeviceToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="44" />
+<DataValueMember Name="NominalControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="2000" />
+<DataValueMember Name="NominalDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="2000" />
+<DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="4000" />
 </Structure>
 </Data>
 </InputTag>
-<OutputTag ExternalAccess="Read/Write">
-<Data Format="L5K">
-[-16241,-1,[0,0,0,0,0,0,0,0,0,16,6,6,0,0]]
-</Data>
-<Data Format="Decorated">
-<Structure DataType="AB:1734_14SLOT:O:0">
-<ArrayMember Name="Data" DataType="SINT" Dimensions="14" Radix="Binary">
-<Element Index="[0]" Value="2#0000_0000" />
-<Element Index="[1]" Value="2#0000_0000" />
-<Element Index="[2]" Value="2#0000_0000" />
-<Element Index="[3]" Value="2#0000_0000" />
-<Element Index="[4]" Value="2#0000_0000" />
-<Element Index="[5]" Value="2#0000_0000" />
-<Element Index="[6]" Value="2#0000_0000" />
-<Element Index="[7]" Value="2#0000_0000" />
-<Element Index="[8]" Value="2#0000_0000" />
-<Element Index="[9]" Value="2#0001_0000" />
-<Element Index="[10]" Value="2#0000_0110" />
-<Element Index="[11]" Value="2#0000_0110" />
-<Element Index="[12]" Value="2#0000_0000" />
-<Element Index="[13]" Value="2#0000_0000" />
-</ArrayMember>
-</Structure>
-</Data>
-</OutputTag>
 </Connection>
+<Connection Name="B_MotionSync" RPI="4000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
 </Connections>
 </Communications>
 </Module>
 
-<Module Name="TestMod2_1734OE2CC" CatalogNumber="1734-OE2C/C" Vendor="1" ProductType="115" ProductCode="25" Major="3" Minor="1" ParentModule="TestMod1_1734OE2CC" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<Module Name="TestMod1_2198P141" CatalogNumber="2198-P141" Vendor="1" ProductType="48" ProductCode="3" Major="14" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
-<Port Id="1" Address="7" Type="PointIO" Upstream="true" />
+<Port Id="2" Address="192.168.1.90" Type="Ethernet" Upstream="true" />
 </Ports>
-<Communications CommMethod="536870913">
-<ConfigTag ConfigSize="40" ExternalAccess="Read/Write">
+<Communications>
+<ConfigData ConfigSize="376">
 <Data Format="L5K">
-[44,123,1,0,0,3277,16383,-32768,32767,0,1,1,0,0,0,0,0,1638,8191,-32768,32767,0,1,1,0,0,0]
+[380,3,257,3,294257767,2,2565904,131588,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,460,-64768,0,0,0,0,0,1120403456
+		,0,0,1120403456,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 </Data>
-<Data Format="Decorated">
-<Structure DataType="AB:1734_OE2:C:0">
-<DataValueMember Name="Ch0FaultValue" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch0ProgValue" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch0LowEngineering" DataType="INT" Radix="Decimal" Value="3277" />
-<DataValueMember Name="Ch0HighEngineering" DataType="INT" Radix="Decimal" Value="16383" />
-<DataValueMember Name="Ch0LowLimit" DataType="INT" Radix="Decimal" Value="-32768" />
-<DataValueMember Name="Ch0HighLimit" DataType="INT" Radix="Decimal" Value="32767" />
-<DataValueMember Name="Ch0RangeType" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch0FaultMode" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="Ch0ProgMode" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="Ch0LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch0AlarmDisable" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch1FaultValue" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch1ProgValue" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch1LowEngineering" DataType="INT" Radix="Decimal" Value="1638" />
-<DataValueMember Name="Ch1HighEngineering" DataType="INT" Radix="Decimal" Value="8191" />
-<DataValueMember Name="Ch1LowLimit" DataType="INT" Radix="Decimal" Value="-32768" />
-<DataValueMember Name="Ch1HighLimit" DataType="INT" Radix="Decimal" Value="32767" />
-<DataValueMember Name="Ch1RangeType" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch1FaultMode" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="Ch1ProgMode" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="Ch1LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch1AlarmDisable" DataType="SINT" Radix="Decimal" Value="0" />
-</Structure>
-</Data>
-</ConfigTag>
+</ConfigData>
 <Connections>
-<Connection Name="OutputData" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="A_MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:1734_OE2:I:0">
-<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Ch0Status" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
-<DataValueMember Name="Ch0Fault" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0Calibration" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0LAlarm" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0HAlarm" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1Status" DataType="SINT" Radix="Binary" Value="2#0000_1001" />
-<DataValueMember Name="Ch1Fault" DataType="BOOL" Value="1" />
-<DataValueMember Name="Ch1Calibration" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1LAlarm" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1HAlarm" DataType="BOOL" Value="1" />
+<Structure DataType="AB:MotionDevice_Diagnostics:S:0">
+<DataValueMember Name="LostControllerToDeviceTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateControllerToDeviceTransmissions" DataType="INT" Radix="Decimal" Value="4" />
+<DataValueMember Name="LostDeviceToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateDeviceToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ControllerToDeviceConnectionSize" DataType="INT" Radix="Decimal" Value="40" />
+<DataValueMember Name="DeviceToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="44" />
+<DataValueMember Name="NominalControllerToDeviceTime" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="NominalDeviceToControllerTime" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="2000" />
 </Structure>
 </Data>
 </InputTag>
-<OutputTag ExternalAccess="Read/Write">
-<Data Format="L5K">
-[5000,32767]
-</Data>
-<Data Format="Decorated">
-<Structure DataType="AB:1734_OE2:O:0">
-<DataValueMember Name="Ch0Data" DataType="INT" Radix="Decimal" Value="5000" />
-<DataValueMember Name="Ch1Data" DataType="INT" Radix="Decimal" Value="32767" />
-</Structure>
-</Data>
-</OutputTag>
 </Connection>
+<Connection Name="B_MotionSync" RPI="4000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
 </Connections>
 </Communications>
-</Module>
-
-<Module Name="TestMod1_1756CNBD" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="50" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" ControlNetSignature="16#bb2b_890b">
-<EKey State="CompatibleModule" />
-<Ports>
-<Port Id="1" Address="4" Type="ICP" Upstream="true" />
-<Port Id="2" Address="1" Type="ControlNet" Upstream="false">
-<Bus />
-</Port>
-</Ports>
 </Module>
 
 </Modules>

@@ -57,14 +57,26 @@ from sample_gen.builders import (
     MemberSpec, aoi_xml, collect_nested_datatypes, counter_tag_xml, rung_xml, rungs_xml,
     tag_xml, timer_tag_xml, udt_xml,
 )
-from sample_gen.gen_module_sweep import _MODULE_CHAINS
+from sample_gen.gen_module_sweep import _MODULE_CHAINS, _UNDIAGNOSED_RETEST_CATALOGS
 from sample_gen.manifest import append_manifest_row, write_sample, write_sample_unmodeled
 from sample_gen.wrapper import build_l5x
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "composite"
 OUT_ROOT.mkdir(parents=True, exist_ok=True)
 
-_MODULE_CATALOGS = sorted(_MODULE_CHAINS.keys())
+# James, 2026-08-31, real: composite_realistic_v2 regenerated the exact same
+# already-known-bad-catalog import failures (5069-OB16/B, FANUC Robot
+# R30iB Plus/A, etc. -- see gen_module_sweep.py's own
+# _UNDIAGNOSED_RETEST_CATALOGS, the canonical list) because this pool
+# still included them. "if its a known bug then why was it generated a
+# second time? ... fix the generation script now." Fixed here at the
+# source -- gen_composite_realistic_v2.py imports _MODULE_CATALOGS/
+# _profile_for_index from this module, so excluding these catalogs from
+# the pool fixes future generation from both. Note: composite_realistic
+# _32's failure was NOT catalog-explained (no bad catalog in its mix --
+# see OPEN_QUESTIONS.md/known_conversion_failures.csv), so this fix won't
+# necessarily resolve that one; it remains separately tracked.
+_MODULE_CATALOGS = sorted(set(_MODULE_CHAINS.keys()) - _UNDIAGNOSED_RETEST_CATALOGS)
 _ATOMIC_TYPES = ["DINT", "INT", "REAL", "SINT", "BOOL"]
 
 

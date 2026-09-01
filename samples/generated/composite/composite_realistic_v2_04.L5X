@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite04V2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 31 23:54:06 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite04V2" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 31 23:54:06 2026" LastModifiedDate="Mon Aug 31 23:54:06 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite04V2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Tue Sep 01 00:18:26 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite04V2" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Tue Sep 01 00:18:26 2026" LastModifiedDate="Tue Sep 01 00:18:26 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -109,314 +109,10 @@
 </Port>
 </Ports>
 </Module>
-<Module Name="TestMod1_1756HSCA" CatalogNumber="1756-HSC/A" Vendor="1" ProductType="109" ProductCode="10" Major="1" Minor="6" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
-<EKey State="CompatibleModule" />
-<Ports>
-<Port Id="1" Address="2" Type="ICP" Upstream="true" />
-</Ports>
-<Communications CommMethod="536870913">
-<ConfigTag ConfigSize="116" ExternalAccess="Read/Write">
-<Data Format="L5K">
-[120,3,0,0,0,[65535,65535],[0,0],[0,0],[2,2],[4,4],0,0,0,0,[[[0,0],[0,0],0,0,0,0],[[0,0],[0,0],0,0,0,0],[[0,0],[0,0],0,0,0,0],[[0,0],[0,0],0,0,0,0]]]
-</Data>
-<Data Format="Decorated">
-<Structure DataType="AB:1756_HSC:C:0">
-<DataValueMember Name="ProgToFaultEn" DataType="BOOL" Value="0" />
-<ArrayMember Name="RollOver" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="65535" />
-<Element Index="[1]" Value="65535" />
-</ArrayMember>
-<ArrayMember Name="Preset" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="Scaler" DataType="INT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="OperationalMode" DataType="SINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="2" />
-<Element Index="[1]" Value="2" />
-</ArrayMember>
-<ArrayMember Name="StorageMode" DataType="SINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="4" />
-<Element Index="[1]" Value="4" />
-</ArrayMember>
-<DataValueMember Name="ZInvert" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FilterA" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FilterB" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FilterZ" DataType="SINT" Radix="Decimal" Value="0" />
-<ArrayMember Name="Output" DataType="AB:1756_HSC_Output:C:0" Dimensions="4">
-<Element Index="[0]">
-<Structure DataType="AB:1756_HSC_Output:C:0">
-<ArrayMember Name="ONValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="OFFValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<DataValueMember Name="ToThisCounter" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FaultMode" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ProgMode" DataType="SINT" Radix="Decimal" Value="0" />
-</Structure>
-</Element>
-<Element Index="[1]">
-<Structure DataType="AB:1756_HSC_Output:C:0">
-<ArrayMember Name="ONValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="OFFValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<DataValueMember Name="ToThisCounter" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FaultMode" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ProgMode" DataType="SINT" Radix="Decimal" Value="0" />
-</Structure>
-</Element>
-<Element Index="[2]">
-<Structure DataType="AB:1756_HSC_Output:C:0">
-<ArrayMember Name="ONValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="OFFValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<DataValueMember Name="ToThisCounter" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FaultMode" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ProgMode" DataType="SINT" Radix="Decimal" Value="0" />
-</Structure>
-</Element>
-<Element Index="[3]">
-<Structure DataType="AB:1756_HSC_Output:C:0">
-<ArrayMember Name="ONValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="OFFValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<DataValueMember Name="ToThisCounter" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FaultMode" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ProgMode" DataType="SINT" Radix="Decimal" Value="0" />
-</Structure>
-</Element>
-</ArrayMember>
-</Structure>
-</Data>
-</ConfigTag>
-<Connections>
-<Connection Name="Standard" RPI="2000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="false">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:1756_HSC:I:0">
-<DataValueMember Name="CommStatus" DataType="DINT" Radix="Decimal" Value="0" />
-<ArrayMember Name="PresentValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="899" />
-<Element Index="[1]" Value="278" />
-</ArrayMember>
-<ArrayMember Name="StoredValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="2000" />
-<Element Index="[1]" Value="2000" />
-</ArrayMember>
-<DataValueMember Name="WasReset" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="WasPreset" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="NewDataFlag" DataType="SINT" Radix="Decimal" Value="3" />
-<DataValueMember Name="ZState" DataType="SINT" Radix="Decimal" Value="2" />
-<DataValueMember Name="OutputState" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="IsOverridden" DataType="SINT" Radix="Decimal" Value="3" />
-<ArrayMember Name="CSTTimestamp" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="131156783" />
-<Element Index="[1]" Value="220" />
-</ArrayMember>
-</Structure>
-</Data>
-</InputTag>
-<OutputTag ExternalAccess="Read/Write">
-<Data Format="L5K">
-[0,0,0,0,[1,1,0,0]]
-</Data>
-<Data Format="Decorated">
-<Structure DataType="AB:1756_HSC:O:0">
-<DataValueMember Name="ResetCounter" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LoadPreset" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ResetNewDataFlag" DataType="SINT" Radix="Decimal" Value="0" />
-<ArrayMember Name="OutputControl" DataType="SINT" Dimensions="4" Radix="Decimal">
-<Element Index="[0]" Value="1" />
-<Element Index="[1]" Value="1" />
-<Element Index="[2]" Value="0" />
-<Element Index="[3]" Value="0" />
-</ArrayMember>
-</Structure>
-</Data>
-</OutputTag>
-</Connection>
-</Connections>
-</Communications>
-</Module>
-
-<Module Name="TestMod1_1756HSCB" CatalogNumber="1756-HSC/B" Vendor="1" ProductType="109" ProductCode="10" Major="3" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
-<EKey State="CompatibleModule" />
-<Ports>
-<Port Id="1" Address="3" Type="ICP" Upstream="true" />
-</Ports>
-<Communications CommMethod="536870913">
-<ConfigTag ConfigSize="116" ExternalAccess="Read/Write">
-<Data Format="L5K">
-[120,3,0,0,0,[65535,65535],[0,0],[0,0],[2,2],[4,4],0,0,0,0,[[[0,0],[0,0],0,0,0,0],[[0,0],[0,0],0,0,0,0],[[0,0],[0,0],0,0,0,0],[[0,0],[0,0],0,0,0,0]]]
-</Data>
-<Data Format="Decorated">
-<Structure DataType="AB:1756_HSC:C:0">
-<DataValueMember Name="ProgToFaultEn" DataType="BOOL" Value="0" />
-<ArrayMember Name="RollOver" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="65535" />
-<Element Index="[1]" Value="65535" />
-</ArrayMember>
-<ArrayMember Name="Preset" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="Scaler" DataType="INT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="OperationalMode" DataType="SINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="2" />
-<Element Index="[1]" Value="2" />
-</ArrayMember>
-<ArrayMember Name="StorageMode" DataType="SINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="4" />
-<Element Index="[1]" Value="4" />
-</ArrayMember>
-<DataValueMember Name="ZInvert" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FilterA" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FilterB" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FilterZ" DataType="SINT" Radix="Decimal" Value="0" />
-<ArrayMember Name="Output" DataType="AB:1756_HSC_Output:C:0" Dimensions="4">
-<Element Index="[0]">
-<Structure DataType="AB:1756_HSC_Output:C:0">
-<ArrayMember Name="ONValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="OFFValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<DataValueMember Name="ToThisCounter" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FaultMode" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ProgMode" DataType="SINT" Radix="Decimal" Value="0" />
-</Structure>
-</Element>
-<Element Index="[1]">
-<Structure DataType="AB:1756_HSC_Output:C:0">
-<ArrayMember Name="ONValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="OFFValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<DataValueMember Name="ToThisCounter" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FaultMode" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ProgMode" DataType="SINT" Radix="Decimal" Value="0" />
-</Structure>
-</Element>
-<Element Index="[2]">
-<Structure DataType="AB:1756_HSC_Output:C:0">
-<ArrayMember Name="ONValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="OFFValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<DataValueMember Name="ToThisCounter" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FaultMode" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ProgMode" DataType="SINT" Radix="Decimal" Value="0" />
-</Structure>
-</Element>
-<Element Index="[3]">
-<Structure DataType="AB:1756_HSC_Output:C:0">
-<ArrayMember Name="ONValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="OFFValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<DataValueMember Name="ToThisCounter" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="FaultMode" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ProgMode" DataType="SINT" Radix="Decimal" Value="0" />
-</Structure>
-</Element>
-</ArrayMember>
-</Structure>
-</Data>
-</ConfigTag>
-<Connections>
-<Connection Name="Standard" RPI="2000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="false">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:1756_HSC:I:0">
-<DataValueMember Name="CommStatus" DataType="DINT" Radix="Decimal" Value="0" />
-<ArrayMember Name="PresentValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="336" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<ArrayMember Name="StoredValue" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="2000" />
-<Element Index="[1]" Value="0" />
-</ArrayMember>
-<DataValueMember Name="WasReset" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="WasPreset" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="NewDataFlag" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="ZState" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="OutputState" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="IsOverridden" DataType="SINT" Radix="Decimal" Value="0" />
-<ArrayMember Name="CSTTimestamp" DataType="DINT" Dimensions="2" Radix="Decimal">
-<Element Index="[0]" Value="-1856297339" />
-<Element Index="[1]" Value="3075" />
-</ArrayMember>
-</Structure>
-</Data>
-</InputTag>
-<OutputTag ExternalAccess="Read/Write">
-<Data Format="L5K">
-[0,0,0,0,[0,0,0,0]]
-</Data>
-<Data Format="Decorated">
-<Structure DataType="AB:1756_HSC:O:0">
-<DataValueMember Name="ResetCounter" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LoadPreset" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ResetNewDataFlag" DataType="SINT" Radix="Decimal" Value="0" />
-<ArrayMember Name="OutputControl" DataType="SINT" Dimensions="4" Radix="Decimal">
-<Element Index="[0]" Value="0" />
-<Element Index="[1]" Value="0" />
-<Element Index="[2]" Value="0" />
-<Element Index="[3]" Value="0" />
-</ArrayMember>
-</Structure>
-</Data>
-</OutputTag>
-</Connection>
-</Connections>
-</Communications>
-</Module>
-
 <Module Name="TestMod1_1756HYD02" CatalogNumber="1756-HYD02" Vendor="1" ProductType="16" ProductCode="17" Major="33" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="Disabled" />
 <Ports>
-<Port Id="1" Address="4" Type="ICP" Upstream="true" />
+<Port Id="1" Address="2" Type="ICP" Upstream="true" />
 </Ports>
 <Communications CommMethod="536870913">
 <ConfigData ConfigSize="12">
@@ -428,6 +124,87 @@
 <Connection Name="MotionAsync" RPI="25000" Type="MotionAsync" EventID="0" ProgrammaticallySendEventTrigger="false" />
 <Connection Name="MotionEvent" RPI="1000000" Type="MotionEvent" EventID="0" ProgrammaticallySendEventTrigger="false" />
 <Connection Name="MotionSync" RPI="6000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod1_1756IA32A" CatalogNumber="1756-IA32/A" Vendor="1" ProductType="7" ProductCode="10" Major="3" Minor="4" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="3" Type="ICP" Upstream="true" />
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[28,16,0,0,0,0,1,9,1,9,1,9,1,9,-1,-1]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1756_DI:C:1">
+<DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="9" />
+<DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="9" />
+<DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="9" />
+<DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="9" />
+<DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="StandardInput" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1756_DI:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod1_1756IB16" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="4" Type="ICP" Upstream="true" />
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1756_DI:C:0">
+<DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0" />
+<DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111" />
+<DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111" />
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1756_DI:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_0000_0000_0001" />
+</Structure>
+</Data>
+</InputTag>
+</Connection>
 </Connections>
 </Communications>
 </Module>
