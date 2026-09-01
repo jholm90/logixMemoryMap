@@ -49,7 +49,14 @@ from sample_gen.wrapper import build_l5x
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "aoi"
 
-_MIX = ["MOV(In0,In1)", "XIC(In2)OTE(Out0)", "CLR(Loc0)", "ADD(In0,In1,Loc1)", "EQU(In0,In1)"]
+# James, 2026-08-31, real, caught on his own re-conversion: "conditional
+# instructions like EQU with no operand at the end of the rung or a
+# NOP() instruction. this is basic ladder logic." The original bare
+# "EQU(In0,In1)" had no output instruction -- fixed to end in a real
+# output (In2/Out0 are both BOOL, so XIC(In2)OTE(Out0) was already valid
+# and stays unchanged; the bit-level XIC/XIO/OTE/OTU/OTL/ONS constraint
+# doesn't apply here since neither operand is SINT/INT/DINT).
+_MIX = ["MOV(In0,In1)", "XIC(In2)OTE(Out0)", "CLR(Loc0)", "ADD(In0,In1,Loc1)", "EQU(In0,In1)OTE(Out0)"]
 
 
 def _logic_rungs(instr_count: int) -> str:

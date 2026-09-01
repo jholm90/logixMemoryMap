@@ -50,7 +50,21 @@ from sample_gen.wrapper import build_l5x
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "composite"
 OUT_ROOT.mkdir(parents=True, exist_ok=True)
 
-_MIX = ["MOV({a},{b})", "XIC({c})OTE({d})", "ADD({a},{b},{a})", "EQU({a},{b})"]
+# James, 2026-08-31, real, caught on his own re-conversion (of the FIRST
+# v2 batch, before this fix): "SINT/INT/DINT cannot be used for bit level
+# instructions like XIO,XIC,OTE,OTU,OTL,ONS only bools and .Bits of
+# SINT/INT/DINT" and "conditional instructions like EQU with no operand
+# at the end of the rung or a NOP() instruction." Both real, both fixed
+# here -- unlike gen_jsr_target_content_scale.py/gen_aoi_internal_logic_
+# isolation.py (same bug class, fixed the same day), this generator's two
+# call sites (AOI-internal-logic, JSR-target-content) pass DIFFERENT real
+# operand types for the condition/output slot (Out0 is BOOL in the AOI
+# case, Arr1[...] is INT in the JSR case) -- a single hardcoded ".0"
+# would be wrong for the BOOL case (bit-subscripting a BOOL is itself
+# invalid). Fixed by having each CALLER pre-format its own cond/out
+# operands correctly (bit-subscripted only when the underlying type
+# actually needs it) rather than guessing in the shared template.
+_MIX = ["MOV({a},{b})", "XIC({cond})OTE({out})", "ADD({a},{b},{a})", "EQU({a},{b})OTE({out})"]
 
 
 def _write(l5x: str, out_name: str, description: str) -> None:
@@ -65,14 +79,19 @@ def _write(l5x: str, out_name: str, description: str) -> None:
         print(f"Wrote {out_path} (predicted N/A -- unmodeled module shape: {exc})")
 
 
-def _content_rungs(instr_count: int, a: str, b: str, c: str, d: str) -> str:
+def _content_rungs(instr_count: int, a: str, b: str, cond: str, out: str) -> str:
+    """a/b: plain numeric operands (MOV/ADD/EQU) -- any atomic numeric type.
+    cond/out: the caller's OWN pre-formatted bit-level operands for XIC/OTE
+    (already ".N"-subscripted if the underlying tag is SINT/INT/DINT, left
+    bare if it's already BOOL) -- see this module's _MIX comment for why
+    that formatting can't be guessed here."""
     if instr_count <= 0:
         return ""
     pieces = []
     idx = 0
     total = 0
     while total < instr_count:
-        piece = _MIX[idx % len(_MIX)].format(a=a, b=b, c=c, d=d)
+        piece = _MIX[idx % len(_MIX)].format(a=a, b=b, cond=cond, out=out)
         pieces.append(rung_xml(idx, piece + ";"))
         total += piece.count("(")
         idx += 1
@@ -92,7 +111,9 @@ def _aoi_specs_with_logic(profile: Profile) -> list[tuple[str, str, list[MemberS
         output_params = [MemberSpec(f"Out{k}", "BOOL", required=True) for k in range(1 + a % 2)]
         local_tags = [MemberSpec(f"Wrk{k}", "DINT") for k in range(2 + a % 3)]
         instr_count = 5 + (a * 7 + profile.index * 3) % 40
-        logic_rungs = _content_rungs(instr_count, "In0", "Wrk0", "In0", "Out0")
+        # In0 is DINT (needs a bit subscript for XIC); Out0 is BOOL (bare,
+        # bit-subscripting a BOOL would itself be invalid).
+        logic_rungs = _content_rungs(instr_count, "In0", "Wrk0", "In0.0", "Out0")
         def_xml, storage = aoi_xml(
             name, input_params=input_params, output_params=output_params,
             local_tags=local_tags, logic_rungs_xml=logic_rungs,
@@ -108,7 +129,9 @@ def _jsr_target_xml(profile: Profile) -> tuple[str, str, str]:
     scaling with file index (20..220)."""
     target_name = f"Comp{profile.index:02d}V2JsrTarget"
     instr_count = 20 + (profile.index * 4) % 200
-    rungs = _content_rungs(instr_count, "Arr0[0]", "Arr0[1]", "Arr1[0]", "Arr1[1]")
+    # Arr1 is always INT (fixed j=1 position in _ATOMIC_TYPES's cycling,
+    # every file) -- both bracket-indexed elements need a bit subscript.
+    rungs = _content_rungs(instr_count, "Arr0[0]", "Arr0[1]", "Arr1[0].0", "Arr1[1].0")
     routine_xml = f'<Routine Name="{target_name}" Type="RLL"><RLLContent>{rungs}</RLLContent></Routine>'
     call_instr = f"JSR({target_name},0);"
     return routine_xml, target_name, call_instr

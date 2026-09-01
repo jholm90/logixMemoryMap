@@ -58,7 +58,17 @@ TARGET_INSTR_COUNTS = (10, 50, 100, 150)
 # Realistic mix matching AccuTally's own real top mnemonics (MOV/XIC/OTE/
 # CLR/ADD/EQU dominate its 123 real JSR-target routines) -- cycled to hit
 # the requested instruction count exactly.
-_MIX = ["MOV({t}0,{t}1)", "XIC({t}2)OTE({t}3)", "CLR({t}4)", "ADD({t}5,{t}6,{t}7)", "EQU({t}8,{t}9)"]
+#
+# James, 2026-08-31, real, caught on his own re-conversion: "SINT/INT/DINT
+# cannot be used for bit level instructions like XIO,XIC,OTE,OTU,OTL,ONS
+# only bools and .Bits of SINT/INT/DINT" -- TC0-9 are all DINT (see
+# tc_tags below), so the original "XIC({t}2)OTE({t}3)" referenced whole
+# DINT tags with no bit subscript, invalid. Also: "conditional instructions
+# like EQU with no operand at the end of the rung or a NOP() instruction"
+# -- the original bare "EQU({t}8,{t}9)" had no output instruction, also
+# invalid. Both fixed: XIC/OTE now bit-subscript (.0), EQU now ends in a
+# real output instruction.
+_MIX = ["MOV({t}0,{t}1)", "XIC({t}2.0)OTE({t}3.0)", "CLR({t}4)", "ADD({t}5,{t}6,{t}7)", "EQU({t}8,{t}9)OTE({t}3.0)"]
 
 
 def _write(out_name: str, l5x: str, description: str) -> None:

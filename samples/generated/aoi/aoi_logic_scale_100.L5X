@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="AoiLogicScale100" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 31 02:55:05 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="AoiLogicScale100" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 31 02:55:05 2026" LastModifiedDate="Mon Aug 31 02:55:05 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="AoiLogicScale100" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Tue Sep 01 01:04:27 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="AoiLogicScale100" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Tue Sep 01 01:04:27 2026" LastModifiedDate="Tue Sep 01 01:04:27 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -45,7 +45,7 @@
               </Rung>              <Rung Number="3" Type="N">
                 <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
               </Rung>              <Rung Number="4" Type="N">
-                <Text><![CDATA[EQU(In0,In1);]]></Text>
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
               </Rung>              <Rung Number="5" Type="N">
                 <Text><![CDATA[MOV(In0,In1);]]></Text>
               </Rung>              <Rung Number="6" Type="N">
@@ -55,7 +55,7 @@
               </Rung>              <Rung Number="8" Type="N">
                 <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
               </Rung>              <Rung Number="9" Type="N">
-                <Text><![CDATA[EQU(In0,In1);]]></Text>
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
               </Rung>              <Rung Number="10" Type="N">
                 <Text><![CDATA[MOV(In0,In1);]]></Text>
               </Rung>              <Rung Number="11" Type="N">
@@ -65,7 +65,7 @@
               </Rung>              <Rung Number="13" Type="N">
                 <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
               </Rung>              <Rung Number="14" Type="N">
-                <Text><![CDATA[EQU(In0,In1);]]></Text>
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
               </Rung>              <Rung Number="15" Type="N">
                 <Text><![CDATA[MOV(In0,In1);]]></Text>
               </Rung>              <Rung Number="16" Type="N">
@@ -75,7 +75,7 @@
               </Rung>              <Rung Number="18" Type="N">
                 <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
               </Rung>              <Rung Number="19" Type="N">
-                <Text><![CDATA[EQU(In0,In1);]]></Text>
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
               </Rung>              <Rung Number="20" Type="N">
                 <Text><![CDATA[MOV(In0,In1);]]></Text>
               </Rung>              <Rung Number="21" Type="N">
@@ -85,7 +85,7 @@
               </Rung>              <Rung Number="23" Type="N">
                 <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
               </Rung>              <Rung Number="24" Type="N">
-                <Text><![CDATA[EQU(In0,In1);]]></Text>
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
               </Rung>              <Rung Number="25" Type="N">
                 <Text><![CDATA[MOV(In0,In1);]]></Text>
               </Rung>              <Rung Number="26" Type="N">
@@ -95,7 +95,7 @@
               </Rung>              <Rung Number="28" Type="N">
                 <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
               </Rung>              <Rung Number="29" Type="N">
-                <Text><![CDATA[EQU(In0,In1);]]></Text>
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
               </Rung>              <Rung Number="30" Type="N">
                 <Text><![CDATA[MOV(In0,In1);]]></Text>
               </Rung>              <Rung Number="31" Type="N">
@@ -105,7 +105,7 @@
               </Rung>              <Rung Number="33" Type="N">
                 <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
               </Rung>              <Rung Number="34" Type="N">
-                <Text><![CDATA[EQU(In0,In1);]]></Text>
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
               </Rung>              <Rung Number="35" Type="N">
                 <Text><![CDATA[MOV(In0,In1);]]></Text>
               </Rung>              <Rung Number="36" Type="N">
@@ -115,7 +115,7 @@
               </Rung>              <Rung Number="38" Type="N">
                 <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
               </Rung>              <Rung Number="39" Type="N">
-                <Text><![CDATA[EQU(In0,In1);]]></Text>
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
               </Rung>              <Rung Number="40" Type="N">
                 <Text><![CDATA[MOV(In0,In1);]]></Text>
               </Rung>              <Rung Number="41" Type="N">
@@ -125,7 +125,7 @@
               </Rung>              <Rung Number="43" Type="N">
                 <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
               </Rung>              <Rung Number="44" Type="N">
-                <Text><![CDATA[EQU(In0,In1);]]></Text>
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
               </Rung>              <Rung Number="45" Type="N">
                 <Text><![CDATA[MOV(In0,In1);]]></Text>
               </Rung>              <Rung Number="46" Type="N">
@@ -135,7 +135,7 @@
               </Rung>              <Rung Number="48" Type="N">
                 <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
               </Rung>              <Rung Number="49" Type="N">
-                <Text><![CDATA[EQU(In0,In1);]]></Text>
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
               </Rung>              <Rung Number="50" Type="N">
                 <Text><![CDATA[MOV(In0,In1);]]></Text>
               </Rung>              <Rung Number="51" Type="N">
@@ -145,7 +145,7 @@
               </Rung>              <Rung Number="53" Type="N">
                 <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
               </Rung>              <Rung Number="54" Type="N">
-                <Text><![CDATA[EQU(In0,In1);]]></Text>
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
               </Rung>              <Rung Number="55" Type="N">
                 <Text><![CDATA[MOV(In0,In1);]]></Text>
               </Rung>              <Rung Number="56" Type="N">
@@ -155,7 +155,7 @@
               </Rung>              <Rung Number="58" Type="N">
                 <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
               </Rung>              <Rung Number="59" Type="N">
-                <Text><![CDATA[EQU(In0,In1);]]></Text>
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
               </Rung>              <Rung Number="60" Type="N">
                 <Text><![CDATA[MOV(In0,In1);]]></Text>
               </Rung>              <Rung Number="61" Type="N">
@@ -165,7 +165,7 @@
               </Rung>              <Rung Number="63" Type="N">
                 <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
               </Rung>              <Rung Number="64" Type="N">
-                <Text><![CDATA[EQU(In0,In1);]]></Text>
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
               </Rung>              <Rung Number="65" Type="N">
                 <Text><![CDATA[MOV(In0,In1);]]></Text>
               </Rung>              <Rung Number="66" Type="N">
@@ -175,33 +175,11 @@
               </Rung>              <Rung Number="68" Type="N">
                 <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
               </Rung>              <Rung Number="69" Type="N">
-                <Text><![CDATA[EQU(In0,In1);]]></Text>
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
               </Rung>              <Rung Number="70" Type="N">
                 <Text><![CDATA[MOV(In0,In1);]]></Text>
               </Rung>              <Rung Number="71" Type="N">
                 <Text><![CDATA[XIC(In2)OTE(Out0);]]></Text>
-              </Rung>              <Rung Number="72" Type="N">
-                <Text><![CDATA[CLR(Loc0);]]></Text>
-              </Rung>              <Rung Number="73" Type="N">
-                <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
-              </Rung>              <Rung Number="74" Type="N">
-                <Text><![CDATA[EQU(In0,In1);]]></Text>
-              </Rung>              <Rung Number="75" Type="N">
-                <Text><![CDATA[MOV(In0,In1);]]></Text>
-              </Rung>              <Rung Number="76" Type="N">
-                <Text><![CDATA[XIC(In2)OTE(Out0);]]></Text>
-              </Rung>              <Rung Number="77" Type="N">
-                <Text><![CDATA[CLR(Loc0);]]></Text>
-              </Rung>              <Rung Number="78" Type="N">
-                <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
-              </Rung>              <Rung Number="79" Type="N">
-                <Text><![CDATA[EQU(In0,In1);]]></Text>
-              </Rung>              <Rung Number="80" Type="N">
-                <Text><![CDATA[MOV(In0,In1);]]></Text>
-              </Rung>              <Rung Number="81" Type="N">
-                <Text><![CDATA[XIC(In2)OTE(Out0);]]></Text>
-              </Rung>              <Rung Number="82" Type="N">
-                <Text><![CDATA[CLR(Loc0);]]></Text>
               </Rung></RLLContent></Routine>
       </Routines>
     </AddOnInstructionDefinition>
