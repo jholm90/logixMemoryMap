@@ -132,7 +132,7 @@ class LintFinding:
     kind: str  # "missing_array_subscript" | "unrecognized_instruction" |
     # "duplicate_module_slot" | "chassis_size_exceeded" |
     # "aoi_call_arg_count_mismatch" | "bit_level_instruction_on_non_bool_operand" |
-    # "rung_missing_output_instruction"
+    # "rung_missing_output_instruction" | "lbl_missing_trailing_instruction"
     detail: str
 
 
@@ -355,6 +355,33 @@ def _rung_missing_output_findings(rung_texts: list[str]) -> list[LintFinding]:
     return findings
 
 
+def _lbl_missing_trailing_instruction_findings(rung_texts: list[str]) -> list[LintFinding]:
+    """James, 2026-08-22 (gen_logic_sweep.py's group_lbl_jmp, found
+    confirming the OQ-LBLJMP-STALE batch failure was real, not a stale-ACD-
+    cache artifact): "lbl needs something after it, LBL(thisLabel); will
+    fail - LBL(thisLabel)NOP(); will pass." A bare LBL with nothing else on
+    its rung is invalid, the same general "rung needs a real terminating
+    instruction" class as rung_missing_output_instruction above -- but LBL
+    isn't a condition/test instruction (it's a label marker), so it was
+    never caught by that check's _PURE_CONDITION_INSTRUCTIONS logic. Found
+    2026-08-31 doing a full sweep of every "real bug" comment in this
+    project for rules that were documented but never actually enforced
+    (James: "read all of your comments and see if there are any rules
+    that could be made") -- already fixed by hand in gen_logic_sweep.py
+    itself, but nothing stopped a NEW generator from reintroducing it
+    until now."""
+    findings = []
+    for text in rung_texts:
+        mnemonics = [name for name, _args in _call_sites(text)]
+        if mnemonics == ["LBL"]:
+            findings.append(LintFinding(
+                "lbl_missing_trailing_instruction",
+                f"LBL with nothing else on its rung -- real Studio 5000 requires a trailing "
+                f"instruction (e.g. NOP()) after LBL: {text.strip()!r}",
+            ))
+    return findings
+
+
 def _module_slot_findings(root: ET.Element) -> list[LintFinding]:
     """James, 2026-08-31: "Are you sure you are validating chassis size
     and duplicated slots? I explicitly remember asking you to check this
@@ -478,6 +505,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     # AOI's internal-only names or vice versa.
     global_tag_types = _tag_types_from(root, "Tag")
     findings.extend(_rung_missing_output_findings(rung_texts))
+    findings.extend(_lbl_missing_trailing_instruction_findings(rung_texts))
     for program_el in root.iter("Program"):
         findings.extend(_bit_level_findings(_all_rung_texts(program_el), global_tag_types))
     for aoi_el in root.iter("AddOnInstructionDefinition"):

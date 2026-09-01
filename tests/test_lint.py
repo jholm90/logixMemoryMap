@@ -225,3 +225,13 @@ def test_does_not_flag_rung_ending_in_output_instruction():
 def test_does_not_flag_empty_rung_as_missing_output():
     l5x = build_l5x(target_name="T", tags_xml="", extra_rungs_xml=rung_xml(0, ""))
     assert not any(f.kind == "rung_missing_output_instruction" for f in lint_l5x(l5x))
+
+
+def test_flags_bare_lbl_with_nothing_after_it():
+    l5x = build_l5x(target_name="T", tags_xml="", extra_rungs_xml=rung_xml(0, "LBL(L1);"))
+    assert any(f.kind == "lbl_missing_trailing_instruction" for f in lint_l5x(l5x))
+
+
+def test_does_not_flag_lbl_followed_by_nop():
+    l5x = build_l5x(target_name="T", tags_xml="", extra_rungs_xml=rung_xml(0, "LBL(L1)NOP();"))
+    assert not any(f.kind == "lbl_missing_trailing_instruction" for f in lint_l5x(l5x))
