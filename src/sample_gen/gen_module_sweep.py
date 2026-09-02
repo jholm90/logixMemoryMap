@@ -13360,30 +13360,26 @@ _5069_CATALOGS = {"5069-IB16/A", "5069-IB8S/A", "5069-IY4/A", "5069-OB16/A", "50
 _SIL2_CATALOGS = {
     "PowerFlex 527-STO CIP Safety", "FANUC Robot R30iB Plus/A",
     "1734-OB8S/A", "1734-OB8S/B", "442G-MABLB-UR-E0JP4679/A",
-    # 2026-09-02, James: "why did you put a safety module inside a non
-    # safety plc" (composite_realistic_v2_19/_30, both include
-    # 2198-S130-ERS3). Root-caused via manifest.csv self-audit, not James's
-    # own re-diagnosis this time: modulesweep_2198_s130_ers3's own
-    # STANDALONE real capture already carried error_count=2 the whole time
-    # (never investigated) -- confirmed a real, consistent, 7/7 signal
-    # across the whole "-ERS3" Kinetix 5700 family in this corpus: every
-    # catalog with an "ERS3" suffix (this one, plus the D012/D020/D032/
-    # D057/S086 variants in gen_module_sweep_variants.py) shows real
-    # nonzero error_count against a non-safety processor, while every
-    # sibling Kinetix catalog WITHOUT "ERS3" (P0xx/RP200/C4004/H008/
-    # V34PR5-LM) shows error_count=0. "ERS3" = Kinetix 5700 Enhanced with
-    # Integrated Safety rev 3 -- the drive's own AOP requires a safety-
-    # capable controller regardless of what this project writes for its
-    # own SafetyEnabled attribute (already false here), matching the exact
-    # "Failed to set the 'SafetyEnabled' property (The Controller is not a
-    # Safety Controller.)" error class the 2026-08-27 catalogs above were
-    # fixed for. modulesweep_2198_s130_ers3.L5X itself is NOT regenerated
-    # by this change (its real error_count=2 capture stays on record as
-    # evidence) -- needs a deliberate regen+recapture pass to confirm the
-    # fix, same as any other real-diagnosed-but-not-yet-reverified case.
-    "2198-S130-ERS3",
 }
 _SAFETY_PROCESSOR_TYPE = "1756-L81ES"
+
+# CORRECTION, 2026-09-02: '2198-S130-ERS3' was briefly added here the same
+# day on the theory that "-ERS3" Kinetix 5700 catalogs inherently require a
+# safety-capable controller (matching modulesweep_2198_s130_ers3's own real
+# error_count=2, and a clean 7/7 signal across every "-ERS3" catalog in
+# this corpus vs 0/7 for non-"-ERS3" siblings). DISPROVEN within the hour
+# by real evidence: James's own real production file (TitusvilleTrimmer)
+# runs a real `2198-D057-ERS3` module (`EM113_TrimmerLC_EM109_TrimInfdLC`)
+# on a plain non-safety 1756-L82E (`<SafetyInfo/>` empty, no SafetyTask) --
+# `SafetyEnabled="false"`, no `SafetyNetwork` anywhere, structurally the
+# same shape this project's own genericized block already uses. An
+# "-ERS3" catalog genuinely CAN run on a non-safety controller in real
+# Rockwell practice, so the safety-controller theory is wrong. The real
+# error_count=2 signal is still real and still unexplained -- see
+# gen_composite_realistic.py's own undiagnosed-catalog exclusion set
+# (renamed to cover this, not "requires safety") for the corrected
+# framing. Not re-adding a guessed replacement theory here; needs the
+# actual Studio 5000 error-log line, same as 193-ECM-ETR.
 
 # Real l5x2acd conversion failures, James's 2026-08-27 push
 # (samples/convert_log.csv): every one of these still failed even with the

@@ -80,33 +80,44 @@ OUT_ROOT.mkdir(parents=True, exist_ok=True)
 # 2026-09-02, second real exclusion class added, James: "why did you put a
 # safety module inside a non safety plc" (composite_realistic_v2_19/_30,
 # both include 2198-S130-ERS3). This generator always builds on the
-# wrapper's plain non-safety default processor (see the module docstring
-# above) and never applies a safety_level override -- so ANY catalog in
-# gen_module_sweep.py's own _SIL2_CATALOGS (real modules whose own
-# SafetyEnabled/CIP-Safety-connection genuinely requires a safety-capable
-# controller, confirmed via the 2026-08-27/2026-09-02 real Studio 5000
-# "Failed to set the 'SafetyEnabled' property" errors -- see that set's own
-# docstring) is structurally incompatible with this generator's own
-# design, not just an unlucky pairing. Excluded here at the source for the
-# same reason _UNDIAGNOSED_RETEST_CATALOGS is.
+# wrapper's plain non-safety default processor and never applies a
+# safety_level override, so ANY catalog in gen_module_sweep.py's own
+# _SIL2_CATALOGS (genuinely requires a safety-capable controller,
+# confirmed via the 2026-08-27 real "Failed to set the 'SafetyEnabled'
+# property" errors) is structurally incompatible with this generator's
+# design. Excluded here for the same reason _UNDIAGNOSED_RETEST_CATALOGS
+# is.
+#
+# CORRECTION, same day: '2198-S130-ERS3' was briefly added to
+# _SIL2_CATALOGS on the theory that its real error_count=2 meant it also
+# needed a safety-capable controller (matching a clean 7/7 signal across
+# every "-ERS3" Kinetix catalog in this corpus) -- DISPROVEN within the
+# hour by James's own real TitusvilleTrimmer production file, which runs
+# a real 2198-D057-ERS3 module on a plain non-safety 1756-L82E
+# (SafetyEnabled="false", no SafetyNetwork, no SafetyTask anywhere) --
+# an "-ERS3" catalog genuinely CAN run on a non-safety controller for
+# real. Reverted out of _SIL2_CATALOGS (see that set's own docstring in
+# gen_module_sweep.py). The real error_count=2 signal is still real and
+# still unexplained, so '2198-S130-ERS3' moves into the same genuinely-
+# undiagnosed bucket as '193-ECM-ETR/A'/'193-ECM-ETR/B' below rather than
+# a second guessed theory.
 #
 # Third exclusion, same push: '193-ECM-ETR/A'/'193-ECM-ETR/B' (James:
 # "Error: TestMod2_193ECMETRA: Child module incompatible with parent
-# module" on composite_realistic_v2_18/_50). Unlike the two exclusions
-# above, this one is genuinely NOT diagnosed yet -- manifest.csv shows
-# BOTH standalone modulesweep_193_ecm_etr_a/b already carry a real
-# error_count=1 (never previously investigated, found only by this
-# 2026-09-02 audit), so it isn't a composite-specific interaction, but the
-# actual Studio 5000 root cause under that error still isn't known.
-# Excluded from this pool anyway so composite files stop reproducing a
-# known-bad catalog while it's worked on, same convention as an
-# undiagnosed _UNDIAGNOSED_RETEST_CATALOGS entry.
-_UNDIAGNOSED_193_ECM_ETR_CATALOGS = {"193-ECM-ETR/A", "193-ECM-ETR/B"}
+# module" on composite_realistic_v2_18/_50). Genuinely NOT diagnosed --
+# manifest.csv shows BOTH standalone modulesweep_193_ecm_etr_a/b already
+# carry a real error_count=1 (never previously investigated, found only
+# by this 2026-09-02 audit), so it isn't a composite-specific interaction,
+# but the actual Studio 5000 root cause under that error still isn't
+# known. Excluded from this pool anyway so composite files stop
+# reproducing a known-bad catalog while it's worked on, same convention
+# as an undiagnosed _UNDIAGNOSED_RETEST_CATALOGS entry.
+_UNDIAGNOSED_COMPOSITE_CATALOGS = {"193-ECM-ETR/A", "193-ECM-ETR/B", "2198-S130-ERS3"}
 _MODULE_CATALOGS = sorted(
     set(_MODULE_CHAINS.keys())
     - _UNDIAGNOSED_RETEST_CATALOGS
     - _SIL2_CATALOGS
-    - _UNDIAGNOSED_193_ECM_ETR_CATALOGS
+    - _UNDIAGNOSED_COMPOSITE_CATALOGS
 )
 _ATOMIC_TYPES = ["DINT", "INT", "REAL", "SINT", "BOOL"]
 

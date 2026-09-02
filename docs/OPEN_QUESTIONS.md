@@ -892,8 +892,9 @@ the matching footnote at the bottom, not inline.
     Routine names too (untested) or is specific to JSR-target/Program
     identifiers.
 
-14. **OQ-193ECMETR** — new, real, genuinely undiagnosed. James, 2026-09-02:
-    real Studio 5000 error on `composite_realistic_v2_18`/`_50` ("Error:
+14. **OQ-193ECMETR** — new, real, genuinely undiagnosed (now covering TWO
+    catalogs — see the correction below). James, 2026-09-02: real Studio
+    5000 error on `composite_realistic_v2_18`/`_50` ("Error:
     TestMod2_193ECMETRA: Child module incompatible with parent module").
     Self-audit (checking for real currently-unreconciled `error_count`
     data per CLAUDE.md's standing rule, not just the composite files James
@@ -907,10 +908,36 @@ the matching footnote at the bottom, not inline.
     child, or the E300 family needing a different real parent device
     entirely) are just guesses, not verified. Excluded from
     `gen_composite_realistic.py`'s module pool
-    (`_UNDIAGNOSED_193_ECM_ETR_CATALOGS`) so future composite files stop
+    (`_UNDIAGNOSED_COMPOSITE_CATALOGS`) so future composite files stop
     reproducing it. Needs the real per-file Studio 5000 error-log detail
     (not just the generic error line already quoted) to actually
     root-cause.
+
+    **CORRECTION, same day, within the hour:** `2198-S130-ERS3` was
+    initially diagnosed below as "requires a safety-capable controller"
+    and wired into `_SIL2_CATALOGS` — DISPROVEN by real evidence almost
+    immediately after: James's own real production file
+    (`TitusvilleTrimmer_20260902r2.L5X`) runs a real `2198-D057-ERS3`
+    module (`EM113_TrimmerLC_EM109_TrimInfdLC`) on a plain non-safety
+    1756-L82E (`<SafetyInfo/>` empty, no SafetyTask anywhere) —
+    `SafetyEnabled="false"`, no `SafetyNetwork`, structurally the same
+    shape this project's own genericized block already uses. An
+    "-ERS3" catalog genuinely CAN run on a non-safety controller for
+    real, so the safety-controller theory is wrong. Reverted out of
+    `_SIL2_CATALOGS`. The real `error_count=2` signal on
+    `modulesweep_2198_s130_ers3` (and the clean 7/7 correlation across
+    every "-ERS3" catalog in the corpus) is still real and still
+    unexplained — `2198-S130-ERS3` moves into the SAME genuinely-
+    undiagnosed bucket as `193-ECM-ETR/A`/`/B` above
+    (`_UNDIAGNOSED_COMPOSITE_CATALOGS`) rather than standing on a second
+    guessed theory. A real, still-untested alternative worth checking
+    first when real error-log detail is available: this project's own
+    genericized `2198-S130-ERS3`/`2198-D057-ERS3` blocks may be missing a
+    real Motion/Axis association these Kinetix drives need beyond the
+    Diagnostics connection alone — James's real file's module carries
+    plain `DiagnosticInput`-only connections in the excerpt checked so
+    far, so this isn't confirmed either, just a real lead not yet a
+    guess turned into code.
 
     **Two separate, real bugs found and fixed the same pass, NOT this
     one:**
@@ -936,28 +963,13 @@ the matching footnote at the bottom, not inline.
       pre-existing `modulerack_1756_local`/`_remote` files not touched by
       this fix — those may be intentionally sparse racks, not bugs; not
       changed, flagged for James to confirm before any future regen.)
-    - **Safety-rated module in a non-safety-declared composite** (James:
-      "why did you put a safety module inside a non safety plc" —
-      `composite_realistic_v2_19`/`_30`, both include `2198-S130-ERS3`).
-      Root-caused via the same self-audit: `modulesweep_2198_s130_ers3`'s
-      own standalone real capture already carried `error_count=2`,
-      matching a clean 7/7 signal across the whole corpus — every
-      "-ERS3"-suffixed Kinetix 5700 catalog (this one, plus the
-      D012/D020/D032/D057/S086 4-conn-family variants in
-      `gen_module_sweep_variants.py`) shows a real nonzero `error_count`
-      against a non-safety controller, while every sibling Kinetix catalog
-      WITHOUT "-ERS3" shows 0. "ERS3" = Enhanced with Integrated Safety
-      rev 3 — the drive's own AOP requires a safety-capable controller
-      regardless of this project's own `SafetyEnabled="false"` attribute,
-      the same `_SIL2_CATALOGS` error class already fixed 2026-08-27
-      ("Failed to set the 'SafetyEnabled' property (The Controller is not
-      a Safety Controller.)"). Added `2198-S130-ERS3` to
-      `_SIL2_CATALOGS` (`gen_module_sweep.py`) and excluded it from
-      `gen_composite_realistic.py`'s pool (which never applies a
-      safety-capable processor at all). `modulesweep_2198_s130_ers3.L5X`
-      itself NOT regenerated — its real `error_count=2` capture stays on
-      record as evidence until a deliberate regen+recapture pass confirms
-      the fix.
+    - **"Safety-rated module in a non-safety-declared composite"
+      (`2198-S130-ERS3`, `composite_realistic_v2_19`/`_30`)** — this WAS
+      diagnosed and fixed here initially, then disproven within the hour
+      by real evidence. See the CORRECTION under OQ-193ECMETR above for
+      the full story: it's genuinely undiagnosed, not a safety-controller
+      requirement, and now sits in the same exclusion bucket as
+      `193-ECM-ETR/A`/`/B`.
 
 ---
 
