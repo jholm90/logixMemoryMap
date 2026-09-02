@@ -425,6 +425,18 @@ across bool_count. See `docs/OPEN_QUESTIONS.md` OQ-AOIBOOLPACK-PAIRING for
 the full data table; new test files generated (`gen_aoi_boolpack_pairing.py`)
 but not yet captured.
 
+**AOI internal Logic-routine content (WIRED 2026-08-31, OQ-AOIINTERNALLOGIC):**
+an AOI's own internal RLL routine(s) — separate from its Parameters/
+LocalTags declaration cost above — were priced at $0 until 2026-08-31.
+`parse_aoi_internal_logic()` aggregates ALL of an AOI's internal routines
+(real data confirms per-routine count doesn't matter, only total content)
+into one pseudo-routine, weighed with the same per-instruction-type table
+as ordinary routine logic (`charge_shell=False` — the AOI definition's own
+`base=1184` already covers its shell). Cut max residual on the isolation
+sweep from 12.02% to 0.55%. A further composite-scale surcharge on top of
+this (`aoi_logic_composite_surcharge_per_instr=20`, FITTED, see the Logic
+instruction weights section below) was found and wired 2026-09-02.
+
 ## Module / I/O tag sizing
 
 **Wired 2026-08-27, per-catalog table added 2026-08-29 — see OQ-MODULEIO
@@ -630,20 +642,20 @@ now contained.
 | MCCP | 204 | 204 (solo rung, `instr_firstpass` x10, LOGIC weight only -- CAM operand's own tag data space still unmodeled) | 4,816 | 2 | 0.00% |
 | MSG | 48 | 48 (solo rung, `instr_firstpass` x10, LOGIC weight only -- MESSAGE operand's own tag data space still unmodeled) | 4,816 | 2 | 0.00% |
 
-**JSR target routines are skipped entirely by the engine, not charged
-their own fixed_base.** Found the same day as the paired-instruction fix
-above, same root cause: the JSR sweep's target routine ("SubTest", always
-exactly one `NOP();` rung, never varying across the whole 10-5000 count
-sweep) had its entire cost absorbed into the calling routine's `5,096`
-constant, since it was the same constant across every calibration point.
-Charging SubTest its *own* independent `fixed_base_per_routine` on top
-(what an early version of `report.py` did) overcounted every JSR-using
-program by ~4,832 blocks. `parser/logic.py`'s `RoutineLogic.is_jsr_target`
-flags any routine that some other routine in the same program calls via
-JSR; `report.py` skips those entirely when building logic entries.
-Verified against real data for all 5 JSR count points, exact match. Only
-confirmed for a trivial (1-NOP-rung) target — a JSR target with
-*substantial* content is untested territory, same caveat as OQ-JSRSHARED.
+**JSR target routines do NOT charge their own `fixed_base_per_routine`**
+(that stays folded into the caller's `5,096` constant — charging it again,
+what an early version of `report.py` did, overcounted every JSR-using
+program by ~4,832 blocks; `RoutineLogic.is_jsr_target` flags a target
+routine and `report.py` passes `charge_shell=False` for it). **But the
+target's own instruction CONTENT is no longer skipped** — corrected
+2026-08-31 (OQ-JSRPARAMCOST): a JSR target with substantial content was
+found to genuinely cost real memory (max 13.37% residual on an isolated
+content-scale sweep before the fix), now weighed with the same
+per-instruction-type table as any ordinary routine via
+`compute_routine_logic_bytes(..., charge_shell=False)`. Cut max residual
+to 4.75% in isolation. A further composite-scale surcharge on top of this
+per-instruction weight was found and wired 2026-09-02 — see the
+`jsr_target_composite_surcharge_per_instr` entry below.
 
 **JSR per-param cost — WIRED 2026-08-25 (OQ-JSRPARAMCOST).** The flat
 72/rung JSR weight above only covers the base call; a real per-param cost
@@ -934,3 +946,47 @@ there's a record of *why* a number is what it is, not just what it currently is.
   (<=16 bytes), 3 already-documented small catalog-model variance
   (+32 bytes), 3 already-documented Safety-Task-bearing-file gap
   (see "Empty-project baseline" above).
+- **2026-08-31, JSR target content WIRED.** Real content-scale sweep
+  (`jsr_target_content_scale_{010,050,100,150}`) proved a JSR target
+  routine's own instructions were priced at $0 (max 13.37% residual).
+  `report.py`'s `is_jsr_target` branch now weighs the target's content
+  via `compute_routine_logic_bytes(..., charge_shell=False)`, using the
+  already-confirmed per-instruction-type table, not a new constant. Cut
+  max residual to 4.75%. See OPEN_QUESTIONS.md OQ-JSRPARAMCOST.
+- **2026-08-31, AOI internal Logic-routine content WIRED.** Same gap,
+  AOI-side: real isolation sweep (`aoi_logic_scale_{000,010,050,100}`,
+  `aoi_multiroutine_control/_real`) proved AOI internal routine content
+  was priced at $0 (max 12.02% residual) and that per-routine count
+  doesn't matter, only total content. New `parser/logic.py`
+  `parse_aoi_internal_logic()` aggregates all of an AOI's internal
+  routines into one pseudo-routine, weighed the same way. Cut max
+  residual to 0.55%. See OPEN_QUESTIONS.md OQ-AOIINTERNALLOGIC.
+- **2026-09-02, real per-catalog module overhead for 6 more catalogs.**
+  Derived exact via chained-residual solving across real `modulesweep_*`
+  captures where multiple unmodeled catalogs stack in one file (subtract
+  already-solved catalogs to isolate the next unknown, confirmed exact to
+  the byte across 2- and 3-catalog chains): `1756-CNB/D`=448,
+  `1756-DHRIO/E`=1392, `1756-DNB`=7536, `1734-OA4/C`=1196,
+  `1794-ACN15/C`=1640, `1794-IB16/A`=1536. Also fixed `report.py`'s
+  module-overhead exclusion logic: it previously did a BLANKET exclusion
+  of any rack-aliased or legacy-network-bridge module regardless of
+  catalog; now checks the per-catalog table first
+  (`ModuleOverheadModel.has_real_data_for`) and only falls through to
+  unmodeled/$0 if that specific catalog has no real entry.
+- **2026-09-02, composite-scale content surcharge WIRED (OQ-COMPOSITESCALE).**
+  `gen_composite_realistic_v2.py`'s 50-file batch (composites with real
+  AOI-internal-logic AND a real JSR-target routine, exercising both gaps
+  above together at project scale for the first time) under-predicted by
+  a mean +5.16% even with both fixes above already wired. Linear
+  regression (no intercept) on the 22 real, error-free, fully-modeled
+  files: `residual ≈ 20.155 * aoi_logic_instr_count + 47.331 *
+  jsr_target_instr_count`, R²=0.6619511766511494 — beat a flat-%-of-total
+  model (R²=0.6015) and a combined model (barely better, R²=0.6631, with
+  the flat-% term going slightly negative). Wired as
+  `aoi_logic_composite_surcharge_per_instr: 20` and
+  `jsr_target_composite_surcharge_per_instr: 47`, additive on top of the
+  per-instruction content weight at both sites. Cut mean abs error on
+  those 22 files from 5.16% to 1.06% (max 5.66%); all 45 error-free v2
+  files average 1.17% mean abs error. FITTED, not KNOWN — R²=0.66 leaves
+  real unexplained variance, and the JSR:AOI rate ratio (~2.3x) isn't
+  mechanistically understood yet, just what the data shows.

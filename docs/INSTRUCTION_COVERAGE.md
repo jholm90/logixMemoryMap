@@ -163,7 +163,7 @@ occurrences, 54 real corpus files (spans the original set and the
 | GRT | 1.54% | 3095 | CONFIRMED (exact fit, 0.00% residual) |
 | LES | 1.28% | 2575 | CONFIRMED (exact fit, 0.00% residual) |
 | COP | 1.27% | 2550 | CONFIRMED (exact fit, 0.00% residual) |
-| JSR | 1.14% | 2300 | PARTIAL (0.00-0.09% on DINT/REAL params; real ~9.8% gap on STRING/UDT params; 2026-08-31, structurally larger: target routine's own logic content priced at $0, confirmed real ~18 bytes/instruction gap -- see OQ-JSRPARAMCOST) |
+| JSR | 1.14% | 2300 | PARTIAL (0.00-0.09% on DINT/REAL params; real ~9.8% gap on STRING/UDT params; target routine's own logic content WIRED 2026-08-31 (max 4.75% residual in isolation), plus a composite-scale content surcharge WIRED 2026-09-02 (max 5.66% residual at composite project scale, FITTED, R²=0.66) -- see OQ-JSRPARAMCOST/OQ-COMPOSITESCALE) |
 | SUB | 0.95% | 1909 | CONFIRMED (exact fit, 0.00% residual) |
 | GEQ | 0.91% | 1823 | CONFIRMED (exact fit, 0.00% residual) |
 | LIM | 0.74% | 1488 | CONFIRMED (exact fit, 0.00% residual) |

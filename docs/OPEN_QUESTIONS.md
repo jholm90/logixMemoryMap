@@ -711,6 +711,58 @@ the matching footnote at the bottom, not inline.
       record for whenever the unmodeled real-I/O-module shapes these files
       hit get real formulas of their own.
 
+      **New v2 batch, 2026-09-02 — the residual reappears at a MUCH larger
+      magnitude once composites actually exercise AOI-internal-logic and
+      JSR-target content, and this time it's explained and wired.** James,
+      2026-08-30: "I expect at least 50 large programs with io and logic to
+      test your generation knowledge" — `gen_composite_realistic_v2.py`
+      built 50 new files, same UDT/array/module/AOI-declaration shape as v1
+      but with every referenced AOI now carrying real internal Logic-
+      routine content (5-45 real instructions) and one real 0-param JSR-
+      target subroutine per file (20-220 real instructions) — the two gaps
+      OQ-JSRPARAMCOST/OQ-AOIINTERNALLOGIC found and wired in isolation,
+      now exercised together at composite scale for the first time. Real
+      capture landed against all 50 (5 files — `_07`/`_18`/`_19`/`_30`/
+      `_50` — carry real Studio 5000 import errors unrelated to sizing: a
+      193-ECM-ETR module-compatibility issue and a safety-drive-on-
+      non-safety-PLC issue in the module mix, both James-deprioritized as
+      generator-script fixes, not sizing bugs; excluded from all figures
+      below). Before any composite-scale fix, the 45 error-free files
+      under-predicted by a mean **+5.16%** even with both isolated-test
+      fixes already wired — the composite hypothesis this OQ's 2026-08-31
+      entry ruled out for v1 (v1 never exercised either gap) turned out to
+      be real once a generator actually did exercise them.
+
+      Linear regression (`np.linalg.lstsq`, no intercept) of real residual
+      bytes against candidate explanatory variables across the 22 files
+      with BOTH zero reported import errors AND a fully-modeled I/O mix
+      (indices 1,2,3,4,8,9,10,21,23,26,27,29,31,32,33,34,37,40,42,43,45,46):
+      `residual ≈ 20.155 × (AOI-internal-logic instruction count) +
+      47.331 × (JSR-target instruction count)`, R²=0.6619511766511494, mean
+      abs error 1,507.79 bytes. Beat a flat-%-of-predicted model (R²=0.6015)
+      and a combined model (R²=0.6631 — barely better, with the flat-%
+      term going slightly negative, meaning the content-count model does
+      the real work, not a size proxy). Rounded and wired 2026-09-02 as
+      `aoi_logic_composite_surcharge_per_instr: 20` and
+      `jsr_target_composite_surcharge_per_instr: 47`
+      (`memory_model.yaml`/`constants.py`), applied additively on top of
+      the already-wired per-instruction content weight at both the
+      AOI-internal-logic and JSR-target-content sites in `report.py`.
+
+      **Re-validated post-wiring: mean abs error on the 22 clean files
+      drops from 5.16% to 1.06% (max 5.66%, file #10); all 45 error-free
+      v2 files average 1.17% mean abs error.** Confidence is FITTED, not
+      KNOWN — R²=0.66 leaves real unexplained variance (max residual still
+      5.66% on one file), and the JSR rate being ~2.3x the AOI rate despite
+      a similar real instruction mix is not yet mechanistically understood,
+      just what the real data shows. More isolated real data — ideally
+      varying AOI-count/JSR-content independently of overall file scale,
+      rather than all three scaling together as they do in this batch —
+      would sharpen or could disprove either constant. The 5 error-flagged
+      files' generation-script fixes (module catalog compatibility,
+      sequential slot numbering) remain separately tracked, James-
+      deprioritized until this tuning work lands.
+
 12. **OQ-AOIINTERNALLOGIC** — new, real, corpus-wide gap, James 2026-08-31:
     "So you closed aois but never put logic inside? All aois have one
     subroutine but they can have more, see the HomeToTorque aoi."

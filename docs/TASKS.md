@@ -92,13 +92,20 @@ RESOLVED_QUESTIONS.md.
 KNOWN. AOI type-name-length step CLOSED 2026-08-30 (7/7 exact). The
 separate array-of-AOI-instances element-cost formula (`aoi_array`,
 downgraded KNOWN→FITTED 2026-08-30) is now its own open item — see
-OPEN_QUESTIONS.md OQ-AOIBOOLPACK-PAIRING. **New, real, confirmed
-2026-08-31 — an AOI's own internal Logic-routine content (and any 2nd/
-3rd internal routine) is currently priced at $0**, matching the same gap
-just found for JSR targets; real capture shows a clean escalating real
-cost with content size, with routine-count itself not mattering (splitting
-the same content across 2 routines costs identically to 1). Not wired —
-see OPEN_QUESTIONS.md OQ-AOIINTERNALLOGIC.
+OPEN_QUESTIONS.md OQ-AOIBOOLPACK-PAIRING. **AOI internal Logic-routine
+content WIRED 2026-08-31**: `parse_aoi_internal_logic()` aggregates every
+AOI's internal RLL routine(s) into one pseudo-routine, weighed with the
+same per-instruction-type table as ordinary routine logic
+(`charge_shell=False`) — cut max residual on the isolation sweep from
+12.02% to 0.55%. Real per-instance routine-count doesn't matter (splitting
+content across 2 routines costs identically to 1), so it's aggregated, not
+tracked per-routine. **Composite-scale content surcharge WIRED
+2026-09-02** (`aoi_logic_composite_surcharge_per_instr=20`, FITTED via
+regression on 22 real composite_realistic_v2 files) — real multi-AOI/
+JSR-combined project scale showed a further systematic under-prediction
+beyond the per-instruction weight alone; see OPEN_QUESTIONS.md
+OQ-COMPOSITESCALE for the fit and remaining unexplained variance
+(R²=0.66).
 
 [^branchdepth]: Real cost confirmed (branch bracket structure costs real
 memory beyond leg instructions), formula not yet fit — see
@@ -125,10 +132,17 @@ RESOLVED_QUESTIONS.md OQ-JSRPARAMCOST for the full correction (the
 original wiring only ever saw input-only calibration data) and
 OPEN_QUESTIONS.md OQ-JSRPARAMCOST for the remaining residuals: A(n) not
 yet output-param-adjusted, a STRING/UDT-specific per-call surcharge (not
-cleanly linear yet, 3 real n-points on file), and — real, structurally
-larger, confirmed 2026-08-31 — a JSR target routine's own logic content
-is currently priced at $0 (`continue`s past it entirely); real capture
-shows a clean ~18 bytes/instruction cost that isn't wired.
+cleanly linear yet, 3 real n-points on file). **JSR target content WIRED
+2026-08-31**: `is_jsr_target` now weighs the target's own instructions with
+the same per-instruction-type table as ordinary routines
+(`charge_shell=False`), cutting max residual on the isolated content-scale
+sweep from 13.37% to 4.75%. **Composite-scale content surcharge WIRED
+2026-09-02** (`jsr_target_composite_surcharge_per_instr=47`, FITTED via
+regression on 22 real composite_realistic_v2 files) — real multi-AOI/
+JSR-combined project scale showed a further systematic under-prediction
+beyond the per-instruction weight alone; see OPEN_QUESTIONS.md
+OQ-COMPOSITESCALE for the fit and remaining unexplained variance
+(R²=0.66).
 
 [^holdout]: 10 real captured files never used to fit anything (random
 instruction-type combinations) checked against the current engine: 7/10
