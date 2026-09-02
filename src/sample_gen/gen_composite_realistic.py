@@ -333,14 +333,35 @@ def _modules_xml_unique_ips(catalogs: list[str]) -> str:
     safety_level branch), so the first real expansion module on the
     backplane is physically slot 1, not 2. Fixed: only catalogs whose
     block actually contains a Local-ICP root module consume a slot, and
-    they're numbered sequentially starting at 1, with no gaps."""
+    they're numbered sequentially starting at 1, with no gaps.
+
+    James, 2026-09-02, real Studio 5000 verify error on the v3 batch:
+    "Failed to set the 'Address' property (Address out of range.)" on
+    several modules from 15-34-catalog files. Root cause: `base = 60 +
+    (i+1)*10` was written for v1/v2's 2-4-catalog files and never checked
+    against a larger count -- at i=19, base=260, an invalid IPv4 4th-octet
+    value (>255), and every catalog past that point inherited the same
+    out-of-range problem, cascading into unrelated "ParentModule ...
+    Requested item could not be found" errors on their own children.
+    Fixed by rolling the 4th octet's block over into a new 3rd-octet
+    block (192.168.2.x, 192.168.3.x, ...) well before it would overflow,
+    instead of letting it run unbounded -- supports an effectively
+    unlimited catalog count per file."""
     parts = []
     next_icp_slot = 1
+    # 60..250 leaves headroom for a full 10-wide block (up to 2 real IPs
+    # used per catalog, see this function's own docstring) without ever
+    # touching the 255 ceiling; rolls into the next 3rd-octet block once
+    # that range is exhausted.
+    _BLOCK_START, _BLOCK_SPACING, _BLOCK_CEILING = 60, 10, 250
+    _CATALOGS_PER_THIRD_OCTET = (_BLOCK_CEILING - _BLOCK_START) // _BLOCK_SPACING
     for i, cat in enumerate(catalogs):
         xml, _source, _chain_len = _MODULE_CHAINS[cat]
         real_ips = sorted(set(re.findall(r"192\.168\.1\.\d+", xml)))
-        base = 60 + (i + 1) * 10
-        mapping = {ip: f"192.168.1.{base + j}" for j, ip in enumerate(real_ips)}
+        block_num, pos_in_block = divmod(i, _CATALOGS_PER_THIRD_OCTET)
+        third_octet = 1 + block_num
+        base = _BLOCK_START + (pos_in_block + 1) * _BLOCK_SPACING
+        mapping = {ip: f"192.168.{third_octet}.{base + j}" for j, ip in enumerate(real_ips)}
         for old, new in mapping.items():
             xml = xml.replace(old, new)
         # 2026-09-02, real bug found generating the v3 batch: comparing
