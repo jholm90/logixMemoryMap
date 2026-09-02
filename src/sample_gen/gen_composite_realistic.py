@@ -255,7 +255,20 @@ def _aoi_specs(profile: Profile) -> list[tuple[str, str, list[MemberSpec]]]:
 
 
 _LOCAL_ICP_SLOT_RE = re.compile(
-    r'(ParentModule="Local".*?<Port Id="1" Address=")\d+("\s*Type="ICP"\s*Upstream="true"\s*/>)',
+    # 2026-09-02, real bug found generating the v3 batch: the original
+    # `.*?` (DOTALL) between ParentModule="Local" and the Port element had
+    # no boundary, so on a catalog whose real root module is Ethernet-
+    # upstream to Local (e.g. 1756-OW16I's 1756-EN2T bridge -- its OWN ICP
+    # port is Upstream="false", a downstream backplane bus, not the
+    # upstream-to-Local connection this regex is meant to find), the
+    # non-greedy match skipped straight past that non-matching port and
+    # kept searching FORWARD into the NEXT module's tag, finding a child
+    # module's own unrelated upstream ICP port and corrupting its real,
+    # already-valid, in-bounds Address into a slot number that overflows
+    # its actual parent's Bus Size. `(?:(?!<Module).)*?` refuses to cross
+    # into a subsequent <Module ...> tag, so the match is now scoped to
+    # ONE module's own attributes/Ports, not "anywhere later in the file."
+    r'(ParentModule="Local"(?:(?!<Module).)*?<Port Id="1" Address=")\d+("\s*Type="ICP"\s*Upstream="true"\s*/>)',
     re.DOTALL,
 )
 
@@ -330,10 +343,18 @@ def _modules_xml_unique_ips(catalogs: list[str]) -> str:
         mapping = {ip: f"192.168.1.{base + j}" for j, ip in enumerate(real_ips)}
         for old, new in mapping.items():
             xml = xml.replace(old, new)
-        remapped = _remap_local_icp_slot(xml, slot=next_icp_slot)
-        if remapped != xml:
+        # 2026-09-02, real bug found generating the v3 batch: comparing
+        # remapped != xml to detect "did this catalog have a Local-ICP root
+        # module" breaks whenever the newly assigned slot happens to equal
+        # the catalog's own original hardcoded slot number (e.g. original
+        # Address="2", next_icp_slot also 2 -- identical text, so the
+        # string comparison wrongly concludes "no match" and the counter
+        # never advances, letting the NEXT real ICP catalog collide on the
+        # same slot). Check the regex match directly instead.
+        has_local_icp = _LOCAL_ICP_SLOT_RE.search(xml) is not None
+        if has_local_icp:
+            xml = _remap_local_icp_slot(xml, slot=next_icp_slot)
             next_icp_slot += 1
-        xml = remapped
         parts.append(xml)
     return "\n".join(parts)
 

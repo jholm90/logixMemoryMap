@@ -436,10 +436,22 @@ def _module_slot_findings(root: ET.Element) -> list[LintFinding]:
     slot_claims: dict[tuple[str, str, str], list[str]] = {}
 
     for mod_el in root.iter("Module"):
-        name = mod_el.get("Name")
+        # 2026-09-02, real, found generating the v3 composite batch: a
+        # Module element with NO Name attribute is real and imports fine
+        # (confirmed: 1756-OF8/B's own genericized block has never carried
+        # one, and its standalone modulesweep file converts "ok" every
+        # time in convert_log.csv) -- but bailing out here on `not name`
+        # made such a module invisible to EVERY check in this function,
+        # including non_sequential_module_slots below: its real, already-
+        # remapped slot doesn't get recorded, so the slot it legitimately
+        # occupies reads as a false "gap" in the sequence. A synthetic,
+        # per-element identifier (never collides with a real Name, since
+        # real names can't contain "#") keeps it visible to slot tracking
+        # without needing a fabricated Name in the XML itself.
+        name = mod_el.get("Name") or f"{mod_el.get('CatalogNumber', '?')}#{id(mod_el)}"
         parent_module = mod_el.get("ParentModule")
         parent_port_id = mod_el.get("ParentModPortId")
-        if not name or not parent_module or parent_port_id is None:
+        if not parent_module or parent_port_id is None:
             continue
         # The upstream Port is this module's own connection point INTO its
         # parent -- its Address is what must be unique among siblings on
