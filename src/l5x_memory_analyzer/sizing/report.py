@@ -385,7 +385,19 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # catalog byte value: zero real corpus data exists for these
         # networks (see parser/modules.py's _LEGACY_NETWORK_PORT_TYPES
         # comment and OQ-LEGACYNETOVERHEAD).
-        if module.uses_rack_connection or module.catalog_number == "Embedded" or module.is_legacy_network:
+        #
+        # 2026-08-31, James: "you need to model them" -- that exclusion was
+        # a blanket SHAPE-level rule, but real per-catalog data now exists
+        # for several rack-aliased/legacy-network catalogs specifically
+        # (memory_model.yaml module_overhead_by_catalog, see its 2026-08-31
+        # comment for the derivation). A catalog with its OWN confirmed
+        # real entry gets charged normally even if it's one of these
+        # shapes; only a catalog with NO real data still falls through to
+        # the $0/unmodeled path below.
+        has_real_catalog_data = model.module_overhead_by_catalog.has_real_data_for(module.catalog_number)
+        if not has_real_catalog_data and (
+            module.uses_rack_connection or module.catalog_number == "Embedded" or module.is_legacy_network
+        ):
             if module.uses_rack_connection:
                 reason = "rack-aliased (RackConnection/InAliasTag)"
             elif module.catalog_number == "Embedded":

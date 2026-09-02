@@ -410,6 +410,28 @@ module_overhead:
 # still ESTIMATED tier, not EXACT -- a real per-catalog n=1 point is a
 # much better estimate than a flat cross-catalog average, but not yet the
 # same confidence as tag/UDT/AOI sizing.
+#
+# 2026-08-31, James: "you need to model them" -- rack-aliased and legacy-
+# network-bridge catalogs were blanket-excluded from this table entirely
+# (report.py fell back to a $0/unmodeled SizeError for ANY such module,
+# regardless of catalog) on the theory that zero real data existed to
+# confirm module_overhead applies the same way to that shape. Real
+# isolated single-module data now exists for several (modulesweep_*
+# corpus) -- derived exactly via residual = real - (everything else the
+# engine already prices), chaining through files with multiple stacked
+# unmodeled modules (e.g. modulesweep_1794_ib16_a's real total minus
+# 1756-CNB/D's already-solved 448 minus 1794-ACN15/C's already-solved
+# 1640 leaves exactly 1536 for 1794-IB16/A, clean to the byte):
+# 1756-CNB/D=448, 1756-DHRIO/E=1392, 1756-DNB=7536, 1734-OA4/C=1196,
+# 1794-ACN15/C=1640, 1794-IB16/A=1536. report.py now checks this table
+# BEFORE the blanket rack-aliased/legacy-network exclusion -- a catalog
+# with a real entry here gets it charged normally; only catalogs with NO
+# real per-catalog data still fall through to the $0/unmodeled path.
+# 1756-HSC/A, 1756-HSC/B, 1756-IB16IF/A, AL1122, AL1222 were also
+# re-checked this pass (real data via their own already-solved
+# module_overhead_by_catalog entries) -- confirmed their ONLY unmodeled
+# piece (an unrecognized nested member type inside module_defined_bytes)
+# genuinely costs $0 extra, not a missing-data gap.
 module_overhead_by_catalog:
   '150 SMC Flex-E': { bytes: 6614, confidence: ASSUMED }
   '1732E-IB16M12DR/A': { bytes: 2126, confidence: ASSUMED }
@@ -418,6 +440,10 @@ module_overhead_by_catalog:
   '1734-AENT/B': { bytes: 1608, confidence: ASSUMED }
   '1734-AENT/C': { bytes: 1604, confidence: ASSUMED }
   '1734-AENTR/B': { bytes: 1606, confidence: ASSUMED }
+  '1734-OA4/C': { bytes: 1196, confidence: ASSUMED }
+  '1756-CNB/D': { bytes: 448, confidence: ASSUMED }
+  '1756-DHRIO/E': { bytes: 1392, confidence: ASSUMED }
+  '1756-DNB': { bytes: 7536, confidence: ASSUMED }
   '1756-EN4TR': { bytes: 3608, confidence: ASSUMED }
   '1756-ENBT/A': { bytes: 2580, confidence: ASSUMED }
   '1756-HSC/A': { bytes: 2759, confidence: ASSUMED }
@@ -435,7 +461,9 @@ module_overhead_by_catalog:
   '1756-OB32': { bytes: 1848, confidence: ASSUMED }
   '1756-OF4/A': { bytes: 3870, confidence: ASSUMED }
   '1756-OF8/B': { bytes: 5066, confidence: ASSUMED }
+  '1794-ACN15/C': { bytes: 1640, confidence: ASSUMED }
   '1794-AENT': { bytes: 1612, confidence: ASSUMED }
+  '1794-IB16/A': { bytes: 1536, confidence: ASSUMED }
   '2097-V34PR5-LM': { bytes: 3633, confidence: ASSUMED }
   '2198-C4004-ERS': { bytes: 4065, confidence: ASSUMED }
   '2198-D012-ERS3': { bytes: 10497, confidence: ASSUMED }

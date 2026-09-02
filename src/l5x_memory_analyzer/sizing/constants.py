@@ -410,6 +410,16 @@ class ModuleOverheadModel:
             return self.default_bytes, self.default_confidence
         return self.by_catalog.get(catalog_number, (self.default_bytes, self.default_confidence))
 
+    def has_real_data_for(self, catalog_number: str | None) -> bool:
+        """True if this SPECIFIC catalog has its own real capture point here,
+        as opposed to falling back to the flat cross-catalog default. Lets
+        report.py's rack-aliased/legacy-network exclusion (real data
+        confirms module_overhead does NOT apply the same way to those
+        shapes in general) still charge a catalog that DOES have its own
+        confirmed real value despite being one of those shapes -- see
+        memory_model.yaml's 2026-08-31 comment for the derivation."""
+        return bool(catalog_number) and catalog_number in self.by_catalog
+
 
 @dataclass(frozen=True)
 class CatalogBaselineDeltaModel:

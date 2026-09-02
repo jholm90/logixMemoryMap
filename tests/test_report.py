@@ -348,7 +348,7 @@ def test_module_overhead_falls_back_to_flat_default_for_unknown_catalog():
     assert module_entry.bytes == 4 + MODEL.module_overhead_bytes
 
 
-def _root_with_legacy_network_module(port_type: str) -> ET.Element:
+def _root_with_legacy_network_module(port_type: str, catalog: str = "9999-NO-REAL-DATA/Z") -> ET.Element:
     xml = f"""
     <RSLogix5000Content SchemaRevision="1.0">
       <Controller Name="Test">
@@ -360,7 +360,7 @@ def _root_with_legacy_network_module(port_type: str) -> ET.Element:
           <Module Name="Local" CatalogNumber="1756-L81E">
             <Ports><Port Id="1" Address="0" Type="ICP" Upstream="false"/></Ports>
           </Module>
-          <Module Name="TestBridge" CatalogNumber="1756-CNB/D">
+          <Module Name="TestBridge" CatalogNumber="{catalog}">
             <Ports>
               <Port Id="1" Address="3" Type="ICP" Upstream="true"/>
               <Port Id="2" Address="1" Type="{port_type}" Upstream="false"/>
@@ -392,9 +392,25 @@ def test_legacy_network_module_excluded_from_sizing():
     # all legacy networks") -- a ControlNet/DeviceNet/DH+/DH-485/RIO
     # bridge module gets no module_overhead charged, same treatment as a
     # rack-aliased or processor-embedded module, flagged via SizeError
-    # instead.
+    # instead -- UNLESS its specific catalog has real per-catalog data
+    # (see test_legacy_network_module_WITH_real_catalog_data_gets_charged
+    # below, 2026-08-31). Uses a catalog with no real entry to keep
+    # testing the general "no real data -> unmodeled" rule in isolation.
     for port_type in ("ControlNet", "DeviceNet", "DH+", "DH-485", "RIO"):
         root = _root_with_legacy_network_module(port_type)
         entries, errors = build_report(root, MODEL)
         assert not any(e.category == "module_io" for e in entries), port_type
         assert any("legacy-network" in e.message for e in errors), port_type
+
+
+def test_legacy_network_module_with_real_catalog_data_gets_charged():
+    # 2026-08-31, James: "you need to model them" -- real per-catalog data
+    # now exists for several legacy-network/rack-aliased catalogs (see
+    # memory_model.yaml module_overhead_by_catalog's 2026-08-31 comment).
+    # 1756-CNB/D (a real ControlNet bridge) has a confirmed real entry
+    # (448 bytes) and should get module_io charged normally despite being
+    # a legacy-network bridge, not fall through to the unmodeled path.
+    root = _root_with_legacy_network_module("ControlNet", catalog="1756-CNB/D")
+    entries, errors = build_report(root, MODEL)
+    assert any(e.category == "module_io" and e.data_type == "1756-CNB/D" for e in entries)
+    assert not any("legacy-network" in e.message for e in errors)
