@@ -1,0 +1,116 @@
+"""Real multi-child PointIO racks (James, 2026-09-02: "you can generate up
+10+ pointIO racks"). Every 1734-family catalog already in gen_module_sweep.py
+was extracted with its OWN independent single-slot adapter (real, but each
+one a SEPARATE standalone node -- e.g. 1734-AENTR/C's own real Bus Size is
+exactly 1, a genuine 1-slot adapter product). That's a different real shape
+from a true multi-card PointIO rack, which this project has never built.
+
+Real fix: '1734-AENT/B' (source: BAI10048_TrimmerTally_20250704.L5X) is
+ALSO already in this project's own corpus with a real Bus Size="8" -- an
+8-slot PointIO adapter. Reusing it as the shared rack host, this generator
+takes ONLY the real CHILD module (the 2nd Module in each existing 1734
+catalog's own chain -- structurally verbatim, untouched) from up to 8 other
+1734-family catalogs, re-points its ParentModule to the shared adapter's
+own Name, and assigns it a real sequential PointIO bus slot (0-7, matching
+Bus Size=8) -- the same real per-file uniqueness convention already used
+elsewhere in this project (composite generator's ICP-slot remap), just
+applied to the PointIO bus instead of a 1756 backplane. 1734-OB8S/A and /B
+excluded (_UNDIAGNOSED_RETEST_CATALOGS -- real, still-undiagnosed CIP
+Safety connection failure, not this generator's concern).
+
+Run: python -m sample_gen.gen_module_pointio_rack
+"""
+
+from __future__ import annotations
+
+import re
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+from l5x_memory_analyzer.sizing.constants import load_memory_model
+from l5x_memory_analyzer.sizing.report import build_report
+
+from sample_gen.gen_module_sweep import _MODULE_CHAINS, _UNDIAGNOSED_RETEST_CATALOGS
+from sample_gen.manifest import append_manifest_row, write_sample_unmodeled
+from sample_gen.wrapper import build_l5x
+
+OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "modules"
+_MODEL = load_memory_model()
+
+_ADAPTER_XML, _ADAPTER_SOURCE, _ = _MODULE_CHAINS["1734-AENT/B"]
+_ADAPTER_NAME = "TestMod1_1734AENTB"  # real Name already in the extracted block
+_ADAPTER_BUS_SIZE = 8
+
+_CHILD_CATALOGS = sorted(
+    cat for cat in _MODULE_CHAINS
+    if cat.startswith("1734-")
+    and not cat.startswith("1734-AENT")
+    and cat not in _UNDIAGNOSED_RETEST_CATALOGS
+)
+
+
+def _extract_child(catalog: str, new_slot: int) -> str:
+    xml, _source, chain_len = _MODULE_CHAINS[catalog]
+    assert chain_len == 2, f"{catalog}: expected a 2-module [adapter, child] chain"
+    mods = re.findall(r"<Module\b.*?</Module>", xml, re.DOTALL)
+    child = mods[1]
+    child = re.sub(r'ParentModule="[^"]+"', f'ParentModule="{_ADAPTER_NAME}"', child, count=1)
+    child = re.sub(
+        r'(<Port Id="1" Address=")\d+(" Type="PointIO" Upstream="true" ?/>)',
+        rf"\g<1>{new_slot}\g<2>", child, count=1,
+    )
+    return child
+
+
+def _floor_bytes(l5x_text: str) -> int:
+    root = ET.fromstring(l5x_text)
+    entries, _errors = build_report(root, _MODEL)
+    return sum(e.bytes for e in entries)
+
+
+def _rack_xml(children: list[str]) -> str:
+    parts = [_ADAPTER_XML]
+    parts.extend(_extract_child(cat, slot) for slot, cat in enumerate(children))
+    return "\n".join(parts)
+
+
+def _write(out_name: str, children: list[str]) -> None:
+    assert len(children) <= _ADAPTER_BUS_SIZE
+    l5x = build_l5x(target_name=f"RackPointIO_{out_name}", tags_xml="", extra_modules_xml=_rack_xml(children))
+    out_path = OUT_ROOT / f"rack_pointio_{out_name}.L5X"
+    write_sample_unmodeled(l5x, out_path)
+    total = _floor_bytes(l5x)
+    description = (
+        f"PointIO rack (James, 2026-09-02): one real 1734-AENT/B 8-slot adapter "
+        f"({_ADAPTER_SOURCE}, real Bus Size=8) hosting {len(children)} real 1734-family child "
+        f"cards on its own PointIO bus ({', '.join(children)}) -- each child's real Module content "
+        f"reused verbatim from its own existing gen_module_sweep.py chain, only ParentModule/slot "
+        f"Address remapped onto this shared adapter. Real floor total {total}. See OQ-MODULEIO."
+    )
+    append_manifest_row(f"rack_pointio_{out_name}", description, "modules", out_path, total)
+    print(f"Wrote {out_path} (floor {total} bytes)")
+
+
+_PLANS: dict[str, list[str]] = {
+    "n02": _CHILD_CATALOGS[0:2],
+    "n02_alt": _CHILD_CATALOGS[2:4],
+    "n03": _CHILD_CATALOGS[0:3],
+    "n03_alt": _CHILD_CATALOGS[4:7],
+    "n04": _CHILD_CATALOGS[0:4],
+    "n04_alt": _CHILD_CATALOGS[7:11],
+    "n05": _CHILD_CATALOGS[0:5],
+    "n06": _CHILD_CATALOGS[0:6],
+    "n06_alt": _CHILD_CATALOGS[3:9],
+    "n07": _CHILD_CATALOGS[0:7],
+    "n08_full": _CHILD_CATALOGS[0:8],
+}
+
+
+def main() -> None:
+    for label, children in _PLANS.items():
+        _write(label, children)
+    print(f"\nDone. {len(_PLANS)} files.")
+
+
+if __name__ == "__main__":
+    main()
