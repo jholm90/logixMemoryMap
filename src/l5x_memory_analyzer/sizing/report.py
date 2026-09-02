@@ -388,9 +388,42 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # visible, not silently dropped.
     module_entries: list[tuple[str, str, str, int, str]] = []
     for module in parse_modules(root):
-        if module.module_defined_bytes == 0 and module.stated_total_bytes == 0:
+        # "Local" is the processor's own self-entry (always present, always
+        # zero connections of its own) -- its overhead is already covered by
+        # empty_project_baseline elsewhere, never module_overhead. Excluded
+        # by name, not by the 0/0 heuristic below, so a genuine zero-
+        # connection I/O module isn't confused with the processor itself.
+        if module.name == "Local":
             continue
         label = module.name or module.catalog_number
+        if module.module_defined_bytes == 0 and module.stated_total_bytes == 0:
+            # 2026-09-02, real, found reviewing James's TitusvilleTrimmer
+            # production file: a bridge/gateway module with NO connections
+            # of its own (e.g. a plain Ethernet-only "ETHERNET-BRIDGE" node
+            # fanning out to a remote PC/HMI/server -- 10 real instances in
+            # that one file) has zero module_defined_bytes and zero stated
+            # size, so it was silently `continue`d past with no SizeEntry
+            # AND no SizeError -- invisible, not just unmodeled. Every
+            # OTHER unmodeled-module case in this function (rack-aliased,
+            # processor-embedded, legacy-network) gets a visible SizeError
+            # instead of silent disappearance; this one didn't, purely
+            # because it predates OQ-MODULEIO's "several _variant_noconn
+            # files cost real nonzero bytes despite module_defined_bytes=0"
+            # finding. Same real gap, same fix direction: made visible, not
+            # silently dropped. Still genuinely unmodeled -- zero real data
+            # exists yet for what a zero-connection module's own overhead
+            # actually is, so no byte value is guessed here.
+            display = f"{module.name} ({module.catalog_number})" if module.name else module.catalog_number
+            errors.append(SizeError(
+                path=f"modules/{label}",
+                message=(
+                    f"Module {display}: no connections/stated size of its own (a bridge/gateway "
+                    f"node, e.g. an Ethernet-only fan-out to a remote device) -- module_overhead "
+                    f"is NOT charged here, zero real data confirms a zero-connection module's own "
+                    f"overhead; controller-memory cost unmodeled for now (see OQ-MODULEIO)"
+                ),
+            ))
+            continue
         display = f"{module.name} ({module.catalog_number})" if module.name else module.catalog_number
         # 2026-08-27, found live-checking this wiring against the 1769-
         # series fw_baseline corpus: CompactLogix 5370 "ER" processors

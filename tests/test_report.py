@@ -414,3 +414,45 @@ def test_legacy_network_module_with_real_catalog_data_gets_charged():
     entries, errors = build_report(root, MODEL)
     assert any(e.category == "module_io" and e.data_type == "1756-CNB/D" for e in entries)
     assert not any("legacy-network" in e.message for e in errors)
+
+
+def _root_with_zero_connection_module(catalog: str = "ETHERNET-BRIDGE") -> ET.Element:
+    xml = f"""
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test">
+        <DataTypes/>
+        <AddOnInstructionDefinitions/>
+        <Tags/>
+        <Programs/>
+        <Modules>
+          <Module Name="Local" CatalogNumber="1756-L81E">
+            <Ports><Port Id="1" Address="0" Type="ICP" Upstream="false"/></Ports>
+          </Module>
+          <Module Name="TestBareBridge" CatalogNumber="{catalog}">
+            <Ports>
+              <Port Id="1" Type="CIPBus" Upstream="false"><Bus Size="100"/></Port>
+              <Port Id="2" Address="192.168.1.1" Type="Ethernet" Upstream="true"/>
+            </Ports>
+          </Module>
+        </Modules>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    return ET.fromstring(xml)
+
+
+def test_zero_connection_module_flagged_visibly_not_silently_dropped():
+    # 2026-09-02, real, found reviewing James's TitusvilleTrimmer production
+    # file: a bridge/gateway module with no Connections of its own (10 real
+    # "ETHERNET-BRIDGE" nodes fanning out to remote PCs/HMIs/servers) has
+    # zero module_defined_bytes and zero stated_total_bytes -- previously
+    # silently `continue`d past with no SizeEntry AND no SizeError at all,
+    # unlike every other unmodeled-module case in this function. "Local"
+    # itself (the processor's own self-entry, also always 0/0) must NOT be
+    # flagged this way -- excluded by name, not by the 0/0 heuristic.
+    root = _root_with_zero_connection_module()
+    entries, errors = build_report(root, MODEL)
+    assert not any(e.category == "module_io" for e in entries)
+    assert any("no connections/stated size" in e.message for e in errors)
+    assert not any("TestLocal" in e.message for e in errors)
+    assert not any(e.path == "modules/Local" for e in errors)
