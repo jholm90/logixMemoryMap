@@ -57,7 +57,7 @@ from sample_gen.builders import (
     MemberSpec, aoi_xml, collect_nested_datatypes, counter_tag_xml, rung_xml, rungs_xml,
     tag_xml, timer_tag_xml, udt_xml,
 )
-from sample_gen.gen_module_sweep import _MODULE_CHAINS, _UNDIAGNOSED_RETEST_CATALOGS
+from sample_gen.gen_module_sweep import _MODULE_CHAINS, _SIL2_CATALOGS, _UNDIAGNOSED_RETEST_CATALOGS
 from sample_gen.manifest import append_manifest_row, write_sample, write_sample_unmodeled
 from sample_gen.wrapper import build_l5x
 
@@ -76,7 +76,38 @@ OUT_ROOT.mkdir(parents=True, exist_ok=True)
 # _32's failure was NOT catalog-explained (no bad catalog in its mix --
 # see OPEN_QUESTIONS.md/known_conversion_failures.csv), so this fix won't
 # necessarily resolve that one; it remains separately tracked.
-_MODULE_CATALOGS = sorted(set(_MODULE_CHAINS.keys()) - _UNDIAGNOSED_RETEST_CATALOGS)
+#
+# 2026-09-02, second real exclusion class added, James: "why did you put a
+# safety module inside a non safety plc" (composite_realistic_v2_19/_30,
+# both include 2198-S130-ERS3). This generator always builds on the
+# wrapper's plain non-safety default processor (see the module docstring
+# above) and never applies a safety_level override -- so ANY catalog in
+# gen_module_sweep.py's own _SIL2_CATALOGS (real modules whose own
+# SafetyEnabled/CIP-Safety-connection genuinely requires a safety-capable
+# controller, confirmed via the 2026-08-27/2026-09-02 real Studio 5000
+# "Failed to set the 'SafetyEnabled' property" errors -- see that set's own
+# docstring) is structurally incompatible with this generator's own
+# design, not just an unlucky pairing. Excluded here at the source for the
+# same reason _UNDIAGNOSED_RETEST_CATALOGS is.
+#
+# Third exclusion, same push: '193-ECM-ETR/A'/'193-ECM-ETR/B' (James:
+# "Error: TestMod2_193ECMETRA: Child module incompatible with parent
+# module" on composite_realistic_v2_18/_50). Unlike the two exclusions
+# above, this one is genuinely NOT diagnosed yet -- manifest.csv shows
+# BOTH standalone modulesweep_193_ecm_etr_a/b already carry a real
+# error_count=1 (never previously investigated, found only by this
+# 2026-09-02 audit), so it isn't a composite-specific interaction, but the
+# actual Studio 5000 root cause under that error still isn't known.
+# Excluded from this pool anyway so composite files stop reproducing a
+# known-bad catalog while it's worked on, same convention as an
+# undiagnosed _UNDIAGNOSED_RETEST_CATALOGS entry.
+_UNDIAGNOSED_193_ECM_ETR_CATALOGS = {"193-ECM-ETR/A", "193-ECM-ETR/B"}
+_MODULE_CATALOGS = sorted(
+    set(_MODULE_CHAINS.keys())
+    - _UNDIAGNOSED_RETEST_CATALOGS
+    - _SIL2_CATALOGS
+    - _UNDIAGNOSED_193_ECM_ETR_CATALOGS
+)
 _ATOMIC_TYPES = ["DINT", "INT", "REAL", "SINT", "BOOL"]
 
 
@@ -262,8 +293,25 @@ def _modules_xml_unique_ips(catalogs: list[str]) -> str:
 
     2026-08-31: also remaps each catalog's own Local-parented ICP
     backplane slot to a unique value per catalog in the file -- see
-    _remap_local_icp_slot's docstring for the real error this fixes."""
+    _remap_local_icp_slot's docstring for the real error this fixes.
+
+    James, 2026-09-02: "lots of racks did not have the slot numbers used
+    in sequence" -- real bug in that same remap. It keyed the assigned
+    slot off the catalog's raw index in the file (slot=2+i) regardless of
+    whether that catalog even HAS a Local-ICP root module: catalogs 0 and
+    2 could get real ICP slots 2 and 4 while catalog 1 (Ethernet-only,
+    no match) silently consumed no slot at all, leaving slot 3 unused --
+    a real gap in the backplane numbering, exactly what James is flagging
+    (composite_realistic_v2_16 is a real example: slots 2 and 4 present,
+    3 missing). It also always started at slot 2 -- wrong base, not just
+    a gap: wrapper.py's own Local module template puts the CPU's
+    downstream ICP port at Address="0" (confirmed across every
+    safety_level branch), so the first real expansion module on the
+    backplane is physically slot 1, not 2. Fixed: only catalogs whose
+    block actually contains a Local-ICP root module consume a slot, and
+    they're numbered sequentially starting at 1, with no gaps."""
     parts = []
+    next_icp_slot = 1
     for i, cat in enumerate(catalogs):
         xml, _source, _chain_len = _MODULE_CHAINS[cat]
         real_ips = sorted(set(re.findall(r"192\.168\.1\.\d+", xml)))
@@ -271,7 +319,10 @@ def _modules_xml_unique_ips(catalogs: list[str]) -> str:
         mapping = {ip: f"192.168.1.{base + j}" for j, ip in enumerate(real_ips)}
         for old, new in mapping.items():
             xml = xml.replace(old, new)
-        xml = _remap_local_icp_slot(xml, slot=2 + i)
+        remapped = _remap_local_icp_slot(xml, slot=next_icp_slot)
+        if remapped != xml:
+            next_icp_slot += 1
+        xml = remapped
         parts.append(xml)
     return "\n".join(parts)
 

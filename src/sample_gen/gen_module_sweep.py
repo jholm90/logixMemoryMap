@@ -13360,6 +13360,28 @@ _5069_CATALOGS = {"5069-IB16/A", "5069-IB8S/A", "5069-IY4/A", "5069-OB16/A", "50
 _SIL2_CATALOGS = {
     "PowerFlex 527-STO CIP Safety", "FANUC Robot R30iB Plus/A",
     "1734-OB8S/A", "1734-OB8S/B", "442G-MABLB-UR-E0JP4679/A",
+    # 2026-09-02, James: "why did you put a safety module inside a non
+    # safety plc" (composite_realistic_v2_19/_30, both include
+    # 2198-S130-ERS3). Root-caused via manifest.csv self-audit, not James's
+    # own re-diagnosis this time: modulesweep_2198_s130_ers3's own
+    # STANDALONE real capture already carried error_count=2 the whole time
+    # (never investigated) -- confirmed a real, consistent, 7/7 signal
+    # across the whole "-ERS3" Kinetix 5700 family in this corpus: every
+    # catalog with an "ERS3" suffix (this one, plus the D012/D020/D032/
+    # D057/S086 variants in gen_module_sweep_variants.py) shows real
+    # nonzero error_count against a non-safety processor, while every
+    # sibling Kinetix catalog WITHOUT "ERS3" (P0xx/RP200/C4004/H008/
+    # V34PR5-LM) shows error_count=0. "ERS3" = Kinetix 5700 Enhanced with
+    # Integrated Safety rev 3 -- the drive's own AOP requires a safety-
+    # capable controller regardless of what this project writes for its
+    # own SafetyEnabled attribute (already false here), matching the exact
+    # "Failed to set the 'SafetyEnabled' property (The Controller is not a
+    # Safety Controller.)" error class the 2026-08-27 catalogs above were
+    # fixed for. modulesweep_2198_s130_ers3.L5X itself is NOT regenerated
+    # by this change (its real error_count=2 capture stays on record as
+    # evidence) -- needs a deliberate regen+recapture pass to confirm the
+    # fix, same as any other real-diagnosed-but-not-yet-reverified case.
+    "2198-S130-ERS3",
 }
 _SAFETY_PROCESSOR_TYPE = "1756-L81ES"
 

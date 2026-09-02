@@ -892,6 +892,73 @@ the matching footnote at the bottom, not inline.
     Routine names too (untested) or is specific to JSR-target/Program
     identifiers.
 
+14. **OQ-193ECMETR** — new, real, genuinely undiagnosed. James, 2026-09-02:
+    real Studio 5000 error on `composite_realistic_v2_18`/`_50` ("Error:
+    TestMod2_193ECMETRA: Child module incompatible with parent module").
+    Self-audit (checking for real currently-unreconciled `error_count`
+    data per CLAUDE.md's standing rule, not just the composite files James
+    named) found this is NOT composite-specific: BOTH standalone
+    `modulesweep_193_ecm_etr_a`/`_b` already carry a real `error_count=1`
+    in `manifest.csv` — sitting there uninvestigated since capture, never
+    previously flagged. No real Studio 5000 error-log line exists for the
+    standalone repro (only James's composite-context quote above), so the
+    exact cause is unconfirmed — plausible candidates (EKey/revision
+    mismatch between the extracted 1756-EN4TR adapter and the E300 relay
+    child, or the E300 family needing a different real parent device
+    entirely) are just guesses, not verified. Excluded from
+    `gen_composite_realistic.py`'s module pool
+    (`_UNDIAGNOSED_193_ECM_ETR_CATALOGS`) so future composite files stop
+    reproducing it. Needs the real per-file Studio 5000 error-log detail
+    (not just the generic error line already quoted) to actually
+    root-cause.
+
+    **Two separate, real bugs found and fixed the same pass, NOT this
+    one:**
+    - **Sequential slot numbering** (James: "lots of racks did not have
+      the slot numbers used in sequence... please add this check").
+      `gen_composite_realistic.py`'s `_modules_xml_unique_ips` keyed each
+      catalog's assigned Local-ICP backplane slot off its raw index in the
+      file's full catalog list (`slot=2+i`), regardless of whether that
+      catalog even has an ICP-backplane root module — an Ethernet-only
+      catalog between two ICP catalogs silently consumed an index without
+      consuming a slot, leaving a real gap (confirmed real example:
+      `composite_realistic_22_r2.L5X`, slots 3 and 5 present, 4 missing).
+      Also always started at slot 2, one too high — `wrapper.py`'s own
+      Local module template puts the CPU's downstream ICP port at
+      `Address="0"` in every branch, so the first real expansion module is
+      physically slot 1. Fixed: only catalogs whose block actually
+      contains a Local-ICP root module consume a slot, numbered
+      sequentially from 1 with no gaps. New lint check added,
+      `non_sequential_module_slots` (`sample_gen/lint.py`
+      `_slot_sequence_findings`) — flags any (ParentModule, PortId) group
+      of 2+ modules with numeric addresses that isn't a contiguous run, so
+      a future generator can't reintroduce this silently. (Also flags 2
+      pre-existing `modulerack_1756_local`/`_remote` files not touched by
+      this fix — those may be intentionally sparse racks, not bugs; not
+      changed, flagged for James to confirm before any future regen.)
+    - **Safety-rated module in a non-safety-declared composite** (James:
+      "why did you put a safety module inside a non safety plc" —
+      `composite_realistic_v2_19`/`_30`, both include `2198-S130-ERS3`).
+      Root-caused via the same self-audit: `modulesweep_2198_s130_ers3`'s
+      own standalone real capture already carried `error_count=2`,
+      matching a clean 7/7 signal across the whole corpus — every
+      "-ERS3"-suffixed Kinetix 5700 catalog (this one, plus the
+      D012/D020/D032/D057/S086 4-conn-family variants in
+      `gen_module_sweep_variants.py`) shows a real nonzero `error_count`
+      against a non-safety controller, while every sibling Kinetix catalog
+      WITHOUT "-ERS3" shows 0. "ERS3" = Enhanced with Integrated Safety
+      rev 3 — the drive's own AOP requires a safety-capable controller
+      regardless of this project's own `SafetyEnabled="false"` attribute,
+      the same `_SIL2_CATALOGS` error class already fixed 2026-08-27
+      ("Failed to set the 'SafetyEnabled' property (The Controller is not
+      a Safety Controller.)"). Added `2198-S130-ERS3` to
+      `_SIL2_CATALOGS` (`gen_module_sweep.py`) and excluded it from
+      `gen_composite_realistic.py`'s pool (which never applies a
+      safety-capable processor at all). `modulesweep_2198_s130_ers3.L5X`
+      itself NOT regenerated — its real `error_count=2` capture stays on
+      record as evidence until a deliberate regen+recapture pass confirms
+      the fix.
+
 ---
 
 [^instrfirstpass]: CROUT (safety-only) and MAPC resolved separately

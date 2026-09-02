@@ -106,6 +106,24 @@ def test_does_not_flag_modules_in_distinct_slots():
     assert not any(f.kind == "duplicate_module_slot" for f in findings)
 
 
+def test_flags_non_sequential_module_slots():
+    modules = _module_xml("ModA", "1") + _module_xml("ModB", "3")
+    findings = lint_l5x(_MODULE_WRAPPER.format(modules=modules))
+    assert any(f.kind == "non_sequential_module_slots" for f in findings)
+
+
+def test_does_not_flag_sequential_module_slots():
+    modules = _module_xml("ModA", "1") + _module_xml("ModB", "2")
+    findings = lint_l5x(_MODULE_WRAPPER.format(modules=modules))
+    assert not any(f.kind == "non_sequential_module_slots" for f in findings)
+
+
+def test_does_not_flag_a_single_module_regardless_of_slot():
+    modules = _module_xml("ModA", "5")
+    findings = lint_l5x(_MODULE_WRAPPER.format(modules=modules))
+    assert not any(f.kind == "non_sequential_module_slots" for f in findings)
+
+
 def test_flags_module_address_beyond_parent_bus_size():
     # Local's own Port Id=1 declares Bus Size=17 -- Address=20 overflows it.
     modules = _module_xml("Overflow", "20")

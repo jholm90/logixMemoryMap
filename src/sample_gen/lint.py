@@ -58,6 +58,10 @@ Checks:
      whose every instruction is a pure condition/test
      (_PURE_CONDITION_INSTRUCTIONS) with no real output instruction has no
      effect and real Studio 5000 rejects it.
+  7. non_sequential_module_slots -- James, 2026-09-02: "lots of racks did
+     not have the slot numbers used in sequence and that was supposed to
+     be a check you were adding for validation." See
+     _slot_sequence_findings for the real generator bug this caught.
 
 These last two were added the same day their bug class was found TWICE --
 once fixed by hand in the one generator that hit it, then reintroduced
@@ -132,7 +136,8 @@ class LintFinding:
     kind: str  # "missing_array_subscript" | "unrecognized_instruction" |
     # "duplicate_module_slot" | "chassis_size_exceeded" |
     # "aoi_call_arg_count_mismatch" | "bit_level_instruction_on_non_bool_operand" |
-    # "rung_missing_output_instruction" | "lbl_missing_trailing_instruction"
+    # "rung_missing_output_instruction" | "lbl_missing_trailing_instruction" |
+    # "non_sequential_module_slots"
     detail: str
 
 
@@ -481,6 +486,58 @@ def _module_slot_findings(root: ET.Element) -> list[LintFinding]:
                 "duplicate_module_slot",
                 f"{len(claimants)} Modules ({', '.join(claimants)}) all claim ParentModule="
                 f"'{parent_module}' Port Id={parent_port_id} Address='{address}'",
+            ))
+
+    findings.extend(_slot_sequence_findings(slot_claims))
+    return findings
+
+
+def _slot_sequence_findings(
+    slot_claims: dict[tuple[str, str, str], list[str]],
+) -> list[LintFinding]:
+    """James, 2026-09-02: "lots of racks did not have the slot numbers
+    used in sequence and that was supposed to be a check you were adding
+    for validation." Real bug this caught in gen_composite_realistic.py's
+    _modules_xml_unique_ips: it keyed the assigned backplane slot off a
+    catalog's raw index in the file's module list, so an Ethernet-only
+    catalog (no real ICP-backplane root module) between two ICP-backplane
+    catalogs silently consumed an index without consuming a slot, leaving
+    a real gap (e.g. composite_realistic_v2_16: slots 2 and 4 present, 3
+    never used). Real Rockwell backplanes don't leave a slot number
+    unassigned in the middle of a populated run the way this project's own
+    generation was doing it -- not because a physical gap is illegal (an
+    empty physical slot is fine), but because THIS project always
+    generates a fully-populated virtual chassis with no genuinely empty
+    slots in between, so a numeric gap here is always a generation
+    artifact, not an intentional empty slot.
+
+    Heuristic, not authoritative: only flags a purely-NUMERIC-address
+    sibling group (2+ Modules sharing the same (ParentModule,
+    ParentModPortId)) whose sorted addresses skip a value -- an
+    Ethernet-addressed group (dotted-IP Address strings) is never numeric
+    and never flagged. A single module in a group can't have a gap by
+    definition and is never flagged either; whether ITS OWN address is a
+    sensible starting point is a generator-level concern (see
+    gen_composite_realistic.py), not something a single data point can
+    validate.
+    """
+    findings: list[LintFinding] = []
+    by_port: dict[tuple[str, str], list[int]] = {}
+    for (parent_module, parent_port_id, address), claimants in slot_claims.items():
+        if not address.isdigit():
+            continue
+        by_port.setdefault((parent_module, parent_port_id), []).append(int(address))
+
+    for (parent_module, parent_port_id), addresses in by_port.items():
+        if len(addresses) < 2:
+            continue
+        addresses.sort()
+        missing = [n for n in range(addresses[0], addresses[-1] + 1) if n not in addresses]
+        if missing:
+            findings.append(LintFinding(
+                "non_sequential_module_slots",
+                f"ParentModule='{parent_module}' Port Id={parent_port_id} has modules at "
+                f"slots {addresses} -- missing {missing} in between",
             ))
 
     return findings
