@@ -199,9 +199,10 @@ def test_jsr_target_routine_not_double_counted():
     # jsr_fixed_base_per_routine(5096) + JSR's own weight(72)*1 + B(0)=4 = 5172
     assert main.bytes == 5096 + 72 + 4
     # A(0) = a_base(104) + a_per_param(20)*0 = 104, plus SubTest's own
-    # content (one NOP rung, weight 16) -- no fixed_base_per_routine (that
-    # stays folded into MainRoutine's jsr_fixed_base_per_routine above).
-    assert sub.bytes == 104 + 16
+    # content (one NOP rung, weight 16, plus the 2026-08-31 composite-scale
+    # surcharge of 47/instr = 47) -- no fixed_base_per_routine (that stays
+    # folded into MainRoutine's jsr_fixed_base_per_routine above).
+    assert sub.bytes == 104 + 16 + 47
 
 
 def test_jsr_param_cost_a_charged_once_even_with_two_call_sites():
@@ -242,10 +243,11 @@ def test_jsr_param_cost_a_charged_once_even_with_two_call_sites():
     by_path = {e.path: e for e in logic_entries}
     sub = by_path["program:MainProgram/SubTest"]
     # A(2) = 104 + 20*2 = 144 -- charged exactly once, not twice for the 2
-    # call sites, plus SubTest's own content (one NOP rung, weight 16) --
-    # also charged exactly once regardless of call-site count, since it's
-    # the target routine's own content, not a per-call cost.
-    assert sub.bytes == 144 + 16
+    # call sites, plus SubTest's own content (one NOP rung, weight 16 +
+    # composite-scale surcharge 47) -- also charged exactly once regardless
+    # of call-site count, since it's the target routine's own content, not
+    # a per-call cost.
+    assert sub.bytes == 144 + 16 + 47
     main = by_path["program:MainProgram/MainRoutine"]
     # jsr_fixed_base(5096) + JSR weight(72)*2 calls + B(2)=4+20*2=44 *2 calls
     assert main.bytes == 5096 + 72 * 2 + 44 * 2
@@ -294,8 +296,8 @@ def test_jsr_output_param_cost_charged_per_call_site():
     sub = by_path["program:MainProgram/SubTest"]
     # A(1) unaffected by output param count (not yet adjusted -- see
     # OPEN_QUESTIONS.md OQ-JSRPARAMCOST), plus SubTest's own content (one
-    # NOP rung, weight 16).
-    assert sub.bytes == 104 + 20 + 16
+    # NOP rung, weight 16 + composite-scale surcharge 47).
+    assert sub.bytes == 104 + 20 + 16 + 47
 
 
 def test_jsr_target_content_scales_with_instruction_count():
@@ -343,10 +345,11 @@ def test_jsr_target_content_scales_with_instruction_count():
         '<Rung Number="1" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>'
     )
     # A(0)=104 shared by both; content must differ by exactly one more
-    # NOP's weight (16), and neither pays fixed_base_per_routine (4816) --
-    # that would swamp this small a difference if it leaked in.
-    assert build(one_nop) == 104 + 16
-    assert build(two_nop) == 104 + 16 * 2
+    # NOP's weight (16) plus its composite-scale surcharge (47), and
+    # neither pays fixed_base_per_routine (4816) -- that would swamp this
+    # small a difference if it leaked in.
+    assert build(one_nop) == 104 + 16 + 47
+    assert build(two_nop) == 104 + (16 + 47) * 2
 
 
 # ---------------------------------------------------------------------------

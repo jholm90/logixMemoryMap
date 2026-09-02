@@ -157,6 +157,18 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                 content_bytes, content_basis = compute_routine_logic_bytes(
                     internal_routine, model.logic_instructions, charge_shell=False
                 )
+                # 2026-08-31, real composite-scale regression (memory_model.
+                # yaml aoi_logic_composite_surcharge_per_instr): the per-
+                # instruction weights above, fit against the small dedicated
+                # isolation test, still underpredict an AOI's real internal-
+                # logic cost at composite scale (multiple distinct AOI
+                # definitions with real logic in the same file) -- this
+                # additive surcharge is that real, FITTED (not KNOWN) gap.
+                content_instr_count = sum(internal_routine.instruction_counts.values())
+                surcharge = content_instr_count * model.logic_instructions.aoi_logic_composite_surcharge_per_instr
+                if surcharge:
+                    content_bytes += surcharge
+                    content_basis = weakest(content_basis, model.logic_instructions.composite_surcharge_confidence)
                 def_bytes += content_bytes
                 def_basis = weakest(def_basis, content_basis)
             definition_entries.append((
@@ -250,6 +262,17 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             content_bytes, content_basis = compute_routine_logic_bytes(
                 routine, model.logic_instructions, tag_types, charge_shell=False
             )
+            # 2026-08-31, real composite-scale regression (memory_model.yaml
+            # jsr_target_composite_surcharge_per_instr): the per-instruction
+            # weights above, fit against the small dedicated isolation test,
+            # still underpredict a JSR target's real content cost at
+            # composite scale -- this additive surcharge is that real,
+            # FITTED (not KNOWN) gap, not a replacement for the weights.
+            content_instr_count = sum(routine.instruction_counts.values())
+            surcharge = content_instr_count * model.logic_instructions.jsr_target_composite_surcharge_per_instr
+            if surcharge:
+                content_bytes += surcharge
+                content_basis = weakest(content_basis, model.logic_instructions.composite_surcharge_confidence)
             target_bytes = a_cost + content_bytes
             if target_bytes:
                 # One entry per routine.path, same convention as every other

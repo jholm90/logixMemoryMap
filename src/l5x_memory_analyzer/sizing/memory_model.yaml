@@ -1393,6 +1393,37 @@ logic_instructions:
   # independently confirmed at a 2nd rung count for this specific formula.
   branch_bracket_cost_per_instruction: 4
   branch_bracket_confidence: FITTED
+  # 2026-08-31, James: "you need to see the analysis and tuning of your
+  # estimation scripts to tune them closer to the results you got...
+  # obviously exclude the results with errors." Regression against 22
+  # error-free composite_realistic_v2 files (real capture, excluding the
+  # 5 files with reported real errors -- 7/18/19/30/50) of real residual
+  # (actual - predicted, AFTER the 2026-08-31 JSR-target-content and
+  # AOI-internal-logic wiring) against each file's own AOI-internal-logic
+  # instruction count and JSR-target instruction count: even after that
+  # wiring, real Capacity is STILL underpredicted, and the gap tracks
+  # those two content sizes specifically (R^2=0.66 for a no-intercept
+  # 2-variable fit, versus R^2=0.60 for the next-best alternative tried --
+  # a flat percent-of-total baseline -- and combining both doesn't
+  # meaningfully improve on the content-only fit, so the content-based
+  # explanation is doing the real work, not just proxying for file size).
+  # This is a REAL, ADDITIONAL per-instruction surcharge on top of the
+  # already-wired per-instruction weights, not a replacement for them --
+  # it only shows up at composite scale (many distinct AOI definitions
+  # with real logic, or larger JSR-target content, combined with
+  # everything else in a realistic file), not in the smaller dedicated
+  # isolation tests (jsr_target_content_scale_*, aoi_logic_scale_*) those
+  # weights were originally fit against. FITTED, explicitly NOT KNOWN --
+  # R^2=0.66 leaves real unexplained variance (mean abs error ~1,500
+  # bytes across the 22-file fit), and the jsr rate being ~2.3x the aoi
+  # rate despite a similar real instruction mix is not yet mechanistically
+  # understood, just what the real data shows. Needs more real composite-
+  # scale data (ideally varying AOI-count/JSR-content independently,
+  # rather than the current profile schedule where they're correlated
+  # with overall file scale) to sharpen or disprove this.
+  aoi_logic_composite_surcharge_per_instr: 20
+  jsr_target_composite_surcharge_per_instr: 47
+  composite_surcharge_confidence: FITTED
   weights:
     ABS: 120
     XPY: 116

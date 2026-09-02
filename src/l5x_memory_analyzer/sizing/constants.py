@@ -348,6 +348,9 @@ class LogicInstructionModel:
     jsr_param_cost: JsrParamCostModel
     branch_bracket_cost_per_instruction: int
     branch_bracket_confidence: str
+    aoi_logic_composite_surcharge_per_instr: int
+    jsr_target_composite_surcharge_per_instr: int
+    composite_surcharge_confidence: str
 
 
 @dataclass(frozen=True)
@@ -649,5 +652,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             ),
             branch_bracket_cost_per_instruction=raw["logic_instructions"]["branch_bracket_cost_per_instruction"],
             branch_bracket_confidence=raw["logic_instructions"]["branch_bracket_confidence"],
+            aoi_logic_composite_surcharge_per_instr=raw["logic_instructions"]["aoi_logic_composite_surcharge_per_instr"],
+            jsr_target_composite_surcharge_per_instr=raw["logic_instructions"]["jsr_target_composite_surcharge_per_instr"],
+            composite_surcharge_confidence=raw["logic_instructions"]["composite_surcharge_confidence"],
         ),
     )
