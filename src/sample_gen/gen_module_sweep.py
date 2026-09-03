@@ -13380,6 +13380,16 @@ _SAFETY_PROCESSOR_TYPE = "1756-L81ES"
 # (renamed to cover this, not "requires safety") for the corrected
 # framing. Not re-adding a guessed replacement theory here; needs the
 # actual Studio 5000 error-log line, same as 193-ECM-ETR.
+#
+# UPDATE, 2026-09-03: the "missing Motion/Axis association" follow-up
+# lead (docs/OPEN_QUESTIONS.md OQ-193ECMETR) is now disproven too --
+# composite_realistic_v3's dual-axis-bound 2198-D012-ERS3 (real
+# MOTION_GROUP + 2 real AXIS_CIP_DRIVE tags) hits the identical
+# "Tag '...:SI': Invalid data type for safety tag" error on all 50
+# files. Every "-ERS3" catalog this project has ever generated fails
+# this way; only James's own real Titusville production file has shown
+# it working. See OPEN_QUESTIONS.md for the full comparison -- still
+# genuinely unresolved, needs the raw Designer error-log line.
 
 # Real l5x2acd conversion failures, James's 2026-08-27 push
 # (samples/convert_log.csv): every one of these still failed even with the

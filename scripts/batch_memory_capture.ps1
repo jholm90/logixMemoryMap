@@ -88,6 +88,41 @@ param(
 New-Item -ItemType Directory -Force -Path (Split-Path $HandoffPath -Parent) | Out-Null
 New-Item -ItemType Directory -Force -Path (Split-Path $OpenRequestPath -Parent) | Out-Null
 
+# James, 2026-09-03: AHK occasionally lags up and needs restarting -- a
+# fresh AHK instance has no memory of which file it was mid-open on, and
+# by the time it's restarted the clipboard may no longer hold the right
+# ACD path (something else could've been copied while waiting). Press
+# SPACE at any point during either wait loop below to re-copy the current
+# file's ACD path to the clipboard, so a restarted AHK's next paste (^v)
+# is still correct without re-running this script. Checked every 200ms
+# so it feels immediate; a no-op (does not skip/retry/affect $elapsed) if
+# never pressed. Wrapped in try/catch since [Console]::KeyAvailable throws
+# when input is redirected (e.g. running under CI/non-interactive) --
+# silently unavailable there rather than breaking the run.
+function Test-SpaceBarPressed {
+    try {
+        if ([Console]::KeyAvailable) {
+            $key = [Console]::ReadKey($true)
+            return $key.Key -eq [ConsoleKey]::Spacebar
+        }
+    } catch {
+        # Console input not available -- treat as "never pressed".
+    }
+    return $false
+}
+
+function Wait-WithSpaceBarClipboardRefresh([int]$Seconds, [string]$AcdPath, [string]$Label) {
+    $checkIntervalMs = 200
+    $ticks = [math]::Ceiling(($Seconds * 1000) / $checkIntervalMs)
+    for ($i = 0; $i -lt $ticks; $i++) {
+        if (Test-SpaceBarPressed) {
+            Set-Clipboard -Value $AcdPath
+            Write-Host "  [space] Re-copied ${Label}'s ACD path to clipboard (AHK restart-safe)."
+        }
+        Start-Sleep -Milliseconds $checkIntervalMs
+    }
+}
+
 function Get-SampleIdAndDescription($l5xPath) {
     $base = [System.IO.Path]::GetFileNameWithoutExtension($l5xPath)
     if ($base -match '^(sample_\d+)_(.+)$') {
@@ -159,6 +194,7 @@ if ($remaining.Count -gt 0) {
 
 Write-Host "Ctrl+C at any time -- already-logged rows are skipped on the next run."
 Write-Host "Make sure your AHK script is already running and waiting before this starts."
+Write-Host "SPACE at any time while waiting re-copies the current file's ACD path to the clipboard (handy after restarting a lagged-up AHK)."
 
 # Stale files from a previous run (or a skipped file) shouldn't get
 # attributed to the first file of this run -- start clean.
@@ -194,7 +230,7 @@ foreach ($row in $remaining) {
     $pollInterval = 2
     while ($elapsed -lt $TimeoutSeconds) {
         if (Test-Path $HandoffPath) { break }
-        Start-Sleep -Seconds $pollInterval
+        Wait-WithSpaceBarClipboardRefresh -Seconds $pollInterval -AcdPath $row.acd_path -Label $meta.Id
         $elapsed += $pollInterval
     }
 
@@ -206,7 +242,7 @@ foreach ($row in $remaining) {
             $elapsed = 0
             while ($elapsed -lt $TimeoutSeconds) {
                 if (Test-Path $HandoffPath) { break }
-                Start-Sleep -Seconds $pollInterval
+                Wait-WithSpaceBarClipboardRefresh -Seconds $pollInterval -AcdPath $row.acd_path -Label $meta.Id
                 $elapsed += $pollInterval
             }
         }

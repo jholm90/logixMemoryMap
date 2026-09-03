@@ -939,6 +939,49 @@ the matching footnote at the bottom, not inline.
     far, so this isn't confirmed either, just a real lead not yet a
     guess turned into code.
 
+    **New real evidence, 2026-09-03 — the "missing Motion/Axis
+    association" lead above is now DISPROVEN too.** All 50
+    `composite_realistic_v3_*` files hit the exact same 2-error signature
+    on real Studio 5000 conversion (James): `Tag 'D012_23:SI': Invalid
+    data type for safety tag` + `Project size exceeds controller
+    capacity` — 2 errors, matching the "clean X/X correlation" pattern
+    already noted above for other "-ERS3" catalogs. Critically, v3's
+    `2198-D012-ERS3` module is NOT missing a Motion/Axis association the
+    way `modulesweep_2198_s130_ers3` was — it's dual-axis-bound (2 real
+    `AXIS_CIP_DRIVE` tags, `MotionModule="D012_NN:Ch1"`/`"...Ch2"`,
+    matching `gen_module_motion.py`'s already-real, already-confirmed
+    shape) plus a shared MOTION_GROUP tag, and STILL hits the identical
+    error. So the "needs a real axis" theory doesn't hold either — every
+    "-ERS3" catalog this project has ever generated fails this way
+    (with or without an axis bound), while only James's own real
+    Titusville production file has ever shown it working. Direct,
+    attribute-by-attribute comparison of James's real `2198-D057-ERS3`
+    Module block (from Titusville) against this project's generated
+    `2198-D012-ERS3` block found them structurally near-identical
+    (same Ports/EKey/Communications/Connections shape, same
+    `SafetyEnabled="false"`, no `SafetyNetwork`) — the one confirmed
+    difference is the real block's `<ExtendedProperties>`
+    (`Vendor`/`CatNum`/`FeedbackDevice1-4`/`ConfigID`) is entirely absent
+    from every generated instance, but that can't be confirmed as the
+    cause either: `gen_module_sweep_variants.py`'s own real-corpus-
+    verbatim `2198-D012-ERS3` "2conn" block (source:
+    `motion_p208/p208_D012_NodeAndAxisDual3.L5X`, a real James-uploaded
+    file) ALSO has no `<ExtendedProperties>` and the exact same zeroed
+    `ControllerToDriveConnectionSize`/etc. diagnostic fields our
+    generator produces — meaning that shape was already confirmed real
+    once, not a generator bug in itself, so a missing `ConfigID` isn't a
+    safe conclusion without a same-catalog real counter-example that DOES
+    import clean. Still needs the raw Designer error-log detail (not
+    l5xgit's one-line summary) or a same-catalog Titusville-style real
+    file confirmed to import successfully in isolation to make further
+    progress — not re-guessing a third theory here. `Project size exceeds
+    controller capacity` is unconfirmed whether it's a second real issue
+    or a downstream artifact of the first import failure (this project's
+    own established pattern elsewhere: a primary import failure has
+    previously been found to silently produce a second, misleading
+    symptom — see the IP-duplicate/axis-tags-never-made finding,
+    2026-08-27, `gen_module_motion.py`).
+
     **Two separate, real bugs found and fixed the same pass, NOT this
     one:**
     - **Sequential slot numbering** (James: "lots of racks did not have

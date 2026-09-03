@@ -85,7 +85,7 @@ def _cip_module_xml(name: str, parent: str, size_bytes: int, cip_address: int = 
         f'<Ports>\n<Port Id="1" Address="{cip_address}" Type="CIPBus" Upstream="true" />\n</Ports>\n'
         f'<Communications CommMethod="536870913" PrimCxnInputSize="{size_bytes}" PrimCxnOutputSize="{size_bytes}">\n'
         f'<ConfigTag ConfigSize="0" ExternalAccess="Read/Write">\n'
-        f'<Data Format="L5K"><![CDATA[[4,103,{",".join(["0"] * 400)}]]]></Data>\n'
+        f'<Data Format="L5K"><![CDATA[[4,103,[{",".join(["0"] * 400)}]]]]></Data>\n'
         f'<Data Format="Decorated"><Structure DataType="AB:1756_MODULE:C:0">'
         f'<ArrayMember Name="Data" DataType="SINT" Dimensions="400" Radix="Hex">'
         + "".join(f'<Element Index="[{i}]" Value="16#00" />' for i in range(400))
