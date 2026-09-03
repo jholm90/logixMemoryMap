@@ -120,6 +120,22 @@ rather than only empirical capture.
 | AXIS_SERVO | 16,796 | FITTED, 2026-08-23. Same. |
 | AXIS_VIRTUAL | 16,796 | FITTED, 2026-08-23. Identical to AXIS_SERVO -- confirmed independently, not assumed. |
 | MOTION_INSTRUCTION | 12 | FITTED, 2026-08-23. Same 3-DINT-style layout as TIMER/COUNTER/CONTROL; exact fit across a 1/5/50 tag-count sweep. |
+
+**Flagged 2026-09-02, NOT wired -- see OPEN_QUESTIONS.md OQ-AXISCOMBO.** A
+second, later real-data note (RESOLVED_QUESTIONS.md OQ-AXISSTRUCT) records
+a different set of Capacity totals for the same 4 axis/coordinate types --
+AXIS_CIP_DRIVE=22,728, COORDINATE_SYSTEM=9,616, AXIS_SERVO=
+AXIS_VIRTUAL=16,888, each ~92-100 blocks HIGHER than the values wired
+above -- against a "MotionGroup-only local baseline" of 19,296 blocks that
+doesn't itself reconcile against the wired `empty_project_baseline`
+(13,296) + `MOTION_GROUP` (1,076) = 14,372. The source file composition
+behind that second number set isn't available, so it's flagged here rather
+than silently trusted or silently ignored; the table above is what's
+actually wired and running today. `axis_scale_*` (18 new files,
+single/dual-axis 2198 servo drive counts 1-20 ± regen) was built this same
+pass but tests a different question (multi-instance servo-drive-module
+marginal cost, OQ-MODULEIO) -- it doesn't by itself resolve this
+discrepancy.
 | SFC_STEP | 28 | ASSUMED, 2026-08-27. 7 DINT (Status+PRE+T+TMax+Count+LimitLow+LimitHigh), read off real Decorated-XML L5K data, zero variance across 272 real instances. Not yet capture-confirmed. |
 | SFC_ACTION | 16 | ASSUMED, 2026-08-27. 4 DINT (Status+PRE+T+Count), zero variance across 97 real instances. |
 | FBD_TIMER | 48 | ASSUMED, 2026-08-27. 12 DINT-equivalent, zero variance across 5 real instances. |
@@ -469,6 +485,29 @@ OPEN_QUESTIONS.md OQ-MODULEIO.
 - Motion/Kinetix (2198-series) and VFD (PowerFlex) module shapes:
   **UNKNOWN**, deliberately untouched — need their own real-shape
   research, not a safe reuse of the backplane/Point-I/O shapes above.
+- **Zero-connection modules, visibility fix 2026-09-02.** A module with no
+  Connection and no stated size of its own (real shape: a bare
+  `ETHERNET-BRIDGE` used purely as an IP-address fan-out for a downstream
+  device with no PLC logic connection, per James's own field description)
+  was silently skipped — no SizeEntry, no SizeError. Now flagged with an
+  explicit SizeError so it's visible in the report; `"Local"` stays
+  excluded from this flag since its overhead is already covered by
+  `empty_project_baseline`. No total changed. New test file:
+  `bridge_placeholder_*`.
+- **CIP-MODULE (generic CIP device / named-EDS-without-AOP), flagged
+  2026-09-02, not yet resolved.** Real shape confirmed from
+  TitusvilleTrimmer's own `IO_Optm` module: `CatalogNumber="CIP-MODULE"`,
+  rides a parent bridge's virtual CIPBus (`ParentModPortId="1"
+  Type="CIPBus"`), one "Standard" Connection with matched Input/OutputSize,
+  Decorated shape `AB:1756_MODULE_DINT_{n}Bytes:I:0`/`:O:0` (DataType name
+  literally encodes the byte count, `Dimensions = n/4`, confirmed exact at
+  n=496 = 124 elements). Currently sized with the flat ~1,672-byte
+  `module_overhead` default (no per-catalog entry exists for CIP-MODULE) —
+  same class of risk already documented above for ETHERNET-MODULE/
+  ETHERNET-PANELVIEW ("overhead scales with declared I/O size, not flat").
+  New test batch `cipmodule_scale_*` (7 files, 64-2048 byte declared I/O
+  sweep + a 3-instance file) built to test this; no real capture data back
+  yet.
 
 ## Logic instruction weights (FITTED, 2026-08-22 — not yet wired into the engine)
 

@@ -971,6 +971,63 @@ the matching footnote at the bottom, not inline.
       requirement, and now sits in the same exclusion bucket as
       `193-ECM-ETR/A`/`/B`.
 
+15. **OQ-V3GENBUGS** — three real generator bugs found via James's actual
+    Studio 5000 ACD-conversion errors on the v3 composite batch (50 files,
+    2026-09-02), all root-caused to the exact reported symptom and fixed:
+    `_LOCAL_ICP_SLOT_RE` crossing `<Module>` boundaries in DOTALL mode
+    (corrupted an unrelated child module's valid ICP slot when the "root"
+    module's own port didn't match), `lint.py`'s `_module_slot_findings`
+    treating a real, valid nameless `<Module>` (e.g. `1756-OF8/B`) as
+    invisible to slot-collision checks, and an IPv4 4th-octet overflow in
+    `_modules_xml_unique_ips` (`base = 60 + (i+1)*10` broke past ~19
+    catalogs/file — v3 routinely has 15-34). All three fixed and covered
+    by new regression tests (`tests/test_gen_composite_realistic.py`).
+    New test batches this same pass, all lint-clean and pushed:
+    `composite_realistic_v3_*` (50, deliberately wide-varying program/AOI/
+    subroutine counts — see [^compositescale] — built specifically to
+    re-derive the JSR/AOI composite-scale surcharge that over-generalized
+    at Titusville's real 179-distinct-JSR-target scale, see OQ-JSRSCALE
+    below), `axis_scale_*` (18, single/dual-axis 2198 servo drive counts
+    1-20 ± regen), `rack_5069_*` (11, real `Remote5069.L5X`-derived AENTR
+    multi-child racks), `rack_pointio_*` (11, real `1734-AENT/B` multi-slot
+    adapter), `rack_1756_*` (12, local-rack size scaling 2-16 modules),
+    `cipmodule_scale_*` (7, CIP-MODULE declared-I/O-size sweep 64-2048
+    bytes, anchored against Titusville's real 496-byte `IO_Optm` instance),
+    `bridge_placeholder_*` (2, real zero-connection `ETHERNET-BRIDGE`
+    IP-only fan-out node). None of these have real capture data back yet
+    (James still validating ACD conversion as of 2026-09-02) — no sizing
+    formula changes from this item, generator-correctness only.
+
+16. **OQ-JSRSCALE** — the composite-scale JSR/AOI surcharge
+    (`aoi_logic_composite_surcharge_per_instr=20`/
+    `jsr_target_composite_surcharge_per_instr=47`, wired from a 22-file
+    synthetic regression where every file had exactly 1 JSR target)
+    catastrophically over-predicts on `TitusvilleTrimmer_20260902r2.L5X`
+    (real file, 179 distinct JSR targets): +736,443 bytes from JSR alone,
+    +824,363 total surcharge overshoot. But removing the surcharge
+    entirely is WORSE, not better — swings from +7.71% over to -14.7%
+    under, meaning there's a real, larger, separate under-prediction in
+    the base per-instruction JSR/AOI-content weighting that only shows up
+    at real production JSR-target counts, which the surcharge was
+    partially (and wrongly) compensating for. Needs real capture data
+    across a wide spread of JSR-target/program/AOI counts to separate the
+    two effects — this is the entire reason `composite_realistic_v3_*`
+    (above) was built with varying counts instead of fixed at James's
+    stated floors. Blocked on that capture data.
+
+17. **OQ-AXISCOMBO** — cited in RESOLVED_QUESTIONS.md (OQ-AXISSTRUCT,
+    OQ-AXISDEEP) as "the one remaining piece," but no item by this name —
+    or covering this ground — was ever actually created here. A real
+    doc-sync gap, not a resolved one. Chasing it down surfaced a second,
+    more substantive gap: OQ-AXISSTRUCT's real Capacity numbers don't
+    match what's already wired into `memory_model.yaml`'s
+    `predefined_structures` from OQ-PREDEFINED. Correction to the record:
+    axis content is NOT "100%-blind, priced at exactly $0" as described to
+    James earlier this session — AXIS_CIP_DRIVE/AXIS_SERVO/AXIS_VIRTUAL/
+    COORDINATE_SYSTEM are wired and sizing without error today (FITTED,
+    single-sample-each). See footnote for the actual unreconciled numbers
+    and what's needed to close this for real.
+
 ---
 
 [^instrfirstpass]: CROUT (safety-only) and MAPC resolved separately
@@ -1702,4 +1759,40 @@ flagged in their own manifest description — real, already-documented
 engine limitations (rack-aliased connections, legacy-network bridges,
 modules with unrecognized nested member types), not something this batch
 introduced. Full corpus crash-swept clean (1801 files, 0 crashes) and
-140/140 unit tests pass with this batch included.
+140/140 unit tests pass with this batch included. The v3 follow-on
+generator (`gen_composite_realistic_v3.py`, see OQ-V3GENBUGS) reuses this
+module-cycling and AOI/orphan machinery unchanged and adds deliberately
+wide-varying program/subroutine/AOI counts (5-24 AOIs, 5-12 programs,
+1-3 subs/program) plus a target-byte-count-by-construction technique: it
+measures the real content "floor" via a direct `build_report()` call, then
+sizes one filler DINT array via already-KNOWN formulas to land within a
+few bytes of a per-file target between 1,550,000 and 2,449,999.
+
+[^axiscombo]: Two different real-data-derived axis/motion
+predefined-structure number sets exist and were never cross-checked
+against each other. OQ-PREDEFINED (RESOLVED_QUESTIONS.md, derived
+2026-08-23 via `residual = actual - sizeable_engine_total -
+empty_project_baseline`, single-sample-each, FITTED) gives
+AXIS_CIP_DRIVE=22,636, COORDINATE_SYSTEM=9,516, AXIS_SERVO=
+AXIS_VIRTUAL=16,796 — these ARE the values currently wired into
+`memory_model.yaml`'s `predefined_structures`, and the sizing engine does
+NOT error on these 4 axis types today. A separate note, OQ-AXISSTRUCT
+(RESOLVED_QUESTIONS.md, appears in the Tag/UDT section ahead of
+OQ-PREDEFINED's section but reads as never reconciled against it),
+records a second real set of Capacity totals — AXIS_CIP_DRIVE=22,728,
+COORDINATE_SYSTEM=9,616, AXIS_SERVO=AXIS_VIRTUAL=16,888 — each
+consistently 92-100 blocks HIGHER than the wired values — "measured over
+a MotionGroup-only local baseline (19,296 blocks)." That 19,296 baseline
+figure doesn't appear anywhere else in this project's docs and doesn't
+cleanly decompose from what's already wired: `empty_project_baseline`
+(13,296) + `MOTION_GROUP` (1,076) = 14,372, leaving an unexplained
+~4,924-block gap. Without the actual source L5X/file composition behind
+the OQ-AXISSTRUCT numbers, there's no way to tell from the two aggregate
+totals alone whether this second set reflects (a) formula drift in some
+shared cost since 2026-08-23, (b) a real MotionGroup-only baseline file
+with more content than OQ-PREDEFINED's bare per-axis isolation files, or
+(c) the still-open multi-axis "combo" case rather than the
+single-axis-in-isolation case OQ-PREDEFINED already solved. Genuinely
+blocked on that source data (or a fresh, clearly-labeled real capture) —
+not guessable from two aggregate totals, and not acted on (no formula
+change made) pending it.

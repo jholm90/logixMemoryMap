@@ -87,6 +87,24 @@ ordinary UDT-member recursion already covers a produced/consumed tag's
 `CONNECTION_STATUS`-typed member, which is itself now a wired
 `predefined_structures` entry (4 bytes, 2026-08-29 batch). See
 RESOLVED_QUESTIONS.md.
+**Zero-connection modules made visible 2026-09-02** (`report.py`):
+modules with no Connection/stated size of their own (e.g. a bare
+`ETHERNET-BRIDGE` IP-only fan-out, James's real "placeholder for IP
+addresses with no PLC logic connections" pattern) were being silently
+skipped with no SizeEntry and no SizeError; now flagged with an explicit
+SizeError (visibility-only, no total changed) — `"Local"` itself stays
+excluded since its overhead is already covered by
+`empty_project_baseline`. New test file: `bridge_placeholder_*`.
+Three more real module-generator bugs found and fixed the same pass (a
+regex crossing `<Module>` boundaries, a nameless-module lint blind spot,
+an IPv4 4th-octet overflow past ~19 catalogs/file) — see OPEN_QUESTIONS.md
+OQ-V3GENBUGS. New per-catalog-shape test batches awaiting real capture:
+`axis_scale_*` (18, servo/dual-axis 2198 drive count scaling),
+`rack_5069_*` (11), `rack_pointio_*` (11), `rack_1756_*` (12),
+`cipmodule_scale_*` (7, CIP-MODULE generic-EDS declared-I/O-size sweep —
+first real test of whether the flat `module_overhead` default shows the
+same "scales with declared I/O size" pattern already confirmed for
+ETHERNET-MODULE/ETHERNET-PANELVIEW).
 
 [^aoidef]: `sizing/udt.py` `compute_aoi_definition_cost()`, FITTED not
 KNOWN. AOI type-name-length step CLOSED 2026-08-30 (7/7 exact). The
@@ -105,7 +123,16 @@ regression on 22 real composite_realistic_v2 files) — real multi-AOI/
 JSR-combined project scale showed a further systematic under-prediction
 beyond the per-instruction weight alone; see OPEN_QUESTIONS.md
 OQ-COMPOSITESCALE for the fit and remaining unexplained variance
-(R²=0.66).
+(R²=0.66). **Does NOT generalize to real production scale, found
+2026-09-02**: `TitusvilleTrimmer_20260902r2.L5X` (real file, 179 distinct
+JSR targets, vs. the 22-file/1-target-each fit) misses by +7.71% with the
+surcharge applied (+824,363 bytes of surcharge overshoot) but WORSE
+(-14.7%) with it removed entirely — a real, larger, separate
+under-prediction in the base per-instruction weighting only shows up at
+real JSR-target counts. See OPEN_QUESTIONS.md OQ-JSRSCALE; blocked on real
+capture data from the newly-built `composite_realistic_v3_*` batch
+(deliberately wide-varying JSR-target/program/AOI counts, not fixed at a
+floor).
 
 [^branchdepth]: Real cost confirmed (branch bracket structure costs real
 memory beyond leg instructions), formula not yet fit — see
@@ -142,7 +169,9 @@ regression on 22 real composite_realistic_v2 files) — real multi-AOI/
 JSR-combined project scale showed a further systematic under-prediction
 beyond the per-instruction weight alone; see OPEN_QUESTIONS.md
 OQ-COMPOSITESCALE for the fit and remaining unexplained variance
-(R²=0.66).
+(R²=0.66). Same real-scale generalization failure as the AOI surcharge
+above (found on `TitusvilleTrimmer_20260902r2.L5X`'s 179 distinct JSR
+targets) — see OQ-JSRSCALE.
 
 [^holdout]: 10 real captured files never used to fit anything (random
 instruction-type combinations) checked against the current engine: 7/10
