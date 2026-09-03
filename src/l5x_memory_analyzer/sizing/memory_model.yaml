@@ -1424,6 +1424,41 @@ logic_instructions:
   aoi_logic_composite_surcharge_per_instr: 20
   jsr_target_composite_surcharge_per_instr: 47
   composite_surcharge_confidence: FITTED
+  # composite_surcharge_cap, wired 2026-09-03 (James: "tweak something else
+  # in your algorithm and get a better result" -- real regression on all
+  # 100 real-captured composite files now on file, the 22-file v2 fit above
+  # PLUS 50 new composite_realistic_v3_* files real-captured this same
+  # day). The per-instruction rates above (20/47), left UNCAPPED, were fit
+  # against the small v2 files (21-216 combined AOI+JSR instructions) and
+  # generalize badly once real files carry much more JSR/AOI content:
+  # v3's real captures (530-2,752 combined instructions) show the
+  # UNCAPPED surcharge badly OVER-predicting (v3 mean error swings from
+  # -1% to -9%+ as content scales up, exactly the composite-scale
+  # over-generalization already flagged in OPEN_QUESTIONS.md
+  # OQ-JSRSCALE/OQ-COMPOSITESCALE) while v2's small files still need the
+  # full uncapped rate to stay accurate. A real, saturating cap threading
+  # both real datasets was found by sweeping cap values against the
+  # COMBINED 100-file real set (v2+v3) and minimizing mean absolute
+  # percent error: capping the file-wide TOTAL surcharge (summed across
+  # every AOI's and every JSR target's own content, before either
+  # per-instruction rate is applied) at ~12,000 blocks/file cuts combined
+  # mean abs error from 3.81% (uncapped) to 2.01% -- nearly half, with the
+  # per-file cap value swept in 250-block steps from 9,000-15,000 and the
+  # optimum landing at 11,500-12,000 (flat plateau, not a sharp/fragile
+  # peak). The 4 remaining >5%-error outliers after capping
+  # (composite_realistic_v2_07/10/18/50) are pre-existing, already-known,
+  # separately-unexplained anomalies (their own uncapped surcharge never
+  # even reaches the cap, so capping doesn't touch them either way) --
+  # not something this cap was meant to or does fix. Applied as a single
+  # FILE-WIDE scale factor (surcharge_scale = min(1, cap /
+  # uncapped_total_surcharge)) in report.py, uniformly shrinking every
+  # individual AOI/JSR surcharge entry proportionally rather than a flat
+  # per-entity cutoff, so relative per-entity attribution is preserved.
+  # FITTED, same confidence tier as the per-instruction rates it caps --
+  # real, substantial, data-driven improvement, but still an empirical
+  # patch on a formula whose true (likely non-linear, saturating)
+  # real shape isn't mechanistically understood yet.
+  composite_surcharge_cap: 12000
   weights:
     ABS: 120
     XPY: 116

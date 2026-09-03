@@ -351,6 +351,7 @@ class LogicInstructionModel:
     aoi_logic_composite_surcharge_per_instr: int
     jsr_target_composite_surcharge_per_instr: int
     composite_surcharge_confidence: str
+    composite_surcharge_cap: int
 
 
 @dataclass(frozen=True)
@@ -655,5 +656,6 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             aoi_logic_composite_surcharge_per_instr=raw["logic_instructions"]["aoi_logic_composite_surcharge_per_instr"],
             jsr_target_composite_surcharge_per_instr=raw["logic_instructions"]["jsr_target_composite_surcharge_per_instr"],
             composite_surcharge_confidence=raw["logic_instructions"]["composite_surcharge_confidence"],
+            composite_surcharge_cap=raw["logic_instructions"]["composite_surcharge_cap"],
         ),
     )

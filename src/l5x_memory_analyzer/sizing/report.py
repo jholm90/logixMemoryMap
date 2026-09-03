@@ -76,6 +76,37 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # this content, same as any other caller that omits tag_types.
     aoi_internal_logic = parse_aoi_internal_logic(root)
 
+    # Composite-scale surcharge cap (2026-09-03, OQ-JSRSCALE/OQ-COMPOSITESCALE,
+    # see memory_model.yaml composite_surcharge_cap for the full derivation):
+    # the per-instruction surcharge rates below (aoi_logic_composite_
+    # surcharge_per_instr / jsr_target_composite_surcharge_per_instr), left
+    # uncapped, badly over-predict once a file's combined AOI+JSR content
+    # scale is much larger than the small files they were originally fit
+    # against. The cap applies to the FILE-WIDE total across every AOI's
+    # and every JSR target's own surcharge-eligible content combined, not
+    # per-entity, so it has to be computed once, up front, before either
+    # per-entity loop below applies its own share of it. A cheap early
+    # parse of the RLL routines (re-parsed again by name below where the
+    # rest of the function needs the full RoutineLogic objects, not just
+    # this instruction-count total) keeps this pre-pass self-contained.
+    _surcharge_aoi_instr = sum(
+        sum(r.instruction_counts.values()) for r in aoi_internal_logic.values()
+    )
+    _surcharge_jsr_instr = sum(
+        sum(r.instruction_counts.values())
+        for r in parse_rll_routines(root)
+        if r.is_jsr_target
+    )
+    _uncapped_total_surcharge = (
+        _surcharge_aoi_instr * model.logic_instructions.aoi_logic_composite_surcharge_per_instr
+        + _surcharge_jsr_instr * model.logic_instructions.jsr_target_composite_surcharge_per_instr
+    )
+    surcharge_scale = (
+        model.logic_instructions.composite_surcharge_cap / _uncapped_total_surcharge
+        if _uncapped_total_surcharge > model.logic_instructions.composite_surcharge_cap
+        else 1.0
+    )
+
     sized: list[tuple[str, str, str, int, str]] = []
     errors: list[SizeError] = []
     # Every DECLARED UDT gets a definition-cost line, whether or not any
@@ -165,7 +196,13 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                 # definitions with real logic in the same file) -- this
                 # additive surcharge is that real, FITTED (not KNOWN) gap.
                 content_instr_count = sum(internal_routine.instruction_counts.values())
-                surcharge = content_instr_count * model.logic_instructions.aoi_logic_composite_surcharge_per_instr
+                # File-wide cap applied as a uniform scale factor -- see
+                # surcharge_scale's own derivation above.
+                surcharge = round(
+                    content_instr_count
+                    * model.logic_instructions.aoi_logic_composite_surcharge_per_instr
+                    * surcharge_scale
+                )
                 if surcharge:
                     content_bytes += surcharge
                     content_basis = weakest(content_basis, model.logic_instructions.composite_surcharge_confidence)
@@ -269,7 +306,13 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             # composite scale -- this additive surcharge is that real,
             # FITTED (not KNOWN) gap, not a replacement for the weights.
             content_instr_count = sum(routine.instruction_counts.values())
-            surcharge = content_instr_count * model.logic_instructions.jsr_target_composite_surcharge_per_instr
+            # File-wide cap applied as a uniform scale factor -- see
+            # surcharge_scale's own derivation near the top of this function.
+            surcharge = round(
+                content_instr_count
+                * model.logic_instructions.jsr_target_composite_surcharge_per_instr
+                * surcharge_scale
+            )
             if surcharge:
                 content_bytes += surcharge
                 content_basis = weakest(content_basis, model.logic_instructions.composite_surcharge_confidence)
