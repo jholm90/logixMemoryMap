@@ -106,6 +106,9 @@ _P208_MODULE_XML = """\
 <Connection Name="B_MotionSync" RPI="0" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false"/>
 </Connections>
 </Communications>
+<ExtendedProperties>
+<public><Vendor>Rockwell Automation/Allen-Bradley</Vendor><CatNum>2198-P208</CatNum><ConfigID>101</ConfigID></public>
+</ExtendedProperties>
 </Module>"""
 
 
@@ -113,6 +116,16 @@ def _drive_module_xml(name: str, catalog: str, safety_enabled: str, address: str
     """D012 (single/dual-axis, non-safety) and S086 (safety-rated) share
     this exact shape -- only Name/CatalogNumber/SafetyEnabled differ,
     confirmed by direct comparison of both real files.
+
+    ExtendedProperties/ConfigID=33554537 confirmed real 2026-09-03 across
+    THREE independent real captures: this project's own original
+    p208_D012_NodeAndAxisDual.L5X (2198-D012-ERS3), James's real
+    TitusvilleTrimmer (2198-D057-ERS3), and James's fresh from-scratch
+    SampleAxis.L5X (2198-D057-ERS3 again) -- same ConfigID on 2 different
+    catalogs, so it's a shared per-family AOP config identifier, not
+    catalog-specific; safe to reuse across D012/D020/D032/D057/S086.
+    Every drive module this project ever generated was missing this block
+    entirely -- found via a byte-for-byte diff against SampleAxis.L5X.
 
     `address` defaults to a DIFFERENT IP than _P208_MODULE_XML's hardcoded
     192.168.1.1 (2026-08-27, real Studio 5000 import bug found by James:
@@ -166,6 +179,9 @@ def _drive_module_xml(name: str, catalog: str, safety_enabled: str, address: str
 <Connection Name="B_MotionSync2" RPI="2000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false"/>
 </Connections>
 </Communications>
+<ExtendedProperties>
+<public><Vendor>Rockwell Automation/Allen-Bradley</Vendor><CatNum>{catalog}</CatNum><FeedbackDevice1>1</FeedbackDevice1><FeedbackDevice2>2</FeedbackDevice2><FeedbackDevice3>3</FeedbackDevice3><FeedbackDevice4>4</FeedbackDevice4><ConfigID>33554537</ConfigID></public>
+</ExtendedProperties>
 </Module>"""
 
 

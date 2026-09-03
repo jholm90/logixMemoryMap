@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite3_19" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 12:18:00 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite3_19" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 12:18:00 2026" LastModifiedDate="Thu Sep 03 12:18:00 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite3_19" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 12:47:57 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite3_19" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 12:47:57 2026" LastModifiedDate="Thu Sep 03 12:47:57 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -205,6 +205,9 @@
 <Connection Name="B_MotionSync" RPI="0" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false"/>
 </Connections>
 </Communications>
+<ExtendedProperties>
+<public><Vendor>Rockwell Automation/Allen-Bradley</Vendor><CatNum>2198-P208</CatNum><ConfigID>101</ConfigID></public>
+</ExtendedProperties>
 </Module>
 <Module Name="D012_19" CatalogNumber="2198-D012-ERS3" Vendor="1" ProductType="45" ProductCode="11" Major="14" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false">
 <EKey State="CompatibleModule"/>
@@ -246,6 +249,9 @@
 <Connection Name="B_MotionSync2" RPI="2000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false"/>
 </Connections>
 </Communications>
+<ExtendedProperties>
+<public><Vendor>Rockwell Automation/Allen-Bradley</Vendor><CatNum>2198-D012-ERS3</CatNum><FeedbackDevice1>1</FeedbackDevice1><FeedbackDevice2>2</FeedbackDevice2><FeedbackDevice3>3</FeedbackDevice3><FeedbackDevice4>4</FeedbackDevice4><ConfigID>33554537</ConfigID></public>
+</ExtendedProperties>
 </Module>
 <Module Name="TestMod1_1756OF4A" CatalogNumber="1756-OF4/A" Vendor="1" ProductType="10" ProductCode="8" Major="1" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
