@@ -62,8 +62,23 @@ Checks:
      not have the slot numbers used in sequence and that was supposed to
      be a check you were adding for validation." See
      _slot_sequence_findings for the real generator bug this caught.
+  8. chassis_size_mismatch -- James, 2026-09-03, real issue found
+     reviewing the v4 Studio 5000 I/O tree: a PointIO/Flex adapter's
+     declared Bus Size can be stale even when its child IS at a
+     sequential, in-bounds slot number (chassis_size_exceeded above only
+     flags an address >= Size, not a Size that's simply too generous for
+     how many modules are actually present -- a lone child at slot 1
+     under a Bus Size="12" never trips that check). "Bus Coupler + 1 IO
+     module = Chassis Size 2" -- see _chassis_size_findings.
+  9. safety_module_on_non_safety_controller -- James, 2026-09-03: "You
+     need to do better checking on safety stuff... you need to 'read'
+     these modules and use your logic to verify safety stuff cannot go on
+     non-safety processors." Real Studio 5000 error rebuilding an already-
+     once-diagnosed real bug by hand without checking for the existing
+     fix first (5069-IB8S/A / 5069-OBV8S/A, SafetyEnabled="true", built
+     into a default non-safety controller) -- see _safety_module_findings.
 
-These last two were added the same day their bug class was found TWICE --
+These last four were added the same day their bug class was found TWICE --
 once fixed by hand in the one generator that hit it, then reintroduced
 fresh in 3 more files written the same session. Hand-fixing a generator
 when a real bug is found is not enough; the check has to be enforced here
@@ -555,11 +570,117 @@ def _slot_sequence_findings(
     return findings
 
 
+def _chassis_size_findings(root: ET.Element) -> list[LintFinding]:
+    """James, 2026-09-03, real issue found reviewing the v4 Studio 5000
+    I/O tree: a PointIO/Flex adapter's declared Bus Size can be stale even
+    when its child sits at a sequential, in-bounds slot number --
+    chassis_size_exceeded (in _module_slot_findings) only flags an address
+    >= Size, so a lone real child at slot 1 under a Bus Size="12" (12
+    inherited verbatim from whatever real, larger rack this catalog was
+    originally captured from) never trips it. "Bus Coupler + 1 IO module =
+    Chassis Size 2" -- Size must equal the real module count actually
+    present on that bus, the adapter itself plus its children, not merely
+    be large enough that no address happens to exceed it. Scoped to
+    PointIO/Flex Port types only, matching gen_composite_realistic.py's
+    own _normalize_chain_bus_sizes -- a ControlNet/Ethernet/ICP `<Bus />`
+    placeholder has no slot-count semantics. A Bus-bearing adapter with NO
+    children present in this file at all is left unflagged (a bare-
+    adapter reuse is a generator-level choice, not something a single
+    file can validate on its own)."""
+    findings: list[LintFinding] = []
+    modules_by_name: dict[str, ET.Element] = {}
+    for mod_el in root.iter("Module"):
+        name = mod_el.get("Name")
+        if name:
+            modules_by_name[name] = mod_el
+
+    children_count: dict[tuple[str, str], int] = {}
+    for mod_el in root.iter("Module"):
+        parent_module = mod_el.get("ParentModule")
+        parent_port_id = mod_el.get("ParentModPortId")
+        if not parent_module or parent_port_id is None:
+            continue
+        key = (parent_module, parent_port_id)
+        children_count[key] = children_count.get(key, 0) + 1
+
+    for name, mod_el in modules_by_name.items():
+        ports_el = mod_el.find("Ports")
+        if ports_el is None:
+            continue
+        for port_el in ports_el.findall("Port"):
+            if port_el.get("Type") not in ("PointIO", "Flex"):
+                continue
+            bus_el = port_el.find("Bus")
+            if bus_el is None:
+                continue
+            bus_size = bus_el.get("Size")
+            if not bus_size or not bus_size.isdigit():
+                continue
+            port_id = port_el.get("Id")
+            n_children = children_count.get((name, port_id), 0)
+            if n_children == 0:
+                continue
+            expected = n_children + 1
+            if int(bus_size) != expected:
+                findings.append(LintFinding(
+                    "chassis_size_mismatch",
+                    f"Module '{name}' Port Id={port_id} declares Bus Size={bus_size}, but "
+                    f"{n_children} real child module(s) are present on it (expected "
+                    f"Size={expected}: the adapter itself plus its children)",
+                ))
+    return findings
+
+
+def _safety_module_findings(root: ET.Element) -> list[LintFinding]:
+    """James, 2026-09-03, real Studio 5000 error caught combining several
+    real 5069 Compact I/O catalogs into a scratch sample: "Failed to set
+    the 'SafetyEnabled' property (The Controller is not a Safety
+    Controller.)" on 2 of the 6 -- 5069-IB8S/A and 5069-OBV8S/A are real
+    safety modules (SafetyEnabled="true"), and this project's own
+    build_l5x defaults to a plain non-safety controller unless
+    safety_level is explicitly passed. This exact combination (this
+    project's own gen_module_sweep.py already fully diagnosed it,
+    2026-08-27: "5069-L306ERMS2" is the confirmed-real safety-capable 5069
+    processor) was rebuilt from scratch by hand without checking for the
+    existing fix first -- James: "You need to do better checking on
+    safety stuff... you need to 'read' these modules and use your logic
+    to verify safety stuff cannot go on non-safety processors." A
+    Module's own SafetyEnabled="true" is a REAL, unambiguous signal
+    (not a heuristic) that this file's Controller needs a safety-capable
+    build. Self-caught before this check ever shipped: wrapper.py's
+    build_l5x emits a bare `<SafetyInfo/>` element UNCONDITIONALLY (even
+    for the default non-safety controller, `safety_level=None`) -- only
+    the `SafetyLevel` ATTRIBUTE on it is conditional on `safety_level`
+    being passed. Checking for the element alone is a false negative
+    (confirmed: silently passed 0 findings on a rebuilt copy of the exact
+    file James got the real Studio error on). Checking the attribute is
+    the reliable, zero-false-positive signal."""
+    safety_info_el = root.find(".//SafetyInfo")
+    has_safety_controller = safety_info_el is not None and safety_info_el.get("SafetyLevel") is not None
+    if has_safety_controller:
+        return []
+    findings: list[LintFinding] = []
+    for mod_el in root.iter("Module"):
+        if mod_el.get("SafetyEnabled") == "true":
+            name = mod_el.get("Name") or mod_el.get("CatalogNumber", "?")
+            findings.append(LintFinding(
+                "safety_module_on_non_safety_controller",
+                f"Module '{name}' (CatalogNumber={mod_el.get('CatalogNumber')}) has "
+                f"SafetyEnabled=\"true\" but this file's <SafetyInfo> has no SafetyLevel "
+                f"attribute (non-safety controller) -- real Studio 5000 rejects this with "
+                f"\"The Controller is not a Safety Controller.\" Build with a safety_level "
+                f"(build_l5x) or exclude this catalog.",
+            ))
+    return findings
+
+
 def lint_l5x(l5x_text: str) -> list[LintFinding]:
     root = ET.fromstring(l5x_text)
     findings: list[LintFinding] = []
 
     findings.extend(_module_slot_findings(root))
+    findings.extend(_chassis_size_findings(root))
+    findings.extend(_safety_module_findings(root))
 
     array_tags = _array_tag_names(root)
     aoi_names = _declared_aoi_names(root)

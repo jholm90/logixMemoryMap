@@ -77,3 +77,32 @@ generate sample → predict bytes (this tool) → import/download (Studio 5000)
 That last step matters — a constant tuned to fix sample #12 can silently break
 the prediction for sample #4. Re-run the full manifest's predicted-vs-actual
 comparison after every constant change, not just the sample that prompted it.
+
+## Before hand-picking catalogs into any script (including one-off chat samples)
+
+James, 2026-09-03, real Studio 5000 errors that were both **already
+diagnosed and fixed elsewhere in this codebase** before being rebuilt from
+scratch by hand: (1) `193-ECM-ETR/A` used directly in a scratch sample --
+already in `gen_composite_realistic.py`'s `_UNDIAGNOSED_COMPOSITE_CATALOGS`
+exclusion set with a documented real "Child module incompatible with
+parent module" error; James's response was to delete it from
+`_MODULE_CHAINS` entirely. (2) Several real 5069 Compact I/O catalogs
+combined onto the default 1756-L81E non-safety controller -- `gen_module_
+sweep.py` already documents (2026-08-27) that 5069 modules need
+`_5069_PROCESSOR_TYPE = "5069-L306ER"` (a 5069-series processor, not
+1756-L81E -- `Type="5069"` Ports only match a 5069 controller's own local
+bus) and that 2 of the 6 (`_5069_SAFETY_CATALOGS`) are
+`SafetyEnabled="true"`, needing `5069-L306ERMS2` (safety-rated). James:
+"You need to do better checking on safety stuff... you need to 'read'
+these modules and use your logic to verify safety stuff cannot go on
+non-safety processors."
+
+**Before writing ANY script that picks catalogs by name** (`_MODULE_CHAINS`
+keys, `_5069_*`, `_UNDIAGNOSED_*`, etc.), grep this file's own generators
+for that catalog first -- an existing exclusion set, a dedicated processor-
+type constant, or a safety-catalog set means the question is already
+answered. `sample_gen.lint.lint_l5x` now also catches the safety case
+mechanically (`safety_module_on_non_safety_controller`, checks every
+Module's own `SafetyEnabled="true"` against the file's `<SafetyInfo>`
+presence) -- run it on every generated file before sending it anywhere,
+scratch chat samples included, not just committed batches.

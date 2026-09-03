@@ -268,7 +268,18 @@ _LOCAL_ICP_SLOT_RE = re.compile(
     # its actual parent's Bus Size. `(?:(?!<Module).)*?` refuses to cross
     # into a subsequent <Module ...> tag, so the match is now scoped to
     # ONE module's own attributes/Ports, not "anywhere later in the file."
-    r'(ParentModule="Local"(?:(?!<Module).)*?<Port Id="1" Address=")\d+("\s*Type="ICP"\s*Upstream="true"\s*/>)',
+    #
+    # 2026-09-03, James: "didnt see the 5069" -- combining multiple 5069
+    # Compact I/O catalogs together revealed the identical real slot-
+    # collision bug this regex already fixes for Type="ICP", just under a
+    # different Port Type: every 5069 module mounts directly on its own
+    # controller's local bus via `Type="5069"` (confirmed across all 6 real
+    # 5069 catalogs in this corpus), not "ICP" -- so this regex never
+    # matched them and their real, stale captured-slot Address collided
+    # the instant 2+ landed in the same file, exactly like 1756-CNB/D
+    # catalogs did for ICP before that fix. Same remap, same convention,
+    # just widened to match either real Type value.
+    r'(ParentModule="Local"(?:(?!<Module).)*?<Port Id="1" Address=")\d+("\s*Type="(?:ICP|5069)"\s*Upstream="true"\s*/>)',
     re.DOTALL,
 )
 
@@ -295,6 +306,201 @@ def _remap_local_icp_slot(xml: str, slot: int) -> str:
     at all (e.g. already Ethernet-only) is left untouched (no match, no
     collision risk)."""
     return _LOCAL_ICP_SLOT_RE.sub(rf"\g<1>{slot}\g<2>", xml, count=1)
+
+
+_MODULE_BLOCK_RE = re.compile(r"<Module\b[^>]*>.*?</Module>", re.DOTALL)
+_MODULE_OPEN_TAG_RE = re.compile(r"<Module\b[^>]*>")
+# Only a PointIO/Flex downstream Port's Bus -- these are the two real
+# catalog types with a visible "N Slot Chassis" concept in Studio 5000's
+# I/O tree. A ControlNet/Ethernet/ICP Port can also carry a bare `<Bus />`
+# placeholder (no Size, no slot-count semantics), which this deliberately
+# leaves untouched -- see _normalize_chain_bus_sizes's docstring.
+_BUS_PORT_RE = re.compile(
+    r'(<Port\b(?=[^>]*\bType="(?:PointIO|Flex)")[^>]*\bId="([^"]+)"[^>]*>\s*)'
+    r'(<Bus(?:\s+Size="\d+")?\s*/>)(\s*</Port>)',
+    re.DOTALL,
+)
+
+
+def _attr(tag: str, name: str) -> str | None:
+    m = re.search(rf'\b{name}="([^"]*)"', tag)
+    return m.group(1) if m else None
+
+
+def _rewrite_child_upstream_address(block: str, new_address: str) -> str:
+    """Rewrites the FIRST self-closing Upstream="true" Port's Address in
+    this module block. Safe because every real child module found behind a
+    PointIO/Flex adapter in this project's corpus has exactly one Port
+    total (its own upstream connection back to the adapter) -- it has no
+    downstream bus of its own, so there's no ambiguity about which Port to
+    touch."""
+    def repl(m: re.Match) -> str:
+        tag = m.group(0)
+        return re.sub(r'\bAddress="[^"]*"', f'Address="{new_address}"', tag, count=1)
+    return re.sub(r'<Port\b[^>]*\bUpstream="true"[^>]*/>', repl, block, count=1)
+
+
+_SLOT_STRUCTURE_TYPE_RE = re.compile(r'\d+(SLOT:[IO]:0)')
+_ARRAY_MEMBER_DIMENSIONS_RE = re.compile(r'(<ArrayMember Name="Data" DataType="\w+" Dimensions=")\d+(")')
+_ARRAY_MEMBER_BLOCK_RE = re.compile(
+    r'<ArrayMember Name="Data"[^>]*>.*?</ArrayMember>', re.DOTALL,
+)
+_ELEMENT_RE = re.compile(r'<Element\b[^/]*/>')
+# The innermost pure-numeric bracket group in an OutputTag's L5K literal --
+# e.g. the "[0,0]" in "[-1,-1,[0,0]]" (1734 family) or the "[0,0,1,...]" in
+# "[[0,0,1,0,0,0,0,0]]" (1794 family). Whatever scalar values sit outside
+# this innermost bracket (fault/config words -- vary per catalog, unrelated
+# to slot count) are deliberately left untouched.
+_L5K_INNER_ARRAY_RE = re.compile(r'\[([\d,\s-]*)\]')
+
+
+def _resize_slot_structure(block: str, new_n: int) -> str:
+    """James, 2026-09-03, real Studio 5000 import error on the first
+    _normalize_chain_bus_sizes verification samples: "Data doesn't match
+    the data type of the member as defined in the containing data type"
+    (warning) then "Failed to set the 'Data' property (Data type
+    mismatch...)" (error) on the adapter's own Connection/InputTag and
+    OutputTag. Root cause: Studio cross-validates a PointIO/Flex Port's
+    Bus Size against its OWN Connection's predefined I/O structure, which
+    bakes the SAME slot count into its DataType name (e.g.
+    "AB:1734_3SLOT:I:0"), its ArrayMember's Dimensions ("3"), and the
+    literal count of <Element> entries -- all three, PLUS the Bus Size
+    itself, must agree. _normalize_chain_bus_sizes only touched Bus Size,
+    leaving these three still declaring the ORIGINAL (larger, stale)
+    real-capture slot count -- a real, structural mismatch, not a cosmetic
+    one. Fixed here: rewrite the DataType name's slot number and each
+    ArrayMember's Dimensions to new_n, then resize each Element list to
+    exactly new_n entries. Shrinking always TRUNCATES (never regenerates)
+    -- confirmed correct against real data: this project's own reused
+    child module always sits at the SAME real bus position it occupied in
+    the original capture (see _normalize_chain_bus_sizes), so the first
+    new_n Elements are genuinely that exact real data for the positions
+    being kept (all-zero placeholders for the 1734 family, real non-zero
+    per-slot config words for the 1794 FLEX family -- truncating preserves
+    whichever is real instead of guessing at replacement values). Growing
+    (James, 2026-09-03: "I want to see some 14+ racks now" -- a real multi-
+    catalog rack bigger than any single real capture happened to
+    populate) pads new positions with an all-zero Element matching the
+    existing ones' own bit-width/DataType, the same "unpopulated slot"
+    pattern every real capture already uses at its own genuinely-empty
+    positions. Same resize (truncate or pad) applied to the OutputTag's
+    parallel L5K literal's innermost numeric array."""
+    block = _SLOT_STRUCTURE_TYPE_RE.sub(rf'{new_n}\1', block)
+    block = _ARRAY_MEMBER_DIMENSIONS_RE.sub(rf'\g<1>{new_n}\g<2>', block)
+
+    def _truncate_array_member(m: re.Match) -> str:
+        am = m.group(0)
+        elements = _ELEMENT_RE.findall(am)
+        if not elements:
+            return am
+        if new_n <= len(elements):
+            resized = elements[:new_n]
+        else:
+            # Growing beyond the real captured slot count (e.g. building a
+            # bigger real multi-catalog rack than any single real capture
+            # happened to populate): pad with additional all-zero Elements,
+            # same bit-width/format as the real ones already here (SINT vs
+            # INT differ in width) -- matches the "unpopulated slot" zero
+            # pattern already used at every genuinely-unpopulated real
+            # position in this exact corpus (see this function's docstring).
+            zero_value = re.sub(r"[01]", "0", re.search(r'Value="([^"]+)"', elements[-1]).group(1))
+            padding = [f'<Element Index="[{i}]" Value="{zero_value}" />' for i in range(len(elements), new_n)]
+            resized = elements + padding
+        head = am[: am.index(elements[0])]
+        tail = am[am.index("</ArrayMember>"):]
+        return head + "\n".join(resized) + ("\n" if resized else "") + tail
+
+    block = _ARRAY_MEMBER_BLOCK_RE.sub(_truncate_array_member, block)
+
+    output_tag_m = re.search(r'<OutputTag\b.*?</OutputTag>', block, re.DOTALL)
+    if output_tag_m:
+        output_tag = output_tag_m.group(0)
+        l5k_m = re.search(r'<Data Format="L5K">.*?</Data>', output_tag, re.DOTALL)
+        if l5k_m:
+            l5k = l5k_m.group(0)
+            inner_matches = list(_L5K_INNER_ARRAY_RE.finditer(l5k))
+            if inner_matches:
+                last = inner_matches[-1]
+                values = [v.strip() for v in last.group(1).split(",") if v.strip() != ""]
+                if new_n <= len(values):
+                    resized_values = values[:new_n]
+                else:
+                    resized_values = values + ["0"] * (new_n - len(values))
+                new_l5k = l5k[: last.start()] + "[" + ",".join(resized_values) + "]" + l5k[last.end():]
+                block = block[: output_tag_m.start()] + output_tag[: l5k_m.start()] + new_l5k + \
+                    output_tag[l5k_m.end():] + block[output_tag_m.end():]
+    return block
+
+
+def _normalize_chain_bus_sizes(xml: str) -> str:
+    """James, 2026-09-03, real issue caught reviewing the v4 Studio 5000
+    I/O tree: every PointIO/Flex adapter+child pair in _MODULE_CHAINS
+    carries the real "Bus Size" (chassis slot count) and child slot
+    Address it happened to have in whatever real, larger rack it was
+    originally captured from (e.g. a bus coupler captured from a real
+    12-slot chassis still declares Bus Size="12" and its one reused child
+    still sits at slot [11], even though this project only ever reuses ONE
+    child per catalog). James: "your slots should be using sequential
+    slots for pointIO... note that the Chassis Size for the AENTR needs to
+    be of sufficient size as well (Bus Coupler + 1 IO module = Chassis
+    Size 2)." Confirmed against an already-correct real example in the
+    same corpus (1734-232ASC/C: adapter at slot 0, its one real child at
+    slot 1, Bus Size="2") -- Bus Size counts the ADAPTER too, not just its
+    children (bus coupler + 1 IO module = 2, not 1). Fixed generically,
+    not per-catalog: for every Module in this chain whose own PointIO/Flex
+    downstream Port carries a <Bus>, count the REAL number of other
+    Modules in this same chain that declare it as their ParentModule
+    (matching ParentModPortId), rewrite Bus/@Size to that count PLUS the
+    adapter itself, then renumber each of those children's own upstream
+    Port Address sequentially from 1 in chain order (slot 0 is implicitly
+    the adapter's own position, matching every already-correct real
+    example found). A catalog with no matching
+    children in its own fragment (a bare adapter reused with nothing
+    attached) is left untouched -- nothing to renumber. Deliberately
+    scoped to PointIO/Flex Port types only (see _BUS_PORT_RE) -- a bare
+    ControlNet/Ethernet/ICP `<Bus />` placeholder has no slot-count
+    semantics and isn't part of what James flagged."""
+    blocks = _MODULE_BLOCK_RE.findall(xml)
+    if len(blocks) < 2:
+        return xml
+    open_tags = [_MODULE_OPEN_TAG_RE.search(b).group(0) for b in blocks]
+    names = [_attr(t, "Name") for t in open_tags]
+
+    new_blocks = list(blocks)
+    for i, block in enumerate(blocks):
+        this_name = names[i]
+        if this_name is None:
+            continue
+        bus_m = _BUS_PORT_RE.search(block)
+        if not bus_m:
+            continue
+        port_id = bus_m.group(2)
+        children_idx = [
+            j for j, t in enumerate(open_tags)
+            if j != i and _attr(t, "ParentModule") == this_name and _attr(t, "ParentModPortId") == port_id
+        ]
+        if not children_idx:
+            continue
+        old_bus_size = _attr(bus_m.group(3), "Size")
+        new_n = len(children_idx) + 1
+        new_bus = f'<Bus Size="{new_n}" />'
+        resized_block = block[: bus_m.start(3)] + new_bus + block[bus_m.end(3):]
+        if old_bus_size != str(new_n):
+            # See _resize_slot_structure's docstring: Studio cross-validates
+            # this Port's Bus Size against this SAME Module's own Connection
+            # I/O structure (DataType slot-number, ArrayMember Dimensions,
+            # Element count) -- all of it has to move together or Studio
+            # rejects the whole import.
+            resized_block = _resize_slot_structure(resized_block, new_n)
+        new_blocks[i] = resized_block
+        for slot, j in enumerate(children_idx, start=1):
+            new_blocks[j] = _rewrite_child_upstream_address(new_blocks[j], str(slot))
+
+    result = xml
+    for old, new in zip(blocks, new_blocks):
+        if old != new:
+            result = result.replace(old, new, 1)
+    return result
 
 
 def _modules_xml_unique_ips(catalogs: list[str]) -> str:
@@ -357,6 +563,7 @@ def _modules_xml_unique_ips(catalogs: list[str]) -> str:
     _CATALOGS_PER_THIRD_OCTET = (_BLOCK_CEILING - _BLOCK_START) // _BLOCK_SPACING
     for i, cat in enumerate(catalogs):
         xml, _source, _chain_len = _MODULE_CHAINS[cat]
+        xml = _normalize_chain_bus_sizes(xml)
         real_ips = sorted(set(re.findall(r"192\.168\.1\.\d+", xml)))
         block_num, pos_in_block = divmod(i, _CATALOGS_PER_THIRD_OCTET)
         third_octet = 1 + block_num

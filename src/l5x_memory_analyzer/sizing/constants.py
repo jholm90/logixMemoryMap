@@ -352,6 +352,8 @@ class LogicInstructionModel:
     jsr_target_composite_surcharge_per_instr: int
     composite_surcharge_confidence: str
     composite_surcharge_cap: int
+    safety_task_program_shell: int
+    safety_task_program_shell_confidence: str
 
 
 @dataclass(frozen=True)
@@ -657,5 +659,7 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             jsr_target_composite_surcharge_per_instr=raw["logic_instructions"]["jsr_target_composite_surcharge_per_instr"],
             composite_surcharge_confidence=raw["logic_instructions"]["composite_surcharge_confidence"],
             composite_surcharge_cap=raw["logic_instructions"]["composite_surcharge_cap"],
+            safety_task_program_shell=raw["logic_instructions"]["safety_task_program_shell"],
+            safety_task_program_shell_confidence=raw["logic_instructions"]["safety_task_program_shell_confidence"],
         ),
     )

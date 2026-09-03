@@ -1459,6 +1459,29 @@ logic_instructions:
   # patch on a formula whose true (likely non-linear, saturating)
   # real shape isn't mechanistically understood yet.
   composite_surcharge_cap: 12000
+  # OQ-SAFETYSCOPE-SIZING, wired 2026-09-03 (James: "they answered your
+  # question - they are safety tasks and safety programs therefore they
+  # need seperate sizing calculations"). Real fw_catalog_matrix rows show
+  # a Safety Task+Program+MainRoutine triple was previously charged the
+  # SAME task_extra(700)+program_extra(484)+routine_extra(272)=1456 shell
+  # weight as an ordinary extra task/program/routine, plus its 16 real
+  # content bytes = 1472 measured -- but the real total safety-vs-non-
+  # safety delta on matching catalogs is only +312 (fw v31-v33) or +296
+  # (v34-v38). This engine always predicts 16 bytes for the SafetyProgram
+  # MainRoutine's own content regardless of firmware (unchanged
+  # routine_logic path); subtracting that from the v31-v33 real delta
+  # lands on exactly 296 -- the true Safety Task/Program shell itself is a
+  # single flat constant, and the v34-v38 firmware group's real content
+  # apparently drops to 0 bytes on hardware (a separate, tiny, still-
+  # unmodeled content-side effect, not a shell effect). report.py now
+  # excludes Safety tasks/programs/routines from the ordinary
+  # task_program_shell counts entirely and charges this flat value once
+  # per file that has at least one Safety task instead. Live-verified
+  # 2026-09-03 against all 24 real L81ES-L84ES fwmatrix rows: exact at
+  # v31-v33, a known +16-byte (0.087%) residual at v34-v38 -- well inside
+  # the <1% North Star.
+  safety_task_program_shell: 296
+  safety_task_program_shell_confidence: FITTED
   weights:
     ABS: 120
     XPY: 116

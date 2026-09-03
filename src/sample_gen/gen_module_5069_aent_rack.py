@@ -3787,6 +3787,8 @@ _5069_AENT_CHAIN_BLOCKS = {
 }
 
 
+import random
+import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -3802,9 +3804,57 @@ _MODEL = load_memory_model()
 _ALL_CHILDREN = [c for c in _5069_AENT_CHAIN_BLOCKS if c != "5069-AENTR"]
 
 
-def _rack_xml(children: list[str]) -> str:
+def _rack_xml(children: list[str], renumber: bool = False) -> str:
+    """`renumber=True`: rewrite each selected child's own upstream Port
+    Address to a sequential slot (1..len(children)) instead of using its
+    real captured value verbatim. Needed for a genuinely RANDOM subset --
+    _ALL_CHILDREN's own dict insertion order already tracks each catalog's
+    real captured slot 1-12 in order, so every _PLANS entry above (built
+    from plain Python slices of that list) is naturally a CONTIGUOUS real
+    slot range with no gap; random.sample picks an unordered subset, which
+    is a real gap almost every time -- caught by this project's own
+    non_sequential_module_slots lint check (write_sample_unmodeled's
+    lint_or_raise). Safe to touch only the Port Address: confirmed via
+    every real ConnectionPath value in this file being catalog-specific
+    (unique per module, not slot-derived), and each child's own I/O
+    Connection/ConfigTag content is per-module data unrelated to which
+    slot it physically occupies (unlike the PointIO adapter case, there is
+    no per-adapter aggregate structure here that depends on slot count --
+    the AENTR's own real Bus Size=32 comfortably covers any subset up to
+    12, confirmed already by n12_full importing clean)."""
     parts = [_5069_AENT_CHAIN_BLOCKS["5069-AENTR"]]
-    parts.extend(_5069_AENT_CHAIN_BLOCKS[c] for c in children)
+    for slot, cat in enumerate(children, start=1):
+        block = _5069_AENT_CHAIN_BLOCKS[cat]
+        if renumber:
+            block = re.sub(
+                r'(<Port Id="1" Address=")\d+("\s*Type="5069"\s*Upstream="true"\s*/>)',
+                rf"\g<1>{slot}\g<2>", block, count=1,
+            )
+        parts.append(block)
+    return "\n".join(parts)
+
+
+def _combined_racks_xml(plans: dict[str, list[str]]) -> str:
+    """James, 2026-09-03, after the 10 random racks imported clean as
+    separate files: "i want all 10 in one file" -- 10 independent
+    5069-AENTR adapters in one project. Each _5069_AENT_CHAIN_BLOCKS
+    adapter block carries the SAME real captured Name ("AENT") and IP
+    (192.168.1.1) -- fine standalone (matches _rack_xml/_write above,
+    each its own file), a real collision the instant 2+ land in the same
+    file, the same class of bug already fixed elsewhere in this project
+    for composite/PointIO catalogs. Renames only the adapter's own
+    Name="AENT" declaration and each of its children's ParentModule="AENT"
+    reference (both exact-quoted-attribute matches, scoped precisely --
+    no child catalog name contains the substring "AENT", confirmed
+    against _ALL_CHILDREN) to "AENT{n}", and the adapter's own IP to a
+    unique 192.168.{n}.1 -- nothing else in any block is touched."""
+    parts = []
+    for i, (_label, children) in enumerate(plans.items(), start=1):
+        rack = _rack_xml(children, renumber=True)
+        rack = rack.replace('Name="AENT"', f'Name="AENT{i}"', 1)
+        rack = rack.replace('ParentModule="AENT"', f'ParentModule="AENT{i}"')
+        rack = rack.replace('Address="192.168.1.1"', f'Address="192.168.{i}.1"', 1)
+        parts.append(rack)
     return "\n".join(parts)
 
 
@@ -3821,18 +3871,52 @@ def _floor_bytes(l5x_text: str) -> int:
     return sum(e.bytes for e in entries)
 
 
-def _write(out_name: str, children: list[str]) -> None:
-    l5x = build_l5x(target_name=f"Rack5069_{out_name}", tags_xml="", extra_modules_xml=_rack_xml(children))
+def _write(out_name: str, children: list[str], renumber: bool = False) -> None:
+    l5x = build_l5x(
+        target_name=f"Rack5069_{out_name}", tags_xml="", extra_modules_xml=_rack_xml(children, renumber=renumber),
+    )
     out_path = OUT_ROOT / f"rack_5069_{out_name}.L5X"
     write_sample_unmodeled(l5x, out_path)
     total = _floor_bytes(l5x)
+    renumber_note = (
+        " Slot Addresses renumbered sequentially from 1 (real captured values would leave gaps for "
+        "this non-contiguous a random subset -- see _rack_xml's docstring); everything else, "
+        "including each module's own I/O Connection/ConfigTag content, is untouched." if renumber else ""
+    )
     description = (
-        f"5069-AENTR remote rack (James, 2026-09-02, real reference upload): one real 5069-AENTR "
-        f"EtherNet/IP adapter hosting {len(children)} real 5069-family child modules on its own "
-        f"local bus ({', '.join(children)}), genericized structurally verbatim from that reference. "
-        f"Real floor total {total} (AENTR itself and 5069-SERIAL/A are unmodeled zero-connection/"
-        f"unresolved shapes -- real Capacity will run somewhat higher). See OQ-MODULEIO for the "
-        f"per-catalog/rack-scale module_overhead question this feeds."
+        f"5069-AENTR remote rack (James, 2026-09-02, real reference upload; random-composition batch "
+        f"added 2026-09-03: \"I want 10 ethernet racks with random cards and random sizes to "
+        f"validate\"): one real 5069-AENTR EtherNet/IP adapter hosting {len(children)} real 5069-family "
+        f"child modules on its own local bus ({', '.join(children)}), genericized structurally "
+        f"verbatim from that reference.{renumber_note} Real floor total {total} (AENTR itself and "
+        f"5069-SERIAL/A are unmodeled zero-connection/unresolved shapes -- real Capacity will run "
+        f"somewhat higher). See OQ-MODULEIO for the per-catalog/rack-scale module_overhead question "
+        f"this feeds."
+    )
+    append_manifest_row(f"rack_5069_{out_name}", description, "modules", out_path, total)
+    print(f"Wrote {out_path} (floor {total} bytes)")
+
+
+def _write_combined(out_name: str, plans: dict[str, list[str]]) -> None:
+    """James, 2026-09-03, confirmed clean in real Studio 5000: "no errors,
+    valid ok. add to your arsenal for the next mass generation." Writes
+    N independent 5069-AENTR racks (see _combined_racks_xml) into ONE
+    project -- reusable for any future plans dict, not just _RANDOM_PLANS
+    (e.g. a future "mass generation" combining many rack compositions
+    into one bigger multi-adapter file)."""
+    modules_xml = _combined_racks_xml(plans)
+    l5x = build_l5x(target_name=f"Rack5069_{out_name}", tags_xml="", extra_modules_xml=modules_xml)
+    out_path = OUT_ROOT / f"rack_5069_{out_name}.L5X"
+    write_sample_unmodeled(l5x, out_path)
+    total = _floor_bytes(l5x)
+    catalogs_summary = "; ".join(f"{i}:[{', '.join(c)}]" for i, c in enumerate(plans.values(), start=1))
+    description = (
+        f"5069-AENTR combined multi-rack (James, 2026-09-03: \"i want all 10 in one file\" -- "
+        f"confirmed real Studio 5000 clean, then \"add to your arsenal for the next mass "
+        f"generation\"): {len(plans)} independent real 5069-AENTR EtherNet/IP adapters in one "
+        f"project (AENT1..AENT{len(plans)}, each its own unique IP 192.168.N.1), each hosting its "
+        f"own real 5069-family child modules -- {catalogs_summary}. Real floor total {total}. "
+        f"See OQ-MODULEIO."
     )
     append_manifest_row(f"rack_5069_{out_name}", description, "modules", out_path, total)
     print(f"Wrote {out_path} (floor {total} bytes)")
@@ -3855,11 +3939,29 @@ _PLANS: dict[str, list[str]] = {
     "n12_full": _ALL_CHILDREN[0:12],
 }
 
+# James, 2026-09-03, after confirming n12_full imports clean: "i think you
+# just copied my file. i want 10 ethernet racks with random cards and
+# random sizes to validate" -- fair: n12_full uses all 12 children in the
+# same fixed docstring order as the uploaded reference, and every _PLANS
+# entry above is a deterministic FIXED slice of _ALL_CHILDREN, not a real
+# mix of card selection and rack size. Fixed seed so this batch is
+# reproducible (re-running main() regenerates byte-identical files), but
+# each of the 10 picks its own random size (3..12) and random subset (no
+# repeats -- only 12 distinct real catalogs exist in this pool).
+_RANDOM_PLANS: dict[str, list[str]] = {}
+_rng = random.Random(20260903)
+for _i in range(1, 11):
+    _size = _rng.randint(3, len(_ALL_CHILDREN))
+    _RANDOM_PLANS[f"rand{_i:02d}"] = _rng.sample(_ALL_CHILDREN, _size)
+
 
 def main() -> None:
     for label, children in _PLANS.items():
         _write(label, children)
-    print(f"\nDone. {len(_PLANS)} files.")
+    for label, children in _RANDOM_PLANS.items():
+        _write(label, children, renumber=True)
+    _write_combined("rand_combined10", _RANDOM_PLANS)
+    print(f"\nDone. {len(_PLANS) + len(_RANDOM_PLANS) + 1} files.")
 
 
 if __name__ == "__main__":

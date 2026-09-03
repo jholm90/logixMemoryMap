@@ -299,6 +299,17 @@ class RoutineLogic:
     # the normal per-instruction model (charge_shell=False, so only its
     # fixed shell stays excluded).
     is_jsr_target: bool = False
+    # 2026-09-03, OQ-SAFETYSCOPE-SIZING (James: "they are safety tasks and
+    # safety programs therefore they need separate sizing calculations").
+    # True when this routine's owning <Program> carries Class="Safety" --
+    # real, unambiguous marker (confirmed on samples/generated/fw_catalog_
+    # matrix/fwmatrix_v31_1756_l81es.L5X's real SafetyProgram), not the
+    # Type="PERIODIC" schedule-type attribute (shared with ordinary
+    # periodic programs/tasks). sizing/report.py's Task/Program/Routine
+    # shell decomposition excludes Safety routines from the ordinary
+    # n_plain_routines count and charges a separate, smaller, real
+    # safety_task_program_shell constant instead.
+    is_safety_program: bool = False
     # One entry per real CPT(...) call in this routine, each the ordered
     # list of top-level operator tokens found in that call's expression --
     # see _cpt_calls above. sizing/logic.py costs these individually
@@ -438,6 +449,7 @@ def parse_rll_routines(root: ET.Element) -> list[RoutineLogic]:
 
     for program_el in programs_el.findall("Program"):
         program_name = program_el.get("Name")
+        is_safety_program = program_el.get("Class") == "Safety"
         routines_el = program_el.find("Routines")
         if routines_el is None:
             continue
@@ -485,6 +497,7 @@ def parse_rll_routines(root: ET.Element) -> list[RoutineLogic]:
                 rung_count=len(rung_texts),
                 instruction_counts=_count_instructions(rung_texts),
                 is_jsr_target=routine_name in program_jsr_targets,
+                is_safety_program=is_safety_program,
                 cpt_calls=_cpt_calls(rung_texts),
                 typed_calls=_typed_instruction_calls(rung_texts),
                 indirect_index_kinds=_indirect_index_kinds(rung_texts),

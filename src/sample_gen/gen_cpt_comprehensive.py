@@ -141,6 +141,33 @@ def group_literal_linearity() -> None:
                f"{n} rungs of CPT(R2,R0+5.5) -- float-literal linearity check, operator-independence question")
 
 
+def group_floatliteral_operator_independence() -> None:
+    """James, 2026-09-03, full-depth open-questions review: group_
+    literal_linearity above only ever tested the float-literal effect for
+    ADD at n=10/100 (its own comment already flagged this as an
+    "operator-independence question" but never actually tested the other
+    4 operators at more than the single n=1000 point each). Recomputing
+    those n=1000 rows live against the current engine found a real,
+    perfectly clean (zero-noise) per-operator split -- add/sub short by
+    exactly 44.00 bytes/rung, mul/div by exactly 28.00, pow OVER by
+    exactly 28.00 -- at n=1000 alone. This fills in n=10/n=100 for the 4
+    operators group_literal_linearity skipped, giving every operator the
+    same 3-count-point linearity confidence ADD already has before wiring
+    a fix."""
+    for op in ["-", "*", "/", "**"]:
+        opname = _OPNAME[op]
+        for n in [10, 100]:
+            fn_float = lambda i, op=op: f"CPT(R2,R0{op}5.5);"
+            l5x = build_l5x(
+                target_name=f"CptConstFloat{opname}N{n}", tags_xml=_POOL_TAGS_XML,
+                extra_rungs_xml=rungs_xml(n, fn_float),
+            )
+            _write(l5x, f"cmpcpt_cpt_op_{opname}_floatliteral_n{n:05d}",
+                   f"{n} rungs of CPT(R2,R0{op}5.5) -- float-literal linearity/operator-independence check for "
+                   f"{opname.upper()}, matching ADD's existing n=10/100/1000 set (group_literal_linearity only "
+                   f"ever covered ADD; the other 4 operators only had a single n=1000 point)")
+
+
 def group_compound_cmp_n100() -> None:
     variants = {
         "single": "L0>L1",
@@ -161,8 +188,9 @@ def main() -> None:
     group_n10_third_point()
     group_chain_length_sweep()
     group_literal_linearity()
+    group_floatliteral_operator_independence()
     group_compound_cmp_n100()
-    total = 3 + 2 + 6 + 5 + 4 + 4
+    total = 3 + 2 + 6 + 5 + 4 + 8 + 4
     print(f"\nDone. {total} files.")
 
 

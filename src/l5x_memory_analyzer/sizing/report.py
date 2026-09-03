@@ -335,8 +335,15 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # routine; the shell entry built below charges it once for the
         # whole file plus the real per-extra-Task/Program/routine marginal
         # costs instead.
+        # OQ-SAFETYSCOPE-SIZING, James 2026-09-03: "they are safety tasks
+        # and safety programs therefore they need separate sizing
+        # calculations" -- a Safety routine's own content is still sized
+        # normally below (charge_shell unaffected), it just doesn't count
+        # toward the ORDINARY n_plain_routines shell aggregate; its real
+        # shell cost is the separate safety_task_program_shell constant
+        # emitted after this loop.
         is_plain = "JSR" not in routine.instruction_counts
-        if is_plain:
+        if is_plain and not routine.is_safety_program:
             n_plain_routines += 1
         logic_bytes, logic_basis = compute_routine_logic_bytes(
             routine, model.logic_instructions, tag_types, charge_shell=not is_plain
@@ -349,9 +356,17 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # n_plain_routines == 0 -- a file whose only routines are JSR
         # callers/targets already has its shell fully accounted for by
         # jsr_fixed_base_per_routine above, adding this would double it.
-        n_tasks = max(len(parse_tasks(root)), 1)
+        # Safety tasks/programs excluded from these counts -- see below.
+        all_tasks = parse_tasks(root)
+        n_safety_tasks = sum(1 for t in all_tasks if t.is_safety)
+        n_tasks = max(len(all_tasks) - n_safety_tasks, 1)
         programs_el = root.find("Controller/Programs")
-        n_programs = max(len(programs_el.findall("Program")), 1) if programs_el is not None else 1
+        if programs_el is not None:
+            all_program_els = programs_el.findall("Program")
+            n_safety_programs = sum(1 for p in all_program_els if p.get("Class") == "Safety")
+            n_programs = max(len(all_program_els) - n_safety_programs, 1)
+        else:
+            n_programs = 1
         overhead = model.logic_instructions.task_program_overhead
         shell_bytes = (
             model.logic_instructions.fixed_base_per_routine
@@ -370,6 +385,35 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         logic_entries.append(
             ("task_program_shell", "task_program_shell", "SHELL", shell_bytes, shell_basis)
         )
+    else:
+        all_tasks = parse_tasks(root)
+        n_safety_tasks = sum(1 for t in all_tasks if t.is_safety)
+
+    if n_safety_tasks > 0:
+        # OQ-SAFETYSCOPE-SIZING, real fix 2026-09-03: previously a
+        # SafetyTask/SafetyProgram/SafetyRoutine triple was counted as one
+        # more of EACH ordinary shell component above (task_extra +
+        # program_extra + routine_extra = 1,456 bytes), overpredicting the
+        # real safety/non-safety delta (a flat +312 at fw v31-v33, +296 at
+        # v34-v38, confirmed exact across every real GuardLogix ES fwmatrix
+        # row) by nearly 5x. This flat constant replaces that entirely for
+        # every Safety task/program pair -- fitted from the v31-v33 real
+        # delta (312) minus the SafetyProgram's own already-separately-
+        # sized real MainRoutine content (this engine always predicts 16
+        # bytes for it, firmware-independent), landing on 296. Live-
+        # verified 2026-09-03 against all 24 real L81ES-L84ES fwmatrix
+        # rows: exact (0 delta) at v31-v33, a small known +16-byte
+        # (0.087%) residual at v34-v38 where the real MainRoutine content
+        # apparently drops to 0 bytes on real hardware but this engine
+        # still predicts 16 -- a genuine, tiny, firmware-dependent CONTENT
+        # gap (not a shell gap), well inside the <1% North Star, not
+        # chased further here.
+        safety_shell_bytes = model.logic_instructions.safety_task_program_shell * n_safety_tasks
+        safety_shell_basis = model.logic_instructions.safety_task_program_shell_confidence
+        logic_entries.append((
+            "safety_task_program_shell", "task_program_shell", "SHELL",
+            safety_shell_bytes, safety_shell_basis,
+        ))
 
     # Fixed per-project overhead (controller/module/task/program scaffolding)
     # confirmed 2026-08-23 -- see memory_model.yaml empty_project_baseline

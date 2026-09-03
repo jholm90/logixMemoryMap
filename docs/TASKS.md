@@ -67,6 +67,25 @@ files; PID and ASCII-module instructions dropped (zero real occurrences).
 
 ## Phase 6 — Polish
 - ✅ Safety-project warning (UI banner + CLI stderr)[^safety]
+- ✅ Generator-side safety check (James, 2026-09-03: "you need to do
+      better checking on safety stuff... verify safety stuff cannot go on
+      non-safety processors") -- `sample_gen.lint.lint_l5x`'s new
+      `safety_module_on_non_safety_controller` check flags any Module
+      with `SafetyEnabled="true"` in a file with no `<SafetyInfo>`
+      element. Real trigger: 5069-IB8S/A and 5069-OBV8S/A rebuilt into a
+      non-safety controller by hand without checking `gen_module_sweep.py`'s
+      already-documented `_5069_SAFETY_CATALOGS`/`_5069_PROCESSOR_TYPE`
+      fix from 2026-08-27 first. See docs/SAMPLE_GENERATION.md's "Before
+      hand-picking catalogs into any script" section.
+- ✅ Wire Safety Task/Program/Routine shell as its own sizing calculation
+      (James, 2026-09-03: "they are safety tasks and safety programs
+      therefore they need seperate sizing calculations") -- new flat
+      `safety_task_program_shell` (296 bytes/file) replaces the old
+      ordinary-shell overcharge for a Safety task/program pair. Live-
+      verified exact at fw v31-v33, 0.087% residual at v34-v38 (see
+      OPEN_QUESTIONS.md OQ-SAFETYSCOPE-SIZING). The separate Safety-
+      classed-TAG-content policy question (DCI_STOP/CONFIGURABLE_ROUT)
+      is NOT resolved by this and stays open.
 - 🔴 Alarm instance (ALMD/ALMA) overhead if in scope (OQ-ALARM)
 - ✅ Per-part-number memory budget (`controller_budgets.yaml`, prefix-
       matched against `Controller/@ProcessorType`, unknown types show

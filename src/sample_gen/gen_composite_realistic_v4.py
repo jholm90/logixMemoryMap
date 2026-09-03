@@ -59,7 +59,8 @@ from sample_gen.builders import (
     tag_xml, timer_tag_xml, counter_tag_xml,
 )
 from sample_gen.gen_composite_realistic import (
-    _ATOMIC_TYPES, _LOCAL_ICP_SLOT_RE, _MODULE_CATALOGS, _remap_local_icp_slot,
+    _ATOMIC_TYPES, _LOCAL_ICP_SLOT_RE, _MODULE_CATALOGS, _normalize_chain_bus_sizes,
+    _remap_local_icp_slot,
 )
 from sample_gen.gen_module_sweep import _MODULE_CHAINS
 from sample_gen.gen_composite_realistic_v2 import _content_rungs
@@ -117,6 +118,7 @@ def _modules_xml_unique_ips_v4(catalogs: list[str]) -> str:
     _CATALOGS_PER_THIRD_OCTET = (_BLOCK_CEILING - _BLOCK_START) // _BLOCK_SPACING
     for i, cat in enumerate(catalogs):
         xml, _source, _chain_len = _MODULE_CHAINS[cat]
+        xml = _normalize_chain_bus_sizes(xml)
         occurrence = seen_counts.get(cat, 0)
         seen_counts[cat] = occurrence + 1
         if occurrence > 0:

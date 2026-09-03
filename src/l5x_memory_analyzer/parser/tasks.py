@@ -24,6 +24,13 @@ from dataclasses import dataclass, field
 class TaskInfo:
     name: str
     scheduled_program_names: tuple[str, ...] = field(default_factory=tuple)
+    # 2026-09-03, OQ-SAFETYSCOPE-SIZING (James: "they are safety tasks and
+    # safety programs therefore they need separate sizing calculations").
+    # Real, unambiguous marker: a SafetyTask carries Class="Safety" (confirmed
+    # on samples/generated/fw_catalog_matrix/fwmatrix_v31_1756_l81es.L5X),
+    # not the Type="PERIODIC" schedule-type attribute shared with ordinary
+    # periodic tasks.
+    is_safety: bool = False
 
 
 def parse_tasks(root: ET.Element) -> list[TaskInfo]:
@@ -41,7 +48,10 @@ def parse_tasks(root: ET.Element) -> list[TaskInfo]:
                 prog_name = sp_el.get("Name")
                 if prog_name:
                     programs.append(prog_name)
-        result.append(TaskInfo(name=name, scheduled_program_names=tuple(programs)))
+        result.append(TaskInfo(
+            name=name, scheduled_program_names=tuple(programs),
+            is_safety=task_el.get("Class") == "Safety",
+        ))
     return result
 
 

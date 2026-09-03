@@ -181,44 +181,34 @@ the matching footnote at the bottom, not inline.
     a check of whether bc63/64 (the next DWORD-adjacent pair up) shows the
     same +4/instance signature before generalizing.
 
-4. **OQ-SAFETYSCOPE-SIZING** — real, unresolved product decision, split
-   out 2026-08-30 from the now-closed OQ-PREDEFINED (moved to
-   RESOLVED_QUESTIONS.md — the byte-value derivation for all 195 known
-   predefined structure types is done; this is a separate policy
-   question, not a data gap). The tool already warns rather than refuses
-   on a Safety-rated project (`is_safety_project`, cli.py/ui/server.py),
-   but within a warned-and-still-processed project, resolvable
-   Safety-classed content (`DCI_STOP`, real corpus evidence, 80 bytes;
-   `CONFIGURABLE_ROUT`, wired 52 bytes but Safety-family by name-root) is
-   currently left unsized by convention, not by any code that actually
-   enforces the exclusion. Needs a call from James: exclude Safety-class
-   tags from sizing everywhere by design (and wire that exclusion
-   explicitly instead of it being incidental), or size everything
-   resolvable including Safety content and adjust the warning
-   wording.
+4. **OQ-SAFETYSCOPE-SIZING** — Task/Program/Routine SHELL sub-thread
+   **decided and wired 2026-09-03** (James: "they are safety tasks and
+   safety programs therefore they need seperate sizing calculations").
+   `report.py` now excludes Safety tasks/programs/routines from the
+   ordinary `task_program_shell` aggregate entirely and charges a new
+   flat `safety_task_program_shell` (296 bytes/file, see
+   `memory_model.yaml`) once per file with at least one Safety task
+   instead, replacing the old +1,456-byte ordinary-shell overcharge.
+   Live-verified against all 24 real L81ES-L84ES fwmatrix rows: exact (0
+   delta) at fw v31-v33, a known +16-byte (0.087%) residual at v34-v38
+   (real SafetyProgram MainRoutine content apparently drops to 0 bytes on
+   that firmware; this engine still predicts a firmware-independent 16 —
+   a separate, tiny, content-side gap, not a shell gap, well inside the
+   <1% North Star, not chased further).
 
-   2026-08-31, concrete new evidence (James: "what are you going to do
-   about the L8 guardlogix?"): traced the real -3.55% to -6.38% GuardLogix
-   ES gap from the last review to its exact source. It is NOT a missing
-   catalog-suffix baseline delta (tried wiring one at the real +312-byte
-   safety/non-safety delta derived from `fwmatrix_v3x_1756_l81e` vs
-   `l81es` actuals — made the prediction WORSE, caught by testing before
-   committing, reverted). The real cause: `task_program_shell` charges the
-   SafetyTask's shell/container the SAME full weight as an ordinary task
-   (4,816 -> 6,272, a real +1,456-byte jump) even though its actual
-   Program/Routine CONTENT is correctly left unsized (SafetyProgram's
-   MainRoutine only contributes 16 bytes) — this is exactly the "left
-   unsized by convention, not by code" gap the policy question above
-   already names, just showing up in the task/program SHELL specifically
-   rather than tag content. Real total safety/non-safety delta is only
-   +312 (confirmed flat across v31-v35, +296 at v38) — nowhere near the
-   +1,472 the engine currently produces. Not fixing until James decides
-   the policy question: if Safety Task/Program shells are meant to be
-   excluded from sizing the same as their content, `task_program_shell`
-   needs a Safety-task carve-out; if shells ARE meant to count (a
-   SafetyTask genuinely does reserve its own container in the controller
-   independent of its logic), the shell weight itself needs a real
-   Safety-specific value, not the ordinary-task one it's using now.[^safetyscope]
+   **Still genuinely open, separate sub-thread, NOT covered by the above
+   decision**: whether resolvable Safety-CLASSED TAG content (`DCI_STOP`,
+   real corpus evidence, 80 bytes; `CONFIGURABLE_ROUT`, wired 52 bytes but
+   Safety-family by name-root) should be sized at all. The tool already
+   warns rather than refuses on a Safety-rated project
+   (`is_safety_project`, cli.py/ui/server.py), but these two Safety-classed
+   tag types are still left unsized by convention, not by any code that
+   enforces the exclusion. James's shell decision doesn't resolve this —
+   it was specifically about Task/Program/Routine containers, not tag
+   content. Still needs a call: exclude Safety-class tags from sizing
+   everywhere by design (and wire that exclusion explicitly), or size
+   everything resolvable including Safety tag content and adjust the
+   warning wording.[^safetyscope]
 
 5. **OQ-AOIARRAYDIMENSION** — real parser bug fixed 2026-08-27:
    `<Parameter>`/`<LocalTag>` array size is a "Dimensions" (plural)
