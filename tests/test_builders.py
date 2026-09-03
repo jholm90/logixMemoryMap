@@ -1,5 +1,7 @@
 import xml.etree.ElementTree as ET
 
+import pytest
+
 from sample_gen.builders import MemberSpec, aoi_xml, custom_string_type_xml, rung_xml, rungs_xml, tag_xml, tags_xml, udt_xml
 
 from l5x_memory_analyzer.parser.datatypes import parse_data_types
@@ -53,24 +55,28 @@ def test_tag_xml_parses_with_dimensions():
     assert tags[0].dimensions == (100,)
 
 
-def test_aoi_dimensioned_input_parameter_forces_required_visible_true():
-    # Real 2026-08-29 import failure (James: "the file does not open"):
-    # aoi_array_param_def_only used the generic false/false Required/
-    # Visible default on a DIMENSIONED (array) Input Parameter. Zero real
-    # corpus evidence supports false/false on an array Parameter of any
-    # Usage -- the only two real array-Parameter examples on file
-    # (LOG_HMIDisplay Dimensions="25", BitArray Dimensions="1024") are
-    # both Required="true" Visible="true". A dimensioned Input/Output
-    # Parameter must ALWAYS render true/true, regardless of the
-    # MemberSpec's own required/visible fields (which still apply to
-    # scalar parameters).
-    array_param = MemberSpec("InputBuffer", "DINT", dimension=50, required=False, visible=False)
-    definition, _ = aoi_xml("ArrayParamAOI", [array_param], [], [], [])
+def test_aoi_dimensioned_input_parameter_rejected():
+    # ROOT CAUSE FOUND 2026-09-03 (James, real controller testing): "the
+    # issue is BOOL/SINT/INT/DINT cannot be arrays for Inputs. Arrays
+    # require InOut." The real aoi_array_param_def_only import failure
+    # that motivated the old (now-removed) Required/Visible-forcing
+    # behavior below was never a formatting bug -- an array-dimensioned
+    # atomic Input/Output Parameter is not a legal Logix construct at
+    # all, so no rendering fix could ever have made it import. Generation
+    # must hard-fail instead of emitting invalid XML.
+    array_param = MemberSpec("InputBuffer", "DINT", dimension=50)
+    with pytest.raises(ValueError, match="InOut"):
+        aoi_xml("ArrayParamAOI", [array_param], [], [], [])
+
+    # Same rule for an Output Parameter.
+    with pytest.raises(ValueError, match="InOut"):
+        aoi_xml("ArrayParamAOI", [], [array_param], [], [])
+
+    # The InOut path is unaffected -- array InOut Parameters are real,
+    # confirmed territory (LOG_HMIDisplay/BitArray).
+    definition, _ = aoi_xml("ArrayInOutAOI", [], [], [array_param], [])
     assert 'Name="InputBuffer"' in definition
     assert 'Dimensions="50"' in definition
-    param_xml = definition[definition.index('Name="InputBuffer"'):]
-    assert 'Required="true"' in param_xml.split(">")[0]
-    assert 'Visible="true"' in param_xml.split(">")[0]
 
 
 def test_aoi_scalar_input_parameter_still_honors_required_visible_default():

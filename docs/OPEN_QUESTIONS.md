@@ -210,30 +210,46 @@ the matching footnote at the bottom, not inline.
    everything resolvable including Safety tag content and adjust the
    warning wording.[^safetyscope]
 
-5. **OQ-AOIARRAYDIMENSION** — real parser bug fixed 2026-08-27:
-   `<Parameter>`/`<LocalTag>` array size is a "Dimensions" (plural)
-   attribute, not "Dimension" (singular, correct only for a plain UDT
-   `<Member>`) — was silently sizing every array-dimensioned AOI local/
-   param as a scalar. 5 existing test files need a fresh real capture;
-   their prior "confirmed" numbers almost certainly tested scalar
-   behavior by coincidence, not the array behavior they were meant
-   to. Second real bug, found 2026-08-30 (James: `aoi_array_param_def_
-   only.L5X` still fails to import — `XMLSrv_E_IMPORT_ABORTED_NO_CHANGES`
-   — even after the earlier Required/Visible fix): the generator omitted
-   `<DefaultData>` entirely for ANY dimensioned Parameter, conflating
-   "is an array" with "is InOut" the same way the Required/Visible bug
-   did (`BitArray`/`LOG_HMIDisplay`, the only 2 real array-Parameter
-   examples on file, are both InOut AND dimensioned, so the array case
-   alone was never actually isolated). Real corpus check confirms every
-   non-InOut Parameter with `ExternalAccess` also carries `<DefaultData>`
-   (scalar `WindowStart`/`WindowEnd`/etc., `TS_TrackSts` AOI) — InOut
-   params are the only ones that go bare. Fixed: a dimensioned atomic
-   Input/Output Parameter now gets a real `<Array>`/`<Element>`
-   DefaultData body (same convention `_array_body_xml` already uses for
-   an ordinary array Tag) plus a bracketed-list L5K default. No real
-   corpus example of an array Input/Output Parameter exists anywhere to
-   confirm this exact shape — still ASSUMED, generalized from adjacent
-   confirmed conventions, not independently verified.[^aoiarraydimension]
+5. **OQ-AOIARRAYDIMENSION** — the `aoi_array_param_def_only.L5X` import
+   thread is **CLOSED 2026-09-03, real root cause** (James, live
+   controller testing: "the issue is BOOL/SINT/INT/DINT cannot be arrays
+   for Inputs. Arrays require InOut"). The two prior "fixes" (Required/
+   Visible forced true/true 2026-08-29, then a real `<Array>`/`<Element>`
+   DefaultData body 2026-08-30) were chasing a formatting bug that never
+   existed — an array-dimensioned atomic Input/Output Parameter is not a
+   legal Logix construct at all; only `Usage="InOut"` permits an array
+   Parameter (matches this project's own real corpus evidence,
+   `LOG_HMIDisplay`/`BitArray` — both `Dimensions` AND `InOut`, which is
+   now understood as the ONLY combination that can exist, not a coincidence
+   of the only 2 examples on file). Fixed for real:
+   `builders.py::_aoi_parameter_xml` now hard-fails (`ValueError`) if a
+   caller ever asks for a dimensioned Input/Output Parameter, so this
+   generator-level bug class cannot recur; `lint.py`'s new
+   `aoi_array_param_wrong_usage` check is a defense-in-depth net for any
+   L5X reaching lint by another path. The broken `aoi_array_param_def_
+   only.L5X` file and its never-successfully-captured manifest row are
+   removed (confirmed via `convert_log.csv`: FAILED at every one of 5
+   logged attempts, 2026-08-30 through 2026-08-31, `XMLSrv_E_IMPORT_
+   ABORTED_NO_CHANGES` every time — never had real ground truth to lose).
+   Same fix pass also found and closed a second, previously-untested gap
+   in the SAME function: the InOut branch never rendered a `Dimensions`
+   attribute at all (no generated file had ever actually exercised
+   `inout_params=[...]` with `dimension` set until a new test for this
+   fix exercised it) — now fixed to match the real `LOG_HMIDisplay`/
+   `BitArray` shape.
+
+   **Still genuinely open, separate sub-thread**: the array-LocalTag
+   dimension-scaling question (real +400/+404-byte, ~2%, gap on
+   `aoi_array_localtag_1_instance`/`_def_only`, both at dimension=100 —
+   the only 2 real data points on file, both the SAME size, so it's
+   unknown whether the gap is a flat per-array-LocalTag declaration cost
+   or scales with dimension/element type). The current `aoi_definition`
+   formula charges `per_declared_item` once per declared item regardless
+   of `dimension`, so if the real gap DOES scale with size this is a
+   genuine missing term. 27-file isolation sweep built 2026-09-03
+   (`gen_aoi_arraylocaltag_sweep.py`: dimension 10–1000, type SINT/INT/
+   DINT/REAL/BOOL, multiplicity 1–3 array LocalTags/AOI) awaiting real
+   capture.[^aoiarraydimension]
 
 6. **OQ-MODULEIO** — mostly closed 2026-08-29. 126 real module captures
    were sitting unreconciled in manifest.csv; 51 catalogs now have a real

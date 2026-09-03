@@ -450,11 +450,20 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
         # Visible="true"/>` -- no Radix, no Constant at all. The STRING
         # special case generalizes to "no atomic type, no Radix/Constant,"
         # not "no STRING specifically."
+        # 2026-09-03, real gap found writing a test for the array-Parameter
+        # Usage rule above: this branch never rendered a Dimensions
+        # attribute at all, even though the project's own real corpus
+        # evidence for an array InOut Parameter (LOG_HMIDisplay
+        # Dimensions="25", BitArray Dimensions="1024") clearly has one --
+        # no generated file had ever actually exercised inout_params=[...]
+        # with dimension set until now, so this was a silent, untested gap,
+        # not a deliberate omission.
         is_atomic = m.data_type in _ATOMIC_TYPES
+        dim_attr = f' Dimensions="{m.dimension}"' if m.dimension else ""
         radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"' if is_atomic else ""
         constant_attr = ' Constant="false"' if is_atomic else ""
         return (
-            f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{radix_attr} Usage="InOut" '
+            f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{dim_attr}{radix_attr} Usage="InOut" '
             f'Required="true" Visible="true"{constant_attr}/>'
         )
 
@@ -464,44 +473,36 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
     # datatypes.py), which self-consistently matched the SAME bug in
     # parser/aoi.py's own reader. Confirmed against 271 real <Parameter>/
     # <LocalTag Dimensions="N"> elements in James's corpus, zero
-    # counter-examples. Every previously-generated file with an
-    # array-dimensioned AOI Parameter/LocalTag needs regenerating +
-    # RE-CAPTURING -- the malformed attribute name almost certainly also
-    # went unrecognized by Studio 5000's own importer on the prior
-    # capture, meaning those "confirmed" numbers likely tested scalar
-    # behavior, not the array behavior they were meant to.
-    dim_attr = f' Dimensions="{m.dimension}"' if m.dimension else ""
+    # counter-examples.
+    #
+    # ROOT CAUSE FOUND 2026-09-03 (James: "the issue is BOOL/SINT/INT/DINT
+    # cannot be arrays for Inputs. Arrays require InOut"): the real
+    # `aoi_array_param_def_only.L5X` import failure that OQ-AOIARRAYDIMENSION
+    # spent two prior "fixes" chasing (Required/Visible, then DefaultData
+    # shape) was never a formatting bug at all -- an array-dimensioned
+    # atomic Input/Output Parameter is not a legal Logix construct in the
+    # first place; Studio 5000 only allows array Parameters when
+    # Usage="InOut" (matching this project's own already-confirmed real
+    # corpus evidence, LOG_HMIDisplay/BitArray -- both Dimensions AND
+    # InOut, never independently confirmed for Input/Output because no
+    # real Input/Output array Parameter can exist to confirm it against).
+    # A dimensioned atomic Input/Output Parameter can therefore never be
+    # generated correctly -- hard-fail here instead of emitting invalid XML
+    # that only fails later, in Studio.
+    if m.dimension and usage != "InOut":
+        raise ValueError(
+            f"AOI Parameter {m.name!r}: array-dimensioned (Dimensions={m.dimension}) "
+            f"atomic Parameters must be Usage=\"InOut\" -- Logix does not allow an array "
+            f"Input/Output Parameter (real bug found 2026-09-03, James's own controller "
+            f"testing). Use inout_params=, not input_params=/output_params=, for this member."
+        )
     radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
     external_access = "Read Only" if usage == "Output" else "Read/Write"
-    if m.dimension and m.nested_members is None:
-        default = _aoi_array_default_data_xml(m)
-    elif m.dimension:
-        default = ""  # nested-UDT array param -- genuinely unexplored, not this bug's scope
-    else:
-        default = _aoi_default_data_xml(m)
-    # 2026-08-29 real-world bug report (James: "aoi_array_param_def_only
-    # does not open"): this file used the false/false Required/Visible
-    # default on a DIMENSIONED (array) Input Parameter. The only real
-    # corpus evidence this project has for an array Parameter's Required/
-    # Visible (LOG_HMIDisplay Dimensions="25", BitArray Dimensions="1024",
-    # both InOut) is Required="true" Visible="true" -- already-confirmed
-    # for InOut specifically (see the InOut branch above), but never
-    # independently confirmed for Input/Output. Given a real file with
-    # false/false on an array Input Parameter is now confirmed BROKEN
-    # (doesn't open) and zero real evidence exists for false/false working
-    # on any array Parameter regardless of Usage, forcing true/true here
-    # is the best-supported fix available without a positive real Input/
-    # Output-array counter-example -- flagged as ASSUMED/hypothesis-driven
-    # in OPEN_QUESTIONS.md OQ-AOIARRAYDIMENSION, not silently treated as
-    # fully confirmed.
-    if m.dimension:
-        required_attr = "true"
-        visible_attr = "true"
-    else:
-        required_attr = "true" if m.required else "false"
-        visible_attr = "true" if (m.required or m.visible) else "false"
+    default = _aoi_default_data_xml(m)
+    required_attr = "true" if m.required else "false"
+    visible_attr = "true" if (m.required or m.visible) else "false"
     return (
-        f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{dim_attr} Usage="{usage}"'
+        f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}" Usage="{usage}"'
         f'{radix_attr} Required="{required_attr}" Visible="{visible_attr}" '
         f'ExternalAccess="{external_access}">{default}</Parameter>'
     )

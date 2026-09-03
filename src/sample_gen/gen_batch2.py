@@ -122,11 +122,19 @@ def group_aoi() -> None:
     l5x = build_l5x(target_name="ArrayLocalAOI", tags_xml=tag, extra_aoi_xml=definition2)
     _write(l5x, "aoi", "aoi_array_localtag_1_instance", "AOI with a 100-element array LocalTag, 1 instance")
 
-    # AOI with an array Input Parameter.
-    array_inputs = [MemberSpec("InputBuffer", "DINT", dimension=50)]
-    definition3, storage3 = aoi_xml("ArrayParamAOI", array_inputs, [], [], [])
-    l5x = build_l5x(target_name="ArrayParamAOI", tags_xml="", extra_aoi_xml=definition3)
-    _write(l5x, "aoi", "aoi_array_param_def_only", "AOI with a 50-element array Input Parameter, 0 instances")
+    # Real rule found 2026-09-03 (James, live controller testing): an
+    # array-dimensioned atomic Parameter can ONLY be Usage="InOut" -- Logix
+    # does not allow an array Input or Output Parameter at all. This
+    # generator previously built "aoi_array_param_def_only" with a
+    # DINT[50] Input Parameter, which spent two prior "fixes" (Required/
+    # Visible, then DefaultData shape) chasing a real Studio import
+    # failure that was never a formatting bug -- the file was invalid by
+    # construction, no fix could have made it import. builders.py's
+    # _aoi_parameter_xml now hard-fails on this shape instead of silently
+    # emitting invalid XML. Removed rather than "fixed to InOut" -- an
+    # array InOut Parameter is already real, confirmed territory
+    # (LOG_HMIDisplay/BitArray, see OPEN_QUESTIONS.md OQ-AOIARRAYDIMENSION),
+    # so regenerating this as InOut would just duplicate existing coverage.
 
     # InOut parameters (James: real examples aoi_inOut_OneDint.L5X /
     # aoi_inOut_OneString.L5X -- confirmed an InOut param carries zero

@@ -77,8 +77,16 @@ Checks:
      once-diagnosed real bug by hand without checking for the existing
      fix first (5069-IB8S/A / 5069-OBV8S/A, SafetyEnabled="true", built
      into a default non-safety controller) -- see _safety_module_findings.
+  10. aoi_array_param_wrong_usage -- James, 2026-09-03: "the issue is
+      BOOL/SINT/INT/DINT cannot be arrays for Inputs. Arrays require
+      InOut." Root cause of the aoi_array_param_def_only.L5X import
+      failure two prior "fixes" chased without success -- an array-
+      dimensioned atomic AOI Parameter is only legal as Usage="InOut".
+      builders.py's _aoi_parameter_xml hard-fails on this shape at
+      generation time; this check is the defense-in-depth net -- see
+      _aoi_array_param_usage_findings.
 
-These last four were added the same day their bug class was found TWICE --
+These last five were added the same day their bug class was found TWICE --
 once fixed by hand in the one generator that hit it, then reintroduced
 fresh in 3 more files written the same session. Hand-fixing a generator
 when a real bug is found is not enough; the check has to be enforced here
@@ -674,6 +682,39 @@ def _safety_module_findings(root: ET.Element) -> list[LintFinding]:
     return findings
 
 
+def _aoi_array_param_usage_findings(root: ET.Element) -> list[LintFinding]:
+    """James, 2026-09-03, real controller testing: "the issue is BOOL/
+    SINT/INT/DINT cannot be arrays for Inputs. Arrays require InOut" --
+    root cause of the `aoi_array_param_def_only.L5X` import failure that
+    two prior "fixes" (Required/Visible, then DefaultData shape) chased
+    without success. An array-dimensioned atomic AOI Parameter is only
+    legal with Usage="InOut"; Input/Output cannot be arrays at all.
+    builders.py's _aoi_parameter_xml now hard-fails on this shape at
+    generation time, so this check is a defense-in-depth net for any
+    L5X that reaches lint by another path (hand-edited, older generator
+    version, etc.) -- same purpose as _chassis_size_findings/
+    _safety_module_findings, catching a real found bug mechanically
+    forever after instead of trusting it never recurs."""
+    findings: list[LintFinding] = []
+    for aoi_el in root.iter("AddOnInstructionDefinition"):
+        aoi_name = aoi_el.get("Name", "?")
+        params_el = aoi_el.find("Parameters")
+        if params_el is None:
+            continue
+        for param_el in params_el.findall("Parameter"):
+            usage = param_el.get("Usage")
+            dims = param_el.get("Dimensions")
+            if dims and usage in ("Input", "Output"):
+                findings.append(LintFinding(
+                    "aoi_array_param_wrong_usage",
+                    f"AOI '{aoi_name}' Parameter '{param_el.get('Name')}' has "
+                    f"Dimensions=\"{dims}\" and Usage=\"{usage}\" -- Logix does not allow an "
+                    f"array Input/Output Parameter, only InOut. Real Studio 5000 rejects this "
+                    f"with XMLSrv_E_IMPORT_ABORTED_NO_CHANGES.",
+                ))
+    return findings
+
+
 def lint_l5x(l5x_text: str) -> list[LintFinding]:
     root = ET.fromstring(l5x_text)
     findings: list[LintFinding] = []
@@ -681,6 +722,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     findings.extend(_module_slot_findings(root))
     findings.extend(_chassis_size_findings(root))
     findings.extend(_safety_module_findings(root))
+    findings.extend(_aoi_array_param_usage_findings(root))
 
     array_tags = _array_tag_names(root)
     aoi_names = _declared_aoi_names(root)
