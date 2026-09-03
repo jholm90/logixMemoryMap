@@ -193,6 +193,8 @@ Status(msg) {
 						Sleep 250
 				}
 				; window found, continue here
+				
+				Sleep 2000
 
         ; --- Build ---
         Status("Alt")
@@ -212,7 +214,7 @@ Status(msg) {
                 MsgBox "Build popup didn't close within " maxWaitSeconds "s -- possible hang, check manually."
         }
 
-        Sleep 250
+        Sleep 5000
 				ErrorValue := ExtractCount(ControlGetText("Button10", "A"))
         ; Captured at the same moment as Error/Warning/Message -- the
         ; window title has the open .ACD filename baked in (James, 2026-08-22:
@@ -220,9 +222,9 @@ Status(msg) {
         ; giving PowerShell an independent cross-check against the filename
         ; it actually requested, instead of just trusting the handshake blind.
         WindowTitle := WinGetTitle("A")
-        ErrorValue := ExtractCount(ControlGetText("Button10", "A"))
-        WarningValue := ExtractCount(ControlGetText("Button11", "A"))
-        MessageValue := ExtractCount(ControlGetText("Button12", "A"))
+        ErrorValue := ExtractCount(ControlGetText("Button1", "A"))
+        WarningValue := ExtractCount(ControlGetText("Button2", "A"))
+        MessageValue := ExtractCount(ControlGetText("Button3", "A"))
 				
 				if ErrorValue = "" AND WarningValue = ""{
 					Status("Reading Static23 value")
