@@ -258,7 +258,7 @@ def group_motion_dual_axis_drive() -> None:
         f"{_MOTION_GROUP_TAG_XML}\n"
         f"{_axis_tag('P208', 'P208:Ch1')}\n"
         f"{_axis_tag('D012_Axis', 'D012_1:Ch1')}\n"
-        f"{_axis_tag('D012_Axis1', 'D012_1:Ch2')}"
+        f"{_axis_tag('D012_Axis1', 'D012_1:Ch3')}"
     )
     l5x = build_l5x(target_name="ModuleMotion4D012Dual", tags_xml=tags_xml, extra_modules_xml=module_xml)
     _write_unmodeled(
@@ -266,7 +266,9 @@ def group_motion_dual_axis_drive() -> None:
         "SAME single 2198-D012-ERS3 module as modulemotion_d012_single_axis, but with a SECOND "
         "AXIS_CIP_DRIVE tag riding on it (real dual-axis-capable drive, confirmed: one Module "
         "element, two Axis tags, not two modules) -- genericized from real corpus "
-        "(p208_D012_NodeAndAxisDual.L5X), isolates the cost of a 2nd axis on an already-present "
+        "(p208_D012_NodeAndAxisDual.L5X, real channels Ch1/Ch3 -- fixed 2026-09-03, a real bug "
+        "had this as Ch1/Ch2, see OPEN_QUESTIONS.md OQ-193ECMETR), isolates the cost of a 2nd "
+        "axis on an already-present "
         "drive module vs a whole fresh module. See OQ-MODULEIO.",
     )
 

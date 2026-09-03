@@ -982,6 +982,42 @@ the matching footnote at the bottom, not inline.
     symptom — see the IP-duplicate/axis-tags-never-made finding,
     2026-08-27, `gen_module_motion.py`).
 
+    **Real generator bug found and fixed, 2026-09-03 — root cause of the
+    SI/SO error still NOT confirmed, but a real, independently-confirmed
+    channel-numbering mistake found and corrected along the way.** This
+    project's own real source file for the dual-axis case
+    (`motion_p208/p208_D012_NodeAndAxisDual.L5X`/`Dual3.L5X`, which
+    `gen_module_motion.py`'s own docstring claims to genericize
+    "structurally verbatim") uses `MotionModule="D012_1:Ch1"` and
+    `"...Ch3"` for its two axis tags — **never Ch2.** Both
+    `gen_module_motion.py`'s `group_motion_dual_axis_drive()` and
+    `gen_composite_realistic_v3.py` had instead hand-typed `Ch2` for the
+    second axis — a real transcription bug, confirmed independently
+    against 2 real corpus files, not a guess. Fixed (Ch2 -> Ch3 in both
+    places), all affected files regenerated, lint-clean.
+
+    **CORRECTION, same day, within the hour:** initially theorized Ch2
+    might be internally reserved for the drive's Safe-Torque-Off/safety
+    channel, explaining the SI/SO auto-creation — James disproved this
+    immediately with two more real reference exports
+    (`SampleAxis.L5X`/`SampleAxis_2and4.L5X`): a real 4-axis Kinetix 5700
+    config genuinely uses all 4 channels — Ch1/Ch3 carry the two real
+    motor axes (`AxisConfiguration="Position Loop"`), Ch2/Ch4 carry their
+    paired **Feedback-Only companion axes** (`AxisConfiguration="Feedback
+    Only"`, `FeedbackConfiguration="Master Feedback"`, no motor/tuning
+    params at all) — legitimate, ordinary channels, nothing safety-related
+    about them. So Ch2 itself isn't the problem; the real, still-open
+    question is why our generator's ORIGINAL mistake (a full
+    `Position Loop`-configured axis tag placed on Ch2, a slot real
+    Kinetix 5700 configs use for a structurally DIFFERENT
+    `Feedback Only`-shaped axis) specifically produced a SAFETY-tagged
+    error rather than some other kind of mismatch error. The Ch1/Ch3 fix
+    still stands (matches 2 independent real corpus captures exactly for
+    a 2-declared-axis file), but calling it "the fix for the SI/SO
+    error" is not yet confirmed — needs a real ACD retest of the
+    regenerated files to know whether it actually clears that error or
+    just happens to also be correct for an unrelated reason.
+
     **Two separate, real bugs found and fixed the same pass, NOT this
     one:**
     - **Sequential slot numbering** (James: "lots of racks did not have

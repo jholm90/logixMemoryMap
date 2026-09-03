@@ -276,7 +276,7 @@ def _build(profile: ProfileV3) -> tuple[str, str, int]:
         _MOTION_GROUP_TAG_XML,
         _axis_tag(f"DcBus{profile.index:02d}", "P208:Ch1"),
         _axis_tag(servo_axis_1, f"D012_{profile.index:02d}:Ch1"),
-        _axis_tag(servo_axis_2, f"D012_{profile.index:02d}:Ch2"),
+        _axis_tag(servo_axis_2, f"D012_{profile.index:02d}:Ch3"),
     ])
 
     aois = _aoi_specs(profile, servo_axis_1)
