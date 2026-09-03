@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite4_070" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 13:27:52 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite4_070" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 13:27:52 2026" LastModifiedDate="Thu Sep 03 13:27:52 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite4_070" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 16:42:09 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite4_070" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 16:42:09 2026" LastModifiedDate="Thu Sep 03 16:42:09 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -7192,34 +7192,34 @@ mPo
 </Data>
 </ConfigData>
 <Connections>
-<Connection Name="MotionDiagnostics_v4d1" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
+<Connection Name="MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:Motion_Diagnostics:S:1">
-<DataValueMember Name="LostControllerToDriveTransmissions_v4d1" DataType="INT" Radix="Decimal" Value="24" />
-<DataValueMember Name="LateControllerToDriveTransmissions_v4d1" DataType="INT" Radix="Decimal" Value="20535" />
-<DataValueMember Name="LostDriveToControllerTransmissions_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LateDriveToControllerTransmissions_v4d1" DataType="INT" Radix="Decimal" Value="11786" />
-<DataValueMember Name="LastControllerToDriveTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageControllerToDriveTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumControllerToDriveTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastDriveToControllerTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageDriveToControllerTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumDriveToControllerTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastSystemClockJitter_v4d1" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageSystemClockJitter_v4d1" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumSystemClockJitter_v4d1" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="TimingStatisticsEnabled_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ControllerToDriveConnectionSize_v4d1" DataType="INT" Radix="Decimal" Value="48" />
-<DataValueMember Name="DriveToControllerConnectionSize_v4d1" DataType="INT" Radix="Decimal" Value="76" />
-<DataValueMember Name="NominalControllerToDriveTime_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="NominalDriveToControllerTime_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="CoarseUpdatePeriod_v4d1" DataType="INT" Radix="Decimal" Value="2000" />
+<DataValueMember Name="LostControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="24" />
+<DataValueMember Name="LateControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="20535" />
+<DataValueMember Name="LostDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="11786" />
+<DataValueMember Name="LastControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ControllerToDriveConnectionSize" DataType="INT" Radix="Decimal" Value="48" />
+<DataValueMember Name="DriveToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="76" />
+<DataValueMember Name="NominalControllerToDriveTime" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="NominalDriveToControllerTime" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="2000" />
 </Structure>
 </Data>
 </InputTag>
 </Connection>
-<Connection Name="MotionSync_v4d1" RPI="2000" Type="MotionSync_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" />
+<Connection Name="MotionSync" RPI="2000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
 </Connections>
 </Communications>
 </Module>
@@ -7282,43 +7282,43 @@ mPo
 </Data>
 </ConfigScript>
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" InputCxnPoint="1" OutputCxnPoint="2" OutputSize="8" InputSize="12" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" InputCxnPoint="1" OutputCxnPoint="2" OutputSize="8" InputSize="12" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:PowerFlex755_EENET_Drive:I:0">
-<DataValueMember Name="DriveStatus_v4d1" DataType="DINT" Radix="Binary" Value="2#0010_0001_0000_0000_0000_0100_0000_1100" />
-<DataValueMember Name="DriveStatus_Ready_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Active_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_CommandDir_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_ActualDir_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_Accelerating_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Decelerating_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Alarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Faulted_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_AtSpeed_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Manual_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpdRefBit0_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_SpdRefBit1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpdRefBit2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpdRefBit3_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpdRefBit4_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Running_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Jogging_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Stopping_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_DCBraking_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_DBActive_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpeedMode_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_PositionMode_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_TorqueMode_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_AtZeroSpeed_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_AtHome_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_AtLimit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_CurrLimit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_BusFrqReg_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_EnableOn_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_MotorOL_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Regen_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Feedback_v4d1" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="DriveStatus" DataType="DINT" Radix="Binary" Value="2#0010_0001_0000_0000_0000_0100_0000_1100" />
+<DataValueMember Name="DriveStatus_Ready" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Active" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_CommandDir" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_ActualDir" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_Accelerating" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Decelerating" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Alarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Faulted" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_AtSpeed" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Manual" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpdRefBit0" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_SpdRefBit1" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpdRefBit2" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpdRefBit3" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpdRefBit4" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Running" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Jogging" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Stopping" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_DCBraking" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_DBActive" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpeedMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_PositionMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_TorqueMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_AtZeroSpeed" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_AtHome" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_AtLimit" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_CurrLimit" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_BusFrqReg" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_EnableOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_MotorOL" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Regen" DataType="BOOL" Value="0" />
+<DataValueMember Name="Feedback" DataType="REAL" Radix="Float" Value="0.0" />
 </Structure>
 </Data>
 </InputTag>
@@ -7328,26 +7328,26 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:PowerFlex755_EENET_Drive:O:0">
-<DataValueMember Name="LogicCommand_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0001" />
-<DataValueMember Name="LogicCommand_Stop_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="LogicCommand_Start_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Jog1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_ClearFaults_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Forward_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Reverse_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Manual_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_AccelTime1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_AccelTime2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_DecelTime1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_DecelTime2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_SpdRefSel0_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_SpdRefSel1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_SpdRefSel2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_CoastStop_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_CLimitStop_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Run_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Jog2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Reference_v4d1" DataType="REAL" Radix="Float" Value="75.0" />
+<DataValueMember Name="LogicCommand" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0001" />
+<DataValueMember Name="LogicCommand_Stop" DataType="BOOL" Value="1" />
+<DataValueMember Name="LogicCommand_Start" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Jog1" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_ClearFaults" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Forward" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Reverse" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Manual" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_AccelTime1" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_AccelTime2" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_DecelTime1" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_DecelTime2" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_SpdRefSel0" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_SpdRefSel1" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_SpdRefSel2" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_CoastStop" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_CLimitStop" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Run" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Jog2" DataType="BOOL" Value="0" />
+<DataValueMember Name="Reference" DataType="REAL" Radix="Float" Value="75.0" />
 </Structure>
 </Data>
 </OutputTag>
@@ -7397,42 +7397,42 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1732_D16Diag:C:0">
-<DataValueMember Name="FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt00_01OpenWireEn_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt02_03OpenWireEn_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt04_05OpenWireEn_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt06_07OpenWireEn_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt08_09OpenWireEn_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt10_11OpenWireEn_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt12_13OpenWireEn_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt14_15OpenWireEn_v4d1" DataType="BOOL" Value="0" />
+<DataValueMember Name="FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt00_01OpenWireEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt02_03OpenWireEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt04_05OpenWireEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt06_07OpenWireEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt08_09OpenWireEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt10_11OpenWireEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt12_13OpenWireEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt14_15OpenWireEn" DataType="BOOL" Value="0" />
 </Structure>
 </Data>
 </ConfigTag>
 <Connections>
-<Connection Name="OutputData_v4d1" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="OutputData" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1732_DI16Diag:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data_v4d1" DataType="INT" Radix="Binary" Value="2#0000_1111_1101_1100" />
-<DataValueMember Name="Pt00_01OpenWire_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt02_03OpenWire_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt04_05OpenWire_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt06_07OpenWire_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt08_09OpenWire_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt10_11OpenWire_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt12_13OpenWire_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt14_15OpenWire_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt00_01ShortCircuit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt02_03ShortCircuit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt04_05ShortCircuit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt06_07ShortCircuit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt08_09ShortCircuit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt10_11ShortCircuit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt12_13ShortCircuit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt14_15ShortCircuit_v4d1" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="INT" Radix="Binary" Value="2#0000_1111_1101_1100" />
+<DataValueMember Name="Pt00_01OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt02_03OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt04_05OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt06_07OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt08_09OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt10_11OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt12_13OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt14_15OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt00_01ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt02_03ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt04_05ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt06_07ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt08_09ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt10_11ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt12_13ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt14_15ShortCircuit" DataType="BOOL" Value="0" />
 </Structure>
 </Data>
 </InputTag>
@@ -7453,18 +7453,18 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1732_DI16:C:0">
-<DataValueMember Name="FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
 </Structure>
 </Data>
 </ConfigTag>
 <Connections>
-<Connection Name="InputData_v4d1" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="InputData" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1732_DI16:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data_v4d1" DataType="INT" Radix="Binary" Value="2#0011_1111_0000_0000" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="INT" Radix="Binary" Value="2#0011_1111_0000_0000" />
 </Structure>
 </Data>
 </InputTag>
@@ -7485,19 +7485,19 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1732_DO16:C:0">
-<DataValueMember Name="FaultMode_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="FaultValue_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="ProgMode_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="ProgValue_v4d1" DataType="BOOL" Value="0" />
+<DataValueMember Name="FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="ProgValue" DataType="BOOL" Value="0" />
 </Structure>
 </Data>
 </ConfigTag>
 <Connections>
-<Connection Name="OutputData_v4d1" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="OutputData" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1732_D2:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
 </Structure>
 </Data>
 </InputTag>
@@ -7507,7 +7507,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1732_DO16:O:0">
-<DataValueMember Name="Data_v4d1" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000" />
 </Structure>
 </Data>
 </OutputTag>
@@ -7526,13 +7526,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_2SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="2" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="2" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 </ArrayMember>
@@ -7545,7 +7545,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_2SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="2" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="2" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 </ArrayMember>
@@ -7569,37 +7569,37 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_232ASC:C:0">
-<DataValueMember Name="SerialCharacterFormat_v4d1" DataType="SINT" Radix="Decimal" Value="3" />
-<DataValueMember Name="SerialCommSpeed_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaxReceiveCharacters_v4d1" DataType="SINT" Radix="Decimal" Value="80" />
-<DataValueMember Name="ReceiveStartDelimiterMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ReceiveStartDelimiterCharacter_v4d1" DataType="SINT" Radix="Decimal" Value="58" />
-<DataValueMember Name="ReceiveRecordEndMode_v4d1" DataType="SINT" Radix="Decimal" Value="2" />
-<DataValueMember Name="ReceiveEndDelimiter_v4d1" DataType="SINT" Radix="Decimal" Value="13" />
-<DataValueMember Name="ReceiveStringDataType_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="PadMode_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="PadCharacter_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ReceiveSwapMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="DeviceNetHandshakeMode_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="MaxTransmitCharacters_v4d1" DataType="SINT" Radix="Decimal" Value="80" />
-<DataValueMember Name="TransmitEndDelimiterMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="TransmitEndDelimiterCharacter_v4d1" DataType="SINT" Radix="Decimal" Value="13" />
-<DataValueMember Name="ConsumeStringDataType_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="TransmitSwapMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="DeviceNetRecordHeaderMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="SerialCharacterFormat" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="SerialCommSpeed" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaxReceiveCharacters" DataType="SINT" Radix="Decimal" Value="80" />
+<DataValueMember Name="ReceiveStartDelimiterMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ReceiveStartDelimiterCharacter" DataType="SINT" Radix="Decimal" Value="58" />
+<DataValueMember Name="ReceiveRecordEndMode" DataType="SINT" Radix="Decimal" Value="2" />
+<DataValueMember Name="ReceiveEndDelimiter" DataType="SINT" Radix="Decimal" Value="13" />
+<DataValueMember Name="ReceiveStringDataType" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="PadMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="PadCharacter" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ReceiveSwapMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="DeviceNetHandshakeMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="MaxTransmitCharacters" DataType="SINT" Radix="Decimal" Value="80" />
+<DataValueMember Name="TransmitEndDelimiterMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TransmitEndDelimiterCharacter" DataType="SINT" Radix="Decimal" Value="13" />
+<DataValueMember Name="ConsumeStringDataType" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="TransmitSwapMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="DeviceNetRecordHeaderMode" DataType="SINT" Radix="Decimal" Value="0" />
 </Structure>
 </Data>
 </ConfigTag>
 <Connections>
-<Connection Name="OutputData_v4d1" RPI="80000" Type="Output_v4d1" InputCxnPoint="101" OutputCxnPoint="102" OutputSize="84" InputSize="88" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="OutputData" RPI="80000" Type="Output" InputCxnPoint="101" OutputCxnPoint="102" OutputSize="84" InputSize="88" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_232ASC_80Bytes:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="ReceiveRecordNumber_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Status_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Length_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="80" Radix="Decimal">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="ReceiveRecordNumber" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Status" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Length" DataType="SINT" Radix="Decimal" Value="0" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="80" Radix="Decimal">
 <Element Index="[0]" Value="0" />
 <Element Index="[1]" Value="0" />
 <Element Index="[2]" Value="0" />
@@ -7691,10 +7691,10 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_232ASC_80Bytes:O:0">
-<DataValueMember Name="NextTransmitRecordNumber_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="TransmitRecordNumber_v4d1" DataType="SINT" Radix="Decimal" Value="-19" />
-<DataValueMember Name="Length_v4d1" DataType="SINT" Radix="Decimal" Value="41" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="80" Radix="Decimal">
+<DataValueMember Name="NextTransmitRecordNumber" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TransmitRecordNumber" DataType="SINT" Radix="Decimal" Value="-19" />
+<DataValueMember Name="Length" DataType="SINT" Radix="Decimal" Value="41" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="80" Radix="Decimal">
 <Element Index="[0]" Value="0" />
 <Element Index="[1]" Value="1" />
 <Element Index="[2]" Value="0" />

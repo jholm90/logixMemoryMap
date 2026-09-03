@@ -77,7 +77,12 @@ OUT_ROOT.mkdir(parents=True, exist_ok=True)
 _MODEL = load_memory_model()
 _TAG_FLAT_OVERHEAD_BASE = 84  # KNOWN, docs/MEMORY_MODEL.md "Per-tag flat overhead"
 _MAX_ICP_CATALOGS_PER_FILE = 10
-_NAME_ATTR_RE = re.compile(r'Name="([^"]+)"')
+# Matches only a <Module ...Name="X"...> element's OWN Name= declaration --
+# never a nested Connection/DataValueMember/ArrayMember Name= (those are
+# real fixed CIP/struct identifiers, not module identity; see
+# _modules_xml_unique_ips_v4's docstring for the real Studio 5000 import
+# bug this scoping fixes).
+_MODULE_NAME_DECL_RE = re.compile(r'<Module\b[^>]*?\bName="([^"]+)"')
 
 
 def _modules_xml_unique_ips_v4(catalogs: list[str]) -> str:
@@ -88,7 +93,23 @@ def _modules_xml_unique_ips_v4(catalogs: list[str]) -> str:
     the identical real Name is a real Studio 5000 rejection). A catalog's
     FIRST occurrence in the list is left completely untouched (matching
     v3's own established output byte-for-byte); only the 2nd+ occurrence
-    gets its Name/ParentModule references suffixed."""
+    gets its Name/ParentModule references suffixed.
+
+    2026-09-03, real Studio 5000 import bug found by James (every single
+    v4 file rejected on import, XMLSrv_E_IMPORT_ABORTED_NO_CHANGES): the
+    original version of this function used a blanket `Name="([^"]+)"`
+    regex to find "the module's own names" to rename, which also matched
+    every OTHER Name= attribute nested inside that catalog's XML block --
+    <Connection Name="Output" Type="Output" ...> (a fixed CIP
+    connection-point enum, not free text) and <DataValueMember
+    Name="SlotStatusBits0_31".../<ArrayMember Name="Data".../ (real fixed
+    struct member names from the module's AOP-defined Config/Input data
+    type). Renaming those to "Output_v4d1"/"Data_v4d1" etc. is schema-
+    invalid and Studio rejects the whole import. Fixed by scoping both the
+    search AND the replacement to only `<Module ...Name="X">` element
+    declarations and `ParentModule="X"` references -- never any Name=
+    nested inside a Connection/DataValueMember/ArrayMember/StructureMember
+    element."""
     seen_counts: dict[str, int] = {}
     parts = []
     next_icp_slot = 1
@@ -99,14 +120,20 @@ def _modules_xml_unique_ips_v4(catalogs: list[str]) -> str:
         occurrence = seen_counts.get(cat, 0)
         seen_counts[cat] = occurrence + 1
         if occurrence > 0:
-            # Rename every declared Module Name in this catalog's own block
-            # (a chain can be more than one Module, e.g. adapter+child) --
-            # replacing the exact quoted string covers both Name="X" and
-            # any sibling Module's ParentModule="X" reference in the same
-            # block, since both use the identical quoted substring.
-            own_names = sorted(set(_NAME_ATTR_RE.findall(xml)))
+            # Rename only the Module element's OWN Name= declaration (a
+            # chain can be more than one Module, e.g. adapter+child) and
+            # any sibling Module's ParentModule="X" reference -- NEVER any
+            # other Name= attribute nested inside the block (Connection/
+            # DataValueMember/ArrayMember names are real fixed CIP/struct
+            # identifiers, not module identity, and must not be touched).
+            own_names = sorted(set(_MODULE_NAME_DECL_RE.findall(xml)))
             for name in own_names:
-                xml = xml.replace(f'"{name}"', f'"{name}_v4d{occurrence}"')
+                new_name = f"{name}_v4d{occurrence}"
+                escaped = re.escape(name)
+                xml = re.sub(
+                    rf'(<Module\b[^>]*?\bName=)"{escaped}"', rf'\1"{new_name}"', xml,
+                )
+                xml = xml.replace(f'ParentModule="{name}"', f'ParentModule="{new_name}"')
         real_ips = sorted(set(re.findall(r"192\.168\.1\.\d+", xml)))
         block_num, pos_in_block = divmod(i, _CATALOGS_PER_THIRD_OCTET)
         third_octet = 1 + block_num

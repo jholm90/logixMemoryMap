@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite4_046" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 13:26:49 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite4_046" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 13:26:49 2026" LastModifiedDate="Thu Sep 03 13:26:49 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite4_046" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 16:41:12 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite4_046" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 16:41:12 2026" LastModifiedDate="Thu Sep 03 16:41:12 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -6378,88 +6378,88 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="10000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="10000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1756_ENET_13SLOT:I:0">
-<DataValueMember Name="SlotStatusBits_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1110_0000_0000_0001" />
-<ArrayMember Name="Slot_v4d1" DataType="AB:1756_ENET_SLOT:I:0" Dimensions="13">
+<DataValueMember Name="SlotStatusBits" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1110_0000_0000_0001" />
+<ArrayMember Name="Slot" DataType="AB:1756_ENET_SLOT:I:0" Dimensions="13">
 <Element Index="[0]">
 <Structure DataType="AB:1756_ENET_SLOT:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
 </Structure>
 </Element>
 <Element Index="[1]">
 <Structure DataType="AB:1756_ENET_SLOT:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0100_0000_0010_0000_1010" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0100_0000_0010_0000_1010" />
 </Structure>
 </Element>
 <Element Index="[2]">
 <Structure DataType="AB:1756_ENET_SLOT:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#1000_0011_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#1000_0011_0000_0000_0000_0000_0000_0000" />
 </Structure>
 </Element>
 <Element Index="[3]">
 <Structure DataType="AB:1756_ENET_SLOT:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0001_1011_1011_0000_0000_1000" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0001_1011_1011_0000_0000_1000" />
 </Structure>
 </Element>
 <Element Index="[4]">
 <Structure DataType="AB:1756_ENET_SLOT:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0001_0000_0000" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0001_0000_0000" />
 </Structure>
 </Element>
 <Element Index="[5]">
 <Structure DataType="AB:1756_ENET_SLOT:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0010_0000_0000_1001" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0010_0000_0000_1001" />
 </Structure>
 </Element>
 <Element Index="[6]">
 <Structure DataType="AB:1756_ENET_SLOT:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1000_0010_0110_0000" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1000_0010_0110_0000" />
 </Structure>
 </Element>
 <Element Index="[7]">
 <Structure DataType="AB:1756_ENET_SLOT:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_1100_0000_1010" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_1100_0000_1010" />
 </Structure>
 </Element>
 <Element Index="[8]">
 <Structure DataType="AB:1756_ENET_SLOT:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1110_0001_1110_1000" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1110_0001_1110_1000" />
 </Structure>
 </Element>
 <Element Index="[9]">
 <Structure DataType="AB:1756_ENET_SLOT:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_1000_0000_0100" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_1000_0000_0100" />
 </Structure>
 </Element>
 <Element Index="[10]">
 <Structure DataType="AB:1756_ENET_SLOT:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1001_0000" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1001_0000" />
 </Structure>
 </Element>
 <Element Index="[11]">
 <Structure DataType="AB:1756_ENET_SLOT:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0010_0110_0000" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0010_0110_0000" />
 </Structure>
 </Element>
 <Element Index="[12]">
 <Structure DataType="AB:1756_ENET_SLOT:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1111_0100" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1111_0100" />
 </Structure>
 </Element>
 </ArrayMember>
@@ -6472,70 +6472,70 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1756_ENET_13SLOT:O:0">
-<ArrayMember Name="Slot_v4d1" DataType="AB:1756_ENET_SLOT:O:0" Dimensions="13">
+<ArrayMember Name="Slot" DataType="AB:1756_ENET_SLOT:O:0" Dimensions="13">
 <Element Index="[0]">
 <Structure DataType="AB:1756_ENET_SLOT:O:0">
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
 </Structure>
 </Element>
 <Element Index="[1]">
 <Structure DataType="AB:1756_ENET_SLOT:O:0">
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
 </Structure>
 </Element>
 <Element Index="[2]">
 <Structure DataType="AB:1756_ENET_SLOT:O:0">
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
 </Structure>
 </Element>
 <Element Index="[3]">
 <Structure DataType="AB:1756_ENET_SLOT:O:0">
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0001_1011_1011_0000_0000_1000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0001_1011_1011_0000_0000_1000" />
 </Structure>
 </Element>
 <Element Index="[4]">
 <Structure DataType="AB:1756_ENET_SLOT:O:0">
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0001_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0001_0000_0000" />
 </Structure>
 </Element>
 <Element Index="[5]">
 <Structure DataType="AB:1756_ENET_SLOT:O:0">
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
 </Structure>
 </Element>
 <Element Index="[6]">
 <Structure DataType="AB:1756_ENET_SLOT:O:0">
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
 </Structure>
 </Element>
 <Element Index="[7]">
 <Structure DataType="AB:1756_ENET_SLOT:O:0">
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
 </Structure>
 </Element>
 <Element Index="[8]">
 <Structure DataType="AB:1756_ENET_SLOT:O:0">
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
 </Structure>
 </Element>
 <Element Index="[9]">
 <Structure DataType="AB:1756_ENET_SLOT:O:0">
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_1000_0000_0100" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_1000_0000_0100" />
 </Structure>
 </Element>
 <Element Index="[10]">
 <Structure DataType="AB:1756_ENET_SLOT:O:0">
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1001_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1001_0000" />
 </Structure>
 </Element>
 <Element Index="[11]">
 <Structure DataType="AB:1756_ENET_SLOT:O:0">
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0010_0110_0000" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0010_0110_0000" />
 </Structure>
 </Element>
 <Element Index="[12]">
 <Structure DataType="AB:1756_ENET_SLOT:O:0">
-<DataValueMember Name="Data_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1111_0100" />
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1111_0100" />
 </Structure>
 </Element>
 </ArrayMember>
@@ -6559,11 +6559,11 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1756_DO:C:0">
-<DataValueMember Name="ProgToFaultEn_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="FaultMode_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="FaultValue_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="ProgMode_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="ProgValue_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="ProgToFaultEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="FaultMode" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="FaultValue" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="ProgMode" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="ProgValue" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
 </Structure>
 </Data>
 </ConfigTag>
@@ -6593,12 +6593,12 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1794_AEN_8SLOT:I:0">
-<DataValueMember Name="SlotStatusBits_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<ArrayMember Name="Data_v4d1" DataType="INT" Dimensions="8" Radix="Binary">
+<DataValueMember Name="SlotStatusBits" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0001_1111_0110" />
 <Element Index="[1]" Value="2#0000_0000_0000_0000" />
 <Element Index="[2]" Value="2#0000_0000_0000_0000" />
@@ -6617,7 +6617,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1794_AEN_8SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="INT" Dimensions="8" Radix="Binary">
+<ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000_0000_0000" />
 <Element Index="[1]" Value="2#0000_0000_0111_1111" />
 <Element Index="[2]" Value="2#0000_0000_0000_0000" />
@@ -6645,12 +6645,12 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1794_AEN_8SLOT:I:0">
-<DataValueMember Name="SlotStatusBits_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<ArrayMember Name="Data_v4d1" DataType="INT" Dimensions="8" Radix="Binary">
+<DataValueMember Name="SlotStatusBits" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0001_1111_0110" />
 <Element Index="[1]" Value="2#0000_0000_0000_0000" />
 <Element Index="[2]" Value="2#0000_0000_0000_0000" />
@@ -6669,7 +6669,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1794_AEN_8SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="INT" Dimensions="8" Radix="Binary">
+<ArrayMember Name="Data" DataType="INT" Dimensions="8" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000_0000_0000" />
 <Element Index="[1]" Value="2#0000_0000_0111_1111" />
 <Element Index="[2]" Value="2#0000_0000_0000_0000" />
@@ -6699,13 +6699,13 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1794_DI_Delay16:C:0">
-<DataValueMember Name="Config_v4d1" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000" />
-<DataValueMember Name="DelayTime_0_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DelayTime_1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DelayTime_2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DelayTime_3_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DelayTime_4_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DelayTime_5_v4d1" DataType="BOOL" Value="0" />
+<DataValueMember Name="Config" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000" />
+<DataValueMember Name="DelayTime_0" DataType="BOOL" Value="0" />
+<DataValueMember Name="DelayTime_1" DataType="BOOL" Value="0" />
+<DataValueMember Name="DelayTime_2" DataType="BOOL" Value="0" />
+<DataValueMember Name="DelayTime_3" DataType="BOOL" Value="0" />
+<DataValueMember Name="DelayTime_4" DataType="BOOL" Value="0" />
+<DataValueMember Name="DelayTime_5" DataType="BOOL" Value="0" />
 </Structure>
 </Data>
 </ConfigTag>

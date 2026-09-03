@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite4_015" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 13:25:47 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite4_015" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 13:25:47 2026" LastModifiedDate="Thu Sep 03 13:25:47 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite4_015" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 16:40:15 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite4_015" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 16:40:15 2026" LastModifiedDate="Thu Sep 03 16:40:15 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -7653,13 +7653,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_2SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="2" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="2" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 </ArrayMember>
@@ -7672,7 +7672,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_2SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="2" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="2" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 </ArrayMember>
@@ -7696,37 +7696,37 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_232ASC:C:0">
-<DataValueMember Name="SerialCharacterFormat_v4d1" DataType="SINT" Radix="Decimal" Value="3" />
-<DataValueMember Name="SerialCommSpeed_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaxReceiveCharacters_v4d1" DataType="SINT" Radix="Decimal" Value="80" />
-<DataValueMember Name="ReceiveStartDelimiterMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ReceiveStartDelimiterCharacter_v4d1" DataType="SINT" Radix="Decimal" Value="58" />
-<DataValueMember Name="ReceiveRecordEndMode_v4d1" DataType="SINT" Radix="Decimal" Value="2" />
-<DataValueMember Name="ReceiveEndDelimiter_v4d1" DataType="SINT" Radix="Decimal" Value="13" />
-<DataValueMember Name="ReceiveStringDataType_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="PadMode_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="PadCharacter_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ReceiveSwapMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="DeviceNetHandshakeMode_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="MaxTransmitCharacters_v4d1" DataType="SINT" Radix="Decimal" Value="80" />
-<DataValueMember Name="TransmitEndDelimiterMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="TransmitEndDelimiterCharacter_v4d1" DataType="SINT" Radix="Decimal" Value="13" />
-<DataValueMember Name="ConsumeStringDataType_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="TransmitSwapMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="DeviceNetRecordHeaderMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="SerialCharacterFormat" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="SerialCommSpeed" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaxReceiveCharacters" DataType="SINT" Radix="Decimal" Value="80" />
+<DataValueMember Name="ReceiveStartDelimiterMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ReceiveStartDelimiterCharacter" DataType="SINT" Radix="Decimal" Value="58" />
+<DataValueMember Name="ReceiveRecordEndMode" DataType="SINT" Radix="Decimal" Value="2" />
+<DataValueMember Name="ReceiveEndDelimiter" DataType="SINT" Radix="Decimal" Value="13" />
+<DataValueMember Name="ReceiveStringDataType" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="PadMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="PadCharacter" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ReceiveSwapMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="DeviceNetHandshakeMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="MaxTransmitCharacters" DataType="SINT" Radix="Decimal" Value="80" />
+<DataValueMember Name="TransmitEndDelimiterMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TransmitEndDelimiterCharacter" DataType="SINT" Radix="Decimal" Value="13" />
+<DataValueMember Name="ConsumeStringDataType" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="TransmitSwapMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="DeviceNetRecordHeaderMode" DataType="SINT" Radix="Decimal" Value="0" />
 </Structure>
 </Data>
 </ConfigTag>
 <Connections>
-<Connection Name="OutputData_v4d1" RPI="80000" Type="Output_v4d1" InputCxnPoint="101" OutputCxnPoint="102" OutputSize="84" InputSize="88" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="OutputData" RPI="80000" Type="Output" InputCxnPoint="101" OutputCxnPoint="102" OutputSize="84" InputSize="88" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_232ASC_80Bytes:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="ReceiveRecordNumber_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Status_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Length_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="80" Radix="Decimal">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="ReceiveRecordNumber" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Status" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Length" DataType="SINT" Radix="Decimal" Value="0" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="80" Radix="Decimal">
 <Element Index="[0]" Value="0" />
 <Element Index="[1]" Value="0" />
 <Element Index="[2]" Value="0" />
@@ -7818,10 +7818,10 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_232ASC_80Bytes:O:0">
-<DataValueMember Name="NextTransmitRecordNumber_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="TransmitRecordNumber_v4d1" DataType="SINT" Radix="Decimal" Value="-19" />
-<DataValueMember Name="Length_v4d1" DataType="SINT" Radix="Decimal" Value="41" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="80" Radix="Decimal">
+<DataValueMember Name="NextTransmitRecordNumber" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TransmitRecordNumber" DataType="SINT" Radix="Decimal" Value="-19" />
+<DataValueMember Name="Length" DataType="SINT" Radix="Decimal" Value="41" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="80" Radix="Decimal">
 <Element Index="[0]" Value="0" />
 <Element Index="[1]" Value="1" />
 <Element Index="[2]" Value="0" />
@@ -7921,13 +7921,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="2000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="2000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_7SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1011_1001" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="7" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1011_1001" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="7" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#1010_0001" />
 <Element Index="[2]" Value="2#0010_0010" />
@@ -7945,7 +7945,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_7SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="7" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="7" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_0000" />
@@ -7974,37 +7974,37 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_485ASC:C:0">
-<DataValueMember Name="SerialCharacterFormat_v4d1" DataType="SINT" Radix="Decimal" Value="3" />
-<DataValueMember Name="SerialCommSpeed_v4d1" DataType="SINT" Radix="Decimal" Value="4" />
-<DataValueMember Name="MaxReceiveCharacters_v4d1" DataType="SINT" Radix="Decimal" Value="40" />
-<DataValueMember Name="ReceiveStartDelimiterMode_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="ReceiveStartDelimiterCharacter_v4d1" DataType="SINT" Radix="Decimal" Value="10" />
-<DataValueMember Name="ReceiveRecordEndMode_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="ReceiveEndDelimiter_v4d1" DataType="SINT" Radix="Decimal" Value="13" />
-<DataValueMember Name="ReceiveStringDataType_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="PadMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="PadCharacter_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ReceiveSwapMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="DeviceNetHandshakeMode_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="MaxTransmitCharacters_v4d1" DataType="SINT" Radix="Decimal" Value="40" />
-<DataValueMember Name="TransmitEndDelimiterMode_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="TransmitEndDelimiterCharacter_v4d1" DataType="SINT" Radix="Decimal" Value="13" />
-<DataValueMember Name="ConsumeStringDataType_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="TransmitSwapMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="DeviceNetRecordHeaderMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="SerialCharacterFormat" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="SerialCommSpeed" DataType="SINT" Radix="Decimal" Value="4" />
+<DataValueMember Name="MaxReceiveCharacters" DataType="SINT" Radix="Decimal" Value="40" />
+<DataValueMember Name="ReceiveStartDelimiterMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="ReceiveStartDelimiterCharacter" DataType="SINT" Radix="Decimal" Value="10" />
+<DataValueMember Name="ReceiveRecordEndMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="ReceiveEndDelimiter" DataType="SINT" Radix="Decimal" Value="13" />
+<DataValueMember Name="ReceiveStringDataType" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="PadMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="PadCharacter" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ReceiveSwapMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="DeviceNetHandshakeMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="MaxTransmitCharacters" DataType="SINT" Radix="Decimal" Value="40" />
+<DataValueMember Name="TransmitEndDelimiterMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="TransmitEndDelimiterCharacter" DataType="SINT" Radix="Decimal" Value="13" />
+<DataValueMember Name="ConsumeStringDataType" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="TransmitSwapMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="DeviceNetRecordHeaderMode" DataType="SINT" Radix="Decimal" Value="0" />
 </Structure>
 </Data>
 </ConfigTag>
 <Connections>
-<Connection Name="Output_v4d1" RPI="2000" Type="Output_v4d1" InputCxnPoint="101" OutputCxnPoint="102" OutputSize="44" InputSize="48" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="2000" Type="Output" InputCxnPoint="101" OutputCxnPoint="102" OutputSize="44" InputSize="48" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_485ASC_40Bytes:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="ReceiveRecordNumber_v4d1" DataType="SINT" Radix="Decimal" Value="83" />
-<DataValueMember Name="Status_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Length_v4d1" DataType="SINT" Radix="Decimal" Value="9" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="40" Radix="Decimal">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="ReceiveRecordNumber" DataType="SINT" Radix="Decimal" Value="83" />
+<DataValueMember Name="Status" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Length" DataType="SINT" Radix="Decimal" Value="9" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="40" Radix="Decimal">
 <Element Index="[0]" Value="68" />
 <Element Index="[1]" Value="48" />
 <Element Index="[2]" Value="48" />
@@ -8055,10 +8055,10 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_485ASC_40Bytes:O:0">
-<DataValueMember Name="NextTransmitRecordNumber_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="TransmitRecordNumber_v4d1" DataType="SINT" Radix="Decimal" Value="45" />
-<DataValueMember Name="Length_v4d1" DataType="SINT" Radix="Decimal" Value="3" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="40" Radix="Decimal">
+<DataValueMember Name="NextTransmitRecordNumber" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TransmitRecordNumber" DataType="SINT" Radix="Decimal" Value="45" />
+<DataValueMember Name="Length" DataType="SINT" Radix="Decimal" Value="3" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="40" Radix="Decimal">
 <Element Index="[0]" Value="10" />
 <Element Index="[1]" Value="68" />
 <Element Index="[2]" Value="13" />
@@ -8118,13 +8118,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_3SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1011" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="3" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1011" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="3" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_1000" />
@@ -8138,7 +8138,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_3SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="3" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="3" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_0000" />
@@ -8163,12 +8163,12 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_8CFG:C:0">
-<DataValueMember Name="FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="FaultMode_v4d1" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
-<DataValueMember Name="FaultValue_v4d1" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
-<DataValueMember Name="ProgMode_v4d1" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
-<DataValueMember Name="ProgValue_v4d1" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="FaultMode" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="FaultValue" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="ProgMode" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="ProgValue" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
 </Structure>
 </Data>
 </ConfigTag>
@@ -8193,13 +8193,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_8SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_0000_0001" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="8" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_0000_0001" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="8" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#1110_0001" />
 <Element Index="[2]" Value="2#1111_1111" />
@@ -8218,7 +8218,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_8SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="8" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="8" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_0000" />
@@ -8246,13 +8246,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_2SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="2" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="2" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 </ArrayMember>
@@ -8265,7 +8265,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_2SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="2" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="2" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 </ArrayMember>
@@ -8287,13 +8287,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_1SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="1" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="1" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 </ArrayMember>
 </Structure>
@@ -8305,7 +8305,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_1SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="1" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="1" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 </ArrayMember>
 </Structure>

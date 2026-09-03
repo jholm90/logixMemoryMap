@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite4_029" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 13:26:13 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite4_029" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 13:26:13 2026" LastModifiedDate="Thu Sep 03 13:26:13 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite4_029" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 16:40:39 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite4_029" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 16:40:39 2026" LastModifiedDate="Thu Sep 03 16:40:39 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -6929,12 +6929,12 @@
 </Data>
 </ConfigData>
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="SM:EX260_SEN1:I:0">
-<DataValueMember Name="InputArea_v4d1" DataType="INT" Radix="Binary" Value="2#0000_1000_0000_0000" />
-<DataValueMember Name="SOLV_Status_v4d1" DataType="BOOL" Value="1" />
+<DataValueMember Name="InputArea" DataType="INT" Radix="Binary" Value="2#0000_1000_0000_0000" />
+<DataValueMember Name="SOLV_Status" DataType="BOOL" Value="1" />
 </Structure>
 </Data>
 </InputTag>
@@ -6944,7 +6944,7 @@
 </Data>
 <Data Format="Decorated">
 <Structure DataType="SM:EX260_SEN1:O:0">
-<ArrayMember Name="OutputArea_v4d1" DataType="INT" Dimensions="2" Radix="Binary">
+<ArrayMember Name="OutputArea" DataType="INT" Dimensions="2" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000_0000_0000" />
 <Element Index="[1]" Value="2#0000_0000_0000_0000" />
 </ArrayMember>
@@ -6968,12 +6968,12 @@
 </Data>
 </ConfigData>
 <Connections>
-<Connection Name="Output_v4d1" RPI="10000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="10000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="SM:EX260_SEN3:I:0">
-<DataValueMember Name="InputArea_v4d1" DataType="INT" Radix="Binary" Value="2#1111_1111_1111_1111" />
-<DataValueMember Name="SOLV_Status_v4d1" DataType="BOOL" Value="1" />
+<DataValueMember Name="InputArea" DataType="INT" Radix="Binary" Value="2#1111_1111_1111_1111" />
+<DataValueMember Name="SOLV_Status" DataType="BOOL" Value="1" />
 </Structure>
 </Data>
 </InputTag>
@@ -6983,7 +6983,7 @@
 </Data>
 <Data Format="Decorated">
 <Structure DataType="SM:EX260_SEN3:O:0">
-<DataValueMember Name="OutputArea_v4d1" DataType="INT" Radix="Binary" Value="2#0000_0000_1001_1001" />
+<DataValueMember Name="OutputArea" DataType="INT" Radix="Binary" Value="2#0000_0000_1001_1001" />
 </Structure>
 </Data>
 </OutputTag>
@@ -7174,31 +7174,31 @@
 </Data>
 </ConfigScript>
 <Connections>
-<Connection Name="Standard_v4d1" RPI="20000" Type="Output" InputCxnPoint="1" OutputCxnPoint="2" OutputSize="12" InputSize="16" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Standard" RPI="20000" Type="Output" InputCxnPoint="1" OutputCxnPoint="2" OutputSize="12" InputSize="16" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:PowerFlex525V_E_F6518AFA:I:0_v4d1">
-<DataValueMember Name="DriveStatus_v4d1" DataType="INT" Radix="Binary" Value="2#0000_0110_0000_1101" />
-<DataValueMember Name="Ready_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="Active_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="CommandDir_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="ActualDir_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="Accelerating_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Decelerating_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Faulted_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="AtReference_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="CommFreqCnt_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="CommLogicCnt_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="ParmsLocked_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DigIn1Active_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DigIn2Active_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DigIn3Active_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DigIn4Active_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="OutputFreq_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="OutputCurrent_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="OutputVoltage_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="CommandedFreq_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumFreq_v4d1" DataType="INT" Radix="Decimal" Value="12000" />
+<Structure DataType="AB:PowerFlex525V_E_F6518AFA:I:0">
+<DataValueMember Name="DriveStatus" DataType="INT" Radix="Binary" Value="2#0000_0110_0000_1101" />
+<DataValueMember Name="Ready" DataType="BOOL" Value="1" />
+<DataValueMember Name="Active" DataType="BOOL" Value="0" />
+<DataValueMember Name="CommandDir" DataType="BOOL" Value="1" />
+<DataValueMember Name="ActualDir" DataType="BOOL" Value="1" />
+<DataValueMember Name="Accelerating" DataType="BOOL" Value="0" />
+<DataValueMember Name="Decelerating" DataType="BOOL" Value="0" />
+<DataValueMember Name="Faulted" DataType="BOOL" Value="0" />
+<DataValueMember Name="AtReference" DataType="BOOL" Value="0" />
+<DataValueMember Name="CommFreqCnt" DataType="BOOL" Value="1" />
+<DataValueMember Name="CommLogicCnt" DataType="BOOL" Value="1" />
+<DataValueMember Name="ParmsLocked" DataType="BOOL" Value="0" />
+<DataValueMember Name="DigIn1Active" DataType="BOOL" Value="0" />
+<DataValueMember Name="DigIn2Active" DataType="BOOL" Value="0" />
+<DataValueMember Name="DigIn3Active" DataType="BOOL" Value="0" />
+<DataValueMember Name="DigIn4Active" DataType="BOOL" Value="0" />
+<DataValueMember Name="OutputFreq" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="OutputCurrent" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="OutputVoltage" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="CommandedFreq" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumFreq" DataType="INT" Radix="Decimal" Value="12000" />
 </Structure>
 </Data>
 </InputTag>
@@ -7207,29 +7207,29 @@
 [0,0,0,0,5895,46]
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:PowerFlex525V_E_34F78343:O:0_v4d1">
-<DataValueMember Name="LogicCommand_v4d1" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000" />
-<DataValueMember Name="Stop_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Start_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Jog_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="ClearFaults_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Forward_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Reverse_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="ForceKeypadCtrl_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="MOPIncrement_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="AccelRate1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="AccelRate2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DecelRate1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DecelRate2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="FreqSel01_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="FreqSel02_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="FreqSel03_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="MOPDecrement_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="FreqCommand_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AccelTime1_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="DecelTime1_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="JogFrequency_v4d1" DataType="INT" Radix="Decimal" Value="5895" />
-<DataValueMember Name="JogAccelDecel_v4d1" DataType="INT" Radix="Decimal" Value="46" />
+<Structure DataType="AB:PowerFlex525V_E_34F78343:O:0">
+<DataValueMember Name="LogicCommand" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000" />
+<DataValueMember Name="Stop" DataType="BOOL" Value="0" />
+<DataValueMember Name="Start" DataType="BOOL" Value="0" />
+<DataValueMember Name="Jog" DataType="BOOL" Value="0" />
+<DataValueMember Name="ClearFaults" DataType="BOOL" Value="0" />
+<DataValueMember Name="Forward" DataType="BOOL" Value="0" />
+<DataValueMember Name="Reverse" DataType="BOOL" Value="0" />
+<DataValueMember Name="ForceKeypadCtrl" DataType="BOOL" Value="0" />
+<DataValueMember Name="MOPIncrement" DataType="BOOL" Value="0" />
+<DataValueMember Name="AccelRate1" DataType="BOOL" Value="0" />
+<DataValueMember Name="AccelRate2" DataType="BOOL" Value="0" />
+<DataValueMember Name="DecelRate1" DataType="BOOL" Value="0" />
+<DataValueMember Name="DecelRate2" DataType="BOOL" Value="0" />
+<DataValueMember Name="FreqSel01" DataType="BOOL" Value="0" />
+<DataValueMember Name="FreqSel02" DataType="BOOL" Value="0" />
+<DataValueMember Name="FreqSel03" DataType="BOOL" Value="0" />
+<DataValueMember Name="MOPDecrement" DataType="BOOL" Value="0" />
+<DataValueMember Name="FreqCommand" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AccelTime1" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="DecelTime1" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="JogFrequency" DataType="INT" Radix="Decimal" Value="5895" />
+<DataValueMember Name="JogAccelDecel" DataType="INT" Radix="Decimal" Value="46" />
 </Structure>
 </Data>
 </OutputTag>
@@ -7237,7 +7237,7 @@
 </Connections>
 </Communications>
 <ExtendedProperties>
-<public><Vendor>Rockwell Automation/Allen-Bradley</Vendor><CatNum>PowerFlex 525-EENET</CatNum><LgxVersion>35</LgxVersion><ConnectedCommModule>0</ConnectedCommModule><PrimaryModulePort>0</PrimaryModulePort><ConfigCode>220</ConfigCode><PortName>PF525_A</PortName><PortDescription/><ConfigID>115</ConfigID><ADDAVersion>1</ADDAVersion><InputDataTag>&lt;DataTypes&gt;&lt;DataType Name="AB:PowerFlex525V_E_F6518AFA:I:0_v4d1" Class="IO"&gt;&lt;Members&gt;&lt;Member Name="pad_v4d1" DataType="DINT" Hidden="1" /&gt;&lt;Member Name="DriveStatus_v4d1" DataType="INT" Radix="Binary" /&gt;&lt;Member Name="Ready_v4d1" DataType="BIT" BitNumber="0" Target="DriveStatus_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="Active_v4d1" DataType="BIT" BitNumber="1" Target="DriveStatus_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="CommandDir_v4d1" DataType="BIT" BitNumber="2" Target="DriveStatus_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="ActualDir_v4d1" DataType="BIT" BitNumber="3" Target="DriveStatus_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="Accelerating_v4d1" DataType="BIT" BitNumber="4" Target="DriveStatus_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="Decelerating_v4d1" DataType="BIT" BitNumber="5" Target="DriveStatus_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="Faulted_v4d1" DataType="BIT" BitNumber="7" Target="DriveStatus_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="AtReference_v4d1" DataType="BIT" BitNumber="8" Target="DriveStatus_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="CommFreqCnt_v4d1" DataType="BIT" BitNumber="9" Target="DriveStatus_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="CommLogicCnt_v4d1" DataType="BIT" BitNumber="10" Target="DriveStatus_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="ParmsLocked_v4d1" DataType="BIT" BitNumber="11" Target="DriveStatus_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="DigIn1Active_v4d1" DataType="BIT" BitNumber="12" Target="DriveStatus_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="DigIn2Active_v4d1" DataType="BIT" BitNumber="13" Target="DriveStatus_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="DigIn3Active_v4d1" DataType="BIT" BitNumber="14" Target="DriveStatus_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="DigIn4Active_v4d1" DataType="BIT" BitNumber="15" Target="DriveStatus_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="OutputFreq_v4d1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="OutputCurrent_v4d1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="OutputVoltage_v4d1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="CommandedFreq_v4d1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="MaximumFreq_v4d1" DataType="INT" Radix="Decimal" /&gt;&lt;/Members&gt;&lt;/DataType&gt;&lt;/DataTypes&gt;</InputDataTag><OutputDataTag>&lt;DataTypes&gt;&lt;DataType Name="AB:PowerFlex525V_E_34F78343:O:0_v4d1" Class="IO"&gt;&lt;Members&gt;&lt;Member Name="LogicCommand_v4d1" DataType="INT" Radix="Binary" /&gt;&lt;Member Name="Stop_v4d1" DataType="BIT" BitNumber="0" Target="LogicCommand_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="Start_v4d1" DataType="BIT" BitNumber="1" Target="LogicCommand_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="Jog_v4d1" DataType="BIT" BitNumber="2" Target="LogicCommand_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="ClearFaults_v4d1" DataType="BIT" BitNumber="3" Target="LogicCommand_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="Forward_v4d1" DataType="BIT" BitNumber="4" Target="LogicCommand_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="Reverse_v4d1" DataType="BIT" BitNumber="5" Target="LogicCommand_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="ForceKeypadCtrl_v4d1" DataType="BIT" BitNumber="6" Target="LogicCommand_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="MOPIncrement_v4d1" DataType="BIT" BitNumber="7" Target="LogicCommand_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="AccelRate1_v4d1" DataType="BIT" BitNumber="8" Target="LogicCommand_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="AccelRate2_v4d1" DataType="BIT" BitNumber="9" Target="LogicCommand_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="DecelRate1_v4d1" DataType="BIT" BitNumber="10" Target="LogicCommand_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="DecelRate2_v4d1" DataType="BIT" BitNumber="11" Target="LogicCommand_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="FreqSel01_v4d1" DataType="BIT" BitNumber="12" Target="LogicCommand_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="FreqSel02_v4d1" DataType="BIT" BitNumber="13" Target="LogicCommand_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="FreqSel03_v4d1" DataType="BIT" BitNumber="14" Target="LogicCommand_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="MOPDecrement_v4d1" DataType="BIT" BitNumber="15" Target="LogicCommand_v4d1"&gt;&lt;/Member&gt;&lt;Member Name="FreqCommand_v4d1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="AccelTime1_v4d1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="DecelTime1_v4d1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="JogFrequency_v4d1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="JogAccelDecel_v4d1" DataType="INT" Radix="Decimal" /&gt;&lt;/Members&gt;&lt;/DataType&gt;&lt;/DataTypes&gt;</OutputDataTag><UdcAopVersion>16.3.1.10350</UdcAopVersion></public>
+<public><Vendor>Rockwell Automation/Allen-Bradley</Vendor><CatNum>PowerFlex 525-EENET</CatNum><LgxVersion>35</LgxVersion><ConnectedCommModule>0</ConnectedCommModule><PrimaryModulePort>0</PrimaryModulePort><ConfigCode>220</ConfigCode><PortName>PF525_A</PortName><PortDescription/><ConfigID>115</ConfigID><ADDAVersion>1</ADDAVersion><InputDataTag>&lt;DataTypes&gt;&lt;DataType Name="AB:PowerFlex525V_E_F6518AFA:I:0" Class="IO"&gt;&lt;Members&gt;&lt;Member Name="pad" DataType="DINT" Hidden="1" /&gt;&lt;Member Name="DriveStatus" DataType="INT" Radix="Binary" /&gt;&lt;Member Name="Ready" DataType="BIT" BitNumber="0" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="Active" DataType="BIT" BitNumber="1" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="CommandDir" DataType="BIT" BitNumber="2" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="ActualDir" DataType="BIT" BitNumber="3" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="Accelerating" DataType="BIT" BitNumber="4" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="Decelerating" DataType="BIT" BitNumber="5" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="Faulted" DataType="BIT" BitNumber="7" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="AtReference" DataType="BIT" BitNumber="8" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="CommFreqCnt" DataType="BIT" BitNumber="9" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="CommLogicCnt" DataType="BIT" BitNumber="10" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="ParmsLocked" DataType="BIT" BitNumber="11" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="DigIn1Active" DataType="BIT" BitNumber="12" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="DigIn2Active" DataType="BIT" BitNumber="13" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="DigIn3Active" DataType="BIT" BitNumber="14" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="DigIn4Active" DataType="BIT" BitNumber="15" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="OutputFreq" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="OutputCurrent" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="OutputVoltage" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="CommandedFreq" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="MaximumFreq" DataType="INT" Radix="Decimal" /&gt;&lt;/Members&gt;&lt;/DataType&gt;&lt;/DataTypes&gt;</InputDataTag><OutputDataTag>&lt;DataTypes&gt;&lt;DataType Name="AB:PowerFlex525V_E_34F78343:O:0" Class="IO"&gt;&lt;Members&gt;&lt;Member Name="LogicCommand" DataType="INT" Radix="Binary" /&gt;&lt;Member Name="Stop" DataType="BIT" BitNumber="0" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="Start" DataType="BIT" BitNumber="1" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="Jog" DataType="BIT" BitNumber="2" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="ClearFaults" DataType="BIT" BitNumber="3" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="Forward" DataType="BIT" BitNumber="4" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="Reverse" DataType="BIT" BitNumber="5" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="ForceKeypadCtrl" DataType="BIT" BitNumber="6" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="MOPIncrement" DataType="BIT" BitNumber="7" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="AccelRate1" DataType="BIT" BitNumber="8" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="AccelRate2" DataType="BIT" BitNumber="9" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="DecelRate1" DataType="BIT" BitNumber="10" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="DecelRate2" DataType="BIT" BitNumber="11" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="FreqSel01" DataType="BIT" BitNumber="12" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="FreqSel02" DataType="BIT" BitNumber="13" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="FreqSel03" DataType="BIT" BitNumber="14" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="MOPDecrement" DataType="BIT" BitNumber="15" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="FreqCommand" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="AccelTime1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="DecelTime1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="JogFrequency" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="JogAccelDecel" DataType="INT" Radix="Decimal" /&gt;&lt;/Members&gt;&lt;/DataType&gt;&lt;/DataTypes&gt;</OutputDataTag><UdcAopVersion>16.3.1.10350</UdcAopVersion></public>
 </ExtendedProperties>
 </Module>
 
@@ -7299,43 +7299,43 @@
 </Data>
 </ConfigScript>
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" InputCxnPoint="1" OutputCxnPoint="2" OutputSize="8" InputSize="12" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" InputCxnPoint="1" OutputCxnPoint="2" OutputSize="8" InputSize="12" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:PowerFlex755_EENET_Drive:I:0">
-<DataValueMember Name="DriveStatus_v4d1" DataType="DINT" Radix="Binary" Value="2#0010_0001_0000_0000_0000_0100_0000_1100" />
-<DataValueMember Name="DriveStatus_Ready_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Active_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_CommandDir_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_ActualDir_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_Accelerating_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Decelerating_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Alarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Faulted_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_AtSpeed_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Manual_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpdRefBit0_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_SpdRefBit1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpdRefBit2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpdRefBit3_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpdRefBit4_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Running_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Jogging_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Stopping_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_DCBraking_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_DBActive_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpeedMode_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_PositionMode_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_TorqueMode_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_AtZeroSpeed_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_AtHome_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_AtLimit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_CurrLimit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_BusFrqReg_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_EnableOn_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_MotorOL_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Regen_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Feedback_v4d1" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="DriveStatus" DataType="DINT" Radix="Binary" Value="2#0010_0001_0000_0000_0000_0100_0000_1100" />
+<DataValueMember Name="DriveStatus_Ready" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Active" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_CommandDir" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_ActualDir" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_Accelerating" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Decelerating" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Alarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Faulted" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_AtSpeed" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Manual" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpdRefBit0" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_SpdRefBit1" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpdRefBit2" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpdRefBit3" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpdRefBit4" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Running" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Jogging" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Stopping" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_DCBraking" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_DBActive" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpeedMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_PositionMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_TorqueMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_AtZeroSpeed" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_AtHome" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_AtLimit" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_CurrLimit" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_BusFrqReg" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_EnableOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_MotorOL" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Regen" DataType="BOOL" Value="0" />
+<DataValueMember Name="Feedback" DataType="REAL" Radix="Float" Value="0.0" />
 </Structure>
 </Data>
 </InputTag>
@@ -7345,26 +7345,26 @@
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:PowerFlex755_EENET_Drive:O:0">
-<DataValueMember Name="LogicCommand_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0001" />
-<DataValueMember Name="LogicCommand_Stop_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="LogicCommand_Start_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Jog1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_ClearFaults_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Forward_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Reverse_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Manual_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_AccelTime1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_AccelTime2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_DecelTime1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_DecelTime2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_SpdRefSel0_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_SpdRefSel1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_SpdRefSel2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_CoastStop_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_CLimitStop_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Run_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Jog2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Reference_v4d1" DataType="REAL" Radix="Float" Value="75.0" />
+<DataValueMember Name="LogicCommand" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0001" />
+<DataValueMember Name="LogicCommand_Stop" DataType="BOOL" Value="1" />
+<DataValueMember Name="LogicCommand_Start" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Jog1" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_ClearFaults" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Forward" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Reverse" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Manual" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_AccelTime1" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_AccelTime2" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_DecelTime1" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_DecelTime2" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_SpdRefSel0" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_SpdRefSel1" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_SpdRefSel2" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_CoastStop" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_CLimitStop" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Run" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Jog2" DataType="BOOL" Value="0" />
+<DataValueMember Name="Reference" DataType="REAL" Radix="Float" Value="75.0" />
 </Structure>
 </Data>
 </OutputTag>
@@ -7388,34 +7388,34 @@
 </Data>
 </ConfigData>
 <Connections>
-<Connection Name="MotionDiagnostics_v4d1" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
+<Connection Name="MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:Motion_Diagnostics:S:1">
-<DataValueMember Name="LostControllerToDriveTransmissions_v4d1" DataType="INT" Radix="Decimal" Value="34" />
-<DataValueMember Name="LateControllerToDriveTransmissions_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LostDriveToControllerTransmissions_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LateDriveToControllerTransmissions_v4d1" DataType="INT" Radix="Decimal" Value="5" />
-<DataValueMember Name="LastControllerToDriveTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageControllerToDriveTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumControllerToDriveTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastDriveToControllerTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageDriveToControllerTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumDriveToControllerTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastSystemClockJitter_v4d1" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageSystemClockJitter_v4d1" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumSystemClockJitter_v4d1" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="TimingStatisticsEnabled_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ControllerToDriveConnectionSize_v4d1" DataType="INT" Radix="Decimal" Value="48" />
-<DataValueMember Name="DriveToControllerConnectionSize_v4d1" DataType="INT" Radix="Decimal" Value="72" />
-<DataValueMember Name="NominalControllerToDriveTime_v4d1" DataType="INT" Radix="Decimal" Value="2500" />
-<DataValueMember Name="NominalDriveToControllerTime_v4d1" DataType="INT" Radix="Decimal" Value="2500" />
-<DataValueMember Name="CoarseUpdatePeriod_v4d1" DataType="INT" Radix="Decimal" Value="5000" />
+<DataValueMember Name="LostControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="34" />
+<DataValueMember Name="LateControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LostDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="5" />
+<DataValueMember Name="LastControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ControllerToDriveConnectionSize" DataType="INT" Radix="Decimal" Value="48" />
+<DataValueMember Name="DriveToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="72" />
+<DataValueMember Name="NominalControllerToDriveTime" DataType="INT" Radix="Decimal" Value="2500" />
+<DataValueMember Name="NominalDriveToControllerTime" DataType="INT" Radix="Decimal" Value="2500" />
+<DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="5000" />
 </Structure>
 </Data>
 </InputTag>
 </Connection>
-<Connection Name="MotionSync_v4d1" RPI="5000" Type="MotionSync_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" />
+<Connection Name="MotionSync" RPI="5000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
 </Connections>
 </Communications>
 </Module>
@@ -7435,34 +7435,34 @@
 </Data>
 </ConfigData>
 <Connections>
-<Connection Name="MotionDiagnostics_v4d1" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
+<Connection Name="MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:Motion_Diagnostics:S:1">
-<DataValueMember Name="LostControllerToDriveTransmissions_v4d1" DataType="INT" Radix="Decimal" Value="24" />
-<DataValueMember Name="LateControllerToDriveTransmissions_v4d1" DataType="INT" Radix="Decimal" Value="20535" />
-<DataValueMember Name="LostDriveToControllerTransmissions_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LateDriveToControllerTransmissions_v4d1" DataType="INT" Radix="Decimal" Value="11786" />
-<DataValueMember Name="LastControllerToDriveTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageControllerToDriveTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumControllerToDriveTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastDriveToControllerTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageDriveToControllerTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumDriveToControllerTime_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="LastSystemClockJitter_v4d1" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="AverageSystemClockJitter_v4d1" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="MaximumSystemClockJitter_v4d1" DataType="DINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="TimingStatisticsEnabled_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ControllerToDriveConnectionSize_v4d1" DataType="INT" Radix="Decimal" Value="48" />
-<DataValueMember Name="DriveToControllerConnectionSize_v4d1" DataType="INT" Radix="Decimal" Value="76" />
-<DataValueMember Name="NominalControllerToDriveTime_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="NominalDriveToControllerTime_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="CoarseUpdatePeriod_v4d1" DataType="INT" Radix="Decimal" Value="2000" />
+<DataValueMember Name="LostControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="24" />
+<DataValueMember Name="LateControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="20535" />
+<DataValueMember Name="LostDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="11786" />
+<DataValueMember Name="LastControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ControllerToDriveConnectionSize" DataType="INT" Radix="Decimal" Value="48" />
+<DataValueMember Name="DriveToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="76" />
+<DataValueMember Name="NominalControllerToDriveTime" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="NominalDriveToControllerTime" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="2000" />
 </Structure>
 </Data>
 </InputTag>
 </Connection>
-<Connection Name="MotionSync_v4d1" RPI="2000" Type="MotionSync_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" />
+<Connection Name="MotionSync" RPI="2000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
 </Connections>
 </Communications>
 </Module>
@@ -7525,43 +7525,43 @@
 </Data>
 </ConfigScript>
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" InputCxnPoint="1" OutputCxnPoint="2" OutputSize="8" InputSize="12" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" InputCxnPoint="1" OutputCxnPoint="2" OutputSize="8" InputSize="12" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:PowerFlex755_EENET_Drive:I:0">
-<DataValueMember Name="DriveStatus_v4d1" DataType="DINT" Radix="Binary" Value="2#0010_0001_0000_0000_0000_0100_0000_1100" />
-<DataValueMember Name="DriveStatus_Ready_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Active_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_CommandDir_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_ActualDir_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_Accelerating_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Decelerating_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Alarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Faulted_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_AtSpeed_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Manual_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpdRefBit0_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_SpdRefBit1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpdRefBit2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpdRefBit3_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpdRefBit4_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Running_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Jogging_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Stopping_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_DCBraking_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_DBActive_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_SpeedMode_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_PositionMode_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_TorqueMode_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_AtZeroSpeed_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_AtHome_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_AtLimit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_CurrLimit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_BusFrqReg_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_EnableOn_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="DriveStatus_MotorOL_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="DriveStatus_Regen_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Feedback_v4d1" DataType="REAL" Radix="Float" Value="0.0" />
+<DataValueMember Name="DriveStatus" DataType="DINT" Radix="Binary" Value="2#0010_0001_0000_0000_0000_0100_0000_1100" />
+<DataValueMember Name="DriveStatus_Ready" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Active" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_CommandDir" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_ActualDir" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_Accelerating" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Decelerating" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Alarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Faulted" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_AtSpeed" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Manual" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpdRefBit0" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_SpdRefBit1" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpdRefBit2" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpdRefBit3" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpdRefBit4" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Running" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Jogging" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Stopping" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_DCBraking" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_DBActive" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_SpeedMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_PositionMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_TorqueMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_AtZeroSpeed" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_AtHome" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_AtLimit" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_CurrLimit" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_BusFrqReg" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_EnableOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="DriveStatus_MotorOL" DataType="BOOL" Value="0" />
+<DataValueMember Name="DriveStatus_Regen" DataType="BOOL" Value="0" />
+<DataValueMember Name="Feedback" DataType="REAL" Radix="Float" Value="0.0" />
 </Structure>
 </Data>
 </InputTag>
@@ -7571,26 +7571,26 @@
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:PowerFlex755_EENET_Drive:O:0">
-<DataValueMember Name="LogicCommand_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0001" />
-<DataValueMember Name="LogicCommand_Stop_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="LogicCommand_Start_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Jog1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_ClearFaults_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Forward_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Reverse_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Manual_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_AccelTime1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_AccelTime2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_DecelTime1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_DecelTime2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_SpdRefSel0_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_SpdRefSel1_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_SpdRefSel2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_CoastStop_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_CLimitStop_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Run_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="LogicCommand_Jog2_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Reference_v4d1" DataType="REAL" Radix="Float" Value="75.0" />
+<DataValueMember Name="LogicCommand" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0001" />
+<DataValueMember Name="LogicCommand_Stop" DataType="BOOL" Value="1" />
+<DataValueMember Name="LogicCommand_Start" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Jog1" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_ClearFaults" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Forward" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Reverse" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Manual" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_AccelTime1" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_AccelTime2" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_DecelTime1" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_DecelTime2" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_SpdRefSel0" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_SpdRefSel1" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_SpdRefSel2" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_CoastStop" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_CLimitStop" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Run" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicCommand_Jog2" DataType="BOOL" Value="0" />
+<DataValueMember Name="Reference" DataType="REAL" Radix="Float" Value="75.0" />
 </Structure>
 </Data>
 </OutputTag>
@@ -7640,42 +7640,42 @@
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1732_D16Diag:C:0">
-<DataValueMember Name="FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt00_01OpenWireEn_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt02_03OpenWireEn_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt04_05OpenWireEn_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt06_07OpenWireEn_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt08_09OpenWireEn_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt10_11OpenWireEn_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt12_13OpenWireEn_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt14_15OpenWireEn_v4d1" DataType="BOOL" Value="0" />
+<DataValueMember Name="FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt00_01OpenWireEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt02_03OpenWireEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt04_05OpenWireEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt06_07OpenWireEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt08_09OpenWireEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt10_11OpenWireEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt12_13OpenWireEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt14_15OpenWireEn" DataType="BOOL" Value="0" />
 </Structure>
 </Data>
 </ConfigTag>
 <Connections>
-<Connection Name="OutputData_v4d1" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="OutputData" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1732_DI16Diag:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data_v4d1" DataType="INT" Radix="Binary" Value="2#0000_1111_1101_1100" />
-<DataValueMember Name="Pt00_01OpenWire_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt02_03OpenWire_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt04_05OpenWire_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt06_07OpenWire_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt08_09OpenWire_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt10_11OpenWire_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt12_13OpenWire_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt14_15OpenWire_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt00_01ShortCircuit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt02_03ShortCircuit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt04_05ShortCircuit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt06_07ShortCircuit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt08_09ShortCircuit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt10_11ShortCircuit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt12_13ShortCircuit_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Pt14_15ShortCircuit_v4d1" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="INT" Radix="Binary" Value="2#0000_1111_1101_1100" />
+<DataValueMember Name="Pt00_01OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt02_03OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt04_05OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt06_07OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt08_09OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt10_11OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt12_13OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt14_15OpenWire" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt00_01ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt02_03ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt04_05ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt06_07ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt08_09ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt10_11ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt12_13ShortCircuit" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt14_15ShortCircuit" DataType="BOOL" Value="0" />
 </Structure>
 </Data>
 </InputTag>
@@ -7696,18 +7696,18 @@
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1732_DI16:C:0">
-<DataValueMember Name="FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
 </Structure>
 </Data>
 </ConfigTag>
 <Connections>
-<Connection Name="InputData_v4d1" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="InputData" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1732_DI16:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Data_v4d1" DataType="INT" Radix="Binary" Value="2#0011_1111_0000_0000" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Data" DataType="INT" Radix="Binary" Value="2#0011_1111_0000_0000" />
 </Structure>
 </Data>
 </InputTag>

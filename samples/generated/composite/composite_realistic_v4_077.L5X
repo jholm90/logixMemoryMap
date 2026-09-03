@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite4_077" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 13:28:11 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite4_077" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 13:28:11 2026" LastModifiedDate="Thu Sep 03 13:28:11 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite4_077" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 16:42:28 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite4_077" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 16:42:28 2026" LastModifiedDate="Thu Sep 03 16:42:28 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -7047,12 +7047,12 @@
 </Data>
 </ConfigData>
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="SM:EX260_SEN1:I:0">
-<DataValueMember Name="InputArea_v4d1" DataType="INT" Radix="Binary" Value="2#0000_1000_0000_0000" />
-<DataValueMember Name="SOLV_Status_v4d1" DataType="BOOL" Value="1" />
+<DataValueMember Name="InputArea" DataType="INT" Radix="Binary" Value="2#0000_1000_0000_0000" />
+<DataValueMember Name="SOLV_Status" DataType="BOOL" Value="1" />
 </Structure>
 </Data>
 </InputTag>
@@ -7062,7 +7062,7 @@
 </Data>
 <Data Format="Decorated">
 <Structure DataType="SM:EX260_SEN1:O:0">
-<ArrayMember Name="OutputArea_v4d1" DataType="INT" Dimensions="2" Radix="Binary">
+<ArrayMember Name="OutputArea" DataType="INT" Dimensions="2" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000_0000_0000" />
 <Element Index="[1]" Value="2#0000_0000_0000_0000" />
 </ArrayMember>
@@ -7086,12 +7086,12 @@
 </Data>
 </ConfigData>
 <Connections>
-<Connection Name="Output_v4d1" RPI="10000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="10000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="SM:EX260_SEN3:I:0">
-<DataValueMember Name="InputArea_v4d1" DataType="INT" Radix="Binary" Value="2#1111_1111_1111_1111" />
-<DataValueMember Name="SOLV_Status_v4d1" DataType="BOOL" Value="1" />
+<DataValueMember Name="InputArea" DataType="INT" Radix="Binary" Value="2#1111_1111_1111_1111" />
+<DataValueMember Name="SOLV_Status" DataType="BOOL" Value="1" />
 </Structure>
 </Data>
 </InputTag>
@@ -7101,7 +7101,7 @@
 </Data>
 <Data Format="Decorated">
 <Structure DataType="SM:EX260_SEN3:O:0">
-<DataValueMember Name="OutputArea_v4d1" DataType="INT" Radix="Binary" Value="2#0000_0000_1001_1001" />
+<DataValueMember Name="OutputArea" DataType="INT" Radix="Binary" Value="2#0000_0000_1001_1001" />
 </Structure>
 </Data>
 </OutputTag>

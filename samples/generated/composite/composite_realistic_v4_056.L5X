@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite4_056" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 13:27:15 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite4_056" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 13:27:15 2026" LastModifiedDate="Thu Sep 03 13:27:15 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite4_056" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 16:41:34 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite4_056" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 16:41:34 2026" LastModifiedDate="Thu Sep 03 16:41:34 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -7026,13 +7026,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_1SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="1" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="1" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 </ArrayMember>
 </Structure>
@@ -7044,7 +7044,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_1SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="1" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="1" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 </ArrayMember>
 </Structure>
@@ -7065,13 +7065,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_1SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="1" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="1" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 </ArrayMember>
 </Structure>
@@ -7083,7 +7083,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_1SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="1" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="1" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 </ArrayMember>
 </Structure>
@@ -7104,13 +7104,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_12SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="12" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="12" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_0000" />
@@ -7133,7 +7133,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_12SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="12" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="12" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_0000" />
@@ -7167,22 +7167,22 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_DI8:C:0">
-<DataValueMember Name="Pt0FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt0FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt1FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt1FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt2FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt2FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt3FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt3FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt4FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt4FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt5FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt5FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt6FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt6FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt7FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt7FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt0FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt0FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt1FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt1FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt2FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt2FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt3FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt3FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt4FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt4FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt5FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt5FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt6FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt6FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt7FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt7FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
 </Structure>
 </Data>
 </ConfigTag>

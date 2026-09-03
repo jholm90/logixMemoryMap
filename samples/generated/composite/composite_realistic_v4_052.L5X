@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite4_052" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 13:27:05 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="Composite4_052" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 13:27:05 2026" LastModifiedDate="Thu Sep 03 13:27:05 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Composite4_052" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 16:41:25 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Composite4_052" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 16:41:25 2026" LastModifiedDate="Thu Sep 03 16:41:25 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -7498,13 +7498,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="2000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="2000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_7SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1011_1001" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="7" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1011_1001" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="7" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#1010_0001" />
 <Element Index="[2]" Value="2#0010_0010" />
@@ -7522,7 +7522,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_7SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="7" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="7" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_0000" />
@@ -7551,37 +7551,37 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_485ASC:C:0">
-<DataValueMember Name="SerialCharacterFormat_v4d1" DataType="SINT" Radix="Decimal" Value="3" />
-<DataValueMember Name="SerialCommSpeed_v4d1" DataType="SINT" Radix="Decimal" Value="4" />
-<DataValueMember Name="MaxReceiveCharacters_v4d1" DataType="SINT" Radix="Decimal" Value="40" />
-<DataValueMember Name="ReceiveStartDelimiterMode_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="ReceiveStartDelimiterCharacter_v4d1" DataType="SINT" Radix="Decimal" Value="10" />
-<DataValueMember Name="ReceiveRecordEndMode_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="ReceiveEndDelimiter_v4d1" DataType="SINT" Radix="Decimal" Value="13" />
-<DataValueMember Name="ReceiveStringDataType_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="PadMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="PadCharacter_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="ReceiveSwapMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="DeviceNetHandshakeMode_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="MaxTransmitCharacters_v4d1" DataType="SINT" Radix="Decimal" Value="40" />
-<DataValueMember Name="TransmitEndDelimiterMode_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="TransmitEndDelimiterCharacter_v4d1" DataType="SINT" Radix="Decimal" Value="13" />
-<DataValueMember Name="ConsumeStringDataType_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="TransmitSwapMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="DeviceNetRecordHeaderMode_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="SerialCharacterFormat" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="SerialCommSpeed" DataType="SINT" Radix="Decimal" Value="4" />
+<DataValueMember Name="MaxReceiveCharacters" DataType="SINT" Radix="Decimal" Value="40" />
+<DataValueMember Name="ReceiveStartDelimiterMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="ReceiveStartDelimiterCharacter" DataType="SINT" Radix="Decimal" Value="10" />
+<DataValueMember Name="ReceiveRecordEndMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="ReceiveEndDelimiter" DataType="SINT" Radix="Decimal" Value="13" />
+<DataValueMember Name="ReceiveStringDataType" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="PadMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="PadCharacter" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ReceiveSwapMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="DeviceNetHandshakeMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="MaxTransmitCharacters" DataType="SINT" Radix="Decimal" Value="40" />
+<DataValueMember Name="TransmitEndDelimiterMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="TransmitEndDelimiterCharacter" DataType="SINT" Radix="Decimal" Value="13" />
+<DataValueMember Name="ConsumeStringDataType" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="TransmitSwapMode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="DeviceNetRecordHeaderMode" DataType="SINT" Radix="Decimal" Value="0" />
 </Structure>
 </Data>
 </ConfigTag>
 <Connections>
-<Connection Name="Output_v4d1" RPI="2000" Type="Output_v4d1" InputCxnPoint="101" OutputCxnPoint="102" OutputSize="44" InputSize="48" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="2000" Type="Output" InputCxnPoint="101" OutputCxnPoint="102" OutputSize="44" InputSize="48" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_485ASC_40Bytes:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="ReceiveRecordNumber_v4d1" DataType="SINT" Radix="Decimal" Value="83" />
-<DataValueMember Name="Status_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Length_v4d1" DataType="SINT" Radix="Decimal" Value="9" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="40" Radix="Decimal">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="ReceiveRecordNumber" DataType="SINT" Radix="Decimal" Value="83" />
+<DataValueMember Name="Status" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Length" DataType="SINT" Radix="Decimal" Value="9" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="40" Radix="Decimal">
 <Element Index="[0]" Value="68" />
 <Element Index="[1]" Value="48" />
 <Element Index="[2]" Value="48" />
@@ -7632,10 +7632,10 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_485ASC_40Bytes:O:0">
-<DataValueMember Name="NextTransmitRecordNumber_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="TransmitRecordNumber_v4d1" DataType="SINT" Radix="Decimal" Value="45" />
-<DataValueMember Name="Length_v4d1" DataType="SINT" Radix="Decimal" Value="3" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="40" Radix="Decimal">
+<DataValueMember Name="NextTransmitRecordNumber" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TransmitRecordNumber" DataType="SINT" Radix="Decimal" Value="45" />
+<DataValueMember Name="Length" DataType="SINT" Radix="Decimal" Value="3" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="40" Radix="Decimal">
 <Element Index="[0]" Value="10" />
 <Element Index="[1]" Value="68" />
 <Element Index="[2]" Value="13" />
@@ -7695,13 +7695,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_3SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1011" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="3" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1011" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="3" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_1000" />
@@ -7715,7 +7715,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_3SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="3" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="3" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_0000" />
@@ -7740,12 +7740,12 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_8CFG:C:0">
-<DataValueMember Name="FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="FaultMode_v4d1" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
-<DataValueMember Name="FaultValue_v4d1" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
-<DataValueMember Name="ProgMode_v4d1" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
-<DataValueMember Name="ProgValue_v4d1" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="FaultMode" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="FaultValue" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="ProgMode" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="ProgValue" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
 </Structure>
 </Data>
 </ConfigTag>
@@ -7770,13 +7770,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_8SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_0000_0001" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="8" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_0000_0001" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="8" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#1110_0001" />
 <Element Index="[2]" Value="2#1111_1111" />
@@ -7795,7 +7795,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_8SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="8" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="8" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_0000" />
@@ -7823,13 +7823,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_2SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="2" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="2" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 </ArrayMember>
@@ -7842,7 +7842,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_2SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="2" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="2" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 </ArrayMember>
@@ -7864,13 +7864,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_1SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="1" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="1" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 </ArrayMember>
 </Structure>
@@ -7882,7 +7882,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_1SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="1" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="1" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 </ArrayMember>
 </Structure>
@@ -7903,13 +7903,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_1SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="1" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="1" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 </ArrayMember>
 </Structure>
@@ -7921,7 +7921,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_1SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="1" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="1" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 </ArrayMember>
 </Structure>
@@ -7942,13 +7942,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_12SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="12" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="12" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_0000" />
@@ -7971,7 +7971,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_12SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="12" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="12" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_0000" />
@@ -8005,22 +8005,22 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_DI8:C:0">
-<DataValueMember Name="Pt0FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt0FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt1FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt1FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt2FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt2FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt3FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt3FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt4FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt4FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt5FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt5FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt6FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt6FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt7FilterOffOn_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
-<DataValueMember Name="Pt7FilterOnOff_v4d1" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt0FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt0FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt1FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt1FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt2FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt2FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt3FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt3FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt4FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt4FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt5FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt5FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt6FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt6FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt7FilterOffOn" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Pt7FilterOnOff" DataType="INT" Radix="Decimal" Value="1000" />
 </Structure>
 </Data>
 </ConfigTag>
@@ -8042,13 +8042,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="5000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="5000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_14SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_0000_0001_1111" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="14" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_0000_0001_1111" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="14" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_0000" />
@@ -8073,7 +8073,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_14SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="14" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="14" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_0000" />
@@ -8109,57 +8109,57 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_IE2:C:0">
-<DataValueMember Name="Ch0LowEngineering_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch0HighEngineering_v4d1" DataType="INT" Radix="Decimal" Value="32767" />
-<DataValueMember Name="Ch0DigitalFilter_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch0LAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="3113" />
-<DataValueMember Name="Ch0HAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="16547" />
-<DataValueMember Name="Ch0LLAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="2867" />
-<DataValueMember Name="Ch0HHAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="16793" />
-<DataValueMember Name="Ch0RangeType_v4d1" DataType="SINT" Radix="Decimal" Value="3" />
-<DataValueMember Name="Ch0LimitAlarmLatch_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch0AlarmDisable_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="Ch1LowEngineering_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch1HighEngineering_v4d1" DataType="INT" Radix="Decimal" Value="16383" />
-<DataValueMember Name="Ch1DigitalFilter_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch1LAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="3113" />
-<DataValueMember Name="Ch1HAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="16547" />
-<DataValueMember Name="Ch1LLAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="2867" />
-<DataValueMember Name="Ch1HHAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="16793" />
-<DataValueMember Name="Ch1RangeType_v4d1" DataType="SINT" Radix="Decimal" Value="3" />
-<DataValueMember Name="Ch1LimitAlarmLatch_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch1AlarmDisable_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="NotchFilter_v4d1" DataType="SINT" Radix="Decimal" Value="2" />
-<DataValueMember Name="RealTimeSample_v4d1" DataType="INT" Radix="Decimal" Value="10" />
+<DataValueMember Name="Ch0LowEngineering" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0HighEngineering" DataType="INT" Radix="Decimal" Value="32767" />
+<DataValueMember Name="Ch0DigitalFilter" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0LAlarmLimit" DataType="INT" Radix="Decimal" Value="3113" />
+<DataValueMember Name="Ch0HAlarmLimit" DataType="INT" Radix="Decimal" Value="16547" />
+<DataValueMember Name="Ch0LLAlarmLimit" DataType="INT" Radix="Decimal" Value="2867" />
+<DataValueMember Name="Ch0HHAlarmLimit" DataType="INT" Radix="Decimal" Value="16793" />
+<DataValueMember Name="Ch0RangeType" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Ch0LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0AlarmDisable" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Ch1LowEngineering" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1HighEngineering" DataType="INT" Radix="Decimal" Value="16383" />
+<DataValueMember Name="Ch1DigitalFilter" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1LAlarmLimit" DataType="INT" Radix="Decimal" Value="3113" />
+<DataValueMember Name="Ch1HAlarmLimit" DataType="INT" Radix="Decimal" Value="16547" />
+<DataValueMember Name="Ch1LLAlarmLimit" DataType="INT" Radix="Decimal" Value="2867" />
+<DataValueMember Name="Ch1HHAlarmLimit" DataType="INT" Radix="Decimal" Value="16793" />
+<DataValueMember Name="Ch1RangeType" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Ch1LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1AlarmDisable" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="NotchFilter" DataType="SINT" Radix="Decimal" Value="2" />
+<DataValueMember Name="RealTimeSample" DataType="INT" Radix="Decimal" Value="10" />
 </Structure>
 </Data>
 </ConfigTag>
 <Connections>
-<Connection Name="InputData_v4d1" RPI="5000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="InputData" RPI="5000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_IE2:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Ch0Data_v4d1" DataType="INT" Radix="Decimal" Value="32767" />
-<DataValueMember Name="Ch1Data_v4d1" DataType="INT" Radix="Decimal" Value="-4072" />
-<DataValueMember Name="Ch0Status_v4d1" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
-<DataValueMember Name="Ch0Fault_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0Calibration_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0LAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0HAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0LLAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0HHAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0Underrange_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0Overrange_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1Status_v4d1" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
-<DataValueMember Name="Ch1Fault_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1Calibration_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1LAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1HAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1LLAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1HHAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1Underrange_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1Overrange_v4d1" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Ch0Data" DataType="INT" Radix="Decimal" Value="32767" />
+<DataValueMember Name="Ch1Data" DataType="INT" Radix="Decimal" Value="-4072" />
+<DataValueMember Name="Ch0Status" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Ch0Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0Calibration" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0LAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0HAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0LLAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0HHAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0Underrange" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0Overrange" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1Status" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Ch1Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1Calibration" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1LAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1HAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1LLAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1HHAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1Underrange" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1Overrange" DataType="BOOL" Value="0" />
 </Structure>
 </Data>
 </InputTag>
@@ -8178,13 +8178,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_6SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_0001" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="6" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_0001" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="6" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0001_0000" />
@@ -8201,7 +8201,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_6SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="6" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="6" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_0000" />
@@ -8229,57 +8229,57 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_IE2:C:0">
-<DataValueMember Name="Ch0LowEngineering_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch0HighEngineering_v4d1" DataType="INT" Radix="Decimal" Value="10000" />
-<DataValueMember Name="Ch0DigitalFilter_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch0LAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="500" />
-<DataValueMember Name="Ch0HAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="9500" />
-<DataValueMember Name="Ch0LLAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="200" />
-<DataValueMember Name="Ch0HHAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="9800" />
-<DataValueMember Name="Ch0RangeType_v4d1" DataType="SINT" Radix="Decimal" Value="2" />
-<DataValueMember Name="Ch0LimitAlarmLatch_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch0AlarmDisable_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch1LowEngineering_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch1HighEngineering_v4d1" DataType="INT" Radix="Decimal" Value="10000" />
-<DataValueMember Name="Ch1DigitalFilter_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch1LAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="500" />
-<DataValueMember Name="Ch1HAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="9500" />
-<DataValueMember Name="Ch1LLAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="200" />
-<DataValueMember Name="Ch1HHAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="9800" />
-<DataValueMember Name="Ch1RangeType_v4d1" DataType="SINT" Radix="Decimal" Value="2" />
-<DataValueMember Name="Ch1LimitAlarmLatch_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch1AlarmDisable_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="NotchFilter_v4d1" DataType="SINT" Radix="Decimal" Value="2" />
-<DataValueMember Name="RealTimeSample_v4d1" DataType="INT" Radix="Decimal" Value="100" />
+<DataValueMember Name="Ch0LowEngineering" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0HighEngineering" DataType="INT" Radix="Decimal" Value="10000" />
+<DataValueMember Name="Ch0DigitalFilter" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0LAlarmLimit" DataType="INT" Radix="Decimal" Value="500" />
+<DataValueMember Name="Ch0HAlarmLimit" DataType="INT" Radix="Decimal" Value="9500" />
+<DataValueMember Name="Ch0LLAlarmLimit" DataType="INT" Radix="Decimal" Value="200" />
+<DataValueMember Name="Ch0HHAlarmLimit" DataType="INT" Radix="Decimal" Value="9800" />
+<DataValueMember Name="Ch0RangeType" DataType="SINT" Radix="Decimal" Value="2" />
+<DataValueMember Name="Ch0LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0AlarmDisable" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1LowEngineering" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1HighEngineering" DataType="INT" Radix="Decimal" Value="10000" />
+<DataValueMember Name="Ch1DigitalFilter" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1LAlarmLimit" DataType="INT" Radix="Decimal" Value="500" />
+<DataValueMember Name="Ch1HAlarmLimit" DataType="INT" Radix="Decimal" Value="9500" />
+<DataValueMember Name="Ch1LLAlarmLimit" DataType="INT" Radix="Decimal" Value="200" />
+<DataValueMember Name="Ch1HHAlarmLimit" DataType="INT" Radix="Decimal" Value="9800" />
+<DataValueMember Name="Ch1RangeType" DataType="SINT" Radix="Decimal" Value="2" />
+<DataValueMember Name="Ch1LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1AlarmDisable" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="NotchFilter" DataType="SINT" Radix="Decimal" Value="2" />
+<DataValueMember Name="RealTimeSample" DataType="INT" Radix="Decimal" Value="100" />
 </Structure>
 </Data>
 </ConfigTag>
 <Connections>
-<Connection Name="InputData_v4d1" RPI="80000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="InputData" RPI="80000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_IE2:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Ch0Data_v4d1" DataType="INT" Radix="Decimal" Value="10004" />
-<DataValueMember Name="Ch1Data_v4d1" DataType="INT" Radix="Decimal" Value="10577" />
-<DataValueMember Name="Ch0Status_v4d1" DataType="SINT" Radix="Binary" Value="2#0010_1001" />
-<DataValueMember Name="Ch0Fault_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="Ch0Calibration_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0LAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0HAlarm_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="Ch0LLAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0HHAlarm_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="Ch0Underrange_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0Overrange_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1Status_v4d1" DataType="SINT" Radix="Binary" Value="2#1010_1001" />
-<DataValueMember Name="Ch1Fault_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="Ch1Calibration_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1LAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1HAlarm_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="Ch1LLAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1HHAlarm_v4d1" DataType="BOOL" Value="1" />
-<DataValueMember Name="Ch1Underrange_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1Overrange_v4d1" DataType="BOOL" Value="1" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Ch0Data" DataType="INT" Radix="Decimal" Value="10004" />
+<DataValueMember Name="Ch1Data" DataType="INT" Radix="Decimal" Value="10577" />
+<DataValueMember Name="Ch0Status" DataType="SINT" Radix="Binary" Value="2#0010_1001" />
+<DataValueMember Name="Ch0Fault" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch0Calibration" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0LAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0HAlarm" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch0LLAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0HHAlarm" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch0Underrange" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0Overrange" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1Status" DataType="SINT" Radix="Binary" Value="2#1010_1001" />
+<DataValueMember Name="Ch1Fault" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch1Calibration" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1LAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1HAlarm" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch1LLAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1HHAlarm" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch1Underrange" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1Overrange" DataType="BOOL" Value="1" />
 </Structure>
 </Data>
 </InputTag>
@@ -8298,13 +8298,13 @@ mPo
 </Ports>
 <Communications CommMethod="805306369">
 <Connections>
-<Connection Name="Output_v4d1" RPI="20000" Type="Output_v4d1" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_12SLOT:I:0">
-<DataValueMember Name="SlotStatusBits0_31_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1000_0100_0001" />
-<DataValueMember Name="SlotStatusBits32_63_v4d1" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="12" Radix="Binary">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1000_0100_0001" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="12" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_0000" />
@@ -8327,7 +8327,7 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_12SLOT:O:0">
-<ArrayMember Name="Data_v4d1" DataType="SINT" Dimensions="12" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="12" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_0000" />
@@ -8362,97 +8362,97 @@ mPo
 </Data>
 <Data Format="Decorated">
 <Structure DataType="AB:1734_IE4:C:0">
-<DataValueMember Name="Ch0LowEngineering_v4d1" DataType="INT" Radix="Decimal" Value="3277" />
-<DataValueMember Name="Ch0HighEngineering_v4d1" DataType="INT" Radix="Decimal" Value="16383" />
-<DataValueMember Name="Ch0DigitalFilter_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch0LAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="3113" />
-<DataValueMember Name="Ch0HAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="16547" />
-<DataValueMember Name="Ch0LLAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="2867" />
-<DataValueMember Name="Ch0HHAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="16793" />
-<DataValueMember Name="Ch0RangeType_v4d1" DataType="SINT" Radix="Decimal" Value="3" />
-<DataValueMember Name="Ch0LimitAlarmLatch_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch0AlarmDisable_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="Ch1LowEngineering_v4d1" DataType="INT" Radix="Decimal" Value="3277" />
-<DataValueMember Name="Ch1HighEngineering_v4d1" DataType="INT" Radix="Decimal" Value="16383" />
-<DataValueMember Name="Ch1DigitalFilter_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch1LAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="3113" />
-<DataValueMember Name="Ch1HAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="16547" />
-<DataValueMember Name="Ch1LLAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="2867" />
-<DataValueMember Name="Ch1HHAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="16793" />
-<DataValueMember Name="Ch1RangeType_v4d1" DataType="SINT" Radix="Decimal" Value="3" />
-<DataValueMember Name="Ch1LimitAlarmLatch_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch1AlarmDisable_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="Ch2LowEngineering_v4d1" DataType="INT" Radix="Decimal" Value="3277" />
-<DataValueMember Name="Ch2HighEngineering_v4d1" DataType="INT" Radix="Decimal" Value="16383" />
-<DataValueMember Name="Ch2DigitalFilter_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch2LAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="3113" />
-<DataValueMember Name="Ch2HAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="16547" />
-<DataValueMember Name="Ch2LLAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="2867" />
-<DataValueMember Name="Ch2HHAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="16793" />
-<DataValueMember Name="Ch2RangeType_v4d1" DataType="SINT" Radix="Decimal" Value="3" />
-<DataValueMember Name="Ch2LimitAlarmLatch_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch2AlarmDisable_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="Ch3LowEngineering_v4d1" DataType="INT" Radix="Decimal" Value="3277" />
-<DataValueMember Name="Ch3HighEngineering_v4d1" DataType="INT" Radix="Decimal" Value="16383" />
-<DataValueMember Name="Ch3DigitalFilter_v4d1" DataType="INT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch3LAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="3113" />
-<DataValueMember Name="Ch3HAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="16547" />
-<DataValueMember Name="Ch3LLAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="2867" />
-<DataValueMember Name="Ch3HHAlarmLimit_v4d1" DataType="INT" Radix="Decimal" Value="16793" />
-<DataValueMember Name="Ch3RangeType_v4d1" DataType="SINT" Radix="Decimal" Value="3" />
-<DataValueMember Name="Ch3LimitAlarmLatch_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="Ch3AlarmDisable_v4d1" DataType="SINT" Radix="Decimal" Value="1" />
-<DataValueMember Name="NotchFilter_v4d1" DataType="SINT" Radix="Decimal" Value="0" />
-<DataValueMember Name="RealTimeSample_v4d1" DataType="INT" Radix="Decimal" Value="67" />
+<DataValueMember Name="Ch0LowEngineering" DataType="INT" Radix="Decimal" Value="3277" />
+<DataValueMember Name="Ch0HighEngineering" DataType="INT" Radix="Decimal" Value="16383" />
+<DataValueMember Name="Ch0DigitalFilter" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0LAlarmLimit" DataType="INT" Radix="Decimal" Value="3113" />
+<DataValueMember Name="Ch0HAlarmLimit" DataType="INT" Radix="Decimal" Value="16547" />
+<DataValueMember Name="Ch0LLAlarmLimit" DataType="INT" Radix="Decimal" Value="2867" />
+<DataValueMember Name="Ch0HHAlarmLimit" DataType="INT" Radix="Decimal" Value="16793" />
+<DataValueMember Name="Ch0RangeType" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Ch0LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0AlarmDisable" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Ch1LowEngineering" DataType="INT" Radix="Decimal" Value="3277" />
+<DataValueMember Name="Ch1HighEngineering" DataType="INT" Radix="Decimal" Value="16383" />
+<DataValueMember Name="Ch1DigitalFilter" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1LAlarmLimit" DataType="INT" Radix="Decimal" Value="3113" />
+<DataValueMember Name="Ch1HAlarmLimit" DataType="INT" Radix="Decimal" Value="16547" />
+<DataValueMember Name="Ch1LLAlarmLimit" DataType="INT" Radix="Decimal" Value="2867" />
+<DataValueMember Name="Ch1HHAlarmLimit" DataType="INT" Radix="Decimal" Value="16793" />
+<DataValueMember Name="Ch1RangeType" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Ch1LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1AlarmDisable" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Ch2LowEngineering" DataType="INT" Radix="Decimal" Value="3277" />
+<DataValueMember Name="Ch2HighEngineering" DataType="INT" Radix="Decimal" Value="16383" />
+<DataValueMember Name="Ch2DigitalFilter" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch2LAlarmLimit" DataType="INT" Radix="Decimal" Value="3113" />
+<DataValueMember Name="Ch2HAlarmLimit" DataType="INT" Radix="Decimal" Value="16547" />
+<DataValueMember Name="Ch2LLAlarmLimit" DataType="INT" Radix="Decimal" Value="2867" />
+<DataValueMember Name="Ch2HHAlarmLimit" DataType="INT" Radix="Decimal" Value="16793" />
+<DataValueMember Name="Ch2RangeType" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Ch2LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch2AlarmDisable" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Ch3LowEngineering" DataType="INT" Radix="Decimal" Value="3277" />
+<DataValueMember Name="Ch3HighEngineering" DataType="INT" Radix="Decimal" Value="16383" />
+<DataValueMember Name="Ch3DigitalFilter" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch3LAlarmLimit" DataType="INT" Radix="Decimal" Value="3113" />
+<DataValueMember Name="Ch3HAlarmLimit" DataType="INT" Radix="Decimal" Value="16547" />
+<DataValueMember Name="Ch3LLAlarmLimit" DataType="INT" Radix="Decimal" Value="2867" />
+<DataValueMember Name="Ch3HHAlarmLimit" DataType="INT" Radix="Decimal" Value="16793" />
+<DataValueMember Name="Ch3RangeType" DataType="SINT" Radix="Decimal" Value="3" />
+<DataValueMember Name="Ch3LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch3AlarmDisable" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="NotchFilter" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="RealTimeSample" DataType="INT" Radix="Decimal" Value="67" />
 </Structure>
 </Data>
 </ConfigTag>
 <Connections>
-<Connection Name="InputData_v4d1" RPI="4000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="InputData" RPI="4000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
 <Structure DataType="AB:1734_IE4:I:0">
-<DataValueMember Name="Fault_v4d1" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
-<DataValueMember Name="Ch0Data_v4d1" DataType="INT" Radix="Decimal" Value="-5" />
-<DataValueMember Name="Ch1Data_v4d1" DataType="INT" Radix="Decimal" Value="-6" />
-<DataValueMember Name="Ch2Data_v4d1" DataType="INT" Radix="Decimal" Value="-6" />
-<DataValueMember Name="Ch3Data_v4d1" DataType="INT" Radix="Decimal" Value="-3" />
-<DataValueMember Name="Ch0Status_v4d1" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
-<DataValueMember Name="Ch0Fault_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0Calibration_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0LAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0HAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0LLAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0HHAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0Underrange_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch0Overrange_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1Status_v4d1" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
-<DataValueMember Name="Ch1Fault_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1Calibration_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1LAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1HAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1LLAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1HHAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1Underrange_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch1Overrange_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch2Status_v4d1" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
-<DataValueMember Name="Ch2Fault_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch2Calibration_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch2LAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch2HAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch2LLAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch2HHAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch2Underrange_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch2Overrange_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch3Status_v4d1" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
-<DataValueMember Name="Ch3Fault_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch3Calibration_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch3LAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch3HAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch3LLAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch3HHAlarm_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch3Underrange_v4d1" DataType="BOOL" Value="0" />
-<DataValueMember Name="Ch3Overrange_v4d1" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Ch0Data" DataType="INT" Radix="Decimal" Value="-5" />
+<DataValueMember Name="Ch1Data" DataType="INT" Radix="Decimal" Value="-6" />
+<DataValueMember Name="Ch2Data" DataType="INT" Radix="Decimal" Value="-6" />
+<DataValueMember Name="Ch3Data" DataType="INT" Radix="Decimal" Value="-3" />
+<DataValueMember Name="Ch0Status" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Ch0Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0Calibration" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0LAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0HAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0LLAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0HHAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0Underrange" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0Overrange" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1Status" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Ch1Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1Calibration" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1LAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1HAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1LLAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1HHAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1Underrange" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1Overrange" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch2Status" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Ch2Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch2Calibration" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch2LAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch2HAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch2LLAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch2HHAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch2Underrange" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch2Overrange" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch3Status" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Ch3Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch3Calibration" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch3LAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch3HAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch3LLAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch3HHAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch3Underrange" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch3Overrange" DataType="BOOL" Value="0" />
 </Structure>
 </Data>
 </InputTag>
