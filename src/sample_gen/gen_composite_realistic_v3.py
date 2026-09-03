@@ -71,7 +71,9 @@ from sample_gen.gen_composite_realistic import (
 )
 from sample_gen.gen_module_sweep import _MODULE_CHAINS
 from sample_gen.gen_composite_realistic_v2 import _content_rungs
-from sample_gen.gen_module_motion import _P208_MODULE_XML, _MOTION_GROUP_TAG_XML, _axis_tag, _drive_module_xml
+from sample_gen.gen_module_motion import (
+    _P208_MODULE_XML, _MOTION_GROUP_TAG_XML, _axis_tag, _dcbus_axis_tag, _drive_module_xml,
+)
 from sample_gen.manifest import append_manifest_row, write_sample_unmodeled
 from sample_gen.wrapper import build_l5x
 
@@ -274,7 +276,7 @@ def _build(profile: ProfileV3) -> tuple[str, str, int]:
     servo_axis_2 = f"Servo{profile.index:02d}B"
     motion_tags_xml = "\n".join([
         _MOTION_GROUP_TAG_XML,
-        _axis_tag(f"DcBus{profile.index:02d}", "P208:Ch1"),
+        _dcbus_axis_tag(f"DcBus{profile.index:02d}", "P208:Ch1"),
         _axis_tag(servo_axis_1, f"D012_{profile.index:02d}:Ch1"),
         _axis_tag(servo_axis_2, f"D012_{profile.index:02d}:Ch3"),
     ])

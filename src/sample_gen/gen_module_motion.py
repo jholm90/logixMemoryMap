@@ -195,6 +195,43 @@ def _axis_tag(name: str, motion_module: str) -> str:
     return body
 
 
+# Real shape, extracted verbatim from samples/local/motion_p208/
+# p208_D012_NodeAndAxisDual.L5X (P208's own on-board "DC BUS" axis) --
+# confirmed 2026-09-03, structurally a COMPLETELY different, much shorter
+# AXIS_CIP_DRIVE shape than a real motor/servo axis: AxisConfiguration=
+# "Non-Regenerative AC/DC Converter", FeedbackConfiguration="No Feedback",
+# no MotorDataSource/tuning/servo-loop-bandwidth parameters at all. Real
+# bug found the same day: every P208 axis this project ever generated
+# used `_axis_tag` (the full Position-Loop servo template) instead --
+# genuinely malformed for this axis type, the leading suspect for James's
+# real Studio 5000 "opening the module profile page crashes" report on
+# the very first regenerated test file. See OPEN_QUESTIONS.md
+# OQ-193ECMETR.
+_DCBUS_AXIS_TAG_XML = (
+    '      <Tag Name="P208" TagType="Base" DataType="AXIS_CIP_DRIVE" ExternalAccess="Read/Write">\n'
+    '        <Data Format="Axis">\n'
+    '<AxisParameters MotionGroup="MotionGroup" MotionModule="&lt;NA>" ApplicationCatalogNumberInstance="0" ApplicationCatalogNumberVersion="0" AxisConfiguration="Non-Regenerative AC/DC Converter" FeedbackConfiguration="No Feedback" ProgrammedStopMode="Fast Stop" ConverterCapacity="0.0" CIPAxisExceptionAction="Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Disable Disable Unsupported Disable Unsupported Disable Disable Unsupported Disable Unsupported Disable Unsupported Disable Unsupported Disable Disable Disable Disable Unsupported Unsupported Disable Unsupported Unsupported Unsupported Unsupported Disable Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Disable Unsupported Unsupported" CIPAxisExceptionActionRA="Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Disable Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Disable Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported Unsupported" AxisID="841714260"\n'
+    ' AxisUpdateSchedule="Base" TestModeConfiguration="Controller Loop Back" TestModeEnable="Disabled"/>\n'
+    '        </Data>\n'
+    '      </Tag>'
+)
+
+
+def _dcbus_axis_tag(name: str, motion_module: str) -> str:
+    """P208's own on-board DC-bus axis, using its real, structurally
+    distinct shape (see _DCBUS_AXIS_TAG_XML) instead of the full servo
+    template -- same MotionGroup/MotionModule/AxisID substitution pattern
+    as _axis_tag."""
+    body = _DCBUS_AXIS_TAG_XML
+    body = body.replace('Name="P208"', f'Name="{name}"')
+    body = body.replace('MotionModule="&lt;NA>"', f'MotionModule="{motion_module}"')
+    body = body.replace('MotionGroup="MotionGroup"', 'MotionGroup="Motion"')
+    digest = int(hashlib.sha256(name.encode()).hexdigest(), 16)
+    unique_axis_id = str(digest % 900_000_000 + 100_000_000)
+    body = body.replace('AxisID="841714260"', f'AxisID="{unique_axis_id}"')
+    return body
+
+
 _MOTION_GROUP_TAG_XML = """\
       <Tag Name="Motion" TagType="Base" DataType="MOTION_GROUP" ExternalAccess="Read/Write">
         <Data Format="MotionGroup">
@@ -218,7 +255,7 @@ def group_motion_power_supply() -> None:
 def group_motion_power_supply_axis() -> None:
     """P208 + its own on-board axis + MOTION_GROUP -- isolates what the
     power supply's own axis costs, on top of the bare-module baseline."""
-    tags_xml = f"{_MOTION_GROUP_TAG_XML}\n{_axis_tag('P208_Axis', 'P208:Ch1')}"
+    tags_xml = f"{_MOTION_GROUP_TAG_XML}\n{_dcbus_axis_tag('P208_Axis', 'P208:Ch1')}"
     l5x = build_l5x(target_name="ModuleMotion2P208Axis", tags_xml=tags_xml, extra_modules_xml=_P208_MODULE_XML)
     _write_unmodeled(
         l5x, "modulemotion_p208_with_axis",
@@ -235,7 +272,7 @@ def group_motion_single_axis_drive() -> None:
     module_xml = _P208_MODULE_XML + "\n" + _drive_module_xml("D012_1", "2198-D012-ERS3", "false")
     tags_xml = (
         f"{_MOTION_GROUP_TAG_XML}\n"
-        f"{_axis_tag('P208', 'P208:Ch1')}\n"
+        f"{_dcbus_axis_tag('P208', 'P208:Ch1')}\n"
         f"{_axis_tag('D012_Axis', 'D012_1:Ch1')}"
     )
     l5x = build_l5x(target_name="ModuleMotion3D012", tags_xml=tags_xml, extra_modules_xml=module_xml)
@@ -256,7 +293,7 @@ def group_motion_dual_axis_drive() -> None:
     module_xml = _P208_MODULE_XML + "\n" + _drive_module_xml("D012_1", "2198-D012-ERS3", "false")
     tags_xml = (
         f"{_MOTION_GROUP_TAG_XML}\n"
-        f"{_axis_tag('P208', 'P208:Ch1')}\n"
+        f"{_dcbus_axis_tag('P208', 'P208:Ch1')}\n"
         f"{_axis_tag('D012_Axis', 'D012_1:Ch1')}\n"
         f"{_axis_tag('D012_Axis1', 'D012_1:Ch3')}"
     )
@@ -281,7 +318,7 @@ def group_motion_safety_axis_drive() -> None:
     module_xml = _P208_MODULE_XML + "\n" + _drive_module_xml("S086", "2198-S086-ERS3", "false")
     tags_xml = (
         f"{_MOTION_GROUP_TAG_XML}\n"
-        f"{_axis_tag('P208', 'P208:Ch1')}\n"
+        f"{_dcbus_axis_tag('P208', 'P208:Ch1')}\n"
         f"{_axis_tag('S086_Axis', 'S086:Ch1')}"
     )
     l5x = build_l5x(target_name="ModuleMotion5S086", tags_xml=tags_xml, extra_modules_xml=module_xml)

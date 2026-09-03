@@ -1018,6 +1018,37 @@ the matching footnote at the bottom, not inline.
     regenerated files to know whether it actually clears that error or
     just happens to also be correct for an unrelated reason.
 
+    **Real symptom clarified, real second bug found and fixed, still
+    2026-09-03.** James retested the Ch2->Ch3 fix (`modulemotion_
+    d012_dual_axis.L5X`): same 2-error signature. He also clarified the
+    actual crash: opening the **module's own I/O-tree profile page**
+    (not the axis properties page) crashes Studio outright -- confirmed
+    by testing his own original, unmodified real source file
+    (`p208_D012_NodeAndAxisDual.L5X`, the one this project's D012 module
+    block is extracted from) side by side: **that file opens fine.**
+    Definitive proof the bug is in how this project's own pipeline
+    reassembles the real content, not in the real content itself. A
+    precise structural diff (whitespace-normalized, identifiers scrubbed)
+    against that real file found a second real, concrete bug: `_axis_tag`
+    -- the ONE helper this project used to build every axis tag -- was
+    also being used to build P208's own on-board "DC BUS" axis, but a
+    real DC-bus axis is a structurally DIFFERENT, much shorter
+    `AxisConfiguration="Non-Regenerative AC/DC Converter"` shape with no
+    servo-tuning parameters at all -- nothing like the full `Position
+    Loop` servo template `_axis_tag` always applied. Every P208 axis this
+    project has ever generated (5 `modulemotion_*` files, all 50
+    `composite_realistic_v3_*` files, all 18 `axis_scale_*` files) has
+    been structurally malformed this way -- the leading real suspect for
+    the module-page crash, though NOT yet confirmed (James said "P208
+    isnt the issue" independently of this fix, before it was applied --
+    still needs a retest of the regenerated file to know either way).
+    Fixed: new `_dcbus_axis_tag()` helper using the real, verbatim-
+    extracted DC-bus shape, wired into all 3 generators
+    (`gen_module_motion.py`, `gen_composite_realistic_v3.py`,
+    `gen_module_axis_scale.py` -- the last one had never been checked
+    against this bug before). All affected files regenerated, lint-clean,
+    177/177 tests passing.
+
     **Two separate, real bugs found and fixed the same pass, NOT this
     one:**
     - **Sequential slot numbering** (James: "lots of racks did not have

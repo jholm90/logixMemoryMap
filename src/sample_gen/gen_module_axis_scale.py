@@ -37,7 +37,7 @@ import re
 from pathlib import Path
 
 from sample_gen.gen_axis_composite import _AXIS_TAG_XML  # noqa: F401 (re-exported convention)
-from sample_gen.gen_module_motion import _P208_MODULE_XML, _MOTION_GROUP_TAG_XML, _axis_tag
+from sample_gen.gen_module_motion import _P208_MODULE_XML, _MOTION_GROUP_TAG_XML, _axis_tag, _dcbus_axis_tag
 from sample_gen.gen_module_sweep import _MODULE_CHAINS
 from sample_gen.gen_module_sweep_variants import _MODULE_VARIANTS
 from sample_gen.manifest import append_manifest_row, write_sample_unmodeled
@@ -74,7 +74,7 @@ def _build(n_axes: int, shape: str, with_regen: bool, file_idx: int) -> tuple[st
     """shape: 'single' (2198-S086-ERS3 x n_axes) or 'dual' (2198-Dxxx-ERS3
     x n_axes/2, real dual-axis modules only support even totals)."""
     modules = [_P208_MODULE_XML]
-    tags = [_MOTION_GROUP_TAG_XML, _axis_tag(f"DcBus{file_idx}", "P208:Ch1")]
+    tags = [_MOTION_GROUP_TAG_XML, _dcbus_axis_tag(f"DcBus{file_idx}", "P208:Ch1")]
     axis_names: list[str] = []
     ip = 10
 
