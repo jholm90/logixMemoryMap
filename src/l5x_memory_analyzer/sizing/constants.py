@@ -196,31 +196,87 @@ class CptRealDestModel:
     memory_model.yaml cpt_expression.real_dest for the full derivation and
     the flagged coverage gaps."""
 
-    first_operator: int
+    expression_base: int
     extra_operator: int
-    single_pow_extra: int
-    five_plus_operator_extra: int
+    # Measured base by operator count, before operand/literal terms. Falls
+    # back to expression_base + extra_operator*n outside the table.
+    operator_count_base: dict[int, int]
+    pow_extra: int
+    pow_with_tier2_extra: int
     per_int_operand: int
+    narrow_widening_block: int
     per_float_literal: int
     confidence: str
 
+    def base_for(self, operators: list[str]) -> int:
+        n = len(operators)
+        linear = self.expression_base + self.extra_operator * n
+        if any(op == "**" for op in operators):
+            # A pow expression uses the PLAIN linear base -- it does not get
+            # the measured 5-operator bump below. See the class docstring.
+            has_t2 = any(op in ("*", "/", "MOD") for op in operators)
+            return linear + self.pow_extra + (self.pow_with_tier2_extra if has_t2 else 0)
+        return self.operator_count_base.get(n, linear)
+
     def cost_for(
-        self, operators: list[str], n_int_operands: int, n_float_literals: int, base_read: int
+        self,
+        operators: list[str],
+        n_int_operands: int,
+        n_float_literals: int,
+        base_read: int,
+        has_narrow_operand: bool = False,
     ) -> int:
-        n_ops = len(operators)
-        if n_ops == 0:
+        """REFIT 2026-09-04 -- exact on all 47 captured REAL-dest CPT calls.
+
+        The operator ladder is `124 + 40*n` and the operator's TIER does not
+        matter here (unlike the integer path, where * and / cost more than
+        + and -): fitting a + b*tier1 + c*tier2 against the opcount files
+        returns b = c = 40. That makes sense for a float evaluation.
+
+        Two empirical corrections sit on top, and neither has a known
+        mechanism. They are stored as measurements, not as a theory:
+
+        1. A 5-operator expression costs 328, not the 324 the ladder
+           predicts. Three files from three different generators
+           (cptmix_real*, cptcx_constants_floatconst_n4,
+           instr_cpt_literaloperands) independently agree on 328, and 6 and
+           8 operators are back on the ladder exactly (364, 444). So it is
+           not a ">=5" step -- the old model had it as one and over-charged
+           the 6- and 8-operator files by 4 each.
+        2. `**` adds 8, plus another 4 if the expression also contains a
+           tier-2 operator (* / MOD). And a pow expression does NOT get
+           correction 1: powmulti_n05 lands on 324+12, not 328+12.
+
+        Both are the kind of thing that wants an operator-count x
+        tier-composition sweep to explain rather than a story invented to
+        fit 47 points. See OQ-CPTREALDEST.
+
+        The operand terms:
+          per_int_operand   40 for every DINT/SINT/INT operand and integer
+                            literal -- the conversion into the float
+                            evaluation. NOT charged for LINT: the
+                            SINT/LINT isolation pair is the same expression
+                            with only the operand type swapped, and the
+                            LINT file lands byte-identical to the all-REAL
+                            control at 244/rung.
+          narrow_widening_block  James, 2026-09-04: "ints will use a behind
+                            the scenes conversion to dint". SINT/INT are
+                            widened first; LINT, already 64-bit, is not.
+                            ONE-POINT FIT and the per-operand/per-call
+                            split is undetermined -- see the yaml comment
+                            and OQ-CPTNARROW.
+          per_float_literal 4, confirmed across 12 files at 1, 2 and 3
+                            float literals.
+        """
+        if not operators:
             # A bare REAL copy, 'CPT(R1,R0)' -- no operators, so no float
             # arithmetic to charge differently. Falls through to the plain
             # base_read the integer path would have charged.
             return base_read + self.per_int_operand * n_int_operands
-        total = base_read + self.first_operator + self.extra_operator * (n_ops - 1)
-        if n_ops == 1 and operators[0] == "**":
-            total += self.single_pow_extra
-        if n_ops >= 5:
-            total += self.five_plus_operator_extra
         return (
-            total
+            self.base_for(operators)
             + self.per_int_operand * n_int_operands
+            + (self.narrow_widening_block if has_narrow_operand else 0)
             + self.per_float_literal * n_float_literals
         )
 
@@ -231,7 +287,8 @@ class CptExpressionModel:
     operator_tier_costs: dict[str, int]
     per_extra_same_tier_operand: int
     two_tier_mix_base: int
-    two_tier_mix_per_operator: int
+    two_tier_mix_per_tier1: int
+    two_tier_mix_per_tier2: int
     pow_tier_mix_base: int
     pow_tier_mix_per_operator: int
     three_tier_mix_base_by_remainder: dict[int, int]
@@ -294,7 +351,38 @@ class CptExpressionModel:
         mul_tier = self.operator_tier_costs["*"]
         pow_tier = self.operator_tier_costs["**"]
         if set(tiers) == {add_tier, mul_tier}:
-            return self.two_tier_mix_base + self.two_tier_mix_per_operator * len(operators)
+            # REFIT 2026-09-04. The old form charged the same
+            # two_tier_mix_per_operator regardless of WHICH tier each
+            # operator was, so it could only be right where the two tiers
+            # happened to balance -- 15 of 23 real points, and it missed
+            # every unbalanced one by 4 or 8.
+            #
+            # Splitting the rate by tier fixes that and, more importantly,
+            # cross-validates against data it was not fitted on. The
+            # single-operator captures say a MUL/DIV costs exactly 16 more
+            # than an ADD/SUB (140 vs 124); fitting these multi-operator
+            # mixes independently returns per_tier2 - per_tier1 = 40 - 24 =
+            # 16, the same number. And the resulting form collapses onto
+            # the uniform-tier path exactly: 100 + 24n reproduces the whole
+            # pure-ADD chain (124/148/172/196/220/268/316 at n=1..9), which
+            # is the branch above computing it a different way.
+            #
+            # 19 of 23 exact. The four that remain are all -4 and all
+            # unexplained: three (2,1) files (two of which,
+            # cptcx_operatormix_mixedops and _nested, are the SAME operator
+            # multiset arranged differently and agree with each other), and
+            # cptmix_scaling_grouped_n05, whose (2,2) counts match
+            # cptmix_scaling_alternating_n05 exactly yet costs 4 more.
+            # Arrangement therefore matters somewhere, but not consistently
+            # -- at n=11 the same alternating/grouped pair is identical. Not
+            # patched with an invented rule; see OQ-CPTARRANGE.
+            n_tier1 = sum(1 for t in tiers if t == add_tier)
+            n_tier2 = sum(1 for t in tiers if t == mul_tier)
+            return (
+                self.two_tier_mix_base
+                + self.two_tier_mix_per_tier1 * n_tier1
+                + self.two_tier_mix_per_tier2 * n_tier2
+            )
         if set(tiers) in ({add_tier, pow_tier}, {mul_tier, pow_tier}):
             return self.pow_tier_mix_base + self.pow_tier_mix_per_operator * len(operators)
         pow_operand_count = tiers.count(pow_tier)
@@ -740,7 +828,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 operator_tier_costs=dict(raw["cpt_expression"]["operator_tier_costs"]),
                 per_extra_same_tier_operand=raw["cpt_expression"]["per_extra_same_tier_operand"],
                 two_tier_mix_base=raw["cpt_expression"]["two_tier_mix_base"],
-                two_tier_mix_per_operator=raw["cpt_expression"]["two_tier_mix_per_operator"],
+                two_tier_mix_per_tier1=raw["cpt_expression"]["two_tier_mix_per_tier1"],
+                two_tier_mix_per_tier2=raw["cpt_expression"]["two_tier_mix_per_tier2"],
                 pow_tier_mix_base=raw["cpt_expression"]["pow_tier_mix_base"],
                 pow_tier_mix_per_operator=raw["cpt_expression"]["pow_tier_mix_per_operator"],
                 three_tier_mix_base_by_remainder={
@@ -748,11 +837,16 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 },
                 three_tier_mix_per_pow_operand=raw["cpt_expression"]["three_tier_mix_per_pow_operand"],
                 real_dest=CptRealDestModel(
-                    first_operator=raw["cpt_expression"]["real_dest"]["first_operator"],
+                    expression_base=raw["cpt_expression"]["real_dest"]["expression_base"],
                     extra_operator=raw["cpt_expression"]["real_dest"]["extra_operator"],
-                    single_pow_extra=raw["cpt_expression"]["real_dest"]["single_pow_extra"],
-                    five_plus_operator_extra=raw["cpt_expression"]["real_dest"]["five_plus_operator_extra"],
+                    operator_count_base={
+                        int(k): v for k, v in
+                        raw["cpt_expression"]["real_dest"]["operator_count_base"].items()
+                    },
+                    pow_extra=raw["cpt_expression"]["real_dest"]["pow_extra"],
+                    pow_with_tier2_extra=raw["cpt_expression"]["real_dest"]["pow_with_tier2_extra"],
                     per_int_operand=raw["cpt_expression"]["real_dest"]["per_int_operand"],
+                    narrow_widening_block=raw["cpt_expression"]["real_dest"]["narrow_widening_block"],
                     per_float_literal=raw["cpt_expression"]["real_dest"]["per_float_literal"],
                     confidence=raw["cpt_expression"]["real_dest"]["confidence"],
                 ),

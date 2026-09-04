@@ -20,7 +20,17 @@ _BARE_TAG = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 # deliberately absent -- no real corpus example of a BOOL operand inside a
 # CPT expression exists to confirm it converts the same way, so it falls
 # through uncharged rather than being guessed at.
-_CPT_INTEGER_OPERAND_TYPES = frozenset({"SINT", "INT", "DINT", "LINT"})
+# Integer operand types that cost a conversion in a REAL-destination CPT.
+# LINT is deliberately ABSENT (2026-09-04): cptrd_operand_lint, which is the
+# all-REAL control with only the operand type swapped, measures 244/rung --
+# byte-identical to that control. A LINT operand costs nothing extra, and
+# charging it per_int_operand over-predicted that file by 26.79%.
+_CPT_INTEGER_OPERAND_TYPES = frozenset({"SINT", "INT", "DINT"})
+
+# Narrow integers, widened to DINT before evaluation -- James, 2026-09-04:
+# "ints will use a behind the scenes conversion to dint". This is what makes
+# SINT cost +256/rung against that same control while LINT costs nothing.
+_CPT_NARROW_OPERAND_TYPES = frozenset({"SINT", "INT"})
 
 
 def _resolve_call_type(operands: list[str], tag_types: dict[str, str]) -> str | None:
@@ -93,9 +103,13 @@ def compute_routine_logic_bytes(
                 1 for name in call.operand_names
                 if tag_types.get(name) in _CPT_INTEGER_OPERAND_TYPES
             )
+            has_narrow = any(
+                tag_types.get(name) in _CPT_NARROW_OPERAND_TYPES
+                for name in call.operand_names
+            )
             total += model.cpt_expression.real_dest.cost_for(
                 call.operators, n_int_operands, call.float_literals,
-                model.cpt_expression.base_read,
+                model.cpt_expression.base_read, has_narrow,
             )
         else:
             total += model.cpt_expression.cost_for(call.operators)

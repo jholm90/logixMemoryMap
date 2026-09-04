@@ -485,13 +485,46 @@ def test_cpt_uniform_chain_matches_confirmed_real_formula():
         assert model.cpt_expression.cost_for(operators) == 88 + expected_operator_cost
 
 
-def test_cpt_t1_t2_mix_matches_confirmed_real_formula():
-    # gen_cpt_mixed_operators.py's real operand-count sweep, 2026-08-26:
-    # a T1(ADD/SUB)+T2(MUL/DIV/MOD)-only mix is exact at 100+32*operators
-    # for 3/5/11/15 operators (4/5 real points, k=7 off by small noise).
-    # "+","-","*" is exactly this tier set (2 operators).
+def test_cpt_t1_t2_mix_is_priced_per_tier_not_per_operator():
+    """A T1+T2 mix costs 100 + 24*tier1 + 40*tier2, refit 2026-09-04.
+
+    The old form here was a flat 100 + 32*operators, which could only be
+    right where the two tiers balanced. Splitting the rate by tier takes the
+    real two-tier captures from 15/23 exact to 19/23, and the split
+    cross-validates against data it was NOT fitted on: the single-operator
+    captures put MUL/DIV 16 above ADD/SUB (140 vs 124), and fitting the
+    multi-operator mixes independently returns 40 - 24 = 16.
+    """
     model = MODEL.logic_instructions
-    assert model.cpt_expression.cost_for(["+", "-", "*"]) == 100 + 32 * 3
+    cost_for = model.cpt_expression.cost_for
+    # Balanced mixes -- where the old flat rate also happened to be right.
+    assert cost_for(["+", "*"]) == 100 + 24 + 40                       # 164
+    assert cost_for(["+", "*", "+", "*"]) == 100 + 2 * 24 + 2 * 40     # 228
+    # Unbalanced -- where it was not. Swapping one T1 for one T2 must move
+    # the answer by exactly 16; under a flat per-operator rate it moved by 0.
+    assert cost_for(["+", "*", "*"]) - cost_for(["+", "+", "*"]) == 16
+    assert cost_for(["+", "+", "+", "*", "*", "*", "*"]) == 332  # real: 332
+    assert cost_for(["+", "*", "+", "*", "+", "*", "+"]) == 316  # real: 316
+    # Collapses onto the uniform-tier branch, which computes it a different
+    # way: a pure ADD chain is 100 + 24n by both routes.
+    assert cost_for(["+", "*"]) - 40 + 24 == cost_for(["+", "+"])
+
+
+def test_cpt_t1_t2_mix_has_four_known_unexplained_misses():
+    """Documents the four real points no linear (t1, t2) model can hit.
+
+    The system is over-determined and inconsistent, so this is a real
+    arrangement effect rather than a bad fit: cptmix_scaling_grouped_n05 and
+    cptmix_scaling_alternating_n05 have IDENTICAL operator tier counts (2
+    and 2) yet measure 232 and 228 -- while at 11 operators the same
+    alternating/grouped pair measures identically. Rather than invent a rule
+    from four points, the miss is pinned here so a future refit that claims
+    to explain it has to move these numbers deliberately. See OQ-CPTARRANGE.
+    """
+    cost_for = MODEL.logic_instructions.cpt_expression.cost_for
+    # Real captured cost is 192 (cptcx_operatormix_mixedops / _nested and
+    # cptcx_spotcheck_mixedops4op_n100 all agree); the model says 188.
+    assert cost_for(["+", "-", "*"]) == 188
 
 
 def test_cpt_pow_tier_mix_solved_for_t1t3_and_t2t3():

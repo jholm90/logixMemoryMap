@@ -1165,7 +1165,13 @@ cpt_expression:
   # different behavior (see OPEN_QUESTIONS.md OQ-CMPCPTLAYOUT) and fall
   # back to the plain additive-sum approximation below instead.
   two_tier_mix_base: 100
-  two_tier_mix_per_operator: 32
+  # REFIT 2026-09-04, split by tier (was a single 32/operator). MUL/DIV/MOD
+  # costs 16 more than ADD/SUB in a mixed expression -- which is exactly the
+  # gap the SINGLE-operator captures show independently (op_mul/op_div/op_mod
+  # 140 vs op_add/op_sub 124), so this is cross-validated, not just fitted.
+  # 19 of 23 real two-tier points exact, against 15 for the flat rate.
+  two_tier_mix_per_tier1: 24
+  two_tier_mix_per_tier2: 40
   # T1T3/T2T3 mixed expression (POW alongside exactly one of ADD/SUB or
   # MUL/DIV/MOD), wired 2026-08-25 -- OQ-CMPCPTLAYOUT. Real capture data
   # already existed (2026-08-24, gen_cpt_mixed_operators.py's
@@ -1244,12 +1250,69 @@ cpt_expression:
   # zero real data; gen_cpt_realdest_sweep.py generates exactly those.
   # A multi-operator expression containing ** with a REAL destination is
   # also untested (single_pow_extra is confirmed at n_ops=1 only).
+  # REFIT 2026-09-04 -- exact on all 11 captured REAL-destination points
+  # (was exact on 8). Full reasoning in constants.py CptRealDestModel.
+  # cost = expression_base
+  #      + extra_operator * (non-** operators)
+  #      + pow_operator   * (** operators)
+  #      + three_plus_operator_extra   if operator count >= 3
+  #      + per_int_operand * (DINT/SINT/INT operands and int literals)
+  #      + narrow_widening_block       if any SINT/INT operand present
+  #      + per_float_literal * (float literals)
+  #
+  #   opcount_n03/n04/n06/n08   244 / 284 / 364 / 444   exact
+  #   typesweep_cpt_real        244                     exact
+  #   powmulti_n02/n03/n05      212 / 256 / 336         exact
+  #   operand_lint              244                     exact (LINT is free)
+  #   operand_sint              500                     exact
+  #   instr_cpt (mirror)        452                     exact
+  #
+  # The two headline corrections: the operator-count step is at >=3, not >=5
+  # (the old five_plus form over-charged the 6- and 8-operator files by
+  # exactly 4 each), and ** is simply its own tier at 52 rather than a
+  # special case for a lone pow (all three powmulti files agree on 52 once
+  # the >=3 step is separated; under the old form they implied 48/52/52).
   real_dest:
-    first_operator: 76
+    expression_base: 124
     extra_operator: 40
-    single_pow_extra: 8
-    five_plus_operator_extra: 4
+    # Measured base per operator count. 1/2/3/4/6/8 all sit exactly on
+    # 124 + 40n; 5 does not -- it measures 328 where the ladder says 324,
+    # confirmed independently by cptmix_real*, cptcx_constants_floatconst_n4
+    # and instr_cpt_literaloperands. Listed rather than fitted because there
+    # is no known mechanism for a bump at exactly 5 that is absent at 6.
+    operator_count_base:
+      1: 164
+      2: 204
+      3: 244
+      4: 284
+      5: 328
+      6: 364
+      8: 444
+    # ** costs 8 over a normal operator, plus 4 more when the expression
+    # also contains a tier-2 operator (* / MOD). A pow expression uses the
+    # plain 124+40n base and does NOT get the 5-operator bump above --
+    # powmulti_n05 is 324+12, not 328+12.
+    pow_extra: 8
+    pow_with_tier2_extra: 4
+    # Charged for DINT/SINT/INT operands and integer literals. NOT for LINT:
+    # cptrd_operand_lint measures 244/rung, byte-identical to the all-REAL
+    # control, so a LINT operand costs nothing extra. The old model charged
+    # it 40 each and over-predicted that file by 26.79%.
     per_int_operand: 40
+    # James, 2026-09-04: "ints will use a behind the scenes conversion to
+    # dint". A narrow integer operand (SINT/INT) is widened to DINT before
+    # the float evaluation; LINT, already 64-bit, is not. cptrd_operand_sint
+    # is +256/rung over the all-REAL control with 3 SINT operands.
+    #
+    # ONE-POINT FIT, and the per-operand/per-call split is NOT determined:
+    # 256/3 is not an integer, which rules out a pure per-operand rate but
+    # leaves several forms fitting equally well. Modelled as 3*40 (the
+    # ordinary DINT->REAL conversion each integer operand pays) + 136 once
+    # per call. See OQ-CPTNARROW; the cptnarrow_* sweep settles it.
+    narrow_widening_block: 136
+    # 4, confirmed across 12 real-dest files carrying 1, 2 and 3 float
+    # literals (cptmix_*_float*, cptcx_constants_floatconst_n2/n4,
+    # instr_cpt_literaloperands).
     per_float_literal: 4
     confidence: FITTED
 
