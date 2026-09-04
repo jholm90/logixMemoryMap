@@ -79,15 +79,18 @@ C. group_aoi_internal_ladder (6 files)
    AOI term is isolated from the JSR term for the first time. n=6000
    (12,000 AOI instructions) brackets the real file's 6,255.
 
-D. group_st_routine_ladder (6 files)
-   Structured Text is COMPLETELY unmodeled -- `parse_rll_routines` only
-   handles RLL, so the real file's 3 ST routines / 505 ST lines contribute
-   exactly 0 to its prediction. This is the first ST data this project has
-   ever generated. A single ST routine called by one JSR, n = 0/25/100/400/
-   1000 lines of a plain `Di := Dj + 1;` assignment, plus one FOR-loop file
-   copying the real file's own ST shape verbatim. Because the engine
-   predicts a flat number across the whole ladder, whatever Capacity
-   movement comes back IS the per-ST-line cost, with nothing to subtract.
+D. Structured Text -- MOVED OUT to gen_st_sizing.py, 2026-09-04.
+   The first draft of this batch carried a naive ST ladder written from
+   general knowledge with only its FOR shape copied from a real file.
+   James, same day: "I hope you are going to be able to write st language
+   based on your knowledge and skills, not just tossing lines and hope they
+   stick... can you extract enough from the sample code like bender and
+   some of the aois." Measuring the corpus first (297 real ST routines,
+   24,017 lines across 23 files in samples/local/) showed that ladder was
+   not representative of anything real -- 100% plain assignments, where
+   real ST is ~36% control flow, ~29% comments, and calls the same
+   instructions the ladder does. See gen_st_sizing.py, which replaces it
+   and keeps the same realscale_st_n* file names.
 
 Run: python -m sample_gen.gen_realscale_surcharge
 """
@@ -229,71 +232,11 @@ def group_aoi_internal_ladder() -> None:
         )
 
 
-# --- D. Structured Text ladder ----------------------------------------------
-
-_D_COUNTS = (0, 25, 100, 400, 1000)
-
-
-def _st_routine(name: str, lines: list[str]) -> str:
-    body = "".join(
-        f'<Line Number="{i}">\n<![CDATA[{text}]]>\n</Line>\n'
-        for i, text in enumerate(lines)
-    )
-    return f'<Routine Name="{name}" Type="ST">\n<STContent>\n{body}</STContent>\n</Routine>'
-
-
-def group_st_routine_ladder() -> None:
-    for n in _D_COUNTS:
-        lines = [f"D{i % 10} := D{(i + 1) % 10} + 1;" for i in range(n)]
-        l5x = build_l5x(
-            target_name=f"RsSt{n:05d}", tags_xml=_POOL_TAGS_XML,
-            extra_rungs_xml=rung_xml(0, "JSR(StTarget,0);"),
-            extra_routines_xml=_st_routine("StTarget", lines),
-        )
-        _write(
-            LOGIC_OUT, f"realscale_st_n{n:05d}", l5x, "logic_instr",
-            f"A single Structured Text routine of {n} plain assignment lines "
-            f"(Di := Dj + 1;), called by one JSR, everything else held identical across the "
-            f"ladder. Structured Text is COMPLETELY unmodeled today -- parse_rll_routines "
-            f"handles RLL only, so the engine predicts the SAME number for every file in "
-            f"this ladder and whatever Capacity movement comes back is the raw per-ST-line "
-            f"cost with nothing to subtract. This is the first ST sizing data this project "
-            f"has ever generated; the real Cardin_TrimSortStack file carries 3 ST routines / "
-            f"505 ST lines contributing exactly 0 to its prediction.",
-        )
-
-    # One FOR-loop file, shape copied from the real file's own ST routine
-    # (indexed UDT-member assignment inside FOR ... DO ... END_FOR) rather
-    # than invented -- a flat assignment ladder cannot say whether a loop
-    # construct costs anything of its own.
-    loop_lines = []
-    for blk in range(25):
-        loop_lines.append(f"FOR StIdx := 0 TO 24 DO")
-        loop_lines.append(f"\tD{blk % 10} := D{(blk + 1) % 10} + StIdx;")
-        loop_lines.append("END_FOR;")
-    tags = _POOL_TAGS_XML + "\n" + tag_xml("StIdx", "DINT")
-    l5x = build_l5x(
-        target_name="RsStForLoop", tags_xml=tags,
-        extra_rungs_xml=rung_xml(0, "JSR(StTarget,0);"),
-        extra_routines_xml=_st_routine("StTarget", loop_lines),
-    )
-    _write(
-        LOGIC_OUT, "realscale_st_forloop_n00075", l5x, "logic_instr",
-        "25 FOR ... DO / assignment / END_FOR blocks (75 ST lines) in one Structured Text "
-        "routine called by a single JSR -- the same construct shape the real "
-        "Cardin_TrimSortStack file's own ST routines use, not an invented one. Read against "
-        "realscale_st_n00100 (100 flat assignment lines, no loops): if an ST line costs the "
-        "same regardless of what it is, the two land in proportion to line count; if the FOR "
-        "construct carries its own cost, they do not.",
-    )
-
-
 def main() -> None:
     group_jsr_placement_ladder()
     group_jsr_target_count_split()
     group_aoi_internal_ladder()
-    group_st_routine_ladder()
-    print("\nDone. 23 files.")
+    print("\nDone. 17 files.")
 
 
 if __name__ == "__main__":

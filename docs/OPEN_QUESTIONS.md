@@ -1232,19 +1232,65 @@ the matching footnote at the bottom, not inline.
     and what's needed to close this for real.
 
 18. **OQ-STSIZING** — new, 2026-09-04. **Structured Text is completely
-    unmodeled.** `parse_rll_routines` handles RLL only, so every ST
-    routine in every file contributes exactly **0** to the prediction —
-    including the 3 ST routines / 505 ST lines in the real
-    `Cardin_TrimSortStack` file. This is a total coverage hole for real
-    programs, which commonly use ST, and it has never been tested because
-    no generator in this project has ever emitted an ST routine.
-    `realscale_st_n*` (5 files, 0/25/100/400/1000 plain assignment lines)
-    plus `realscale_st_forloop_n00075` (the FOR ... DO ... END_FOR shape
-    copied from the real file's own ST routines) are the first ST sizing
-    data this project has generated. The engine predicts an identical
-    23,277 for every file in the flat ladder — confirmed at generation
-    time — so whatever Capacity movement comes back IS the per-ST-line
-    cost, with nothing to subtract. Blocked on capture.
+    unmodeled.** `parse_rll_routines` handles RLL only, so every ST routine
+    in every file contributes exactly **0** to the prediction. Every file
+    in the `gen_st_sizing.py` batch predicts an identical 23,365 today —
+    that is the diagnostic property, not a bug: whatever Capacity movement
+    comes back IS the ST cost, with nothing to subtract.
+
+    **This is not a small corner.** Measured across `samples/local/`, 23
+    real files: **297 ST routines, 24,017 ST lines.**
+    | construct | count | | construct | count |
+    |---|---:|---|---|---:|
+    | `:=` assignment | 8,688 | | `FOR`/`DO`/`END_FOR` | 600/879/148 |
+    | `IF`/`THEN`/`END_IF` | 1,739/1,831/1,230 | | `WHILE`/`END_WHILE` | 38/3 |
+    | `ELSIF`/`ELSE` | 559/332 | | `REPEAT`/`UNTIL` | 1/8 |
+    | `CASE`/`OF`/`END_CASE` | 90/1,085/84 | | `EXIT`/`RETURN` | 39/5 |
+    Comments: **5,931 leading `//`, 967 trailing `//`, 27 `(* *)` = 6,925
+    lines, 29% of all real ST.** Instruction-style calls INSIDE ST: COP
+    362, CONCAT 67, SBR 44, RET 42, DTOS 26, TRUNC 25, TONR 22, JSR 18,
+    DELETE 16, OSRI 12, ABS 10, GSV 8, SIZE 7, STOD 7, BTDT 6, CPS 4,
+    SCL 4, MSG 2, SSV 1.
+
+    So real ST is ~36% control flow, ~29% comments, and it calls the SAME
+    instructions the ladder does. That last fact is the cheapest possible
+    route to closing this hole and is what group D tests: 1,000 COP /
+    CONCAT / DTOS / SIZE calls hosted in ST, each using operands
+    byte-for-byte identical to `gen_logic_sweep`'s own rung text, paired
+    against the existing valid `instr_*_n01000` captures. **If they land on
+    the same number, the entire per-instruction weight table transfers to
+    ST unchanged** and ST needs only a per-statement term and control-flow
+    terms on top.
+
+    Sub-question, **OQ-STCOMMENT** (James, 2026-09-04: *"one thing not
+    modelled is st comments and if a comment line or block takes up data
+    memory or is like tag and rung comments and does not count towards data
+    usage"*). The RLL half of this is already ANSWERED and free:
+    `instr_cpt_n05000_comment100` and `instr_cpt_n05000_nocomment` came
+    back **byte-identical at 2,282,944**. But that result does not
+    transfer, and assuming it would be a real mistake: an RLL rung comment
+    is a separate `<Comment>` element hanging off the rung — metadata
+    beside the logic — whereas an ST comment lives INSIDE the routine's own
+    source CDATA, in the same text Studio compiles. Group B holds 100
+    executable lines identical to `realscale_st_n00100` and varies only the
+    comments: 100 short leading, 100 long leading (110 chars, the real
+    header width from Bender134053's T_ADD routine), 400 short leading, 100
+    trailing (zero added lines), and 400 genuinely blank lines with no
+    comments at all. That set separates per-comment-LINE from
+    per-comment-CHARACTER from per-`<Line>`-element, and answers whether
+    blank lines are free.
+
+    Also open and covered by the same batch: whether an ST assignment with
+    an arithmetic right-hand side is just a CPT expression (group E
+    transcribes `instr_cpt_n01000`'s expression operand for operand into ST
+    — if it lands on 474,944 the existing tier-aware CPT model is reusable
+    as-is), and whether an ST routine used as a JSR target is charged the
+    same parameter cost as an RLL one (group F; all JSR param constants
+    were fitted on RLL targets only, and 44 SBR / 42 RET in the corpus say
+    ST targets are a real shape). Blocked on capture — **not on James
+    writing samples: 24,017 real ST lines is more idiom than this needs,
+    and every construct and call in the batch is taken from that corpus,
+    not invented.**
 
 ---
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="RsSt00025" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 04 08:30:14 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="RsSt00025" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 04 08:30:14 2026" LastModifiedDate="Fri Sep 04 08:30:14 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="RsSt00025" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 04 09:15:23 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="RsSt00025" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 04 09:15:23 2026" LastModifiedDate="Fri Sep 04 09:15:23 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -204,6 +204,9 @@
       </Tag>
       <Tag Name="ARR1" TagType="Base" DataType="DINT" Dimensions="20" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><Array DataType="DINT" Dimensions="20" Radix="Decimal"><Element Index="[0]" Value="0" /><Element Index="[1]" Value="0" /><Element Index="[2]" Value="0" /><Element Index="[3]" Value="0" /><Element Index="[4]" Value="0" /><Element Index="[5]" Value="0" /><Element Index="[6]" Value="0" /><Element Index="[7]" Value="0" /><Element Index="[8]" Value="0" /><Element Index="[9]" Value="0" /><Element Index="[10]" Value="0" /><Element Index="[11]" Value="0" /><Element Index="[12]" Value="0" /><Element Index="[13]" Value="0" /><Element Index="[14]" Value="0" /><Element Index="[15]" Value="0" /><Element Index="[16]" Value="0" /><Element Index="[17]" Value="0" /><Element Index="[18]" Value="0" /><Element Index="[19]" Value="0" /></Array></Data>
+      </Tag>
+      <Tag Name="StIdx" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
 </Tags>
 <Programs>

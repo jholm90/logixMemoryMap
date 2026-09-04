@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="RsSt00000" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 04 09:15:23 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="RsSt00000" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 04 09:15:23 2026" LastModifiedDate="Fri Sep 04 09:15:23 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="RsStCtlElsif" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 04 09:15:24 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="RsStCtlElsif" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 04 09:15:24 2026" LastModifiedDate="Fri Sep 04 09:15:24 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -224,6 +224,309 @@
 </Routine>
 <Routine Name="StTarget" Type="ST">
 <STContent>
+<Line Number="0">
+<![CDATA[IF B0 THEN D0 := D1 + 1;]]>
+</Line>
+<Line Number="1">
+<![CDATA[ELSIF B1 THEN D1 := D2 + 1;]]>
+</Line>
+<Line Number="2">
+<![CDATA[ELSIF B2 THEN D2 := D3 + 1;]]>
+</Line>
+<Line Number="3">
+<![CDATA[ELSIF B3 THEN D3 := D4 + 1;]]>
+</Line>
+<Line Number="4">
+<![CDATA[ELSIF B4 THEN D4 := D5 + 1;]]>
+</Line>
+<Line Number="5">
+<![CDATA[ELSIF B5 THEN D5 := D6 + 1;]]>
+</Line>
+<Line Number="6">
+<![CDATA[ELSIF B6 THEN D6 := D7 + 1;]]>
+</Line>
+<Line Number="7">
+<![CDATA[ELSIF B7 THEN D7 := D8 + 1;]]>
+</Line>
+<Line Number="8">
+<![CDATA[ELSIF B8 THEN D8 := D9 + 1;]]>
+</Line>
+<Line Number="9">
+<![CDATA[ELSIF B9 THEN D9 := D0 + 1;]]>
+</Line>
+<Line Number="10">
+<![CDATA[ELSIF B0 THEN D0 := D1 + 1;]]>
+</Line>
+<Line Number="11">
+<![CDATA[ELSIF B1 THEN D1 := D2 + 1;]]>
+</Line>
+<Line Number="12">
+<![CDATA[ELSIF B2 THEN D2 := D3 + 1;]]>
+</Line>
+<Line Number="13">
+<![CDATA[ELSIF B3 THEN D3 := D4 + 1;]]>
+</Line>
+<Line Number="14">
+<![CDATA[ELSIF B4 THEN D4 := D5 + 1;]]>
+</Line>
+<Line Number="15">
+<![CDATA[ELSIF B5 THEN D5 := D6 + 1;]]>
+</Line>
+<Line Number="16">
+<![CDATA[ELSIF B6 THEN D6 := D7 + 1;]]>
+</Line>
+<Line Number="17">
+<![CDATA[ELSIF B7 THEN D7 := D8 + 1;]]>
+</Line>
+<Line Number="18">
+<![CDATA[ELSIF B8 THEN D8 := D9 + 1;]]>
+</Line>
+<Line Number="19">
+<![CDATA[ELSIF B9 THEN D9 := D0 + 1;]]>
+</Line>
+<Line Number="20">
+<![CDATA[ELSIF B0 THEN D0 := D1 + 1;]]>
+</Line>
+<Line Number="21">
+<![CDATA[ELSIF B1 THEN D1 := D2 + 1;]]>
+</Line>
+<Line Number="22">
+<![CDATA[ELSIF B2 THEN D2 := D3 + 1;]]>
+</Line>
+<Line Number="23">
+<![CDATA[ELSIF B3 THEN D3 := D4 + 1;]]>
+</Line>
+<Line Number="24">
+<![CDATA[ELSIF B4 THEN D4 := D5 + 1;]]>
+</Line>
+<Line Number="25">
+<![CDATA[ELSIF B5 THEN D5 := D6 + 1;]]>
+</Line>
+<Line Number="26">
+<![CDATA[ELSIF B6 THEN D6 := D7 + 1;]]>
+</Line>
+<Line Number="27">
+<![CDATA[ELSIF B7 THEN D7 := D8 + 1;]]>
+</Line>
+<Line Number="28">
+<![CDATA[ELSIF B8 THEN D8 := D9 + 1;]]>
+</Line>
+<Line Number="29">
+<![CDATA[ELSIF B9 THEN D9 := D0 + 1;]]>
+</Line>
+<Line Number="30">
+<![CDATA[ELSIF B0 THEN D0 := D1 + 1;]]>
+</Line>
+<Line Number="31">
+<![CDATA[ELSIF B1 THEN D1 := D2 + 1;]]>
+</Line>
+<Line Number="32">
+<![CDATA[ELSIF B2 THEN D2 := D3 + 1;]]>
+</Line>
+<Line Number="33">
+<![CDATA[ELSIF B3 THEN D3 := D4 + 1;]]>
+</Line>
+<Line Number="34">
+<![CDATA[ELSIF B4 THEN D4 := D5 + 1;]]>
+</Line>
+<Line Number="35">
+<![CDATA[ELSIF B5 THEN D5 := D6 + 1;]]>
+</Line>
+<Line Number="36">
+<![CDATA[ELSIF B6 THEN D6 := D7 + 1;]]>
+</Line>
+<Line Number="37">
+<![CDATA[ELSIF B7 THEN D7 := D8 + 1;]]>
+</Line>
+<Line Number="38">
+<![CDATA[ELSIF B8 THEN D8 := D9 + 1;]]>
+</Line>
+<Line Number="39">
+<![CDATA[ELSIF B9 THEN D9 := D0 + 1;]]>
+</Line>
+<Line Number="40">
+<![CDATA[ELSIF B0 THEN D0 := D1 + 1;]]>
+</Line>
+<Line Number="41">
+<![CDATA[ELSIF B1 THEN D1 := D2 + 1;]]>
+</Line>
+<Line Number="42">
+<![CDATA[ELSIF B2 THEN D2 := D3 + 1;]]>
+</Line>
+<Line Number="43">
+<![CDATA[ELSIF B3 THEN D3 := D4 + 1;]]>
+</Line>
+<Line Number="44">
+<![CDATA[ELSIF B4 THEN D4 := D5 + 1;]]>
+</Line>
+<Line Number="45">
+<![CDATA[ELSIF B5 THEN D5 := D6 + 1;]]>
+</Line>
+<Line Number="46">
+<![CDATA[ELSIF B6 THEN D6 := D7 + 1;]]>
+</Line>
+<Line Number="47">
+<![CDATA[ELSIF B7 THEN D7 := D8 + 1;]]>
+</Line>
+<Line Number="48">
+<![CDATA[ELSIF B8 THEN D8 := D9 + 1;]]>
+</Line>
+<Line Number="49">
+<![CDATA[ELSIF B9 THEN D9 := D0 + 1;]]>
+</Line>
+<Line Number="50">
+<![CDATA[ELSIF B0 THEN D0 := D1 + 1;]]>
+</Line>
+<Line Number="51">
+<![CDATA[ELSIF B1 THEN D1 := D2 + 1;]]>
+</Line>
+<Line Number="52">
+<![CDATA[ELSIF B2 THEN D2 := D3 + 1;]]>
+</Line>
+<Line Number="53">
+<![CDATA[ELSIF B3 THEN D3 := D4 + 1;]]>
+</Line>
+<Line Number="54">
+<![CDATA[ELSIF B4 THEN D4 := D5 + 1;]]>
+</Line>
+<Line Number="55">
+<![CDATA[ELSIF B5 THEN D5 := D6 + 1;]]>
+</Line>
+<Line Number="56">
+<![CDATA[ELSIF B6 THEN D6 := D7 + 1;]]>
+</Line>
+<Line Number="57">
+<![CDATA[ELSIF B7 THEN D7 := D8 + 1;]]>
+</Line>
+<Line Number="58">
+<![CDATA[ELSIF B8 THEN D8 := D9 + 1;]]>
+</Line>
+<Line Number="59">
+<![CDATA[ELSIF B9 THEN D9 := D0 + 1;]]>
+</Line>
+<Line Number="60">
+<![CDATA[ELSIF B0 THEN D0 := D1 + 1;]]>
+</Line>
+<Line Number="61">
+<![CDATA[ELSIF B1 THEN D1 := D2 + 1;]]>
+</Line>
+<Line Number="62">
+<![CDATA[ELSIF B2 THEN D2 := D3 + 1;]]>
+</Line>
+<Line Number="63">
+<![CDATA[ELSIF B3 THEN D3 := D4 + 1;]]>
+</Line>
+<Line Number="64">
+<![CDATA[ELSIF B4 THEN D4 := D5 + 1;]]>
+</Line>
+<Line Number="65">
+<![CDATA[ELSIF B5 THEN D5 := D6 + 1;]]>
+</Line>
+<Line Number="66">
+<![CDATA[ELSIF B6 THEN D6 := D7 + 1;]]>
+</Line>
+<Line Number="67">
+<![CDATA[ELSIF B7 THEN D7 := D8 + 1;]]>
+</Line>
+<Line Number="68">
+<![CDATA[ELSIF B8 THEN D8 := D9 + 1;]]>
+</Line>
+<Line Number="69">
+<![CDATA[ELSIF B9 THEN D9 := D0 + 1;]]>
+</Line>
+<Line Number="70">
+<![CDATA[ELSIF B0 THEN D0 := D1 + 1;]]>
+</Line>
+<Line Number="71">
+<![CDATA[ELSIF B1 THEN D1 := D2 + 1;]]>
+</Line>
+<Line Number="72">
+<![CDATA[ELSIF B2 THEN D2 := D3 + 1;]]>
+</Line>
+<Line Number="73">
+<![CDATA[ELSIF B3 THEN D3 := D4 + 1;]]>
+</Line>
+<Line Number="74">
+<![CDATA[ELSIF B4 THEN D4 := D5 + 1;]]>
+</Line>
+<Line Number="75">
+<![CDATA[ELSIF B5 THEN D5 := D6 + 1;]]>
+</Line>
+<Line Number="76">
+<![CDATA[ELSIF B6 THEN D6 := D7 + 1;]]>
+</Line>
+<Line Number="77">
+<![CDATA[ELSIF B7 THEN D7 := D8 + 1;]]>
+</Line>
+<Line Number="78">
+<![CDATA[ELSIF B8 THEN D8 := D9 + 1;]]>
+</Line>
+<Line Number="79">
+<![CDATA[ELSIF B9 THEN D9 := D0 + 1;]]>
+</Line>
+<Line Number="80">
+<![CDATA[ELSIF B0 THEN D0 := D1 + 1;]]>
+</Line>
+<Line Number="81">
+<![CDATA[ELSIF B1 THEN D1 := D2 + 1;]]>
+</Line>
+<Line Number="82">
+<![CDATA[ELSIF B2 THEN D2 := D3 + 1;]]>
+</Line>
+<Line Number="83">
+<![CDATA[ELSIF B3 THEN D3 := D4 + 1;]]>
+</Line>
+<Line Number="84">
+<![CDATA[ELSIF B4 THEN D4 := D5 + 1;]]>
+</Line>
+<Line Number="85">
+<![CDATA[ELSIF B5 THEN D5 := D6 + 1;]]>
+</Line>
+<Line Number="86">
+<![CDATA[ELSIF B6 THEN D6 := D7 + 1;]]>
+</Line>
+<Line Number="87">
+<![CDATA[ELSIF B7 THEN D7 := D8 + 1;]]>
+</Line>
+<Line Number="88">
+<![CDATA[ELSIF B8 THEN D8 := D9 + 1;]]>
+</Line>
+<Line Number="89">
+<![CDATA[ELSIF B9 THEN D9 := D0 + 1;]]>
+</Line>
+<Line Number="90">
+<![CDATA[ELSIF B0 THEN D0 := D1 + 1;]]>
+</Line>
+<Line Number="91">
+<![CDATA[ELSIF B1 THEN D1 := D2 + 1;]]>
+</Line>
+<Line Number="92">
+<![CDATA[ELSIF B2 THEN D2 := D3 + 1;]]>
+</Line>
+<Line Number="93">
+<![CDATA[ELSIF B3 THEN D3 := D4 + 1;]]>
+</Line>
+<Line Number="94">
+<![CDATA[ELSIF B4 THEN D4 := D5 + 1;]]>
+</Line>
+<Line Number="95">
+<![CDATA[ELSIF B5 THEN D5 := D6 + 1;]]>
+</Line>
+<Line Number="96">
+<![CDATA[ELSIF B6 THEN D6 := D7 + 1;]]>
+</Line>
+<Line Number="97">
+<![CDATA[ELSIF B7 THEN D7 := D8 + 1;]]>
+</Line>
+<Line Number="98">
+<![CDATA[ELSIF B8 THEN D8 := D9 + 1;]]>
+</Line>
+<Line Number="99">
+<![CDATA[ELSIF B9 THEN D9 := D0 + 1;]]>
+</Line>
+<Line Number="100">
+<![CDATA[END_IF;]]>
+</Line>
 </STContent>
 </Routine>
 </Routines>

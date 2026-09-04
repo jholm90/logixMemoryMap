@@ -224,3 +224,23 @@ work (Phase 5) with an open, unresolved tag/UDT discrepancy just because
 logic sizing is more interesting — an error in the "exact" tier undermines
 the tool's whole value proposition more than an acknowledged estimate in the
 logic tier does.
+
+## A blank `error_count` is weaker evidence than an explicit `0`
+
+Found 2026-09-04 while picking the RLL partner for an ST instruction test.
+**268 of the 1,841 captured rows have a BLANK `error_count`**, not a `0` —
+they were captured before that column existed, so nobody recorded the build
+status either way. `is_valid_capture()` counts them, and should: measured
+both ways, the difference on the corpus headline is small (mean |error|
+0.679% counting them vs 0.693% excluding them; within ±1% 87.6% vs 89.1%),
+so throwing 268 real rows away on a hunch would be its own unforced error.
+`scripts/accuracy_report.py --strict` excludes them whenever that needs
+re-checking.
+
+Where it does matter is **anchoring**: when a single row is the pair or
+control for a new measurement, a blank there means the whole comparison
+rests on a build nobody verified. Prefer an explicit-`0` row for that job,
+or test more than one instruction so a single soft anchor cannot carry the
+conclusion on its own (`gen_st_sizing.py`'s group D pairs four instructions
+for exactly this reason — `instr_cop_n01000` is blank, the other three are
+explicit `0`).

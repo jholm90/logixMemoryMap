@@ -22,7 +22,17 @@ is only a valid fitting point if ALL of these hold:
   * notes carries neither WINDOW TITLE MISMATCH nor ZERO CAPACITY -- both
     already-established bad-read markers (see docs/TESTING_PLAN.md).
 
-Run: python scripts/accuracy_report.py [--json OUT] [--category CAT]
+A BLANK error_count is NOT the same evidence as an explicit 0 (found
+2026-09-04 while pairing an ST test against instr_cop_n01000, which is one
+of these). 268 captured rows predate the error_count column entirely, and
+for those "no errors recorded" means "nobody recorded" -- absence of
+evidence, not evidence of a clean build. They are still counted by default,
+because reclassifying 268 rows as invalid on a hunch would be its own
+unforced error; --strict excludes them so the difference is measurable
+instead of assumed. Prefer an explicit-0 row whenever a single row is being
+used as the pair/anchor for a new measurement.
+
+Run: python scripts/accuracy_report.py [--json OUT] [--category CAT] [--strict]
 """
 
 from __future__ import annotations
@@ -46,8 +56,12 @@ MANIFEST = REPO_ROOT / "samples" / "manifest.csv"
 _BAD_NOTE_MARKERS = ("WINDOW TITLE MISMATCH", "ZERO CAPACITY")
 
 
-def is_valid_capture(row: dict) -> tuple[bool, str]:
-    """(valid, reason_if_not) -- see this module's docstring."""
+def is_valid_capture(row: dict, strict: bool = False) -> tuple[bool, str]:
+    """(valid, reason_if_not) -- see this module's docstring.
+
+    strict=True additionally rejects a row whose error_count is blank
+    rather than an explicit 0 (a capture predating the error_count column,
+    so its build status was never recorded either way)."""
     actual = (row.get("actual_bytes") or "").strip()
     if not actual.isdigit():
         return False, "no capture"
@@ -58,10 +72,12 @@ def is_valid_capture(row: dict) -> tuple[bool, str]:
     error_count = (row.get("error_count") or "").strip()
     if error_count not in ("", "0"):
         return False, f"built with {error_count} error(s)"
+    if strict and error_count == "":
+        return False, "error_count never recorded"
     return True, ""
 
 
-def collect(category_filter: str | None = None) -> tuple[list[dict], collections.Counter]:
+def collect(category_filter: str | None = None, strict: bool = False) -> tuple[list[dict], collections.Counter]:
     model = load_memory_model()
     with open(MANIFEST, encoding="utf-8-sig", newline="") as f:
         rows = list(csv.DictReader(f))
@@ -69,7 +85,7 @@ def collect(category_filter: str | None = None) -> tuple[list[dict], collections
     results: list[dict] = []
     excluded: collections.Counter = collections.Counter()
     for row in rows:
-        valid, reason = is_valid_capture(row)
+        valid, reason = is_valid_capture(row, strict)
         if not valid:
             if reason != "no capture":
                 excluded[reason] += 1
@@ -109,9 +125,11 @@ def main() -> int:
     ap.add_argument("--json", help="write the per-file results to this path")
     ap.add_argument("--category", help="only report this manifest category")
     ap.add_argument("--worst", type=int, default=10, help="list this many worst files")
+    ap.add_argument("--strict", action="store_true",
+                    help="also exclude rows whose error_count was never recorded (blank)")
     args = ap.parse_args()
 
-    results, excluded = collect(args.category)
+    results, excluded = collect(args.category, args.strict)
     if not results:
         print("No valid capture rows matched.")
         return 1

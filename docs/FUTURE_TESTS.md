@@ -74,13 +74,25 @@ data point and must not be fitted on its own — the axis_scale lesson.
   precisely because the previous attempt at this question
   (`jsr_target_content_scale_*`) used a hand-rolled mix and came back
   5/26/50/75 errors, still undiagnosed.
-- ~~Structured Text is completely unmodeled~~ — **FIRST DATA GENERATED
-  2026-09-04** (OQ-STSIZING). `realscale_st_n{0,25,100,400,1000}` (plain
-  assignment lines) + `realscale_st_forloop_n00075` (the FOR ... DO ...
-  END_FOR shape copied from the real file's own ST routines). The engine
-  predicts an identical 23,277 across the whole flat ladder, so whatever
-  comes back IS the per-ST-line cost. Still unmodeled in code until that
-  capture lands.
+- ~~Structured Text is completely unmodeled~~ — **FULL BATCH GENERATED
+  2026-09-04**, `src/sample_gen/gen_st_sizing.py`, 24 files (OQ-STSIZING /
+  OQ-STCOMMENT). The first draft of this was a naive assignment-only
+  ladder written from general ST knowledge; James pushed back (*"not just
+  tossing lines and hope they stick"*), the corpus was measured, and the
+  ladder turned out to be representative of nothing — real ST is ~36%
+  control flow, ~29% comments, and calls the same instructions the ladder
+  does (297 routines / 24,017 lines across 23 real files). Rebuilt as: an
+  executable-only line ladder, a comment/blank-line group (James's own
+  question — an RLL rung comment is confirmed FREE, but it is a separate
+  `<Comment>` element while an ST comment is inside the compiled source
+  text, so that result does not transfer), a construct group
+  (IF/ELSIF-chain/CASE/FOR/WHILE, each shape taken from a named real
+  routine), 1,000-call instruction files paired against existing valid
+  `instr_*_n01000` captures, a CPT-expression mirror, and an ST JSR target
+  with SBR/RET params. Every file predicts an identical 23,365 today, which
+  is the point. Still unmodeled in code until the capture lands. **No
+  sample-writing needed from James** — the corpus has more idiom than this
+  requires.
 
 ## 1. Structural module model (OQ-MODULESTRUCTURAL) — highest value
 
