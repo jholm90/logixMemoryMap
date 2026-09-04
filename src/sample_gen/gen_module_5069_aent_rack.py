@@ -3955,13 +3955,37 @@ for _i in range(1, 11):
     _RANDOM_PLANS[f"rand{_i:02d}"] = _rng.sample(_ALL_CHILDREN, _size)
 
 
+def _catalog_slug(catalog: str) -> str:
+    return catalog.lower().replace("-", "_").replace("/", "_")
+
+
+# One file per real 5069 child catalog, each holding the AENTR adapter and
+# exactly ONE child (2026-09-04). Reason: a full-corpus recompute found the
+# rack_5069_* family to be the single worst category error left (+28% to
+# +35%, always under-predicting) because NO 5069 catalog had its own real
+# per-catalog module_overhead point -- every one fell back to the flat
+# 1,672 cross-catalog default. Only four 5069 catalogs (IB16/A, IB8S/A,
+# IY4/A, OBV8S/A) had dedicated single-module captures to derive a real
+# value from; the rest appear only inside multi-child racks where several
+# ALWAYS co-occur (OA16+OB16, OB8+OF4, OF8+OW16 never appear apart), so a
+# least-squares split between the members of those pairs is arbitrary
+# rather than measured. These files break every one of those ties by
+# isolating one catalog at a time -- the same single-module methodology
+# behind every other real entry in module_overhead_by_catalog.
+_SINGLE_PLANS: dict[str, list[str]] = {
+    f"single_{_catalog_slug(c)}": [c] for c in _ALL_CHILDREN
+}
+
+
 def main() -> None:
     for label, children in _PLANS.items():
         _write(label, children)
     for label, children in _RANDOM_PLANS.items():
         _write(label, children, renumber=True)
     _write_combined("rand_combined10", _RANDOM_PLANS)
-    print(f"\nDone. {len(_PLANS) + len(_RANDOM_PLANS) + 1} files.")
+    for label, children in _SINGLE_PLANS.items():
+        _write(label, children)
+    print(f"\nDone. {len(_PLANS) + len(_RANDOM_PLANS) + 1 + len(_SINGLE_PLANS)} files.")
 
 
 if __name__ == "__main__":

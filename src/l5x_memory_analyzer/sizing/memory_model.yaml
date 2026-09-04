@@ -505,6 +505,26 @@ module_overhead_by_catalog:
   '1794-AENT': { bytes: 1612, confidence: ASSUMED }
   '1794-IB16/A': { bytes: 1536, confidence: ASSUMED }
   '2097-V34PR5-LM': { bytes: 3633, confidence: ASSUMED }
+  # 5069 Compact I/O, wired 2026-09-04. Before this, NO 5069 catalog had
+  # its own real capture point -- every one fell back to the flat 1,672
+  # cross-catalog default, which badly under-states them (the whole
+  # rack_5069_* family recomputed at +28% to +35%, the single worst
+  # category error in the corpus). These four come from DEDICATED
+  # SINGLE-MODULE isolation files (modulesweep_5069_*_r2), the same
+  # methodology behind every other real entry in this table, so each is a
+  # direct measurement rather than a fitted split.
+  #
+  # The other nine 5069 catalogs in the corpus (IA16/A, IF8/B, OA16/A,
+  # OB16/B, OB8/A, OF4/A, OF8/A, OW16/C, HSC2XOB4/A) appear ONLY inside
+  # multi-module rack_5069_* files, where several always co-occur --
+  # OA16+OB16, OB8+OF4 and OF8+OW16 each never appear apart, so a
+  # least-squares split between the members of those pairs is arbitrary,
+  # not measured. Deliberately NOT wired from that fit; gen_module_5069_
+  # single_sweep.py generates the missing single-module files instead.
+  '5069-IB16/A': { bytes: 2888, confidence: FITTED }
+  '5069-IB8S/A': { bytes: 1835, confidence: FITTED }
+  '5069-IY4/A': { bytes: 4040, confidence: FITTED }
+  '5069-OBV8S/A': { bytes: 1915, confidence: FITTED }
   '2198-C4004-ERS': { bytes: 4065, confidence: ASSUMED }
   '2198-D012-ERS3': { bytes: 10497, confidence: ASSUMED }
   '2198-D020-ERS3': { bytes: 10497, confidence: ASSUMED }
