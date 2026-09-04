@@ -432,46 +432,6 @@ module_overhead:
 # module_overhead_by_catalog entries) -- confirmed their ONLY unmodeled
 # piece (an unrecognized nested member type inside module_defined_bytes)
 # genuinely costs $0 extra, not a missing-data gap.
-# OQ-MODULEIO's "multi-module marginal cost" sub-thread, for the 2198
-# Kinetix drive family specifically -- derived and wired 2026-09-04 from
-# the 18-file axis_scale_* sweep, which had been sitting reconciled but
-# unexplained (every file off by -6% to -10%, always OVER-predicting).
-#
-# Real effect: module_overhead_by_catalog is fitted from SINGLE-module
-# captures and is correct for the FIRST 2198 drive on a shared 2198-P208
-# DC bus. Every ADDITIONAL drive on that same bus costs materially less
-# than the first -- the shared bus/connection structures are established
-# once, not per drive. The engine was charging every drive the full
-# first-drive overhead.
-#
-# Exactly linear on real data, both drive shapes, no residual:
-#   single-axis (2198-S086-ERS3), n = 1,2,4,6,8,12,16,20 drives:
-#       delta = -3288 * (n - 1) - 56    (8/8 points exact)
-#   dual-axis (2198-D012/D020/D032/... -ERS3), d = 1,2,3,4,6,8,10 drives:
-#       delta = -5200 * (d - 1) - 56    (7/7 points exact, and note these
-#       are all DISTINCT catalogs, so this is not a repeated-catalog
-#       effect -- it is per additional drive on the bus)
-# The -56 is the same small universal offset the rest of this project's
-# module files carry; it does not scale.
-#
-# Confirmed NOT a general per-additional-module effect: the same recompute
-# over rack_1756_n02..n16_full (all-distinct 1756 backplane modules) shows
-# only ~-300/module, and rack_5069_* shows the opposite sign entirely
-# (+1,400/module UNDER-prediction). So this is scoped to the 2198 drive
-# family on a shared DC bus and deliberately NOT generalized.
-#
-# The discount is larger for a dual-axis drive (5,200) than a single-axis
-# one (3,288). With only these two real drive shapes in existence for this
-# family (Kinetix 5700 is S-series single-axis / D-series dual-axis), a
-# per-module vs per-axis split of that difference is NOT separable from
-# the data -- 2 shapes, 2 unknowns. Stored per axis-count rather than
-# claiming a mechanism.
-drive_bus_additional_module_discount:
-  by_axis_count:
-    1: 3288
-    2: 5200
-  confidence: FITTED
-
 module_overhead_by_catalog:
   '150 SMC Flex-E': { bytes: 6614, confidence: ASSUMED }
   '1732E-IB16M12DR/A': { bytes: 2126, confidence: ASSUMED }

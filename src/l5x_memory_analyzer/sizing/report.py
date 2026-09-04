@@ -474,10 +474,6 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # is included, unmodeled-overhead noted via a SizeError instead so it's
     # visible, not silently dropped.
     module_entries: list[tuple[str, str, str, int, str]] = []
-    # True once a 2198 bus drive has been charged full first-drive overhead
-    # -- every later one on the shared DC bus gets the real marginal
-    # discount instead (see drive_bus_discount below).
-    seen_bus_drive = False
     for module in parse_modules(root):
         # "Local" is the processor's own self-entry (always present, always
         # zero connections of its own) -- its overhead is already covered by
@@ -566,21 +562,6 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # average for any catalog with an unambiguous real capture point;
         # falls back to the same flat default otherwise.
         overhead_bytes, overhead_basis = model.module_overhead_by_catalog.overhead_for(module.catalog_number)
-        # OQ-MODULEIO multi-module marginal cost, 2198 Kinetix drive family
-        # (wired 2026-09-04): module_overhead_by_catalog is fitted from
-        # SINGLE-module captures and is right for the FIRST drive on a
-        # shared 2198-P208 DC bus; every additional drive on that bus costs
-        # materially less (the shared bus structures are established once).
-        # Exact on all 18 real axis_scale_* files -- see memory_model.yaml
-        # drive_bus_additional_module_discount. Deliberately scoped to this
-        # family: the same recompute shows other module families do NOT
-        # behave this way.
-        drive_axes = model.drive_bus_discount.axis_count_for(module.catalog_number)
-        if drive_axes is not None:
-            if seen_bus_drive:
-                overhead_bytes -= model.drive_bus_discount.discount_for(module.catalog_number)
-                overhead_basis = weakest(overhead_basis, model.drive_bus_discount.confidence)
-            seen_bus_drive = True
         module_bytes = module.module_defined_bytes + overhead_bytes
         module_entries.append((f"modules/{label}", "module_io", module.catalog_number,
                                 module_bytes, overhead_basis))

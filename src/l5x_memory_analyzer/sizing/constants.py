@@ -433,42 +433,6 @@ class SafetyCapableBaselineDeltaModel:
 
 
 @dataclass(frozen=True)
-class DriveBusDiscountModel:
-    """Real per-ADDITIONAL-drive discount for the 2198 Kinetix family on a
-    shared 2198-P208 DC bus (OQ-MODULEIO's multi-module marginal sub-thread,
-    wired 2026-09-04) -- see memory_model.yaml
-    drive_bus_additional_module_discount for the derivation, the exact
-    18-file evidence, and why this is deliberately NOT generalized to other
-    module families."""
-
-    by_axis_count: dict[int, int]
-    confidence: str
-
-    # Real Kinetix 5700 catalog convention: 2198-S###-ERS# is a single-axis
-    # drive, 2198-D###-ERS# a dual-axis one. 2198-P### is the DC-bus power
-    # supply, not a drive -- it establishes the bus rather than hanging off
-    # it, and carries no axes.
-    _SINGLE_AXIS_PREFIX = "2198-S"
-    _DUAL_AXIS_PREFIX = "2198-D"
-
-    def axis_count_for(self, catalog_number: str | None) -> int | None:
-        """Axes on this drive catalog, or None if it isn't a bus drive."""
-        if not catalog_number:
-            return None
-        if catalog_number.startswith(self._SINGLE_AXIS_PREFIX):
-            return 1
-        if catalog_number.startswith(self._DUAL_AXIS_PREFIX):
-            return 2
-        return None
-
-    def discount_for(self, catalog_number: str | None) -> int:
-        axes = self.axis_count_for(catalog_number)
-        if axes is None:
-            return 0
-        return self.by_axis_count.get(axes, 0)
-
-
-@dataclass(frozen=True)
 class ModuleOverheadModel:
     """Real per-catalog module overhead (OQ-MODULEIO, wired 2026-08-29) --
     see memory_model.yaml module_overhead_by_catalog for the full
@@ -540,7 +504,6 @@ class MemoryModel:
     module_overhead_bytes: int
     module_overhead_confidence: str
     module_overhead_by_catalog: ModuleOverheadModel
-    drive_bus_discount: DriveBusDiscountModel
     firmware_baseline_delta: FirmwareBaselineDeltaModel
     safety_capable_baseline_delta: SafetyCapableBaselineDeltaModel
     catalog_baseline_delta: CatalogBaselineDeltaModel
@@ -586,13 +549,6 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             },
             default_bytes=module_overhead["bytes"],
             default_confidence=module_overhead["confidence"],
-        ),
-        drive_bus_discount=DriveBusDiscountModel(
-            by_axis_count={
-                int(k): v
-                for k, v in raw["drive_bus_additional_module_discount"]["by_axis_count"].items()
-            },
-            confidence=raw["drive_bus_additional_module_discount"]["confidence"],
         ),
         firmware_baseline_delta=FirmwareBaselineDeltaModel(
             by_major_version={
