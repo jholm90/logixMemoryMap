@@ -55,21 +55,22 @@ global ErrorValue := ""
 global WarningValue := ""
 global MessageValue := ""
 global WindowTitle := ""
-
-; Catalogs whose projects never raise a Build popup at all (James,
-; 2026-09-04: "The 1769/L7 processors don't build unless there are changes
-; so that build window will never come up"). Semicolon-separated wildcard
-; patterns matched case-insensitively against the FULL Logix window title,
-; which carries the catalog in trailing brackets -- real example:
-;   Logix Designer - FwMatrix311769L16ERBB1B in fwmatrix_v31_1769_l16er_bb1b.ACD [1769-L16ER-BB1B 31.11]
-; so "*1769-*" matches on the bracketed catalog. Add patterns here rather
-; than in the build logic below.
 global BUILD_SKIP_CATALOGS := "*1769-*;*1756-L7*"
 
-; True if this project should be expected to show a Build popup. Wildcards
-; are translated to a regex rather than pattern-matched by hand: every
-; regex metacharacter is escaped EXCEPT `*`, which then becomes `.*`, so a
-; catalog containing a `.` or `+` can never be read as a metacharacter.
+; Pulls the leading integer out of button/label text like "0 Warnings",
+; "3 Errors", "1 Warning" -- handles singular/plural and any wording since
+; it only looks for digits at the start. Returns "" (not "0") if nothing
+; matched, so a bad ControlGetText read doesn't silently log a false zero.
+ExtractCount(text) {
+    if RegExMatch(Trim(text), "^(\d+)", &m)
+        return m[1]
+    return ""
+}
+
+
+
+
+
 BuildPopupExpected(title) {
     for pat in StrSplit(BUILD_SKIP_CATALOGS, ";") {
         pat := Trim(pat)
@@ -82,36 +83,7 @@ BuildPopupExpected(title) {
     return true
 }
 
-; Pulls the leading integer out of button/label text like "0 Warnings",
-; "3 Errors", "1 Warning" -- handles singular/plural and any wording since
-; it only looks for digits at the start. Returns "" (not "0") if nothing
-; matched, so a bad ControlGetText read doesn't silently log a false zero.
-ExtractCount(text) {
-    if RegExMatch(Trim(text), "^(\d+)", &m)
-        return m[1]
-    return ""
-}
 
-; Finds the Error/Warning/Message counters BY THEIR TEXT instead of by a
-; hardcoded ClassNN index (James, 2026-09-04: "i notice sometimes these
-; buttons change depending on how many instances i have open. Button3
-; should be 'nnn *Error*' Button4 should be 'nnn *Warning*' Button 5 should
-; be 'nnn *Message*'").
-;
-; The old code read Button3/4/5, with Button25/26/27 and a stray Button10 as
-; fallbacks -- three guesses at an index that Studio 5000 reassigns
-; depending on how many instances are open, so on the wrong layout it read
-; the WRONG CONTROL rather than failing. That is the dangerous case: a
-; button holding some other number logs a plausible-looking error_count and
-; the row enters the corpus as a clean build. This project has already had
-; to void 30 capture rows for exactly that class of silently-wrong reading.
-;
-; Enumerates every Button* control in the ACTIVE window, matches
-; "<digits> ... Error|Warning|Message" case-insensitively, and returns "" for
-; anything not found -- never "0" -- so a failed scan is logged as no-read,
-; not as a clean build. `seen` carries every button's text for the status
-; line, so a future layout change is diagnosable from the log instead of
-; needing another round of index guessing.
 FindCountButtons() {
     counts := Map("Error", "", "Warning", "", "Message", "")
     seen := ""
@@ -133,8 +105,6 @@ FindCountButtons() {
             continue
         seen .= (seen = "" ? "" : " | ") ctrl "=" txt
         for kind in ["Error", "Warning", "Message"] {
-            ; first match wins; requires LEADING digits so a plain
-            ; "Errors..." button with no count can't be mistaken for one
             if (counts[kind] = "") && RegExMatch(txt, "i)^(\d+)\b.*\b" kind, &m)
                 counts[kind] := m[1]
         }
@@ -237,7 +207,7 @@ Status(msg) {
 				
 				Status("Active Title: " active_title)
 				
-				sleep 2000
+				sleep 100
 				
 				
 				
@@ -272,18 +242,31 @@ Status(msg) {
 				}
 				; window found, continue here
 				
-				Sleep 2000
+				Sleep 100
 
         ; --- Build ---
-        ; Read the title BEFORE building -- it carries the catalog, and some
-        ; catalogs never raise a Build popup at all (see BUILD_SKIP_CATALOGS).
-        ; Waiting for a popup that cannot appear costs the full appear
-        ; timeout on every one of those files.
+        ; USAGE of BuildPopupExpected() (defined above with the globals).
+        ; Read the title BEFORE building: it carries the catalog in trailing
+        ; brackets, e.g.
+        ;   Logix Designer - Foo in bar.ACD [1769-L16ER-BB1B 31.11]
+        ; and BUILD_SKIP_CATALOGS lists the families that never raise a Build
+        ; popup at all (James, 2026-09-04: "The 1769/L7 processors don't build
+        ; unless there are changes so that build window will never come up").
+        ; Without this the whole build block below waits out maxAppearSeconds
+        ; on every one of those files for a window that cannot appear.
+        ;
+        ;   BuildPopupExpected(title) -> true  = normal catalog, build it and
+        ;                                        wait for the popup
+        ;                              -> false = skip the build entirely
+        ;
+        ; To add a family, edit BUILD_SKIP_CATALOGS only -- semicolon-
+        ; separated wildcards, matched case-insensitively against the FULL
+        ; window title. Nothing below needs to change.
         preBuildTitle := WinGetTitle("A")
         buildRan := BuildPopupExpected(preBuildTitle)
 
         if !buildRan {
-            Status("Build SKIPPED by catalog rule (no popup possible for this controller): " preBuildTitle)
+            Status("Build SKIPPED by BUILD_SKIP_CATALOGS (no popup possible for this controller): " preBuildTitle)
         } else {
         Status("Alt")
         Send "{Alt}"
@@ -292,58 +275,32 @@ Status(msg) {
         Send "l"
         Sleep 50
         Status("b")
-        Send "b"
 
-        ; Wait for the build popup to APPEAR, then for it to CLOSE (James,
-        ; 2026-09-04: "on loading bigger files i want to wait for the build
-        ; window to start").
-        ;
-        ; The old shape was `Sleep 7500` then `WinWait(title, , 1)`: a fixed
-        ; guess at how long Studio takes to start building, with a 1-second
-        ; window to catch it. On a big file the build hadn't started yet
-        ; within 8.5s, WinWait timed out, and the script sailed on to read
-        ; the Error/Warning counters WHILE THE BUILD WAS STILL RUNNING --
-        ; the counters then hold the PREVIOUS file's numbers.
-        ;
-        ; Two bugs in the attempted fix, for the record:
-        ;   WinWait(!buildPopupTitle, , 1)
-        ; `!` is boolean NOT, so `!"Building"` evaluates to 0 and that waits
-        ; for a window literally titled "0" -- there is no negated form of
-        ; WinWait. And the body called WinWaitClose with a "didn't open"
-        ; message, un-negated, so it would have fired the MsgBox on the
-        ; success path. The return values are what carry the meaning:
-        ;   WinWait      -> HWND (truthy) if it appeared, 0 on TIMEOUT
-        ;   WinWaitClose -> 1 if it closed,               0 on TIMEOUT
-        ; so "timed out" is `!` on either, which is why the close-wait below
-        ; is written `if !WinWaitClose(...)`.
-        ;
-        ; The short sleep matters: start watching BEFORE the popup can
-        ; appear, not after. Keeping the old 7.5s here would mean a fast
-        ; build's popup opens and closes inside the sleep, WinWait then
-        ; waits the full appear timeout for a window that already came and
-        ; went, and every small file costs an extra two minutes.
-        Sleep 300
 
-        buildPopupTitle := "Building"
-        maxAppearSeconds := 120   ; a big file can take minutes just to START
-        maxWaitSeconds := 600     ; ceiling so a hung build doesn't loop forever
+				Send "b"
+				Sleep 300
+				
+				
+				
 
-        Status("Waiting for build to start")
-        if WinWait(buildPopupTitle, , maxAppearSeconds) {
-            Status("Build started -- waiting for it to finish")
-            if !WinWaitClose(buildPopupTitle, , maxWaitSeconds)
-                MsgBox "Build popup didn't close within " maxWaitSeconds "s -- possible hang, check manually."
-            else
-                Status("Build finished")
-        } else {
-            ; Ambiguous by nature: either the build never started, or it
-            ; finished faster than the 300 ms above. NOT treated as success
-            ; -- the counter scan that follows returns "" rather than "0"
-            ; when it can't read cleanly, so an unbuilt project lands in the
-            ; manifest as no-read instead of as a clean build.
-            Status("WARNING: build popup never seen within " maxAppearSeconds "s -- build may not have run, or finished too fast to catch. Counter values below are suspect.")
-        }
-        }   ; end: buildRan
+				buildPopupTitle := "Building"
+				maxAppearSeconds := 120   ; a big file can take minutes just to START
+				maxWaitSeconds := 600     ; ceiling so a hung build doesn't loop forever
+
+				Status("Waiting for build to start")
+				if WinWait(buildPopupTitle, , maxAppearSeconds) {
+						Status("Build started -- waiting for it to finish")
+						if !WinWaitClose(buildPopupTitle, , maxWaitSeconds)
+								MsgBox "Build popup didn't close within " maxWaitSeconds "s -- possible hang, check manually."
+						else
+								Status("Build finished")
+				} else {
+						Status("WARNING: build popup never seen within " maxAppearSeconds "s -- build may not have run, or finished too fast to catch. Counter values below are suspect.")
+				}
+        }   ; end: if buildRan
+
+
+
 
         Sleep 50
         ; Captured at the same moment as Error/Warning/Message -- the
@@ -352,41 +309,27 @@ Status(msg) {
         ; giving PowerShell an independent cross-check against the filename
         ; it actually requested, instead of just trusting the handshake blind.
         WindowTitle := WinGetTitle("A")
-        found := FindCountButtons()
-        ErrorValue := found.counts["Error"]
-        WarningValue := found.counts["Warning"]
-        MessageValue := found.counts["Message"]
+				found := FindCountButtons()
+				ErrorValue   := found.counts["Error"]
+				WarningValue := found.counts["Warning"]
+				MessageValue := found.counts["Message"]
 
-        ; One retry: the counters can still be repainting right after the
-        ; build popup closes. Same scan, not a different index guess.
-        if (ErrorValue = "" AND WarningValue = "") {
-            Status("Counter buttons not found yet -- rescanning. Saw: " found.seen)
-            Sleep 250
-            found := FindCountButtons()
-            ErrorValue := found.counts["Error"]
-            WarningValue := found.counts["Warning"]
-            MessageValue := found.counts["Message"]
-        }
-        if (ErrorValue = "" AND WarningValue = "")
-            Status("WARNING: no Error/Warning counter button matched -- logging BLANK, not 0. Buttons seen: " found.seen)
-
-        ; No build ran, so whatever those buttons hold is left over from
-        ; the PREVIOUS file -- the exact stale-read that has already cost
-        ; this project 30 voided capture rows. Blanked rather than logged:
-        ; a blank error_count reads as "never recorded" downstream
-        ; (scripts/accuracy_report.py --strict), which is true here, where
-        ; "0" would falsely assert a clean build that never happened.
+        ; No build ran, so those buttons still hold the PREVIOUS file's
+        ; numbers. Blanked rather than logged: a blank error_count reads
+        ; downstream as "never recorded" (accuracy_report.py --strict),
+        ; which is true here, where "0" would assert a clean build that
+        ; never happened. Capacity capture below is unaffected.
         if !buildRan {
             ErrorValue := ""
             WarningValue := ""
             MessageValue := ""
-            Status("Counters blanked -- no build ran for this catalog, so the on-screen values belong to the previous file.")
+            Status("Counters blanked -- no build ran for this catalog.")
         }
 
         Status("Errors/Warnings/Message: " ErrorValue ", " WarningValue ", " MessageValue " | " WindowTitle)
 
         ; --- Controller Properties -> Capacity (OCD value) ---
-        Sleep 1000
+        Sleep 250
         Status("Alt")
         Send "{Alt}"
         Sleep 10
@@ -420,9 +363,9 @@ Status(msg) {
         OCDValue := StripCommas(Trim(ControlGetText("Edit3", "A")))
 				ButtonTest := ControlGetText("Button1", "A")
         Status("Read OCD value: " OCDValue)
-        Sleep 2000
+        Sleep 200
 				Status("Read Test value: " ButtonTest)
-        Sleep 2000
+        Sleep 250
 				
 				if OCDValue = "0" AND ButtonTest != "Redundancy Enabled"{
 					Status("Reading 1769 Edit8 value")
@@ -432,7 +375,7 @@ Status(msg) {
 							Send "{Tab}"
 							Sleep 50
 							Send "{Enter}"
-							Sleep 2500
+							Sleep 500
 							OCDValue := StripCommas(Trim(ControlGetText("Edit8", "A")))
 				}
 				
@@ -443,7 +386,7 @@ Status(msg) {
 					OCDValue := StripCommas(Trim(ControlGetText("Static23", "A")))
 					Status("Read Static23 value: {{" OCDValue "}}")
 					
-					Sleep 2000
+					Sleep 150
 					
 					; L7 or 1769
 					if OCDValue = "" OR !IsNumber(OCDValue) OR OCDValue = "0" {
@@ -475,7 +418,7 @@ Status(msg) {
 							
 							
 							;Send "{Enter}"
-							Sleep 2500
+							Sleep 500
 							OCDValue := StripCommas(Trim(ControlGetText("Edit8", "A")))
 					}					
 				}
