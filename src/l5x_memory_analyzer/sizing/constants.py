@@ -191,6 +191,41 @@ class UdtDefinitionModel:
 
 
 @dataclass(frozen=True)
+class CptRealDestModel:
+    """REAL-destination CPT cost (OQ-CMPCPTLAYOUT, wired 2026-09-04) -- see
+    memory_model.yaml cpt_expression.real_dest for the full derivation and
+    the flagged coverage gaps."""
+
+    first_operator: int
+    extra_operator: int
+    single_pow_extra: int
+    five_plus_operator_extra: int
+    per_int_operand: int
+    per_float_literal: int
+    confidence: str
+
+    def cost_for(
+        self, operators: list[str], n_int_operands: int, n_float_literals: int, base_read: int
+    ) -> int:
+        n_ops = len(operators)
+        if n_ops == 0:
+            # A bare REAL copy, 'CPT(R1,R0)' -- no operators, so no float
+            # arithmetic to charge differently. Falls through to the plain
+            # base_read the integer path would have charged.
+            return base_read + self.per_int_operand * n_int_operands
+        total = base_read + self.first_operator + self.extra_operator * (n_ops - 1)
+        if n_ops == 1 and operators[0] == "**":
+            total += self.single_pow_extra
+        if n_ops >= 5:
+            total += self.five_plus_operator_extra
+        return (
+            total
+            + self.per_int_operand * n_int_operands
+            + self.per_float_literal * n_float_literals
+        )
+
+
+@dataclass(frozen=True)
 class CptExpressionModel:
     base_read: int
     operator_tier_costs: dict[str, int]
@@ -201,6 +236,7 @@ class CptExpressionModel:
     pow_tier_mix_per_operator: int
     three_tier_mix_base_by_remainder: dict[int, int]
     three_tier_mix_per_pow_operand: int
+    real_dest: "CptRealDestModel"
 
     def cost_for(self, operators: list[str]) -> int:
         """Real per-call CPT cost from its expression's operator tokens
@@ -620,6 +656,15 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                     int(k): v for k, v in raw["cpt_expression"]["three_tier_mix_base_by_remainder"].items()
                 },
                 three_tier_mix_per_pow_operand=raw["cpt_expression"]["three_tier_mix_per_pow_operand"],
+                real_dest=CptRealDestModel(
+                    first_operator=raw["cpt_expression"]["real_dest"]["first_operator"],
+                    extra_operator=raw["cpt_expression"]["real_dest"]["extra_operator"],
+                    single_pow_extra=raw["cpt_expression"]["real_dest"]["single_pow_extra"],
+                    five_plus_operator_extra=raw["cpt_expression"]["real_dest"]["five_plus_operator_extra"],
+                    per_int_operand=raw["cpt_expression"]["real_dest"]["per_int_operand"],
+                    per_float_literal=raw["cpt_expression"]["real_dest"]["per_float_literal"],
+                    confidence=raw["cpt_expression"]["real_dest"]["confidence"],
+                ),
             ),
             operand_type_surcharge=OperandTypeSurchargeModel(
                 confidence=raw["operand_type_surcharge"]["confidence"],

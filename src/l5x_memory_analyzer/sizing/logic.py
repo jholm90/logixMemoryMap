@@ -15,6 +15,13 @@ from l5x_memory_analyzer.sizing.constants import LogicInstructionModel
 # see memory_model.yaml operand_type_surcharge for why).
 _BARE_TAG = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
+# Operand types that a REAL-destination CPT has to convert to float before
+# it can evaluate (memory_model.yaml cpt_expression.real_dest). BOOL is
+# deliberately absent -- no real corpus example of a BOOL operand inside a
+# CPT expression exists to confirm it converts the same way, so it falls
+# through uncharged rather than being guessed at.
+_CPT_INTEGER_OPERAND_TYPES = frozenset({"SINT", "INT", "DINT", "LINT"})
+
 
 def _resolve_call_type(operands: list[str], tag_types: dict[str, str]) -> str | None:
     """The first operand that resolves to a known bare-tag type -- every
@@ -71,8 +78,27 @@ def compute_routine_logic_bytes(
     # cost is expression-complexity-dependent) -- see memory_model.yaml
     # cpt_expression for the derivation. "CPT" is deliberately absent from
     # `weights` now, so the loop above never double-counts it.
-    for operators in routine.cpt_calls:
-        total += model.cpt_expression.cost_for(operators)
+    #
+    # A CPT writing to a REAL destination is evaluated in floating point and
+    # priced by a separate real_dest model (wired 2026-09-04) -- the integer
+    # operator-tier costs above don't apply, and every non-float operand
+    # carries a real conversion cost. Needs the file's tag types to tell a
+    # REAL destination from an integer one, so a file whose types can't be
+    # resolved (tag_types empty) keeps the integer path unchanged rather
+    # than guessing.
+    for call in routine.cpt_calls:
+        dest_type = tag_types.get(call.dest) if tag_types else None
+        if dest_type == "REAL":
+            n_int_operands = call.int_literals + sum(
+                1 for name in call.operand_names
+                if tag_types.get(name) in _CPT_INTEGER_OPERAND_TYPES
+            )
+            total += model.cpt_expression.real_dest.cost_for(
+                call.operators, n_int_operands, call.float_literals,
+                model.cpt_expression.base_read,
+            )
+        else:
+            total += model.cpt_expression.cost_for(call.operators)
 
     # Operand-type surcharge (OQ-OPERANDTYPE) -- additive on TOP of the
     # base DINT-rate weight already summed above via instruction_counts,

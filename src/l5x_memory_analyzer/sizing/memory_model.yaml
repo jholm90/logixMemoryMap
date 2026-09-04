@@ -1179,6 +1179,60 @@ cpt_expression:
     2: 144
   three_tier_mix_per_pow_operand: 4
 
+  # REAL-DESTINATION CPT (OQ-CMPCPTLAYOUT's last open thread), derived and
+  # wired 2026-09-04. Everything above was fitted on INTEGER-destination
+  # CPT calls and is exact there (every all-DINT CPT row in the corpus
+  # recomputes to a ~0 residual). A CPT whose DESTINATION is REAL is
+  # evaluated in floating point instead, and costs materially differently
+  # -- completely unmodeled until now, leaving residuals up to +272 bytes
+  # per call site (instr_cpt_n05000 was off by +960,023 bytes / +42%).
+  #
+  # Real mechanism, not a curve fit: in float, the integer operator-TIER
+  # differences vanish. Integer CPT charges +/- at 36, * and / at 52, and
+  # ** at 116; in a REAL-destination CPT a single operator costs the same
+  # 76 whichever of +,-,*,/ it is (** costs 8 more). Each additional
+  # operator then costs a flat 40. On top of that, every operand that is
+  # NOT already floating point (a DINT/INT/SINT/LINT tag, or an integer
+  # literal) costs a further 40 -- the real per-operand int->float
+  # conversion -- and each float literal costs 4.
+  #
+  #   float_cost = base_read + first_operator + extra_operator*(n_ops - 1)
+  #                + (single_pow_extra if the lone operator is **)
+  #                + (five_plus_operator_extra if n_ops >= 5)
+  #   total      = float_cost + per_int_operand*n_int_operands
+  #                + per_float_literal*n_float_literals
+  #
+  # Exact (0 residual) on all 29 real REAL-destination CPT capture rows in
+  # the corpus, spanning 1, 2 and 5 operators, every operator tier, and
+  # every operand mix from all-integer to all-float:
+  #   cmpcpt_cpt_op_{add,sub,mul,div,pow}_floatliteral_n01000 (1 operator,
+  #   all 5 tiers), cptcx_constants_floatconst_n2/_n4, cptmix_realcheck_
+  #   real, and the whole 20-file cptmix_{real1,real2,real3,float1,
+  #   stacked,disentangle}_* probe set (5 operators). Those 20 had been
+  #   sitting reconciled-but-unexplained since 2026-08-30 -- OPEN_QUESTIONS
+  #   described them as "too tight/consistent across position/nesting
+  #   variants to isolate a clean new term from"; the missing variable was
+  #   operand TYPE composition, which nothing in the model was reading.
+  #
+  # Coverage gap, flagged not guessed: only n_ops of 1, 2 and 5 have real
+  # REAL-destination data. extra_operator=40 is confirmed between n=1 and
+  # n=2, and reproduces n=5 to within the single 4-byte
+  # five_plus_operator_extra term below -- which is real but currently
+  # rests on n=5 alone, so whether it is a step at 5, a per-operator term
+  # that only shows up once, or something tied to operator-tier mixing is
+  # NOT yet distinguishable. n_ops of 3, 4, 6+ with a REAL destination has
+  # zero real data; gen_cpt_realdest_sweep.py generates exactly those.
+  # A multi-operator expression containing ** with a REAL destination is
+  # also untested (single_pow_extra is confirmed at n_ops=1 only).
+  real_dest:
+    first_operator: 76
+    extra_operator: 40
+    single_pow_extra: 8
+    five_plus_operator_extra: 4
+    per_int_operand: 40
+    per_float_literal: 4
+    confidence: FITTED
+
 # Operand-type surcharge (OQ-OPERANDTYPE, wired 2026-08-26, James: "touch
 # these and finalize them now"). Every weight in `logic_instructions.
 # weights` below was fit against DINT-operand sweeps -- real data

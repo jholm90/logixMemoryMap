@@ -70,22 +70,88 @@ def _extract_cpt_expr(text: str, start: int) -> str | None:
 
 _CPT_CALL_START = re.compile(r"\bCPT\(")
 
+# Identifier (tag reference, with or without a subscript) and numeric-literal
+# tokens inside a CPT expression -- needed to tell a REAL-destination CPT's
+# already-float operands from the ones Logix has to convert. See
+# _cpt_call_detail and memory_model.yaml cpt_real_dest.
+_CPT_IDENT = re.compile(r"[A-Za-z_][A-Za-z0-9_.]*(?:\[[^\]]*\])?")
+_CPT_NUMBER = re.compile(r"(?<![A-Za-z_0-9.\[])\d+\.\d+|(?<![A-Za-z_0-9.\[])\d+(?![.\d])")
 
-def _cpt_calls(rung_texts: list[str]) -> list[list[str]]:
-    """One entry per real CPT(...) call found across every rung, each the
-    ordered list of top-level operator tokens in that call's expression --
-    e.g. 'CPT(Dest,L0+L1*L2)' -> ['+', '*']. Nesting/parenthesization
-    doesn't change which operators are present (confirmed real 2026-08-25:
-    'CPT(Dest,L0+L1-L2*L3)' and 'CPT(Dest,(L0+L1)*(L2-L3))' cost
-    identically), so this deliberately ignores grouping and just collects
-    the flat operator-token stream."""
-    calls: list[list[str]] = []
+
+@dataclass(frozen=True)
+class CptCall:
+    """One real CPT(...) call site.
+
+    `operators` is the ordered list of top-level operator tokens in the
+    call's expression -- e.g. 'CPT(Dest,L0+L1*L2)' -> ['+', '*']. Nesting/
+    parenthesization doesn't change which operators are present (confirmed
+    real 2026-08-25: 'CPT(Dest,L0+L1-L2*L3)' and 'CPT(Dest,(L0+L1)*(L2-L3))'
+    cost identically), so grouping is deliberately ignored.
+
+    The rest describes the call's DESTINATION and OPERAND COMPOSITION, added
+    2026-09-04 for OQ-CMPCPTLAYOUT's REAL-destination thread: a CPT writing
+    to a REAL destination is evaluated in float, which costs materially
+    differently from the integer path this model was originally fitted on
+    (real, exact, 29/29 captured rows -- see memory_model.yaml
+    cpt_real_dest). sizing/logic.py resolves `dest` against the file's real
+    tag types; the parser deliberately doesn't (same split of
+    responsibility as typed_calls)."""
+
+    operators: list[str]
+    dest: str
+    operand_names: tuple[str, ...]
+    int_literals: int
+    float_literals: int
+
+
+def _cpt_call_detail(text: str, start: int) -> CptCall | None:
+    """Builds one CptCall from the text right after a matched 'CPT('.
+    Returns None for a malformed/truncated call (don't guess), same
+    convention as _extract_cpt_expr."""
+    depth = 1
+    first_comma = None
+    i = start
+    while i < len(text):
+        c = text[i]
+        if c == "(":
+            depth += 1
+        elif c == ")":
+            depth -= 1
+            if depth == 0:
+                if first_comma is None:
+                    return None
+                dest = text[start:first_comma].strip()
+                expr = text[first_comma + 1:i]
+                numbers = _CPT_NUMBER.findall(expr)
+                return CptCall(
+                    operators=_CPT_OPERATOR_TOKEN.findall(expr),
+                    # Subscript stripped: an array element's type is its
+                    # array's type, and that's how tag_types is keyed.
+                    dest=dest.split("[")[0],
+                    # MOD is a word OPERATOR, not a tag -- excluded here so
+                    # it can never be miscounted as an integer operand.
+                    operand_names=tuple(
+                        idn.split("[")[0]
+                        for idn in _CPT_IDENT.findall(expr)
+                        if idn != "MOD"
+                    ),
+                    int_literals=sum(1 for x in numbers if "." not in x),
+                    float_literals=sum(1 for x in numbers if "." in x),
+                )
+        elif c == "," and depth == 1 and first_comma is None:
+            first_comma = i
+        i += 1
+    return None
+
+
+def _cpt_calls(rung_texts: list[str]) -> list[CptCall]:
+    """One entry per real CPT(...) call found across every rung."""
+    calls: list[CptCall] = []
     for text in rung_texts:
         for m in _CPT_CALL_START.finditer(text):
-            expr = _extract_cpt_expr(text, m.end())
-            if expr is None:
-                continue
-            calls.append(_CPT_OPERATOR_TOKEN.findall(expr))
+            call = _cpt_call_detail(text, m.end())
+            if call is not None:
+                calls.append(call)
     return calls
 
 
@@ -310,12 +376,11 @@ class RoutineLogic:
     # n_plain_routines count and charges a separate, smaller, real
     # safety_task_program_shell constant instead.
     is_safety_program: bool = False
-    # One entry per real CPT(...) call in this routine, each the ordered
-    # list of top-level operator tokens found in that call's expression --
-    # see _cpt_calls above. sizing/logic.py costs these individually
-    # instead of via the flat instruction_counts["CPT"] path (real data:
-    # CPT's cost is expression-complexity-dependent, OQ-CMPCPTLAYOUT).
-    cpt_calls: list[list[str]] = field(default_factory=list)
+    # One entry per real CPT(...) call in this routine -- see CptCall and
+    # _cpt_calls above. sizing/logic.py costs these individually instead of
+    # via the flat instruction_counts["CPT"] path (real data: CPT's cost is
+    # expression-complexity-dependent, OQ-CMPCPTLAYOUT).
+    cpt_calls: list[CptCall] = field(default_factory=list)
     # One entry per real call to a type-sensitive instruction (see
     # _TYPE_SENSITIVE_INSTRUCTIONS), each (mnemonic, [operand_tokens]) --
     # sizing/logic.py resolves each operand's real type against the tag

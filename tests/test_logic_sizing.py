@@ -387,17 +387,65 @@ def _one_rung_routine(rung_text: str):
 
 def test_cpt_parser_extracts_flat_operator_tokens():
     routine = _one_rung_routine("CPT(Dest,L0+L1*L2);")
-    assert routine.cpt_calls == [["+", "*"]]
+    assert [c.operators for c in routine.cpt_calls] == [["+", "*"]]
 
 
 def test_cpt_parser_handles_nested_parens_and_multiple_calls():
     routine = _one_rung_routine("CPT(D1,(L0+L1)*(L2-L3))CPT(D2,L4);")
-    assert routine.cpt_calls == [["+", "*", "-"], []]
+    assert [c.operators for c in routine.cpt_calls] == [["+", "*", "-"], []]
+    assert [c.dest for c in routine.cpt_calls] == ["D1", "D2"]
 
 
 def test_cpt_parser_recognizes_pow_and_word_mod():
     routine = _one_rung_routine("CPT(Dest,L0**L1 MOD L2);")
-    assert routine.cpt_calls == [["**", "MOD"]]
+    assert [c.operators for c in routine.cpt_calls] == [["**", "MOD"]]
+    # MOD is a word OPERATOR -- it must not land in operand_names, where it
+    # would be miscounted as an int operand needing a float conversion.
+    assert routine.cpt_calls[0].operand_names == ("L0", "L1", "L2")
+
+
+def test_cpt_parser_captures_operand_composition_for_real_dest_costing():
+    # Destination, tag operands and int-vs-float literals are what
+    # sizing/logic.py needs to price a REAL-destination CPT (the integer
+    # operator-tier costs don't apply there) -- see memory_model.yaml
+    # cpt_expression.real_dest.
+    routine = _one_rung_routine("CPT(DestR,(L0+L1)*R1-R2/2+1.5);")
+    call = routine.cpt_calls[0]
+    assert call.dest == "DestR"
+    assert call.operand_names == ("L0", "L1", "R1", "R2")
+    assert (call.int_literals, call.float_literals) == (1, 1)
+
+
+def test_cpt_real_dest_costs_more_than_int_dest_for_same_expression():
+    # Real, confirmed on 29 capture rows: an identically-shaped CPT costs
+    # materially more with a REAL destination (float evaluation + a real
+    # per-operand int->float conversion) than with an integer one.
+    xml = """
+<RSLogix5000Content SchemaRevision="1.0"><Controller Name="T">
+  <Tags>
+    <Tag Name="TD0" TagType="Base" DataType="DINT"/>
+    <Tag Name="TD1" TagType="Base" DataType="DINT"/>
+    <Tag Name="TD2" TagType="Base" DataType="DINT"/>
+    <Tag Name="TR0" TagType="Base" DataType="REAL"/>
+  </Tags>
+  <Programs><Program Name="MainProgram"><Routines>
+    <Routine Name="R" Type="RLL"><RLLContent>
+      <Rung Number="0" Type="N"><Text><![CDATA[CPT(TD0,TD1+TD2);]]></Text></Rung>
+    </RLLContent></Routine>
+    <Routine Name="R2" Type="RLL"><RLLContent>
+      <Rung Number="0" Type="N"><Text><![CDATA[CPT(TR0,TD1+TD2);]]></Text></Rung>
+    </RLLContent></Routine>
+  </Routines></Program></Programs>
+</Controller></RSLogix5000Content>
+"""
+    root = ET.fromstring(xml)
+    entries, _errors = build_report(root, MODEL)
+    by_path = {e.path: e.bytes for e in entries}
+    int_dest = by_path["program:MainProgram/R"]
+    real_dest = by_path["program:MainProgram/R2"]
+    # 1 operator, 2 DINT operands needing conversion:
+    #   float first_operator(76) - int '+' tier cost(36) + 2*per_int_operand(40)
+    assert real_dest - int_dest == 76 - 36 + 80
 
 
 def test_cpt_bare_copy_costs_base_read_only():
