@@ -1326,6 +1326,49 @@ the matching footnote at the bottom, not inline.
     is a controller-in-the-loop test, not a file-generation one, so it
     needs James at the bench rather than a generator run.
 
+20. **OQ-ALARMCOND** — new, 2026-09-04 (James: *"Another thing to look at
+    is Controller Alarms that we use... see the alarms prefixed by
+    'Alarm1_' as they could be holding back some of your calcuations from
+    being accurate"*). He was right, measurably.
+
+    **3,463 real `AlarmCondition` elements across `samples/local/`, every
+    one priced at ZERO.** All 8 real programs fitted the same day carry
+    200-600 each. After the composite surcharge was refitted, the leftover
+    residual on those 8 correlates **+0.583 with alarm count** — the
+    strongest remaining identified driver (AOI-internal instructions
+    −0.236, JSR-target −0.094). This is the most likely single reason those
+    files sit at 3.29% rather than <1%.
+
+    They were missed because they are **children of the `<Tag>` element
+    they alarm**, not of a top-level container, so a parser walking
+    `Controller/Tags/Tag` and reading the Tag's own attributes never sees
+    them. Now parsed (`parser/alarms.py`) and reported through the coverage
+    channel; **no byte value is assigned**, because no capture exists.
+
+    Real usage profile, measured across all 3,463 — one shape, essentially:
+    | property | reality |
+    |---|---|
+    | host tag | BOOL[224] ×3,400, BOOL[256] ×55, UDT scalar ×8 |
+    | associated tags | exactly **3** on 3,455; 0 on 8 |
+    | AlarmConfig | HMIGroup on 3,455; empty on 8 |
+    | ConditionType | TRIP on **all** 3,463 |
+    | Severity / Expression / EvaluationPeriod | 500 / `= 1` / 500 ms on all |
+    | OnDelay | 1000 on 3,449; 0 on 14 |
+    | name length | 10-17, mean 13.9 |
+
+    **Why real files alone can never fit this:** assoc-tag count never
+    varies independently of alarm count in any real program on file (always
+    exactly 3), so the two are perfectly collinear and no regression can
+    separate cost-per-alarm from cost-per-associated-tag. That is exactly
+    what James's four `Alarm1_*` probes break apart, and what the generated
+    42-file `alarmcond_*` batch extends: count ladder bare and at the real
+    shape, assoc count 0-4, assoc type DINT/STRING/REAL/BOOL, HMIGroup
+    length, alarm-name length, the four analog condition types (0% of real
+    conditions are anything but TRIP on a BOOL), and the behavioural
+    attributes. The four placeholder arrays are byte-identical in every
+    file, so James's *"mute them in your calculations"* is handled by the
+    experiment design rather than by a subtraction. Blocked on capture.
+
 ---
 
 [^instrfirstpass]: CROUT (safety-only) and MAPC resolved separately

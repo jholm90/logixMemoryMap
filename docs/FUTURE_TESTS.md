@@ -196,3 +196,27 @@ roughly constant ~-50k regardless of filler size).
   ExtendedProperties/ConfigID regeneration — stale content, needs
   re-capture.
 - `rack_pointio_n05`'s capture predates the Bus Size fix regeneration.
+
+## 0b. Tag-based alarm conditions — new #2 error source (OQ-ALARMCOND)
+
+**Found 2026-09-04**, after the composite surcharge refit, when James asked
+about controller alarms. **3,463 real `AlarmCondition` elements across the
+corpus, every one priced at zero**; 200-600 in each of the 8 real programs.
+The residual left over after the refit correlates **+0.583 with alarm
+count** — the strongest remaining identified driver.
+
+Generated and awaiting capture: `gen_alarm_conditions.py`, 42 files.
+The four placeholder arrays are byte-identical across every file, so the
+whole batch differences cleanly against `alarmcond_count_bare_n000`.
+
+Still needed beyond that batch:
+- **A real program with a KNOWN alarm count removed.** The cleanest possible
+  confirmation would be one real file captured twice, once with its alarm
+  definitions deleted — that isolates alarm cost inside a genuinely real
+  program instead of a synthetic one, and would say immediately whether the
+  synthetic per-alarm rate transfers.
+- **Alarms on a UDT-scalar host.** 8 real conditions sit on `ts_CIPAxis`
+  rather than a BOOL array; the batch only covers array hosts.
+- **AlarmSet membership.** `AlarmSetOperIncluded`/`AlarmSetRollupIncluded`
+  are true on every real condition and no file varies them; whether alarm
+  SETS carry their own cost is untested and unrepresented in the batch.

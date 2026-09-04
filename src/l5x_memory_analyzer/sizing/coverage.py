@@ -42,6 +42,7 @@ from __future__ import annotations
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
+from l5x_memory_analyzer.parser.alarms import parse_alarm_conditions
 from l5x_memory_analyzer.parser.logic import count_instructions_in_text, routine_language
 
 # Priced outside logic_instructions.weights -- see the module docstring.
@@ -192,6 +193,30 @@ def audit_coverage(root: ET.Element, weighted_mnemonics) -> list[CoverageGap]:
                 f"{mnemonic} appears {n} time(s) in sized RLL routines but has no weight in "
                 f"logic_instructions.weights, so it is charged 0 bytes. That is an absence of "
                 f"data, not a measurement -- see docs/INSTRUCTION_COVERAGE.md.{note}"
+            ),
+        ))
+
+    # --- tag-based alarm conditions ------------------------------------
+    # These live INSIDE the <Tag> element they alarm, not in a top-level
+    # container, which is exactly why a tag-walking parser missed them and
+    # 3,463 real corpus conditions ended up priced at zero (James,
+    # 2026-09-04: "they could be holding back some of your calcuations
+    # from being accurate" -- he was right; see parser/alarms.py).
+    alarms = parse_alarm_conditions(root)
+    if alarms:
+        hosts = sorted({a.host_tag for a in alarms})
+        assoc = sum(len(a.assoc_tags) for a in alarms)
+        groups = sum(1 for a in alarms if a.hmi_group)
+        gaps.append(CoverageGap(
+            kind="alarm_condition", detail="AlarmCondition", count=len(alarms),
+            path="coverage/alarm_condition",
+            message=(
+                f"{len(alarms)} tag-based alarm condition(s) on {len(hosts)} host tag(s), with "
+                f"{assoc} associated-tag reference(s) and {groups} HMIGroup(s), contribute ZERO "
+                f"to this total -- alarm conditions are not sized by this engine at all "
+                f"(OQ-ALARMCOND; no capture data exists yet, so no byte value is guessed). "
+                f"Not a rare shape: 3,463 across the real corpus, 200-600 in every real program "
+                f"measured. Hosts: {', '.join(hosts[:5])}{' ...' if len(hosts) > 5 else ''}"
             ),
         ))
 
