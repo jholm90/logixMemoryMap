@@ -41,7 +41,10 @@ def test_parse_rll_routines_counts_instructions_and_skips_st():
     root = ET.fromstring(_XML)
     routines = parse_rll_routines(root)
 
-    assert len(routines) == 1  # StRoutine (Type="ST") is skipped entirely
+    # StRoutine (Type="ST") is skipped entirely by the RLL parser -- but it
+    # is no longer skipped SILENTLY: see
+    # test_build_report_reports_non_rll_routine_as_a_coverage_gap below.
+    assert len(routines) == 1
     routine = routines[0]
     assert routine.program_name == "MainProgram"
     assert routine.routine_name == "MainRoutine"
@@ -65,7 +68,9 @@ def test_compute_routine_logic_bytes_sums_weights_plus_fixed_base():
 def test_build_report_includes_estimated_logic_entries():
     root = ET.fromstring(_XML)
     entries, errors = build_report(root, MODEL)
-    assert errors == []
+    # The only error is the ST coverage gap asserted on in its own test
+    # below; nothing here should fail to size.
+    assert [e.path for e in errors] == ["coverage/routine_type/ST"]
 
     # 2026-08-27, Task/Program/Routine shell decomposition: a single plain
     # routine's fixed_base_per_routine is now a separate "SHELL" entry
@@ -738,3 +743,40 @@ def test_array_index_bracket_not_counted_as_branch():
     # "Arr[5]" is an array index, not a branch -- must not be misclassified.
     routine = _one_rung_routine("MOV(Arr[5],Dest);")
     assert routine.branch_bracket_instruction_count == 0
+
+
+def test_build_report_reports_non_rll_routine_as_a_coverage_gap():
+    """A routine this engine cannot size must SAY SO, not vanish.
+
+    _XML carries a Type="ST" routine that parse_rll_routines drops on the
+    floor. Before sizing/coverage.py that produced a silently understated
+    total with nothing in the output to hint at it -- the only thing that
+    ever caught it was someone reading the L5X by hand (2026-09-04, James:
+    "I need to make sure that in the long run all of the calculations are
+    done inside the python logic for the total project scripts and not just
+    claude in depth testing"). It now comes back as an ordinary SizeError,
+    which is what the CLI, the UI and the CSV/XLSX export all render.
+    """
+    root = ET.fromstring(_XML)
+    _entries, errors = build_report(root, MODEL)
+
+    gaps = [e for e in errors if e.path.startswith("coverage/")]
+    assert len(gaps) == 1
+    assert gaps[0].path == "coverage/routine_type/ST"
+    assert "Structured Text" in gaps[0].message
+    assert "StRoutine" in gaps[0].message or "MainProgram" in gaps[0].message
+
+
+def test_coverage_audit_does_not_flag_instructions_priced_outside_the_weights_table():
+    """CPT, the branch brackets and any declared AOI are all priced somewhere
+    other than logic_instructions.weights. Flagging them as unweighted would
+    be a false alarm that trains the reader to ignore the whole section."""
+    xml = _XML.replace(
+        '<Rung Number="1" Type="N"><Text><![CDATA[XIC(A)XIC(B)OTE(A);]]></Text></Rung>',
+        '<Rung Number="1" Type="N"><Text><![CDATA[BST XIC(A) NXB XIC(B) BND OTE(A);]]></Text></Rung>'
+        '<Rung Number="2" Type="N"><Text><![CDATA[CPT(C,A+B);]]></Text></Rung>',
+    )
+    _entries, errors = build_report(ET.fromstring(xml), MODEL)
+
+    flagged = {e.path for e in errors if e.path.startswith("coverage/instruction/")}
+    assert flagged == set(), flagged

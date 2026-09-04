@@ -499,6 +499,13 @@ def _count_instructions(rung_texts: list[str]) -> dict[str, int]:
     return counts
 
 
+def count_instructions_in_text(rung_texts: list[str]) -> dict[str, int]:
+    """Public wrapper over the same mnemonic scanner the sizer itself uses --
+    so sizing/coverage.py counts instructions exactly the way size_routine()
+    does, rather than re-implementing the regex and drifting from it."""
+    return _count_instructions(rung_texts)
+
+
 def _jsr_targets(rung_texts: list[str]) -> set[str]:
     targets: set[str] = set()
     for text in rung_texts:

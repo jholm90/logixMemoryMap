@@ -23,6 +23,7 @@ from l5x_memory_analyzer.parser.modules import parse_modules
 from l5x_memory_analyzer.parser.tags import CONTROLLER_SCOPE, parse_tags
 from l5x_memory_analyzer.parser.tasks import parse_tasks
 from l5x_memory_analyzer.sizing.confidence import weakest
+from l5x_memory_analyzer.sizing.coverage import audit_coverage
 from l5x_memory_analyzer.sizing.constants import MemoryModel
 from l5x_memory_analyzer.sizing.logic import compute_routine_logic_bytes
 from l5x_memory_analyzer.sizing.udt import (
@@ -655,5 +656,20 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                       pct_of_total=(e.bytes / total_bytes * 100), tier=e.tier, basis=e.basis)
             for e in entries
         ]
+
+    # Coverage audit LAST, so it reports against the whole file (2026-09-04,
+    # James: "I need to make sure that in the long run all of the
+    # calculations are done inside the python logic for the total project
+    # scripts and not just claude in depth testing"). Content this engine
+    # prices at zero WITHOUT modelling it -- a non-RLL routine, an
+    # instruction with no weight -- previously left no trace at all in the
+    # output; the only thing that ever caught it was reading the file by
+    # hand. It now surfaces through the same errors channel as an unsized
+    # tag or an unmodeled module, so the CLI, the UI and the CSV/XLSX
+    # export all report it for free. See sizing/coverage.py.
+    errors += [
+        SizeError(path=gap.path, message=gap.message)
+        for gap in audit_coverage(root, model.logic_instructions.weights)
+    ]
 
     return entries, errors
