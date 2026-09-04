@@ -6,6 +6,13 @@ from l5x_memory_analyzer.sizing.logic import compute_routine_logic_bytes
 from l5x_memory_analyzer.sizing.report import ESTIMATED, EXACT, build_report
 
 MODEL = load_memory_model()
+# Read from the model, never restated here as a literal. These assertions
+# used to hardcode 47; when the composite surcharge was refitted on 9 real
+# programs (20/47 -> 52/21, 2026-09-04) three tests failed for asserting a
+# constant's VALUE rather than that it is APPLIED ONCE PER JSR-target
+# instruction, which is the behaviour they exist to pin. See CLAUDE.md:
+# never hardcode a byte size where a named constant from the model will do.
+_JSR_SURCHARGE = MODEL.logic_instructions.jsr_target_composite_surcharge_per_instr
 
 _XML = """
 <RSLogix5000Content SchemaRevision="1.0">
@@ -207,7 +214,7 @@ def test_jsr_target_routine_not_double_counted():
     # content (one NOP rung, weight 16, plus the 2026-08-31 composite-scale
     # surcharge of 47/instr = 47) -- no fixed_base_per_routine (that stays
     # folded into MainRoutine's jsr_fixed_base_per_routine above).
-    assert sub.bytes == 104 + 16 + 47
+    assert sub.bytes == 104 + 16 + _JSR_SURCHARGE
 
 
 def test_jsr_param_cost_a_charged_once_even_with_two_call_sites():
@@ -252,7 +259,7 @@ def test_jsr_param_cost_a_charged_once_even_with_two_call_sites():
     # composite-scale surcharge 47) -- also charged exactly once regardless
     # of call-site count, since it's the target routine's own content, not
     # a per-call cost.
-    assert sub.bytes == 144 + 16 + 47
+    assert sub.bytes == 144 + 16 + _JSR_SURCHARGE
     main = by_path["program:MainProgram/MainRoutine"]
     # jsr_fixed_base(5096) + JSR weight(72)*2 calls + B(2)=4+20*2=44 *2 calls
     assert main.bytes == 5096 + 72 * 2 + 44 * 2
@@ -302,7 +309,7 @@ def test_jsr_output_param_cost_charged_per_call_site():
     # A(1) unaffected by output param count (not yet adjusted -- see
     # OPEN_QUESTIONS.md OQ-JSRPARAMCOST), plus SubTest's own content (one
     # NOP rung, weight 16 + composite-scale surcharge 47).
-    assert sub.bytes == 104 + 20 + 16 + 47
+    assert sub.bytes == 104 + 20 + 16 + _JSR_SURCHARGE
 
 
 def test_jsr_target_content_scales_with_instruction_count():
@@ -353,8 +360,8 @@ def test_jsr_target_content_scales_with_instruction_count():
     # NOP's weight (16) plus its composite-scale surcharge (47), and
     # neither pays fixed_base_per_routine (4816) -- that would swamp this
     # small a difference if it leaked in.
-    assert build(one_nop) == 104 + 16 + 47
-    assert build(two_nop) == 104 + (16 + 47) * 2
+    assert build(one_nop) == 104 + 16 + _JSR_SURCHARGE
+    assert build(two_nop) == 104 + (16 + _JSR_SURCHARGE) * 2
 
 
 # ---------------------------------------------------------------------------

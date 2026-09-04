@@ -1495,8 +1495,55 @@ logic_instructions:
   # scale data (ideally varying AOI-count/JSR-content independently,
   # rather than the current profile schedule where they're correlated
   # with overall file scale) to sharpen or disprove this.
-  aoi_logic_composite_surcharge_per_instr: 20
-  jsr_target_composite_surcharge_per_instr: 47
+  #
+  # REFITTED 2026-09-04 ON REAL PROGRAMS -- 20/47 replaced by 52/21, and
+  # the cap below turned OFF. Everything above this line describes how the
+  # old pair was fitted (against SYNTHETIC composites) and is kept because
+  # it explains why they were wrong, not because they are current.
+  #
+  # James supplied real Capacity readings for 8 whole real customer
+  # programs, joining Cardin_TrimSortStack from 2026-09-04 for 9 real
+  # points. Under the old 20/47 + 12,000-cap model, ALL NINE
+  # under-predicted, by +8.35% to +30.63%, aggregate +12.62%, mean
+  # |error| 14.95%. That is the North Star number and it was nowhere near
+  # <1%.
+  #
+  # The driver was identified before anything was refitted, so this is not
+  # a knob turned because it moved the number. Correlating each real file's
+  # residual against every measurable candidate:
+  #     JSR-target instructions  +0.813     routine count       +0.769
+  #     all RLL instructions     +0.805     controller tags     +0.514
+  #     unweighted instructions  +0.524     AOI-internal instrs +0.203
+  #     ST source lines          -0.396     unsized modules     -0.255
+  # ST content and unmodeled modules are NOT the cause (both negative);
+  # JSR-target logic content is. Same conclusion the single Cardin file
+  # gave, now confirmed on 8 more independent real programs.
+  #
+  # Fit is ordinary least squares of (actual - prediction-with-no-
+  # surcharge) on [aoi_instructions, jsr_instructions] across all 9 real
+  # files, giving 52.52 / 20.81; rounded to integers with no meaningful
+  # loss (mean |error| 2.99% -> 3.00%). Leave-one-out across the 9 -- fit
+  # on 8, predict the 9th -- gives mean |error| 3.83%, max 9.41%, and beat
+  # both a single combined rate (same mean, max 12.78%) and a JSR-only
+  # rate (4.86% / 17.69%), which is why two rates are kept rather than
+  # collapsing them.
+  #
+  # The old jsr rate was too HIGH by ~2.3x and the old aoi rate too LOW by
+  # ~2.6x; the cap existed to patch the resulting over-prediction. With
+  # the rates corrected against real data the patch is no longer needed.
+  #
+  # HONEST COST OF THIS CHANGE, stated rather than buried: real-program
+  # mean |error| 14.95% -> 2.99% (aggregate +12.62% -> -0.10%), while the
+  # 176 corpus rows that carry any AOI/JSR content go 3.09% -> 3.57% and
+  # the whole 1,885-row corpus goes 1.378% -> 1.423%. The synthetic
+  # composites and the real programs genuinely disagree about this law,
+  # and this trades a rounding error on the instruments for a 5x
+  # improvement on the thing the project exists to predict.
+  #
+  # STILL FITTED, STILL NOT DONE: 2.99% is not <1%, and leave-one-out says
+  # expect ~3.8% on a file nobody has seen. See OQ-JSRSCALE.
+  aoi_logic_composite_surcharge_per_instr: 52
+  jsr_target_composite_surcharge_per_instr: 21
   composite_surcharge_confidence: FITTED
   # composite_surcharge_cap, wired 2026-09-03 (James: "tweak something else
   # in your algorithm and get a better result" -- real regression on all
@@ -1532,7 +1579,14 @@ logic_instructions:
   # real, substantial, data-driven improvement, but still an empirical
   # patch on a formula whose true (likely non-linear, saturating)
   # real shape isn't mechanistically understood yet.
-  composite_surcharge_cap: 12000
+  #
+  # DISABLED 2026-09-04 (0 = no cap). The cap was a patch for a jsr rate
+  # that was 2.3x too high; with the rates refitted on 9 real programs
+  # (above) it does active harm -- at real scale it suppressed 252,749 to
+  # 1,260,885 bytes per file, which IS the +12.62% under-prediction those
+  # files showed. Kept as a live constant rather than deleted so the
+  # mechanism is one number away if new data ever shows a real saturation.
+  composite_surcharge_cap: 0
   # OQ-SAFETYSCOPE-SIZING, wired 2026-09-03 (James: "they answered your
   # question - they are safety tasks and safety programs therefore they
   # need seperate sizing calculations"). Real fw_catalog_matrix rows show

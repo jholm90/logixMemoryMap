@@ -113,9 +113,15 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         _surcharge_aoi_instr * model.logic_instructions.aoi_logic_composite_surcharge_per_instr
         + _surcharge_jsr_instr * model.logic_instructions.jsr_target_composite_surcharge_per_instr
     )
+    # cap <= 0 means NO CAP (disabled 2026-09-04 -- see memory_model.yaml
+    # composite_surcharge_cap for why: it was patching a jsr rate that was
+    # 2.3x too high, and at real-program scale it suppressed 252k-1,261k
+    # bytes per file, which was the entire +12.62% real-file
+    # under-prediction). The mechanism is left in place, not deleted.
+    _cap = model.logic_instructions.composite_surcharge_cap
     surcharge_scale = (
-        model.logic_instructions.composite_surcharge_cap / _uncapped_total_surcharge
-        if _uncapped_total_surcharge > model.logic_instructions.composite_surcharge_cap
+        _cap / _uncapped_total_surcharge
+        if _cap > 0 and _uncapped_total_surcharge > _cap
         else 1.0
     )
 

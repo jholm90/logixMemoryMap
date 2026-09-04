@@ -1163,60 +1163,63 @@ the matching footnote at the bottom, not inline.
     (James still validating ACD conversion as of 2026-09-02) — no sizing
     formula changes from this item, generator-correctness only.
 
-16. **OQ-JSRSCALE** — the composite-scale JSR/AOI surcharge
-    (`aoi_logic_composite_surcharge_per_instr=20`/
-    `jsr_target_composite_surcharge_per_instr=47`, wired from a 22-file
-    synthetic regression where every file had exactly 1 JSR target)
-    catastrophically over-predicts on `TitusvilleTrimmer_20260902r2.L5X`
-    (real file, 179 distinct JSR targets): +736,443 bytes from JSR alone,
-    +824,363 total surcharge overshoot. But removing the surcharge
-    entirely is WORSE, not better — swings from +7.71% over to -14.7%
-    under, meaning there's a real, larger, separate under-prediction in
-    the base per-instruction JSR/AOI-content weighting that only shows up
-    at real production JSR-target counts, which the surcharge was
-    partially (and wrongly) compensating for. Needs real capture data
-    across a wide spread of JSR-target/program/AOI counts to separate the
-    two effects — this is the entire reason `composite_realistic_v3_*`
-    (above) was built with varying counts instead of fixed at James's
-    stated floors.
+16. **OQ-JSRSCALE / OQ-COMPOSITESCALE** — the composite AOI/JSR surcharge.
+    **REFITTED ON REAL PROGRAMS 2026-09-04. Was the project's #1 error
+    source; is now its largest remaining one, but 5x smaller.**
 
-    **NO LONGER BLOCKED ON DATA THAT DOESN'T EXIST — 2026-09-04.** The
-    first real virgin-file measurement made this the #1 error source in
-    the whole project, and made the shape of the problem measurable
-    instead of speculative. `Cardin_TrimSortStack_20260624r00` (1756-L83E,
-    fw 35.13, never seen before) predicted 7,162,455 against a real
-    8,178,556 — **12.4% UNDER**. Measured cause, not guessed: the
-    file-wide `composite_surcharge_cap` (12,000) suppresses **1,551,065
-    bytes** on that one file. Its uncapped surcharge is **130.3x** the
-    cap; the largest synthetic composite this project has ever built
-    (v4_074) is **8.2x**, and a typical one (v2_25) is **0.7x**. So the
-    cap does mild trimming on everything it was fitted against and total
-    annihilation on a real program. Capped = −12.4%; fully uncapped =
-    **+6.5%** (8,713,520). Landing exactly on this file needs ~66% of
-    uncapped — ONE data point, which must NOT be fitted on its own (the
-    axis_scale lesson, docs/TESTING_PLAN.md).
+    James supplied real Capacity readings for 8 whole real customer
+    programs, joining `Cardin_TrimSortStack` for **9 real data points** —
+    the first time this question has had more than one. Under the old model
+    (`aoi=20`, `jsr=47`, file-wide cap 12,000) **all nine under-predicted**,
+    by +8.35% to +30.63%, aggregate **+12.62%**, mean |error| **14.95%**.
 
-    `gen_realscale_surcharge.py` (2026-09-04, 23 files) is built
-    specifically to measure the LAW instead of fitting that one point:
-    - `realscale_jsrtgt_xic_n*` (8) — the identical rung text and tag pool
-      as the existing valid `instr_xic_n*` captures, moved out of
-      MainRoutine and into a JSR target. Five of the eight PAIR exactly
-      with an existing error-free capture, so the JSR-target cost comes
-      out as a direct paired difference with no model in between; the
-      other three run to 45,000 target instructions, past the real file's
-      30,595. Uncapped surcharge spans 0.08x to 176x the cap.
-    - `realscale_jsrsplit_k*` (3) — 20,000 target instructions held
-      constant, split across 10/50/250 distinct targets. First test of
-      whether the cap is really FILE-WIDE (as modelled) or per-routine.
-    - `realscale_aoiint_n*` (6) — the AOI half of the surcharge in
-      isolation (no JSR target in the file at all), 0→24,000 AOI-internal
-      instructions, bracketing the real file's 6,255. There is no valid
-      nonzero AOI-content point in the corpus today: the existing
-      `aoi_logic_scale_*` ladder stopped at 100 instructions and built
-      with errors at every nonzero point.
-    Blocked only on capture now, and on more real virgin files — two or
-    three more with real Capacity readings would settle whether the law is
-    constant, proportional or saturating.
+    The driver was identified BEFORE anything was refitted, deliberately —
+    correlating each real file's residual against every measurable
+    candidate:
+
+    | driver | corr | | driver | corr |
+    |---|---:|---|---|---:|
+    | JSR-target instructions | **+0.813** | | routine count | +0.769 |
+    | all RLL instructions | +0.805 | | controller tags | +0.514 |
+    | unweighted instructions | +0.524 | | AOI-internal instructions | +0.203 |
+    | **ST source lines** | **−0.396** | | **unsized modules** | **−0.255** |
+
+    So the residual is JSR-target logic content, and it is NOT unmodeled ST
+    (negative) and NOT the unsized rack-aliased modules (negative). That
+    matters: it rules out the two most tempting alternative explanations
+    before the surcharge was touched, which is the check that was missing
+    when the drive-bus discount got fitted on bad data and had to be
+    reverted.
+
+    Refit: least squares of (actual − prediction-with-no-surcharge) on
+    [aoi_instr, jsr_instr] over all 9 real files → **52.52 / 20.81**,
+    rounded to **52 / 21** with no meaningful loss. **Cap disabled** (0) —
+    it was a patch for a jsr rate 2.3x too high, and at real scale it was
+    suppressing 252,749–1,260,885 bytes per file, which IS the +12.62%.
+
+    Leave-one-out over the 9 (fit on 8, predict the 9th): **mean |error|
+    3.83%, max 9.41%**. Two rates beat one combined rate (same mean, max
+    12.78%) and a JSR-only rate (4.86% / 17.69%), which is why both are
+    kept.
+
+    Result: real programs **14.95% → 3.29%** mean, aggregate **+12.62% →
+    −0.41%**, 2 of 8 now inside ±1%. Cost, stated not buried: the 176
+    corpus rows carrying AOI/JSR content go 3.09% → 3.57% and the whole
+    1,885-row corpus 1.378% → 1.423%. The synthetic composites and the real
+    programs genuinely disagree about this law; this trades a rounding
+    error on the instruments for a 5x gain on the thing the project exists
+    to predict, per CLAUDE.md's North Star.
+
+    **STILL OPEN, and this is the main remaining gap:** 3.29% is not <1%,
+    and leave-one-out says expect ~3.8% on a file nobody has seen. The two
+    worst are `MurrayBros` (+7.43%, the smallest file at 923 KB) and
+    `K3M16_Edgers` (+5.55%) — both still UNDER — against `Pukall_Gang`
+    (−5.44%) OVER, so the remaining error is not a single sign and not a
+    simple scale term. What is needed: **more real programs** (each one has
+    been worth more than any synthetic batch), and the captures for the
+    already-generated `realscale_jsrtgt_xic_n*` ladder, which is the only
+    thing that can separate per-instruction cost from per-target and
+    per-routine cost at real scale.
 
 17. **OQ-AXISCOMBO** — cited in RESOLVED_QUESTIONS.md (OQ-AXISSTRUCT,
     OQ-AXISDEEP) as "the one remaining piece," but no item by this name —
