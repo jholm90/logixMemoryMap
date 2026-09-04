@@ -488,7 +488,25 @@ def _build(profile: ProfileV4) -> tuple[str, str, int]:
 
 
 def main() -> None:
-    for i in range(1, 101):
+    # Capped at 74, not 100 (2026-09-04). Files 075-100 were generated and
+    # every one of them FAILED to convert: 18 died with RxE_OBJECT_NOT_LOADED
+    # and 8 with "Server execution failed", the two signatures interleaved at
+    # random across the block. 001-074 all converted "ok".
+    #
+    # That is not a content bug -- the split falls on FILE SIZE, not on
+    # anything the generator varies: 074 is 20.0 MB and converts, 070 is
+    # 20.7 MB and converts, 075 is 21.6 MB and 076 is 20.9 MB and both
+    # crash. Two different crash signatures appearing at random within the
+    # failing block is what resource exhaustion looks like, not what a
+    # malformed L5X looks like (a bad element gives the same import error
+    # every time). The Logix Designer SDK conversion path simply cannot
+    # open a project this large.
+    #
+    # The 26 files and their manifest rows were deleted rather than left in
+    # place: they carried no capture data at all, they can never produce
+    # any, and every batch_memory_capture.ps1 run was skipping them
+    # forever. 74 points across the same design space is plenty.
+    for i in range(1, 75):
         profile = _profile_for_index(i)
         l5x, description, total = _build(profile)
         out_name = f"composite_realistic_v4_{i:03d}"
