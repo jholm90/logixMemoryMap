@@ -59,31 +59,68 @@ def test_associated_tag_count_is_read_exactly(k):
 
 
 @_gen
-def test_alarms_are_reported_as_a_coverage_gap_not_silently_dropped():
+def test_alarms_are_priced_and_no_longer_reported_as_a_gap():
+    """Solved exactly 2026-09-05. From 2026-09-04 until then these were
+    reported as an unpriced coverage gap; now they are a real sized entry,
+    and flagging them would be a false alarm -- the gap list has to shrink
+    when a hole is actually closed or it stops meaning anything."""
     root = _root("alarmcond_count_real_n128")
-    gaps = [g for g in audit_coverage(root, MODEL.logic_instructions.weights)
-            if g.kind == "alarm_condition"]
+    entries, errors = build_report(root, MODEL)
 
-    assert len(gaps) == 1
-    assert gaps[0].count == 128
-    assert "384 associated-tag" in gaps[0].message
-    assert "ZERO" in gaps[0].message
-    # ...and it reaches the ordinary errors channel, so the CLI, the UI and
-    # the CSV/XLSX export all show it without per-caller work.
-    _entries, errors = build_report(root, MODEL)
-    assert [e for e in errors if e.path == "coverage/alarm_condition"]
+    assert not [g for g in audit_coverage(root, MODEL.logic_instructions.weights)
+                if g.kind == "alarm_condition"]
+    assert not [e for e in errors if e.path == "coverage/alarm_condition"]
+
+    priced = [e for e in entries if e.category == "alarm_condition"]
+    assert [e.path for e in priced] == ["alarms/AlarmBoolArray"]
+    # 128 alarms x (500 + DINT 92 + STRING 256 + STRING 256) + 800 file base
+    assert priced[0].bytes == 800 + 128 * (500 + 92 + 256 + 256)
 
 
 @_gen
-def test_alarm_content_is_currently_free_which_is_the_whole_point():
-    """0 alarms and 128 alarms predict IDENTICALLY today. That is the
-    diagnostic property this batch exists to exploit: the placeholder tags
-    are byte-identical across the ladder, so once real Capacity readings
-    land, the entire difference is alarm cost with nothing to subtract."""
-    zero = sum(e.bytes for e in build_report(_root("alarmcond_count_bare_n000"), MODEL)[0])
-    many = sum(e.bytes for e in build_report(_root("alarmcond_count_real_n128"), MODEL)[0])
-    assert zero == many
+@pytest.mark.parametrize("n", [1, 2, 4, 8, 16, 32, 64, 128])
+def test_bare_and_real_alarm_ladders_reproduce_exactly(n):
+    """The formula is not a fit with small error -- it reconstructs every
+    captured point in both ladders with ZERO residual, so these assert the
+    engine total against the arithmetic, not against a tolerance."""
+    cfg = MODEL.alarm_conditions
+    bare = [e for e in build_report(_root(f"alarmcond_count_bare_n{n:03d}"), MODEL)[0]
+            if e.category == "alarm_condition"]
+    assert bare[0].bytes == cfg.file_base + n * cfg.per_condition
 
+    real = [e for e in build_report(_root(f"alarmcond_count_real_n{n:03d}"), MODEL)[0]
+            if e.category == "alarm_condition"]
+    assert real[0].bytes == cfg.file_base + n * (cfg.per_condition + 92 + 256 + 256)
+
+
+@_gen
+@pytest.mark.parametrize("type_name,rate", [("bool", 88), ("dint", 92), ("real", 92), ("string", 256)])
+def test_associated_tag_rate_is_keyed_on_the_referenced_type(type_name, rate):
+    """Measured at 32 alarms x 1 associated tag. This is the axis no real
+    file can provide -- every real program has exactly 3 associated tags on
+    every alarm, so count and type are perfectly collinear there."""
+    cfg = MODEL.alarm_conditions
+    e = [x for x in build_report(_root(f"alarmcond_assoc_type_{type_name}"), MODEL)[0]
+         if x.category == "alarm_condition"]
+    assert e[0].bytes == cfg.file_base + 32 * (cfg.per_condition + rate)
+
+
+@_gen
+@pytest.mark.parametrize("name", [
+    "alarmcond_hmigroup_none", "alarmcond_hmigroup_len04", "alarmcond_hmigroup_len16",
+    "alarmcond_namelen_08", "alarmcond_namelen_40",
+    "alarmcond_attr_severity_low", "alarmcond_attr_severity_high",
+    "alarmcond_attr_ondelay", "alarmcond_attr_latched_noack",
+])
+def test_everything_except_count_and_associated_tags_is_free(name):
+    """HMIGroup, alarm name length, Severity, OnDelay, Latched and
+    AckRequired all captured byte-identical to the 32-alarm control. Alarm
+    cost depends ONLY on how many alarms there are and what their
+    associated tags point at -- pinned because it is exactly the kind of
+    thing that gets quietly re-assumed later."""
+    cfg = MODEL.alarm_conditions
+    e = [x for x in build_report(_root(name), MODEL)[0] if x.category == "alarm_condition"]
+    assert e[0].bytes == cfg.file_base + 32 * cfg.per_condition
 
 @_gen
 def test_placeholder_tags_are_identical_across_the_batch():

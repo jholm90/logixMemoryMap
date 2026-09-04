@@ -484,6 +484,27 @@ class CatalogBaselineDeltaModel:
 
 
 @dataclass(frozen=True)
+class AlarmConditionModel:
+    """Exact cost of tag-based alarm conditions -- see memory_model.yaml
+    alarm_conditions and sizing/alarms.py. Reproduces all 37 captured
+    alarmcond_* points with zero residual."""
+
+    file_base: int
+    per_condition: int
+    per_associated_tag_by_type: dict[str, int]
+    associated_tag_default: int
+    confidence: str
+
+    def assoc_tag_cost(self, resolved_type: str | None) -> int:
+        """An unresolved reference is charged the STRING rate -- the most
+        expensive -- so a partial export over-states rather than silently
+        under-states."""
+        if resolved_type is None:
+            return self.associated_tag_default
+        return self.per_associated_tag_by_type.get(resolved_type, self.associated_tag_default)
+
+
+@dataclass(frozen=True)
 class MemoryModel:
     atomic_types: dict[str, AtomicType]
     predefined_structures: dict[str, AtomicType]
@@ -499,6 +520,7 @@ class MemoryModel:
     alias_overhead: TagOverheadModel
     udt_definition: UdtDefinitionModel
     logic_instructions: LogicInstructionModel
+    alarm_conditions: AlarmConditionModel
     empty_project_baseline_bytes: int
     empty_project_baseline_confidence: str
     module_overhead_bytes: int
@@ -538,6 +560,13 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
         atomic_types=atomic_types,
         predefined_structures=predefined_structures,
         predefined_array_structures=predefined_array_structures,
+        alarm_conditions=AlarmConditionModel(
+            file_base=raw["alarm_conditions"]["file_base"],
+            per_condition=raw["alarm_conditions"]["per_condition"],
+            per_associated_tag_by_type=dict(raw["alarm_conditions"]["per_associated_tag_by_type"]),
+            associated_tag_default=raw["alarm_conditions"]["associated_tag_default"],
+            confidence=raw["alarm_conditions"]["confidence"],
+        ),
         empty_project_baseline_bytes=baseline["bytes"],
         empty_project_baseline_confidence=baseline["confidence"],
         module_overhead_bytes=module_overhead["bytes"],

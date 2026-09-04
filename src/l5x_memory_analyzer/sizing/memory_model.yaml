@@ -1542,8 +1542,64 @@ logic_instructions:
   #
   # STILL FITTED, STILL NOT DONE: 2.99% is not <1%, and leave-one-out says
   # expect ~3.8% on a file nobody has seen. See OQ-JSRSCALE.
-  aoi_logic_composite_surcharge_per_instr: 52
-  jsr_target_composite_surcharge_per_instr: 21
+  #
+  # REFITTED AGAIN 2026-09-05, jointly with the now-EXACT alarm model
+  # (alarm_conditions below). 52/21 was fitted while tag-based alarm
+  # conditions were priced at ZERO, so those rates were silently absorbing
+  # alarm cost -- every real program carries 200-600 alarms worth
+  # 1,104 bytes each, i.e. 221,600-663,200 bytes per file that the
+  # surcharge was standing in for. With alarms priced exactly, the honest
+  # rates collapse: aoi 52 -> 22, jsr 21 -> 3.
+  #
+  # The jsr rate falling to ~3 is the real finding here: almost everything
+  # the "JSR-target content surcharge" appeared to measure was alarm cost
+  # wearing a JSR-shaped mask, because in a real program alarm count and
+  # JSR-target instruction count both scale with project size. This is the
+  # third time these two rates have moved (20/47 -> 52/21 -> 22/3) and each
+  # move followed a real coverage hole being closed, not a knob being
+  # turned to chase a number.
+  #
+  # Fit: least squares of (actual - prediction-with-no-surcharge - exact
+  # alarm cost) on [aoi_instructions, jsr_instructions] across the 8 real
+  # programs -> 22.32 / 2.77, rounded to 22 / 3.
+  # Leave-one-out (fit on 7, predict the 8th): mean |error| 0.78%, max
+  # 2.09%, 6 of 8 inside +/-1%.
+  #
+  # SET TO ZERO 2026-09-05 -- BOTH RATES DISPROVED BY DIRECT MEASUREMENT.
+  # Everything above this line is the history of three successive fits
+  # (20/47 -> 52/21 -> 22/3) made while the isolating experiments did not
+  # exist. They do now, and they are unambiguous:
+  #
+  #   realscale_jsrtgt_xic_n{10,50,100,1000,5000}: the SAME rung text, moved
+  #   from MainRoutine into a JSR target, costs +344 -- FLAT, at every one
+  #   of the five scales, against the matching instr_xic_n* capture. Not
+  #   +344 plus a per-instruction term; +344 exactly. JSR-target content
+  #   costs precisely what main-routine content costs.
+  #
+  #   realscale_aoiint_n{50,500,2000,6000,12000}: AOI-internal content costs
+  #   20 bytes/rung = 10/instruction at every scale, which is exactly
+  #   XIC(4) + OTE(16) -- the ordinary weight of the rung, with nothing
+  #   added. Zero residual across a 240x span.
+  #
+  # A per-instruction surcharge on either cannot survive that. What the
+  # three fits were really tracking was, in order: alarm cost (now exact,
+  # see alarm_conditions), and a per-PROGRAM/per-ROUTINE structural cost
+  # that all three regressions mistook for a per-instruction one because in
+  # a real program every count scales together. On the 8 real programs the
+  # leftover residual correlates +0.871 with PROGRAM count and +0.829 with
+  # ROUTINE count, against +0.711 for AOI instructions -- see OQ-SHELLSCALE.
+  #
+  # Honest consequence, stated rather than buried: setting these to 0 moves
+  # the real programs from 0.63% mean |error| back to 3.42%, all 8
+  # under-predicting. That is worse on the number and RIGHT on the model:
+  # 0.63% was bought by a term the isolating ladders have now disproved,
+  # and leaving it in would mean carrying a known-false constant to flatter
+  # a metric. The residual is real and is now correctly ATTRIBUTED rather
+  # than absorbed; task_program_overhead is where it belongs, and the
+  # shellscale_* batch exists to fit it from isolation instead of from 8
+  # collinear real files.
+  aoi_logic_composite_surcharge_per_instr: 0
+  jsr_target_composite_surcharge_per_instr: 0
   composite_surcharge_confidence: FITTED
   # composite_surcharge_cap, wired 2026-09-03 (James: "tweak something else
   # in your algorithm and get a better result" -- real regression on all
@@ -1787,3 +1843,88 @@ logic_instructions:
     # Safety-task processor (James, 2026-08-24). See
     # docs/OPEN_QUESTIONS.md OQ-CROUT-MAPC-BUILDFAIL. Not guessing a weight
     # off broken-build data, and not in scope regardless.
+
+# Tag-based alarm conditions (OQ-ALARMCOND), SOLVED EXACTLY 2026-09-05.
+#
+# James, 2026-09-04: "see the alarms prefixed by 'Alarm1_' as they could be
+# holding back some of your calcuations from being accurate." They were the
+# single biggest unpriced item in the model: 3,463 real AlarmCondition
+# elements across the corpus, 200-600 in every real program, all costing
+# exactly zero.
+#
+# Derived from the 37-file alarmcond_* batch, in which the four placeholder
+# arrays are byte-identical across every file so their storage cancels in
+# every difference. The formula reproduces ALL 37 captures with ZERO
+# residual -- not a fit with small error, an exact reconstruction:
+#
+#   bare ladder (0 assoc):  cost = 800 + 500n   exact at n = 1,2,4,8,16,32,64,128
+#   real shape (3 assoc):   cost = 800 + 1104n  exact at the same 8 points
+#   assoc k=0..4 at n=32:   0 / 92 / 348 / 604 / 696 per alarm
+#                           = running sum of DINT 92 + STRING 256 + STRING 256 + REAL 92
+#   by type at n=32 x1:     BOOL 88, DINT 92, REAL 92, STRING 256
+#
+# CONFIRMED FREE, all reading byte-identical to the 32-alarm control:
+#   HMIGroup            absent / 4 chars / 16 chars   -> 0
+#   alarm Name length   8 / 16 / 32 / 40 chars        -> 0
+#   Severity 1 / 1000, OnDelay 1000, Latched, AckRequired -> 0
+# That is worth stating plainly: alarm cost depends ONLY on how many alarms
+# there are and what their associated tags point at. Nothing else about an
+# alarm costs memory.
+#
+# file_base vs per_condition: the data fixes their SUM but not the split --
+# 800 + 500n and "first alarm costs 1,300, rest 500" are indistinguishable
+# here. Modelled as a file base because that matches how every other
+# structural overhead in this model behaves.
+alarm_conditions:
+  file_base: 800
+  per_condition: 500
+  # Keyed on the resolved data type of what AssocTagN points AT, following
+  # UDT member paths (real corpus refs look like Alarms_Edger1[0].Number).
+  per_associated_tag_by_type:
+    BOOL: 88        # measured
+    DINT: 92        # measured
+    REAL: 92        # measured
+    STRING: 256     # measured
+    SINT: 92        # INFERRED -- DINT and REAL both measure 92, so every
+    INT: 92         # non-STRING scalar is assumed to share that rate. No
+    LINT: 92        # SINT/INT/LINT associated tag has been measured.
+  # An associated tag whose type cannot be resolved (a partial export, or a
+  # reference into something this parser does not follow) is charged the
+  # STRING rate -- the most expensive, so an unresolved reference
+  # over-states rather than silently under-states.
+  associated_tag_default: 256
+  confidence: KNOWN
+
+# Structured Text (OQ-STSIZING), SOLVED 2026-09-05 from the realscale_st_*
+# / st_* batch. Every number here is exact, not fitted.
+#
+# THE HEADLINE: an instruction inside ST costs EXACTLY what the same
+# instruction costs in a rung. Measured against the matching instr_*_n01000
+# ladder captures, ST is a flat +432 (the ST routine shell) and nothing
+# else:
+#     COP    135,376 vs 134,944   DTOS  95,376 vs  94,944
+#     SIZE   151,376 vs 150,944   MOV   59,376 vs  58,944  (as "D := lit;")
+#     CPT    475,376 vs 474,944   (as "R := (D+D)*R - R/2 + 1.5;")
+# +432 in all five. So the whole per-instruction weight table transfers to
+# ST unchanged, and an ST assignment with an arithmetic right-hand side is
+# priced by the existing CPT expression model -- no second model needed.
+#
+# COMMENTS ARE FREE, which is what James asked (2026-09-04: "if a comment
+# line or block takes up data memory or is like tag and rung comments").
+# Answer: like rung comments. 100 short leading, 100 long leading (110
+# chars), 400 leading, and 100 trailing comments ALL read byte-identical to
+# the 100-line control, as do 400 blank lines. Comment text costs nothing at
+# any count, length or placement.
+structured_text:
+  per_statement: 40          # exact: 25/100/400/1000 assignment lines all 40/line
+  routine_shell: 432         # exact: the +432 above, once per ST routine
+  # Control-flow constructs, measured against the same 100-statement control.
+  # FOR is 5x an IF, which is worth knowing before modelling a real file:
+  # a loop-heavy ST routine is not priced like a branch-heavy one.
+  if_block: 48               # per IF ... END_IF
+  elsif_branch: 40           # per additional ELSIF in a chain
+  case_block: 57             # per CASE branch (incl. its ELSE)
+  for_block: 248             # per FOR ... END_FOR
+  while_block: 72            # per WHILE ... END_WHILE
+  comments_and_blanks: 0     # CONFIRMED FREE -- see above
+  confidence: KNOWN

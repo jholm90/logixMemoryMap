@@ -1326,7 +1326,9 @@ the matching footnote at the bottom, not inline.
     is a controller-in-the-loop test, not a file-generation one, so it
     needs James at the bench rather than a generator run.
 
-20. **OQ-ALARMCOND** — new, 2026-09-04 (James: *"Another thing to look at
+20. **OQ-ALARMCOND** — **SOLVED EXACTLY 2026-09-05, moved to
+    RESOLVED_QUESTIONS.md.** Original entry kept below for the trail.
+    Opened 2026-09-04 (James: *"Another thing to look at
     is Controller Alarms that we use... see the alarms prefixed by
     'Alarm1_' as they could be holding back some of your calcuations from
     being accurate"*). He was right, measurably.
@@ -2166,3 +2168,46 @@ single-axis-in-isolation case OQ-PREDEFINED already solved. Genuinely
 blocked on that source data (or a fresh, clearly-labeled real capture) —
 not guessable from two aggregate totals, and not acted on (no formula
 change made) pending it.
+
+
+21. **OQ-SHELLSCALE** — new, 2026-09-05. **The real remaining gap, and for
+    the first time it has a name that survives contact with an isolating
+    experiment.**
+
+    Three successive fits of the composite AOI/JSR surcharge (20/47 →
+    52/21 → 22/3) were all chasing one residual. The ladders built for the
+    2026-09-04 batch have now disproved the per-instruction explanation
+    outright, each with zero residual:
+
+    | experiment | result |
+    |---|---|
+    | `realscale_jsrtgt_xic_n{10..5000}` | the same rungs moved into a JSR target cost **+344 flat**, at all 5 scales |
+    | `realscale_jsrsplit_k{10,50,250}` | exactly **344 per additional distinct target** |
+    | `realscale_aoiint_n{50..12000}` | AOI-internal content costs **20/rung = 10/instr** = exactly XIC+OTE, across a 240× span |
+
+    So neither AOI-internal nor JSR-target CONTENT carries any surcharge.
+    Both rates are now **0**. With that gone and alarms priced exactly, the
+    8 real programs under-predict by +0.95% to +7.93% (aggregate +2.80%,
+    mean 3.42%), and the residual correlates:
+
+        programs     +0.871      aoi_instructions  +0.711
+        routines     +0.829      jsr_instructions  +0.670
+        jsr_targets  +0.816      aoi_instances     +0.602
+
+    **PROGRAM and ROUTINE count** — which every previous ladder held at 1
+    and 2 respectively while scaling content, so a per-program or
+    per-routine term was invisible by construction and could only surface
+    disguised as a per-instruction one. `task_program_overhead`
+    (`program_extra=484`, `routine_extra=272`) was fitted on 5 files with
+    single-digit counts; the real files run 8-39 programs and 46-301
+    routines and imply roughly **4,900/program and 550/routine** — a 10×
+    and 2× extrapolation failure.
+
+    NOT refitted from those 8 files: in a real project programs, routines
+    and JSR targets all move together, which is exactly the collinearity
+    that produced three wrong surcharge fits. `gen_shell_scale.py` (19
+    files) isolates it — a routine ladder to 200 and a program ladder to
+    40, both at constant total content, plus a crossed group reaching 100
+    routines as 1×100 / 5×20 / 20×5 / 50×2. If the cost is per-routine
+    only those four land together; if there is a real per-program term they
+    separate by program count. Blocked on capture.

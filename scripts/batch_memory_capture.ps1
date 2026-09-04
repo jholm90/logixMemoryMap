@@ -134,7 +134,7 @@ function Test-SpaceBarPressed {
 }
 
 function Wait-WithSpaceBarClipboardRefresh([int]$Seconds, [string]$AcdPath, [string]$Label, [string]$OpenRequestPath) {
-    $checkIntervalMs = 200
+    $checkIntervalMs = 50   # James, 2026-09-05
     $ticks = [math]::Ceiling(($Seconds * 1000) / $checkIntervalMs)
     for ($i = 0; $i -lt $ticks; $i++) {
         if (Test-SpaceBarPressed) {
@@ -188,10 +188,10 @@ $alreadyLogged = @{}
 # this script runs against the same $ConvertLog -- no ACD rebuild needed,
 # since convert_log.csv already has status=ok for it (only the capture
 # READ was suspect, not the conversion).
-$manifest | Where-Object { $_.actual_bytes -and ($_.notes -notmatch 'WINDOW TITLE MISMATCH|ZERO CAPACITY') } |
+$manifest | Where-Object { $_.actual_bytes -and ($_.notes -notmatch 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC') } |
     ForEach-Object { $alreadyLogged[$_.l5x_path] = $true }
 $mismatchFlagged = @{}
-$manifest | Where-Object { $_.notes -match 'WINDOW TITLE MISMATCH|ZERO CAPACITY' } |
+$manifest | Where-Object { $_.notes -match 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC' } |
     ForEach-Object { $mismatchFlagged[$_.l5x_path] = $true }
 
 $rows = Import-Csv $ConvertLog | Where-Object { $_.status -eq "ok" }
@@ -323,6 +323,29 @@ foreach ($row in $remaining) {
         Write-Warning "Capacity read as 0 for $($meta.Id) -- almost certainly a bad read, not a real value. Flagging, not counting."
         $notes = if ($notes) { "$notes; ZERO CAPACITY: read as 0, not a real value, not counted" } else { "ZERO CAPACITY: read as 0, not a real value, not counted" }
     }
+    # James, 2026-09-05: "flag the file if Error or Warning is not a number
+    # then i want to flag it just like the window title to be able to be run
+    # again." The AHK side returns "" (never "0") when its button scan can't
+    # read the counters cleanly -- no build ran, the popup was missed, or the
+    # controls moved. A blank or non-numeric error_count means the BUILD
+    # STATUS IS UNKNOWN for this row, and an unknown build status is exactly
+    # what has already forced 30 capture rows to be voided: a project that
+    # built with errors, logged as if it were clean, silently poisons every
+    # fit it enters. Flagged in notes like WINDOW TITLE MISMATCH and
+    # ZERO CAPACITY, which means the row is excluded from "already logged"
+    # and retried automatically on the next run -- no manual re-flagging.
+    $countersBad = @()
+    foreach ($pair in @(@("Error", $errorCount), @("Warning", $warningCount))) {
+        if ($pair[1] -notmatch '^\d+$') {
+            $countersBad += "$($pair[0])='$($pair[1])'"
+        }
+    }
+    if ($countersBad.Count -gt 0) {
+        Write-Warning "Non-numeric build counter(s) for $($meta.Id): $($countersBad -join ', ') -- build status unknown, flagging for retry."
+        $flag = "COUNTER NOT NUMERIC: " + ($countersBad -join ', ') + " -- build status unknown, not counted"
+        $notes = if ($notes) { "$notes; $flag" } else { $flag }
+    }
+
     $date = Get-Date -Format "yyyy-MM-dd"
     $predicted = if ($existing -and $existing.predicted_bytes) { $existing.predicted_bytes } else { "" }
     $delta = ""

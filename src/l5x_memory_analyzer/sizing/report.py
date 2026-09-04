@@ -24,6 +24,7 @@ from l5x_memory_analyzer.parser.modules import parse_modules
 from l5x_memory_analyzer.parser.tags import CONTROLLER_SCOPE, parse_tags
 from l5x_memory_analyzer.parser.tasks import parse_tasks
 from l5x_memory_analyzer.sizing.confidence import weakest
+from l5x_memory_analyzer.sizing.alarms import size_alarm_conditions
 from l5x_memory_analyzer.sizing.coverage import audit_coverage
 from l5x_memory_analyzer.sizing.constants import MemoryModel
 from l5x_memory_analyzer.sizing.logic import compute_routine_logic_bytes
@@ -273,6 +274,19 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # than silently assumed correct.
     tag_types = {t.name: t.data_type for t in tags if t.data_type}
 
+    # Tag-based alarm conditions (OQ-ALARMCOND, solved exactly 2026-09-05).
+    # Placed here because it needs tag_types, which is built just above, and
+    # a UDT member map -- real AssocTagN references are member paths like
+    # "Alarms_Edger1[0].Number", so bare-tag-name resolution would find
+    # almost nothing on a real file. See sizing/alarms.py.
+    _udt_member_types = {
+        name: {mem.name: mem.data_type for mem in defn.members}
+        for name, defn in udt_types.items()
+    }
+    alarm_entries, alarm_conditions = size_alarm_conditions(
+        root, model, tag_types, _udt_member_types
+    )
+
     all_routines = parse_rll_routines(root)
 
     # Target routine name -> declared param count, from every real JSR(...)
@@ -460,7 +474,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         if scope.is_whole_controller else []
     )
 
-    all_exact = sized + definition_entries + baseline_entries
+    all_exact = sized + definition_entries + alarm_entries + baseline_entries
     exact_total = sum(size for _, _, _, size, _ in all_exact)
     logic_total = sum(size for _, _, _, size, _ in logic_entries)
     total_bytes = exact_total + logic_total

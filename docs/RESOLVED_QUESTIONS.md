@@ -1429,3 +1429,55 @@ minimal pair. The core question (does an orphaned AOI definition cost
 real memory) is closed. Still open, tracked separately under
 OQ-COMPOSITESCALE: capturing the remaining composite files (8 blocked on
 an unrelated CIP-Safety-catalog import bug, the rest not yet run).
+
+## OQ-ALARMCOND — tag-based alarm conditions (SOLVED EXACTLY, 2026-09-05)
+
+James, 2026-09-04: *"see the alarms prefixed by 'Alarm1_' as they could be
+holding back some of your calcuations from being accurate."* They were the
+single largest unpriced item in the model — 3,463 across the real corpus,
+200-600 in every real program, all costing exactly zero.
+
+Solved from the 37-file `alarmcond_*` batch with **zero residual on every
+captured point**:
+
+```
+total = 800  (once per file, if any alarm exists)
+      + 500  per alarm condition
+      + per associated tag, by the resolved type of what it points AT:
+            BOOL 88 | DINT 92 | REAL 92 | STRING 256
+```
+
+Confirmed **free**, all byte-identical to the 32-alarm control: HMIGroup
+(absent / 4 / 16 chars), alarm Name length (8/16/32/40), Severity, OnDelay,
+Latched, AckRequired. **Alarm cost depends only on how many alarms there
+are and what their associated tags point at.**
+
+Impact: `alarm_condition` category 37/37 within ±1% (0.03% mean), and
+pricing it forced the composite AOI/JSR surcharge to be re-examined — which
+led directly to both rates being disproved and set to 0 (OQ-SHELLSCALE).
+
+Two things this batch got right that are worth repeating: the four
+placeholder arrays were byte-identical in every file, so James's *"mute
+them in your calculations"* was handled by the experiment design rather
+than a subtraction; and assoc-tag count was varied independently of alarm
+count, which no real file can do (every real alarm has exactly 3).
+
+## OQ-STSIZING — Structured Text (SOLVED, 2026-09-05)
+
+**An instruction inside ST costs exactly what the same instruction costs in
+a rung.** Against the matching `instr_*_n01000` captures, ST is a flat
+**+432** (the ST routine shell) and nothing else — COP, DTOS, SIZE, `:=`
+against MOV, and a full arithmetic `:=` against CPT, all five at +432. The
+entire per-instruction weight table transfers to ST unchanged, and an ST
+arithmetic assignment is priced by the existing CPT expression model.
+
+Per plain assignment statement: **40 bytes**, exact at 25/100/400/1000.
+Control flow, per construct: IF 48, ELSIF 40, CASE branch 57, **FOR 248**,
+WHILE 72 — a loop-heavy ST routine is not priced like a branch-heavy one.
+
+**ST comments are FREE**, answering James's question directly: 100 short
+leading, 100 long (110-char) leading, 400 leading and 100 trailing comments
+all read byte-identical to the control, as do 400 blank lines. Same as rung
+comments — but this had to be measured, because a rung comment is a
+separate `<Comment>` element while an ST comment sits inside the compiled
+source text.
