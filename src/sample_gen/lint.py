@@ -133,6 +133,15 @@ _KNOWN_NATIVE_INSTRUCTIONS = {
     "NOT", "NEG", "UID", "UIE", "MCR", "TND", "ATN", "DEG", "RAD", "TAN",
     "SWPB", "XOR", "FIND", "INSERT", "BSL", "BSR", "FFL", "FFU", "SRT",
     "AVE", "FAL", "FSC", "MDW", "MASD", "MGSD", "MGSR", "CROUT",
+    # Added 2026-09-04 from James's own hand-built, BUILD-CLEAN export
+    # (samples/local/instr_probes/instruction_shapes_20260904.L5X). These are
+    # the strongest possible provenance in this repo: not corpus-inferred,
+    # not documented-family-guessed -- James wrote the rungs, Studio 5000
+    # accepted them, and the verified call shapes now live in
+    # gen_verified_instructions.py. NXT is deliberately absent: James,
+    # "NXT not valid instruction" -- it is not an RLL mnemonic.
+    "BRK", "COS", "LOG", "SIN", "PID", "FBC", "STOR",
+    "MCD", "MCS", "MCSV", "MAG", "MCLM",
     # Added 2026-09-05. Every one of these is confirmed real by an actual
     # call site in samples/local/ (James's own production files) -- they
     # were missing here only because no generator had ever emitted them,
@@ -775,7 +784,17 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
             # FLL/BTD, SIZE's first operand is the whole array, not one
             # element of it, so a bare tag immediately after "SIZE(" is
             # not a missing-subscript bug.
-            pattern = re.compile(r"(?<!SIZE\()\b" + re.escape(tag) + r"\b(?!\s*\[)")
+            # MCSV is the second confirmed whole-array exception, same
+            # class as SIZE and on the same evidence standard: James's own
+            # 2026-09-04 build-clean export writes
+            # `MCSV(MCSV,Cam_Profile,Src,Dst,Dst,Dst);` against a plain
+            # CAM_PROFILE[10] with NO subscript. A cam profile is passed as
+            # the whole profile array, never one element of it, so a bare
+            # array tag after "MCSV(" is correct, not a missing-subscript
+            # bug. Kept as a mnemonic-specific lookbehind rather than a
+            # blanket CAM_PROFILE exemption, because MAPC/MCCP DO take a
+            # subscripted element and must still be caught.
+            pattern = re.compile(r"(?<!SIZE\()(?<!MCSV\(MCSV,)\b" + re.escape(tag) + r"\b(?!\s*\[)")
             if pattern.search(text):
                 findings.append(LintFinding(
                     "missing_array_subscript",

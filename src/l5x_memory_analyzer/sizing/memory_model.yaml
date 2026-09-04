@@ -1396,10 +1396,46 @@ cmp_surcharge:
 # untouched, same as before this fix). A file mixing JSR-caller routines
 # WITH plain routines across a multi-Task/multi-Program structure is
 # untested territory -- flagged, not guessed at.
+# REFIT 2026-09-04 from the shellscale_* isolation batch -- routine_extra
+# 272 -> 264 and program_extra 484 -> 476. Both were exactly +8 too high.
+#
+# The values above were solved from n=2 files (2 programs, 2 routines): a
+# single marginal step each, so any constant contaminating that one step
+# lands entirely in the slope. The shellscale_* batch was built precisely
+# to replace that with a real span, and it does -- the marginals are not
+# approximately linear, they are EXACTLY linear, every step:
+#
+#   shellscale_routines_n001..n200 (1 program, 200 rungs held FIXED, only
+#   the routine count varies): 1->2, 2->5, 5->10, 10->25, 25->50, 50->100,
+#   100->200 all give exactly 264.000 bytes per routine, no rounding.
+#   => routine_extra = 264
+#
+#   shellscale_programs_n001..n040 (200 rungs held FIXED, each added
+#   program carries exactly 1 routine): 1->2, 2->5, 5->10, 10->20, 20->30,
+#   30->40 all give exactly 740.000 per program-with-routine.
+#   => program_extra = 740 - 264 = 476
+#
+# Note the DIRECTION this correction goes, because it is the opposite of
+# what OQ-SHELLSCALE predicted. That question hypothesised the constants
+# were far too SMALL (real files seemed to imply ~4,900/program and
+# ~550/routine), fitted off 8 real programs whose program count, routine
+# count and AOI instruction count are all mutually collinear. Isolation
+# says the truth is the other way: the constants were slightly too LARGE,
+# and the real-file residual those inflated numbers were chasing is NOT a
+# shell-scaling term at all. See OPEN_QUESTIONS.md OQ-SHELLSCALE.
+#
+# task_extra: NOT refit. The shellscale_* batch holds Task count at 1 in
+# every file (confirmed by counting <Task> elements in each, not by
+# trusting the filenames), so it carries no information about task_extra
+# whatsoever. 700 stands on its old 2-task derivation and stays FITTED.
 task_program_overhead:
-  routine_extra: 272
-  program_extra: 484
+  routine_extra: 264
+  program_extra: 476
   task_extra: 700
+  # Stays FITTED, not KNOWN: routine_extra/program_extra are now measured
+  # exactly over a real span, but task_extra in this same block is still
+  # the old 2-task fit, and this tier propagates to everything the block
+  # touches. The block is only as strong as its weakest constant.
   confidence: FITTED
 
 # OQ-JSRPARAMCOST, wired 2026-08-25. delta(n,R) = A(n) + B(n)*R, solved
