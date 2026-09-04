@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="MRPN10" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 04 19:13:51 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="MRPN10" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 04 19:13:51 2026" LastModifiedDate="Fri Sep 04 19:13:51 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="MARN10" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 04 19:13:51 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="MARN10" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 04 19:13:51 2026" LastModifiedDate="Fri Sep 04 19:13:51 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -92,34 +92,34 @@
 <Routine Name="MainRoutine" Type="RLL">
 <RLLContent>
               <Rung Number="0" Type="N">
-                <Text><![CDATA[MRP(Axis_Cip_Drive,MotionInstr1,Absolute,Actual,0);]]></Text>
+                <Text><![CDATA[MAR(Axis_Cip_Drive,MotionInstr1,Positive_Edge,Disabled,0,0,1);]]></Text>
               </Rung>
               <Rung Number="1" Type="N">
-                <Text><![CDATA[MRP(Axis_Cip_Drive,MotionInstr1,Absolute,Actual,0);]]></Text>
+                <Text><![CDATA[MAR(Axis_Cip_Drive,MotionInstr1,Positive_Edge,Disabled,0,0,1);]]></Text>
               </Rung>
               <Rung Number="2" Type="N">
-                <Text><![CDATA[MRP(Axis_Cip_Drive,MotionInstr1,Absolute,Actual,0);]]></Text>
+                <Text><![CDATA[MAR(Axis_Cip_Drive,MotionInstr1,Positive_Edge,Disabled,0,0,1);]]></Text>
               </Rung>
               <Rung Number="3" Type="N">
-                <Text><![CDATA[MRP(Axis_Cip_Drive,MotionInstr1,Absolute,Actual,0);]]></Text>
+                <Text><![CDATA[MAR(Axis_Cip_Drive,MotionInstr1,Positive_Edge,Disabled,0,0,1);]]></Text>
               </Rung>
               <Rung Number="4" Type="N">
-                <Text><![CDATA[MRP(Axis_Cip_Drive,MotionInstr1,Absolute,Actual,0);]]></Text>
+                <Text><![CDATA[MAR(Axis_Cip_Drive,MotionInstr1,Positive_Edge,Disabled,0,0,1);]]></Text>
               </Rung>
               <Rung Number="5" Type="N">
-                <Text><![CDATA[MRP(Axis_Cip_Drive,MotionInstr1,Absolute,Actual,0);]]></Text>
+                <Text><![CDATA[MAR(Axis_Cip_Drive,MotionInstr1,Positive_Edge,Disabled,0,0,1);]]></Text>
               </Rung>
               <Rung Number="6" Type="N">
-                <Text><![CDATA[MRP(Axis_Cip_Drive,MotionInstr1,Absolute,Actual,0);]]></Text>
+                <Text><![CDATA[MAR(Axis_Cip_Drive,MotionInstr1,Positive_Edge,Disabled,0,0,1);]]></Text>
               </Rung>
               <Rung Number="7" Type="N">
-                <Text><![CDATA[MRP(Axis_Cip_Drive,MotionInstr1,Absolute,Actual,0);]]></Text>
+                <Text><![CDATA[MAR(Axis_Cip_Drive,MotionInstr1,Positive_Edge,Disabled,0,0,1);]]></Text>
               </Rung>
               <Rung Number="8" Type="N">
-                <Text><![CDATA[MRP(Axis_Cip_Drive,MotionInstr1,Absolute,Actual,0);]]></Text>
+                <Text><![CDATA[MAR(Axis_Cip_Drive,MotionInstr1,Positive_Edge,Disabled,0,0,1);]]></Text>
               </Rung>
               <Rung Number="9" Type="N">
-                <Text><![CDATA[MRP(Axis_Cip_Drive,MotionInstr1,Absolute,Actual,0);]]></Text>
+                <Text><![CDATA[MAR(Axis_Cip_Drive,MotionInstr1,Positive_Edge,Disabled,0,0,1);]]></Text>
               </Rung>
 </RLLContent>
 </Routine>

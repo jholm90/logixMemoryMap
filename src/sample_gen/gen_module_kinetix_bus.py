@@ -90,7 +90,34 @@ def main() -> None:
         _axis_tag("Bus2_Drive020_Sf_Axis", "Bus2_Drive_D020:Ch3"),
     ])
 
-    l5x = build_l5x(target_name="KinetixFullBus", tags_xml=tags_xml, extra_modules_xml=modules_xml)
+    # REBUILT 2026-09-05 off James's real Studio 5000 errors:
+    #     Tag 'Bus2_Drive_D020:SI': Invalid data type for safety tag.   (x3)
+    #     Project size exceeds controller capacity.
+    #
+    # Those :SI tags are not in this file -- Studio SYNTHESISES them,
+    # because an -ERS3 Kinetix drive is a safety drive and its config data
+    # declares safety I/O. On a plain 1756-L81E there is no safety task to
+    # own them, so each drive contributes one invalid safety tag; three
+    # drives, three errors. The fourth error is separate and simpler: three
+    # dual-axis drives plus two power supplies do not fit an L81E's 3 MB.
+    #
+    # Both fixed by matching the shape that ALREADY BUILDS CLEAN in this
+    # corpus -- the modulesweep_2198_*_variant_4conn files, which put the
+    # same -ERS3 catalogs on a safety-capable controller. 1756-L85ES rather
+    # than the L81ES they use, purely for the memory headroom the capacity
+    # error demands.
+    #
+    # NOT a guess that -ERS3 always needs a safety controller: that theory
+    # was raised and DISPROVEN on 2026-09-02 (James's real TitusvilleTrimmer
+    # runs a real 2198-D057-ERS3 on a non-safety 1756-L82E). The difference
+    # is that his real module carries no safety connections and no safety
+    # config; this generator's blocks do. A non-safety -ERS3 shape is
+    # buildable, it just needs config data captured from a real non-safety
+    # module -- which this project does not have.
+    l5x = build_l5x(
+        target_name="KinetixFullBus", tags_xml=tags_xml, extra_modules_xml=modules_xml,
+        processor_type="1756-L85ES", safety_level="SIL2",
+    )
     out_path = OUT_ROOT / "modulerack_kinetix_full_bus.L5X"
     write_sample_unmodeled(l5x, out_path)
     append_manifest_row(

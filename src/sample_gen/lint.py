@@ -133,6 +133,14 @@ _KNOWN_NATIVE_INSTRUCTIONS = {
     "NOT", "NEG", "UID", "UIE", "MCR", "TND", "ATN", "DEG", "RAD", "TAN",
     "SWPB", "XOR", "FIND", "INSERT", "BSL", "BSR", "FFL", "FFU", "SRT",
     "AVE", "FAL", "FSC", "MDW", "MASD", "MGSD", "MGSR", "CROUT",
+    # Added 2026-09-05. Every one of these is confirmed real by an actual
+    # call site in samples/local/ (James's own production files) -- they
+    # were missing here only because no generator had ever emitted them,
+    # not because they are not real Logix instructions. The corpus call
+    # site is recorded in gen_unweighted_instructions.py per instruction.
+    "MSF", "MAW", "MAR", "MDR", "MAG", "MCD", "MCS", "MCSV", "MCLM",
+    "AND", "OR", "DTR", "UPPER", "RTOS", "SFR", "LFU", "SCP", "FOR",
+    "BRK", "NXT", "EVENT", "SBR", "RET",
 }
 
 # REAL BUG FOUND 2026-08-31, self-audit while adding the aoi_call_arg_

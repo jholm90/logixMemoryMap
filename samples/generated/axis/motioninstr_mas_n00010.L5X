@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="MASN10" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Aug 23 19:48:48 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="MASN10" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Aug 23 19:48:48 2026" LastModifiedDate="Sun Aug 23 19:48:48 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="MASN10" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 04 19:13:50 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="MASN10" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 04 19:13:50 2026" LastModifiedDate="Fri Sep 04 19:13:50 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -55,32 +55,32 @@
       <Tag Name="Direction" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="Position" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
-        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      <Tag Name="Position" TagType="Base" DataType="REAL" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></Data>
       </Tag>
-      <Tag Name="Speed" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
-        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      <Tag Name="Speed" TagType="Base" DataType="REAL" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></Data>
       </Tag>
-      <Tag Name="AccelRate" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
-        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      <Tag Name="AccelRate" TagType="Base" DataType="REAL" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></Data>
       </Tag>
-      <Tag Name="DecelRate" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
-        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      <Tag Name="DecelRate" TagType="Base" DataType="REAL" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></Data>
       </Tag>
-      <Tag Name="AccelJerk" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
-        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      <Tag Name="AccelJerk" TagType="Base" DataType="REAL" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></Data>
       </Tag>
-      <Tag Name="DecelJerk" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
-        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      <Tag Name="DecelJerk" TagType="Base" DataType="REAL" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></Data>
       </Tag>
-      <Tag Name="LockPosn" TagType="Base" DataType="REAL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
-        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Decimal" Value="0.0" /></Data>
+      <Tag Name="LockPosn" TagType="Base" DataType="REAL" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></Data>
       </Tag>
-      <Tag Name="EventDistance" TagType="Base" DataType="REAL" Dimensions="1" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
-        <Data Format="Decorated"><Array DataType="REAL" Dimensions="1" Radix="Decimal"><Element Index="[0]" Value="0.0" /></Array></Data>
+      <Tag Name="EventDistance" TagType="Base" DataType="REAL" Dimensions="1" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Array DataType="REAL" Dimensions="1" Radix="Float"><Element Index="[0]" Value="0.0" /></Array></Data>
       </Tag>
-      <Tag Name="CalculatedData" TagType="Base" DataType="REAL" Dimensions="1" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
-        <Data Format="Decorated"><Array DataType="REAL" Dimensions="1" Radix="Decimal"><Element Index="[0]" Value="0.0" /></Array></Data>
+      <Tag Name="CalculatedData" TagType="Base" DataType="REAL" Dimensions="1" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Array DataType="REAL" Dimensions="1" Radix="Float"><Element Index="[0]" Value="0.0" /></Array></Data>
       </Tag>
 </Tags>
 <Programs>

@@ -103,7 +103,27 @@ def _write(out_name: str, l5x: str, description: str) -> None:
 
 
 def main() -> None:
-    instr = "ALMD(Alm1,AlmIn,AlmProgAck,AlmProgReset,AlmProgDisable,AlmProgEnable);"
+    # ALMD's REAL operand list, read straight off James's Studio 5000
+    # faceplate 2026-09-05 after both files failed with "Rung 0, ALMD:
+    # Invalid number of arguments for instruction."
+    #
+    #     slot 1  ALMD             <- the ALARM_DIGITAL tag
+    #     slot 2  ProgAck
+    #     slot 3  ProgReset
+    #     slot 4  ProgDisable
+    #     slot 5  ProgEnable
+    #     slot 6  MinDurationPRE
+    #     slot 7  MinDurationACC
+    #
+    # SEVEN operands, and critically there is NO "In" operand -- the alarm
+    # input is the RUNG CONDITION, not an argument. The old 6-argument call
+    # passed AlmIn second, so Studio bound it to ProgAck and every operand
+    # after it landed one slot early, with the last spilling into a slot
+    # that does not exist ("Unknown" on the faceplate). That is what the
+    # error was really saying: not "too few", but "these don't line up".
+    # MinDurationPRE/ACC are v33+ additions and are what the old call was
+    # missing entirely.
+    instr = "ALMD(Alm1,AlmProgAck,AlmProgReset,AlmProgDisable,AlmProgEnable,0,0);"
     rung = rung_xml(0, instr)
 
     minimal_tag = _almd_tag_xml("Alm1", "Alarm", "A")

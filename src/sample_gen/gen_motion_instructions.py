@@ -64,6 +64,31 @@ _MOTION_RUNGS = {
            "Units per sec2,Trapezoidal,AccelJerk,DecelJerk,% of Maximum,Disabled,Programmed,0,None);",
     "MAS": "MAS(Axis_Cip_Drive,MotionInstr1,All,No,DecelRate,Units per sec2,No,DecelJerk,% of Time);",
     "MRP": "MRP(Axis_Cip_Drive,MotionInstr1,Absolute,Actual,0);",
+    # Added 2026-09-05 (James: "you can do the generation for unweighted
+    # instructions. MCSV is a motion instruction so be cautious it will need
+    # an axis... just like the MAJ MSF etc"). Every shape below is copied
+    # from a REAL call site in samples/local/, not composed from the manual
+    # -- the corpus reference is given per instruction. All four are
+    # single-axis, so they reuse the same Axis_Cip_Drive/MotionInstr1 pair
+    # the confirmed MAH/MSO files already use.
+    #
+    #   MSF, real: MSF(Inp_Axis,Motion[5])
+    #   MAW, real: MAW(EM108_GradingLC,Grading_LC_MAW_DataShift,Forward,0)
+    #   MAR, real: MAR(Axis_BND1_Trav_Drive,Reg_MAR,Positive_Edge,Disabled,0,0,1)
+    #   MDR, real: MDR(Axis_BND1_Trav_Drive,Reg_MDR,1)
+    #
+    # DELIBERATELY NOT ADDED, and why -- each needs structure this
+    # generator does not build, and inventing it is what produced the
+    # rejected alarm ConditionTypes:
+    #   MAG   needs a MASTER and a SLAVE axis (real: MAG(slave,master,...))
+    #   MCD   needs a real motion-instruction merge shape with 15+ operands
+    #   MCS   needs a COORDINATE_SYSTEM tag
+    #   MCLM  needs a COORDINATE_SYSTEM plus a target-position array
+    #   MCSV  needs a CAM_PROFILE array pair (master/slave cam)
+    "MSF": "MSF(Axis_Cip_Drive,MotionInstr1);",
+    "MAW": "MAW(Axis_Cip_Drive,MotionInstr1,Forward,0);",
+    "MAR": "MAR(Axis_Cip_Drive,MotionInstr1,Positive_Edge,Disabled,0,0,1);",
+    "MDR": "MDR(Axis_Cip_Drive,MotionInstr1,1);",
 }
 # Extra tags MAM/MAJ/MAS/MRP's real parameter lists reference beyond the
 # shared Axis_Cip_Drive/MotionInstr1 pair -- declared once, harmless if a
@@ -81,7 +106,7 @@ _MOTION_EXTRA_TAGS_XML = "\n".join([
     tag_xml("EventDistance", "REAL", dimensions=(1,)),
     tag_xml("CalculatedData", "REAL", dimensions=(1,)),
 ])
-INSTRUCTIONS = ["MAM", "MAJ", "MAH", "MAS", "MSO", "MRP"]
+INSTRUCTIONS = ["MAM", "MAJ", "MAH", "MAS", "MSO", "MRP", "MSF", "MAW", "MAR", "MDR"]
 
 
 def _write_unmodeled(l5x: str, out_name: str, description: str) -> None:
