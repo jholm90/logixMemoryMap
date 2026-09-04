@@ -505,6 +505,49 @@ class AlarmConditionModel:
 
 
 @dataclass(frozen=True)
+class StructuredTextModel:
+    """Cost of Structured Text routines -- see memory_model.yaml
+    structured_text and sizing/structured_text.py.
+
+    The headline result, and the reason this is a thin model rather than a
+    parallel weight table: ST costs EXACTLY what RLL costs for the same
+    instruction, plus one flat per-routine shell. Four ST/RLL pairs built
+    to be operand-for-operand identical came back separated by exactly
+    +432 every time, with no other term:
+
+        st_instr_cop_n01000    135,376  vs  instr_cop_n01000   134,944
+        st_instr_dtos_n01000    95,376  vs  instr_dtos_n01000   94,944
+        st_instr_size_n01000   151,376  vs  instr_size_n01000  150,944
+        st_expr_cpt_mirror_n01000 475,376 vs instr_cpt_n01000  474,944
+
+    So the whole per-instruction weight table, and the tier-aware CPT
+    expression model, transfer to ST unchanged. What ST adds on top is a
+    per-statement cost and per-construct control-flow costs, all measured
+    against a common 100-statement control.
+    """
+
+    per_statement: int
+    per_statement_literal_rhs: int
+    routine_shell: int
+    if_block: int
+    elsif_branch: int
+    case_block: int
+    for_block: int
+    while_block: int
+    comments_and_blanks: int
+    confidence: str
+    # "<n_operators>|<dest_is_real>" -> measured bytes. Sparse on purpose --
+    # see the memory_model.yaml comment. A shape not in here is NOT
+    # interpolated; sizing/structured_text.py reports it as a coverage gap.
+    assignment_expression_cost: dict[str, int]
+    assignment_expression_confidence: str
+
+    def assignment_cost(self, n_operators: int, dest_is_real: bool) -> int | None:
+        """Measured cost for this assignment shape, or None if unmeasured."""
+        return self.assignment_expression_cost.get(f"{n_operators}|{str(dest_is_real).lower()}")
+
+
+@dataclass(frozen=True)
 class MemoryModel:
     atomic_types: dict[str, AtomicType]
     predefined_structures: dict[str, AtomicType]
@@ -521,6 +564,7 @@ class MemoryModel:
     udt_definition: UdtDefinitionModel
     logic_instructions: LogicInstructionModel
     alarm_conditions: AlarmConditionModel
+    structured_text: StructuredTextModel
     empty_project_baseline_bytes: int
     empty_project_baseline_confidence: str
     module_overhead_bytes: int
@@ -560,6 +604,24 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
         atomic_types=atomic_types,
         predefined_structures=predefined_structures,
         predefined_array_structures=predefined_array_structures,
+        structured_text=StructuredTextModel(
+            per_statement=raw["structured_text"]["per_statement"],
+            per_statement_literal_rhs=raw["structured_text"]["per_statement_literal_rhs"],
+            routine_shell=raw["structured_text"]["routine_shell"],
+            if_block=raw["structured_text"]["if_block"],
+            elsif_branch=raw["structured_text"]["elsif_branch"],
+            case_block=raw["structured_text"]["case_block"],
+            for_block=raw["structured_text"]["for_block"],
+            while_block=raw["structured_text"]["while_block"],
+            comments_and_blanks=raw["structured_text"]["comments_and_blanks"],
+            assignment_expression_cost={
+                str(k): v for k, v in
+                raw["structured_text"].get("assignment_expression_cost", {}).items()
+            },
+            assignment_expression_confidence=raw["structured_text"].get(
+                "assignment_expression_confidence", "UNKNOWN"),
+            confidence=raw["structured_text"]["confidence"],
+        ),
         alarm_conditions=AlarmConditionModel(
             file_base=raw["alarm_conditions"]["file_base"],
             per_condition=raw["alarm_conditions"]["per_condition"],

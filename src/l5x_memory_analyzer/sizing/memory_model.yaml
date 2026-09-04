@@ -1953,6 +1953,11 @@ alarm_conditions:
 # any count, length or placement.
 structured_text:
   per_statement: 40          # exact: 25/100/400/1000 assignment lines all 40/line
+  # A statement whose right-hand side is a bare literal rather than a tag
+  # expression costs 4 less: st_assign_literal_n01000 ("Dn := n;", 1000
+  # lines) came back 59,376 against realscale_st_n01000's ("Dn := Dn+1 + 1;")
+  # 63,376 -- exactly 36.000/statement over 1000 statements vs 40.000.
+  per_statement_literal_rhs: 36
   routine_shell: 432         # exact: the +432 above, once per ST routine
   # Control-flow constructs, measured against the same 100-statement control.
   # FOR is 5x an IF, which is worth knowing before modelling a real file:
@@ -1961,6 +1966,51 @@ structured_text:
   elsif_branch: 40           # per additional ELSIF in a chain
   case_block: 57             # per CASE branch (incl. its ELSE)
   for_block: 248             # per FOR ... END_FOR
-  while_block: 72            # per WHILE ... END_WHILE
+  # 76, corrected 2026-09-04 (was 72). st_ctl_while is 10 blocks of
+  # {StIdx := 0; WHILE StIdx < 10 DO; D := D + StIdx; StIdx := StIdx + 1;
+  # END_WHILE;} and came back 25,296. The old 72 charged all 30 assignments
+  # at 40; the literal-RHS rate (36) was not known when it was derived, and
+  # `StIdx := 0;` is a bare-literal RHS. Recomputed:
+  #   25,296 - 23,376(base) - 10*36 - 10*40 - 10*40 = 760 => 76/WHILE.
+  # Honest caveat: this leans on `StIdx := 0` costing the same 36 that
+  # st_assign_literal_n01000 measured over 1,000 statements. A dedicated
+  # WHILE-count sweep at fixed assignment content would settle it outright;
+  # only one WHILE file exists, so the split between per-WHILE and
+  # per-assignment rests on that one substitution. See OQ-STSIZING.
+  while_block: 76            # per WHILE ... END_WHILE
   comments_and_blanks: 0     # CONFIRMED FREE -- see above
+  # ST ASSIGNMENT EXPRESSION COST, keyed "<operator count>|<REAL dest?>".
+  #
+  # An ST assignment does NOT simply cost what the equivalent CPT costs.
+  # That was the working hypothesis (the st_expr_cpt_mirror/instr_cpt pair
+  # differ by exactly the +432 routine shell, which looked conclusive), and
+  # routing every assignment through the tier-aware CPT model on that basis
+  # over-predicted the simple cases badly: realscale_st_n01000 by +132%.
+  #
+  # What the five measured shapes actually say:
+  #   D := D + 1;                    1 op,  DINT dest        ->  40
+  #   D := D + D * 2;                2 ops, DINT dest        -> 164
+  #   R := D + D;                    1 op,  REAL dest        -> 152
+  #   R := (D+D)*R - R/2 + 1.5;      5 ops, REAL dest, float -> 452
+  #   D := 0;                        bare literal RHS        ->  36
+  #
+  # A 1-operator assignment costing 40 is the tell: that is an ADD's own
+  # weight, not a CPT's. Logix appears to compile a simple assignment to the
+  # single equivalent instruction and only reaches for CPT-like evaluation
+  # on a compound expression -- which is why the 2-operator DINT case lands
+  # on the CPT number and the 1-operator cases land nowhere near it.
+  #
+  # These five points are MEASURED and exact. Everything else is a genuine
+  # gap: sizing/structured_text.py falls back to the CPT model outside this
+  # table and flags the file, rather than interpolating a curve through five
+  # points that clearly are not one curve. See OQ-STEXPR for the ladder that
+  # would close it (operator count 0..6 x DINT/REAL dest x with/without
+  # float literal -- the direct ST analogue of what cmpcpt_* did for RLL).
+  assignment_expression_cost:
+    "0|false": 36
+    "1|false": 40
+    "2|false": 164
+    "1|true": 152
+    "5|true": 452
+  assignment_expression_confidence: MEASURED_SPARSE
   confidence: KNOWN

@@ -75,9 +75,10 @@ def test_compute_routine_logic_bytes_sums_weights_plus_fixed_base():
 def test_build_report_includes_estimated_logic_entries():
     root = ET.fromstring(_XML)
     entries, errors = build_report(root, MODEL)
-    # The only error is the ST coverage gap asserted on in its own test
-    # below; nothing here should fail to size.
-    assert [e.path for e in errors] == ["coverage/routine_type/ST"]
+    # ST is SIZED as of 2026-09-04 (sizing/structured_text.py), so it is no
+    # longer reported as a whole-language coverage hole. The fixture's ST
+    # routine now produces a real entry instead.
+    assert [e.path for e in errors] == []
 
     # 2026-08-27, Task/Program/Routine shell decomposition: a single plain
     # routine's fixed_base_per_routine is now a separate "SHELL" entry
@@ -85,7 +86,8 @@ def test_build_report_includes_estimated_logic_entries():
     # task_program_overhead) rather than baked into the routine's own
     # entry -- same total, two entries instead of one.
     logic_entries = [e for e in entries if e.tier == ESTIMATED]
-    assert len(logic_entries) == 2
+    # RLL routine + SHELL + the now-sized ST routine.
+    assert len(logic_entries) == 3
     routine_entry = next(e for e in logic_entries if e.data_type == "RLL")
     shell_entry = next(e for e in logic_entries if e.data_type == "SHELL")
     assert routine_entry.path == "program:MainProgram/MainRoutine"
@@ -755,7 +757,7 @@ def test_array_index_bracket_not_counted_as_branch():
 def test_build_report_reports_non_rll_routine_as_a_coverage_gap():
     """A routine this engine cannot size must SAY SO, not vanish.
 
-    _XML carries a Type="ST" routine that parse_rll_routines drops on the
+    _XML carries a non-RLL routine that parse_rll_routines drops on the
     floor. Before sizing/coverage.py that produced a silently understated
     total with nothing in the output to hint at it -- the only thing that
     ever caught it was someone reading the L5X by hand (2026-09-04, James:
@@ -764,13 +766,17 @@ def test_build_report_reports_non_rll_routine_as_a_coverage_gap():
     claude in depth testing"). It now comes back as an ordinary SizeError,
     which is what the CLI, the UI and the CSV/XLSX export all render.
     """
-    root = ET.fromstring(_XML)
-    _entries, errors = build_report(root, MODEL)
+    # Retargeted 2026-09-04: ST used to be the unsized language here, but
+    # sizing/structured_text.py now prices it, so asserting on ST would test
+    # nothing. FBD is still genuinely unsized (no real capture data exists
+    # for it), which is exactly the condition this test guards.
+    xml = _XML.replace('Type="ST"', 'Type="FBD"')
+    _entries, errors = build_report(ET.fromstring(xml), MODEL)
 
     gaps = [e for e in errors if e.path.startswith("coverage/")]
     assert len(gaps) == 1
-    assert gaps[0].path == "coverage/routine_type/ST"
-    assert "Structured Text" in gaps[0].message
+    assert gaps[0].path == "coverage/routine_type/FBD"
+    assert "Function Block Diagram" in gaps[0].message
     assert "StRoutine" in gaps[0].message or "MainProgram" in gaps[0].message
 
 

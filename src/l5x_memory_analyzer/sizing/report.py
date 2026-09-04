@@ -19,7 +19,17 @@ from dataclasses import dataclass
 from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
 from l5x_memory_analyzer.parser.datatypes import parse_data_types
 from l5x_memory_analyzer.parser.export_scope import context_names, detect_export_scope
-from l5x_memory_analyzer.parser.logic import parse_aoi_internal_logic, parse_rll_routines
+from l5x_memory_analyzer.parser.logic import (
+    RoutineLogic,
+    count_instructions_in_text,
+    parse_aoi_internal_logic,
+    parse_rll_routines,
+)
+from l5x_memory_analyzer.sizing.structured_text import (
+    parse_st_routines,
+    size_st_assignments,
+    size_st_control_flow,
+)
 from l5x_memory_analyzer.parser.modules import parse_modules
 from l5x_memory_analyzer.parser.tags import CONTROLLER_SCOPE, parse_tags
 from l5x_memory_analyzer.parser.tasks import parse_tasks
@@ -381,6 +391,61 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             routine, model.logic_instructions, tag_types, charge_shell=not is_plain
         )
         logic_entries.append((routine.path, "routine_logic", "RLL", logic_bytes, logic_basis))
+
+    # Structured Text (OQ-STSIZING, wired 2026-09-04). Before this, ST
+    # contributed exactly ZERO -- parse_rll_routines filters to RLL and
+    # nothing else looked at an ST routine, while the real corpus carries
+    # 297 ST routines / 24,017 ST lines and one real program has 1,894 ST
+    # lines. See sizing/structured_text.py for the full derivation.
+    #
+    # Instructions inside ST are charged through the SAME weight table the
+    # rung sizer uses, not a parallel ST table: four ST/RLL pairs built
+    # operand-for-operand identical came back separated by exactly +432
+    # every time and by nothing else, so the per-instruction weights and
+    # the tier-aware CPT expression model both transfer unchanged.
+    #
+    # The 432 ST routine shell is deliberately NOT charged here. The empty
+    # ST control (realscale_st_n00000, one ST routine, zero statements)
+    # measures 23,376 and the model already predicts 23,365 for it without
+    # any ST term -- the routine's mere existence is already priced by the
+    # generic project/routine accounting, so adding the shell on top would
+    # double it. The +432 seen in the ST/RLL pairs is the difference
+    # between an ST routine and an RLL one, which that generic accounting
+    # already absorbs. Charging content only keeps the empty control exact.
+    for st_routine in parse_st_routines(root):
+        st_assign_bytes, st_unmeasured = size_st_assignments(st_routine, model, tag_types)
+        st_bytes = size_st_control_flow(st_routine, model) + st_assign_bytes
+        for shape in sorted(set(st_unmeasured)):
+            n_ops, is_real = shape.split("|")
+            errors.append(SizeError(
+                path=f"coverage/st_expression/{st_routine.program_name}/{st_routine.routine_name}",
+                message=(
+                    f"ST assignment with {n_ops} operator(s) and "
+                    f"{'REAL' if is_real == 'true' else 'integer'} destination -- "
+                    f"shape not in the measured assignment_expression_cost table "
+                    f"(only 5 shapes measured), so its cost is unpriced. See OQ-STEXPR."
+                ),
+            ))
+        # Instruction calls AND assignment right-hand sides both go through
+        # the shared rung sizer -- the ST/RLL pairs showed each costs the
+        # same in either language, so ST reuses the weight table and the
+        # tier-aware CPT expression model rather than duplicating them.
+        instr_counts = count_instructions_in_text([st_routine.code_text])
+        st_instr_bytes, st_instr_basis = compute_routine_logic_bytes(
+            RoutineLogic(
+                program_name=st_routine.program_name,
+                routine_name=st_routine.routine_name,
+                rung_count=0,
+                instruction_counts=instr_counts,
+            ),
+            model.logic_instructions, tag_types, charge_shell=False,
+        )
+        logic_entries.append((
+            f"program:{st_routine.program_name}/{st_routine.routine_name}",
+            "routine_logic", "ST",
+            st_bytes + st_instr_bytes,
+            weakest(model.structured_text.confidence, st_instr_basis),
+        ))
 
     if n_plain_routines > 0 and scope.is_whole_controller:
         # PROJECT-ONLY (2026-09-04): this whole decomposition is

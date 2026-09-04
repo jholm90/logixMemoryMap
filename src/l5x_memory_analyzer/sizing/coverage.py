@@ -50,10 +50,16 @@ _PRICED_ELSEWHERE = frozenset({"CPT", "BST", "NXB", "BND"})
 
 # Routine Type values this engine can size. Everything else is a real
 # coverage hole, not a parse error.
-_SIZED_ROUTINE_TYPES = frozenset({"RLL"})
+# ST joined this set 2026-09-04 when sizing/structured_text.py was wired --
+# before that an ST routine contributed exactly ZERO and this coverage gap
+# was the only thing saying so. ST is now sized (22 of 23 captured ST files
+# land within 11 bytes), so reporting it as an unpriced hole would be
+# stale. Individual ST ASSIGNMENT SHAPES outside the measured table are
+# still reported, as coverage/st_expression/... from report.py -- that is
+# the honest remaining gap, and it is per-shape rather than per-language.
+_SIZED_ROUTINE_TYPES = frozenset({"RLL", "ST"})
 
 _ROUTINE_TYPE_NOTES = {
-    "ST": ("Structured Text", "OQ-STSIZING"),
     "FBD": ("Function Block Diagram", "no open question yet -- no real data"),
     "SFC": ("Sequential Function Chart", "no open question yet -- no real data"),
 }

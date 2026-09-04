@@ -2170,47 +2170,47 @@ not guessable from two aggregate totals, and not acted on (no formula
 change made) pending it.
 
 
-21. **OQ-SHELLSCALE** — new, 2026-09-05. **The real remaining gap, and for
-    the first time it has a name that survives contact with an isolating
-    experiment.**
+21. **OQ-SHELLSCALE** — **ANSWERED 2026-09-04, and the answer reverses this
+    question's own conclusion. Moved to RESOLVED_QUESTIONS.md.** Summary
+    kept here only because the reversal is the useful part:
 
-    Three successive fits of the composite AOI/JSR surcharge (20/47 →
-    52/21 → 22/3) were all chasing one residual. The ladders built for the
-    2026-09-04 batch have now disproved the per-instruction explanation
-    outright, each with zero residual:
+    This item predicted `program_extra`/`routine_extra` were far too SMALL
+    (the 8 real programs implied roughly 4,900/program and 550/routine
+    against the wired 484/272 — "a 10× and 2× extrapolation failure").
+    The `shellscale_*` isolation batch says the opposite: both constants
+    were slightly too LARGE, by exactly 8 bytes each.
 
-    | experiment | result |
+    | sweep | measured marginal |
     |---|---|
-    | `realscale_jsrtgt_xic_n{10..5000}` | the same rungs moved into a JSR target cost **+344 flat**, at all 5 scales |
-    | `realscale_jsrsplit_k{10,50,250}` | exactly **344 per additional distinct target** |
-    | `realscale_aoiint_n{50..12000}` | AOI-internal content costs **20/rung = 10/instr** = exactly XIC+OTE, across a 240× span |
+    | `shellscale_routines_n001..n200` (1 program, 200 rungs fixed) | exactly **264.000**/routine, all 7 steps |
+    | `shellscale_programs_n001..n040` (200 rungs fixed, 1 routine per program) | exactly **740.000**/program-with-routine, all 6 steps |
 
-    So neither AOI-internal nor JSR-target CONTENT carries any surcharge.
-    Both rates are now **0**. With that gone and alarms priced exactly, the
-    8 real programs under-predict by +0.95% to +7.93% (aggregate +2.80%,
-    mean 3.42%), and the residual correlates:
+    So `routine_extra = 264`, `program_extra = 740 − 264 = 476`, both now
+    wired. Not approximately linear — exactly linear, no rounding, over a
+    200× and 40× span. Both pure sweeps now sit at a constant −23 across
+    the whole span instead of drifting to +1.97% at the top end.
 
-        programs     +0.871      aoi_instructions  +0.711
-        routines     +0.829      jsr_instructions  +0.670
-        jsr_targets  +0.816      aoi_instances     +0.602
+    **The lesson, which is the fourth time this exact trap has been hit:**
+    the +0.871/+0.829 correlations with program and routine count were
+    collinear artefacts, the same way the per-instruction surcharge
+    correlations before them were. In a real project every count moves
+    together, so a regression against real files can nominate any of them
+    and will nominate whichever happens to load highest. Isolation
+    answered it in one batch; three successive fits against real files
+    never would have. **Do not fit a scaling constant off the real
+    programs. Build the ladder.**
 
-    **PROGRAM and ROUTINE count** — which every previous ladder held at 1
-    and 2 respectively while scaling content, so a per-program or
-    per-routine term was invisible by construction and could only surface
-    disguised as a per-instruction one. `task_program_overhead`
-    (`program_extra=484`, `routine_extra=272`) was fitted on 5 files with
-    single-digit counts; the real files run 8-39 programs and 46-301
-    routines and imply roughly **4,900/program and 550/routine** — a 10×
-    and 2× extrapolation failure.
+    `task_extra` (+700) is NOT covered by this: every `shellscale_*` file
+    holds Task count at 1 (verified by counting `<Task>` elements, not by
+    trusting filenames), so the batch carries zero information about it.
+    It stands on its old 2-task derivation.
 
-    NOT refitted from those 8 files: in a real project programs, routines
-    and JSR targets all move together, which is exactly the collinearity
-    that produced three wrong surcharge fits. `gen_shell_scale.py` (19
-    files) isolates it — a routine ladder to 200 and a program ladder to
-    40, both at constant total content, plus a crossed group reaching 100
-    routines as 1×100 / 5×20 / 20×5 / 50×2. If the cost is per-routine
-    only those four land together; if there is a real per-program term they
-    separate by program count. Blocked on capture.
+    Two residuals this batch surfaced and did not close, both small and
+    both constant rather than scaling — carried forward as
+    **OQ-SHELLCONST** (item 23):
+    - a flat **−23** on every pure `shellscale_programs_*`/`_routines_*` file
+    - a flat **−815** on all four `shellscale_crossed_*` files, which have
+      the same P and R as their pure counterparts but a different generator
 
 
 22. **OQ-BUILDFAIL-OPEN** — the 11 sample files that genuinely still fail to
@@ -2234,3 +2234,112 @@ change made) pending it.
     **What is needed:** the real error line for one 2198 file (all six fail
     the same way, so one diagnosis fixes six) and one for `almd_minimal`.
     That is two error messages for 9 of the 11 files.
+
+
+23. **OQ-DEFSCALE** — new, 2026-09-04. **Now the single largest identified
+    gap on real files, and the direct successor to OQ-SHELLSCALE.**
+
+    With shells refit from isolation and alarms exact, all nine real
+    programs still under-predict, every one of them:
+
+    | file | actual | predicted | delta |
+    |---|---:|---:|---:|
+    | `murraybros_20260122r1` | 923,320 | 850,077 | **−7.93%** |
+    | `ipc_edgerline_20251217r1` | 2,255,773 | 2,142,530 | −5.02% |
+    | `accutally_20260803` | 5,999,972 | 5,747,134 | −4.21% |
+    | `emporiumedger_20250905r1` | 1,703,932 | 1,640,431 | −3.73% |
+    | `cmu_2025_10_14r00` | 5,217,440 | 5,066,834 | −2.89% |
+    | `pukall_gang_20260414_r00` | 2,502,336 | 2,437,207 | −2.60% |
+    | `emporium_2025_05_28r01` | 7,136,625 | 6,970,969 | −2.32% |
+    | `k3m16_edgers_20220808r00` | 4,044,994 | 3,966,805 | −1.93% |
+    | `mrfp_edger_2026_06_01_r00` | 2,281,316 | 2,259,476 | −0.96% |
+
+    Mean absolute error **3.51%**, 1 of 9 inside the <1% North Star target.
+    Every single one under-predicts, so this is a missing cost, not noise.
+
+    Re-regressing the residual against structure AFTER the shell refit
+    (the refit is what makes this reading meaningful — it removed the
+    collinear program/routine signal that previously dominated):
+
+        aoidefs    r=+0.878          routines   r=+0.581
+        udts       r=+0.838          rungs      r=+0.545
+        tags       r=+0.709          programs   r=+0.431
+        sttext     r=+0.629          instrs     r=+0.388
+
+    Programs and routines fell from +0.871/+0.829 to +0.431/+0.581 once
+    their own constants were correct — which is exactly what a collinear
+    artefact does when the real term underneath it gets fixed.
+
+    **Why the existing corpus cannot answer this, checked before fitting
+    anything.** Across all 1,961 captured non-real files the maximum is
+    **7 AOI definitions** and **6 UDTs**, and 308 of the 312 files
+    containing any AOI at all have exactly ONE. The nine real programs
+    carry **11–39 AOI definitions and 53–174 UDTs**. So every real-file
+    prediction extrapolates per-definition cost 5×–30× past the largest
+    point it was ever measured at, on both axes simultaneously. The 127
+    existing `*_def_only` files vary what is *inside* one definition
+    (param count, param type, local tags, name length, packing) — never
+    how many definitions exist.
+
+    That is the identical shape of the error OQ-SHELLSCALE just caught:
+    a constant fitted at n=2 and extrapolated to n=200, wrong by 8
+    bytes/unit, invisible at n=2 and worth 1.97% at n=200.
+
+    **Deliberately NOT fitted from the real files.** On a real project
+    aoidefs, udts, tags and rungs all move together; that collinearity has
+    now produced four wrong fits in a row (three surcharge fits, then the
+    shell hypothesis). `gen_defscale.py` (30 files) isolates it instead:
+
+    | sweep | varies | span | current model's slope |
+    |---|---|---|---|
+    | `defscale_aoidefs_n*` | AOI definitions, zero instances | 1→60 | 1,292/def |
+    | `defscale_aoiinst_n*` | same defs, one instance each | 1→60 | 1,412/def |
+    | `defscale_udts_n*` | UDT definitions, zero tags | 1→200 | 248/UDT |
+    | `defscale_udttag_n*` | same UDTs, one tag each | 1→200 | 349/UDT |
+
+    Spans deliberately bracket the real files on both sides, so a measured
+    slope is interpolation on a real program rather than extrapolation.
+    The model currently predicts a perfectly straight line in each sweep,
+    so any slope error or curvature will be unambiguous. The paired
+    with/without-instance sweeps separate definition cost from instance
+    cost at scale, which no existing file does. **Blocked on capture.**
+
+
+24. **OQ-SHELLCONST** — new, 2026-09-04, split out of OQ-SHELLSCALE. Two
+    small CONSTANT (non-scaling) residuals the shell isolation exposed
+    once the slopes were exact:
+
+    - **−23 bytes** on every `shellscale_programs_*` and
+      `shellscale_routines_*` file, dead flat from n=1 to n=200. A fixed
+      per-file baseline offset, worth 0.09% at the small end and 0.03% at
+      the large end. Too small to chase on its own, but it is real and
+      exact, so it is probably one concrete unpriced item rather than
+      accumulated rounding.
+    - **−815 bytes** on all four `shellscale_crossed_*` files, also dead
+      flat. These have the same Program and Routine counts as their pure
+      counterparts (verified by element count) but come from a different
+      generator, so something that generator emits — most likely the
+      cross-program JSR wiring — costs 815 bytes that nothing prices. This
+      one is worth identifying: 815 flat is 1.5% on a 54 KB file.
+
+    Both are constants, not slopes, so neither affects the OQ-DEFSCALE
+    reading above.
+
+
+25. **OQ-VERIFINSTR** — new, 2026-09-04. Eleven instructions now have
+    call shapes verified by James's own build-clean Studio 5000 export
+    (`instruction_shapes_20260904.L5X`), and none of them has a measured
+    cost: **BRK, COS, LOG, SIN, PID, FBC, STOR, MCD, MCS, MCSV, MAG**.
+    `gen_verified_instructions.py` builds each at n=10/100/1000 on an
+    AXIS_VIRTUAL basis (no drive/module binding, so nothing has to be
+    netted back out). The model currently prices all eleven at zero, so
+    each sweep's predicted total is flat across n — any real slope is the
+    instruction's cost, read directly. **Blocked on capture.**
+
+    Provenance note worth keeping: NXT is excluded because James stated it
+    is not a valid RLL mnemonic, and MCLM was skipped at his direction.
+    Neither was inferred from documentation — which matters, because every
+    previous attempt in this project to compose predefined-structure or
+    instruction XML from a manual (alarm `ConditionType`s, the bare
+    2-operand MAM/MAJ rungs, the Kinetix `:SI` safety tags) was rejected
+    by the real toolchain.
