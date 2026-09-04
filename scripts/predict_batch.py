@@ -28,6 +28,11 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
+from l5x_memory_analyzer.parser.export_scope import (  # noqa: E402
+    context_names,
+    detect_export_scope,
+    split_totals,
+)
 from l5x_memory_analyzer.sizing.constants import load_memory_model  # noqa: E402
 from l5x_memory_analyzer.sizing.coverage import audit_coverage  # noqa: E402
 from l5x_memory_analyzer.sizing.report import build_report  # noqa: E402
@@ -66,13 +71,18 @@ def main() -> int:
         controller = root.find("Controller")
         entries, errors = build_report(root, model)
         gaps = audit_coverage(root, model.logic_instructions.weights)
+        scope = detect_export_scope(root)
+        totals = split_totals(entries, context_names(root, scope))
         unpriced_routines = sum(g.count for g in gaps if g.kind == "routine_type")
         unpriced_instr = sum(g.count for g in gaps if g.kind == "instruction")
         rows.append({
             "file": Path(path).name,
             "processor": (controller.get("ProcessorType") if controller is not None else "") or "",
             "fw": (controller.get("MajorRev") if controller is not None else "") or "",
-            "predicted": sum(e.bytes for e in entries),
+            "scope": scope.target_type if scope.is_whole_controller else f"{scope.target_type} (partial)",
+            "predicted": totals["total"],
+            "target": totals["target"],
+            "context": totals["context"],
             "unsized_items": len([e for e in errors if not e.path.startswith("coverage/")]),
             "unpriced_routines": unpriced_routines,
             "unpriced_instr_uses": unpriced_instr,
@@ -80,11 +90,12 @@ def main() -> int:
         })
 
     ok = [r for r in rows if not r["error"]]
-    print(f"{'file':<44}{'processor':<18}{'fw':>3}{'predicted':>12}"
-          f"{'unsized':>9}{'0-cost rtn':>12}{'0-cost instr':>14}")
+    print(f"{'file':<40}{'scope':<30}{'predicted':>12}{'target':>12}{'context':>11}"
+          f"{'unsized':>9}{'0-rtn':>7}{'0-instr':>9}")
     for r in sorted(ok, key=lambda r: -r["predicted"]):
-        print(f"{r['file']:<44}{r['processor']:<18}{r['fw']:>3}{r['predicted']:>12,}"
-              f"{r['unsized_items']:>9}{r['unpriced_routines']:>12}{r['unpriced_instr_uses']:>14}")
+        print(f"{r['file'][:39]:<40}{r['scope'][:29]:<30}{r['predicted']:>12,}{r['target']:>12,}"
+              f"{r['context']:>11,}{r['unsized_items']:>9}{r['unpriced_routines']:>7}"
+              f"{r['unpriced_instr_uses']:>9}")
     for r in rows:
         if r["error"]:
             print(f"{r['file']:<44}{r['error']}", file=sys.stderr)
@@ -96,6 +107,9 @@ def main() -> int:
             w.writerows(rows)
         print(f"\nwrote {args.csv}")
 
+    print("\nA '(partial)' scope means NO project base load was charged and the total is NOT")
+    print("comparable to a controller Capacity reading; 'context' is what the export drags")
+    print("along and costs only if the destination controller lacks it. See export_scope.py.")
     print("\n'0-cost rtn' = routines in a language this engine cannot size (ST/FBD/SFC).")
     print("'0-cost instr' = instruction USES with no weight in the model.")
     print("Both are charged 0 bytes, so any predicted total above is a FLOOR, not an estimate,")

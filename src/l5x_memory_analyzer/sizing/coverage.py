@@ -42,7 +42,7 @@ from __future__ import annotations
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
-from l5x_memory_analyzer.parser.logic import count_instructions_in_text
+from l5x_memory_analyzer.parser.logic import count_instructions_in_text, routine_language
 
 # Priced outside logic_instructions.weights -- see the module docstring.
 _PRICED_ELSEWHERE = frozenset({"CPT", "BST", "NXB", "BND"})
@@ -144,7 +144,7 @@ def audit_coverage(root: ET.Element, weighted_mnemonics) -> list[CoverageGap]:
     # --- routines in a language this engine cannot size ---------------
     by_type: dict[str, list[tuple[str, str, int]]] = {}
     for owner, routine_el in _iter_routines(root):
-        rtype = routine_el.get("Type") or "?"
+        rtype = routine_language(routine_el)
         if rtype in _SIZED_ROUTINE_TYPES:
             continue
         by_type.setdefault(rtype, []).append(
@@ -170,7 +170,7 @@ def audit_coverage(root: ET.Element, weighted_mnemonics) -> list[CoverageGap]:
     skip = _PRICED_ELSEWHERE | set(weighted_mnemonics) | _declared_aoi_names(root)
     unweighted: dict[str, int] = {}
     for _owner, routine_el in _iter_routines(root):
-        if routine_el.get("Type") not in _SIZED_ROUTINE_TYPES:
+        if routine_language(routine_el) not in _SIZED_ROUTINE_TYPES:
             continue  # already reported whole, above
         for mnemonic, n in count_instructions_in_text(_rung_texts(routine_el)).items():
             if mnemonic not in skip:

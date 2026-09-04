@@ -499,6 +499,31 @@ def _count_instructions(rung_texts: list[str]) -> dict[str, int]:
     return counts
 
 
+def routine_language(routine_el: ET.Element) -> str:
+    """The routine's language, inferred from its content child when the
+    Type attribute is absent.
+
+    A whole-project export always states Type="RLL"/"ST"/... but a RUNG
+    export does not: its containing routine is a context stub carrying only
+    Use and Name (real shape, Rung11_from_Main.L5X:
+    `<Routine Use="Context" Name="Main"><RLLContent>...`). Requiring the
+    Type attribute meant every rung export parsed to ZERO routines and the
+    exported rung -- the entire point of the file -- was never sized at all.
+    The content child is unambiguous: RLLContent only ever appears in an RLL
+    routine, STContent in an ST one, and so on.
+    """
+    declared = routine_el.get("Type")
+    if declared:
+        return declared
+    for child_tag, language in (
+        ("RLLContent", "RLL"), ("STContent", "ST"),
+        ("FBDContent", "FBD"), ("SFCContent", "SFC"),
+    ):
+        if routine_el.find(child_tag) is not None:
+            return language
+    return "?"
+
+
 def count_instructions_in_text(rung_texts: list[str]) -> dict[str, int]:
     """Public wrapper over the same mnemonic scanner the sizer itself uses --
     so sizing/coverage.py counts instructions exactly the way size_routine()
@@ -531,7 +556,7 @@ def parse_rll_routines(root: ET.Element) -> list[RoutineLogic]:
         # one routine), then build the RoutineLogic list.
         per_routine_rung_texts: dict[str, list[str]] = {}
         for routine_el in routines_el.findall("Routine"):
-            if routine_el.get("Type") != "RLL":
+            if routine_language(routine_el) != "RLL":
                 continue
             routine_name = routine_el.get("Name")
             rll_content = routine_el.find("RLLContent")
@@ -616,7 +641,7 @@ def parse_aoi_internal_logic(root: ET.Element) -> dict[str, RoutineLogic]:
             continue
         rung_texts: list[str] = []
         for routine_el in routines_el.findall("Routine"):
-            if routine_el.get("Type") != "RLL":
+            if routine_language(routine_el) != "RLL":
                 continue
             rll_content = routine_el.find("RLLContent")
             if rll_content is None:

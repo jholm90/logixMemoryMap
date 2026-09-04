@@ -18,6 +18,7 @@ from dataclasses import dataclass
 
 from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
 from l5x_memory_analyzer.parser.datatypes import parse_data_types
+from l5x_memory_analyzer.parser.export_scope import context_names, detect_export_scope
 from l5x_memory_analyzer.parser.logic import parse_aoi_internal_logic, parse_rll_routines
 from l5x_memory_analyzer.parser.modules import parse_modules
 from l5x_memory_analyzer.parser.tags import CONTROLLER_SCOPE, parse_tags
@@ -75,6 +76,16 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # Parameter/LocalTag operand names anyway (they're not in the
     # file-wide tag table), so the operand-type surcharge is skipped for
     # this content, same as any other caller that omits tag_types.
+    # Export scope FIRST -- it decides whether this file even has a project
+    # to charge a base load to (2026-09-04, James: "Anything that's not a
+    # controller export can not use the prices sir base load, but rungs,
+    # routines and programs might contain controller tags"). Until this,
+    # every partial export was sized as a whole project: an exported RUNG
+    # came back at 15,080 bytes, 13,296 of which was empty_project_baseline.
+    # See parser/export_scope.py for how Studio 5000 marks target vs context.
+    scope = detect_export_scope(root)
+    ctx_names = context_names(root, scope)
+
     aoi_internal_logic = parse_aoi_internal_logic(root)
 
     # Composite-scale surcharge cap (2026-09-03, OQ-JSRSCALE/OQ-COMPOSITESCALE,
@@ -351,7 +362,17 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         )
         logic_entries.append((routine.path, "routine_logic", "RLL", logic_bytes, logic_basis))
 
-    if n_plain_routines > 0:
+    if n_plain_routines > 0 and scope.is_whole_controller:
+        # PROJECT-ONLY (2026-09-04): this whole decomposition is
+        # "one base + per-extra-task + per-extra-program + per-extra-routine
+        # ACROSS A PROJECT", fitted on whole-project captures. A partial
+        # export has no task list and no project-wide routine count -- the
+        # routines it does carry are mostly CONTEXT, present only so the
+        # target can reference them, so counting them here invents a shell
+        # for a project that is not in the file. The target's own logic is
+        # still sized normally; only the project-level scaffolding is
+        # dropped. What a single exported program/routine really costs in
+        # shell terms on import is unmeasured -- see OQ-EXPORTSCOPE.
         # See memory_model.yaml task_program_overhead for the full
         # derivation (5 real files, exact/near-exact). Untouched when
         # n_plain_routines == 0 -- a file whose only routines are JSR
@@ -423,10 +444,17 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # 200+ independent real data points spanning wildly different
     # categories). Every real program has this cost regardless of content,
     # so it's emitted once per file, unconditionally.
-    baseline_entry = ("project_baseline", "project_baseline", "PROJECT_BASELINE",
-                       model.empty_project_baseline_bytes, model.empty_project_baseline_confidence)
+    # ...but ONLY for a whole-controller export. A program, routine, rung,
+    # AOI or UDT export is not a project and has no controller scaffolding
+    # of its own; charging it this baseline is charging it for a controller
+    # that is not in the file.
+    baseline_entries = (
+        [("project_baseline", "project_baseline", "PROJECT_BASELINE",
+          model.empty_project_baseline_bytes, model.empty_project_baseline_confidence)]
+        if scope.is_whole_controller else []
+    )
 
-    all_exact = sized + definition_entries + [baseline_entry]
+    all_exact = sized + definition_entries + baseline_entries
     exact_total = sum(size for _, _, _, size, _ in all_exact)
     logic_total = sum(size for _, _, _, size, _ in logic_entries)
     total_bytes = exact_total + logic_total
@@ -616,21 +644,30 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     software_revision = root.get("SoftwareRevision")
     processor_type = controller_el.get("ProcessorType") if controller_el is not None else None
 
+    # Same scope rule as the flat baseline above: these are per-PROJECT
+    # structural deltas (firmware revision, safety-capable model, catalog),
+    # so a partial export gets none of them. Skipping the block wholesale
+    # rather than each term individually -- there is no such thing as "the
+    # firmware baseline of a rung".
     baseline_delta_entries: list[tuple[str, str, str, int, str]] = []
-    fw_bytes, fw_basis = model.firmware_baseline_delta.delta_for(software_revision)
+    fw_bytes, fw_basis = (
+        model.firmware_baseline_delta.delta_for(software_revision)
+        if scope.is_whole_controller else (0, "")
+    )
     if fw_bytes:
         fw_major = software_revision.split(".")[0] if software_revision else "?"
         baseline_delta_entries.append((
             "firmware_baseline_delta", "project_baseline", f"FW_V{fw_major}_BASELINE",
             fw_bytes, fw_basis,
         ))
-    if model.safety_capable_baseline_delta.applies_to(processor_type):
+    if scope.is_whole_controller and model.safety_capable_baseline_delta.applies_to(processor_type):
         baseline_delta_entries.append((
             "safety_capable_baseline_delta", "project_baseline", "SAFETY_CAPABLE_BASELINE",
             model.safety_capable_baseline_delta.bytes,
             model.safety_capable_baseline_delta.confidence,
         ))
-    catalog_delta = model.catalog_baseline_delta.delta_for(processor_type)
+    catalog_delta = (model.catalog_baseline_delta.delta_for(processor_type)
+                      if scope.is_whole_controller else None)
     if catalog_delta is not None:
         catalog_bytes, catalog_basis = catalog_delta
         baseline_delta_entries.append((
@@ -671,5 +708,24 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         SizeError(path=gap.path, message=gap.message)
         for gap in audit_coverage(root, model.logic_instructions.weights)
     ]
+
+    # A partial export says so in its own report, every time. Without this
+    # line the number above looks exactly like a whole-project number and
+    # is not comparable to a controller's Capacity reading at all.
+    if not scope.is_whole_controller:
+        errors.append(SizeError(
+            path="scope/partial_export",
+            message=(
+                f"PARTIAL EXPORT ({scope.describe()}) -- no project base load, firmware/"
+                f"catalog/safety baseline delta or task/program shell is charged here, "
+                f"because none of those belong to anything but a whole controller. This "
+                f"total is NOT comparable to a controller Capacity reading. It also carries "
+                f"{len(ctx_names.controller_tags)} controller tag(s), {len(ctx_names.udts)} "
+                f"UDT(s) and {len(ctx_names.aois)} AOI(s) as CONTEXT -- real declarations the "
+                f"target references, which cost their bytes only if the destination "
+                f"controller does not already have them. Use split_totals() for the "
+                f"target/context breakdown."
+            ),
+        ))
 
     return entries, errors

@@ -1292,6 +1292,37 @@ the matching footnote at the bottom, not inline.
     and every construct and call in the batch is taken from that corpus,
     not invented.**
 
+19. **OQ-EXPORTSCOPE** — new, 2026-09-04 (James: *"Can you please rewrite
+    the estimation script for handling controller, udt, aoi, programs,
+    routines, rungs logic exports... Anything that's not a controller
+    export can not use the prices sir base load, but rungs, routines and
+    programs might contain controller tags"*). The scope machinery is now
+    WIRED (`parser/export_scope.py`): a partial export gets no project base
+    load, no firmware/catalog/safety baseline delta and no task/program
+    shell, and its total is reported split three ways — target / context /
+    project. What remains genuinely open is what a partial export costs
+    **on import**, which is not the same question and has no data at all:
+
+    - **A Program export's own shell.** Importing a program into a
+      controller creates a program, and `task_program_overhead.program_extra`
+      is the marginal cost of an extra program in a whole project — but
+      that constant was fitted across whole-project captures and has never
+      been checked against "import one program into an existing project".
+      Charging it here would be a guess, so nothing is charged.
+    - **A Routine export's own shell**, same argument with `routine_extra`.
+    - **A Rung export** creates no structural container at all, so
+      arguably zero — untested.
+    - **The context/target boundary in bytes.** Context declarations are
+      reported separately because they cost their bytes only if the
+      destination controller does not already have them. Whether Logix
+      charges anything extra for reconciling an already-present declaration
+      on import is unknown.
+
+    Test shape needed: export one program from a known project, import it
+    into a second known project, and read Capacity before and after. That
+    is a controller-in-the-loop test, not a file-generation one, so it
+    needs James at the bench rather than a generator run.
+
 ---
 
 [^instrfirstpass]: CROUT (safety-only) and MAPC resolved separately

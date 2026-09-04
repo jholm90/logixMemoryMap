@@ -23,6 +23,11 @@ import sys
 import xml.etree.ElementTree as ET
 
 from l5x_memory_analyzer.parser.load import L5XFormatError, load_l5x
+from l5x_memory_analyzer.parser.export_scope import (
+    context_names,
+    detect_export_scope,
+    split_totals,
+)
 from l5x_memory_analyzer.sizing.constants import load_memory_model
 from l5x_memory_analyzer.sizing.report import build_report
 
@@ -62,6 +67,25 @@ def _cmd_size(args: argparse.Namespace) -> int:
     model = load_memory_model()
     entries, errors = build_report(doc.root, model)
     entries = sorted(entries, key=lambda e: e.bytes, reverse=True)
+
+    # Export scope up front, before any number (2026-09-04). A partial
+    # export's total is not comparable to a controller Capacity reading,
+    # and the three-way split is the only honest way to state it: what the
+    # exported thing costs, versus what it drags along that the destination
+    # controller may already have.
+    scope = detect_export_scope(doc.root)
+    totals = split_totals(entries, context_names(doc.root, scope))
+    if not scope.is_whole_controller:
+        print(f"scope: PARTIAL EXPORT -- {scope.describe()}", file=sys.stderr)
+        print(f"  target  {totals['target']:>12,}  the exported item itself", file=sys.stderr)
+        print(f"  context {totals['context']:>12,}  declarations it references -- cost these "
+              f"ONLY if the destination controller does not already have them", file=sys.stderr)
+        print(f"  total   {totals['total']:>12,}  (no project base load; not comparable to a "
+              f"controller Capacity reading)", file=sys.stderr)
+    else:
+        print(f"scope: whole controller project -- project overhead "
+              f"{totals['project']:,} of {totals['total']:,}", file=sys.stderr)
+
 
     print(f"{'BYTES':>10}  {'%':>6}  {'BASIS':<9}  {'CATEGORY':<15}  PATH")
     for e in entries:

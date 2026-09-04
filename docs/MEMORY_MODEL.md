@@ -1029,3 +1029,49 @@ there's a record of *why* a number is what it is, not just what it currently is.
   files average 1.17% mean abs error. FITTED, not KNOWN — R²=0.66 leaves
   real unexplained variance, and the JSR:AOI rate ratio (~2.3x) isn't
   mechanistically understood yet, just what the data shows.
+
+## Export scope: what a partial export may and may not be charged
+
+Wired 2026-09-04 (`parser/export_scope.py`, OQ-EXPORTSCOPE). Studio 5000
+exports at six granularities and the root element declares which:
+`TargetType` = `Controller` | `Program` | `Routine` | `Rung` |
+`AddOnInstructionDefinition` | `DataType`, with `ContainsContext="true"` on
+every partial one. Inside a partial export the exported thing is marked
+`Use="Target"` and everything it merely references is `Use="Context"`.
+
+**Only a whole-controller export (`TargetType="Controller"` AND
+`ContainsContext="false"`) may be charged:**
+
+| constant | why it is project-only |
+|---|---|
+| `empty_project_baseline` | a controller's fixed scaffolding |
+| `firmware_baseline_delta` | there is no "firmware baseline of a rung" |
+| `catalog_baseline_delta` | keyed on ProcessorType, a project property |
+| `safety_capable_baseline_delta` | same |
+| `task_program_overhead` (the whole shell decomposition) | fitted as "one base + per-extra task/program/routine ACROSS A PROJECT"; a partial export's routines are mostly context, so counting them invents a project |
+
+Everything else — tag storage, UDT/AOI definition cost, per-instruction
+logic weights — applies normally to whatever the file actually contains.
+
+**Target vs context.** An element is target-scope if it or an ancestor
+carries `Use="Target"`. The nesting is not intuitive: in a Rung export the
+chain is `Program Use="Context" > Routines Use="Context" > Routine
+Use="Context" > RLLContent Use="Context" > Rung Use="TARGET"`, so "is it
+inside a context container" is the wrong test — only the nearest `Use`
+attribute up the chain decides.
+
+`split_totals()` reports **target** (what was exported), **context**
+(declarations it references, which cost their bytes only if the destination
+controller does not already have them — James: *"rungs, routines and
+programs might contain controller tags"*) and **project** (base load, zero
+on any partial export by construction).
+
+**Two parser bugs this exposed, both real and both fixed:**
+1. A rung export's containing `Routine` element carries `Use` and `Name` but
+   **no `Type` attribute**, so requiring `Type == "RLL"` parsed every rung
+   export to zero routines and never sized the exported rung at all. Routine
+   language is now inferred from the content child (`RLLContent` → RLL,
+   `STContent` → ST, …) when Type is absent.
+2. A target routine inside a context program was classified as context,
+   reporting target = 0, because routine and program-tag entry paths share
+   the `program:<P>/<X>` prefix and the program was checked first.
