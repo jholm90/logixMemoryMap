@@ -267,3 +267,43 @@ stops bad rows from reaching a fit. Those 30 files still need a real
 re-capture, and the reason a clean-looking run produced a 2,976 reading is
 worth root-causing before the next batch (a Capacity dialog read before the
 project finished loading is the obvious suspect, unconfirmed).
+
+## Auditing error_count > 0: stale-vs-genuine before anything else
+
+James, 2026-09-05: *"every time i run the memory test .ps1 i see lots of
+ignored files and want them addressed. if you dont want them then delete
+them from the manifest, otherwise we need to repair the files to get the
+samples out."*
+
+138 rows carried `error_count > 0`. The first cut is not "what's broken" —
+it is **whether the failing capture is even about the file that exists
+today**:
+
+```
+file's last git-write time  vs  the row's date_tested
+```
+
+If the L5X was regenerated AFTER the capture, the recorded errors were
+against a version that no longer exists. **72 of the 138 were exactly
+that** — captures taken before the 2026-09-03 P208 DC-bus / axis-channel
+fixes, on files that were rewritten hours later. Nothing was wrong with
+them; they just needed their capture columns cleared so the next pass
+picks them up. Diagnosing any of those as a live bug would have been
+chasing a ghost.
+
+Do this check FIRST, every time, before reading a single error message.
+
+The remaining rows split three ways:
+- **Superseded** — the question has since been answered exactly by a
+  better-designed test. `jsr_target_content_scale_*` and
+  `aoi_logic_scale_*`/`aoi_multiroutine_*` were both replaced by
+  `realscale_*` ladders that solved their questions with zero residual, so
+  the broken originals have no remaining value. Deleted, files and rows.
+- **Obsolete corpus** — `composite_realistic_*` v1/v2 (40 rows). Replaced by
+  the v4 batch and, far more importantly, by 8 real captured customer
+  programs. A synthetic composite is a proxy for a real program; once real
+  programs are on file the proxy stops earning its keep, and a broken proxy
+  never did.
+- **Genuinely unfixed** — 11 rows, kept, listed in OQ-BUILDFAIL-OPEN. These
+  need the real Studio 5000 error text; nothing in the repo diagnoses them
+  and guessing is what produced the invented alarm ConditionTypes.

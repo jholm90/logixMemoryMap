@@ -2211,3 +2211,26 @@ change made) pending it.
     routines as 1×100 / 5×20 / 20×5 / 50×2. If the cost is per-routine
     only those four land together; if there is a real per-program term they
     separate by program count. Blocked on capture.
+
+
+22. **OQ-BUILDFAIL-OPEN** — the 11 sample files that genuinely still fail to
+    build, 2026-09-05. Audited down from 138 `error_count > 0` rows: 72 were
+    stale captures against files regenerated after the fact (cleared, they
+    re-run automatically), 13 were superseded by exact `realscale_*` tests,
+    40 were obsolete composite v1/v2, 2 no longer exist. These 11 are real,
+    and **nothing in this repo diagnoses any of them** — the generators'
+    own comments are silent, so the cause has to come from James's Studio
+    5000 error log rather than from a guess (guessing is what produced the
+    invented alarm `ConditionType` names that all four failed on).
+
+    | file | errors | why it still matters |
+    |---|---:|---|
+    | `almd_minimal`, `almd_realtext` | 1 ea | **ALMD instruction cost — now high value.** Alarms turned out to be the single biggest unpriced item in the model (OQ-ALARMCOND); ALMD is the *other* alarm mechanism and is still completely unmeasured. |
+    | `modulesweep_2198_{d012,d020,d032,d057,s086,s130}_ers3*` | 2 ea | The 2198 drive catalogs, all failing identically at 2 errors — one shared cause, six files. OQ-MODULEIO's per-catalog table has no entry for any of them. |
+    | `modulerack_kinetix_full_bus` | 4 | Same family, full Kinetix bus. |
+    | `predefprobe_axis_generic` | 1 | AXIS predefined-structure probe (OQ-AXISCOMBO). |
+    | `eventtask_axiswatch` | 1 | EVENT-task trigger cost. |
+
+    **What is needed:** the real error line for one 2198 file (all six fail
+    the same way, so one diagnosis fixes six) and one for `almd_minimal`.
+    That is two error messages for 9 of the 11 files.
