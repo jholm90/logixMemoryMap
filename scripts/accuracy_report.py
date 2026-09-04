@@ -19,8 +19,21 @@ is only a valid fitting point if ALL of these hold:
     this filter was added -- the whole 18-file axis_scale_* sweep (every
     file error_count = drives+1) was fitted into a "multi-module marginal
     discount" that had to be reverted.
+  * actual_bytes is at least the empty-project baseline -- see below
   * notes carries neither WINDOW TITLE MISMATCH nor ZERO CAPACITY -- both
     already-established bad-read markers (see docs/TESTING_PLAN.md).
+
+A capture BELOW THE EMPTY-PROJECT BASELINE is physically impossible and is
+rejected outright (added 2026-09-04). No Logix project can report using
+less memory than an empty project on the same controller, so a smaller
+number is a bad read, not a small project -- and this class of bad read
+passes every other check: error_count 0, no warning, a window title that
+matches the expected ACD exactly. Real case that forced this: a capture run
+returned 2,976 bytes for 24 separate 1769 fw-matrix files and 6,640 for 6
+more, against a 1769 empty-project baseline of 69,600-98,944. Left in, those
+30 rows alone moved the corpus mean |error| from 0.68% to 32.17%. The floor
+comes from the model's own empty_project_baseline_bytes, not a hardcoded
+number, so it tracks the model.
 
 A BLANK error_count is NOT the same evidence as an explicit 0 (found
 2026-09-04 while pairing an ST test against instr_cop_n01000, which is one
@@ -56,6 +69,12 @@ MANIFEST = REPO_ROOT / "samples" / "manifest.csv"
 _BAD_NOTE_MARKERS = ("WINDOW TITLE MISMATCH", "ZERO CAPACITY")
 
 
+_MODEL = load_memory_model()
+# Physical floor: an empty project on the SMALLEST-baseline controller this
+# model knows. Anything under it did not come from a real Capacity reading.
+IMPLAUSIBLE_BELOW = _MODEL.empty_project_baseline_bytes
+
+
 def is_valid_capture(row: dict, strict: bool = False) -> tuple[bool, str]:
     """(valid, reason_if_not) -- see this module's docstring.
 
@@ -65,6 +84,8 @@ def is_valid_capture(row: dict, strict: bool = False) -> tuple[bool, str]:
     actual = (row.get("actual_bytes") or "").strip()
     if not actual.isdigit():
         return False, "no capture"
+    if int(actual) < IMPLAUSIBLE_BELOW:
+        return False, f"implausible capture (< empty-project baseline {IMPLAUSIBLE_BELOW})"
     notes = row.get("notes") or ""
     for marker in _BAD_NOTE_MARKERS:
         if marker in notes:
@@ -78,7 +99,7 @@ def is_valid_capture(row: dict, strict: bool = False) -> tuple[bool, str]:
 
 
 def collect(category_filter: str | None = None, strict: bool = False) -> tuple[list[dict], collections.Counter]:
-    model = load_memory_model()
+    model = _MODEL
     with open(MANIFEST, encoding="utf-8-sig", newline="") as f:
         rows = list(csv.DictReader(f))
 

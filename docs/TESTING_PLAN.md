@@ -244,3 +244,26 @@ or test more than one instruction so a single soft anchor cannot carry the
 conclusion on its own (`gen_st_sizing.py`'s group D pairs four instructions
 for exactly this reason — `instr_cop_n01000` is blank, the other three are
 explicit `0`).
+
+## A capture below the empty-project baseline is a bad read, not a small project
+
+Found 2026-09-04, in a capture batch that passed every check this project
+had. 24 fw-matrix rows came back at **2,976 bytes** and 6 more at **6,640**,
+for 1769 controllers whose EMPTY-project baseline is 69,600-98,944. Every
+one of them had `error_count` 0, no warning, blank notes, and a window title
+that matched the expected ACD exactly — so `WINDOW TITLE MISMATCH`, `ZERO
+CAPACITY` and the build-error filter all passed them through. Left in, those
+30 rows alone moved the corpus mean |error| from **0.68% to 32.17%**.
+
+No Logix project can report using less memory than an empty project on the
+same controller. `is_valid_capture()` now rejects anything below
+`empty_project_baseline_bytes` (13,296 — read from the model, not
+hardcoded, so the floor tracks the model). This is a physical impossibility
+check, and it belongs in the Python validity logic rather than in whoever
+happens to be reading the CSV that day.
+
+The underlying capture-tooling bug is NOT fixed by this — the floor only
+stops bad rows from reaching a fit. Those 30 files still need a real
+re-capture, and the reason a clean-looking run produced a 2,976 reading is
+worth root-causing before the next batch (a Capacity dialog read before the
+project finished loading is the obvious suspect, unconfirmed).
