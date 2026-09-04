@@ -66,6 +66,56 @@ ExtractCount(text) {
     return ""
 }
 
+; Finds the Error/Warning/Message counters BY THEIR TEXT instead of by a
+; hardcoded ClassNN index (James, 2026-09-04: "i notice sometimes these
+; buttons change depending on how many instances i have open. Button3
+; should be 'nnn *Error*' Button4 should be 'nnn *Warning*' Button 5 should
+; be 'nnn *Message*'").
+;
+; The old code read Button3/4/5, with Button25/26/27 and a stray Button10 as
+; fallbacks -- three guesses at an index that Studio 5000 reassigns
+; depending on how many instances are open, so on the wrong layout it read
+; the WRONG CONTROL rather than failing. That is the dangerous case: a
+; button holding some other number logs a plausible-looking error_count and
+; the row enters the corpus as a clean build. This project has already had
+; to void 30 capture rows for exactly that class of silently-wrong reading.
+;
+; Enumerates every Button* control in the ACTIVE window, matches
+; "<digits> ... Error|Warning|Message" case-insensitively, and returns "" for
+; anything not found -- never "0" -- so a failed scan is logged as no-read,
+; not as a clean build. `seen` carries every button's text for the status
+; line, so a future layout change is diagnosable from the log instead of
+; needing another round of index guessing.
+FindCountButtons() {
+    counts := Map("Error", "", "Warning", "", "Message", "")
+    seen := ""
+    ctrls := ""
+    try ctrls := WinGetControls("A")
+    catch
+        return {counts: counts, seen: "(WinGetControls failed)"}
+    if !IsObject(ctrls)
+        return {counts: counts, seen: "(no controls)"}
+
+    for ctrl in ctrls {
+        if !RegExMatch(ctrl, "^Button\d+$")
+            continue
+        txt := ""
+        try txt := Trim(ControlGetText(ctrl, "A"))
+        catch
+            continue
+        if (txt = "")
+            continue
+        seen .= (seen = "" ? "" : " | ") ctrl "=" txt
+        for kind in ["Error", "Warning", "Message"] {
+            ; first match wins; requires LEADING digits so a plain
+            ; "Errors..." button with no count can't be mistaken for one
+            if (counts[kind] = "") && RegExMatch(txt, "i)^(\d+)\b.*\b" kind, &m)
+                counts[kind] := m[1]
+        }
+    }
+    return {counts: counts, seen: seen}
+}
+
 ; Studio 5000 formats some numeric fields (confirmed: the Capacity/OCD
 ; value) with thousands-separator commas -- e.g. "99,999" -- which would
 ; otherwise split into two columns once written into a comma-delimited
@@ -218,25 +268,30 @@ Status(msg) {
         }
 
         Sleep 50
-				ErrorValue := ExtractCount(ControlGetText("Button10", "A"))
         ; Captured at the same moment as Error/Warning/Message -- the
         ; window title has the open .ACD filename baked in (James, 2026-08-22:
         ; "window title is valid there with the filename.acd present inside"),
         ; giving PowerShell an independent cross-check against the filename
         ; it actually requested, instead of just trusting the handshake blind.
         WindowTitle := WinGetTitle("A")
-        ErrorValue := ExtractCount(ControlGetText("Button3", "A"))
-        WarningValue := ExtractCount(ControlGetText("Button4", "A"))
-        MessageValue := ExtractCount(ControlGetText("Button5", "A"))
-				
-				if ErrorValue = "" AND WarningValue = ""{
-					Status("Reading Static23 value")
-					Sleep 20
-						ErrorValue := ExtractCount(ControlGetText("Button25", "A"))
-						WarningValue := ExtractCount(ControlGetText("Button26", "A"))
-						;MessageValue := ExtractCount(ControlGetText("Button27", "A"))
-				}
-				
+        found := FindCountButtons()
+        ErrorValue := found.counts["Error"]
+        WarningValue := found.counts["Warning"]
+        MessageValue := found.counts["Message"]
+
+        ; One retry: the counters can still be repainting right after the
+        ; build popup closes. Same scan, not a different index guess.
+        if (ErrorValue = "" AND WarningValue = "") {
+            Status("Counter buttons not found yet -- rescanning. Saw: " found.seen)
+            Sleep 250
+            found := FindCountButtons()
+            ErrorValue := found.counts["Error"]
+            WarningValue := found.counts["Warning"]
+            MessageValue := found.counts["Message"]
+        }
+        if (ErrorValue = "" AND WarningValue = "")
+            Status("WARNING: no Error/Warning counter button matched -- logging BLANK, not 0. Buttons seen: " found.seen)
+
         Status("Errors/Warnings/Message: " ErrorValue ", " WarningValue ", " MessageValue " | " WindowTitle)
 
         ; --- Controller Properties -> Capacity (OCD value) ---
