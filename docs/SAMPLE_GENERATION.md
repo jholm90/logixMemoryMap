@@ -106,3 +106,26 @@ mechanically (`safety_module_on_non_safety_controller`, checks every
 Module's own `SafetyEnabled="true"` against the file's `<SafetyInfo>`
 presence) -- run it on every generated file before sending it anywhere,
 scratch chat samples included, not just committed batches.
+
+## After fixing a generator bug: the committed files don't fix themselves
+
+James, 2026-09-04, caught via his own `batch_l5x_to_acd.ps1` output showing
+files still queued for conversion that had already been reported "fixed" in
+chat. Real gap found: `gen_module_pointio_rack.py`'s Bus Size/slot-resize
+fix landed in the generator SOURCE (2026-09-03), and a direct in-memory
+test of the fixed function was reported to James as verification -- but the
+actual COMMITTED `rack_pointio_n02...n07_full/_alt` files in `samples/
+generated/` were never regenerated afterward. They still had the old,
+pre-fix content (last touched by an earlier commit), so they kept showing
+`FAILED`/never-logged in `convert_log.csv` -- not because the fix was
+wrong, but because the shipped files never picked it up. A code fix is not
+done until `python -m sample_gen.<module>` has actually been re-run and the
+resulting file diff committed -- verifying the FUNCTION in isolation is not
+the same as verifying the FILE that ships. Same session, a parallel check
+on `cipmodule_scale_*.L5X` (also flagged in the same PowerShell output)
+found the opposite: regenerating changed nothing but the export timestamp
+-- that fix had already made it into the committed files; the file was
+just sitting on a stale, never-retried `FAILED` log entry from before the
+fix landed. Distinguishing these two cases (stale FILE vs. stale LOG
+entry) needs an actual regeneration + diff, every time -- not an assumption
+either way.
