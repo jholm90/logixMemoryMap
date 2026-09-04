@@ -1369,6 +1369,35 @@ the matching footnote at the bottom, not inline.
     file, so James's *"mute them in your calculations"* is handled by the
     experiment design rather than by a subtraction. Blocked on capture.
 
+    **Real build results, 2026-09-04 (James's first conversion pass).**
+    38 of the 42 built clean. The 4 failures are all mine, and two of them
+    taught something:
+    - `alarmcond_hmigroup_len64` — *"Failed to set the 'HMIGroup' property
+      (Invalid Alarm group name.)"* at 55 characters. `len04` and `len16`
+      both converted, and `len16` is `LineA_Station12` — **so underscores
+      are legal and the constraint is a LENGTH limit somewhere between 16
+      and 55.** Replaced by `alarmcond_hmigroup_len40`, probing the
+      canonical 40-character Rockwell name limit directly. Real HMIGroup
+      values run 5-9 characters (Edger, Stacker, LugLoader), so this axis is
+      deliberately far past reality.
+    - `alarmcond_type_trip_high` / `_trip_low` / `_deviation` — *"Invalid
+      condition type."* **Those three names were invented.** 100% of the
+      3,463 real corpus conditions are `ConditionType="TRIP"`, so this
+      project has zero evidence for what any other condition type is
+      called. Group removed rather than re-guessed — the same mistake the
+      ST batch had to be rebuilt for.
+    - `alarmcond_type_trip` — a valid TRIP, but on a REAL[128] host:
+      *"Condition expression is not compatible with condition type or the
+      data type of the input."* Every real condition is TRIP on a BOOL, so
+      the expression form an analog input needs is unknown.
+
+    **NEEDED FROM JAMES, and the analog half of this question is blocked on
+    it:** the real `ConditionType` list from the Studio 5000 dropdown, plus
+    one working analog example (an alarm on a REAL tag with whatever
+    Expression it actually requires). With those, the analog group can be
+    rebuilt from evidence instead of guesswork. Everything else in the batch
+    stands.
+
 ---
 
 [^instrfirstpass]: CROUT (safety-only) and MAPC resolved separately

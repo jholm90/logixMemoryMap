@@ -52,17 +52,15 @@ D. group_assoc_type (4)   32 alarms x 1 assoc tag of DINT / STRING / REAL /
    BOOL. James probed DINT and STRING at n=1; this repeats them at n=32
    where a per-alarm difference is 32x easier to read, and adds the two
    types he did not.
-E. group_hmigroup (4)     32 alarms, HMIGroup absent / 4 / 16 / 64 chars.
+E. group_hmigroup (4)     32 alarms, HMIGroup absent / 4 / 16 / 40 chars.
    Every other name-ish string in this model costs real bytes by length
    (alias names, AOI type names, JSR target names), so this is a live
    hypothesis, not a formality.
 F. group_name_length (4)  32 alarms at name length 8/16/32/40. Same reason.
    Real names are 10-17 chars, so 8 and 16 bracket reality and 32/40 extend
    it far enough to see a step if there is one.
-G. group_condition_type (4) 32 alarms of TRIP / TRIP_HIGH / TRIP_LOW /
-   DEVIATION on a REAL array. 100% of real conditions are TRIP on a BOOL, so
-   the analog condition types are completely unmeasured -- and they are the
-   ones carrying Limit/Deadband, which may well cost more.
+G. (removed -- see the comment above group_attributes: the analog
+   ConditionType names were invented and Studio 5000 rejected all four.)
 H. group_attributes (4)   32 alarms varying Severity, OnDelay, Latched and
    AckRequired. Probably free; cheap to prove rather than assume.
 
@@ -221,7 +219,7 @@ def group_assoc_type() -> None:
 
 def group_hmigroup() -> None:
     for label, group in (("none", None), ("len04", "Grp1"), ("len16", "LineA_Station12"),
-                         ("len64", "LineA_Station12_UpperDeckInfeedConveyorSection_ZoneThree")):
+                         ("len40", "LineAStation12UpperDeckInfeedConveyr40")):
         conds = [_condition_xml(f"AlarmHmi{i:03d}", i, assoc=[], hmi_group=group)
                  for i in range(_FIXED_N)]
         _write(f"alarmcond_hmigroup_{label}",
@@ -250,27 +248,19 @@ def group_name_length() -> None:
                f"length is a real, measured cost everywhere else in this model. " + _MUTED)
 
 
-def group_condition_type() -> None:
-    for ctype, limit, deadband, expr in (
-        ("TRIP", "0.0", "0.0", "= 1"),
-        ("TRIP_HIGH", "80.0", "1.0", "&gt; 80.0"),
-        ("TRIP_LOW", "20.0", "1.0", "&lt; 20.0"),
-        ("DEVIATION", "5.0", "0.5", "= 1"),
-    ):
-        conds = [
-            _condition_xml(f"AlarmCt{i:03d}", i, assoc=[], hmi_group=None,
-                           condition_type=ctype, limit=limit, deadband=deadband,
-                           expression=expr)
-            for i in range(_FIXED_N)
-        ]
-        _write(f"alarmcond_type_{ctype.lower()}",
-               _host_tag_xml("AlarmRealArray", "REAL", conds),
-               f"{_FIXED_N} {ctype} alarm conditions on a REAL[128] analog tag "
-               f"(Limit={limit}, Deadband={deadband}). 100% of the 3,463 real corpus "
-               f"conditions are TRIP on a BOOL, so every analog condition type is completely "
-               f"unmeasured -- and they are the ones that actually carry Limit and Deadband, "
-               f"which may well cost more than a discrete trip. TRIP here is on the same REAL "
-               f"host as its three siblings so the comparison is condition-type only. " + _MUTED)
+# group_condition_type REMOVED 2026-09-04 -- real Studio 5000 rejected all
+# four files. TRIP_HIGH / TRIP_LOW / DEVIATION: "Failed to set the
+# 'ConditionType' property (Invalid condition type.)"; and plain TRIP on a
+# REAL host: "Failed to set the 'Expression' property (Condition expression
+# is not compatible with condition type or the data type of the input.)".
+#
+# Those three type names were INVENTED. 100% of the 3,463 real corpus
+# conditions are TRIP on a BOOL, so this project has zero evidence for what
+# any other ConditionType is called or what expression form an analog input
+# requires -- exactly the situation where the ST batch had to be rebuilt for
+# guessing instead of measuring. Not re-guessed here. The analog side stays
+# unmeasured until James supplies the real ConditionType list from the
+# Studio 5000 dropdown and one working analog example; see OQ-ALARMCOND.
 
 
 def group_attributes() -> None:
@@ -300,9 +290,8 @@ def main() -> None:
     group_assoc_type()
     group_hmigroup()
     group_name_length()
-    group_condition_type()
     group_attributes()
-    print("\nDone. 42 files.")
+    print("\nDone. 38 files.")
 
 
 if __name__ == "__main__":

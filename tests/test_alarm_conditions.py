@@ -108,5 +108,5 @@ def test_placeholder_tags_are_identical_across_the_batch():
 
     baseline = placeholders("alarmcond_count_bare_n000")
     for name in ("alarmcond_count_bare_n128", "alarmcond_count_real_n064",
-                 "alarmcond_assoc_k4", "alarmcond_namelen_40", "alarmcond_hmigroup_len64"):
+                 "alarmcond_assoc_k4", "alarmcond_namelen_40", "alarmcond_hmigroup_len40"):
         assert placeholders(name) == baseline, name

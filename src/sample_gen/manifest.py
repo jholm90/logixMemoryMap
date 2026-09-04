@@ -28,8 +28,19 @@ def predicted_bytes(l5x_text: str) -> int:
     root = ET.fromstring(l5x_text)
     model = load_memory_model()
     entries, errors = build_report(root, model)
-    if errors:
-        raise RuntimeError(f"sample has unsized tags, fix the generator: {errors}")
+    # Coverage/scope notices are INFORMATIONAL, not sizing failures -- they
+    # say "this file contains something the model doesn't price yet" (an ST
+    # routine, an unweighted instruction, a tag-based alarm condition, a
+    # partial export). Those are the whole point of the files that carry
+    # them. Only a genuine unsized-tag error means the generator is wrong.
+    #
+    # Found 2026-09-04 the moment sizing/coverage.py started routing gaps
+    # through the errors channel: every alarm-batch regeneration blew up
+    # with "sample has unsized tags" on a file whose only problem was that
+    # it contains the very thing it was built to measure.
+    blocking = [e for e in errors if not e.path.startswith(("coverage/", "scope/"))]
+    if blocking:
+        raise RuntimeError(f"sample has unsized tags, fix the generator: {blocking}")
     return sum(e.bytes for e in entries)
 
 

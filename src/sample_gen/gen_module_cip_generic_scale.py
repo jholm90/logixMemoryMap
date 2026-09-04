@@ -123,7 +123,15 @@ def _write(out_name: str, modules_xml: str, description: str) -> None:
     print(f"Wrote {out_path} (floor {total} bytes)")
 
 
-_SIZES = [64, 128, 256, 496, 1024, 2048]
+# 1024 and 2048 REMOVED 2026-09-04 -- real Studio 5000 error, both files:
+# "Failed to set the 'PrimCxnInputSize' property (Value too large.)". A
+# generic Ethernet/CIP connection tops out at 500 bytes, confirmed two
+# independent ways: the largest PrimCxnInputSize anywhere in the real corpus
+# is exactly 500 (next values down 496, 450, 448), and 496 is the largest
+# size in this sweep that ever converted. They were never valid sizes, so
+# there is nothing to regenerate -- the two files are deleted and
+# skip-listed. 496 remains the anchoring real-file size.
+_SIZES = [64, 128, 256, 496]
 
 
 def main() -> None:
