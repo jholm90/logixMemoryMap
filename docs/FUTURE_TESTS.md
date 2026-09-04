@@ -12,6 +12,53 @@ Ordered by expected impact on the <1%-on-a-real-file North Star.
 
 ---
 
+## 0. Composite surcharge cap vs REAL-program scale — now the #1 error source
+
+**First real virgin-file measurement, 2026-09-04.** James supplied
+`Cardin_TrimSortStack_20260624r00` (1756-L83E, fw 35.13, 35 MB L5X, never
+seen by this project). Predicted **7,162,455**, actual **8,178,556** —
+**12.4% UNDER**, a miss of 1,016,101 bytes. That is the honest North Star
+number and it is nowhere near <1%.
+
+Root cause, measured not guessed: `logic_instructions.composite_surcharge_cap`
+(12,000 bytes, file-wide) suppresses **1,551,065 bytes** on this file.
+The cap was fitted against the synthetic composite corpus, which is not
+remotely representative of a real program's JSR-target content:
+
+| file | aoi_instr | jsr_instr | uncapped surcharge | vs the 12,000 cap |
+|---|---:|---:|---:|---:|
+| REAL Cardin_TrimSortStack | 6,255 | 30,595 | 1,563,065 | **130.3x** |
+| synthetic v4_074 | 450 | 1,899 | 98,253 | 8.2x |
+| synthetic v4_001 | 146 | 564 | 29,428 | 2.5x |
+| synthetic v2_25 | 111 | 120 | 7,860 | 0.7x |
+
+The real file has **16x to 54x more JSR-target instructions** than any
+synthetic composite. So the cap behaves completely differently in the two
+regimes: mild trimming on the files it was fitted against, total
+annihilation on a real program. With the cap the model ignores JSR-target
+content almost entirely — which is exactly the "JSR target content is NOT
+free" finding OQ-JSRPARAMCOST already proved and this cap silently undoes
+at real scale.
+
+Neither setting is right on its own: capped gives -12.4%, fully uncapped
+would give **+6.5%** (predicted 8,713,520). The value that lands exactly on
+this file is a surcharge of ~1,028,000, i.e. ~66% of uncapped. That is ONE
+data point and must not be fitted on its own — the axis_scale lesson.
+
+**Tests needed:**
+- **More real captured programs, of varying size.** This is the only thing
+  that can fit a cap/scale law that holds at real scale. Two or three more
+  virgin files with actual Capacity readings would settle the shape
+  (constant? proportional? saturating?).
+- **A v5 composite generator with REAL-scale JSR-target content** —
+  20,000-40,000 JSR-target instructions, not 500-2,000. The current
+  corpus cannot exercise this regime at all, so no amount of synthetic
+  generation in its current shape will surface the problem.
+- **Structured Text is completely unmodeled.** The same real file has 3 ST
+  routines / 505 ST lines contributing exactly 0 to the prediction.
+  `parse_rll_routines` only handles RLL. Small here, but it is a total
+  coverage hole for real programs, which commonly use ST.
+
 ## 1. Structural module model (OQ-MODULESTRUCTURAL) — highest value
 
 The blocker for ever predicting an UNSEEN catalog. Needs single-module
