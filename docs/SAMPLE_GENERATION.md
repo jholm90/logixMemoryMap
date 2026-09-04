@@ -164,3 +164,36 @@ this is the pattern to copy for any future large batch:
 - **If the proven shape ALSO errors in the new placement, that is the
   result**, not a setback: it isolates the placement as what Studio 5000
   objects to, which no existing row can distinguish today.
+
+## SBR is a condition, not an output -- every rung still needs a terminator
+
+James, 2026-09-04, real Studio 5000 failure on `jsr_paramtype_udt_n*_r00100`:
+*"Your SBR rung has no output instructions and fails to build, please
+regenerate SBR with a NOP() afterwards and make a note that the SBR is like
+a comparison and needs outputs afterwards."*
+
+`SBR` only RECEIVES the caller's parameters. It has no effect of its own, so
+a rung containing nothing but `SBR(...)` has nothing terminating it and
+Studio 5000 rejects it — **exactly** like a bare `EQU`, and with the same
+fix:
+
+```
+SBR(P0,P1,P2)NOP();     <- correct
+SBR(P0,P1,P2);          <- rejected, no output instruction
+```
+
+`RET();` on its own rung is fine — RET is a real output, not a condition.
+Structured Text is also exempt: ST has no rungs and no output-instruction
+rule, and the real corpus carries bare `SBR( a, b, c );` ST statements
+(44 of them) that build clean.
+
+**The lesson is about where a rule lives, not about SBR.** This project
+already knew it — `lint.py`'s `_rung_missing_output_findings` was written in
+August for exactly this class, off James's *"conditional instructions like
+EQU with no operand at the end of the rung"*. `SBR` simply was not in
+`_PURE_CONDITION_INSTRUCTIONS`, so 8 of the 9 generators that emit an SBR
+got the `NOP()` right **by convention** and the 9th silently did not. A rule
+enforced by convention across nine copies is a rule that will be broken by
+the tenth. When a build-validity rule turns up, add it to `lint.py` — a
+comment in the generator you happen to be editing does not protect the
+others.

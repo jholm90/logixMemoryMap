@@ -255,7 +255,13 @@ def group_jsr_paramtype_count() -> None:
         sbr_args = ",".join(params)
         target = (
             '<Routine Name="JsrUdtTarget" Type="RLL"><RLLContent>'
-            + rung_xml(0, f"SBR({sbr_args});")
+            # SBR(args)NOP(); -- NOT a bare SBR. SBR only receives the
+            # caller's parameters and has no output of its own, so a rung
+            # containing only SBR has nothing terminating it and real
+            # Studio 5000 rejects it exactly like a bare EQU (James,
+            # 2026-09-04: "the SBR is like a comparison and needs outputs
+            # afterwards"). sample_gen/lint.py now enforces this.
+            + rung_xml(0, f"SBR({sbr_args})NOP();")
             + rung_xml(1, "RET();")
             + "</RLLContent></Routine>"
         )

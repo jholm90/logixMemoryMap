@@ -290,6 +290,19 @@ _BIT_LEVEL_INSTRUCTIONS = {"XIC", "XIO", "OTE", "OTU", "OTL", "ONS"}
 # has no real output/effect and real Studio 5000 rejects it outright.
 _PURE_CONDITION_INSTRUCTIONS = {
     "XIC", "XIO", "EQU", "NEQ", "GRT", "GEQ", "LES", "LEQ", "LIM", "MEQ", "CMP",
+    # SBR added 2026-09-04 (James, real Studio 5000 failure on
+    # jsr_paramtype_udt_n*_r00100): "Your SBR rung has no output
+    # instructions and fails to build ... make a note that the SBR is like
+    # a comparison and needs outputs afterwards." SBR only RECEIVES the
+    # caller's parameters -- it has no effect of its own, so a rung
+    # containing nothing but SBR() has no terminating output and Studio
+    # rejects it, exactly like a bare EQU. The fix is the same: SBR(args)NOP();
+    #
+    # Note this check already existed and already had the right shape --
+    # SBR simply was not in the set, so 8 of this project's 9 generators
+    # got the NOP right by convention and the 9th silently did not. That is
+    # why it belongs HERE rather than as another comment in one generator.
+    "SBR",
 }
 _BIT_SUBSCRIPT_RE = re.compile(r"\.\d+$")
 _BASE_TAG_NAME_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)")
