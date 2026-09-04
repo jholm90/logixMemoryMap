@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="RackPointIO_n07_full" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 04 00:00:11 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="RackPointIO_n07_full" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 04 00:00:11 2026" LastModifiedDate="Fri Sep 04 00:00:11 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="RackPointIO_n15_full" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 04 00:00:11 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="RackPointIO_n15_full" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 04 00:00:11 2026" LastModifiedDate="Fri Sep 04 00:00:11 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -23,7 +23,7 @@
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="1" Address="0" Type="PointIO" Upstream="false">
-<Bus Size="8" />
+<Bus Size="16" />
 </Port>
 <Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
 </Ports>
@@ -32,10 +32,10 @@
 <Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:1734_8SLOT:I:0">
+<Structure DataType="AB:1734_16SLOT:I:0">
 <DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_0000_0001" />
 <DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<ArrayMember Name="Data" DataType="SINT" Dimensions="8" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="16" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#1110_0001" />
 <Element Index="[2]" Value="2#1111_1111" />
@@ -44,17 +44,25 @@
 <Element Index="[5]" Value="2#0011_1111" />
 <Element Index="[6]" Value="2#0000_0000" />
 <Element Index="[7]" Value="2#0000_0000" />
+<Element Index="[8]" Value="2#0000_0000" />
+<Element Index="[9]" Value="2#0000_0000" />
+<Element Index="[10]" Value="2#0000_0000" />
+<Element Index="[11]" Value="2#0000_0000" />
+<Element Index="[12]" Value="2#0000_0000" />
+<Element Index="[13]" Value="2#0000_0000" />
+<Element Index="[14]" Value="2#0000_0000" />
+<Element Index="[15]" Value="2#0000_0000" />
 </ArrayMember>
 </Structure>
 </Data>
 </InputTag>
 <OutputTag ExternalAccess="Read/Write">
 <Data Format="L5K">
-[-255,-1,[0,0,0,0,0,0,0,0]]
+[-255,-1,[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:1734_8SLOT:O:0">
-<ArrayMember Name="Data" DataType="SINT" Dimensions="8" Radix="Binary">
+<Structure DataType="AB:1734_16SLOT:O:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="16" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_0000" />
@@ -63,6 +71,14 @@
 <Element Index="[5]" Value="2#0000_0000" />
 <Element Index="[6]" Value="2#0000_0000" />
 <Element Index="[7]" Value="2#0000_0000" />
+<Element Index="[8]" Value="2#0000_0000" />
+<Element Index="[9]" Value="2#0000_0000" />
+<Element Index="[10]" Value="2#0000_0000" />
+<Element Index="[11]" Value="2#0000_0000" />
+<Element Index="[12]" Value="2#0000_0000" />
+<Element Index="[13]" Value="2#0000_0000" />
+<Element Index="[14]" Value="2#0000_0000" />
+<Element Index="[15]" Value="2#0000_0000" />
 </ArrayMember>
 </Structure>
 </Data>
@@ -759,6 +775,539 @@
 </Structure>
 </Data>
 </InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="TestMod2_1734IJC" CatalogNumber="1734-IJ/C" Vendor="1" ProductType="109" ProductCode="15" Major="3" Minor="1" ParentModule="TestMod1_1734AENTB" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="8" Type="PointIO" Upstream="true" />
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="22" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[26,123,0,1,113,1,0,0,0,1,360,180,0,0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_IJK:C:0">
+<DataValueMember Name="CounterConfig" DataType="SINT" Radix="Binary" Value="2#0000_0001" />
+<DataValueMember Name="Config_0" DataType="BOOL" Value="1" />
+<DataValueMember Name="Config_1" DataType="BOOL" Value="0" />
+<DataValueMember Name="Config_2" DataType="BOOL" Value="0" />
+<DataValueMember Name="Config_3" DataType="BOOL" Value="0" />
+<DataValueMember Name="Mode_4" DataType="BOOL" Value="0" />
+<DataValueMember Name="Mode_5" DataType="BOOL" Value="0" />
+<DataValueMember Name="Mode_6" DataType="BOOL" Value="0" />
+<DataValueMember Name="ZInput" DataType="BOOL" Value="0" />
+<DataValueMember Name="Filter" DataType="SINT" Radix="Binary" Value="2#0111_0001" />
+<DataValueMember Name="Filter_0" DataType="BOOL" Value="1" />
+<DataValueMember Name="Filter_1" DataType="BOOL" Value="0" />
+<DataValueMember Name="Filter_2" DataType="BOOL" Value="0" />
+<DataValueMember Name="Filter_3" DataType="BOOL" Value="0" />
+<DataValueMember Name="FilterA" DataType="BOOL" Value="1" />
+<DataValueMember Name="FilterB" DataType="BOOL" Value="1" />
+<DataValueMember Name="FilterZ" DataType="BOOL" Value="1" />
+<DataValueMember Name="DecimalPosition" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="TimeBase" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="GateInterval" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Scalar" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="RollOver" DataType="DINT" Radix="Decimal" Value="360" />
+<DataValueMember Name="Preset" DataType="DINT" Radix="Decimal" Value="180" />
+<DataValueMember Name="SSCounterControl" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="SSCounterReset" DataType="BOOL" Value="0" />
+<DataValueMember Name="SSCounterPreset" DataType="BOOL" Value="0" />
+<DataValueMember Name="SSValueReset" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="OutputData" RPI="2000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1734_IJK:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="PresentData" DataType="DINT" Radix="Decimal" Value="180" />
+<DataValueMember Name="StoredData" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Status" DataType="INT" Radix="Binary" Value="2#0000_0000_0001_0000" />
+<DataValueMember Name="ZeroFreqDetect" DataType="BOOL" Value="0" />
+<DataValueMember Name="StoredDataCount_2" DataType="BOOL" Value="0" />
+<DataValueMember Name="StoredDataCount_3" DataType="BOOL" Value="0" />
+<DataValueMember Name="AInputStatus" DataType="BOOL" Value="1" />
+<DataValueMember Name="BInputStatus" DataType="BOOL" Value="0" />
+<DataValueMember Name="ZInputStatus" DataType="BOOL" Value="0" />
+<DataValueMember Name="NotReady" DataType="BOOL" Value="0" />
+<DataValueMember Name="EEPROMFault" DataType="BOOL" Value="0" />
+<DataValueMember Name="ProgramFault" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_IJK:O:0">
+<DataValueMember Name="CounterControl" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="CounterReset" DataType="BOOL" Value="0" />
+<DataValueMember Name="CounterPreset" DataType="BOOL" Value="0" />
+<DataValueMember Name="ValueReset" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module CatalogNumber="1734-IK/C" Vendor="1" ProductType="109" ProductCode="16" Major="3" Minor="4" ParentModule="TestMod1_1734AENTB" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="9" Type="PointIO" Upstream="true" />
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="22" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[26,123,0,-60,1,1,0,0,0,0,16777215,0,0,0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_IJK:C:0">
+<DataValueMember Name="CounterConfig" DataType="SINT" Radix="Binary" Value="2#1100_0100" />
+<DataValueMember Name="Config_0" DataType="BOOL" Value="0" />
+<DataValueMember Name="Config_1" DataType="BOOL" Value="0" />
+<DataValueMember Name="Config_2" DataType="BOOL" Value="1" />
+<DataValueMember Name="Config_3" DataType="BOOL" Value="0" />
+<DataValueMember Name="Mode_4" DataType="BOOL" Value="0" />
+<DataValueMember Name="Mode_5" DataType="BOOL" Value="0" />
+<DataValueMember Name="Mode_6" DataType="BOOL" Value="1" />
+<DataValueMember Name="ZInput" DataType="BOOL" Value="1" />
+<DataValueMember Name="Filter" DataType="SINT" Radix="Binary" Value="2#0000_0001" />
+<DataValueMember Name="Filter_0" DataType="BOOL" Value="1" />
+<DataValueMember Name="Filter_1" DataType="BOOL" Value="0" />
+<DataValueMember Name="Filter_2" DataType="BOOL" Value="0" />
+<DataValueMember Name="Filter_3" DataType="BOOL" Value="0" />
+<DataValueMember Name="FilterA" DataType="BOOL" Value="0" />
+<DataValueMember Name="FilterB" DataType="BOOL" Value="0" />
+<DataValueMember Name="FilterZ" DataType="BOOL" Value="0" />
+<DataValueMember Name="DecimalPosition" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="TimeBase" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="GateInterval" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Scalar" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="RollOver" DataType="DINT" Radix="Decimal" Value="16777215" />
+<DataValueMember Name="Preset" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="SSCounterControl" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="SSCounterReset" DataType="BOOL" Value="0" />
+<DataValueMember Name="SSCounterPreset" DataType="BOOL" Value="0" />
+<DataValueMember Name="SSValueReset" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="OutputData" RPI="10000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1734_IJK:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="PresentData" DataType="DINT" Radix="Decimal" Value="9417503" />
+<DataValueMember Name="StoredData" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Status" DataType="INT" Radix="Binary" Value="2#0000_0000_0011_0000" />
+<DataValueMember Name="ZeroFreqDetect" DataType="BOOL" Value="0" />
+<DataValueMember Name="StoredDataCount_2" DataType="BOOL" Value="0" />
+<DataValueMember Name="StoredDataCount_3" DataType="BOOL" Value="0" />
+<DataValueMember Name="AInputStatus" DataType="BOOL" Value="1" />
+<DataValueMember Name="BInputStatus" DataType="BOOL" Value="1" />
+<DataValueMember Name="ZInputStatus" DataType="BOOL" Value="0" />
+<DataValueMember Name="NotReady" DataType="BOOL" Value="0" />
+<DataValueMember Name="EEPROMFault" DataType="BOOL" Value="0" />
+<DataValueMember Name="ProgramFault" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_IJK:O:0">
+<DataValueMember Name="CounterControl" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="CounterReset" DataType="BOOL" Value="0" />
+<DataValueMember Name="CounterPreset" DataType="BOOL" Value="0" />
+<DataValueMember Name="ValueReset" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="TestMod2_1734IR2C" CatalogNumber="1734-IR2/C" Vendor="1" ProductType="115" ProductCode="50" Major="3" Minor="1" ParentModule="TestMod1_1734AENTB" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="10" Type="PointIO" Upstream="true" />
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="42" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[46,123,1,1000,5000,0,-32768,32767,-32768,32767,0,0,1,2,1000,5000,0,-32768,32767,-32768,32767,0,0,1,2,1,0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_IR2:C:0">
+<DataValueMember Name="Ch0LowEngineering" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Ch0HighEngineering" DataType="INT" Radix="Decimal" Value="5000" />
+<DataValueMember Name="Ch0DigitalFilter" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0LAlarmLimit" DataType="INT" Radix="Decimal" Value="-32768" />
+<DataValueMember Name="Ch0HAlarmLimit" DataType="INT" Radix="Decimal" Value="32767" />
+<DataValueMember Name="Ch0LLAlarmLimit" DataType="INT" Radix="Decimal" Value="-32768" />
+<DataValueMember Name="Ch0HHAlarmLimit" DataType="INT" Radix="Decimal" Value="32767" />
+<DataValueMember Name="Ch0LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0AlarmDisable" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0SensorType" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Ch0TempMode" DataType="SINT" Radix="Decimal" Value="2" />
+<DataValueMember Name="Ch1LowEngineering" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="Ch1HighEngineering" DataType="INT" Radix="Decimal" Value="5000" />
+<DataValueMember Name="Ch1DigitalFilter" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1LAlarmLimit" DataType="INT" Radix="Decimal" Value="-32768" />
+<DataValueMember Name="Ch1HAlarmLimit" DataType="INT" Radix="Decimal" Value="32767" />
+<DataValueMember Name="Ch1LLAlarmLimit" DataType="INT" Radix="Decimal" Value="-32768" />
+<DataValueMember Name="Ch1HHAlarmLimit" DataType="INT" Radix="Decimal" Value="32767" />
+<DataValueMember Name="Ch1LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1AlarmDisable" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1SensorType" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Ch1TempMode" DataType="SINT" Radix="Decimal" Value="2" />
+<DataValueMember Name="NotchFilter" DataType="SINT" Radix="Decimal" Value="1" />
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="InputData" RPI="80000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1734_IR2:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Ch0Data" DataType="INT" Radix="Decimal" Value="1017" />
+<DataValueMember Name="Ch1Data" DataType="INT" Radix="Decimal" Value="1014" />
+<DataValueMember Name="Ch0Status" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Ch0Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0Calibration" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0LAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0HAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0LLAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0HHAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0Underrange" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0Overrange" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1Status" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Ch1Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1Calibration" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1LAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1HAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1LLAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1HHAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1Underrange" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1Overrange" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module CatalogNumber="1734-OA4/C" Vendor="1" ProductType="7" ProductCode="290" Major="3" Minor="1" ParentModule="TestMod1_1734AENTB" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="11" Type="PointIO" Upstream="true" />
+</Ports>
+<Communications CommMethod="1073741824">
+<ConfigTag ConfigSize="8" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[12,103,1,0,0,0,0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_DO4:C:0">
+<DataValueMember Name="FaultMode" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt2FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt3FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="FaultValue" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt2FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt3FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="ProgMode" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt2ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt3ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="ProgValue" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt2ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt3ProgValue" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<RackConnection>
+<OutAliasTag />
+</RackConnection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="TestMod2_1734OB2EPC" CatalogNumber="1734-OB2EP/C" Vendor="1" ProductType="7" ProductCode="163" Major="3" Minor="1" ParentModule="TestMod1_1734AENTB" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="12" Type="PointIO" Upstream="true" />
+</Ports>
+<Communications CommMethod="1073741824">
+<ConfigTag ConfigSize="12" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[16,123,1,0,0,0,0,0,0,0,0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_DOB2:C:0">
+<DataValueMember Name="FaultMode" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="FaultValue" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="ProgMode" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="ProgValue" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="NoLoadEn" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0NoLoadEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1NoLoadEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="AutoRestartEn" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0AutoRestartEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1AutoRestartEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="FaultLatchEn" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0FaultLatchEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1FaultLatchEn" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<RackConnection>
+<InAliasTag />
+<OutAliasTag />
+</RackConnection>
+</Connections>
+</Communications>
+</Module>
+<Module CatalogNumber="1734-OB8/C" Vendor="1" ProductType="7" ProductCode="232" Major="3" Minor="1" ParentModule="TestMod1_1734AENTB" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="13" Type="PointIO" Upstream="true" />
+</Ports>
+<Communications CommMethod="1073741824">
+<ConfigTag ConfigSize="12" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[16,123,1,0,0,0,0,0,0,0,0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_DO8_NoDiag:C:0">
+<DataValueMember Name="FaultMode" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt2FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt3FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt4FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt5FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt6FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt7FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="FaultValue" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt2FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt3FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt4FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt5FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt6FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt7FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="ProgMode" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt2ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt3ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt4ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt5ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt6ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt7ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="ProgValue" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt2ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt3ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt4ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt5ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt6ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt7ProgValue" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<RackConnection>
+<InAliasTag />
+<OutAliasTag />
+</RackConnection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="TestMod2_1734OB8EC" CatalogNumber="1734-OB8E/C" Vendor="1" ProductType="7" ProductCode="218" Major="3" Minor="1" ParentModule="TestMod1_1734AENTB" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="14" Type="PointIO" Upstream="true" />
+</Ports>
+<Communications CommMethod="1073741824">
+<ConfigTag ConfigSize="12" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[16,123,1,0,0,0,0,0,0,0,0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_DOB8:C:0">
+<DataValueMember Name="FaultMode" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt2FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt3FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt4FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt5FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt6FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt7FaultMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="FaultValue" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt2FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt3FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt4FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt5FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt6FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt7FaultValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="ProgMode" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt2ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt3ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt4ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt5ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt6ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt7ProgMode" DataType="BOOL" Value="0" />
+<DataValueMember Name="ProgValue" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt2ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt3ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt4ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt5ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt6ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt7ProgValue" DataType="BOOL" Value="0" />
+<DataValueMember Name="NoLoadEn" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0NoLoadEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1NoLoadEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt2NoLoadEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt3NoLoadEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt4NoLoadEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt5NoLoadEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt6NoLoadEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt7NoLoadEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="AutoRestartEn" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0AutoRestartEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1AutoRestartEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt2AutoRestartEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt3AutoRestartEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt4AutoRestartEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt5AutoRestartEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt6AutoRestartEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt7AutoRestartEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="FaultLatchEn" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Pt0FaultLatchEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt1FaultLatchEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt2FaultLatchEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt3FaultLatchEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt4FaultLatchEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt5FaultLatchEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt6FaultLatchEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt7FaultLatchEn" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<RackConnection>
+<InAliasTag />
+<OutAliasTag />
+</RackConnection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="TestMod2_1734OE2CC" CatalogNumber="1734-OE2C/C" Vendor="1" ProductType="115" ProductCode="25" Major="3" Minor="1" ParentModule="TestMod1_1734AENTB" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="15" Type="PointIO" Upstream="true" />
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="40" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[44,123,1,0,0,3277,16383,-32768,32767,0,1,1,0,0,0,0,0,1638,8191,-32768,32767,0,1,1,0,0,0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_OE2:C:0">
+<DataValueMember Name="Ch0FaultValue" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0ProgValue" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0LowEngineering" DataType="INT" Radix="Decimal" Value="3277" />
+<DataValueMember Name="Ch0HighEngineering" DataType="INT" Radix="Decimal" Value="16383" />
+<DataValueMember Name="Ch0LowLimit" DataType="INT" Radix="Decimal" Value="-32768" />
+<DataValueMember Name="Ch0HighLimit" DataType="INT" Radix="Decimal" Value="32767" />
+<DataValueMember Name="Ch0RangeType" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0FaultMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Ch0ProgMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Ch0LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch0AlarmDisable" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1FaultValue" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1ProgValue" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1LowEngineering" DataType="INT" Radix="Decimal" Value="1638" />
+<DataValueMember Name="Ch1HighEngineering" DataType="INT" Radix="Decimal" Value="8191" />
+<DataValueMember Name="Ch1LowLimit" DataType="INT" Radix="Decimal" Value="-32768" />
+<DataValueMember Name="Ch1HighLimit" DataType="INT" Radix="Decimal" Value="32767" />
+<DataValueMember Name="Ch1RangeType" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1FaultMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Ch1ProgMode" DataType="SINT" Radix="Decimal" Value="1" />
+<DataValueMember Name="Ch1LimitAlarmLatch" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="Ch1AlarmDisable" DataType="SINT" Radix="Decimal" Value="0" />
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="OutputData" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1734_OE2:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<DataValueMember Name="Ch0Status" DataType="SINT" Radix="Binary" Value="2#0000_0000" />
+<DataValueMember Name="Ch0Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0Calibration" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0LAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch0HAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1Status" DataType="SINT" Radix="Binary" Value="2#0000_1001" />
+<DataValueMember Name="Ch1Fault" DataType="BOOL" Value="1" />
+<DataValueMember Name="Ch1Calibration" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1LAlarm" DataType="BOOL" Value="0" />
+<DataValueMember Name="Ch1HAlarm" DataType="BOOL" Value="1" />
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[5000,32767]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_OE2:O:0">
+<DataValueMember Name="Ch0Data" DataType="INT" Radix="Decimal" Value="5000" />
+<DataValueMember Name="Ch1Data" DataType="INT" Radix="Decimal" Value="32767" />
+</Structure>
+</Data>
+</OutputTag>
 </Connection>
 </Connections>
 </Communications>

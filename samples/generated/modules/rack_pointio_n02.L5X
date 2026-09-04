@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="RackPointIO_n02" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 11:28:42 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="RackPointIO_n02" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 11:28:42 2026" LastModifiedDate="Thu Sep 03 11:28:42 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="RackPointIO_n02" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 04 00:00:11 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="RackPointIO_n02" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 04 00:00:11 2026" LastModifiedDate="Fri Sep 04 00:00:11 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -23,7 +23,7 @@
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="1" Address="0" Type="PointIO" Upstream="false">
-<Bus Size="8" />
+<Bus Size="3" />
 </Port>
 <Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
 </Ports>
@@ -32,37 +32,27 @@
 <Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:1734_8SLOT:I:0">
+<Structure DataType="AB:1734_3SLOT:I:0">
 <DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_0000_0001" />
 <DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
-<ArrayMember Name="Data" DataType="SINT" Dimensions="8" Radix="Binary">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="3" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#1110_0001" />
 <Element Index="[2]" Value="2#1111_1111" />
-<Element Index="[3]" Value="2#1011_1111" />
-<Element Index="[4]" Value="2#1111_1101" />
-<Element Index="[5]" Value="2#0011_1111" />
-<Element Index="[6]" Value="2#0000_0000" />
-<Element Index="[7]" Value="2#0000_0000" />
 </ArrayMember>
 </Structure>
 </Data>
 </InputTag>
 <OutputTag ExternalAccess="Read/Write">
 <Data Format="L5K">
-[-255,-1,[0,0,0,0,0,0,0,0]]
+[-255,-1,[0,0,0]]
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:1734_8SLOT:O:0">
-<ArrayMember Name="Data" DataType="SINT" Dimensions="8" Radix="Binary">
+<Structure DataType="AB:1734_3SLOT:O:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="3" Radix="Binary">
 <Element Index="[0]" Value="2#0000_0000" />
 <Element Index="[1]" Value="2#0000_0000" />
 <Element Index="[2]" Value="2#0000_0000" />
-<Element Index="[3]" Value="2#0000_0000" />
-<Element Index="[4]" Value="2#0000_0000" />
-<Element Index="[5]" Value="2#0000_0000" />
-<Element Index="[6]" Value="2#0000_0000" />
-<Element Index="[7]" Value="2#0000_0000" />
 </ArrayMember>
 </Structure>
 </Data>
