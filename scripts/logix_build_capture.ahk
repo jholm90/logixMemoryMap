@@ -257,14 +257,55 @@ Status(msg) {
         Sleep 50
         Status("b")
         Send "b"
-        Sleep 7500
+
+        ; Wait for the build popup to APPEAR, then for it to CLOSE (James,
+        ; 2026-09-04: "on loading bigger files i want to wait for the build
+        ; window to start").
+        ;
+        ; The old shape was `Sleep 7500` then `WinWait(title, , 1)`: a fixed
+        ; guess at how long Studio takes to start building, with a 1-second
+        ; window to catch it. On a big file the build hadn't started yet
+        ; within 8.5s, WinWait timed out, and the script sailed on to read
+        ; the Error/Warning counters WHILE THE BUILD WAS STILL RUNNING --
+        ; the counters then hold the PREVIOUS file's numbers.
+        ;
+        ; Two bugs in the attempted fix, for the record:
+        ;   WinWait(!buildPopupTitle, , 1)
+        ; `!` is boolean NOT, so `!"Building"` evaluates to 0 and that waits
+        ; for a window literally titled "0" -- there is no negated form of
+        ; WinWait. And the body called WinWaitClose with a "didn't open"
+        ; message, un-negated, so it would have fired the MsgBox on the
+        ; success path. The return values are what carry the meaning:
+        ;   WinWait      -> HWND (truthy) if it appeared, 0 on TIMEOUT
+        ;   WinWaitClose -> 1 if it closed,               0 on TIMEOUT
+        ; so "timed out" is `!` on either, which is why the close-wait below
+        ; is written `if !WinWaitClose(...)`.
+        ;
+        ; The short sleep matters: start watching BEFORE the popup can
+        ; appear, not after. Keeping the old 7.5s here would mean a fast
+        ; build's popup opens and closes inside the sleep, WinWait then
+        ; waits the full appear timeout for a window that already came and
+        ; went, and every small file costs an extra two minutes.
+        Sleep 300
 
         buildPopupTitle := "Building"
-        if WinWait(buildPopupTitle, , 1) {
-            maxWaitSeconds := 600   ; ceiling so a hung build doesn't loop forever
-            Status("Waiting For Build")
-						if !WinWaitClose(buildPopupTitle, , maxWaitSeconds)
+        maxAppearSeconds := 120   ; a big file can take minutes just to START
+        maxWaitSeconds := 600     ; ceiling so a hung build doesn't loop forever
+
+        Status("Waiting for build to start")
+        if WinWait(buildPopupTitle, , maxAppearSeconds) {
+            Status("Build started -- waiting for it to finish")
+            if !WinWaitClose(buildPopupTitle, , maxWaitSeconds)
                 MsgBox "Build popup didn't close within " maxWaitSeconds "s -- possible hang, check manually."
+            else
+                Status("Build finished")
+        } else {
+            ; Ambiguous by nature: either the build never started, or it
+            ; finished faster than the 300 ms above. NOT treated as success
+            ; -- the counter scan that follows returns "" rather than "0"
+            ; when it can't read cleanly, so an unbuilt project lands in the
+            ; manifest as no-read instead of as a clean build.
+            Status("WARNING: build popup never seen within " maxAppearSeconds "s -- build may not have run, or finished too fast to catch. Counter values below are suspect.")
         }
 
         Sleep 50
