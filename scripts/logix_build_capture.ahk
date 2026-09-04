@@ -55,6 +55,7 @@ global ErrorValue := ""
 global WarningValue := ""
 global MessageValue := ""
 global WindowTitle := ""
+global BUILD_SKIP_CATALOGS := "*1769-*;*1756-L7*"
 
 ; Pulls the leading integer out of button/label text like "0 Warnings",
 ; "3 Errors", "1 Warning" -- handles singular/plural and any wording since
@@ -64,6 +65,51 @@ ExtractCount(text) {
     if RegExMatch(Trim(text), "^(\d+)", &m)
         return m[1]
     return ""
+}
+
+
+
+
+
+BuildPopupExpected(title) {
+    for pat in StrSplit(BUILD_SKIP_CATALOGS, ";") {
+        pat := Trim(pat)
+        if (pat = "")
+            continue
+        rx := "i)^" StrReplace(RegExReplace(pat, "([\\.^$|()\[\]{}+?])", "\$1"), "*", ".*") "$"
+        if RegExMatch(title, rx)
+            return false
+    }
+    return true
+}
+
+
+FindCountButtons() {
+    counts := Map("Error", "", "Warning", "", "Message", "")
+    seen := ""
+    ctrls := ""
+    try ctrls := WinGetControls("A")
+    catch
+        return {counts: counts, seen: "(WinGetControls failed)"}
+    if !IsObject(ctrls)
+        return {counts: counts, seen: "(no controls)"}
+
+    for ctrl in ctrls {
+        if !RegExMatch(ctrl, "^Button\d+$")
+            continue
+        txt := ""
+        try txt := Trim(ControlGetText(ctrl, "A"))
+        catch
+            continue
+        if (txt = "")
+            continue
+        seen .= (seen = "" ? "" : " | ") ctrl "=" txt
+        for kind in ["Error", "Warning", "Message"] {
+            if (counts[kind] = "") && RegExMatch(txt, "i)^(\d+)\b.*\b" kind, &m)
+                counts[kind] := m[1]
+        }
+    }
+    return {counts: counts, seen: seen}
 }
 
 ; Studio 5000 formats some numeric fields (confirmed: the Capacity/OCD
@@ -161,7 +207,7 @@ Status(msg) {
 				
 				Status("Active Title: " active_title)
 				
-				sleep 2000
+				sleep 100
 				
 				
 				
@@ -196,7 +242,7 @@ Status(msg) {
 				}
 				; window found, continue here
 				
-				Sleep 2000
+				Sleep 100
 
         ; --- Build ---
         Status("Alt")
@@ -206,16 +252,31 @@ Status(msg) {
         Send "l"
         Sleep 50
         Status("b")
-        Send "b"
-        Sleep 7500
 
-        buildPopupTitle := "Building"
-        if WinWait(buildPopupTitle, , 1) {
-            maxWaitSeconds := 600   ; ceiling so a hung build doesn't loop forever
-            Status("Waiting For Build")
+
+				Send "b"
+				Sleep 300
+				
+				
+				
+
+				buildPopupTitle := "Building"
+				maxAppearSeconds := 120   ; a big file can take minutes just to START
+				maxWaitSeconds := 600     ; ceiling so a hung build doesn't loop forever
+
+				Status("Waiting for build to start")
+				if WinWait(buildPopupTitle, , maxAppearSeconds) {
+						Status("Build started -- waiting for it to finish")
 						if !WinWaitClose(buildPopupTitle, , maxWaitSeconds)
-                MsgBox "Build popup didn't close within " maxWaitSeconds "s -- possible hang, check manually."
-        }
+								MsgBox "Build popup didn't close within " maxWaitSeconds "s -- possible hang, check manually."
+						else
+								Status("Build finished")
+				} else {
+						Status("WARNING: build popup never seen within " maxAppearSeconds "s -- build may not have run, or finished too fast to catch. Counter values below are suspect.")
+				}
+
+
+
 
         Sleep 50
 				ErrorValue := ExtractCount(ControlGetText("Button10", "A"))
@@ -225,22 +286,15 @@ Status(msg) {
         ; giving PowerShell an independent cross-check against the filename
         ; it actually requested, instead of just trusting the handshake blind.
         WindowTitle := WinGetTitle("A")
-        ErrorValue := ExtractCount(ControlGetText("Button3", "A"))
-        WarningValue := ExtractCount(ControlGetText("Button4", "A"))
-        MessageValue := ExtractCount(ControlGetText("Button5", "A"))
-				
-				if ErrorValue = "" AND WarningValue = ""{
-					Status("Reading Static23 value")
-					Sleep 20
-						ErrorValue := ExtractCount(ControlGetText("Button25", "A"))
-						WarningValue := ExtractCount(ControlGetText("Button26", "A"))
-						;MessageValue := ExtractCount(ControlGetText("Button27", "A"))
-				}
+				found := FindCountButtons()
+				ErrorValue   := found.counts["Error"]
+				WarningValue := found.counts["Warning"]
+				MessageValue := found.counts["Message"]
 				
         Status("Errors/Warnings/Message: " ErrorValue ", " WarningValue ", " MessageValue " | " WindowTitle)
 
         ; --- Controller Properties -> Capacity (OCD value) ---
-        Sleep 1000
+        Sleep 250
         Status("Alt")
         Send "{Alt}"
         Sleep 10
@@ -274,9 +328,9 @@ Status(msg) {
         OCDValue := StripCommas(Trim(ControlGetText("Edit3", "A")))
 				ButtonTest := ControlGetText("Button1", "A")
         Status("Read OCD value: " OCDValue)
-        Sleep 2000
+        Sleep 200
 				Status("Read Test value: " ButtonTest)
-        Sleep 2000
+        Sleep 250
 				
 				if OCDValue = "0" AND ButtonTest != "Redundancy Enabled"{
 					Status("Reading 1769 Edit8 value")
@@ -286,7 +340,7 @@ Status(msg) {
 							Send "{Tab}"
 							Sleep 50
 							Send "{Enter}"
-							Sleep 2500
+							Sleep 500
 							OCDValue := StripCommas(Trim(ControlGetText("Edit8", "A")))
 				}
 				
@@ -297,7 +351,7 @@ Status(msg) {
 					OCDValue := StripCommas(Trim(ControlGetText("Static23", "A")))
 					Status("Read Static23 value: {{" OCDValue "}}")
 					
-					Sleep 2000
+					Sleep 150
 					
 					; L7 or 1769
 					if OCDValue = "" OR !IsNumber(OCDValue) OR OCDValue = "0" {
@@ -329,7 +383,7 @@ Status(msg) {
 							
 							
 							;Send "{Enter}"
-							Sleep 2500
+							Sleep 500
 							OCDValue := StripCommas(Trim(ControlGetText("Edit8", "A")))
 					}					
 				}
