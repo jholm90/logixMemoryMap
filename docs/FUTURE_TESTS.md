@@ -46,18 +46,41 @@ this file is a surcharge of ~1,028,000, i.e. ~66% of uncapped. That is ONE
 data point and must not be fitted on its own — the axis_scale lesson.
 
 **Tests needed:**
-- **More real captured programs, of varying size.** This is the only thing
-  that can fit a cap/scale law that holds at real scale. Two or three more
-  virgin files with actual Capacity readings would settle the shape
-  (constant? proportional? saturating?).
-- **A v5 composite generator with REAL-scale JSR-target content** —
-  20,000-40,000 JSR-target instructions, not 500-2,000. The current
-  corpus cannot exercise this regime at all, so no amount of synthetic
-  generation in its current shape will surface the problem.
-- **Structured Text is completely unmodeled.** The same real file has 3 ST
-  routines / 505 ST lines contributing exactly 0 to the prediction.
-  `parse_rll_routines` only handles RLL. Small here, but it is a total
-  coverage hole for real programs, which commonly use ST.
+- **More real captured programs, of varying size.** STILL OPEN, and still
+  the only thing that can fit a cap/scale law that holds at real scale.
+  Two or three more virgin files with actual Capacity readings would
+  settle the shape (constant? proportional? saturating?). Nothing
+  synthetic substitutes for this.
+- ~~A generator with REAL-scale JSR-target content~~ — **BUILT
+  2026-09-04**, `src/sample_gen/gen_realscale_surcharge.py`, 23 files,
+  awaiting capture:
+  - `realscale_jsrtgt_xic_n{10,50,100,1000,5000,10000,15000,22500}` — the
+    identical rung text and tag pool as the existing valid `instr_xic_n*`
+    captures, moved from MainRoutine into a single JSR target. Five of the
+    eight pair exactly with an existing error-free capture, so the
+    JSR-target cost falls out as a direct paired difference with no model
+    in between. Top end reaches 45,000 target instructions, past the real
+    file's 30,595. Uncapped surcharge spans 0.08x to 176x the cap.
+  - `realscale_jsrsplit_k{10,50,250}` — 20,000 target instructions held
+    constant, split across K distinct targets. First test of whether the
+    cap is really FILE-WIDE (as modelled) or per-routine.
+  - `realscale_aoiint_n{0,50,500,2000,6000,12000}` — the AOI half of the
+    surcharge with no JSR target in the file at all. There is no valid
+    nonzero AOI-content point in the corpus today (`aoi_logic_scale_*`
+    stopped at 100 instructions and errored at every nonzero point).
+  Every file is built from rung text taken verbatim from
+  `gen_logic_sweep.INSTRUCTIONS` — the only large-scale shape with a
+  proven error-free build (`randommix_05`, 27,267 rungs, 0 errors) —
+  precisely because the previous attempt at this question
+  (`jsr_target_content_scale_*`) used a hand-rolled mix and came back
+  5/26/50/75 errors, still undiagnosed.
+- ~~Structured Text is completely unmodeled~~ — **FIRST DATA GENERATED
+  2026-09-04** (OQ-STSIZING). `realscale_st_n{0,25,100,400,1000}` (plain
+  assignment lines) + `realscale_st_forloop_n00075` (the FOR ... DO ...
+  END_FOR shape copied from the real file's own ST routines). The engine
+  predicts an identical 23,277 across the whole flat ladder, so whatever
+  comes back IS the per-ST-line cost. Still unmodeled in code until that
+  capture lands.
 
 ## 1. Structural module model (OQ-MODULESTRUCTURAL) — highest value
 

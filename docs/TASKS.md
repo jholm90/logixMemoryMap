@@ -148,10 +148,21 @@ JSR targets, vs. the 22-file/1-target-each fit) misses by +7.71% with the
 surcharge applied (+824,363 bytes of surcharge overshoot) but WORSE
 (-14.7%) with it removed entirely — a real, larger, separate
 under-prediction in the base per-instruction weighting only shows up at
-real JSR-target counts. See OPEN_QUESTIONS.md OQ-JSRSCALE; blocked on real
-capture data from the newly-built `composite_realistic_v3_*` batch
-(deliberately wide-varying JSR-target/program/AOI counts, not fixed at a
-floor).
+real JSR-target counts. See OPEN_QUESTIONS.md OQ-JSRSCALE. **Now the #1
+error source in the project, 2026-09-04**: the first real virgin-file
+measurement (`Cardin_TrimSortStack_20260624r00`, 1756-L83E/fw 35.13)
+came back **12.4% UNDER** (7,162,455 predicted vs 8,178,556 real), and
+the `composite_surcharge_cap` alone suppresses 1,551,065 bytes of that.
+The real file's uncapped surcharge is 130x the cap where the largest
+synthetic composite is 8.2x, so the cap was fitted in a regime the corpus
+could not leave. `gen_realscale_surcharge.py` (23 files, 2026-09-04) is
+built to measure the law rather than fit that one point — a JSR-target
+placement ladder paired file-for-file against the existing valid
+`instr_xic_n*` captures out to 45,000 target instructions, a
+same-content/K-targets split to test whether the cap is really file-wide,
+and the first isolated AOI-internal-content ladder (there is no valid
+nonzero AOI-content point on file today). Blocked on capture, and on more
+real virgin files.
 
 [^branchdepth]: Real cost confirmed (branch bracket structure costs real
 memory beyond leg instructions), formula not yet fit — see

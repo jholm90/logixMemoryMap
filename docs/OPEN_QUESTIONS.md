@@ -1178,7 +1178,45 @@ the matching footnote at the bottom, not inline.
     across a wide spread of JSR-target/program/AOI counts to separate the
     two effects — this is the entire reason `composite_realistic_v3_*`
     (above) was built with varying counts instead of fixed at James's
-    stated floors. Blocked on that capture data.
+    stated floors.
+
+    **NO LONGER BLOCKED ON DATA THAT DOESN'T EXIST — 2026-09-04.** The
+    first real virgin-file measurement made this the #1 error source in
+    the whole project, and made the shape of the problem measurable
+    instead of speculative. `Cardin_TrimSortStack_20260624r00` (1756-L83E,
+    fw 35.13, never seen before) predicted 7,162,455 against a real
+    8,178,556 — **12.4% UNDER**. Measured cause, not guessed: the
+    file-wide `composite_surcharge_cap` (12,000) suppresses **1,551,065
+    bytes** on that one file. Its uncapped surcharge is **130.3x** the
+    cap; the largest synthetic composite this project has ever built
+    (v4_074) is **8.2x**, and a typical one (v2_25) is **0.7x**. So the
+    cap does mild trimming on everything it was fitted against and total
+    annihilation on a real program. Capped = −12.4%; fully uncapped =
+    **+6.5%** (8,713,520). Landing exactly on this file needs ~66% of
+    uncapped — ONE data point, which must NOT be fitted on its own (the
+    axis_scale lesson, docs/TESTING_PLAN.md).
+
+    `gen_realscale_surcharge.py` (2026-09-04, 23 files) is built
+    specifically to measure the LAW instead of fitting that one point:
+    - `realscale_jsrtgt_xic_n*` (8) — the identical rung text and tag pool
+      as the existing valid `instr_xic_n*` captures, moved out of
+      MainRoutine and into a JSR target. Five of the eight PAIR exactly
+      with an existing error-free capture, so the JSR-target cost comes
+      out as a direct paired difference with no model in between; the
+      other three run to 45,000 target instructions, past the real file's
+      30,595. Uncapped surcharge spans 0.08x to 176x the cap.
+    - `realscale_jsrsplit_k*` (3) — 20,000 target instructions held
+      constant, split across 10/50/250 distinct targets. First test of
+      whether the cap is really FILE-WIDE (as modelled) or per-routine.
+    - `realscale_aoiint_n*` (6) — the AOI half of the surcharge in
+      isolation (no JSR target in the file at all), 0→24,000 AOI-internal
+      instructions, bracketing the real file's 6,255. There is no valid
+      nonzero AOI-content point in the corpus today: the existing
+      `aoi_logic_scale_*` ladder stopped at 100 instructions and built
+      with errors at every nonzero point.
+    Blocked only on capture now, and on more real virgin files — two or
+    three more with real Capacity readings would settle whether the law is
+    constant, proportional or saturating.
 
 17. **OQ-AXISCOMBO** — cited in RESOLVED_QUESTIONS.md (OQ-AXISSTRUCT,
     OQ-AXISDEEP) as "the one remaining piece," but no item by this name —
@@ -1192,6 +1230,21 @@ the matching footnote at the bottom, not inline.
     COORDINATE_SYSTEM are wired and sizing without error today (FITTED,
     single-sample-each). See footnote for the actual unreconciled numbers
     and what's needed to close this for real.
+
+18. **OQ-STSIZING** — new, 2026-09-04. **Structured Text is completely
+    unmodeled.** `parse_rll_routines` handles RLL only, so every ST
+    routine in every file contributes exactly **0** to the prediction —
+    including the 3 ST routines / 505 ST lines in the real
+    `Cardin_TrimSortStack` file. This is a total coverage hole for real
+    programs, which commonly use ST, and it has never been tested because
+    no generator in this project has ever emitted an ST routine.
+    `realscale_st_n*` (5 files, 0/25/100/400/1000 plain assignment lines)
+    plus `realscale_st_forloop_n00075` (the FOR ... DO ... END_FOR shape
+    copied from the real file's own ST routines) are the first ST sizing
+    data this project has generated. The engine predicts an identical
+    23,277 for every file in the flat ladder — confirmed at generation
+    time — so whatever Capacity movement comes back IS the per-ST-line
+    cost, with nothing to subtract. Blocked on capture.
 
 ---
 

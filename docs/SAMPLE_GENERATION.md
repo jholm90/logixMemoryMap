@@ -129,3 +129,38 @@ just sitting on a stale, never-retried `FAILED` log entry from before the
 fix landed. Distinguishing these two cases (stale FILE vs. stale LOG
 entry) needs an actual regeneration + diff, every time -- not an assumption
 either way.
+
+## Build a real-scale batch out of already-proven rung text
+
+James, 2026-09-04, on the first real virgin-file miss: *"youve made some
+more unique tests to fix this 12% error?"*
+
+The batch that answers a real-scale question has to actually BUILD at real
+scale, and this project has already spent one whole batch learning that the
+hard way. `jsr_target_content_scale_*` was built to answer exactly the
+JSR-target-content question, used its own hand-rolled instruction mix over
+its own hand-rolled tag pool, and came back with 5/26/50/75 build errors —
+so all four rows are invalid fitting points and the question stayed open
+for four more days. The cause of those specific errors is still genuinely
+undiagnosed; do not claim otherwise without a real Studio 5000 error-log
+line.
+
+`gen_realscale_surcharge.py` (2026-09-04) is built the other way round, and
+this is the pattern to copy for any future large batch:
+
+- **Take the rung text verbatim from `gen_logic_sweep.INSTRUCTIONS` and the
+  tag pool verbatim from its `_POOL_TAGS_XML`.** That shape has an
+  error-free build on record at 5,000 rungs (the whole `instr_*_n05000`
+  sweep) and at 27,267 rungs (`randommix_05_n27267rungs_23types`,
+  `error_count` 0). Nothing in a new batch should re-invent an operand
+  shape that a valid capture already proves.
+- **Pick counts that PAIR with existing valid captures.** Five of the eight
+  files in its JSR ladder use exactly `gen_logic_sweep.COUNTS`
+  (10/50/100/1000/5000), so each one differs from an existing error-free
+  row by one deliberate change — the rungs sit behind a JSR instead of in
+  MainRoutine — and the answer falls out as a paired difference with no
+  model in between. A ladder that shares no count with the existing corpus
+  throws that away.
+- **If the proven shape ALSO errors in the new placement, that is the
+  result**, not a setback: it isolates the placement as what Studio 5000
+  objects to, which no existing row can distinguish today.
