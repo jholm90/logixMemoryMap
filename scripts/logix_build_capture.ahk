@@ -56,6 +56,32 @@ global WarningValue := ""
 global MessageValue := ""
 global WindowTitle := ""
 
+; Catalogs whose projects never raise a Build popup at all (James,
+; 2026-09-04: "The 1769/L7 processors don't build unless there are changes
+; so that build window will never come up"). Semicolon-separated wildcard
+; patterns matched case-insensitively against the FULL Logix window title,
+; which carries the catalog in trailing brackets -- real example:
+;   Logix Designer - FwMatrix311769L16ERBB1B in fwmatrix_v31_1769_l16er_bb1b.ACD [1769-L16ER-BB1B 31.11]
+; so "*1769-*" matches on the bracketed catalog. Add patterns here rather
+; than in the build logic below.
+global BUILD_SKIP_CATALOGS := "*1769-*;*1756-L7*"
+
+; True if this project should be expected to show a Build popup. Wildcards
+; are translated to a regex rather than pattern-matched by hand: every
+; regex metacharacter is escaped EXCEPT `*`, which then becomes `.*`, so a
+; catalog containing a `.` or `+` can never be read as a metacharacter.
+BuildPopupExpected(title) {
+    for pat in StrSplit(BUILD_SKIP_CATALOGS, ";") {
+        pat := Trim(pat)
+        if (pat = "")
+            continue
+        rx := "i)^" StrReplace(RegExReplace(pat, "([\\.^$|()\[\]{}+?])", "\$1"), "*", ".*") "$"
+        if RegExMatch(title, rx)
+            return false
+    }
+    return true
+}
+
 ; Pulls the leading integer out of button/label text like "0 Warnings",
 ; "3 Errors", "1 Warning" -- handles singular/plural and any wording since
 ; it only looks for digits at the start. Returns "" (not "0") if nothing
@@ -249,6 +275,16 @@ Status(msg) {
 				Sleep 2000
 
         ; --- Build ---
+        ; Read the title BEFORE building -- it carries the catalog, and some
+        ; catalogs never raise a Build popup at all (see BUILD_SKIP_CATALOGS).
+        ; Waiting for a popup that cannot appear costs the full appear
+        ; timeout on every one of those files.
+        preBuildTitle := WinGetTitle("A")
+        buildRan := BuildPopupExpected(preBuildTitle)
+
+        if !buildRan {
+            Status("Build SKIPPED by catalog rule (no popup possible for this controller): " preBuildTitle)
+        } else {
         Status("Alt")
         Send "{Alt}"
         Sleep 50
@@ -307,6 +343,7 @@ Status(msg) {
             ; manifest as no-read instead of as a clean build.
             Status("WARNING: build popup never seen within " maxAppearSeconds "s -- build may not have run, or finished too fast to catch. Counter values below are suspect.")
         }
+        }   ; end: buildRan
 
         Sleep 50
         ; Captured at the same moment as Error/Warning/Message -- the
@@ -332,6 +369,19 @@ Status(msg) {
         }
         if (ErrorValue = "" AND WarningValue = "")
             Status("WARNING: no Error/Warning counter button matched -- logging BLANK, not 0. Buttons seen: " found.seen)
+
+        ; No build ran, so whatever those buttons hold is left over from
+        ; the PREVIOUS file -- the exact stale-read that has already cost
+        ; this project 30 voided capture rows. Blanked rather than logged:
+        ; a blank error_count reads as "never recorded" downstream
+        ; (scripts/accuracy_report.py --strict), which is true here, where
+        ; "0" would falsely assert a clean build that never happened.
+        if !buildRan {
+            ErrorValue := ""
+            WarningValue := ""
+            MessageValue := ""
+            Status("Counters blanked -- no build ran for this catalog, so the on-screen values belong to the previous file.")
+        }
 
         Status("Errors/Warnings/Message: " ErrorValue ", " WarningValue ", " MessageValue " | " WindowTitle)
 
