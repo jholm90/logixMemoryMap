@@ -251,6 +251,55 @@ the matching footnote at the bottom, not inline.
    DINT/REAL/BOOL, multiplicity 1–3 array LocalTags/AOI) awaiting real
    capture.[^aoiarraydimension]
 
+6b. **OQ-MODULESTRUCTURAL** — NEW, 2026-09-04, and it changes the target
+   for OQ-MODULEIO below. James: *"the target application for this is to
+   have an unknown file tested and we cannot 100% capture all catalog
+   module numbers individually — you'll have to tell that a 16pt digital
+   card has XX overhead + 16pts of data, whereas a 8pt analog card has
+   different overhead."*
+
+   The per-catalog `module_overhead_by_catalog` table is the wrong shape
+   for the real goal. It can only ever cover catalogs we have personally
+   captured; a real customer file will contain catalogs we've never seen,
+   and those silently fall back to one flat cross-catalog default (1,672)
+   that is badly wrong for whole families (the 5069 family sits +28% to
+   +35% under-predicted on that default). The table should become a
+   FALLBACK for known-exact catalogs, not the primary mechanism.
+
+   What's needed instead: predict a module's overhead from its own
+   STRUCTURE, which is already in the L5X and already parsed. First look
+   at the evidence, 2026-09-04:
+   * A naive structural regression (constant + module count + connection
+     input/output/config bytes + module_defined_bytes) over the 98
+     error-free single-module `modulesweep_*` captures lands at MAE 845
+     bytes / 3.84% mean — better than nothing but not close to the <1%
+     target, because it lumps genuinely different module CLASSES (simple
+     discrete I/O, analog, drives, safety, network bridges) into one
+     linear model.
+   * The missing variable is class, and Rockwell already states it: every
+     module carries its own PROFILE string on its Input/Output/Config tag
+     (`ModuleInfo.input_profile` etc., already parsed since 2026-08-27).
+     `AB:1756_DI:I:0` is "1756 digital input", `AB:1756_DO:C:0` is
+     "1756 digital output config", `AB:1734_8SLOT:I:0` is an 8-slot
+     PointIO adapter, `AB:MotionDevice_Diagnostics:S:0` a drive. This is
+     catalog-INDEPENDENT and exactly the "16pt digital vs 8pt analog"
+     axis James is asking for -- 1756-IA16 and 1756-IB16 are different
+     catalogs but both `AB:1756_DI`. Across the 98 valid files there are
+     143 distinct profile strings resolving to a much smaller set of
+     class tokens (DI, DO, IB, OE, OF, SLOT, ...).
+   * Point count is recoverable the same way (the `_16` / `_8SLOT`
+     numeric token, cross-checkable against the real connection byte
+     counts already parsed).
+
+   Proposed model shape, NOT yet fitted or wired:
+       overhead = class_base[profile_class] + per_point[class] * points
+                  + per_connection_byte * (in + out + cfg)
+   fitted per class from the single-module captures, with the existing
+   per-catalog table kept as an exact-match override where we have real
+   data. This is the single highest-value remaining architecture change
+   for the North Star, because it is what makes an UNSEEN catalog
+   predictable at all.
+
 6. **OQ-MODULEIO** — mostly closed 2026-08-29. 126 real module captures
    were sitting unreconciled in manifest.csv; 51 catalogs now have a real
    per-catalog overhead value (exact-match rate on real data went from

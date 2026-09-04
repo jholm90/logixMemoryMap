@@ -111,6 +111,42 @@ case above: `batch_memory_capture.ps1` flags it `ZERO CAPACITY` in `notes`
 and excludes that row from "already logged," so it's automatically retried
 next run with no manual re-flagging needed.
 
+## A row that BUILT WITH ERRORS is never a valid fitting point (James, 2026-09-04)
+
+**"some of those results had errors and should not have been counted as a
+valid result. i am concerned that you are changing models with bad data —
+ensure it is all valid data!"**
+
+`error_count > 0` means the project did not fully compile, so its Capacity
+reading is of an INCOMPLETE project. Those rows are not merely noisy —
+they manufacture a *systematic, directional* false signal, because
+whatever content failed to build is missing from `actual_bytes` while the
+engine still predicts it. That reads exactly like "we over-predict," and
+it will pull a fitted constant the wrong way.
+
+This is not hypothetical. It cost a real wrong model change the same day
+the rule was written: the entire 18-file `axis_scale_*` sweep has
+`error_count = drives + 1` on every single file (n01_single=2 …
+n20_single=21), and its residuals are almost perfectly linear in drive
+count — so it looked like a beautiful, exact "each additional drive on a
+shared DC bus is over-charged by 3,288/5,200 bytes" finding, was derived
+to 0 residual on 18/18 points, and was wired and committed. It was an
+artifact of the drives failing to build. Reverted the same session.
+
+**Rules, applied by `scripts/accuracy_report.py::is_valid_capture` so this
+can't be forgotten again:**
+
+1. Any analysis, fit, or "we're off by X%" claim uses ONLY rows with
+   `error_count` of 0 or blank, no `WINDOW TITLE MISMATCH`, no
+   `ZERO CAPACITY`, and a real integer `actual_bytes`.
+2. A clean, exact-looking linear fit is NOT evidence of validity. Check
+   `error_count` FIRST, before believing a residual pattern — the
+   axis_scale fit was exact on 18/18 points and still wrong.
+3. Corpus-wide, 132 of 1,978 captured rows (6.7%) are invalid by this
+   rule, concentrated in `composite` (87) and `modules` (28) — the two
+   categories carrying the most error, so the filter matters most exactly
+   where it's most tempting to fit.
+
 ## 1769-series (CompactLogix 5370) requires clicking "Estimate" first (James, 2026-08-27)
 
 "the 1769 processors require 'estimate' button before giving memory sizes."
