@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="JsrCross40L32" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 04 01:00:41 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="JsrCross40L32" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 04 01:00:41 2026" LastModifiedDate="Fri Sep 04 01:00:41 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+              <Rung Number="0" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX00,0);]]></Text>
+              </Rung>
+              <Rung Number="1" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX01,0);]]></Text>
+              </Rung>
+              <Rung Number="2" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX02,0);]]></Text>
+              </Rung>
+              <Rung Number="3" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX03,0);]]></Text>
+              </Rung>
+              <Rung Number="4" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX04,0);]]></Text>
+              </Rung>
+              <Rung Number="5" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX05,0);]]></Text>
+              </Rung>
+              <Rung Number="6" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX06,0);]]></Text>
+              </Rung>
+              <Rung Number="7" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX07,0);]]></Text>
+              </Rung>
+              <Rung Number="8" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX08,0);]]></Text>
+              </Rung>
+              <Rung Number="9" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX09,0);]]></Text>
+              </Rung>
+              <Rung Number="10" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX10,0);]]></Text>
+              </Rung>
+              <Rung Number="11" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX11,0);]]></Text>
+              </Rung>
+              <Rung Number="12" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX12,0);]]></Text>
+              </Rung>
+              <Rung Number="13" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX13,0);]]></Text>
+              </Rung>
+              <Rung Number="14" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX14,0);]]></Text>
+              </Rung>
+              <Rung Number="15" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX15,0);]]></Text>
+              </Rung>
+              <Rung Number="16" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX16,0);]]></Text>
+              </Rung>
+              <Rung Number="17" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX17,0);]]></Text>
+              </Rung>
+              <Rung Number="18" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX18,0);]]></Text>
+              </Rung>
+              <Rung Number="19" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX19,0);]]></Text>
+              </Rung>
+              <Rung Number="20" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX20,0);]]></Text>
+              </Rung>
+              <Rung Number="21" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX21,0);]]></Text>
+              </Rung>
+              <Rung Number="22" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX22,0);]]></Text>
+              </Rung>
+              <Rung Number="23" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX23,0);]]></Text>
+              </Rung>
+              <Rung Number="24" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX24,0);]]></Text>
+              </Rung>
+              <Rung Number="25" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX25,0);]]></Text>
+              </Rung>
+              <Rung Number="26" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX26,0);]]></Text>
+              </Rung>
+              <Rung Number="27" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX27,0);]]></Text>
+              </Rung>
+              <Rung Number="28" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX28,0);]]></Text>
+              </Rung>
+              <Rung Number="29" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX29,0);]]></Text>
+              </Rung>
+              <Rung Number="30" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX30,0);]]></Text>
+              </Rung>
+              <Rung Number="31" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX31,0);]]></Text>
+              </Rung>
+              <Rung Number="32" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX32,0);]]></Text>
+              </Rung>
+              <Rung Number="33" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX33,0);]]></Text>
+              </Rung>
+              <Rung Number="34" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX34,0);]]></Text>
+              </Rung>
+              <Rung Number="35" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX35,0);]]></Text>
+              </Rung>
+              <Rung Number="36" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX36,0);]]></Text>
+              </Rung>
+              <Rung Number="37" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX37,0);]]></Text>
+              </Rung>
+              <Rung Number="38" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX38,0);]]></Text>
+              </Rung>
+              <Rung Number="39" Type="N">
+                <Text><![CDATA[JSR(TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX39,0);]]></Text>
+              </Rung>
+</RLLContent>
+</Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX00" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX01" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX02" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX03" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX04" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX05" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX06" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX07" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX08" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX09" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX10" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX11" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX12" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX13" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX14" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX15" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX16" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX17" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX18" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX19" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX20" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX21" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX22" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX23" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX24" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX25" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX26" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX27" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX28" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX29" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX30" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX31" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX32" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX33" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX34" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX35" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX36" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX37" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX38" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX39" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>
