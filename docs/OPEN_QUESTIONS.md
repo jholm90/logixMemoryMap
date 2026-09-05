@@ -2343,3 +2343,153 @@ change made) pending it.
     instruction XML from a manual (alarm `ConditionType`s, the bare
     2-operand MAM/MAJ rungs, the Kinetix `:SI` safety tags) was rejected
     by the real toolchain.
+
+
+26. **OQ-CPTREALDEST** — REAL-destination CPT: two measured constants with
+    no known mechanism. 2026-09-04. **Not blocking — the path is exact on
+    all 47 captured calls — but both terms are descriptions, not theory,
+    and a model you cannot explain is a model that will surprise you on a
+    file you have not seen.**
+
+    The ladder itself is clean and tier-blind: `124 + 40n`, and fitting
+    `a + b*tier1 + c*tier2` against the opcount files returns b = c = 40
+    (which makes sense — it is all float arithmetic, so a MUL should not
+    cost more than an ADD the way it does on the integer path). Sitting on
+    top:
+
+    - **A 5-operator expression measures 328, not the 324 the ladder
+      says.** Three files from three different generators
+      (`cptmix_real*`, `cptcx_constants_floatconst_n4`,
+      `instr_cpt_literaloperands`) independently agree on 328, and 6 and 8
+      operators are back on the ladder exactly (364, 444). So it is not a
+      ">= 5" step — the previous model had it as one and over-charged the
+      6- and 8-operator files by 4 each.
+    - **`**` adds 8, plus another 4 when the expression also contains a
+      tier-2 operator**, and a pow expression does NOT get the 5-operator
+      bump (`powmulti_n05` is 324+12, not 328+12).
+
+    Two ad-hoc +4s is one too many to be comfortable. `cptrdops_n07/09/10`
+    fills the ladder either side of the anomaly, `cptrdpow_k2/k3` tests
+    whether pow_extra is per-operator or per-call (every existing real-dest
+    pow file has exactly ONE `**`), and `cptrdarrange_*` tests whether the
+    5-operator +4 is really the same arrangement effect OQ-CPTARRANGE
+    found on the integer path, wearing a different hat. Blocked on capture.
+
+
+27. **OQ-CPTNARROW** — how the SINT/INT → DINT widening scales. 2026-09-04.
+
+    James, 2026-09-04: *"ints will use a behind the scenes conversion to
+    dint."* That is the mechanism, and it resolved two things at once:
+    LINT operands cost **nothing** (already 64-bit, no widening), and
+    SINT/INT operands cost **+256/rung** on the 3-operator all-REAL control.
+
+    **What is NOT determined: how that 256 splits.** There is exactly one
+    file in the corpus with narrow operands in a REAL-destination CPT
+    (`cptrd_operand_sint`, 3 SINT operands). 256/3 is not an integer, which
+    rules out a pure per-operand rate, but per-call, per-operand-plus-block
+    and per-conversion-site all fit that single point identically. The
+    model currently charges `3*40 + 136` — the ordinary per-int-operand
+    conversion each operand pays, plus one widening block per call. That
+    split has a physical story and no evidence.
+
+    It matters for real files, which have arbitrary SINT/INT counts: if the
+    truth is per-operand, a 10-narrow-operand expression is wrong by ~600
+    bytes per call.
+
+    `cptnarrow_{sint,int}_k0..4` varies ONLY the narrow count at a fixed
+    3-operator shape (k=0 must reproduce the 244/rung control, which is the
+    built-in check that the batch is comparable). INT is swept alongside
+    SINT because the model assumes they behave identically and that has
+    never been tested — this project already assumed LINT belonged in the
+    same set and it turned out to cost nothing. `cptwide_lint_k1..4`
+    confirms LINT is free at every count rather than just at the one count
+    (3) the single existing file happens to use, and
+    `cptwide_mixed_sint_lint` covers mixed integer WIDTHS, which nothing in
+    the corpus does. Blocked on capture.
+
+
+28. **OQ-CPTARRANGE** — does operator ARRANGEMENT change CPT cost?
+    2026-09-04. **The last real CPT unknown, and the data proves it is real
+    rather than a bad fit.**
+
+    The integer-destination two-tier mix is now priced per tier
+    (`100 + 24*t1 + 40*t2`, 19/23 exact, cross-validated against the
+    single-operator captures which put MUL/DIV exactly 16 above ADD/SUB).
+    Four points sit exactly −4 and **no linear model in (t1, t2) can reach
+    them** — the system is over-determined and inconsistent. The smoking
+    gun:
+
+    | file | expression | t1 | t2 | measured |
+    |---|---|---:|---:|---:|
+    | `cptmix_scaling_alternating_n05` | `L0+L1*L2+L3*L4` | 2 | 2 | **228** |
+    | `cptmix_scaling_grouped_n05` | `L0+L1+L2*L3*L4` | 2 | 2 | **232** |
+
+    Identical tier counts, 4 bytes apart. Yet at 11 operators the same
+    alternating/grouped pair measures IDENTICALLY. So arrangement matters
+    at some sizes and not others, and two files cannot say which.
+
+    Several hypotheses were tested against the data and all died: adjacent
+    same-tier operators (`grouped_n08` has three adjacent T1 and is exact),
+    maximal same-tier runs (`operatormix_nested` has a different run count
+    from `operatormix_mixedops` and the same cost), and tier-transition
+    count. Not patched with an invented rule — the miss is pinned in
+    `test_cpt_t1_t2_mix_has_four_known_unexplained_misses` so any future
+    refit claiming to explain it has to move those numbers deliberately.
+
+    `cptarrange_{alternating,grouped,frontloaded,split}_n03..09` holds the
+    tier counts fixed and varies only the order, at every operator count
+    from 3 to 9. If arrangement is real the four curves separate and the
+    pattern is readable; if the n=5 pair was a one-off they collapse and
+    the −4 belongs to something else. Blocked on capture.
+
+    Also in the same batch and genuinely never tested: **a float literal
+    with an INTEGER destination** (`cptidflit_k1..3`). All ~97 integer-dest
+    captures have zero float literals, so the integer path has no
+    float-literal term at all and silently charges nothing — while real
+    logic writes `CPT(Dest,A*1.5+B)` against a DINT routinely.
+
+
+29. **OQ-STEXPR** — ST assignment expression cost, five shapes measured.
+    2026-09-04.
+
+    An ST assignment is **not** priced like the equivalent CPT. That was
+    the working hypothesis — the `st_expr_cpt_mirror`/`instr_cpt` pair
+    differ by exactly the +432 routine shell, which looked conclusive — and
+    routing every assignment through the tier-aware CPT model on that basis
+    over-predicted `realscale_st_n01000` by **+132%**.
+
+    | shape | operators | dest | measured |
+    |---|---:|---|---:|
+    | `D := 0;` | 0 (bare literal) | DINT | 36 |
+    | `D := D + 1;` | 1 | DINT | 40 |
+    | `D := D + D * 2;` | 2 | DINT | 164 |
+    | `R := D + D;` | 1 | REAL | 152 |
+    | `R := (D+D)*R - R/2 + 1.5;` | 5 | REAL | 452 |
+
+    The tell is the 1-operator case at 40: that is an ADD's own weight, not
+    a CPT's. Logix appears to compile a simple assignment to the single
+    equivalent instruction and only reach for CPT-like evaluation on a
+    compound expression — which is why the 2-operator DINT case lands on
+    the CPT number and the 1-operator cases land nowhere near it.
+
+    Five points are clearly not one curve, so they are stored as an
+    explicit sparse table rather than interpolated. A shape outside it
+    falls back to the CPT model AND is reported as a
+    `coverage/st_expression/...` gap, so a real file says so rather than
+    quietly carrying a wrong number.
+
+    **What would close it:** the direct ST analogue of what `cmpcpt_*` did
+    for RLL — operator count 0..6 × DINT/REAL destination × with and
+    without a float literal. Not yet generated; it is the obvious next ST
+    batch and is not blocked on James for anything.
+
+    Also still open on ST, one thread each:
+    - `st_jsr_param_target_n00100` is the only ST file not exact (−243,
+      −0.52%). Every JSR parameter constant was fitted on RLL targets, and
+      the corpus has 44 SBR / 42 RET inside ST, so an ST JSR target is a
+      real shape that may be charged differently.
+    - `st_ctl_case` carries a +21 residual; the CASE decomposition into
+      per-construct and per-selector is one data point short.
+    - `while_block` was corrected 72 → 76 on the strength of the
+      literal-RHS rate (36). Only one WHILE file exists, so the split
+      between per-WHILE and per-assignment rests on that substitution.

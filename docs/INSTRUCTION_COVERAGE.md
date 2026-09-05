@@ -15,11 +15,28 @@ every time real capture data lands, not just when someone remembers to.
 - **Corpus:** every real `.L5X` file under `samples/local/` (54 files,
   gitignored real production exports — spans the original corpus plus the
   `DnR_Personal/` set). Not the synthetic `samples/generated/` files.
-- **Scope:** RLL routines only (`Type="RLL"`), matching this project's
-  sizing engine — ST (Structured Text) logic isn't modeled and isn't
-  counted here. A handful of real SBR/RET/JSR examples only exist in ST in
-  this corpus; the RLL numbers below for those instructions come from
-  other RLL call sites, not from the ST ones.
+- **Scope:** RLL routines only (`Type="RLL"`). **This is now a counting
+  choice, not a modelling limit** — as of 2026-09-04 ST *is* sized
+  (`sizing/structured_text.py`), and the reason the table stays RLL-only is
+  that instruction cost proved IDENTICAL in both languages, so counting ST
+  call sites separately would double-report the same evidence. Four
+  ST/RLL pairs built operand-for-operand identical came back separated by
+  exactly +432 — the ST routine shell — and by nothing else:
+
+  | pair | ST | RLL | difference |
+  |---|---:|---:|---:|
+  | COP x1000 | 135,376 | 134,944 | +432 |
+  | DTOS x1000 | 95,376 | 94,944 | +432 |
+  | SIZE x1000 | 151,376 | 150,944 | +432 |
+  | CPT-mirror x1000 | 475,376 | 474,944 | +432 |
+
+  So every weight in this table applies unchanged to the same instruction
+  called from ST. The practical consequence for coverage: the real corpus
+  has 297 ST routines / 24,017 ST lines whose instruction content is now
+  priced by these same numbers, where before 2026-09-04 it contributed
+  exactly ZERO. A handful of real SBR/RET/JSR examples only exist in ST in
+  this corpus; the RLL numbers below for those come from other RLL call
+  sites.
 - **Counting unit:** one occurrence per *rung* an instruction's mnemonic
   appears in (matches how `parser/logic.py` counts — `RoutineLogic.
   instruction_counts` — not a raw substring count that could double-count
@@ -261,25 +278,51 @@ project's corpus grows.
 
 ## Where to focus next, by real impact
 
-1. **CPT (840 occurrences, 0.42%)** — actively WRONG, not just untested,
-   and the single largest remaining non-CONFIRMED bucket in the whole
-   table. 2026-08-25: mined the 27 already-captured `cmpcpt_*` rows —
-   real operator-tier deltas found (ADD/SUB, MUL/DIV, POW each a distinct
-   tier) plus real operand-type effects (literal vs tag operands don't
-   cost the same), all documented in `docs/OPEN_QUESTIONS.md`
-   OQ-CMPCPTLAYOUT, but every one is anchored on a single rung count —
-   nothing wireable yet. `gen_cpt_confirm.py` (4 files, 2nd count point
-   for the 3 tiers) generated and awaiting capture to confirm linearity
-   before a real per-operand/operator cost model can be built. 2026-08-25,
-   per James's explicit priority directive: `gen_cpt_comprehensive.py` (24
-   files, lint-clean, all sharing the same tag pool) adds MOD (146 real
-   uses, was zero-coverage — the single biggest real-usage gap in the
-   whole operator set), a 3rd count point (n=10) for every established
-   tier, SUB/DIV n=100 completion, a 5-point chain-length sweep (3/4/5/8/
-   10 operands), int/float-literal linearity at n=10/100, and a compound-
-   CMP 2nd count point. Once captured, every operator CPT sees at
-   meaningful real frequency (all but ABS/ATN/TAN/SQR, single-digit real
-   uses each) will have multi-point real data instead of one anchor row.
+1. **CPT (840 occurrences, 0.42%) — LARGELY CLOSED 2026-09-04.** This
+   entry used to read "actively WRONG, not just untested, and the single
+   largest remaining non-CONFIRMED bucket". That is no longer true, and the
+   history is worth keeping because it shows what moved the needle.
+
+   **REAL-destination CPT is exact on all 47 captured calls** (was 8/11 on
+   the probes that isolate operand type). What unlocked it was James,
+   2026-09-04: *"ints will use a behind the scenes conversion to dint."*
+   Two corrections fell straight out of that:
+   - **LINT operands cost NOTHING.** `cptrd_operand_lint` is the all-REAL
+     control with only the operand type swapped and lands byte-identical
+     at 244/rung. The model had been charging it 40/operand and
+     over-predicting that file by 26.79%.
+   - **SINT/INT operands cost +256/rung** — the narrow-to-DINT widening.
+     LINT, already 64-bit, skips it.
+
+   Two more came from re-fitting the ladder properly: the operator-count
+   step is at >= 3, not >= 5 (the old form over-charged the 6- and
+   8-operator files by exactly 4 each), and `**` is its own tier rather
+   than a special case for a lone pow.
+
+   **Integer-destination CPT** improved too: the two-tier mix is now priced
+   per tier (`100 + 24*t1 + 40*t2`), 19/23 exact against 15/23. That
+   cross-validates against data it was not fitted on — the single-operator
+   captures put MUL/DIV exactly 16 above ADD/SUB, and fitting the
+   multi-operator mixes independently returns 40 - 24 = 16 — and it
+   collapses onto the uniform-tier path, reproducing the whole pure-ADD
+   chain (124/148/172/196/220/268/316) by a second route. This fixed
+   `typesweep_cpt_dint_n01000`, previously the worst CPT file at +3.81%.
+
+   **What is genuinely still open**, and deliberately not patched over:
+   four two-tier points sit exactly -4 and no linear model in (t1, t2) can
+   reach them. `cptmix_scaling_grouped_n05` and `..._alternating_n05` have
+   identical tier counts and measure 232 vs 228, while at 11 operators the
+   same pair measures identically — so operator ARRANGEMENT matters
+   somewhere but not consistently. See OQ-CPTARRANGE.
+
+   `gen_cpt_closeout.py` (58 files) covers every remaining CPT dimension,
+   found by enumerating the model's dimensions and checking each against
+   the corpus rather than by guessing. That audit turned up three holes
+   that had never been tested at all: INT operand count (zero files), a
+   float literal with an INTEGER destination (zero of ~97 integer-dest
+   captures have one, while real logic writes `CPT(Dest,A*1.5+B)`
+   routinely), and multiple `**` on the real-dest path. Blocked on capture.
+
 2. **MAPC (113 occurrences, 0.06%) — RESOLVED 2026-08-25.** James: "100%
    needed instruction that needs 100% accuracy" — bug root-caused
    (undeclared axis tag + reused axis for slave/master), fixed, corrected
