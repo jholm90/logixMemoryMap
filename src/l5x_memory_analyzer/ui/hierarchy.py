@@ -76,6 +76,19 @@ def build_hierarchy(
         # try scope.split(':', 1)[1] and crash the same way. Own top-level
         # group instead, same fix shape as the others above.
         "module_io": "I/O Modules",
+        # alarm_condition (2026-09-04, James: "I also want a separate tree
+        # section for the alarms just like you did for the axis"). Path is
+        # "alarms/<host tag>", which contains "/" but whose first segment
+        # is not a Program/Controller scope -- so without this entry the
+        # split below would have produced a bogus "Program: " group from
+        # scope.split(':', 1), the identical latent bug already fixed twice
+        # for udt_definition and module_io. Alarms are worth their own root
+        # group on merit too: they were the single largest unpriced item in
+        # the model when they were found (3,463 conditions missed on one
+        # real file), and one condition costs 500 bytes plus its associated
+        # tags, so an alarm-heavy program can hide megabytes that otherwise
+        # appear scattered across the tags they hang off.
+        "alarm_condition": "Alarm Conditions",
     }
 
     # Axis/motion tags (James, 2026-08-28: "the UI treeview needs to have
@@ -99,7 +112,11 @@ def build_hierarchy(
     for e in entries:
         if e.category in NON_TAG_GROUPS:
             group_name = NON_TAG_GROUPS[e.category]
-            name = e.data_type
+            # Alarm entries carry the host tag in the path and a
+            # "<n> condition(s)" summary in data_type, so the tree label has
+            # to come from the path -- using data_type would render every
+            # row as an indistinguishable count.
+            name = e.path.partition("/")[2] if e.category == "alarm_condition" else e.data_type
             # udt_definition entries ARE drillable now (2026-08-26, /api/node's
             # "udt_definitions/<Name>" branch) -- locals+params/members
             # breakdown of the definition's own cost, see sizing/tree.py's
