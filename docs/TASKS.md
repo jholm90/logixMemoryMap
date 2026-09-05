@@ -53,12 +53,38 @@ Scope from real instruction-frequency data across James's 4 production
 files; PID and ASCII-module instructions dropped (zero real occurrences).
 - ✅ Timers/counters, motion+cam/route, GSV/SSV, array/file, string
       instructions, indirect addressing — all CONFIRMED and wired
-- 🟡 Math/compare[^cmpcpt]
+- 🟡 Math/compare[^cmpcpt] -- REAL-destination CPT is now exact on all 47
+      captured calls (2026-09-04, including the SINT/INT->DINT widening
+      James pointed at and the LINT-is-free correction). Integer-dest
+      two-tier mixes are 19/23; four points sit exactly -4 on an operator
+      ARRANGEMENT effect that the current probes demonstrably cannot
+      resolve. 58-file `gen_cpt_closeout.py` batch covers every remaining
+      CPT dimension -- see OQ-CPTARRANGE / OQ-CPTNARROW.
 - ✅ JSR param cost[^jsrparam]
 - ✅ MSG logic weight wired (48/rung); operand's own structure cost — see
       OPEN_QUESTIONS.md OQ-PREDEFINED
 - ✅ Consolidate full instruction-weight table into MEMORY_MODEL.md
 - ✅ Holdout validation[^holdout]
+- ✅ **Structured Text wired** (2026-09-04, OQ-STSIZING). ST contributed
+      exactly ZERO before this while the real corpus carries 297 ST
+      routines / 24,017 ST lines. 22 of 23 captured ST files now land
+      within 11 bytes. Key finding: an instruction inside ST costs exactly
+      what it costs in a rung (four operand-for-operand pairs came back
+      separated by exactly +432, the routine shell, and nothing else), so
+      ST reuses the weight table rather than duplicating it. ST comments
+      and blank lines are FREE -- count, length and position all -- which
+      was James's explicit question and did NOT transfer from the RLL
+      result, since an ST comment lives inside the compiled source rather
+      than beside it.
+- 🟡 ST assignment expressions[^stexpr]
+
+## Phase 4d — Motion structures
+- ✅ AXIS_* / MOTION_GROUP / COORDINATE_SYSTEM predefined sizes, own root
+      group in the UI tree
+- 🟡 11 instructions with James-verified call shapes generated but not yet
+      captured (BRK/COS/LOG/SIN/PID/FBC/STOR/MCD/MCS/MCSV/MAG, on
+      AXIS_VIRTUAL so there is no module overhead to net out) -- see
+      OQ-VERIFINSTR
 
 ## Phase 5 — UI v2 (logic browsing)
 - ✅ Routines/rungs share the tag data contract, Task→Program→Routine
@@ -86,7 +112,20 @@ files; PID and ASCII-module instructions dropped (zero real occurrences).
       OPEN_QUESTIONS.md OQ-SAFETYSCOPE-SIZING). The separate Safety-
       classed-TAG-content policy question (DCI_STOP/CONFIGURABLE_ROUT)
       is NOT resolved by this and stays open.
-- 🔴 Alarm instance (ALMD/ALMA) overhead if in scope (OQ-ALARM)
+- ✅ **Tag-based alarm conditions SOLVED EXACTLY** (2026-09-05,
+      OQ-ALARMCOND): `800 + 500*conditions + sum(associated-tag cost by
+      type)`, zero residual on 37/37 captured files. These live INSIDE the
+      `<Tag>` element (`<AlarmConditions><AlarmCondition>`), not in a
+      top-level container, which is why a tag-walking parser missed 3,463
+      of them on one real file. HMIGroup, alarm name length, Severity,
+      OnDelay, Latched and AckRequired are all FREE. Given its own root
+      group in the UI tree (2026-09-04, alongside Axis Definitions).
+- 🔴 ALMD/ALMA *instruction* overhead -- still open, and now the higher-
+      value half: `almd_minimal`/`almd_realtext` both fail to build with
+      "Invalid number of arguments". The ALMD faceplate James sent shows 7
+      operand slots with NO `In` operand (the input is the rung condition),
+      and the call was rebuilt to match, but it has not been re-captured
+      since. See OQ-BUILDFAIL-OPEN.
 - ✅ Per-part-number memory budget (`controller_budgets.yaml`, prefix-
       matched against `Controller/@ProcessorType`, unknown types show
       "budget unknown" rather than a guess)
@@ -228,3 +267,14 @@ it's missing. CLI: `l5x-memory-analyzer export <l5x_path> <output_path>`,
 format inferred from the output extension. UI: two toolbar buttons next to
 File Open, `/api/export.csv` and `/api/export.xlsx`, downloading the
 currently-loaded file's report.
+
+[^stexpr]: Only five ST assignment SHAPES are measured (0/1/2 operators
+    integer-dest, 1/5 operators REAL-dest), stored as an explicit sparse
+    table. An ST assignment is NOT priced like the equivalent CPT -- that
+    was the working hypothesis and it over-predicted by +132%. A
+    1-operator assignment costs 40, which is an ADD's own weight, so Logix
+    appears to compile a simple assignment to the single equivalent
+    instruction and only reach for CPT-like evaluation on a compound
+    expression. Shapes outside the table fall back to the CPT model AND
+    are reported as a coverage gap rather than passing silently. See
+    OQ-STEXPR.
