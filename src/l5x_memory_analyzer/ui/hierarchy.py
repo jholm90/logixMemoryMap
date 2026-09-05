@@ -123,6 +123,13 @@ def build_hierarchy(
             # expand_definition_children. project_baseline has no breakdown
             # (data_types lookup would miss it entirely, correctly false).
             kids = e.category == "udt_definition" and data_types is not None and name in data_types
+        elif e.path.startswith("aoi_definitions/"):
+            # AOI-internal ST logic (2026-09-05). Belongs with the AOI
+            # definitions pool, not as a top-level pseudo-program.
+            group_name = "Type Definitions"
+            parts = e.path.split("/")
+            name = f"{parts[1]}/{parts[2]}" if len(parts) > 2 else parts[-1]
+            kids = False
         else:
             scope, name = _scope_and_name(e.path)
             group_name = (
@@ -200,6 +207,22 @@ def _nest_programs_under_tasks(children: list[dict], program_to_task: dict[str, 
                     task_order.append(task_name)
                 task_groups[task_name].append(child)
                 continue
+            # No owning Task. In real Logix that means the program is
+            # UNSCHEDULED -- the controller fault handler / power-up
+            # handler live here, as do programs a developer has parked out
+            # of the scan. James, 2026-09-05: "I take it your code didn't
+            # miss the controller error handling task/program for size
+            # calcs.. be sure this is visible in the web gui."
+            #
+            # It was never missed in the SIZING -- report.py counts every
+            # <Program> element for the shell decomposition whether or not
+            # a Task schedules it, and its tags/routines size normally --
+            # but the tree rendered it as a plain "Program: X" sibling,
+            # indistinguishable from a scheduled one. An unscheduled
+            # program still consumes controller memory while never
+            # executing, which is exactly the kind of thing this tool
+            # exists to surface, so it now says so.
+            child = {**child, "name": f"{name} (unscheduled)", "unscheduled": True}
         result.append(child)
 
     for task_name in task_order:

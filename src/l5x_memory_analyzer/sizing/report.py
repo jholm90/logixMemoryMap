@@ -440,9 +440,20 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             ),
             model.logic_instructions, tag_types, charge_shell=False,
         )
+        # AOI-internal ST is attributed to the AOI DEFINITION, not to a
+        # phantom program. parse_st_routines names those owners "aoi:<Name>"
+        # (2026-09-05, after James pointed out most real ST lives inside
+        # AOIs -- 37% of real ST lines by measurement). Routing them through
+        # the program path would have rendered each AOI as a bogus
+        # top-level "Program: aoi:X" in the tree, which is exactly what the
+        # first cut did.
+        if st_routine.program_name.startswith("aoi:"):
+            aoi_name = st_routine.program_name[len("aoi:"):]
+            path = f"aoi_definitions/{aoi_name}/{st_routine.routine_name}"
+        else:
+            path = f"program:{st_routine.program_name}/{st_routine.routine_name}"
         logic_entries.append((
-            f"program:{st_routine.program_name}/{st_routine.routine_name}",
-            "routine_logic", "ST",
+            path, "routine_logic", "ST",
             st_bytes + st_instr_bytes,
             weakest(model.structured_text.confidence, st_instr_basis),
         ))

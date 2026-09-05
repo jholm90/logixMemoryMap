@@ -117,14 +117,30 @@ def strip_comments(text: str) -> str:
 
 
 def parse_st_routines(root: ET.Element) -> list[StructuredTextRoutine]:
-    routines: list[StructuredTextRoutine] = []
-    programs_el = root.find("Controller/Programs")
-    if programs_el is None:
-        return routines
+    """Every ST routine in the file -- inside Programs AND inside AOIs.
 
-    for program_el in programs_el.findall("Program"):
-        program_name = program_el.get("Name") or "?"
-        routines_el = program_el.find("Routines")
+    The AOI half was missed in the first wiring (2026-09-04) and James
+    caught it immediately: "most of the st code is inside AOIs". Measured
+    across the real corpus, 1,513 of 4,103 real ST lines -- **37%** -- live
+    inside an AddOnInstructionDefinition rather than a Program, and all of
+    them contributed exactly zero.
+    """
+    routines: list[StructuredTextRoutine] = []
+    owners: list[tuple[str, ET.Element]] = []
+
+    programs_el = root.find("Controller/Programs")
+    if programs_el is not None:
+        for program_el in programs_el.findall("Program"):
+            owners.append((program_el.get("Name") or "?", program_el))
+
+    # AOI internal routines. Named "aoi:<Name>" so the report path cannot
+    # collide with a real Program of the same name, and so an ST routine's
+    # cost is attributable to the definition it belongs to.
+    for aoi_el in root.iter("AddOnInstructionDefinition"):
+        owners.append((f"aoi:{aoi_el.get('Name') or '?'}", aoi_el))
+
+    for program_name, owner_el in owners:
+        routines_el = owner_el.find("Routines")
         if routines_el is None:
             continue
         for routine_el in routines_el.findall("Routine"):

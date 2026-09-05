@@ -44,6 +44,35 @@ chat explanations. Before repeating any investigation, check those docs first
 — repeating a mistake or a check already documented there wastes James's time
 and is called out explicitly as a real problem, not a hypothetical one.
 
+## Platform scope — 1756-L7x and 1769 are DEAD ARCHITECTURE
+James, 2026-09-05: *"I'll run these tests you've made for the L7/1769 but
+please consider it dead architecture and I'm happy to leave it where it
+stands after these final tests. There will be no further development with
+that platform and I'd rather not burn resources on it anymore. Make note of
+this and don't complain it's the reason why your model is out of spec."*
+
+Binding. After the currently-queued L7x/1769 captures land:
+- **Do not generate further test files for 1756-L7x or any 1769 catalog.**
+- **Do not cite either platform as a reason the model is out of spec.**
+  Accuracy claims are measured on the L8x/5069 platforms that matter. If a
+  corpus-wide number is dragged down by L7x/1769 rows, report the number
+  EXCLUDING them and say so — don't lead with the contaminated figure and
+  then explain it away.
+- Leave what is already wired in place (it costs nothing to keep and the
+  captures are real); just stop investing in it.
+
+## Accuracy is measured on REAL programs, not generated files
+James, 2026-09-05: *"I don't like you toting the metrics of 93% within 1%
+error — your self generated files don't matter at all for these final
+tests, only the sample large programs that came from real life."*
+
+Correct, and binding. The generated corpus is a MEASUREMENT INSTRUMENT for
+isolating one variable at a time; it is not evidence the tool works. A
+headline accuracy number means the nine real production exports in
+`samples/local/` and nothing else. Report corpus-level pass rates only when
+they are the direct subject (e.g. "this refit fixed family X"), never as
+the project's accuracy.
+
 ## Working agreement
 - **James, 2026-08-30, standing rule, no exceptions: MAIN/ROOT ONLY. NO
   BRANCHES.** All development happens directly on `main`. Never create, work

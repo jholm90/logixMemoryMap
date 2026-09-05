@@ -151,12 +151,21 @@ def test_programs_nest_under_task_when_mapping_supplied():
     assert [c["name"] for c in task_group["children"]] == ["Program: MainProgram"]
 
 
-def test_program_with_no_known_task_stays_top_level():
-    # A real gap in the source L5X (or no mapping supplied at all) must
-    # never drop or hide a program -- it just isn't nested.
+def test_program_with_no_known_task_is_kept_and_marked_unscheduled():
+    """A program with no owning Task must never be dropped or hidden -- and
+    since 2026-09-05 it is also LABELLED, because in real Logix that means
+    it is unscheduled (the controller fault handler and power-up handler
+    live here, as do programs parked out of the scan). It still consumes
+    controller memory while never executing, which is precisely what this
+    tool exists to surface, so rendering it indistinguishable from a
+    scheduled program was hiding something real. James, 2026-09-05: "be
+    sure this is visible in the web gui."
+    """
     tree = build_hierarchy(ENTRIES, program_to_task={"SomeOtherProgram": "SomeTask"})
     group_names = [c["name"] for c in tree["children"]]
-    assert group_names == ["Controller Tags", "Program: MainProgram"]
+    assert group_names == ["Controller Tags", "Program: MainProgram (unscheduled)"]
+    prog = next(c for c in tree["children"] if c["name"].startswith("Program: "))
+    assert prog["unscheduled"] is True
 
 
 def test_type_utilization_rolls_up_across_scopes():
