@@ -1600,3 +1600,52 @@ the matching footnote at the bottom, not inline.
     - `while_block` was corrected 72 → 76 on the strength of the
       literal-RHS rate (36). Only one WHILE file exists, so the split
       between per-WHILE and per-assignment rests on that substitution.
+
+
+30. **OQ-REAL5069** — **the 5069 platform has ZERO real-file validation.**
+    Found 2026-09-05, while checking a platform question from James
+    ("Elmsdale had 5069").
+
+    Every one of the nine real production exports in `samples/local/` is a
+    **1756-L8x**:
+
+    | file | processor | fw |
+    |---|---|---|
+    | k3m16_edgers | 1756-L82E | 32.04 |
+    | murraybros | 1756-L81E | 35.05 |
+    | emporium | 1756-L83E | 32.04 |
+    | pukall_gang | 1756-L81E | 35.05 |
+    | ipc_edgerline | 1756-L81E | 35.05 |
+    | cmu | 1756-L82E | 35.05 |
+    | emporiumedger | 1756-L81E | 35.05 |
+    | mrfp_edger | 1756-L81E | 35.05 |
+    | accutally | 1756-L83E | 35.05 |
+
+    Everything the model knows about 5069 -- the safety-capable baseline
+    delta (+304), the 5069 catalog entries in `module_overhead_by_catalog`,
+    the 5069 processor baselines -- comes from files this project generated
+    itself. Not one of them has ever been checked against a real 5069
+    program.
+
+    That is the same extrapolation risk as OQ-DEFSCALE, and it went
+    unnoticed for the same reason: corpus-level pass rates looked healthy
+    because the corpus is full of synthetic 5069 files that the model was
+    fitted on. Per CLAUDE.md's accuracy rule (real programs only, generated
+    files are an instrument not evidence), the honest statement is that
+    **this tool is validated on 1756-L8x and unvalidated on 5069.**
+
+    It matters more than the raw file count suggests: 1756-L7x and 1769 are
+    now formally dead architecture (James, 2026-09-05), which leaves
+    5069/CompactLogix 5380 as the platform this tool most likely gets used
+    on going forward -- and it is the one with no real evidence behind it.
+
+    **What is needed:** one real 5069 export with a controller capture.
+    James mentioned an "Elmsdale" project on 5069; that file is not in
+    `samples/local/`. Any real 5069 program would do -- the point is a
+    first real data point, not that specific one.
+
+    Until then, the UI should arguably say so on a 5069 file the way it
+    already warns on a Safety project. Not implemented yet -- flagged here
+    rather than built, because a warning banner claiming more precision
+    about its own uncertainty than the data supports would be its own kind
+    of dishonesty.
