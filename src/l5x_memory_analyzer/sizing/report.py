@@ -760,6 +760,25 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             catalog_bytes, catalog_basis,
         ))
 
+    # Absolute per-catalog baseline (2026-09-04, the 1756-L7x family): this
+    # catalog's real empty-project baseline is a fixed floor that does NOT
+    # track the firmware ladder, so instead of adding to what the flat
+    # baseline and the firmware/safety deltas produced, it REPLACES that
+    # sum. Emitted as a correcting delta rather than by rewriting the
+    # earlier entries, so the report still shows every adjustment as its own
+    # auditable line and the arithmetic stays inspectable.
+    catalog_absolute = (model.catalog_baseline_delta.absolute_for(processor_type)
+                        if scope.is_whole_controller else None)
+    if catalog_absolute is not None:
+        absolute_bytes, absolute_basis = catalog_absolute
+        so_far = model.empty_project_baseline_bytes + sum(
+            size for _, _, _, size, _ in baseline_delta_entries
+        )
+        baseline_delta_entries.append((
+            "catalog_absolute_baseline", "project_baseline", "CATALOG_ABSOLUTE",
+            absolute_bytes - so_far, absolute_basis,
+        ))
+
     if baseline_delta_entries:
         baseline_delta_total = sum(size for _, _, _, size, _ in baseline_delta_entries)
         total_bytes += baseline_delta_total

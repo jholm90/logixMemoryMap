@@ -621,6 +621,38 @@ catalog_baseline_delta:
   '1769-L30ERM': { bytes: 64736, confidence: ASSUMED }
   '1769-L33ERM': { bytes: 64736, confidence: ASSUMED }
 
+  # 1756-L7x, wired 2026-09-04. 30 real captures sat unreconciled here and
+  # were the single worst family in the corpus (up to -63%).
+  #
+  # The L7x baseline does NOT track the firmware ladder the way the L8x
+  # family does. Across v31/v32/v34/v35/v38 the L7x actual is a flat 30,152
+  # in every internally-consistent capture (21 files), while the L8x
+  # baseline in those same files moves 29,368 -> 32,376 -> 18,128. So this
+  # is an absolute per-catalog floor for an older platform, layered as a
+  # delta on whatever the firmware ladder produced.
+  #
+  # Expressed as absolute_bytes, not bytes: an additive delta cannot say
+  # "this family ignores the firmware ladder". Wiring it as a delta first
+  # got 15 of 30 files exact and left the rest off by exactly the ladder's
+  # own movement between versions, which is what showed the shape was wrong.
+  # report.py turns the absolute into one correcting adjustment line so the
+  # output still shows a single auditable entry.
+  #
+  # NOT fitted from all 30 files -- 9 are excluded as contaminated:
+  #   v31 l71/l72/l73/l74  actual 78,312 while v31 l75 is 30,152. Same
+  #     firmware, same family, one file 48KB apart from its four siblings.
+  #     An L71 and an L75 do not differ by 48KB of empty-project baseline;
+  #     that is a capture with something else still loaded.
+  #   v33 l71..l75  actual 87,888, internally consistent across all five but
+  #     ~58KB above every other version of the same catalogs. Consistent
+  #     enough to be real, far enough out to need a re-run before it is
+  #     trusted. Listed for James in OQ-BASELINE-PROCFW.
+  '1756-L71': { absolute_bytes: 25320, confidence: FITTED }
+  '1756-L72': { absolute_bytes: 25320, confidence: FITTED }
+  '1756-L73': { absolute_bytes: 25320, confidence: FITTED }
+  '1756-L74': { absolute_bytes: 25320, confidence: FITTED }
+  '1756-L75': { absolute_bytes: 25320, confidence: FITTED }
+
 bool:
   # Standalone BOOL controller/program tags: allocated as a full DINT, not
   # bit-packed. See OQ-BOOLPACK -- ASSUMED, pending Phase 3 confirmation.

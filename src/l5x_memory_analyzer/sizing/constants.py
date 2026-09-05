@@ -564,11 +564,32 @@ class CatalogBaselineDeltaModel:
     extrapolating beyond an exact confirmed catalog string would be a
     guess, not a real value."""
     by_processor_type: dict[str, tuple[int, str]]
+    # Catalogs whose real baseline is an ABSOLUTE floor rather than a delta
+    # on top of the firmware ladder (2026-09-04, the 1756-L7x thread). An
+    # additive delta cannot express "this family ignores the firmware
+    # ladder": the L7x actual is a flat 30,152 across v31/v32/v34/v35/v38
+    # while the L8x baseline underneath it moves 29,368 -> 32,376 -> 18,128,
+    # so any single delta is right for one firmware and wrong for the rest.
+    # Wiring it as a delta first got 15 of 30 files exact and left the other
+    # 15 off by the firmware ladder's own movement -- which is the
+    # experiment that showed the shape was wrong.
+    absolute_by_processor_type: dict[str, tuple[int, str]]
 
     def delta_for(self, processor_type: str | None) -> tuple[int, str] | None:
         if not processor_type:
             return None
         return self.by_processor_type.get(processor_type)
+
+    def absolute_for(self, processor_type: str | None) -> tuple[int, str] | None:
+        """The catalog's absolute empty-project baseline, if it has one.
+
+        The caller is responsible for turning this into a correcting delta
+        against whatever the flat baseline + firmware/safety deltas already
+        produced, so the report still shows one auditable adjustment line
+        rather than silently rewriting an earlier entry."""
+        if not processor_type:
+            return None
+        return self.absolute_by_processor_type.get(processor_type)
 
 
 @dataclass(frozen=True)
@@ -746,6 +767,12 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             by_processor_type={
                 proc_type: (v["bytes"], v["confidence"])
                 for proc_type, v in catalog_delta.items()
+                if "bytes" in v
+            },
+            absolute_by_processor_type={
+                proc_type: (v["absolute_bytes"], v["confidence"])
+                for proc_type, v in catalog_delta.items()
+                if "absolute_bytes" in v
             },
         ),
         bool=BoolModel(
