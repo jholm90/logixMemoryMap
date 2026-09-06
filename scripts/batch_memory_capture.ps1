@@ -355,12 +355,38 @@ foreach ($row in $remaining) {
         if ([int]$predicted -ne 0) { $deltaPct = [math]::Round(100.0 * $delta / [int]$predicted, 2) }
     }
 
+    # controller_model / firmware_rev come from the L5X ITSELF, not from the
+    # -ControllerModel/-FirmwareRev switches. Fixed 2026-09-05: those switches
+    # default to "5069-L306ER"/"35.11" and were being stamped onto every row
+    # regardless of what the file actually declared, so 1,926 of 1,959
+    # captured rows carried a processor that contradicted their own XML
+    # (2,149 files really declare 1756-L81E). That is operator metadata
+    # masquerading as measurement, and it silently poisons any per-platform
+    # analysis -- which is exactly what it did until the mismatch was
+    # spotted. The file is authoritative and free to read; the switches are
+    # kept only as a fallback for a file we cannot parse.
+    $declaredProc = $ControllerModel
+    $declaredFw   = $FirmwareRev
+    try {
+        [xml]$l5xHead = Get-Content -LiteralPath $l5xPath -TotalCount 40 -ErrorAction Stop
+        if ($l5xHead.RSLogix5000Content.SoftwareRevision) {
+            $declaredFw = $l5xHead.RSLogix5000Content.SoftwareRevision
+        }
+        if ($l5xHead.RSLogix5000Content.Controller.ProcessorType) {
+            $declaredProc = $l5xHead.RSLogix5000Content.Controller.ProcessorType
+        }
+    } catch {
+        # Truncated read or malformed head -- fall back to the switches and
+        # leave a note rather than recording a value we did not verify.
+        $notes = ($notes + " PROCTYPE-UNREAD").Trim()
+    }
+
     if ($existing) {
         $existing.actual_bytes = $blocksUsed
         $existing.delta = $delta
         $existing.delta_pct = $deltaPct
-        $existing.controller_model = $ControllerModel
-        $existing.firmware_rev = $FirmwareRev
+        $existing.controller_model = $declaredProc
+        $existing.firmware_rev = $declaredFw
         $existing.date_tested = $date
         $existing.notes = $notes
         $existing.error_count = $errorCount
@@ -371,7 +397,7 @@ foreach ($row in $remaining) {
         $manifest += [pscustomobject]@{
             sample_id = $meta.Id; description = $meta.Desc; category = $category; l5x_path = $relPath
             predicted_bytes = ""; actual_bytes = $blocksUsed; delta = $delta; delta_pct = $deltaPct
-            controller_model = $ControllerModel; firmware_rev = $FirmwareRev; date_tested = $date; notes = $notes
+            controller_model = $declaredProc; firmware_rev = $declaredFw; date_tested = $date; notes = $notes
             error_count = $errorCount; warning_count = $warningCount; message_value = $messageValue
             window_title = $windowTitle
         }

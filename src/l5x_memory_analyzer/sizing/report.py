@@ -625,14 +625,28 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             # silently dropped. Still genuinely unmodeled -- zero real data
             # exists yet for what a zero-connection module's own overhead
             # actually is, so no byte value is guessed here.
+            # WIRED 2026-09-05 (was: charged nothing, reported as a pure gap).
+            # Across the captured corpus, files where every module is priced
+            # have a median residual of 4 bytes (n=1,663) while files with at
+            # least one of these has a median of +2,750 (n=81) -- the single
+            # largest structural error in the corpus. It is now charged a flat
+            # rate; see memory_model.yaml zero_connection_module for why a
+            # per-catalog table was tried and REJECTED by cross-validation.
+            module_entries.append((
+                f"modules/{label}", "module_io", module.catalog_number,
+                model.zero_connection_module_bytes,
+                model.zero_connection_module_confidence,
+            ))
             display = f"{module.name} ({module.catalog_number})" if module.name else module.catalog_number
             errors.append(SizeError(
-                path=f"modules/{label}",
+                path=f"coverage/module_zero_connection/{label}",
                 message=(
                     f"Module {display}: no connections/stated size of its own (a bridge/gateway "
-                    f"node, e.g. an Ethernet-only fan-out to a remote device) -- module_overhead "
-                    f"is NOT charged here, zero real data confirms a zero-connection module's own "
-                    f"overhead; controller-memory cost unmodeled for now (see OQ-MODULEIO)"
+                    f"node, e.g. an Ethernet-only fan-out to a remote device). Charged the FLAT "
+                    f"zero_connection_module rate ({model.zero_connection_module_bytes} bytes) "
+                    f"rather than a per-catalog value -- a per-catalog fit was rejected by "
+                    f"cross-validation (see OQ-MODULEZEROCONN), so this number is right on "
+                    f"average and can be off for any single catalog"
                 ),
             ))
             continue

@@ -432,6 +432,48 @@ module_overhead:
 # module_overhead_by_catalog entries) -- confirmed their ONLY unmodeled
 # piece (an unrecognized nested member type inside module_defined_bytes)
 # genuinely costs $0 extra, not a missing-data gap.
+# Zero-connection modules (OQ-MODULEIO thread, wired 2026-09-05). A module
+# with no connections and no stated size -- a bridge/adapter/gateway node
+# like 5069-AENTR, ETHERNET-BRIDGE or a 1734 POINT I/O bus module -- used to
+# be charged NOTHING and reported as a coverage gap. That turned out to be
+# the single largest structural error in the whole captured corpus:
+#
+#   files where EVERY module is priced   n=1,663   median residual =     4
+#   files with >=1 unpriced module       n=   81   median residual = 2,750
+#
+# The engine is essentially exact when it prices every module and
+# systematically short when it silently skips one.
+#
+# ONE FLAT RATE, NOT A PER-CATALOG TABLE, and that distinction was settled
+# by cross-validation rather than preference. Solving per-catalog least
+# squares over the 10 well-observed catalogs looked appealing (5069-AENTR
+# 3,042 on n=43, ETHERNET-BRIDGE 2,162 on n=19, and so on) and it is what
+# the older per-catalog module_overhead work would have suggested doing.
+# It is overfitting: on 20 random 75/25 splits it made held-out RMS 131%
+# WORSE (8,479 -> 19,605). Those 81 files carry far more unmodelled
+# variance than the module term itself, so the solver spends its freedom
+# fitting noise.
+#
+# A single parameter survives the same test comfortably, over 40 random
+# splits:
+#   charging 0 (previous behaviour)  held-out RMS 8,848
+#   flat least-squares slope (2,197) held-out RMS 8,171
+#   flat MEDIAN rate (2,344)         held-out RMS 7,083   <- wired
+# and median |residual| on affected files drops 3,128 -> 1,904.
+#
+# The median rate is used rather than the least-squares slope because the
+# set is heavily skewed and the median is what cross-validated best.
+#
+# FITTED, and deliberately still flagged in the report: a per-catalog rate
+# is very likely real (an AENTR adapter should not cost what a serial
+# module costs), it simply is not recoverable from files that vary in a
+# dozen other ways at once. Closing it needs isolation files -- one
+# zero-connection module of one catalog, nothing else changing. See
+# OQ-MODULEZEROCONN.
+zero_connection_module:
+  bytes: 2344
+  confidence: FITTED
+
 module_overhead_by_catalog:
   '150 SMC Flex-E': { bytes: 6614, confidence: ASSUMED }
   '1732E-IB16M12DR/A': { bytes: 2126, confidence: ASSUMED }

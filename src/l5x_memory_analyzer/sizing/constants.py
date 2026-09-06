@@ -678,6 +678,12 @@ class MemoryModel:
     empty_project_baseline_confidence: str
     module_overhead_bytes: int
     module_overhead_confidence: str
+    # Flat cost of a module with no connections and no stated size (a
+    # bridge/adapter/gateway node). See memory_model.yaml
+    # zero_connection_module -- a per-catalog table was tried and rejected
+    # by cross-validation.
+    zero_connection_module_bytes: int
+    zero_connection_module_confidence: str
     module_overhead_by_catalog: ModuleOverheadModel
     firmware_baseline_delta: FirmwareBaselineDeltaModel
     safety_capable_baseline_delta: SafetyCapableBaselineDeltaModel
@@ -741,6 +747,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
         empty_project_baseline_bytes=baseline["bytes"],
         empty_project_baseline_confidence=baseline["confidence"],
         module_overhead_bytes=module_overhead["bytes"],
+        zero_connection_module_bytes=raw.get("zero_connection_module", {}).get("bytes", 0),
+        zero_connection_module_confidence=raw.get("zero_connection_module", {}).get("confidence", "UNKNOWN"),
         module_overhead_confidence=module_overhead["confidence"],
         module_overhead_by_catalog=ModuleOverheadModel(
             by_catalog={

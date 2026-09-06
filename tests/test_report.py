@@ -441,18 +441,29 @@ def _root_with_zero_connection_module(catalog: str = "ETHERNET-BRIDGE") -> ET.El
     return ET.fromstring(xml)
 
 
-def test_zero_connection_module_flagged_visibly_not_silently_dropped():
-    # 2026-09-02, real, found reviewing James's TitusvilleTrimmer production
-    # file: a bridge/gateway module with no Connections of its own (10 real
-    # "ETHERNET-BRIDGE" nodes fanning out to remote PCs/HMIs/servers) has
-    # zero module_defined_bytes and zero stated_total_bytes -- previously
-    # silently `continue`d past with no SizeEntry AND no SizeError at all,
-    # unlike every other unmodeled-module case in this function. "Local"
-    # itself (the processor's own self-entry, also always 0/0) must NOT be
-    # flagged this way -- excluded by name, not by the 0/0 heuristic.
+def test_zero_connection_module_is_charged_and_still_flagged():
+    """A bridge/gateway module with no Connections is now CHARGED, not skipped.
+
+    2026-09-02 it was made visible (previously silently `continue`d past with
+    no SizeEntry and no SizeError). 2026-09-05 it is also priced, because the
+    captured corpus showed this was the single largest structural error in
+    it: files where every module is priced have a median residual of 4 bytes
+    (n=1,663), files with at least one of these a median of +2,750 (n=81).
+
+    A FLAT rate, not per-catalog -- the per-catalog fit made held-out RMS
+    131% worse on 20 random splits, while the flat rate improved it 20%. So
+    the SizeError stays, downgraded to a coverage note, because the number is
+    right on average and can be wrong for any one catalog.
+
+    "Local" (the processor's own self-entry, also 0/0) must still be excluded
+    by name, not by the 0/0 heuristic.
+    """
     root = _root_with_zero_connection_module()
     entries, errors = build_report(root, MODEL)
-    assert not any(e.category == "module_io" for e in entries)
+    charged = [e for e in entries if e.category == "module_io"]
+    assert len(charged) == 1
+    assert charged[0].bytes == MODEL.zero_connection_module_bytes
     assert any("no connections/stated size" in e.message for e in errors)
+    assert any(e.path.startswith("coverage/module_zero_connection/") for e in errors)
     assert not any("TestLocal" in e.message for e in errors)
     assert not any(e.path == "modules/Local" for e in errors)
