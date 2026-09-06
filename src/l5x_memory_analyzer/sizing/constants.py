@@ -657,6 +657,49 @@ class StructuredTextModel:
 
 
 @dataclass(frozen=True)
+class PlatformFirmwareCorrectionModel:
+    """Per-(catalog, firmware-major) baseline correction.
+
+    The existing firmware_baseline_delta applies one ladder to every
+    catalog; grouping the 190 captured baseline files by declared processor
+    AND firmware shows the ladder is platform-specific. See
+    memory_model.yaml platform_firmware_correction for the full matrix and
+    for why catalogs are listed explicitly rather than prefix-matched
+    (5069-L3100ERM would otherwise be captured by a "5069-L310" prefix and
+    put in the wrong class)."""
+
+    by_catalog: dict[str, dict[int, int]]
+    confidence: str
+
+    @staticmethod
+    def _major(software_revision: str | None) -> int | None:
+        if not software_revision:
+            return None
+        head = software_revision.split(".", 1)[0].strip()
+        return int(head) if head.isdigit() else None
+
+    def correction_for(
+        self, processor_type: str | None, software_revision: str | None
+    ) -> tuple[int, str] | None:
+        """Correction bytes for this catalog at this firmware, or None.
+
+        Returns None for an unlisted catalog or an unmeasured firmware
+        rather than interpolating -- a firmware between two measured points
+        is not evidence about the point in between, and this project has
+        been bitten by exactly that assumption before (the 1756-L7x ladder,
+        which does not track firmware at all)."""
+        if not processor_type:
+            return None
+        table = self.by_catalog.get(processor_type)
+        if table is None:
+            return None
+        major = self._major(software_revision)
+        if major is None or major not in table:
+            return None
+        return table[major], self.confidence
+
+
+@dataclass(frozen=True)
 class MemoryModel:
     atomic_types: dict[str, AtomicType]
     predefined_structures: dict[str, AtomicType]
@@ -688,6 +731,7 @@ class MemoryModel:
     firmware_baseline_delta: FirmwareBaselineDeltaModel
     safety_capable_baseline_delta: SafetyCapableBaselineDeltaModel
     catalog_baseline_delta: CatalogBaselineDeltaModel
+    platform_firmware_correction: PlatformFirmwareCorrectionModel
 
 
 def load_memory_model(path: str | Path | None = None) -> MemoryModel:
@@ -747,6 +791,14 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
         empty_project_baseline_bytes=baseline["bytes"],
         empty_project_baseline_confidence=baseline["confidence"],
         module_overhead_bytes=module_overhead["bytes"],
+        platform_firmware_correction=PlatformFirmwareCorrectionModel(
+            by_catalog={
+                cat: {int(k): v for k, v in cls["by_firmware_major"].items()}
+                for cls in raw.get("platform_firmware_correction", {}).get("classes", {}).values()
+                for cat in cls["catalogs"]
+            },
+            confidence=raw.get("platform_firmware_correction", {}).get("confidence", "UNKNOWN"),
+        ),
         zero_connection_module_bytes=raw.get("zero_connection_module", {}).get("bytes", 0),
         zero_connection_module_confidence=raw.get("zero_connection_module", {}).get("confidence", "UNKNOWN"),
         module_overhead_confidence=module_overhead["confidence"],

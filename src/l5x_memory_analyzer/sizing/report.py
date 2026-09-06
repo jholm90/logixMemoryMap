@@ -785,6 +785,27 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             catalog_bytes, catalog_basis,
         ))
 
+    # Per-platform firmware correction (2026-09-05). The firmware ladder
+    # above is one curve applied to every catalog; grouping the 190 captured
+    # baseline files by declared processor AND firmware shows it is
+    # platform-specific -- +48/+32 for the 5069 L306/L310/L320 class, +8/-8
+    # for the L330/L340 class, -16 for 1756-L8x at fw34/35. Every catalog
+    # within a class agrees exactly at every firmware, across 23 catalogs,
+    # which is what makes these measurements rather than 190 one-off fits.
+    # Unlisted catalog or unmeasured firmware returns None and is skipped
+    # rather than interpolated.
+    platform_correction = (
+        model.platform_firmware_correction.correction_for(processor_type, software_revision)
+        if scope.is_whole_controller else None
+    )
+    if platform_correction is not None:
+        pf_bytes, pf_basis = platform_correction
+        if pf_bytes:
+            baseline_delta_entries.append((
+                "platform_firmware_correction", "project_baseline", "PLATFORM_FW",
+                pf_bytes, pf_basis,
+            ))
+
     # Absolute per-catalog baseline (2026-09-04, the 1756-L7x family): this
     # catalog's real empty-project baseline is a fixed floor that does NOT
     # track the firmware ladder, so instead of adding to what the flat
