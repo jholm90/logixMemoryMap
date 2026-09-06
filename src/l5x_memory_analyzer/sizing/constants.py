@@ -657,6 +657,23 @@ class StructuredTextModel:
 
 
 @dataclass(frozen=True)
+class JsrTargetDeclarationModel:
+    """Cost of DECLARING a distinct JSR target, over and above its params.
+
+    See memory_model.yaml jsr_target_declaration. Charged once per distinct
+    target, never per call -- the residual across the captured JSR corpus
+    correlates +0.883 with distinct-target count and -0.445 with call
+    count."""
+
+    per_target: int
+    per_name_char: int
+    confidence: str
+
+    def cost_for(self, routine_name: str) -> int:
+        return self.per_target + self.per_name_char * len(routine_name or "")
+
+
+@dataclass(frozen=True)
 class PlatformFirmwareCorrectionModel:
     """Per-(catalog, firmware-major) baseline correction.
 
@@ -715,6 +732,7 @@ class MemoryModel:
     alias_overhead: TagOverheadModel
     udt_definition: UdtDefinitionModel
     logic_instructions: LogicInstructionModel
+    jsr_target_declaration: JsrTargetDeclarationModel
     alarm_conditions: AlarmConditionModel
     structured_text: StructuredTextModel
     empty_project_baseline_bytes: int
@@ -798,6 +816,11 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 for cat in cls["catalogs"]
             },
             confidence=raw.get("platform_firmware_correction", {}).get("confidence", "UNKNOWN"),
+        ),
+        jsr_target_declaration=JsrTargetDeclarationModel(
+            per_target=raw.get("jsr_target_declaration", {}).get("per_target", 0),
+            per_name_char=raw.get("jsr_target_declaration", {}).get("per_name_char", 0),
+            confidence=raw.get("jsr_target_declaration", {}).get("confidence", "UNKNOWN"),
         ),
         zero_connection_module_bytes=raw.get("zero_connection_module", {}).get("bytes", 0),
         zero_connection_module_confidence=raw.get("zero_connection_module", {}).get("confidence", "UNKNOWN"),

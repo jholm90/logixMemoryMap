@@ -338,6 +338,16 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             n = jsr_target_param_counts.get(routine.routine_name)
             a_cost = model.logic_instructions.jsr_param_cost.a_cost(n) if n is not None else 0
             a_basis = model.logic_instructions.jsr_param_cost.confidence
+            # Declaring a distinct target costs more than its parameter
+            # block alone (2026-09-05, refit over all 61 captured JSR
+            # files). The residual there correlates +0.883 with distinct
+            # target COUNT and -0.445 with call count -- the model was
+            # under-charging each target by ~152 while over-charging each
+            # call by 4, two errors in opposite directions that hid each
+            # other. Name-dependent: matched namelen16/namelen32 pairs
+            # differ by exactly +1 per character per target.
+            a_cost += model.jsr_target_declaration.cost_for(routine.routine_name)
+            a_basis = weakest(a_basis, model.jsr_target_declaration.confidence)
             content_bytes, content_basis = compute_routine_logic_bytes(
                 routine, model.logic_instructions, tag_types, charge_shell=False
             )

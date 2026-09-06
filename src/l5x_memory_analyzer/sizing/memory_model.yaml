@@ -1633,6 +1633,35 @@ task_program_overhead:
 # distinct JSR target regardless of call-site count) -- solved from the
 # same n=5/n=10 pair; not independently re-confirmed at n=8 this pass.
 # See docs/OPEN_QUESTIONS.md OQ-JSRPARAMCOST.
+# Per-distinct-JSR-target declaration cost (refit 2026-09-05, reusing the
+# existing 61 captured JSR files rather than generating anything).
+#
+# The residual across those files correlates +0.883 with the number of
+# DISTINCT JSR targets -- not with the number of calls, which correlates
+# NEGATIVELY (-0.445). Fitting both at once separates them cleanly:
+#
+#     per distinct target        +152
+#     per JSR call                 -4   (folded into the JSR weight above)
+#     per target, per name char    +1
+#
+# The name-length term is real and visible directly in matched pairs:
+# jsr_crossed_n20_namelen16 vs _namelen32 differ by +320 at the same target
+# count, and n40_namelen16 vs _namelen32 by +640 -- 16 extra characters on
+# 20 and 40 targets respectively, i.e. +1/char/target both times.
+#
+# Cross-validated, 40 random 75/25 splits: held-out RMS 4,345 -> 2,028, a
+# 53% improvement. In-sample RMS 6,347 -> 1,725. Several roundings of the
+# constants (152/1.0, 148/1.25, 144/1.5, 160/0.75) all land within 8 bytes
+# RMS of each other, so the clean 152/1 is used.
+#
+# This is charged ONCE PER DISTINCT TARGET, alongside jsr_param_cost's
+# A(n), because it is a property of the callee's declaration rather than of
+# any one call site -- same rule the surrounding code already follows.
+jsr_target_declaration:
+  per_target: 152
+  per_name_char: 1
+  confidence: FITTED
+
 jsr_param_cost:
   a_base: 104
   a_per_param: 20
@@ -1898,7 +1927,15 @@ logic_instructions:
     SSV: 84
     STOD: 80
     DTOS: 72
-    JSR: 72
+    # 68, was 72. Refit 2026-09-05 across all 61 captured JSR files: the
+    # single-target files pin the per-CALL error at almost exactly -4
+    # (instr_jsr_n01000 -4,097 over 1,000 calls; n05000 -20,097 over 5,000;
+    # jsr_paramcount_n01_r01000 -4,020 over 1,000). The model was
+    # over-charging every JSR call by 4 while under-charging each distinct
+    # TARGET by far more -- two errors in opposite directions, which is why
+    # neither showed up while only call-heavy or only target-heavy files
+    # were looked at. See jsr_target_declaration below.
+    JSR: 68
     LIM: 52      # corrected from raw 68 (LIM+OTE combined)
     ONS: 36      # corrected from raw 56 (XIC+ONS+OTE combined)
     MUL: 56
