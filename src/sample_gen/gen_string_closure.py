@@ -1,8 +1,7 @@
-"""STRING closure batch (James, 2026-08-25): "I want strings as a whole
-closed. No more open questions or unknowns... Be sure you know the array
-of sints can be used in copy instructions as well as the Len tag elements"
-and (interrupt) "Be sure you know moving 'constants' into strings and
-custom strings for the L8 and 5069 processors."
+"""STRING closure batch (2026-08-25): strings closed as a whole, with no
+open questions or unknowns left. Two specifics to cover: a STRING's SINT
+array and LEN element are both valid copy-instruction operands, and moving
+constants into strings and custom strings on L8 and 5069 processors.
 
 Closes the specific threads still open after the nearest-8 custom-string
 padding fix (see memory_model.yaml's string: block for the full derivation
@@ -19,9 +18,9 @@ padding fix (see memory_model.yaml's string: block for the full derivation
      lengths (short/medium/long) at both def_only and 1-instance shapes.
 
   B. group_constant_flag -- Constant="true" on a STRING/custom-string tag,
-     James's new question, never tested for ANY data type in this project
+     the new question, never tested for ANY data type in this project
      before. Crossed with processor family (1756-L8x vs 5069-Lxxx) per
-     James's explicit ask -- built-in and custom STRING each get a
+     the explicit ask -- built-in and custom STRING each get a
      Constant=true/false pair on each processor family (8 files).
 
   C. group_cop_string_members -- COP/CPS on a STRING's own .DATA (a plain
@@ -86,7 +85,7 @@ def group_typename_length() -> int:
 # B. Constant="true", builtin + custom -- single processor (1756-L81E, the
 #    same default every other file in this project uses).
 #
-#    2026-08-26 CORRECTION (James, direct field knowledge): the original
+#    2026-08-26 CORRECTION (direct field knowledge): the original
 #    version of this group crossed Constant with processor family (L8 vs
 #    5069), which was unnecessary and actively broke the capture batch --
 #    "5069 and l8/l9 processors use the same calculations for constant
@@ -109,7 +108,7 @@ def group_constant_flag() -> int:
         builtin_tag = tag_xml("StrConstTag", "STRING", string_max_len=82, constant=const)
         l5x = build_l5x(target_name=f"StrConst{const_label.title()}", tags_xml=builtin_tag)
         n += _write(TAGS_OUT, l5x, f"stringconst_builtin_{const_label}",
-                    f"1 built-in STRING tag, Constant={const} -- James: does marking a STRING tag "
+                    f"1 built-in STRING tag, Constant={const} -- does marking a STRING tag "
                     f"Constant change its size",
                     "string_tagoverhead")
 
@@ -149,7 +148,7 @@ def group_cop_string_members() -> int:
                              tags_xml=tags, extra_rungs_xml=rungs, extra_datatypes_xml=extra_dt)
             n += _write(LOGIC_OUT, l5x, f"stringcop_{label}_n{count:02d}",
                         f"{count} rungs of {instr} -- COP on a STRING's own {label.split('_')[1].upper()} "
-                        f"member ({'built-in' if 'builtin' in label else 'custom'} STRING) -- James: "
+                        f"member ({'built-in' if 'builtin' in label else 'custom'} STRING) -- "
                         f"confirm the DATA SINT array and LEN element are valid COP/CPS operands, and "
                         f"size like an ordinary SINT-array/DINT COP with no STRING-specific surcharge",
                         "logic_instr")

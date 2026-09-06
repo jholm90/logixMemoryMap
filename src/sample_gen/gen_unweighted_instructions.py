@@ -1,8 +1,7 @@
 """Instructions this engine charges ZERO bytes for, but that appear in real files.
 
-James, 2026-09-05: *"you can do the generation for unweighted instructions.
-MCSV is a motion instruction so be cautious it will need an axis... just
-like the MAJ MSF etc."*
+2026-09-05, covering the unweighted instructions. MCSV is a motion
+instruction and needs an axis, the same as MAJ, MSF and the rest.
 
 The coverage audit (sizing/coverage.py) found 38 distinct mnemonics used in
 real files with no weight in `logic_instructions.weights`, so every one of

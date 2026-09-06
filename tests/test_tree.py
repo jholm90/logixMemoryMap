@@ -140,7 +140,7 @@ def test_resolve_path_bit_alias_member_is_a_leaf():
 
 
 # ---------------------------------------------------------------------------
-# expand_definition_children -- 2026-08-26, James's Phase 2/2b "defs pool
+# expand_definition_children -- 2026-08-26, the Phase 2/2b "defs pool
 # drill-down" fix. Breaks a definition's own one-time cost into its
 # contributing pieces; must always sum back exactly to what udt.py's own
 # compute_*_definition_cost would report for the same type, or the treemap

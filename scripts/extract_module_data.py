@@ -1,7 +1,7 @@
-"""Module/IO extraction table (2026-08-27, James: "check your DB of
-extracted io modules from existing programs - i want this table to have
-the in/out/config controller tags separately marked in the data for these
-modules and see how it compares to the actual module size... also add
+"""Module/IO extraction table (2026-08-27). Built from the extracted I/O
+modules across the existing programs, with the in/out/config controller
+tags separately marked so they can be compared against the actual module
+size. Also adds
 records from the L5X module profile as a checkable item. i know you dont
 have modules yet but i want you to prep this data").
 
@@ -14,7 +14,7 @@ can be client-identifying, so it stays local-only, same policy as every
 other real-corpus-derived artifact in this project; never move this into
 the tracked samples/ tree).
 
-Columns, per James's ask:
+Columns, per the ask:
   - source_file: which real L5X this module came from (relative path
     under samples/local/), so a row can be traced back and re-checked.
   - module_name, catalog_number, slot: identifying info.
@@ -26,7 +26,7 @@ Columns, per James's ask:
     exact, stated attributes, not fitted).
   - stated_total_bytes: sum of the three above -- what L5X itself claims.
   - actual_module_bytes: DELIBERATELY BLANK. This is the checkable
-    comparison column James asked for -- once a real controller's
+    comparison column asked for -- once a real controller's
     Capacity-tab delta for adding/removing ONE specific module is
     captured, it goes here, and stated_total_bytes vs actual_module_bytes
     is the real per-module/per-connection overhead question (OQ-MODULEIO)

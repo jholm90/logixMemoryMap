@@ -1,8 +1,7 @@
 """What the sizing engine cannot price, across any set of L5X files.
 
-James, 2026-09-04: "I need to make sure that in the long run all of the
-calculations are done inside the python logic for the total project scripts
-and not just claude in depth testing." This is the operator-facing side of
+2026-09-04: every calculation has to live in the engine itself rather than
+in an ad-hoc analysis run alongside it. This is the operator-facing side of
 that: `l5x_memory_analyzer.sizing.coverage.audit_coverage()` is what runs,
 the same function `build_report()` calls on every single file it sizes --
 this script only aggregates it across many files and sorts the result. No

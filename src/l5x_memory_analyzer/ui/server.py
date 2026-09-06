@@ -2,7 +2,7 @@
 
 Can start pre-loaded with an L5X path (CLI usage) or empty, with the
 frontend's File->Open picker uploading a file to /api/load (desktop-shortcut
-usage, James 2026-08-20 -- no command prompt needed for the launch version).
+usage, 2026-08-20: -- no command prompt needed for the launch version).
 Serves the flat sizing report plus a lazy /api/node endpoint for infinite-
 depth drill-down (see sizing/tree.py) -- vanilla JS/SVG frontend, no CDN
 dependency, since engineering workstations on OT networks are frequently
@@ -81,7 +81,7 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         if r.jsr_target_names
     }
 
-    # Rung counts per routine (James, 2026-08-27: "routines need to have
+    # Rung counts per routine (2026-08-27, "routines need to have
     # indication how many rungs"). Same side-channel-dict shape as jsr_calls
     # above, keyed by the identical routine.path every routine_logic leaf
     # node's own path already carries, purely for display -- no sizing
@@ -193,7 +193,7 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
 
         # A "Type Definitions" pool node (path "udt_definitions/<Name>") is
         # not a tag instance -- drill into its own cost breakdown instead
-        # (James, 2026-08-26: locals+params breakdown for a defs-pool node).
+        # (2026-08-26, locals+params breakdown for a defs-pool node).
         # Always exactly one level deep, no further subpath to resolve.
         if tag_path.startswith("udt_definitions/"):
             def_name = tag_path[len("udt_definitions/"):]
@@ -265,7 +265,7 @@ def run(l5x_path: str | Path | None, host: str = "127.0.0.1", port: int = 8765, 
 
         threading.Timer(0.75, lambda: webbrowser.open(f"http://{host}:{port}")).start()
 
-    # threaded=True: the "2 levels deep" treemap toggle (James, 2026-08-27)
+    # threaded=True: the "2 levels deep" treemap toggle (2026-08-27)
     # fires one /api/node fetch per visible drillable tile CONCURRENTLY
     # from the browser -- against Flask's default single-threaded dev
     # server those just queue up serially, which is fine for a handful of

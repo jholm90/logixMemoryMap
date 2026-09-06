@@ -1,4 +1,4 @@
-"""Instruction operand-TYPE sweep (James, 2026-08-21): "lots of these
+"""Instruction operand-TYPE sweep (2026-08-21): "lots of these
 instructions accept multiple data types as inputs and outputs... EQU(string1,
 string2) will occupy different memory possibly from EQU(dint1,dint2). Of
 course it would be more exaggerated for instructions with multiple data
@@ -9,9 +9,9 @@ operand type per instruction. This one holds the instruction and rung count
 FIXED (1000 rungs, a scale already covered elsewhere for comparison) and
 varies only the operand TYPE -- mirrors the atomic-type sweep that worked
 for tags, now applied to logic operands. Prioritizes instructions with more
-than 2 operands (ADD/SUB/MUL/DIV/MOD/LIM) since James's own reasoning is
+than 2 operands (ADD/SUB/MUL/DIV/MOD/LIM) since the reasoning is
 that a type effect would show up more there, plus every comparison
-instruction (his own EQU example) and MOV/CPT.
+instruction (the EQU example) and MOV/CPT.
 
 Uses its own small dedicated tag pool (separate from gen_logic_sweep.py's,
 kept untouched for comparability with what's already been captured) with
@@ -106,8 +106,8 @@ def group_mov_type_sweep() -> None:
 
 
 def group_lim_type_sweep() -> None:
-    # LIM has 3 operands (low/test/high) -- James: type effects "more
-    # exaggerated" with multiple data parameters.
+    # LIM has 3 operands (low/test/high) -- type effects are more
+    # exaggerated with multiple data parameters.
     for t in NUMERIC_TYPES:
         fn = lambda i, t=t: f"LIM({_tag(t,i)},{_tag(t,i+1)},{_tag(t,i+2)})OTE({_bool_tag(i)});"
         rungs = rungs_xml(RUNG_COUNT, fn)
@@ -117,7 +117,7 @@ def group_lim_type_sweep() -> None:
 
 
 def group_string_comparison() -> None:
-    # James's own example: EQU(string1,string2) vs EQU(dint1,dint2) --
+    # the example: EQU(string1,string2) vs EQU(dint1,dint2) --
     # already have the DINT variant from group_comparison_type_sweep(),
     # this adds the STRING side directly.
     for instr in ["EQU", "NEQ"]:

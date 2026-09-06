@@ -2,9 +2,8 @@
 
 Every command/script invocation used on this project, in one place, so
 nothing has to get re-dug-out of chat history. Grouped by what it's for:
-capture pipeline (James runs these), analyzer CLI + webpage (either of you
-runs these), sample generator (mostly Claude, listed here in case you want
-to run one directly).
+capture pipeline (run on the Windows machine with Studio 5000), analyzer
+CLI and webpage, and the sample generators.
 
 ## 1. Capture pipeline (PowerShell + AHK) — the daily driver
 
@@ -61,9 +60,8 @@ Params: `-ConvertLog` (required), `-ManifestPath` (default
 Controller model and firmware are **not** parameters — they are read from
 each L5X's own `Controller/@ProcessorType` and
 `RSLogix5000Content/@SoftwareRevision`. They used to be mandatory switches
-(removed 2026-09-06, James: *"the ps1 script asking for firmware and
-processor is garbage and should never have been there it should be
-determined bu the l5x file anyways"*), and whatever was typed on the
+(removed 2026-09-06 — the script should never have asked for values the
+L5X already declares), and whatever was typed on the
 command line got stamped onto every manifest row regardless of what the
 file declared: 1,926 of 1,959 captured rows ended up carrying a processor
 that contradicted their own XML. A file whose head cannot be parsed now
@@ -217,7 +215,7 @@ type these by hand. Grouped by what they test; each writes its own files
 | `python -m sample_gen.gen_module_rack_pointio` | Point I/O rack tests, multiple real modules on one adapter |
 | `python -m sample_gen.gen_module_rack_1756local` | 1756 local rack, multiple real ControlLogix I/O modules |
 | `python -m sample_gen.gen_module_rack_1756remote` | 1756 local rack talking to a 1756 remote rack over Ethernet |
-| `python -m sample_gen.gen_module_bender_full` | Full-fidelity replica of James's real Bender program (69 modules) |
+| `python -m sample_gen.gen_module_bender_full` | Full-fidelity replica of a real Bender program (69 modules) |
 
 ### Strings
 | Command | Covers |

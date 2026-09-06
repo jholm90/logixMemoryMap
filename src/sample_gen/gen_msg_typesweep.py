@@ -1,7 +1,6 @@
-"""MESSAGE-structure MessageType sweep (OQ-PREDEFINED, 2026-08-25). James
-reversed the earlier deprioritization ("Message size is fine for the 90%
-accuracy, not a common usage instruction"): "Generate messages to satisfy
-this question? Message instructions are just like axis tags, lots of
+"""MESSAGE-structure MessageType sweep (OQ-PREDEFINED, 2026-08-25). This
+reverses the earlier deprioritization of MESSAGE size as acceptable at the
+90% tier. MESSAGE instructions behave like axis tags: lots of
 config but always the same data size."
 
 The only MessageType tested so far is CIP Generic (`instrfirst_msg.L5X`,
@@ -25,7 +24,7 @@ ConnectionPath genericized to this file's own placeholder tags, matching
 not a functioning message -- not tested here.)
 
 Each type gets its own isolated 1-rung MSG() file (mirrors instrfirst_msg's
-shape exactly) so a per-type Capacity delta directly tests James's
+shape exactly) so a per-type Capacity delta directly tests the
 hypothesis: does MessageType/attribute-set variation change the tag's real
 byte size at all, or is MESSAGE's real footprint flat regardless of
 config (the AXIS_CIP_DRIVE pattern)? MESSAGE has no predefined_structures

@@ -1,6 +1,6 @@
 """Tag-based alarm conditions (Logix "alarm definitions" on a tag).
 
-James, 2026-09-04: *"Another thing to look at is Controller Alarms that we
+2026-09-04: *"Another thing to look at is Controller Alarms that we
 use... see the alarms prefixed by 'Alarm1_' as they could be holding back
 some of your calculations from being accurate."*
 
@@ -45,7 +45,7 @@ So real usage is essentially ONE shape, which is good news for modelling it
 and bad news for fitting it from real files alone -- assoc-tag count never
 varies independently of alarm count in any real program on file (every one
 is exactly 3 per alarm), so the two cannot be separated from real data. That
-is precisely what James's four `Alarm1_*` probe files vary, and what the
+is precisely what the four `Alarm1_*` probe files vary, and what the
 generated `alarmcond_*` batch extends.
 
 NOTHING IS PRICED HERE. This module parses and reports; there is no byte

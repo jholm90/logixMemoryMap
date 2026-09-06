@@ -24,7 +24,7 @@ from dataclasses import dataclass, field
 class TaskInfo:
     name: str
     scheduled_program_names: tuple[str, ...] = field(default_factory=tuple)
-    # 2026-09-03, OQ-SAFETYSCOPE-SIZING (James: "they are safety tasks and
+    # 2026-09-03, OQ-SAFETYSCOPE-SIZING ("they are safety tasks and
     # safety programs therefore they need separate sizing calculations").
     # Real, unambiguous marker: a SafetyTask carries Class="Safety" (confirmed
     # on samples/generated/fw_catalog_matrix/fwmatrix_v31_1756_l81es.L5X),

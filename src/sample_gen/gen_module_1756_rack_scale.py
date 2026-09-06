@@ -1,5 +1,4 @@
-"""1756 local-rack SIZE scaling (James, 2026-09-02: "you can generate up
-10+ 1756 rack tests"). gen_module_rack_1756local.py already built ONE
+"""1756 local-rack SIZE scaling (2026-09-02, 10+ rack tests). gen_module_rack_1756local.py already built ONE
 16-module full-chassis rack; this generator varies rack SIZE (2/4/6/8/10/
 12/14/16 real modules) and composition (alternate subsets at a few sizes)
 using the SAME real catalog pool and re-slot mechanism, so the marginal
@@ -61,7 +60,7 @@ def _write(out_name: str, catalogs: list[str]) -> None:
         f"CPU ({', '.join(catalogs)}), each module's own real XML from gen_module_sweep.py/"
         f"gen_module_sweep_variants.py re-slotted to unique sequential addresses. Real floor total "
         f"{total}. Rack-size scaling point for OQ-MODULEIO's multi-module marginal-cost question "
-        f"(James, 2026-09-02)."
+        f"(2026-09-02)."
     )
     append_manifest_row(f"rack_1756_{out_name}", description, "modules", out_path, total)
     print(f"Wrote {out_path} (floor {total} bytes)")

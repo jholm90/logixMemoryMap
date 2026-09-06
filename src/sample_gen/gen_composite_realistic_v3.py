@@ -1,5 +1,5 @@
 """50 MORE large, realistic-scope composite test programs -- v3, 2026-09-02,
-James's explicit spec after reviewing a real production file's accuracy:
+the explicit spec after reviewing a real production file's accuracy:
 "generate another 50 unique files (v3) with these requirements:
 1. 1.5-2.5MB target size (you making 10kb files makes the error much less
    noticeable) [clarified: 1,500,000-2,500,000 bytes of predicted CPU
@@ -25,7 +25,7 @@ instruction, flat per target, or saturating -- the same shape question
 already answered for module_overhead's non-additive multi-module marginal
 cost.
 
-Real motion content added for the first time at composite scale (James: "2
+Real motion content added for the first time at composite scale ("2
 servo axis minimum...sample per the titusville file"): one 2198-P208 power
 supply with its own on-board axis (the real "DC BUS axis" pattern -- the
 power supply's own AXIS_CIP_DRIVE tag) + one 2198-D012-ERS3 dual-axis drive
@@ -92,7 +92,7 @@ _TAG_FLAT_OVERHEAD_BASE = 84  # KNOWN, docs/MEMORY_MODEL.md "Per-tag flat overhe
 # this project's own chassis_size_exceeded lint check). Real ControlLogix
 # plants don't put 15+ modules on one local rack either -- they distribute
 # I/O across remote/networked adapters, which is exactly what most of
-# James's real TitusvilleTrimmer file does (its own local ICP-backplane
+# a real TitusvilleTrimmer file does (its own local ICP-backplane
 # module count was small; almost everything else was Ethernet/rack-
 # aliased). Partitioning the pool and capping the ICP share to a safe
 # number below the real 17-slot limit is the structurally-realistic fix,
@@ -132,7 +132,7 @@ class ProfileV3:
 
 def _profile_for_index(i: int) -> ProfileV3:
     """Deterministic feature schedule, i in [1, 50]. Every count is spread
-    across a real range (not held at James's stated floor) so this batch
+    across a real range (not held at the stated floor) so this batch
     doubles as calibration data for the AOI/JSR-at-scale question, not just
     a structural checklist."""
     udt_count = 3 + (i % 4)  # 3..6
@@ -140,7 +140,7 @@ def _profile_for_index(i: int) -> ProfileV3:
     n_arrays = 4 + (i % 5)  # 4..8
     base_size = 300 + (i * 47) % 4000
     array_sizes = [base_size + j * (211 + i * 5) for j in range(n_arrays)]
-    # James: "15+ ethernet nodes minimum" -- guaranteed by drawing the base
+    # 15+ ethernet nodes minimum -- guaranteed by drawing the base
     # count entirely from _ETHERNET_ONLY_MODULE_CATALOGS (each one's OWN
     # root module is ParentModPortId="2"/Ethernet-attached to Local, a real
     # network-addressed device). A handful of plain local-backplane cards
@@ -160,11 +160,11 @@ def _profile_for_index(i: int) -> ProfileV3:
     module_catalogs = icp_catalogs + eth_catalogs
     rung_count = 200 + (i % 10) * 60
     udt_array_len = 20 + (i % 12) * 12
-    program_count = 5 + (i % 8)  # 5..12 (James: "5+ logic programs")
+    program_count = 5 + (i % 8)  # 5..12 (5+ logic programs)
     subs_per_program = [1 + ((i + p) % 3) for p in range(program_count)]  # 1..3 each
-    string_count = 5 + (i % 5)  # 5..9 (James: "5+ custom strings")
+    string_count = 5 + (i % 5)  # 5..9 (5+ custom strings)
     # Linear spread 1,550,000 -> 2,450,000 across the batch, safely inside
-    # James's 1.5-2.5MB band with margin for the filler-array rounding step.
+    # the 1.5-2.5MB band with margin for the filler-array rounding step.
     target_total = 1_550_000 + int((i - 1) / 49 * 900_000)
     return ProfileV3(
         i, udt_count, aoi_count, array_sizes, module_catalogs, rung_count, udt_array_len,
@@ -209,7 +209,7 @@ def _udt_specs(profile: ProfileV3) -> tuple[str, list[tuple[str, list[MemberSpec
 
 def _aoi_specs(profile: ProfileV3, axis_tag_name: str) -> list[tuple[str, str, list[MemberSpec], bool]]:
     """Returns [(name, def_xml, storage, uses_axis)] -- AOI 0 always takes
-    the servo axis as an InOut param (James: "logic using the axis tags"),
+    the servo axis as an InOut param (logic using the axis tags),
     real shape from gen_axis_composite.py's group_axis_aoi_inout. Every
     other AOI gets real internal Logic-routine content scaled by index,
     same OQ-AOIINTERNALLOGIC pattern already validated in v2."""
@@ -237,7 +237,7 @@ def _aoi_specs(profile: ProfileV3, axis_tag_name: str) -> list[tuple[str, str, l
 
 def _rich_program_xml(prog_name: str, n_subs: int, index: int, prog_idx: int) -> tuple[str, int]:
     """One extra Program: MainRoutine calling n_subs real subroutines, each
-    with real content (James: "5+ logic programs with MAIN/Main routine and
+    with real content ("5+ logic programs with MAIN/Main routine and
     subroutine calls"). Subroutine rungs reference Controller-scope Arr0/
     Arr1 (always present, see _build) -- no Program-local tags needed.
     Returns (program_xml, total_jsr_target_instruction_count)."""
@@ -301,7 +301,7 @@ def _build(profile: ProfileV3) -> tuple[str, str, int]:
     tags_parts.append(timer_tag_xml("MainTmr", preset=1000 + profile.index * 10))
     tags_parts.append(counter_tag_xml("MainCtr", preset=100 + profile.index))
 
-    # 5+ custom STRING types (James), each declared as its own DataType +
+    # 5+ custom STRING types , each declared as its own DataType +
     # one Controller-scope tag of that type.
     string_types_xml = []
     for s in range(profile.string_count):
@@ -325,14 +325,14 @@ def _build(profile: ProfileV3) -> tuple[str, str, int]:
     tags_parts.append(tag_xml("FaultResetBit", "BOOL"))
     tags_parts.append(tag_xml("AxisPosReadout", "REAL"))
 
-    # Real logic directly reading an axis attribute (James: "logic using
+    # Real logic directly reading an axis attribute ("logic using
     # the axis tags") -- MOV is a real output instruction, no bit-level
     # subscript concern (ActualPosition is a REAL member of the axis
     # structure, referenced the same way any real corpus MAM/MAH call does).
     call_instrs.append(f"MOV({servo_axis_2}.ActualPosition,AxisPosReadout);")
 
     # 5+ extra logic Programs, each with MainRoutine + real subroutine
-    # calls (James). MainProgram itself also gets one JSR target below, so
+    # calls . MainProgram itself also gets one JSR target below, so
     # every program in the file (not just the extras) exercises the same
     # real shape.
     programs_xml_parts = []
@@ -407,7 +407,7 @@ def _build(profile: ProfileV3) -> tuple[str, str, int]:
     final_total = _floor_bytes(l5x_final)
 
     description = (
-        f"Composite realistic-scope test v3 #{profile.index}/50 (2026-09-02, James's explicit spec "
+        f"Composite realistic-scope test v3 #{profile.index}/50 (2026-09-02, the explicit spec "
         f"after the real TitusvilleTrimmer accuracy test found the composite-scale JSR/AOI surcharge "
         f"badly over-generalizes at real scale -- see OPEN_QUESTIONS.md OQ-COMPOSITESCALE): "
         f"{profile.udt_count} UDTs (1 nested), {profile.aoi_count} unique AOIs (1 with a real InOut "

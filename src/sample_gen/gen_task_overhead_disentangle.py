@@ -1,4 +1,4 @@
-"""Per-Task overhead disentangling, missing axis (James, 2026-08-26: "touch
+"""Per-Task overhead disentangling, missing axis (2026-08-26, "touch
 these and finalize them now").
 
 docs/OPEN_QUESTIONS.md's per-Task overhead item needed a way to separate

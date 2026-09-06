@@ -136,7 +136,7 @@ body {
 
 .tabs-spacer { flex: 1; }
 
-/* James 2026-08-27: "Type/list should be always visible but hidden" --
+/* 2026-08-27: Type/list should be always visible but hidden --
    this checkbox and the split-toggle button below sit in the tab bar
    permanently, unlike the 3 mutually-exclusive tab-btns to their left. */
 .tab-toggle {
@@ -243,7 +243,7 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
 .panel { display: none; height: 100%; }
 .panel.active { display: block; }
 
-/* James 2026-08-27: the treemap panel now splits in half on demand (the
+/* 2026-08-27: the treemap panel now splits in half on demand (the
    "⊞ Details" toggle) to dock a mini List/Type-Summary pane alongside the
    SVG -- #treemap-main holds the SVG+tooltip exactly as before, #details-
    dock is the new always-present-but-collapsed sibling. */
@@ -270,7 +270,7 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
 }
 .tm-label-sub { font-size: 9.5px; opacity: 0.85; }
 
-/* Depth-2 nested tiles (James, 2026-08-27: "some obvious difference
+/* Depth-2 nested tiles (2026-08-27, "some obvious difference
    between parent/children") -- dashed stroke + reduced opacity + smaller
    label, on top of (never instead of) the ordinary .tm-rect/.tm-label
    styling above, so a grandchild tile is never mistaken for a same-level
@@ -294,7 +294,7 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
 #tooltip.hidden { display: none; }
 
 /* % of the current treemap root this tile represents -- a half-full bar
-   means this element is half its parent's usage (James, 2026-08-27).
+   means this element is half its parent's usage (2026-08-27).
    Fixed dark colors, same reasoning as .text-dim-on-dark: #tooltip has a
    permanently dark background regardless of page theme. */
 .tooltip-bar-wrap { background: #333a45; border-radius: 3px; height: 7px; overflow: hidden; margin-top: 0.35rem; }
@@ -305,13 +305,13 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
 #list-table th, #list-table td, #list-table-dock th, #list-table-dock td { text-align: left; padding: 0.35rem 0.6rem; border-bottom: 1px solid var(--border); }
 #list-table th, #list-table-dock th { cursor: pointer; color: var(--text-dim); position: sticky; top: 0; background: var(--panel-bg); }
 #list-table th:hover, #list-table-dock th:hover { color: var(--accent); }
-/* James 2026-08-27: header ("BYTES"/"%") is left-aligned via the general
+/* 2026-08-27: header ("BYTES"/"%") is left-aligned via the general
    rule above -- data cells used to override to right-align, which is what
-   he flagged; left-aligned now, tabular-nums kept so digits still line up
+   flagged; left-aligned now, tabular-nums kept so digits still line up
    in a column even without right alignment. */
 #list-table td.num, #list-table-dock td.num { font-variant-numeric: tabular-nums; }
 
-/* James 2026-08-27: "List should be browsable to see inside each element
+/* 2026-08-27: "List should be browsable to see inside each element
    name or type" -- a row for a drillable node behaves like a treemap
    tile click. */
 #list-table tbody tr.row-drillable, #list-table-dock tbody tr.row-drillable { cursor: pointer; }
@@ -353,7 +353,7 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
 #type-summary, #type-summary-dock { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem; }
 .type-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.3rem 0; font-size: 0.85rem; }
 .type-row .type-swatch { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
-/* James 2026-08-27: "Type summary needs to be more dynamic for
+/* 2026-08-27: "Type summary needs to be more dynamic for
    REALLY_VERY_LONG_TAGS_AND_UDT_NAMES" -- was a fixed 140px width (long
    names just overflowed/wrapped the row). Now a bounded, ellipsis-
    truncated flex item; the full name is always available via the title

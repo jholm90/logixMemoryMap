@@ -1,9 +1,8 @@
-"""First-pass single-instruction coverage sweep (James, 2026-08-24):
-"Everything that has more than one usage needs to be tested... I want your
-testing to be initially a first pass with one copy for all of the
-outstanding instructions, one per file properly compiled. Don't do the
-multiple per file test at this time... I dont ever want to make dozens of
-files that don't compile because you didn't make the one instruction file
+"""First-pass single-instruction coverage sweep (2026-08-24). Everything
+with more than one usage needs testing, starting with a first pass of one
+copy of each outstanding instruction, one per file, each compiling cleanly.
+No multiple-instructions-per-file tests at this stage: building dozens of
+files that fail to compile because the single-instruction file
 work and just duplicated error rungs."
 
 Scope: every native instruction from docs/INSTRUCTION_COVERAGE.md with
@@ -13,7 +12,7 @@ in `gen_motion_instructions.py`, awaiting capture) and SBR/RET (structurally
 tied to JSR as a pair, can't be isolated as a bare single-rung instruction,
 covered by `gen_jsr_sbr_ret.py`).
 
-**Methodology, per James's explicit instruction:** exactly ONE file per
+**Methodology, per the explicit instruction:** exactly ONE file per
 instruction, ONE rung, no rung-count sweep at first (that came later once
 this first pass proved every file actually compiles). Every operand shape
 below was checked against the real corpus BEFORE being used here -- see
@@ -22,7 +21,7 @@ of instructions were deliberately SKIPPED rather than guessed at (SCP,
 FBC, PID) -- see the bottom of this docstring.
 
 **2026-08-24, all 36 n=1 files captured clean (converted "ok," real
-actual_bytes, 0 errors) -- James: "let's to a 10-count test for each."**
+actual_bytes, 0 errors) -- let's to a 10-count test for each*
 `main()` now also generates a parallel `_x10` file per instruction (same
 tag pool/operand shape, 10 identical rungs instead of 1) -- a basic
 linearity spot check before committing to a full rung-count sweep per
@@ -335,7 +334,7 @@ def group_cam_family(count: int = 1) -> None:
     # not called): "MAPC(Axis_Cip_Drive,Axis_Cip_Drive,MotionInstr1,0,
     # CamProfile1[0],1,1,Once,Forward Only,Cam1[0].Master,Cam1[0].Master,
     # New Cam,Command,Bi-Directional);" -- TWO real bugs found investigating
-    # the resulting build failure (James, 2026-08-25, "review existing
+    # the resulting build failure (2026-08-25, "review existing
     # programs to get accurate logic programming"):
     #   1. Axis_Cip_Drive was never declared as a tag in this file at all
     #      (only `cam_tag` was passed as extra_tags_xml, not _AXIS_TAG_XML)
@@ -420,7 +419,7 @@ def _run_all(count: int) -> int:
 
 
 def main() -> None:
-    # James, 2026-08-24, after all 36 n=1 files built and captured clean:
+    # 2026-08-24: after all 36 n=1 files built and captured clean:
     # "let's to a 10-count test for each." Generates a second, parallel
     # x10 file per instruction (same tag pool/operand shape, 10 identical
     # rungs) alongside the original n=1 files -- a basic linearity check

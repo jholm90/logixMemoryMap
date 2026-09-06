@@ -29,9 +29,9 @@ Every entry is tagged with a confidence level:
 | STRING (built-in) | 4 + 82 = 86 | 4-byte LEN (DINT) + 82-byte DATA (SINT[82]) default |
 | Custom string type (scalar) | 4 + nearest8(N) | 4-byte LEN + DATA rounded to the NEAREST multiple of 8 (round DOWN at the tie, remainder 4) -- see below, KNOWN 2026-08-25 |
 
-**Unsigned atomic types, added 2026-08-30.** James, reviewing a real
-confidential customer project (not committed, never named here) that
-this engine couldn't fully size: "UINT is the same as INT with the last
+**Unsigned atomic types, added 2026-08-30**, after a real confidential
+customer project (not committed, never named here) that this engine could
+not fully size. From field knowledge: "UINT is the same as INT with the last
 bit being unsigned and disabling the INT from having a negative value.
 you should assume INT/UINT are the same size SINT/USINT same size
 DINT/UDINT same size." Real corpus confirmation: that same project's own
@@ -64,7 +64,7 @@ name length. Wired as `string.builtin_tag_overhead_correction = -2`,
 applied in `report.py` only when `tag.data_type == "STRING"`.
 
 **Custom string DATA padding (KNOWN, real bug found and fixed
-2026-08-25).** Chasing James's "strings must be 100% closed" directive
+2026-08-25).** Chasing the "strings must be 100% closed" directive
 found a real bug: the DATA member (SINT[maxlen]) was sized RAW with no
 rounding at all. Real mechanism, verified EXACT (0 residual) against 9
 real maxlen points spanning every mod-4/mod-8 remainder (49, 50, 51, 100,
@@ -92,7 +92,7 @@ Firmware-native structures referenced by name in L5X Tag/Member DataType
 attributes but never given a member list in `Controller/DataTypes` --
 Logix Designer resolves them internally, so there's nothing to recurse.
 **2026-08-29: 174 more wired in one batch**, real single-capture-each data
-from James's own conversion+capture pipeline against `gen_predefined_probe.py`'s
+from the conversion+capture pipeline against `gen_predefined_probe.py`'s
 184-file blank-tag discovery batch (see OPEN_QUESTIONS.md OQ-PREDEFINED for
 the full derivation method and per-type table) -- MESSAGE (688 bytes) and
 ALARM_DIGITAL (973 bytes) are now resolved, both previously genuinely
@@ -188,9 +188,8 @@ separately-modeled cost (custom string definitions, SIZE instruction,
 odd-byte UDT array packing) -- not folded into the baseline itself, each
 has its own constant.
 
-**CAVEAT, James 2026-08-23: "your empty project baseline is not a constant
-and will change based on processor and firmware. You need to be aware of
-this."** Confirmed true, and **partially wired 2026-08-29** -- see
+**CAVEAT, 2026-08-23: the empty-project baseline is not a constant.** It
+changes with processor and firmware. Confirmed true, and **partially wired 2026-08-29** -- see
 `docs/OPEN_QUESTIONS.md` OQ-BASELINE-PROCFW for the full derivation. Rather
 than replace `empty_project_baseline` itself with a lookup, `report.py`
 applies two additional real, additive corrections on top of it (both in
@@ -321,7 +320,7 @@ every real program has AOI definitions, and each one is short by
   BitNumber 0–7, new SINT for bits 8–15, etc).
 - Non-BOOL members: size = atomic/nested-UDT size, per table above.
 - Alignment/padding between members: **KNOWN, confirmed 2026-08-22 (was
-  ASSUMED).** James (100% confident from field experience): `BOOL, DINT,
+  ASSUMED).** From field experience, stated with full confidence: `BOOL, DINT,
   BOOL` = 8+32+8 = 6 bytes; `DINT, BOOL, BOOL` = 32+8 = 5 bytes — i.e. no
   4-byte alignment padding at all, and a run of consecutive BOOLs shares one
   backing byte but a non-BOOL member breaks the run, forcing the next
@@ -331,10 +330,10 @@ every real program has AOI definitions, and each one is short by
   Capacity-tab data too — every real UDT test across the whole per-tag/
   per-UDT-definition sweep (dozens of samples, see per-tag/definition
   sections above) landed on predictions consistent with tight-packing, not
-  just James's field opinion. `udt.alignment_confidence` in
+  just the field opinion. `udt.alignment_confidence` in
   `memory_model.yaml` flipped UNKNOWN→KNOWN.
 - Nested UDT: recursive — a UDT member's size is that UDT's total computed
-  size. James also believes (stated with less certainty, "I also assume")
+  size. Also believed, with less certainty,
   that a nested UDT-typed member always starts fresh rather than packing
   into a partial leftover byte from an adjacent BOOL run — "only BOOLS
   pack." Already true of the implementation: there is no code path that
@@ -488,7 +487,7 @@ OPEN_QUESTIONS.md OQ-MODULEIO.
 - **Zero-connection modules, visibility fix 2026-09-02.** A module with no
   Connection and no stated size of its own (real shape: a bare
   `ETHERNET-BRIDGE` used purely as an IP-address fan-out for a downstream
-  device with no PLC logic connection, per James's own field description)
+  device with no PLC logic connection, per the field description)
   was silently skipped — no SizeEntry, no SizeError. Now flagged with an
   explicit SizeError so it's visible in the report; `"Local"` stays
   excluded from this flag since its overhead is already covered by
@@ -580,8 +579,8 @@ all five are now fixed, re-captured, and in the table with exact fits.
 The EQU n=100/CMP n=10 garbled-value glitch this used to also flag is
 long since fixed and re-captured.
 
-**Root cause of the CPS/COP/FLL/SIZE/BTD glitch, found 2026-08-22 (James
-spot-checked and caught it):** these instructions take an array-typed
+**Root cause of the CPS/COP/FLL/SIZE/BTD glitch, found by spot-check
+2026-08-22:** these instructions take an array-typed
 operand, and the generator was emitting the bare tag name (`Arr`) instead
 of a subscripted reference (`Arr[0]`) — real Rockwell syntax always
 requires `[index]` on an array-typed operand (confirmed against the real
@@ -591,7 +590,7 @@ via its STRING operand, which needs `.DATA[0]`, matching the real corpus
 converts "ok" through `l5xgit l5x2acd` (see the SDK-verification note
 below) — that's why it wasn't caught earlier and why every instance came
 back at an identical byte count regardless of rung count (the program
-never actually compiled at scale, per James). Fixed in `gen_logic_sweep.py`;
+never actually compiled at scale). Fixed in `gen_logic_sweep.py`;
 all 5 instructions regenerated and re-flagged for re-capture.
 
 **T_ADD removed entirely, not re-flagged (2026-08-22):** T_ADD is a real
@@ -605,9 +604,8 @@ there's no fix that makes the original test meaningful — the 5 files and
 their manifest rows were deleted outright rather than queued for
 re-capture.
 
-**SDK-verification finding (James asked, 2026-08-22): does `l5xgit
-l5x2acd` catch bad programs before James burns real capture time on
-them?** No. Confirmed empirically via `samples/convert_log.csv` (398 "ok"
+**SDK-verification finding, 2026-08-22: does `l5xgit
+l5x2acd` catch bad programs before they burn real capture time?** No. Confirmed empirically via `samples/convert_log.csv` (398 "ok"
 / 27 "FAILED"): every file affected by both bugs above shows status "ok"
 — the SDK's L5X→ACD conversion only opens/parses the project (catching
 structural/schema failures like an unsupported ProcessorType — all 27 real
@@ -792,14 +790,14 @@ program using MCCP still throws a SizeError for that tag. MAPC did NOT
 resolve -- real build failure on its x10 capture (20 errors/10 rungs).
 Root-caused 2026-08-25 (see docs/OPEN_QUESTIONS.md OQ-MAPC-COMPAT): two
 real generator bugs, an undeclared Axis_Cip_Drive tag and the same axis
-tag wrongly reused for both slave/master positions. James confirmed the
+tag wrongly reused for both slave/master positions. confirmed the
 real rule: MAPC's slave/master just need to be two DISTINCT axis tags --
 any combination of types works (virtual/virtual is fine), not a required
 CIP-Drive/Virtual pairing. Both fixed,
 corrected `instrfirst_mapc_v2`/`_v2_x10` files generated and awaiting
-capture -- James called this a 100%-accuracy priority, not a defer item.
-CROUT's build failure is NOT a generator bug -- James, 2026-08-25: "Crout
-is safety... requires a safety plc cpu." Reclassified OUT OF SCOPE
+capture -- this is a 100%-accuracy priority, not a defer item.
+CROUT's build failure is NOT a generator bug: CROUT is a Safety
+instruction and requires a safety PLC CPU. Reclassified OUT OF SCOPE
 alongside DCS, not a weight-table gap. Per-Task
 overhead (`gen_task_overhead.py`) — real data now captured, see the
 dedicated write-up in `docs/OPEN_QUESTIONS.md` (a real, clean, exactly
@@ -945,8 +943,7 @@ there's a record of *why* a number is what it is, not just what it currently is.
   OPEN_QUESTIONS.md OQ-CMPCPTLAYOUT for the full finding and a real
   hypothesis (type-promotion-point count, not operand count) for the next
   probe batch.
-- **2026-08-29, same day, full manifest.csv audit** (James: "make another
-  in-depth pass"). Re-ran every category with real capture data through
+- **2026-08-29, same day, full manifest.csv audit.** Re-ran every category with real capture data through
   the live engine, not just the categories a previous pass happened to
   check. Found 90 of 126 `modules`-category rows were never checked
   against the engine at all despite having real data since 2026-08-22.
@@ -1062,8 +1059,8 @@ attribute up the chain decides.
 
 `split_totals()` reports **target** (what was exported), **context**
 (declarations it references, which cost their bytes only if the destination
-controller does not already have them — James: *"rungs, routines and
-programs might contain controller tags"*) and **project** (base load, zero
+controller does not already have them, since rungs, routines and
+programs can reference controller tags) and **project** (base load, zero
 on any partial export by construction).
 
 **Two parser bugs this exposed, both real and both fixed:**

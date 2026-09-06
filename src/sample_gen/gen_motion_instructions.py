@@ -34,15 +34,15 @@ COUNTS = [10, 100]
 # MAFR/MASR in the corpus.
 CORPUS_CONFIRMED = {"MAH", "MSO"}
 
-# MAM/MAJ/MAS/MRP -- FIXED 2026-08-25. James: "You need to put parameters
-# in for motion instructions... you need to have all of the parameters
-# populated" (the bare 2-operand call these 4 previously used built the
+# MAM/MAJ/MAS/MRP -- FIXED 2026-08-25. Motion instructions need all of
+# their parameters populated (the bare 2-operand call these 4 previously
+# used built the
 # rung shape MAH/MSO actually use, not theirs -- that mismatch, not a
 # syntax typo, is why every rung failed). Real corpus operand COUNTS
 # confirmed by reading samples/local/L5X_Samples directly (MAM=20 operands,
 # MAJ=17, MAS=9, MRP=5 -- four genuinely different real shapes, not one
-# family): MAM's template is James's own, given verbatim in his message
-# (tag names his choice, matches the real corpus's real MAM operand
+# family): MAM's template is the, given verbatim in the source report
+# (tag names as given, matches the real corpus's real MAM operand
 # sequence/keyword positions exactly). MAJ/MAS/MRP templates built the
 # same way this project already handles NEAR_VERBATIM transplants
 # elsewhere (MAPC) -- position-for-position from one real corpus example
@@ -64,9 +64,9 @@ _MOTION_RUNGS = {
            "Units per sec2,Trapezoidal,AccelJerk,DecelJerk,% of Maximum,Disabled,Programmed,0,None);",
     "MAS": "MAS(Axis_Cip_Drive,MotionInstr1,All,No,DecelRate,Units per sec2,No,DecelJerk,% of Time);",
     "MRP": "MRP(Axis_Cip_Drive,MotionInstr1,Absolute,Actual,0);",
-    # Added 2026-09-05 (James: "you can do the generation for unweighted
-    # instructions. MCSV is a motion instruction so be cautious it will need
-    # an axis... just like the MAJ MSF etc"). Every shape below is copied
+    # Added 2026-09-05, covering the unweighted instructions. MCSV is a
+    # motion instruction and needs an axis, the same as MAJ, MSF and the
+    # rest. Every shape below is copied
     # from a REAL call site in samples/local/, not composed from the manual
     # -- the corpus reference is given per instruction. All four are
     # single-axis, so they reuse the same Axis_Cip_Drive/MotionInstr1 pair

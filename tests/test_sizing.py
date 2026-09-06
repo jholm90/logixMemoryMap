@@ -151,8 +151,8 @@ def test_custom_string_type_data_member_rounds_to_nearest_8_tie_down():
 
 
 def test_bool_packing_run_broken_by_non_bool_member():
-    # James (2026-08-20): "BOOL/DINT/BOOL will take up 8+32+8 space where
-    # DINT/BOOL/BOOL will take up 32+8 space" -- a run of consecutive BOOLs
+    # 2026-08-20: BOOL/DINT/BOOL takes 8+32+8 of space where DINT/BOOL/BOOL
+    # takes 32+8 -- a run of consecutive BOOLs
     # shares one backing SINT, but a non-BOOL member breaks the run and the
     # next BOOL(s) get a fresh backing SINT. Mirrors Logix Designer's own
     # hidden-SINT-per-run XML shape (see parser/datatypes.py), not something

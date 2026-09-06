@@ -1,7 +1,7 @@
-# Shared by batch_l5x_to_acd.ps1 and batch_memory_capture.ps1 (James,
-# 2026-08-20: "i dont want to copy/paste from powershell everytime" -- both
-# scripts push their results straight to the repo so Claude can read them
-# without a manual paste). Dot-source this file, then call Push-RepoFile.
+# Shared by batch_l5x_to_acd.ps1 and batch_memory_capture.ps1. Results
+# should never need copy/pasting out of PowerShell by hand (2026-08-20), so
+# both scripts push straight to the repo instead. Dot-source this file, then
+# call Push-RepoFile.
 #
 # Straight to main, no branches/merges -- commits local results FIRST (so
 # they're safe in a commit, not sitting as uncommitted changes), then
@@ -52,8 +52,8 @@ function Push-RepoFile {
     }
 }
 
-# James, 2026-08-30: "you should cover ALL files in that project
-# directory" -- broader than Push-RepoFile's one-file-at-a-time scope.
+# 2026-08-30: the push must cover ALL files in the project directory,
+# broader than Push-RepoFile's one-file-at-a-time scope.
 # Stages and pushes EVERYTHING dirty in the working tree (git add -A,
 # not just tracked files -- new/untracked files get swept in too), one
 # commit, same fetch/rebase/push-to-main mechanism as Push-RepoFile.

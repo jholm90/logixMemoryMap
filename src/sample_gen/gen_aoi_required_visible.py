@@ -1,9 +1,8 @@
-"""AOI Parameter Required/Visible flag sweep (James, 2026-08-23): "You need
-more work on your aoi analysis. Use some non-motion AOIs to start. The
-samples I gave had the required flag checked for non-inout tags and this
-requires a tag to be entered for that parameter on the calling instance.
-If the required flag is not set, but the visible one is - it requires a
-value to be present on the calling instance. If neither required or
+"""AOI Parameter Required/Visible flag sweep (2026-08-23), on non-motion
+AOIs. Real semantics: the reference samples set the required flag on
+non-InOut parameters, which forces a tag to be entered for that parameter
+on the calling instance. If required is not set but visible is, the call
+site requires a value to be present. If neither required or
 visible is set then there is nowhere for that parameter to be used on the
 calling instance and it is hidden from the ladder line and only visible in
 the tag browser."
@@ -11,7 +10,7 @@ the tag browser."
 Real semantics confirmed against the corpus, not guessed: every prior
 generator batch hardcoded Required="false" Visible="false" on every
 Input/Output parameter (see builders.py's `_aoi_parameter_xml`, "a safe
-default matching most of his examples") -- never actually varied it. This
+default matching most of the reference examples") -- never actually varied it. This
 generator does, using the same non-motion, plain-atomic-type AOI shapes
 gen_aoi_sweep.py already established.
 
@@ -112,7 +111,7 @@ def group_def_flag_combos() -> None:
                   f"AOI with 4 DINT Input params, all Required={flags['required']}/Visible={flags['visible']}")
 
     # Mixed: 2 required, 1 visible-optional, 1 hidden -- the realistic case
-    # (James's own real AOIs mix all three within one definition).
+    # (a real AOIs mix all three within one definition).
     mixed = [
         MemberSpec("P0", "DINT", required=True, visible=True),
         MemberSpec("P1", "DINT", required=True, visible=True),

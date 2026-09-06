@@ -1,5 +1,5 @@
 """Servo-axis COUNT scaling, single-axis vs dual-axis drive modules
-(James, 2026-09-02: "generate 10+ tests to validate this. compare the
+(2026-09-02, "generate 10+ tests to validate this. compare the
 difference between s/d modules that are dual/single axis. Overall requires
 a power supply, optional regen module and 1..20 axis per rack").
 
@@ -22,7 +22,7 @@ Comparison pairs at matched total axis count (2/4/6/8/12/16/20) isolate
 whether Studio 5000 charges the same real memory for N axes regardless of
 whether they come from N single-axis modules or N/2 dual-axis modules, or
 whether the module-count itself (not just axis-count) drives cost --
-directly answers James's question, not just "does axis count scale."
+directly answers the question, not just "does axis count scale."
 
 Regen module (2198-RP200, real corpus, no axis of its own -- shares the
 power supply's DC bus) included on 3 files as an explicit on/off toggle to
@@ -146,7 +146,7 @@ def main() -> None:
         regen_tag = "_regen" if with_regen else ""
         out_name = f"axis_scale_n{n_axes:02d}_{shape}{regen_tag}"
         description = (
-            f"Servo-axis count scaling (James, 2026-09-02): {n_axes} total real servo axes built from "
+            f"Servo-axis count scaling (2026-09-02): {n_axes} total real servo axes built from "
             f"{'single-axis 2198-S086-ERS3 drives (1 axis/module)' if shape == 'single' else 'dual-axis 2198-Dxxx-ERS3 drives (2 axes/module, one module hosting two real AXIS_CIP_DRIVE tags)'}, "
             f"one 2198-P208 power supply (its own on-board axis = the real 'DC BUS axis'), "
             f"{'plus one 2198-RP200 regen module (no axis of its own)' if with_regen else 'no regen module'}, "

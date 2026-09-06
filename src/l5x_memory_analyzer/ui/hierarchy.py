@@ -76,8 +76,8 @@ def build_hierarchy(
         # try scope.split(':', 1)[1] and crash the same way. Own top-level
         # group instead, same fix shape as the others above.
         "module_io": "I/O Modules",
-        # alarm_condition (2026-09-04, James: "I also want a separate tree
-        # section for the alarms just like you did for the axis"). Path is
+        # alarm_condition (2026-09-04): alarms get their own tree section,
+        # the same way axes do. Path is
         # "alarms/<host tag>", which contains "/" but whose first segment
         # is not a Program/Controller scope -- so without this entry the
         # split below would have produced a bogus "Program: " group from
@@ -91,7 +91,7 @@ def build_hierarchy(
         "alarm_condition": "Alarm Conditions",
     }
 
-    # Axis/motion tags (James, 2026-08-28: "the UI treeview needs to have
+    # Axis/motion tags (2026-08-28, "the UI treeview needs to have
     # the Axis (CIP_Drive, Virtual, etc) broken out at the root level").
     # These are ordinary Controller/Program-scoped tags in the L5X (same
     # category/path shape as any other tag), just typed as one of the
@@ -210,9 +210,9 @@ def _nest_programs_under_tasks(children: list[dict], program_to_task: dict[str, 
             # No owning Task. In real Logix that means the program is
             # UNSCHEDULED -- the controller fault handler / power-up
             # handler live here, as do programs a developer has parked out
-            # of the scan. James, 2026-09-05: "I take it your code didn't
-            # miss the controller error handling task/program for size
-            # calcs.. be sure this is visible in the web gui."
+            # of the scan. 2026-09-05: the controller error-handling
+            # task/program must be included in the size calculation and
+            # visible in the web UI.
             #
             # It was never missed in the SIZING -- report.py counts every
             # <Program> element for the shell decomposition whether or not

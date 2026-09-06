@@ -1,4 +1,4 @@
-"""CAM structure byte-size count sweep (James, 2026-08-26: "touch these and
+"""CAM structure byte-size count sweep (2026-08-26, "touch these and
 finalize them now" -- includes the CAM sweep flagged in OPEN_QUESTIONS.md
 OQ-PREDEFINED item 8 as the one remaining concrete next step).
 

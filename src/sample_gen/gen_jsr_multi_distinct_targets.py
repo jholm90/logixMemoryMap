@@ -1,8 +1,8 @@
 """OQ-JSRPARAMCOST: are multiple DISTINCT subroutines called from the same
 caller routine simply additive (sum of each target's own A(n)), or is
 there a real, currently-unmodeled marginal cost for having more than one?
-(2026-08-31, James: "Just confirming that you did multiple subroutines
-per program in your testing" -- direct check confirms no.)
+(2026-08-31: a check of whether multiple subroutines per program had ever
+been tested -- they had not.)
 
 Every JSR calibration file this project has ever built (old corpus and
 today's target-content-scale/mid-chain files alike) calls exactly ONE
@@ -44,7 +44,7 @@ N_TARGETS = (1, 3, 5)
 
 def _target_xml(name: str) -> str:
     # 0-param leaf target, no SBR/RET -- the real, representative shape
-    # for a 0-param subroutine (James, 2026-08-31, confirmed against the
+    # for a 0-param subroutine (2026-08-31, confirmed against the
     # real corpus in samples/local/, see gen_jsr_target_content_scale.py).
     return (
         f'<Routine Name="{name}" Type="RLL">'

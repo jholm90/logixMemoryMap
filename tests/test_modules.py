@@ -80,7 +80,7 @@ def test_module_config_and_connection_sizes_parsed_from_real_attributes():
 
 
 def test_module_defined_bytes_computed_from_structure_content():
-    # 2026-08-27, James: the real number is the auto-generated
+    # 2026-08-27: the real number is the auto-generated
     # "Module-Defined" data type's own member-sum size, not the (often
     # absent) InputSize/OutputSize attribute -- InputTag's Structure here
     # has BOOL(4) + DINT(4) = 8, ConfigTag's has SINT(1) = 1, total 9,
@@ -92,7 +92,7 @@ def test_module_defined_bytes_computed_from_structure_content():
 
 
 def test_module_profiles_kept_separate_per_io_direction():
-    # James, 2026-08-27: "add records from the L5X module profile as a
+    # 2026-08-27: "add records from the L5X module profile as a
     # checkable item" -- in/config profiles are DIFFERENT strings (same
     # base module type, different :I:/:C: suffix), not one shared value.
     modules = parse_modules(_root(_MODULES_XML))

@@ -43,9 +43,9 @@ Local Flask server, vanilla JS/SVG squarified treemap, no CDN dependency.
       128 locals / 85 internal rungs against a corpus that topped out near
       6/2/1), and extra internal routines. `gen_aoi_structure.py`, 56
       files, one property per group. Deliberately NOT fitted per-AOI-name
-      against the definitions shared across James's projects — James,
-      2026-09-05: *"I plan on sharing this for people outside my company
-      and their code will be very different and use different aois."*
+      against the definitions shared across the projects: the tool is going
+      to people outside the organisation whose code will be different and
+      whose AOI libraries will be unfamiliar.
       The model predicts a dead-flat line across every group except the
       three scale sweeps, so any spread in the captured numbers is an
       unpriced item with no disentangling required. **Blocked on capture.**
@@ -67,13 +67,13 @@ a tracked open question with a generator already built.
       confirmed
 
 ## Phase 4b — Logic sizing round 2 (other instructions)
-Scope from real instruction-frequency data across James's 4 production
+Scope from real instruction-frequency data across the 4 production
 files; PID and ASCII-module instructions dropped (zero real occurrences).
 - ✅ Timers/counters, motion+cam/route, GSV/SSV, array/file, string
       instructions, indirect addressing — all CONFIRMED and wired
 - 🟡 Math/compare[^cmpcpt] -- REAL-destination CPT is now exact on all 47
-      captured calls (2026-09-04, including the SINT/INT->DINT widening
-      James pointed at and the LINT-is-free correction). Integer-dest
+      captured calls (2026-09-04, including the SINT/INT->DINT widening and
+      the LINT-is-free correction). Integer-dest
       two-tier mixes are 19/23; four points sit exactly -4 on an operator
       ARRANGEMENT effect that the current probes demonstrably cannot
       resolve. 58-file `gen_cpt_closeout.py` batch covers every remaining
@@ -91,7 +91,7 @@ files; PID and ASCII-module instructions dropped (zero real occurrences).
       separated by exactly +432, the routine shell, and nothing else), so
       ST reuses the weight table rather than duplicating it. ST comments
       and blank lines are FREE -- count, length and position all -- which
-      was James's explicit question and did NOT transfer from the RLL
+      was an explicit question and did NOT transfer from the RLL
       result, since an ST comment lives inside the compiled source rather
       than beside it.
 - 🟡 ST assignment expressions[^stexpr]
@@ -99,7 +99,7 @@ files; PID and ASCII-module instructions dropped (zero real occurrences).
 ## Phase 4d — Motion structures
 - ✅ AXIS_* / MOTION_GROUP / COORDINATE_SYSTEM predefined sizes, own root
       group in the UI tree
-- 🟡 11 instructions with James-verified call shapes generated but not yet
+- 🟡 11 instructions with hand-verified call shapes generated but not yet
       captured (BRK/COS/LOG/SIN/PID/FBC/STOR/MCD/MCS/MCSV/MAG, on
       AXIS_VIRTUAL so there is no module overhead to net out) -- see
       OQ-VERIFINSTR
@@ -111,9 +111,8 @@ files; PID and ASCII-module instructions dropped (zero real occurrences).
 
 ## Phase 6 — Polish
 - ✅ Safety-project warning (UI banner + CLI stderr)[^safety]
-- ✅ Generator-side safety check (James, 2026-09-03: "you need to do
-      better checking on safety stuff... verify safety stuff cannot go on
-      non-safety processors") -- `sample_gen.lint.lint_l5x`'s new
+- ✅ Generator-side safety check (2026-09-03): verify that safety-rated
+      hardware cannot be placed on a non-safety processor. `sample_gen.lint.lint_l5x`'s new
       `safety_module_on_non_safety_controller` check flags any Module
       with `SafetyEnabled="true"` in a file with no `<SafetyInfo>`
       element. Real trigger: 5069-IB8S/A and 5069-OBV8S/A rebuilt into a
@@ -122,8 +121,8 @@ files; PID and ASCII-module instructions dropped (zero real occurrences).
       fix from 2026-08-27 first. See docs/SAMPLE_GENERATION.md's "Before
       hand-picking catalogs into any script" section.
 - ✅ Wire Safety Task/Program/Routine shell as its own sizing calculation
-      (James, 2026-09-03: "they are safety tasks and safety programs
-      therefore they need seperate sizing calculations") -- new flat
+      (2026-09-03): safety tasks and safety programs need their own sizing
+      calculation. New flat
       `safety_task_program_shell` (296 bytes/file) replaces the old
       ordinary-shell overcharge for a Safety task/program pair. Live-
       verified exact at fw v31-v33, 0.087% residual at v34-v38 (see
@@ -140,7 +139,7 @@ files; PID and ASCII-module instructions dropped (zero real occurrences).
       group in the UI tree (2026-09-04, alongside Axis Definitions).
 - 🔴 ALMD/ALMA *instruction* overhead -- still open, and now the higher-
       value half: `almd_minimal`/`almd_realtext` both fail to build with
-      "Invalid number of arguments". The ALMD faceplate James sent shows 7
+      "Invalid number of arguments". The real ALMD faceplate shows 7
       operand slots with NO `In` operand (the input is the rung condition),
       and the call was rebuilt to match, but it has not been re-captured
       since. See OQ-BUILDFAIL-OPEN.
@@ -165,7 +164,7 @@ ordinary UDT-member recursion already covers a produced/consumed tag's
 RESOLVED_QUESTIONS.md.
 **Zero-connection modules made visible 2026-09-02** (`report.py`):
 modules with no Connection/stated size of their own (e.g. a bare
-`ETHERNET-BRIDGE` IP-only fan-out, James's real "placeholder for IP
+`ETHERNET-BRIDGE` IP-only fan-out, a real "placeholder for IP
 addresses with no PLC logic connections" pattern) were being silently
 skipped with no SizeEntry and no SizeError; now flagged with an explicit
 SizeError (visibility-only, no total changed) — `"Local"` itself stays

@@ -1,9 +1,9 @@
 """OQ-JSRPARAMCOST: extends gen_jsr_multi_distinct_targets.py (which only
 covered N=1/3/5) to real-scale distinct-target COUNTS, and separately
 isolates target-routine NAME LENGTH as its own variable -- both flagged as
-missing by James, 2026-08-31: "You should have 5/10/15/20/50 subroutines
-to test quantity and different routine name lengths in another test set
-for validation of that data that was missed."
+missing by 2026-08-31: 5/10/15/20/50 subroutines to test quantity, plus a
+separate test set varying routine name length, validating data that was
+missed.
 
 report.py's jsr_target_param_counts mechanism (dict keyed by target name,
 each charged A(n) once) has no name-length term at all today -- unlike
@@ -48,7 +48,7 @@ OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "logi
 N_TARGETS_SCALE = (5, 10, 15, 20, 50)
 # 40 is Rockwell's real Logix identifier length cap (tag/routine/program/AOI
 # names all share it) -- NOT a round-number choice. Originally 48 here;
-# James's real l5x2acd run (2026-08-31) failed to import both namelen48
+# a real l5x2acd run (2026-08-31) failed to import both namelen48
 # files (this one and gen_program_multi_distinct_scale.py's) with the
 # generic XMLSrv_E_IMPORT_ABORTED_NO_CHANGES wrapper, no per-file detail,
 # while every other length (4/8/16/32, all <=40) converted clean --
@@ -83,7 +83,7 @@ def _padded_name(prefix: str, i: int, total_length: int, index_width: int) -> st
 
 def _target_xml(name: str) -> str:
     # 0-param leaf target, no SBR/RET -- real corpus norm for 0-param
-    # targets (James, 2026-08-31; confirmed against samples/local/).
+    # targets (2026-08-31, ; confirmed against samples/local/).
     return (
         f'<Routine Name="{name}" Type="RLL">'
         f"<RLLContent>{rung_xml(0, 'NOP();')}</RLLContent>"
@@ -113,7 +113,7 @@ def group_quantity_scale() -> None:
             f"MainRoutine calls {n} genuinely DISTINCT 0-param leaf subroutines, fixed 16-char "
             f"target name length across every file in this group -- OQ-JSRPARAMCOST distinct-"
             f"target-COUNT scale isolation (extends jsr_multi_distinct_targets_{{01,03,05}} out "
-            f"to real-project scale, James 2026-08-31: 'test quantity ... in another test set "
+            f"to real-project scale, 2026-08-31: 'test quantity ... in another test set "
             f"for validation of that data that was missed'). Straight-line check: does the "
             f"already-confirmed +180 bytes/target from N=1/3/5 keep holding at N={n}, or does "
             f"real Capacity diverge from linear at scale?",
@@ -137,9 +137,9 @@ def group_name_length() -> None:
             f"MainRoutine calls a FIXED {FIXED_COUNT_FOR_NAMELEN} genuinely distinct 0-param "
             f"leaf subroutines, target routine name length held at exactly {length} chars across "
             f"every file in this group (count is the only thing held constant here, unlike "
-            f"group_quantity_scale) -- OQ-JSRPARAMCOST target-NAME-LENGTH isolation, James "
-            f"2026-08-31: 'different routine name lengths in another test set for validation of "
-            f"that data that was missed'. report.py's jsr_target_param_counts A(n) charge has no "
+            f"group_quantity_scale) -- OQ-JSRPARAMCOST target-NAME-LENGTH isolation, "
+            f"2026-08-31: different routine name lengths, as a separate test set "
+            f"validating data that was missed." report.py's jsr_target_param_counts A(n) charge has no "
             f"name-length term today, unlike tags/UDTs/AOI definitions (all confirmed real "
             f"name-length bucket costs) -- tests whether that's a real, currently-unmodeled gap "
             f"or genuinely free the way routine logic content itself is not.",

@@ -1,4 +1,4 @@
-"""Orphaned AOI definition cost -- James, 2026-08-30, real open question found
+"""Orphaned AOI definition cost -- 2026-08-30: real open question found
 while reviewing a real confidential customer project (not committed, never
 named here): 12 of that project's 39 declared AddOnInstructionDefinitions
 had ZERO real tag anywhere (even transitively, through another AOI's own
@@ -62,7 +62,7 @@ def _utility_aoi() -> tuple[str, list[MemberSpec]]:
     5 DINT local scratch tags. Rough scale-match to the real orphaned AOIs
     found in the source review (small date/utility helpers), not a
     trivial single-param stub."""
-    # REAL BUG FOUND 2026-08-31 (James, real Studio 5000 verify error
+    # REAL BUG FOUND 2026-08-31 (real Studio 5000 verify error
     # class found via composite_realistic_02/03.ACD, same root cause
     # found here by lint.py's new aoi_call_arg_count_mismatch check):
     # these params defaulted required=False/visible=False (MemberSpec's

@@ -3,12 +3,10 @@
 Source: every real file in `samples/local/` (54 files, including the new
 `DnR_Personal/` batch), scanned for distinct `<Module CatalogNumber=...>`
 values. 120 distinct catalog numbers found. This is Phase 3's deferred
-`Controller/Modules` parsing (James, 2026-08-20: "leave the module stuff
-to later"), now picked back up — **2026-08-22: high priority, testing
+`Controller/Modules` parsing, deferred 2026-08-20 and now picked back up — **2026-08-22: high priority, testing
 starts next.**
 
-Scope for this pass, per James: **Ethernet and local (in-rack) modules
-only.** ControlNet and DeviceNet are explicitly skipped for now — see
+Scope for this pass: **Ethernet and local (in-rack) modules only.** ControlNet and DeviceNet are explicitly skipped for now — see
 bottom of this doc, added to the features backlog.
 
 ## Topology note (matters for connection/RPI sizing, not just tag size)
@@ -25,8 +23,8 @@ hierarchy, confirmed across the corpus:
   *second, remote* 1756 rack list `ParentModule="Sorter2_EN2T"`. Same
   pattern for `1734-AENT`/`1734-AENTR` (Point I/O) and `1794-AENT` (FLEX
   I/O) heading a distributed I/O bank — this is exactly the "1756 modules
-  go in 1756 racks and need an Ethernet card... to access them" case James
-  flagged. Sizing needs to walk this chain, not assume everything is one
+  go in 1756 racks and need an Ethernet card to access them" case. Sizing
+  needs to walk this chain, not assume everything is one
   flat local rack.
 
 ## A. Controllers (chassis root, `ParentModule="Local"`)
@@ -95,8 +93,8 @@ hierarchy, confirmed across the corpus:
 
 ## Skipped for now — added to the features backlog
 
-James, 2026-08-22: skip ControlNet/DeviceNet for now, add to the features
-list.
+2026-08-22: ControlNet and DeviceNet are skipped for now and added to the
+features backlog.
 
 - **1756-CNB/D** — ControlNet bridge
 - **1756-DNB** — DeviceNet bridge
@@ -111,10 +109,10 @@ list.
 ## Module data-size patterns (confirmed 2026-08-22 — read before building
 ## any more module tests)
 
-James: "we can have Io modules from some vendors that have different
-sizing based on the internal config setup — I can have the same catalog
-Phoenix rack with 2 input card or 30 input cards, you need to be careful
-looking at the data sizes in the l5x module properties." Confirmed exactly
+Some vendors' I/O modules size differently depending on their internal
+configuration — the same catalog Phoenix rack can hold 2 input cards or 30
+— so the data sizes in the L5X module properties have to be read rather
+than inferred from the catalog number. Confirmed exactly
 right, and there isn't just one pattern — four real, structurally distinct
 ways a module's data size shows up in the L5X, found across the corpus so
 far:
@@ -132,7 +130,7 @@ far:
    couplers): size is **not catalog-derived at all** — it's the explicit
    `PrimCxnInputSize`/`PrimCxnOutputSize` attributes on `<Communications>`,
    chosen per-instance in Studio 5000 when the module was added. This is
-   James's exact caution, confirmed: `IFM_LugLoader1` in
+   the exact caution, confirmed: `IFM_LugLoader1` in
    `Emporium_2025_05_28r01.L5X` is 450 input / 8 output bytes, and nothing
    about the catalog number says so — the `Structure` `DataType` name even
    encodes the byte count directly (`AB:ETHERNET_MODULE_SINT_450Bytes:I:0`).
@@ -154,12 +152,12 @@ rack-level (not module-level) grouping.
 - **1756 local** (pattern 1): 1/3/10 `1756-IB16` backplane modules —
   captured clean, real data in `manifest.csv`.
 - **Generic Ethernet / config-variance** (pattern 3) — the direct test of
-  James's caution: 4 files, all `CatalogNumber="ETHERNET-MODULE"`, at
+  the caution: 4 files, all `CatalogNumber="ETHERNET-MODULE"`, at
   input/output byte sizes 2/2, 8/8, 32/16, 450/8 (the real IFM value) —
   captured clean. Real Capacity does move differently across these,
   confirming "config drives size, not catalog."
 
-**2026-08-23, James: "purge the old shit... new stuff only."** Dropped
+**2026-08-23: dropped, new catalogs only.** Removed
 from this batch entirely, never once converted successfully across
 several days of retries (`XMLSrv_E_IMPORT_ABORTED_NO_CHANGES` on every
 `l5xgit` attempt, no schema-level detail available to diagnose from here):
@@ -174,12 +172,12 @@ DataTypes (`AB:1734_DI8:C:0`, `AB:5000_DI16:C:0`, etc.) that only resolve
 if the exact module's EDS/AOP is registered in the target Designer
 install's catalog — which the XML shape being "real" (corpus-derived)
 doesn't guarantee on a machine that's never added that specific catalog
-entry. James is rebuilding these himself from a live Studio 5000 project
-rather than iterating blind on this theory. The real corpus catalog
+entry. These are being rebuilt from a live Studio 5000 project rather than
+iterated on blind. The real corpus catalog
 inventory above (sections A-D) stays accurate regardless — this is about
 generating fresh, importable L5X, not about what real fleets use.
 
-Drives (2198-*/PowerFlex) intentionally skipped this round per James.
+Drives (2198-*/PowerFlex) intentionally skipped this round.
 
 ## Next step
 

@@ -1,4 +1,4 @@
-"""Per-instruction logic-sizing sweep (James, 2026-08-21): "examine the
+"""Per-instruction logic-sizing sweep (2026-08-21): "examine the
 difference between XIC/OTE and MVM/MEQ/CPT/MAM all the big juicy ones...
 hammer each individual instruction and make sure you can compile it
 properly. we have 30% of the instructions in the sample code so i'd just
@@ -21,9 +21,9 @@ declared pool, tag-data cost is constant across every file in this sweep,
 so any Capacity movement across the count sweep is attributable to the
 instruction/rung text itself.
 
-**T_ADD removed 2026-08-22 (James's catch):** T_ADD is a real, common
+**T_ADD removed 2026-08-22 (spot-check):** T_ADD is a real, common
 Rockwell-authored AddOnInstructionDefinition ("DateTime := DateTime +
-Time", found in 18+ of James's real corpus files), not a native
+Time", found in 18+ of a real corpus files), not a native
 instruction -- a real research failure earlier in this project mis-
 classified it during the corpus mnemonic scan. The removed test called
 `T_ADD(D0,D1,D2,D3)` with 4 plain DINTs and no AOI definition anywhere in
@@ -35,7 +35,7 @@ instruction sweep. The 5 already-generated `instr_t_add_n*` files and
 their manifest rows are removed, not just flagged for re-capture --
 there's no fix that makes the original test meaningful.
 
-Also confirmed the same day (James: "Curious if the SDK had L5X->ACD with
+Also confirmed the same day ("Curious if the SDK had L5X->ACD with
 controller validation/program checking"): `samples/convert_log.csv` shows
 every T_ADD/CPS/COP/FLL/BTD/SIZE file (including the ones with the
 array-subscript bug fixed nearby) converted with `l5x2acd` status "ok" --
@@ -108,7 +108,7 @@ _POOL_TAGS_XML = _pool_tags_xml()
 # best-effort atomic-typed operands where the real usage involved a
 # specialized structure this project doesn't model yet -- if Studio 5000
 # rejects one of those specifically, that's useful signal on its own
-# ("hammer each individual instruction and make sure you can compile it").
+# -- each individual instruction is hammered until it compiles.
 INSTRUCTIONS: dict[str, "callable"] = {
     "XIC": lambda i: f"XIC({_b(i)})OTE({_b(i+1)});",
     "XIO": lambda i: f"XIO({_b(i)})OTE({_b(i+1)});",
@@ -133,7 +133,7 @@ INSTRUCTIONS: dict[str, "callable"] = {
     "LEQ": lambda i: f"LEQ({_d(i)},{i % 10})OTE({_b(i)});",
     "LIM": lambda i: f"LIM({_d(i)},{_d((i+1)%10)},{_d((i+2)%10)})OTE({_b(i)});",
     "CPT": lambda i: f"CPT({_r(i)},({_d(i)}+{_d((i+1)%10)})*{_r((i+1)%10)}-{_r((i+2)%10)}/2+1.5);",
-    # Real corpus (2026-08-22 re-check, James's spot-check catch): an
+    # Real corpus (2026-08-22 re-check, the spot-check catch): an
     # ARRAY-typed tag reference always needs an explicit [index] subscript
     # -- bare "ARR0" (no bracket) is only valid Rockwell syntax when the
     # tag itself is a scalar UDT/AOI instance (real examples:
@@ -150,7 +150,7 @@ INSTRUCTIONS: dict[str, "callable"] = {
     "CONCAT": lambda i: f"CONCAT({_sd(i)},{_sd((i+1)%5)},{_sd((i+2)%5)});",
     "MID": lambda i: f"MID({_sd(i)},2,1,{_sd((i+1)%5)});",
     "DELETE": lambda i: f"DELETE({_sd(i)},1,1,{_sd((i+1)%5)});",
-    # James's own Studio-5000-verified sample (COP_Samples.L5X, 2026-08-22)
+    # the Studio-5000-verified sample (COP_Samples.L5X, 2026-08-22)
     # compiles SIZE(COP_Source,0,COP_Size); against a plain DINT[10] array
     # -- bare tag name, NO [index] subscript and no .DATA reach-in. That
     # directly contradicts the bracketed/`.DATA[0]` version this used to
@@ -213,7 +213,7 @@ def group_lbl_jmp() -> None:
     # LBL/JMP as a pair -- each "count" unit is one LBL rung + one JMP rung
     # jumping to it, so labels stay locally satisfied.
     #
-    # James, 2026-08-22 (confirmed the OQ-LBLJMP-STALE batch failure was a
+    # 2026-08-22: (confirmed the OQ-LBLJMP-STALE batch failure was a
     # real bug, not just the stale-ACD-cache artifact): "lbl needs
     # something after it, LBL(thisLabel); will fail - LBL(thisLabel)NOP();
     # will pass." A bare LBL with nothing following it on the same rung
@@ -232,8 +232,8 @@ def group_lbl_jmp() -> None:
 def group_tag_vs_literal() -> None:
     # Does populating an instruction with real tag operands vs pure literal
     # constants change anything? Same CPT pattern, only the operand source
-    # differs. James: "i think theres even a level we should test if the
-    # instructions are populated with tags."
+    # differs -- worth testing whether instructions populated with tags
+    # behave differently from ones populated with constants.
     count = 1000
     rungs_tags = rungs_xml(count, lambda i: f"CPT({_r(i)},({_d(i)}+{_d((i+1)%10)})*{_r((i+1)%10)}-{_r((i+2)%10)}/2+1.5);")
     l5x = build_l5x(target_name="CptTags", tags_xml=_POOL_TAGS_XML, extra_rungs_xml=rungs_tags)
@@ -245,9 +245,8 @@ def group_tag_vs_literal() -> None:
 
 
 def group_comment_spotcheck() -> None:
-    # 1-2 spot checks at real scale (not the whole matrix again) -- James:
-    # "i think we can assume (do one/two spot tests) that rung comments are
-    # not going to count."
+    # 1-2 spot checks at real scale (not the whole matrix again): rung
+    # comments are assumed not to count, confirmed by spot test.
     count = 5000
     rungs_no_comment = rungs_xml(count, INSTRUCTIONS["CPT"])
     l5x = build_l5x(target_name="CptNoComment", tags_xml=_POOL_TAGS_XML, extra_rungs_xml=rungs_no_comment)

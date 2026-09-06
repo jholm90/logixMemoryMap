@@ -1,7 +1,7 @@
 """Point I/O RACK tests -- multiple real modules mounted together on ONE
 adapter, not the one-module-at-a-time shape gen_module_sweep.py already
-covers (2026-08-27, James: "a point io rack, one for each type of module
-and on other test with multiple varied modules in one rack").
+covers (2026-08-27): a Point I/O rack with one of each module type, plus a
+second test with multiple varied modules sharing one rack.
 
 Two real racks, each extracted directly from samples/local/ (gitignored)
 as the adapter + its full set of real children under ONE real 1734-AENTR/C,
@@ -12,11 +12,11 @@ as everywhere else in this project). Genericized the same way as
 gen_module_sweep.py: Name -> RackId_<Catalog>, Ethernet Address ->
 placeholder, ExtendedProperties/Description/Comments stripped.
 
-CORRECTED 2026-08-31 (James, after noticing isolated cards/big gaps in
-the two racks: "you will always position the card's slot number
-dynamically during project creation. the slot number is a variable that
-is meant to be modified by the creation of the module and is not tied to
-the card itself like firmware or io count etc."). This file previously
+CORRECTED 2026-08-31, after isolated cards and large gaps were noticed in
+the two racks. A card's slot number is always assigned dynamically during
+project creation: the slot is a variable set when the module is created,
+not a property of the card itself like firmware or I/O count. This file
+previously
 kept each module's real source-file slot Address "AS-IS," treating it as
 meaningful real corpus data -- wrong: slot position is an installation-
 time choice, not a catalog fact, so preserving it just reproduced
@@ -910,11 +910,11 @@ _CHILD_PORT_RE = re.compile(r'(<Port Id="1" Address=")\d+("\s*Type="PointIO"\s*U
 
 
 def _reslot_children(xml: str) -> str:
-    """James, 2026-08-31 (after "one io card in slot 6" review): "you will
-    always position the card's slot number dynamically during project
-    creation. the slot number is a variable that is meant to be modified
-    by the creation of the module and is not tied to the card itself like
-    firmware or io count etc." Real correction, not a stylistic one --
+    """2026-08-31, after a review found a lone I/O card sitting in slot 6.
+    A card's slot number is always assigned dynamically during project
+    creation: the slot is a variable set when the module is created, not a
+    property of the card itself like firmware or I/O count. Real
+    correction, not a stylistic one --
     this file's earlier docstring claimed preserving each child's real
     source-file slot Address was itself meaningful real corpus data worth
     keeping ("kept AS-IS from the real file"); that was wrong. Slot

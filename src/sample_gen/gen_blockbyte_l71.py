@@ -1,9 +1,9 @@
 """1756-L71 counterpart of blockbytetest_dint120000.L5X (samples/generated/
-tags/, built via `sample_gen.cli tags`) -- James, 2026-08-30: "Youll also
+tags/, built via `sample_gen.cli tags`) -- 2026-08-30: "Youll also
 have to make that test for the l71 on the same firmware to get the
 comparison." That earlier file tests the "blocks" side of the question
 (1756-L81E, an L8x-family processor -- Studio 5000 labels its Capacity
-readout "blocks", per James, whereas 1769/L7x-family readouts are labeled
+readout "blocks", as specified, whereas 1769/L7x-family readouts are labeled
 "bytes"). This file is the direct comparison point: byte-identical content
 (same 120,000-element DINT array, nothing else) on 1756-L71 (L7x family,
 "bytes"-labeled), same firmware (35.05/35.11) so firmware isn't a
@@ -43,7 +43,7 @@ def main() -> None:
     )
     _write(
         l5x, "blockbytetest_l71_dint120000",
-        "1756-L71 (L7x family, \"bytes\"-labeled per James) counterpart of "
+        "1756-L71 (L7x family, \"bytes\"-labeled as specified) counterpart of "
         "blockbytetest_dint120000.L5X (1756-L81E, \"blocks\"-labeled) -- byte-identical content "
         "(single 120,000-element DINT array tag, nothing else), same firmware 35.05/35.11, "
         "isolating whether the two families' Capacity readouts are numerically the same unit or a "

@@ -20,14 +20,14 @@ Original round 1 docs below, unchanged.
 
 ---
 
-OQ-XPROGREF (James, 2026-08-22: "add it to the next batch"). Real Logix
+OQ-XPROGREF (2026-08-22: add it to the next batch). Real Logix
 has no direct cross-program tag-addressing syntax in ladder logic --
 confirmed by searching the entire real corpus (47 files, including several
 with real `Usage="Public"` program tags) for any `Program:Tag`-style
-reference inside rung Text: none exists. What James actually described
-earlier in this project ("my 311D program has a couple gGlobal tags and
-local program alias inside each program referencing that controller tag")
-is the real mechanism: a Controller-scoped global tag, with each program
+reference inside rung Text: none exists. The real mechanism, described
+earlier in this project against the 311D program, is a handful of global
+tags with a local program alias inside each program referencing that
+controller tag: a Controller-scoped global tag, with each program
 that needs it declaring its own same-purpose Local alias pointing at that
 global (alias_tag_xml, already confirmed real shape from OQ-ALIASSIZE).
 

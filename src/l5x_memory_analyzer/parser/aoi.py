@@ -25,7 +25,7 @@ _STORAGE_USAGES = {"Input", "Output"}
 
 
 def _member_from_element(el: ET.Element) -> Member:
-    # Real bug, found 2026-08-27 auditing James's own corpus: <Parameter>
+    # Real bug, found 2026-08-27 auditing the corpus: <Parameter>
     # and <LocalTag> elements carry their array size on a "Dimensions"
     # (PLURAL) attribute -- confirmed against 80 real <Parameter
     # Dimensions="N"> and 191 real <LocalTag Dimensions="N"> elements
@@ -35,7 +35,7 @@ def _member_from_element(el: ET.Element) -> Member:
     # instead -- see parser/datatypes.py, correct there) which never
     # matched, so every array-dimensioned AOI Parameter/LocalTag was
     # silently sized as a scalar. Confirmed real-world impact: 24 of
-    # James's 64 files carry an AOI with an array-typed local/param
+    # the 64 files carry an AOI with an array-typed local/param
     # (CAM_PROFILE-backed camming AOIs are the most common real case).
     return Member(
         name=el.get("Name"),

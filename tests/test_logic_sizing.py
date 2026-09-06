@@ -793,10 +793,9 @@ def test_build_report_reports_non_rll_routine_as_a_coverage_gap():
     _XML carries a non-RLL routine that parse_rll_routines drops on the
     floor. Before sizing/coverage.py that produced a silently understated
     total with nothing in the output to hint at it -- the only thing that
-    ever caught it was someone reading the L5X by hand (2026-09-04, James:
-    "I need to make sure that in the long run all of the calculations are
-    done inside the python logic for the total project scripts and not just
-    claude in depth testing"). It now comes back as an ordinary SizeError,
+    ever caught it was someone reading the L5X by hand (2026-09-04). Every
+    calculation has to live in the engine itself rather than in an ad-hoc
+    analysis run alongside it. It now comes back as an ordinary SizeError,
     which is what the CLI, the UI and the CSV/XLSX export all render.
     """
     # Retargeted 2026-09-04: ST used to be the unsized language here, but

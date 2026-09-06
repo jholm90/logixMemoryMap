@@ -1,8 +1,8 @@
 """Full processor-catalog x firmware-version matrix for OQ-BASELINE-PROCFW
-(2026-08-25, James: "I want you to source from Rockwell all catalog
-processor numbers from the l7-l9 controllogx era and the 5069 processors
-... generate a full matrix of all catalog numbers and all versions ...
-within the 31-38 firmware range. Skip v30 ... sorted so my PowerShell will
+(2026-08-25). Catalog processor numbers sourced from Rockwell across the
+L7-L9 ControlLogix era and the 5069 processors, built as a full matrix of
+every catalog against every firmware version in the 31-38 range. v30 is
+skipped. Sorted so the PowerShell capture run will
 test all v31, then all v32 etc.").
 
 CATALOG SOURCING (never guessed -- see the citation on each list below).
@@ -12,20 +12,20 @@ catalog risks a real Studio 5000 import failure and burns a test cycle for
 nothing:
 
   - ControlLogix 5580 (1756-L8x): L81E/L82E/L83E/L84E/L85E. Real
-    ProductCodes already in `wrapper.py`'s `_PRODUCT_CODES` (James's own
+    ProductCodes already in `wrapper.py`'s `_PRODUCT_CODES` (the
     fw_baseline exports).
   - CompactLogix 5380 (5069-Lxxx): 14 catalogs across the L306/L310/L320/
     L330/L340/L3100 tiers and their M/S2/S3 safety-suffix variants -- same
     source.
   - CompactLogix 5370 (1769-Lxx): 9 catalogs, real ProductCodes already in
-    wrapper.py's `_PRODUCT_CODES` (James's own fw_baseline exports).
-    RE-ADDED 2026-08-30 (James: "I got the L7 ahk stuff working and it's
+    wrapper.py's `_PRODUCT_CODES` (the fw_baseline exports).
+    RE-ADDED 2026-08-30 ("I got the L7 ahk stuff working and it's
     the same for the 1769 processors, please re-add the 1769 processors
     to the l5x test generation list") -- previously left out of this
     automated multi-firmware matrix entirely (only ever built as 9
     single-firmware/v35 `fw_baseline` files) because the AHK capture
     pipeline couldn't read a 1769's Capacity value without a manual
-    "Estimate" button click first; now that's resolved on James's end,
+    "Estimate" button click first; now that's resolved on the end,
     same fix as ControlLogix 5570 (L7x).
 
 NOT included, flagged rather than guessed:
@@ -47,7 +47,7 @@ NOT included, flagged rather than guessed:
     zero real corpus examples, same as L9x.
 
 FIRMWARE ATTRIBUTE TABLE -- confirmed from the existing l81_v31-v35/v38
-fw_baseline samples (James's own real per-firmware exports), NOT guessed
+fw_baseline samples (a real per-firmware exports), NOT guessed
 per-version except where explicitly flagged:
   v31: SoftwareRevision="31.02", no AutoDiagsEnabled/WebServerEnabled attrs
   v32: SoftwareRevision="32.04", no AutoDiagsEnabled/WebServerEnabled attrs
@@ -68,7 +68,7 @@ per-version except where explicitly flagged:
     v33-v35, PLUS a new DataExchangeId attribute (a real, project-unique
     GUID -- confirmed real from the l81_v38 sample, but that literal GUID
     value is per-EXPORT, not a firmware constant, so a fresh one is
-    generated per file here rather than reusing James's own).
+    generated per file here rather than reusing the).
   MinorRev="11" is constant across every confirmed sample regardless of
   MajorRev -- used unchanged throughout.
 
@@ -110,7 +110,7 @@ FIRMWARE_TABLE: list[tuple[str, str, str, bool]] = [
     ("33", "33.01", ' AutoDiagsEnabled="false" WebServerEnabled="false"', False),
     ("34", "34.01", ' AutoDiagsEnabled="false" WebServerEnabled="false"', False),
     ("35", "35.05", ' AutoDiagsEnabled="false" WebServerEnabled="false"', False),
-    # v36/v37 deliberately excluded 2026-08-28 (James: not asked for, told
+    # v36/v37 deliberately excluded 2026-08-28 (not asked for, told
     # to leave out) -- they were ASSUMED/unconfirmed firmware attributes
     # anyway (no real v36/v37 L5X sample ever existed in this project).
     # DataExchangeId filled in per-file at generation time (real attribute,
@@ -141,7 +141,7 @@ _5069_CATALOGS = [
     "5069-L330ER", "5069-L330ERMS2", "5069-L340ER", "5069-L340ERS2", "5069-L3100ERM",
 ]
 
-# James, 2026-08-31, real: "fwmatrix_v31_5069_l306erms3.L5X does not
+# 2026-08-31: real: "fwmatrix_v31_5069_l306erms3.L5X does not
 # support v31 firmware for the record ... all SIL3 requires v32 or
 # higher (5069-l320erms3... etc)." SIL3 catalogs are the "MS3"-suffixed
 # ones (as opposed to SIL2's "MS2"/"S2" suffixes, which ARE v31-capable
@@ -153,7 +153,7 @@ _5069_CATALOGS = [
 _SIL3_CATALOGS = {"5069-L306ERMS3", "5069-L320ERMS3"}
 _SIL3_MIN_FIRMWARE_MAJOR = "32"
 
-# ControlLogix 5570 (James, 2026-08-25: "L7 is good all the way").
+# ControlLogix 5570 (2026-08-25: L7 is good all the way).
 # Real confirmed ProductCodes for L71/L72/L75 (92/93/96, from
 # samples/local/L7_v21_Sample.L5X, L5X_Samples/Sorter1_20260722r00.L5X,
 # DnR_Personal/FlareFunction_311D_240731.L5X) are PERFECTLY sequential --
@@ -172,14 +172,14 @@ _L7X_PRODUCT_CODES = {
 _L7X_INFERRED = {"1756-L73", "1756-L74"}
 _L7X_CATALOGS = list(_L7X_PRODUCT_CODES)
 
-# CompactLogix 5370 (1769-Lxx) -- re-added 2026-08-30 (James: AHK capture
+# CompactLogix 5370 (1769-Lxx) -- re-added 2026-08-30 (AHK capture
 # now works for this family, same fix as L7x).
 #
-# NARROWED BACK DOWN 2026-08-30 (James: "Failed to set the 'Size' property
-# (Chassis size exceeds the allowable size for a chassis.)" on his own
-# minimal hand-built 1769-L24ER-QB1B repro file, Bus Size="6" -- then
-# "you f'd up most chassis sizes" / "seems like you shouldnt be guessing
-# chassis sizes and actually use ones that were referenced"). The Bus
+# NARROWED BACK DOWN 2026-08-30 ("Failed to set the 'Size' property
+# (Chassis size exceeds the allowable size for a chassis.)" on the
+# minimal hand-built 1769-L24ER-QB1B repro file, Bus Size="6". That broke
+# most chassis sizes: they must not be guessed, only taken from a
+# referenced real file). The Bus
 # Size values for L24ER-QB1B/L24ER-QBFC1B/L27ERM-QBFC1B/L30ERM/L33ERM
 # below were EXTRACTED from the fw_baseline reference files, not
 # independently real-confirmed -- and those reference files themselves
@@ -192,23 +192,23 @@ _L7X_CATALOGS = list(_L7X_PRODUCT_CODES)
 # Bus Size in the whole corpus is L33ERMS=17 (samples/local/DnR_Personal/
 # TOYOTA_135453_20221024.L5X, a genuine customer file -- see
 # wrapper.py's _1769_BUS_SIZE_BY_MODEL) -- and even that catalog is
-# included in James's "L24..L27 and the L3 series fail" report, so its
+# included in the "L24..L27 and the L3 series fail" report, so its
 # failure has some OTHER unconfirmed cause even though its Bus Size
 # specifically checks out. Per the same principle already applied to
 # 1756-L85ES and 1756-L9x (OQ-BASELINE-PROCFW): don't re-guess and burn
 # another test cycle, pull the whole unconfirmed group back out until
 # real per-catalog data (or a real, unambiguous root cause) exists.
 # Keeping only the 4 PointIO-bus catalogs, which are empirically
-# confirmed working (James's live batch: L16ER/L18ER/L18ERM/L19ER all
+# confirmed working (the live batch: L16ER/L18ER/L18ERM/L19ER all
 # "ok" at v33). See docs/OPEN_QUESTIONS.md OQ-BASELINE-PROCFW.
 _1769_CATALOGS = [
     "1769-L16ER-BB1B", "1769-L18ER-BB1B", "1769-L18ERM-BB1B", "1769-L19ER-BB1B",
 ]
 
-# Real per-catalog <Modules> block, extracted VERBATIM from James's own
+# Real per-catalog <Modules> block, extracted VERBATIM from the
 # real Studio 5000 exports (samples/generated/fw_baseline/v35_*.L5X --
 # genuine Rockwell exports checked directly into the repo, not generated
-# by any script). REAL BUG FOUND 2026-08-30 (James: "Failed to set the
+# by any script). REAL BUG FOUND 2026-08-30 ("Failed to set the
 # 'Size' property (Chassis size exceeds the allowable size for a
 # chassis.)" on fwmatrix_v31_1769_l30erm -- this generator's earlier
 # 1769 support only ported the bare Local-module Port shape from
@@ -266,8 +266,8 @@ def _1769_module_xml(catalog: str, major_rev: str) -> str:
     assert block.count(old) == 1, f"expected exactly 1 Local-module Major substitution site for {catalog!r}, found {block.count(old)}"
     return block.replace(old, new)
 
-# GuardLogix 5580 safety-rated (James, 2026-08-25: "L8 needs safety
-# processors too"). REAL BUG FOUND AND FIXED 2026-08-30 (James: "this file
+# GuardLogix 5580 safety-rated (2026-08-25, "L8 needs safety
+# processors too"). REAL BUG FOUND AND FIXED 2026-08-30 ("this file
 # fails to convert to acd" on fwmatrix_v35_1756_l85es -- direct real-world
 # proof, not a code-review catch): the "L81ES uses the SAME ProductCode as
 # plain L81E" assumption below was never actually checked against a real
@@ -280,11 +280,10 @@ def _1769_module_xml(catalog: str, major_rev: str) -> str:
 # never found by this project until now). 211->214 across L81ES->L84ES is
 # exactly +1 per catalog step, the same sequential pattern this project
 # already uses elsewhere for an unconfirmed run -- L82ES(212)/L83ES(213)
-# have both since been real-tested by James (import succeeds, no line-1
-# error) though still not independently confirmed as the exact real
+# have both since been real-tested (import succeeds, no line-1 error) though still not independently confirmed as the exact real
 # ProductCode the way L81ES/L84ES are.
 #
-# L85ES(215) REMOVED 2026-08-30 (James: "l85es fails on line 1 of the l5x
+# L85ES(215) REMOVED 2026-08-30 ("l85es fails on line 1 of the l5x
 # for multiple firmwares but works fine for l81es..l84es"): the same
 # +1-per-step inference that correctly predicted L82ES/L83ES broke
 # specifically at the L84ES->L85ES step -- real proof the sequence isn't
@@ -292,7 +291,7 @@ def _1769_module_xml(catalog: str, major_rev: str) -> str:
 # current Rockwell product -- 40MB/3MB safety memory, confirmed via web
 # search -- so this isn't a fake-catalog problem, just an unconfirmed
 # ProductCode with no more real anchor to re-derive it from). Rather than
-# guess again and burn another of James's test cycles, treated the same
+# guess again and burn another of the test cycles, treated the same
 # as OQ-BASELINE-PROCFW already treats 1756-L9x: sourced but deliberately
 # NOT generated until a real L85ES sample (or its real ProductCode)
 # surfaces. See docs/OPEN_QUESTIONS.md.
@@ -324,8 +323,8 @@ def _product_code(catalog: str) -> str:
 
 def _local_ports_xml(catalog: str, is_safety: bool = False) -> str:
     if is_safety:
-        # REAL BUG FOUND 2026-08-30 (James: "your L8 safety failed to
-        # generate acd files" -- watched the conversion fail directly).
+        # REAL BUG FOUND 2026-08-30: L8 safety files failed to generate ACD
+        # files, watched failing directly during conversion.
         # A Safety-capable CPU's own Local module Ports need a
         # SafetyNetwork attribute on EVERY port, not just the Task/Program
         # Class="Safety" markers this generator already had. Confirmed
@@ -359,7 +358,7 @@ def _local_ports_xml(catalog: str, is_safety: bool = False) -> str:
             f'<Port Id="4" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
         )
     if catalog in _L7X_PRODUCT_CODES:
-        # REAL BUG FOUND 2026-08-28 (James sent a fresh real Studio 5000
+        # REAL BUG FOUND 2026-08-28 (sent a fresh real Studio 5000
         # export of 1756-L71 for comparison; the exact same shape was
         # ALSO already sitting unused in samples/local/L7_v21_Sample.L5X
         # -- this generator was never cross-checked against it).
@@ -406,16 +405,16 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
     product_code = _product_code(catalog)
     local_ports_xml = _local_ports_xml(catalog, is_safety=is_safety)
     # Real shape confirmed 2026-08-25 against samples/local/SJ_Gormley_
-    # 20251112_r02.L5X and DnR_Personal/Bender134053_201104.L5X (James:
-    # "Safety processor needs a safety task. You don't have to put in a
-    # safety program... check Gormley or bender as samples"): the real
+    # 20251112_r02.L5X and DnR_Personal/Bender134053_201104.L5X. A safety
+    # processor needs a safety task, though not necessarily a safety
+    # program; both files above are the real reference. The real
     # marker isn't the NAME "SafetyTask" -- it's Class="Safety" on BOTH
     # the Task and the Program it schedules. Kept minimal (bare
-    # MainRoutine, no real safety content) per James's "don't have to put
+    # MainRoutine, no real safety content) per the "don't have to put
     # in a safety program" -- but a Task always schedules a real Program
     # in both real references, so the pairing itself is kept, just empty.
-    # REAL BUG FOUND 2026-08-30 (James: "your L8 safety failed to generate
-    # acd files. You should have known that"). SafetyLocked="true" with no
+    # REAL BUG FOUND 2026-08-30: L8 safety files failed to generate ACD
+    # files. SafetyLocked="true" with no
     # SafetySignature attribute is an invalid combination -- checked all
     # 9 real corpus files with a SafetyInfo element: every one of the 4
     # with SafetyLocked="true" ALSO carries a real SafetySignature (a GUID
@@ -440,7 +439,7 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
         '<ScheduledProgram Name="SafetyProgram"/>\n</ScheduledPrograms>\n</Task>\n'
     ) if is_safety else ""
     # Real attributes confirmed 2026-08-28 -- were sitting unused in
-    # samples/local/L7_v21_Sample.L5X AND a fresh export James sent for
+    # samples/local/L7_v21_Sample.L5X AND a fresh export supplied for
     # direct comparison, both showing the exact same shape. Added for
     # fidelity; build_l5x's own template omits both and still imports
     # fine across ~1300 already-tested files, so these are almost
@@ -461,13 +460,12 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
         ethernet_ports_xml = _1769_ETHERNET_XML
     else:
         ethernet_ports_xml = '<EthernetPorts>\n<EthernetPort Port="1" Label="1" PortEnabled="true"/>\n</EthernetPorts>\n'
-    # REAL BUG FOUND 2026-08-28 (James: "looks like your 5069-LxxERMSx
-    # has issues as well"). EtherNetIPMode="A1/A2: Dual-IP" is a real
+    # REAL BUG FOUND 2026-08-28 on the 5069-LxxERMSx catalogs. EtherNetIPMode="A1/A2: Dual-IP" is a real
     # Controller-level attribute confirmed present, identical value, in
     # EVERY 5069 corpus file checked (6/6, zero variance) -- a
     # 5069-family-wide gap (describes the CPU's two embedded Ethernet
-    # ports' addressing mode), not specific to the ERMSx subset James
-    # happened to be testing. See wrapper.py's build_l5x for the same fix.
+    # ports' addressing mode), not specific to the ERMSx subset that was
+    # under test at the time. See wrapper.py's build_l5x for the same fix.
     ethernet_ip_mode_attr = ' EtherNetIPMode="A1/A2: Dual-IP"' if catalog.startswith("5069") else ""
     # 1769 (CompactLogix 5370) uses the real, verbatim per-catalog Modules
     # block (embedded Discrete_IO and all) instead of the generic single-
@@ -554,7 +552,7 @@ def main() -> None:
         for catalog in all_catalogs:
             if catalog in _SIL3_CATALOGS and major_rev < _SIL3_MIN_FIRMWARE_MAJOR:
                 print(f"Skipping fwmatrix_v{major_rev}_{catalog.lower().replace('-', '_')} "
-                      f"-- SIL3 requires firmware v{_SIL3_MIN_FIRMWARE_MAJOR}+ (James, 2026-08-31, real).")
+                      f"-- SIL3 requires firmware v{_SIL3_MIN_FIRMWARE_MAJOR}+ (2026-08-31, real).")
                 continue
             is_safety = catalog in SAFETY_CATALOGS
             slug = catalog.lower().replace("-", "_")

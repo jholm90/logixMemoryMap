@@ -1,11 +1,11 @@
-"""L5X sample generator CLI (James, 2026-08-20: "the l5x generator
+"""L5X sample generator CLI (2026-08-20, "the l5x generator
 application where you make up the l5x files based on things you want to
 test -- UDT size, comment length for bits or rungs etc.").
 
 Every subcommand writes a full L5X to samples/generated/<category>/ and
 logs a manifest.csv row with predicted_bytes already filled in (from this
-project's own sizing engine) -- actual_bytes stays blank until James runs
-it through Studio 5000 and reports back.
+project's own sizing engine) -- actual_bytes stays blank until the file is
+run through Studio 5000 and the real number captured.
 
 Examples:
   python -m sample_gen.cli udt --name MotorStatus --member Running:BOOL \\
@@ -84,7 +84,7 @@ def _cmd_udt(args: argparse.Namespace) -> int:
 
 
 def _padded_tag_name(prefix: str, i: int, count: int, length: int | None) -> str:
-    """Tag name of exactly `length` chars where possible (James, 2026-08-20:
+    """Tag name of exactly `length` chars where possible (2026-08-20, 
     "_TAG_ probably occupies less space than _TAG_LONG_TAG_NAME_DONT_MISS" --
     isolating tag-name-length as its own OQ-TAGOVERHEAD variable). The
     numeric suffix (needed for uniqueness across `count` tags) always stays
@@ -97,7 +97,7 @@ def _padded_tag_name(prefix: str, i: int, count: int, length: int | None) -> str
         return base
     pad_needed = length - len(base)
     filler = ("_LONGTAGNAME" * (pad_needed // 12 + 1))[:pad_needed]
-    # Real Rockwell tag-naming rule (James, 2026-08-25): double underscores
+    # Real Rockwell tag-naming rule (2026-08-25): double underscores
     # are forbidden. The filler's own leading "_" can land as its very last
     # character depending on pad_needed's remainder, which then abuts
     # suffix's leading "_" -- swap that one character for a non-underscore
@@ -133,7 +133,7 @@ def _cmd_rungs(args: argparse.Namespace) -> int:
     instr_fn = lambda i: args.instr.format(i=i)
     rungs_frag = rungs_xml(args.count, instr_fn, comment_fn)
 
-    # James, 2026-08-22: the original xic_ote_1000_* samples referenced
+    # 2026-08-22: the original xic_ote_1000_* samples referenced
     # 2000 tags (In0..In999/Out0..Out999) inside --instr but this command
     # always passed tags_xml="" -- nothing declared them, so Studio 5000
     # rejected the file ("you decided not to generate those tags"). --decl-tag

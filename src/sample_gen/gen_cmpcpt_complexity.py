@@ -1,9 +1,8 @@
-"""CPT/CMP expression-COMPLEXITY sweep (James, 2026-08-23): "You will need
-to generate different complexities of cpt/CMP instruction of course. I'd
-make 10-20 files with one cpt instruction and see how differing
-expressions change size. Do the same with CMP instructions. After analysis
-of that then do a couple of spot checks in files with multiple rungs with
-the same expressions and a couple of spot checks with combinations of
+"""CPT/CMP expression-COMPLEXITY sweep (2026-08-23). Method: 10-20 files
+with a single CPT instruction each, varying expression complexity to see
+how size responds, then the same for CMP. After that analysis, a couple of
+spot checks in files with multiple rungs carrying the same expression, and
+a couple with combinations of
 random rungs/expressions to validate. Be sure to put constants as well as
 tags."
 
@@ -28,7 +27,7 @@ against each other.
      TYPE matter, once operand count is held fixed" (group A's complement).
   C. group_cpt_constants -- integer and float literal operands mixed with
      tags, at increasing complexity (2/3/4-operand). Directly answers
-     James's "be sure to put constants as well as tags."
+     the "be sure to put constants as well as tags."
   D. group_cmp_complexity -- CMP's own complexity ladder: bare tag-tag,
      expressions on one or both sides of the comparison, int/float
      literals, compound (&&) conditions with simple and expression-bearing
@@ -48,7 +47,7 @@ against each other.
      CPT/CMP complexity specifically. NOT validated against the engine's
      own prediction the way that file is (there's no correct per-operand
      CPT/CMP model yet to validate against) -- these exist purely to give
-     James a realistic mixed file to capture real data on.
+     a realistic mixed file to capture real data on.
 
 Own tag pool, separate from every other sweep's (gen_cmpcpt_layout.py's
 8-DINT/3-REAL pool didn't have headroom for a 10-operand chain without

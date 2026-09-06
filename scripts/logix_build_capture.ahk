@@ -1,4 +1,4 @@
-; Logix Designer build/verify + Capacity capture loop (James, 2026-08-22).
+; Logix Designer build/verify + Capacity capture loop (2026-08-22).
 ; Companion to batch_memory_capture.ps1 -- that script writes the next ACD
 ; path to open (file existence at -OpenRequestPath = "go" signal, content +
 ; clipboard both carry the path) and polls for this script's results
@@ -11,7 +11,7 @@
 ; Update HANDOFF_PATH / OPEN_REQUEST_PATH below to match whatever you pass
 ; to batch_memory_capture.ps1's -HandoffPath / -OpenRequestPath.
 ;
-; Confirmed empirically on James's machine (2026-08-22):
+; Confirmed empirically on the machine (2026-08-22):
 ;   - Ctrl+O opens a dialog titled "Open Project" (not generic "Open").
 ;   - The save-changes prompt ("Project file '<name>.ACD' has been changed.
 ;     Save the changes?") actually fires AFTER pasting the new path + Enter,
@@ -250,7 +250,7 @@ Status(msg) {
         ; brackets, e.g.
         ;   Logix Designer - Foo in bar.ACD [1769-L16ER-BB1B 31.11]
         ; and BUILD_SKIP_CATALOGS lists the families that never raise a Build
-        ; popup at all (James, 2026-09-04: "The 1769/L7 processors don't build
+        ; popup at all (2026-09-04, "The 1769/L7 processors don't build
         ; unless there are changes so that build window will never come up").
         ; Without this the whole build block below waits out maxAppearSeconds
         ; on every one of those files for a window that cannot appear.
@@ -304,7 +304,7 @@ Status(msg) {
 
         Sleep 50
         ; Captured at the same moment as Error/Warning/Message -- the
-        ; window title has the open .ACD filename baked in (James, 2026-08-22:
+        ; window title has the open .ACD filename baked in (2026-08-22, 
         ; "window title is valid there with the filename.acd present inside"),
         ; giving PowerShell an independent cross-check against the filename
         ; it actually requested, instead of just trusting the handshake blind.
@@ -430,7 +430,7 @@ Status(msg) {
 
         ; A second save-changes prompt can appear here too, after closing
         ; Controller Properties -- same dismissal, discard and move on.
-        ; Disabled 2026-08-22 -- James found it wasn't actually firing at
+        ; Disabled 2026-08-22 -- found it wasn't actually firing at
         ; this point in practice; left in place, commented, in case it
         ; resurfaces on a different file shape.
         ;if WinWait(, "Save the changes?", 2) {

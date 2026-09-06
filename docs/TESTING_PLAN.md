@@ -7,7 +7,7 @@ against it, or the whole batch has to be redone.
 
 ## Procedure per sample (offline compile, no hardware/emulator — settled 2026-08-20)
 
-**Corrected 2026-08-20 (James, resolving OQ-EMULATE):** no download to a
+**Corrected 2026-08-20, resolving OQ-EMULATE:** no download to a
 controller or Emulate is needed at all. Logix Designer shows memory usage in
 Controller Properties as soon as a project **successfully compiles/verifies
 offline** — that was an incorrect assumption in this file's earlier version
@@ -70,7 +70,7 @@ running memory) is still worth doing periodically to confirm compiled/
 offline-shown memory actually matches what the controller reports once
 running — not proven identical yet, just assumed for now.
 
-## Window-title-mismatch retries are automatic (James, 2026-08-25)
+## Window-title-mismatch retries are automatic (2026-08-25)
 
 "Any test that fails for window title mismatch should be rerun... make sure
 you can rerun those tests next time without me prompting you." The AHK/
@@ -100,7 +100,7 @@ in a pushed capture batch) also blanks the capture columns for rows still
 carrying that flag rather than trusting the stale `actual_bytes`, so a
 retry is never skipped just because the row "looked" logged.
 
-## Zero-Capacity retries are automatic too (James, 2026-08-27)
+## Zero-Capacity retries are automatic too (2026-08-27)
 
 "if memory size is 0 it needs to be flagged and not counted." A real
 controller's Capacity-tab reading is never actually 0 (every project carries
@@ -111,7 +111,7 @@ case above: `batch_memory_capture.ps1` flags it `ZERO CAPACITY` in `notes`
 and excludes that row from "already logged," so it's automatically retried
 next run with no manual re-flagging needed.
 
-## A row that BUILT WITH ERRORS is never a valid fitting point (James, 2026-09-04)
+## A row that BUILT WITH ERRORS is never a valid fitting point (2026-09-04)
 
 **"some of those results had errors and should not have been counted as a
 valid result. i am concerned that you are changing models with bad data —
@@ -147,7 +147,7 @@ can't be forgotten again:**
    categories carrying the most error, so the filter matters most exactly
    where it's most tempting to fit.
 
-## 1769-series (CompactLogix 5370) requires clicking "Estimate" first (James, 2026-08-27)
+## 1769-series (CompactLogix 5370) requires clicking "Estimate" first (2026-08-27)
 
 "the 1769 processors require 'estimate' button before giving memory sizes."
 Real Studio 5000 UI behavior, confirmed against real capture attempts:
@@ -158,13 +158,13 @@ L2xER/L3xER catalog numbers) don't — the "Estimate" button has to be clicked
 first before the tab shows anything meaningful. **The AHK loop does not do
 this today** and would silently read a stale/blank/wrong value for any
 1769-series file without it. All 9 of the currently-staged 1769 points were
-manually reported by James for this reason (see `manifest.csv` notes,
+manually reported for this reason (see `manifest.csv` notes,
 `MANUAL ENTRY`), not captured automatically. **Before building or capturing
 any FUTURE 1769-series test file**, `logix_build_capture.ahk` needs an extra
 click-Estimate step added for that processor family specifically, or every
 such row needs to keep going through manual reporting.
 
-## Pre-v31 firmware (SDK-unsupported) skips L5X->ACD conversion automatically (James, 2026-08-27)
+## Pre-v31 firmware (SDK-unsupported) skips L5X->ACD conversion automatically (2026-08-27)
 
 "l81_v30.l5x failed as the SDK didnt support v30 files ... drop it from
 the list that batch_l5x_to_acd.ps1 is going to ask every time." Confirmed
@@ -218,8 +218,8 @@ Phase 3 and Phase 4/4b each close per PROJECT_PLAN.md's stated exit criteria.
 Tolerance resolved (OQ-TOLERANCE, 2026-08-20): **tag/UDT (exact tier) within
 1% = good, 3% = acceptable, >5% = a real gap worth chasing, not a rounding
 error.** Logic/program-structure memory (estimated tier) isn't held to the
-same bar — James: "a guess at best," so that's expected to carry more slop
-by nature of the problem, not a target to force down to 1%. Don't move to UI
+same bar. Compiled logic size is a guess at best, so it is expected to
+carry more slop by nature of the problem, not a target to force down to 1%. Don't move to UI
 work (Phase 5) with an open, unresolved tag/UDT discrepancy just because
 logic sizing is more interesting — an error in the "exact" tier undermines
 the tool's whole value proposition more than an acknowledged estimate in the
@@ -270,10 +270,9 @@ project finished loading is the obvious suspect, unconfirmed).
 
 ## Auditing error_count > 0: stale-vs-genuine before anything else
 
-James, 2026-09-05: *"every time i run the memory test .ps1 i see lots of
-ignored files and want them addressed. if you dont want them then delete
-them from the manifest, otherwise we need to repair the files to get the
-samples out."*
+2026-09-05: every run of the capture script skips a large number of files,
+and each one has to be dealt with. A file that is not wanted is deleted
+from the manifest; otherwise it is repaired so the sample can be captured.
 
 138 rows carried `error_count > 0`. The first cut is not "what's broken" —
 it is **whether the failing capture is even about the file that exists

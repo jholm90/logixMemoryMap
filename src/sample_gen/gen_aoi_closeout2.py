@@ -1,5 +1,5 @@
-"""OQ-AOIDEF closeout batch 2 (2026-08-25, James: "Generate enough new
-samples now to close this... I haven't seen any AOI L5X files today").
+"""OQ-AOIDEF closeout batch 2 (2026-08-25): enough new samples to close
+the question outright.
 Two of the three remaining OQ-AOIDEF threads get new generated files here;
 the third (Required/Visible/Hidden flag combos) turned out to already have
 real captured data on hand (`reqvis_*_n4_def_only`, captured 2026-08-23)

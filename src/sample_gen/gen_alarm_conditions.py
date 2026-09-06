@@ -1,6 +1,6 @@
 """Tag-based alarm conditions: the unpriced cost sitting in every real file.
 
-James, 2026-09-04: *"Another thing to look at is Controller Alarms that we
+2026-09-04: *"Another thing to look at is Controller Alarms that we
 use. Ive split them out a bit here and you can generate up some code to test
 for them and generate them. Keep in mind that there are controller tags:
 AlarmBoolArray BOOL[128], AlarmNumberArray DINT[128], AlarmDescArray
@@ -25,12 +25,12 @@ millisecond", and **exactly 3 associated tags on 3,455 of the 3,463**, each
 with an HMIGroup. Assoc-tag count never varies independently of alarm count
 in any real program on file, so the two are perfectly collinear and no
 regression on real data can separate "cost per alarm" from "cost per
-associated tag". That is exactly what James's four `Alarm1_*` probe files
+associated tag". That is exactly what the four `Alarm1_*` probe files
 break apart, and what this batch extends into a full sweep.
 
 MUTING THE PLACEHOLDERS
 -----------------------
-James's instruction is handled structurally rather than arithmetically: the
+the instruction is handled structurally rather than arithmetically: the
 four placeholder arrays are byte-identical in EVERY file this generator
 writes, whatever the alarm content. Their storage therefore cancels exactly
 in any file-to-file difference, so no subtraction, assumption or "mute this
@@ -41,7 +41,7 @@ control every other file differences against.
 GROUPS
 ------
 A. group_count_bare (9)   alarms 0/1/2/4/8/16/32/64/128, NO assoc tags, empty
-   AlarmConfig -- James's `Alarm1_NoAssociatedTagsOnlyInput` shape scaled up.
+   AlarmConfig -- the `Alarm1_NoAssociatedTagsOnlyInput` shape scaled up.
    Gives the base per-alarm cost with nothing else varying.
 B. group_count_real (8)   the same ladder at the REAL shape (3 assoc tags +
    HMIGroup). Read against A, the gap is what the real-world trimmings cost,
@@ -49,9 +49,9 @@ B. group_count_real (8)   the same ladder at the REAL shape (3 assoc tags +
 C. group_assoc_count (5)  32 alarms x 0/1/2/3/4 associated tags. The axis
    real data physically cannot provide.
 D. group_assoc_type (4)   32 alarms x 1 assoc tag of DINT / STRING / REAL /
-   BOOL. James probed DINT and STRING at n=1; this repeats them at n=32
-   where a per-alarm difference is 32x easier to read, and adds the two
-   types he did not.
+   BOOL. Earlier probes covered DINT and STRING at n=1; this repeats them
+   at n=32, where a per-alarm difference is 32x easier to read, and adds
+   the two types that were missing.
 E. group_hmigroup (4)     32 alarms, HMIGroup absent / 4 / 16 / 40 chars.
    Every other name-ish string in this model costs real bytes by length
    (alias names, AOI type names, JSR target names), so this is a live
@@ -77,7 +77,7 @@ from sample_gen.wrapper import build_l5x
 
 OUT = Path(__file__).parent.parent.parent / "samples" / "generated" / "alarms"
 
-# James's own placeholder set, verbatim, in EVERY file -- see "muting" above.
+# the placeholder set, verbatim, in EVERY file -- see "muting" above.
 _PLACEHOLDER_N = 128
 _NUMBER_TAG = tag_xml("AlarmNumberArray", "DINT", (_PLACEHOLDER_N,))
 _DESC_TAG = string_array_tag_xml("AlarmDescArray", _PLACEHOLDER_N)
@@ -101,7 +101,7 @@ def _condition_xml(name: str, index: int, *, assoc: list[str], hmi_group: str | 
                    ack_required: str = "true", limit: str = "0.0",
                    deadband: str = "0.0", expression: str = "= 1") -> str:
     """One <AlarmCondition>, attribute for attribute in the real order and
-    with the real defaults, copied from James's Alarm1_* exports rather than
+    with the real defaults, copied from the Alarm1_* exports rather than
     composed from the schema -- the same discipline the ST batch had to be
     rebuilt under."""
     assoc_attrs = "".join(
@@ -148,10 +148,10 @@ def _write(out_name: str, host_tag: str, description: str) -> None:
     print(f"Wrote {out_path} (predicted {bytes_} bytes)")
 
 
-_MUTED = ("The four placeholder arrays James named (AlarmBoolArray BOOL[128], AlarmNumberArray "
+_MUTED = ("The four placeholder arrays named (AlarmBoolArray BOOL[128], AlarmNumberArray "
           "DINT[128], AlarmDescArray STRING[128], AlarmMoreInfoArray STRING[128]) plus a REAL "
           "and a BOOL operand array are byte-identical in EVERY file of this batch, so their "
-          "storage cancels exactly in any file-to-file difference -- his 'mute them in your "
+          "storage cancels exactly in any file-to-file difference -- the 'mute them in the "
           "calculations' handled by the experiment design rather than by a subtraction. "
           "alarmcond_count_bare_n000 (same tags, zero alarms) is the control.")
 
@@ -166,7 +166,7 @@ def group_count_bare() -> None:
         _write(f"alarmcond_count_bare_n{n:03d}",
                _host_tag_xml("AlarmBoolArray", "BOOL", conds),
                f"{n} tag-based alarm condition(s) on a BOOL[128] controller tag, NO associated "
-               f"tags and an empty <AlarmConfig> -- James's Alarm1_NoAssociatedTagsOnlyInput "
+               f"tags and an empty <AlarmConfig> -- the Alarm1_NoAssociatedTagsOnlyInput "
                f"shape scaled into a ladder. Gives the BASE per-alarm cost with nothing else "
                f"varying. Alarm conditions are currently priced at ZERO by this engine and "
                f"there are 3,463 of them across the real corpus, 200-600 in every real "
@@ -209,10 +209,10 @@ def group_assoc_type() -> None:
         _write(f"alarmcond_assoc_type_{type_name.lower()}",
                _host_tag_xml("AlarmBoolArray", "BOOL", conds),
                f"{_FIXED_N} alarm conditions, each with ONE associated tag of type {type_name} "
-               f"({ref}[i]), no HMIGroup. James probed DINT and STRING at n=1 "
+               f"({ref}[i]), no HMIGroup. Earlier probes covered DINT and STRING at n=1 "
                f"(Alarm1_OneAssociatedDINT / Alarm1_OneAssociatedSTRING); this repeats both at "
                f"n={_FIXED_N}, where a per-alarm difference is {_FIXED_N}x easier to read out "
-               f"of a Capacity number, and adds REAL and BOOL which he did not have. If an "
+               f"of a Capacity number, and adds REAL and BOOL which were missing. If an "
                f"associated tag is a fixed-size reference the four land identically; if the "
                f"referenced type matters, STRING should stand out. " + _MUTED)
 
@@ -259,8 +259,8 @@ def group_name_length() -> None:
 # any other ConditionType is called or what expression form an analog input
 # requires -- exactly the situation where the ST batch had to be rebuilt for
 # guessing instead of measuring. Not re-guessed here. The analog side stays
-# unmeasured until James supplies the real ConditionType list from the
-# Studio 5000 dropdown and one working analog example; see OQ-ALARMCOND.
+# unmeasured pending the real ConditionType list from the Studio 5000
+# dropdown and one working analog example; see OQ-ALARMCOND.
 
 
 def group_attributes() -> None:

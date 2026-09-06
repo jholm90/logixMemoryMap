@@ -88,9 +88,9 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # file-wide tag table), so the operand-type surcharge is skipped for
     # this content, same as any other caller that omits tag_types.
     # Export scope FIRST -- it decides whether this file even has a project
-    # to charge a base load to (2026-09-04, James: "Anything that's not a
-    # controller export can not use the prices sir base load, but rungs,
-    # routines and programs might contain controller tags"). Until this,
+    # to charge a base load to (2026-09-04): anything that is not a
+    # controller export cannot use the base load, but rungs, routines and
+    # programs can still reference controller tags. Until this,
     # every partial export was sized as a whole project: an exported RUNG
     # came back at 15,080 bytes, 13,296 of which was empty_project_baseline.
     # See parser/export_scope.py for how Studio 5000 marks target vs context.
@@ -387,7 +387,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # routine; the shell entry built below charges it once for the
         # whole file plus the real per-extra-Task/Program/routine marginal
         # costs instead.
-        # OQ-SAFETYSCOPE-SIZING, James 2026-09-03: "they are safety tasks
+        # OQ-SAFETYSCOPE-SIZING, 2026-09-03: "they are safety tasks
         # and safety programs therefore they need separate sizing
         # calculations" -- a Safety routine's own content is still sized
         # normally below (charge_shell unaffected), it just doesn't count
@@ -452,7 +452,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         )
         # AOI-internal ST is attributed to the AOI DEFINITION, not to a
         # phantom program. parse_st_routines names those owners "aoi:<Name>"
-        # (2026-09-05, after James pointed out most real ST lives inside
+        # (2026-09-05, once it was established that most real ST lives inside
         # AOIs -- 37% of real ST lines by measurement). Routing them through
         # the program path would have rendered each AOI as a bogus
         # top-level "Program: aoi:X" in the tree, which is exactly what the
@@ -619,7 +619,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             continue
         label = module.name or module.catalog_number
         if module.module_defined_bytes == 0 and module.stated_total_bytes == 0:
-            # 2026-09-02, real, found reviewing James's TitusvilleTrimmer
+            # 2026-09-02, real, found reviewing the TitusvilleTrimmer
             # production file: a bridge/gateway module with NO connections
             # of its own (e.g. a plain Ethernet-only "ETHERNET-BRIDGE" node
             # fanning out to a remote PC/HMI/server -- 10 real instances in
@@ -670,7 +670,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # processor-integrated I/O block costs the same, so it stays fully
         # unmodeled (same treatment as a rack-aliased module below) rather
         # than guessing module_overhead applies unchanged.
-        # 2026-08-30, James: "I thought we were excluding controlnet" / "And
+        # 2026-08-30, I thought we were excluding controlnet / "And
         # all legacy networks" -- a ControlNet/DeviceNet/DH+/DH-485/RIO
         # bridge module gets the same unmodeled treatment as a rack-aliased
         # or processor-embedded module, not a fitted module_overhead_by_
@@ -678,7 +678,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # networks (see parser/modules.py's _LEGACY_NETWORK_PORT_TYPES
         # comment and OQ-LEGACYNETOVERHEAD).
         #
-        # 2026-08-31, James: "you need to model them" -- that exclusion was
+        # 2026-08-31, you need to model them -- that exclusion was
         # a blanket SHAPE-level rule, but real per-catalog data now exists
         # for several rack-aliased/legacy-network catalogs specifically
         # (memory_model.yaml module_overhead_by_catalog, see its 2026-08-31
@@ -834,9 +834,8 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         ]
 
     # Coverage audit LAST, so it reports against the whole file (2026-09-04,
-    # James: "I need to make sure that in the long run all of the
-    # calculations are done inside the python logic for the total project
-    # scripts and not just claude in depth testing"). Content this engine
+    # every calculation has to live in the engine itself rather than in an
+    # ad-hoc analysis run alongside it). Content this engine
     # prices at zero WITHOUT modelling it -- a non-RLL routine, an
     # instruction with no weight -- previously left no trace at all in the
     # output; the only thing that ever caught it was reading the file by

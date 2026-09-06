@@ -137,7 +137,7 @@ def test_does_not_flag_module_address_within_parent_bus_size():
     assert not any(f.kind == "chassis_size_exceeded" for f in findings)
 
 
-# James, 2026-08-31: real Studio 5000 verify errors on composite_realistic_
+# 2026-08-31: real Studio 5000 verify errors on composite_realistic_
 # 02/03.ACD, "Invalid number of arguments for instruction" on every AOI
 # call rung -- a hidden (Required=false/Visible=false) Input/Output
 # Parameter isn't a real call-argument slot, but the generator supplied

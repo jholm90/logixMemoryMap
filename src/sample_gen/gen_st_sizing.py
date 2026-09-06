@@ -1,9 +1,7 @@
-"""OQ-STSIZING: Structured Text, the total coverage hole (James, 2026-09-04:
-"Where did you go for St samples? ... I hope you are going to be able to
-write st language based on your knowledge and skills, not just tossing lines
-and hope they stick. One thing not modelled is st comments ... How confident
-are you with your st code and do I have to write samples for you or can you
-extract enough from the sample code like bender and some of the aois.")
+"""OQ-STSIZING: Structured Text, the total coverage hole (2026-09-04).
+The ST in this batch has to be written from measured corpus idiom rather
+than plausible-looking lines, extracting enough from the real sample code
+and AOIs to be representative. ST comments are also unmodelled.
 
 Honest answer to that, and the reason this file replaces the naive first
 attempt: the first ST ladder in gen_realscale_surcharge.py was written from
@@ -21,7 +19,7 @@ time, and it says the naive ladder was not representative of anything:
       DTOS 26, TRUNC 25, TONR 22, JSR 18, DELETE 16, OSRI 12, ABS 10,
       GSV 8, SIZE 7, STOD 7, BTDT 6, CPS 4, SCL 4, MSG 2, SSV 1
 
-So James is right on the substance: real ST is not a wall of assignments,
+So the substance holds: real ST is not a wall of assignments,
 it is ~36% control flow, ~29% comments, and it calls the SAME instructions
 the ladder does. That last point is the single most valuable thing in the
 table -- if a COP costs the same inside ST as it does in a rung, the entire
@@ -30,10 +28,10 @@ new terms needed are the per-line/statement and control-flow ones. Group D
 below is built specifically to answer that, paired file-for-file against
 `instr_*_n01000` captures that are already valid and error-free.
 
-ANSWER TO "do I have to write samples for you": no. 24,017 real ST lines
-across 23 files is more idiom than this needs; every construct and every
+No hand-written ST samples are needed: 24,017 real ST lines
+across 23 files is more idiom than this requires; every construct and every
 instruction call in this batch is taken from that corpus, not invented.
-What is needed from James is CAPTURE, not authoring.
+What is needed is CAPTURE, not authoring.
 
 THE COMMENT QUESTION (group B) is genuinely open and genuinely different
 from the already-answered rung-comment one. `instr_cpt_n05000_comment100`

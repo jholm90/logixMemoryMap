@@ -1,7 +1,7 @@
 """I/O module sweep, part 2 -- real catalogs that show 2+ DIFFERENT real
 shapes across the corpus (2026-08-27, follow-up to gen_module_sweep.py's
-86-catalog single-shape sweep, same "James: every module, 100% filled
-out" ask). gen_module_sweep.py deliberately skipped these 14 catalogs
+86-catalog single-shape sweep, under the same every-module, fully-populated
+requirement). gen_module_sweep.py deliberately skipped these 14 catalogs
 since picking one shape arbitrarily would misrepresent the other real
 configuration -- this file covers ALL real variants found for each,
 labeled by what actually differs (connection count, rack-aliased vs
@@ -4205,7 +4205,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 
 # Real 4-Connection Kinetix variants add SafetyInputDataDriven/
 # SafetyOutputDataDriven connections with SafetyEnabled="true" -- real
-# Studio 5000 error found by James, 2026-08-27: "Failed to set the
+# Studio 5000 error found 2026-08-27: "Failed to set the
 # 'SafetyEnabled' property (The Controller is not a Safety Controller.)".
 # Needs a safety-capable controller (SIL2, no redundant partner -- see
 # wrapper.py's build_l5x docstring), not the project's default standard
@@ -4215,7 +4215,7 @@ _SIL2_VARIANT_LABELS = {("2198-D012-ERS3", "4conn"), ("2198-D020-ERS3", "4conn")
                          ("2198-S086-ERS3", "4conn")}
 _SAFETY_PROCESSOR_TYPE = "1756-L81ES"
 
-# Real l5x2acd conversion failures, James's 2026-08-27 push
+# Real l5x2acd conversion failures in the 2026-08-27 push
 # (samples/convert_log.csv): all 5 "4conn" (motion + Safety) variants still
 # failed even with the safety-controller fix above already applied
 # (confirmed correct on-disk). A real, useful datapoint ruling out one
@@ -4226,8 +4226,8 @@ _SAFETY_PROCESSOR_TYPE = "1756-L81ES"
 # SafetyInputDataDriven/SafetyOutputDataDriven connection shape itself,
 # not diagnosed further -- convert_log's error text is a generic
 # "XMLSrv_E_IMPORT_ABORTED_NO_CHANGES ... See error log" wrapper with no
-# further detail. Regenerated unchanged, suffixed per James's own
-# instruction so his re-test run doesn't collide with the still-present
+# further detail. Regenerated unchanged, suffixed per the
+# instruction so the re-test run doesn't collide with the still-present
 # old failing files. Needs the actual Studio 5000 error-log detail to
 # root-cause for real.
 _UNDIAGNOSED_RETEST_SUFFIX = "_r2"

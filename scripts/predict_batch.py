@@ -1,6 +1,6 @@
 """Predicted total + coverage gaps for a batch of L5X files, in one table.
 
-James, 2026-09-04: "You also have a directory of samples files I uploaded
+2026-09-04: "You also have a directory of samples files I uploaded
 with no sizes." These are complete real programs with no captured Capacity
 reading, so nothing in manifest.csv covers them and scripts/accuracy_report.py
 (which needs an actual_bytes to compare against) skips them entirely.

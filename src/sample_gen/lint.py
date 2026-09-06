@@ -1,7 +1,7 @@
-"""Local heuristic pre-flight check for generated L5X files (James,
-2026-08-22): "Curious if the SDK had L5X->ACD with controller validation/
-program checking to make sure you did a good job generating the program
-instead of me doing all these memory tests on bad programs."
+"""Local heuristic pre-flight check for generated L5X files (2026-08-22).
+The original question was whether the SDK's L5X->ACD conversion performs
+controller validation or program checking that would catch a bad program
+before real capture time is spent on it.
 
 Checked: `samples/convert_log.csv` shows every file from today's two real
 bugs (the missing `[0]` array subscript on CPS/COP/FLL/BTD/SIZE, and T_ADD
@@ -14,13 +14,13 @@ rung-level errors that only a real Studio 5000 Verify would catch. There's
 no way to run that verify from this environment (needs the licensed SDK on
 Windows), so this is the next best thing: a local, heuristic, non-
 authoritative check for the specific classes of error already found the
-hard way, run against every file before it ships instead of after James
-spends real capture time on it.
+hard way, run against every file before it ships rather than after real
+capture time has been spent on it.
 
 Checks:
   1. Array-typed tag referenced without a [index] subscript anywhere it's
      used as an instruction operand in rung text (the CPS/COP/FLL/BTD bug).
-     SIZE is a confirmed exception (James's real COP_Samples.L5X, 2026-08-22:
+     SIZE is a confirmed exception (a real COP_Samples.L5X, 2026-08-22:
      SIZE(COP_Source,0,COP_Size); -- bare array tag, no bracket) since its
      first operand is the whole array, not one element -- see lint_l5x.
   2. An instruction/AOI-style call (ALLCAPS mnemonic followed by "(") whose
@@ -28,9 +28,9 @@ Checks:
      AddOnInstructionDefinition actually declared in the same file (the
      T_ADD bug).
   3. duplicate_module_slot / chassis_size_exceeded (see _module_slot_findings)
-     -- James, 2026-08-31: "Are you sure you are validating chassis size
-     and duplicated slots?"
-  4. aoi_call_arg_count_mismatch -- James, 2026-08-31, real Studio 5000
+     -- 2026-08-31: chassis size and duplicated slots both need
+     validating.
+  4. aoi_call_arg_count_mismatch -- 2026-08-31: real Studio 5000
      verify error on composite_realistic_02/03.ACD ("Invalid number of
      arguments for instruction" on every AOI call rung): a declared AOI's
      Input/Output Parameters with Required="false" Visible="false" are
@@ -43,8 +43,8 @@ Checks:
      a real, checkable mismatch. Does not model the exact-position nuance of
      which specific trailing optional params can be omitted (heuristic, not
      authoritative -- matches this file's existing scope).
-  5. bit_level_instruction_on_non_bool_operand -- James, 2026-08-31, real,
-     caught TWICE on his own re-conversion: "SINT/INT/DINT cannot be used
+  5. bit_level_instruction_on_non_bool_operand -- 2026-08-31: real,
+     caught TWICE on re-conversion: "SINT/INT/DINT cannot be used
      for bit level instructions like XIO,XIC,OTE,OTU,OTL,ONS only bools
      and .Bits of SINT/INT/DINT." A bit-level instruction's operand must
      be BOOL or a bit-subscripted (".N") SINT/INT/DINT reference -- flags
@@ -52,17 +52,17 @@ Checks:
      project's own generators can actually resolve a type for (see
      _resolve_operand_type); an unresolvable operand is silently skipped,
      not flagged.
-  6. rung_missing_output_instruction -- James, 2026-08-31, real: "you also
+  6. rung_missing_output_instruction -- 2026-08-31: real: "you also
      have conditional instructions like EQU with no operand at the end of
      the rung or a NOP() instruction. this is basic ladder logic." A rung
      whose every instruction is a pure condition/test
      (_PURE_CONDITION_INSTRUCTIONS) with no real output instruction has no
      effect and real Studio 5000 rejects it.
-  7. non_sequential_module_slots -- James, 2026-09-02: "lots of racks did
+  7. non_sequential_module_slots -- 2026-09-02: "lots of racks did
      not have the slot numbers used in sequence and that was supposed to
      be a check you were adding for validation." See
      _slot_sequence_findings for the real generator bug this caught.
-  8. chassis_size_mismatch -- James, 2026-09-03, real issue found
+  8. chassis_size_mismatch -- 2026-09-03: real issue found
      reviewing the v4 Studio 5000 I/O tree: a PointIO/Flex adapter's
      declared Bus Size can be stale even when its child IS at a
      sequential, in-bounds slot number (chassis_size_exceeded above only
@@ -70,14 +70,14 @@ Checks:
      how many modules are actually present -- a lone child at slot 1
      under a Bus Size="12" never trips that check). "Bus Coupler + 1 IO
      module = Chassis Size 2" -- see _chassis_size_findings.
-  9. safety_module_on_non_safety_controller -- James, 2026-09-03: "You
+  9. safety_module_on_non_safety_controller -- 2026-09-03: "You
      need to do better checking on safety stuff... you need to 'read'
      these modules and use your logic to verify safety stuff cannot go on
      non-safety processors." Real Studio 5000 error rebuilding an already-
      once-diagnosed real bug by hand without checking for the existing
      fix first (5069-IB8S/A / 5069-OBV8S/A, SafetyEnabled="true", built
      into a default non-safety controller) -- see _safety_module_findings.
-  10. aoi_array_param_wrong_usage -- James, 2026-09-03: "the issue is
+  10. aoi_array_param_wrong_usage -- 2026-09-03: "the issue is
       BOOL/SINT/INT/DINT cannot be arrays for Inputs. Arrays require
       InOut." Root cause of the aoi_array_param_def_only.L5X import
       failure two prior "fixes" chased without success -- an array-
@@ -133,17 +133,17 @@ _KNOWN_NATIVE_INSTRUCTIONS = {
     "NOT", "NEG", "UID", "UIE", "MCR", "TND", "ATN", "DEG", "RAD", "TAN",
     "SWPB", "XOR", "FIND", "INSERT", "BSL", "BSR", "FFL", "FFU", "SRT",
     "AVE", "FAL", "FSC", "MDW", "MASD", "MGSD", "MGSR", "CROUT",
-    # Added 2026-09-04 from James's own hand-built, BUILD-CLEAN export
+    # Added 2026-09-04 from the hand-built, BUILD-CLEAN export
     # (samples/local/instr_probes/instruction_shapes_20260904.L5X). These are
     # the strongest possible provenance in this repo: not corpus-inferred,
-    # not documented-family-guessed -- James wrote the rungs, Studio 5000
-    # accepted them, and the verified call shapes now live in
-    # gen_verified_instructions.py. NXT is deliberately absent: James,
-    # "NXT not valid instruction" -- it is not an RLL mnemonic.
+    # not documented-family-guessed -- the rungs were written by hand,
+    # Studio 5000 accepted them, and the verified call shapes now live in
+    # gen_verified_instructions.py. NXT is deliberately absent: it is not a
+    # valid RLL mnemonic.
     "BRK", "COS", "LOG", "SIN", "PID", "FBC", "STOR",
     "MCD", "MCS", "MCSV", "MAG", "MCLM",
     # Added 2026-09-05. Every one of these is confirmed real by an actual
-    # call site in samples/local/ (James's own production files) -- they
+    # call site in samples/local/ (the production files) -- they
     # were missing here only because no generator had ever emitted them,
     # not because they are not real Logix instructions. The corpus call
     # site is recorded in gen_unweighted_instructions.py per instruction.
@@ -290,7 +290,7 @@ def _all_rung_texts(root: ET.Element) -> list[str]:
     return texts
 
 
-# James, 2026-08-31, real, caught TWICE this same session on his own
+# 2026-08-31: real, caught TWICE this same session on the
 # re-conversion after I'd already fixed the first occurrence: "SINT/INT/
 # DINT cannot be used for bit level instructions like XIO,XIC,OTE,OTU,OTL,
 # ONS only bools and .Bits of SINT/INT/DINT" and "conditional instructions
@@ -298,7 +298,7 @@ def _all_rung_texts(root: ET.Element) -> list[str]:
 # Both fixed by hand in the specific generators that hit them (3 files),
 # but hand-fixing individual generators is exactly what already failed
 # once -- a FUTURE generator can make the identical mistake and nothing
-# catches it before it reaches James. These two checks are the real,
+# catches it before it ships. These two checks are the real,
 # structural fix: enforced automatically on every generated file, same as
 # every other lint check here.
 _BIT_LEVEL_INSTRUCTIONS = {"XIC", "XIO", "OTE", "OTU", "OTL", "ONS"}
@@ -307,10 +307,10 @@ _BIT_LEVEL_INSTRUCTIONS = {"XIC", "XIO", "OTE", "OTU", "OTL", "ONS"}
 # has no real output/effect and real Studio 5000 rejects it outright.
 _PURE_CONDITION_INSTRUCTIONS = {
     "XIC", "XIO", "EQU", "NEQ", "GRT", "GEQ", "LES", "LEQ", "LIM", "MEQ", "CMP",
-    # SBR added 2026-09-04 (James, real Studio 5000 failure on
-    # jsr_paramtype_udt_n*_r00100): "Your SBR rung has no output
-    # instructions and fails to build ... make a note that the SBR is like
-    # a comparison and needs outputs afterwards." SBR only RECEIVES the
+    # SBR added 2026-09-04 (real Studio 5000 failure on
+    # jsr_paramtype_udt_n*_r00100): an SBR rung with no output instruction
+    # fails to build. SBR behaves like a comparison and needs an output
+    # after it. SBR only RECEIVES the
     # caller's parameters -- it has no effect of its own, so a rung
     # containing nothing but SBR() has no terminating output and Studio
     # rejects it, exactly like a bare EQU. The fix is the same: SBR(args)NOP();
@@ -360,7 +360,7 @@ def _resolve_operand_type(operand: str, tag_types: dict[str, str]) -> str | None
 
 
 def _bit_level_findings(rung_texts: list[str], tag_types: dict[str, str]) -> list[LintFinding]:
-    """James, 2026-08-31: "SINT/INT/DINT cannot be used for bit level
+    """2026-08-31: "SINT/INT/DINT cannot be used for bit level
     instructions like XIO,XIC,OTE,OTU,OTL,ONS only bools and .Bits of
     SINT/INT/DINT." Flags a bit-level instruction call whose single
     operand (a) does NOT already end in a ".N" bit subscript, AND (b)
@@ -392,7 +392,7 @@ def _bit_level_findings(rung_texts: list[str], tag_types: dict[str, str]) -> lis
 
 
 def _rung_missing_output_findings(rung_texts: list[str]) -> list[LintFinding]:
-    """James, 2026-08-31: "conditional instructions like EQU with no
+    """2026-08-31: "conditional instructions like EQU with no
     operand at the end of the rung or a NOP() instruction. this is basic
     ladder logic." Flags a rung where every instruction call found is a
     pure condition/test instruction (_PURE_CONDITION_INSTRUCTIONS) with no
@@ -414,7 +414,7 @@ def _rung_missing_output_findings(rung_texts: list[str]) -> list[LintFinding]:
 
 
 def _lbl_missing_trailing_instruction_findings(rung_texts: list[str]) -> list[LintFinding]:
-    """James, 2026-08-22 (gen_logic_sweep.py's group_lbl_jmp, found
+    """2026-08-22: (gen_logic_sweep.py's group_lbl_jmp, found
     confirming the OQ-LBLJMP-STALE batch failure was real, not a stale-ACD-
     cache artifact): "lbl needs something after it, LBL(thisLabel); will
     fail - LBL(thisLabel)NOP(); will pass." A bare LBL with nothing else on
@@ -424,8 +424,8 @@ def _lbl_missing_trailing_instruction_findings(rung_texts: list[str]) -> list[Li
     never caught by that check's _PURE_CONDITION_INSTRUCTIONS logic. Found
     2026-08-31 doing a full sweep of every "real bug" comment in this
     project for rules that were documented but never actually enforced
-    (James: "read all of your comments and see if there are any rules
-    that could be made") -- already fixed by hand in gen_logic_sweep.py
+    -- found by re-reading the existing comments for rules that were
+    documented but never enforced. Already fixed by hand in gen_logic_sweep.py
     itself, but nothing stopped a NEW generator from reintroducing it
     until now."""
     findings = []
@@ -441,10 +441,9 @@ def _lbl_missing_trailing_instruction_findings(rung_texts: list[str]) -> list[Li
 
 
 def _module_slot_findings(root: ET.Element) -> list[LintFinding]:
-    """James, 2026-08-31: "Are you sure you are validating chassis size
-    and duplicated slots? I explicitly remember asking you to check this
-    when you were generating these 50 tests" -- a real gap, not a false
-    alarm: this project's own lint pre-flight NEVER actually checked
+    """2026-08-31: chassis size and duplicated slots both need validating,
+    and were supposed to have been checked while the 50 tests were being
+    generated. A real gap, not a false alarm: this project's own lint pre-flight NEVER actually checked
     either one before this. A prior commit (e57fe42) claimed a "self-audit
     against every real failure class... (chassis size...)" came back clean
     on all 50 composite files; that claim was wrong -- it missed the exact
@@ -460,7 +459,7 @@ def _module_slot_findings(root: ET.Element) -> list[LintFinding]:
     1. duplicate_module_slot -- two different Modules both claiming the
        identical (ParentModule, ParentModPortId, Address) connection
        point. Real Studio 5000 rejects this outright ("Slot number in use
-       by another module") -- confirmed via James's real error on
+       by another module") -- confirmed via a real error on
        composite_realistic_07. Covers both a physical backplane slot
        collision (numeric Address) and a duplicate network address
        collision (Address as an IP string) -- either way, two devices
@@ -470,7 +469,7 @@ def _module_slot_findings(root: ET.Element) -> list[LintFinding]:
        numeric Address that is >= the Bus Size its parent module declared
        on the matching port. Real Studio 5000 rejects this too ("Chassis
        size exceeds the allowable size for a chassis") -- confirmed via
-       James's real error on both fwmatrix_v31_1769_l30erm (RESOLVED_
+       a real error on both fwmatrix_v31_1769_l30erm (RESOLVED_
        QUESTIONS.md) and eventtask_instronly (bare 5069-L306ER, OPEN_
        QUESTIONS.md OQ item 10). This only catches an INTERNALLY
        inconsistent file (we declared Bus Size=9 but also plugged
@@ -560,7 +559,7 @@ def _module_slot_findings(root: ET.Element) -> list[LintFinding]:
 def _slot_sequence_findings(
     slot_claims: dict[tuple[str, str, str], list[str]],
 ) -> list[LintFinding]:
-    """James, 2026-09-02: "lots of racks did not have the slot numbers
+    """2026-09-02: "lots of racks did not have the slot numbers
     used in sequence and that was supposed to be a check you were adding
     for validation." Real bug this caught in gen_composite_realistic.py's
     _modules_xml_unique_ips: it keyed the assigned backplane slot off a
@@ -609,7 +608,7 @@ def _slot_sequence_findings(
 
 
 def _chassis_size_findings(root: ET.Element) -> list[LintFinding]:
-    """James, 2026-09-03, real issue found reviewing the v4 Studio 5000
+    """2026-09-03: real issue found reviewing the v4 Studio 5000
     I/O tree: a PointIO/Flex adapter's declared Bus Size can be stale even
     when its child sits at a sequential, in-bounds slot number --
     chassis_size_exceeded (in _module_slot_findings) only flags an address
@@ -670,7 +669,7 @@ def _chassis_size_findings(root: ET.Element) -> list[LintFinding]:
 
 
 def _safety_module_findings(root: ET.Element) -> list[LintFinding]:
-    """James, 2026-09-03, real Studio 5000 error caught combining several
+    """2026-09-03: real Studio 5000 error caught combining several
     real 5069 Compact I/O catalogs into a scratch sample: "Failed to set
     the 'SafetyEnabled' property (The Controller is not a Safety
     Controller.)" on 2 of the 6 -- 5069-IB8S/A and 5069-OBV8S/A are real
@@ -680,9 +679,8 @@ def _safety_module_findings(root: ET.Element) -> list[LintFinding]:
     project's own gen_module_sweep.py already fully diagnosed it,
     2026-08-27: "5069-L306ERMS2" is the confirmed-real safety-capable 5069
     processor) was rebuilt from scratch by hand without checking for the
-    existing fix first -- James: "You need to do better checking on
-    safety stuff... you need to 'read' these modules and use your logic
-    to verify safety stuff cannot go on non-safety processors." A
+    existing fix first. The requirement: read each module and verify that
+    safety-rated hardware cannot be placed on a non-safety processor. A
     Module's own SafetyEnabled="true" is a REAL, unambiguous signal
     (not a heuristic) that this file's Controller needs a safety-capable
     build. Self-caught before this check ever shipped: wrapper.py's
@@ -691,7 +689,7 @@ def _safety_module_findings(root: ET.Element) -> list[LintFinding]:
     the `SafetyLevel` ATTRIBUTE on it is conditional on `safety_level`
     being passed. Checking for the element alone is a false negative
     (confirmed: silently passed 0 findings on a rebuilt copy of the exact
-    file James got the real Studio error on). Checking the attribute is
+    file that produced the real Studio error). Checking the attribute is
     the reliable, zero-false-positive signal."""
     safety_info_el = root.find(".//SafetyInfo")
     has_safety_controller = safety_info_el is not None and safety_info_el.get("SafetyLevel") is not None
@@ -713,7 +711,7 @@ def _safety_module_findings(root: ET.Element) -> list[LintFinding]:
 
 
 def _aoi_array_param_usage_findings(root: ET.Element) -> list[LintFinding]:
-    """James, 2026-09-03, real controller testing: "the issue is BOOL/
+    """2026-09-03: real controller testing: "the issue is BOOL/
     SINT/INT/DINT cannot be arrays for Inputs. Arrays require InOut" --
     root cause of the `aoi_array_param_def_only.L5X` import failure that
     two prior "fixes" (Required/Visible, then DefaultData shape) chased
@@ -795,7 +793,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
             aoi_arg_regions.append((start, len(text) if close < 0 else close))
 
         for tag in array_tags:
-            # SIZE is a confirmed exception to the bracket rule (James's
+            # SIZE is a confirmed exception to the bracket rule ('s
             # own Studio-5000-verified COP_Samples.L5X, 2026-08-22:
             # SIZE(COP_Source,0,COP_Size); compiles clean against a plain
             # DINT[10] array with NO [index] subscript) -- unlike CPS/COP/
@@ -803,7 +801,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
             # element of it, so a bare tag immediately after "SIZE(" is
             # not a missing-subscript bug.
             # MCSV is the second confirmed whole-array exception, same
-            # class as SIZE and on the same evidence standard: James's own
+            # class as SIZE and on the same evidence standard: the
             # 2026-09-04 build-clean export writes
             # `MCSV(MCSV,Cam_Profile,Src,Dst,Dst,Dst);` against a plain
             # CAM_PROFILE[10] with NO subscript. A cam profile is passed as

@@ -1,5 +1,5 @@
-"""CPT/CMP operand-layout and background-optimization sweep (James,
-2026-08-22): "test the cmp/cpt instructions with different quantities and
+"""CPT/CMP operand-layout and background-optimization sweep
+(2026-08-22). CMP and CPT tested with different quantities and
 layouts of tags. Does tag**tag differ in size from tag*tag or tag-tag? Does
 tag+tag+tag+tag+tag+tag line up with your estimated sizes? Is there
 background optimization for cpt/CMP instructions?"
@@ -18,7 +18,7 @@ effects, not operand type (already covered by gen_logic_typesweep.py).
      (L0+L1+L2+L3+L4+L5). Compare against group A's 2-operand '+' result:
      if CPT's cost really is per-operand, the chain's marginal cost should
      come out to roughly (operand_count-1) x (marginal_2op - fixed_dest_cost)
-     -- i.e. does it "line up with your estimated sizes."
+     -- i.e. does it line up with the estimated sizes.
   C. group_cpt_dedup -- CPT(Dest,X+X) (literally the same tag reference
      twice) vs the group A baseline CPT(Dest,X+Y) (two different tags,
      already captured). Tests whether repeating the same tag reference
@@ -29,7 +29,7 @@ effects, not operand type (already covered by gen_logic_typesweep.py).
      Tests whether Logix folds away a provably-redundant operation or
      charges for the literal operand regardless.
   E. group_cmp_layout -- CMP(A>B) single numeric comparison, plus a real,
-     corpus-confirmed compound-AND variant. James, 2026-08-22, on why the
+     corpus-confirmed compound-AND variant. 2026-08-22: on why the
      original `L0>L1&L2<L3` (bare `&`, no parens) failed Build 100% of
      rungs: "CMP branches of AND/OR would be using the ladder logic
      editor and not internal to the CMP. CMP would be mostly used for
@@ -42,9 +42,9 @@ effects, not operand type (already covered by gen_logic_typesweep.py).
      L5X uses `A>=(B-10)&&(A<=(B+10))` -- `&&`, first clause bare, second
      wrapped in its own parens. Fixed to match. `or_compound` uses `||`
      by symmetry, NOT corpus-confirmed (zero real `||` instances found).
-  F. group_cpt_constant_operand / group_cmp_constant_operand -- James,
-     2026-08-22: "are you testing these with tags only? You might want to
-     test with float/decimal constants as well." Group A only ever
+  F. group_cpt_constant_operand / group_cmp_constant_operand --
+     2026-08-22: these need testing with float/decimal constants, not tags
+     alone. Group A only ever
      compared tag-vs-tag; this adds an integer-LITERAL operand (CPT(L2,
      L0<op>5)) and a float-LITERAL operand against REAL tags (CPT(R2,
      R0<op>5.5)) for every operator, plus the CMP equivalent

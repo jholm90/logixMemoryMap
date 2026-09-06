@@ -1,9 +1,7 @@
 # AOI Sizing — Known / Unknown Map
 
-James, 2026-08-25: "Sounds like you don't know what needs to be addressed
-for AOIs. I am nervous you don't have a gameplan for knowing how they
-work... I need 100% accuracy for AOIs as it is a large foundation for our
-PLC code." This doc is the gameplan — a plain accounting of what's actually
+AOIs are a large foundation of real PLC code and need 100% accuracy. This
+doc is the gameplan — a plain accounting of what's actually
 confirmed about AOI sizing versus what's still a real gap, so there's
 something concrete to correct or add to rather than a vague "still working
 on it." Update this file whenever an item below moves from unknown to
@@ -22,7 +20,7 @@ instruction table almost did.
   inside the instance). Confirmed against real corpus, wired in
   `parser/aoi.py`.
 - Required/Visible/Hidden are per-parameter flags controlling what a
-  calling rung must/may/can't wire at the call site (James's own
+  calling rung must/may/can't wire at the call site (the
   explanation, tested): `Required=true` → tag mandatory on the call;
   `Required=false, Visible=true` → some value mandatory but wiring is
   optional (can be omitted, matches real corpus precedent); neither →
@@ -75,11 +73,11 @@ instruction table almost did.
    | extra internal routines | 7 of 81 have EnableInFalse and/or Prescan besides Logic |
 
    Why it matters more than the byte counts suggest: this tool is going to
-   strangers (James, 2026-09-05, *"I plan on sharing this for people
+   strangers (2026-09-05, *"I plan on sharing this for people
    outside my company and their code will be very different and use
    different aois"*), and every item in that table is a property their AOIs
-   will have in different amounts than James's. A correction fitted against
-   the definitions that recur across his nine projects — `PTimer`,
+   will have in different amounts than the. A correction fitted against
+   the definitions that recur across the nine real projects — `PTimer`,
    `HomeToTorque`, `T_ADD`, `Debounce` and the other byte-identical shared
    AOIs — would score well here and be worthless there.
 
@@ -149,7 +147,7 @@ instruction table almost did.
      InOut all untested — before trusting `18/param` as universal, and the
      UDT-definition formula comparison above is still worth running once
      more param shapes exist), but this is the clearest signal yet on the
-     AOI-vs-UDT structural difference James confirmed is real in the
+     AOI-vs-UDT structural difference confirmed is real in the
      2026-08-25 Q&A (see below) — plausibly the ~1200 flat term IS that
      extra bookkeeping. **Generated 2026-08-25, `gen_aoi_generalization.py`,
      awaiting capture:** INT/BOOL/REAL Input params at n=2/4/8 (9 files)
@@ -164,9 +162,9 @@ instruction table almost did.
      `reqvis_mixed_n4_def_only` = 19,384 (gap -8, 0.04%) — the ±16 swing
      originally flagged (2026-08-25) as "real but unexplained" is well
      within the same small universal noise band already seen throughout
-     this project, not a distinct step pattern. **2026-08-25, James:
-     "check if size is different when marking them as not visible vs
-     visible vs required"** — extended to the BOOL Input + InOut
+     this project, not a distinct step pattern. **2026-08-25: does size
+     differ between not-visible, visible and required parameters?**
+     Extended to the BOOL Input + InOut
      AXIS_CIP_DRIVE shape via `group_axis_aoi_inout_reqvis_sweep`
      (`axis_aoi_inout_reqvis_hidden/visibleoptional/required_def_only`,
      captured, landed at 43,256 / 43,272 / 43,256): same tiny ±16 pattern,
@@ -211,7 +209,7 @@ instruction table almost did.
    +0, 32→33: +8, 48→64: +4.0/instance, 65→96: +3.87/instance — noisy at
    the byte level but flat, no boundary feature). Whatever the real
    Rockwell mechanism is, it is NOT simple 32-per-word cross-element bit
-   packing. James, in the 2026-08-25 quick-fire Q&A: never seen this
+   packing. From field experience (2026-08-25): never seen this
    documented anywhere — this formula is purely empirical, no known
    mechanism behind the `124 - 4n` shape.
 
@@ -259,11 +257,11 @@ instruction table almost did.
    say — worth a fresh look once more real captures land, not treated as
    settled either way.
 
-## Questions where James's own knowledge would help most
+## Questions where the knowledge would help most
 
 These are the places where "how does Logix actually compile this" is a
 real Rockwell-internals question, not something more test files alone can
-answer cleanly. **Quick-fire Q&A run 2026-08-25 (James's request) —
+answer cleanly. **Quick-fire Q&A run 2026-08-25 (the request) —
 answers below.**
 
 - Is there a real, known reason an AOI's own compiled definition would
@@ -271,7 +269,7 @@ answers below.**
   AOI carry extra internal bookkeeping — a signature/revision hash, an
   edit-in-progress flag, something visible in Logix Designer's own
   compare/verify tooling — that a plain UDT doesn't?)
-  **James: yes, AOIs carry real extra metadata.** Confirms the
+  **Answered: yes, AOIs carry real extra metadata.** Confirms the
   definition-cost gap (unknown #1 above) is a genuine structural AOI-vs-
   UDT difference, not measurement noise or an artifact of test shape —
   raises the priority of actually fitting that gap's formula, since it's
@@ -280,7 +278,7 @@ answers below.**
 - Is BOOL-parameter packing inside an array of AOI instances something
   you've seen discussed/documented anywhere (Rockwell KB, AB forums), or
   is this genuinely undocumented territory that only shows up empirically?
-  **James: never seen it documented.** Stays purely empirical — no
+  **Answered: never seen it documented.** Stays purely empirical — no
   shortcut to a known mechanism, the boundary-crossing (n=16/31/32/33/
   48/64/65/96) and ratio sweeps already generated/awaiting capture are
   the only path to a mechanism here.
@@ -289,7 +287,7 @@ answers below.**
   above more likely something else entirely (e.g. an artifact of exactly
   which parameters got marked Hidden vs Visible, not the flag pattern
   itself)?
-  **James: no idea, need more data.** Stays open — the
+  **Answered: unknown, needs more data.** Stays open — the
   `group_axis_aoi_inout_reqvis_sweep` files (BOOL Input + InOut
   AXIS_CIP_DRIVE, hidden/visible-optional/required) already generated and
   awaiting capture are the next data point; no reason yet to expect the
@@ -322,7 +320,7 @@ BOOL/LINT cost differently (unmodeled), so every AOI's definition-cost
 number is now a real, non-zero, DINT-confirmed FLOOR rather than the
 previous silent zero — an honest improvement, not a claim of exactness for
 every AOI. Both are also now drillable in the UI (`sizing/tree.py`'s
-`expand_definition_children`, James's Phase 2/2b "locals+params breakdown"
+`expand_definition_children`, the Phase 2/2b "locals+params breakdown"
 ask). Still tangled/unresolved: AOI name length, BOOL run/pack adjacency at
 the definition level, and non-DINT parameter types — see OPEN_QUESTIONS.md
 OQ-AOIDEF for the live detail, this doc stays the high-level map.

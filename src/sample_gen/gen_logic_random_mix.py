@@ -1,4 +1,4 @@
-"""Random-combination logic validation harness (James, 2026-08-22): "You got
+"""Random-combination logic validation harness (2026-08-22): "You got
 sample instruction sizing already, now you need to generate random
 combinations, estimate and test."
 
@@ -20,7 +20,7 @@ occurrences in the actual rung text and applies the now-decomposed,
 properly-additive per-instruction weights, whatever combination a given
 rung happens to contain.
 
-Once James tests these, comparing predicted vs actual is the direct test
+Once captured, comparing predicted vs actual is the direct test
 of whether the per-instruction weights actually compose additively in a
 realistic mixed routine -- the same validation OQ-LARGEMIXED already did
 for tags/UDTs, now for logic.

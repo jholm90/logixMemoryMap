@@ -1,6 +1,6 @@
-"""CPT comprehensive batch (James, 2026-08-25): "you need to put priority
-on getting this CPT working... I expect the next batch of generated tests
-that you will have this 100% solved. no exceptions. CPT is very important."
+"""CPT comprehensive batch (2026-08-25). CPT is a high-priority
+instruction and this batch is meant to solve it outright, with no gaps
+left for a later pass.
 
 Closes out every remaining gap identified in the CPT mining writeup
 (OQ-CMPCPTLAYOUT) in one batch, reusing gen_cmpcpt_layout.py's exact
@@ -142,7 +142,7 @@ def group_literal_linearity() -> None:
 
 
 def group_floatliteral_operator_independence() -> None:
-    """James, 2026-09-03, full-depth open-questions review: group_
+    """2026-09-03: full-depth open-questions review: group_
     literal_linearity above only ever tested the float-literal effect for
     ADD at n=10/100 (its own comment already flagged this as an
     "operator-independence question" but never actually tested the other

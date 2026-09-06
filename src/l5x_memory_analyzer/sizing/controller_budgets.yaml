@@ -1,4 +1,4 @@
-# Per-processor memory budgets. James (2026-08-20): the budget denominator
+# Per-processor memory budgets. 2026-08-20: the budget denominator
 # was hardcoded to a flat 4MB regardless of ProcessorType -- wrong, since
 # capacity is genuinely part-number-specific (0.6MB up to 40MB across real
 # catalog numbers) and, per Rockwell's own docs, the *architecture* differs
@@ -32,7 +32,7 @@ architecture: unified  # default for entries below unless overridden per-entry
 
 processors:
   # CompactLogix 5380 -- 5069-L3xx, unified memory
-  # James's physical spot-check unit's real ProcessorType is confirmed
+  # the physical spot-check unit's real ProcessorType is confirmed
   # "5069-L306ERS2" (2026-08-20 reference export) -- prefix-matches this
   # entry fine as-is, no code change needed, just documenting the real value.
   "5069-L306ER": { bytes: 629145, confidence: ASSUMED }   # 600 KB
@@ -42,7 +42,7 @@ processors:
   "5069-L3100ER": { bytes: 10485760, confidence: ASSUMED } # 10 MB
 
   # ControlLogix 5580 -- 1756-L8x, unified memory
-  # 1756-L81E upgraded ASSUMED->KNOWN 2026-08-20: James's real Studio 5000
+  # 1756-L81E upgraded ASSUMED->KNOWN 2026-08-20: a real Studio 5000
   # Controller Properties -> Capacity tab (v35.11, offline compile, no
   # download) showed Total: 3,145,728 blocks -- exact match to this figure,
   # and confirmed "blocks" is the on-screen unit (1 block == 1 byte, see
@@ -53,7 +53,7 @@ processors:
   "1756-L84E": { bytes: 20971520, confidence: ASSUMED }   # 20 MB
   "1756-L85E": { bytes: 41943040, confidence: ASSUMED }   # 40 MB
 
-  # ControlLogix 5570 (legacy, "L7 v30"-class hardware James spot-checks
+  # ControlLogix 5570 (legacy, "L7 v30"-class hardware spot-checked
   # against) -- DIVIDED memory: separate data_logic_bytes + io_bytes pools,
   # not one number. io_bytes ~1MB is fairly constant across the L7x line.
   "1756-L61": { data_logic_bytes: 2097152, io_bytes: 489472, confidence: ASSUMED, architecture: divided }  # 2048KB + 478KB

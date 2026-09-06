@@ -29,19 +29,19 @@ the matching footnote at the bottom, not inline.
    not generated until a real sample or its real ProductCode surfaces).
    The 9
    1769-series catalogs were re-added to the automated `fw_catalog_matrix`
-   2026-08-30 (James: AHK capture now works for this family, same as
-   L7x) — previously only ever built as single-firmware/v35
+   2026-08-30, once AHK capture was working for this family, as it
+   already was for L7x — previously only ever built as single-firmware/v35
    `fw_baseline` files; now part of the full 6-firmware sweep too. Real
-   bugs found in the re-add, same day, from live James testing (not
+   bugs found in the re-add, same day, from live controller testing (not
    code review): every 1769 catalog used a single guessed Bus Size (17,
    only confirmed for L33ERM) and was missing a real embedded
    `Discrete_IO` module entirely (L16ER–L27ERM-QBFC1B all have one;
    L30ERM/L33ERM genuinely don't) — fixed by extracting the real
    per-catalog Modules block verbatim from the 9 `fw_baseline` reference
    exports. **That fix was itself wrong and has been narrowed back out,
-   same day** (James: real chassis-size error from his own minimal
-   1769-L24ER-QB1B repro file, Bus Size="6" — "you f'd up most chassis
-   sizes" / "seems like you shouldnt be guessing chassis sizes and
+   same day**, on a real chassis-size error from a minimal
+   1769-L24ER-QB1B repro file with Bus Size="6". Chassis sizes must not be
+   guessed; the earlier fix had applied a guessed size to most chassis
    actually use ones that were referenced"). The extracted Bus Size
    values were never independently real-confirmed — they came from the
    `fw_baseline` reference files, which themselves carry a "MANUAL
@@ -51,25 +51,25 @@ the matching footnote at the bottom, not inline.
    confirmed 1769 Compact-bus Bus Size anywhere in the corpus is
    L33ERMS=17 (`samples/local/DnR_Personal/TOYOTA_135453_20221024.L5X`,
    a genuine customer file) — and even that catalog is included in
-   James's "L24..L27 and the L3 series fail" report, so its failure has
+   the "L24..L27 and the L3 series fail" report, so its failure has
    some other, still-unidentified cause even though its Bus Size checks
    out. `_1769_CATALOGS` is back down to just the 4 PointIO-bus catalogs
    (L16ER-BB1B/L18ER-BB1B/L18ERM-BB1B/L19ER-BB1B), empirically confirmed
-   working in James's live batch (all "ok" at v33). L24ER-QB1B,
+   working in the live batch (all "ok" at v33). L24ER-QB1B,
    L24ER-QBFC1B, L27ERM-QBFC1B, L30ERM, and L33ERM are pulled from
    automated generation — 30 generated files and their manifest rows
    removed — until real per-catalog data (or an unambiguous root cause)
    exists, same treatment as 1756-L85ES/1756-L9x below. Not guessing
    again.
 
-   2026-08-30 update, `samples/convert_log.csv` reconciled (James's
+   2026-08-30 update, `samples/convert_log.csv` reconciled (the
    L5X->ACD conversion log, real per-file build outcomes, not guesswork):
    confirms L24ER-QB1B/L24ER-QBFC1B/L27ERM-QBFC1B/L30ERM genuinely never
    produce an ACD at any firmware version (`XMLSrv_E_IMPORT_ABORTED_
    NO_CHANGES`), settling that removal independent of the Bus Size
    question. But L33ERM — also pulled at the same time — actually DOES
    convert cleanly (`status=ok`, all 6 firmware versions, real per-file
-   window titles) and carried 6 real manifest rows in James's push;
+   window titles) and carried 6 real manifest rows in the push;
    restored those rows into `manifest.csv` this merge (files themselves
    NOT yet regenerated — `gen_fw_catalog_matrix.py` still excludes it,
    needs a deliberate re-add if this is worth pursuing further).
@@ -91,9 +91,9 @@ the matching footnote at the bottom, not inline.
    the "bytes"-labeled side of that question), though the ratios aren't a
    single clean constant across the two groups (94104/6640≈14.2 vs
    80856/2976≈27.2), so it isn't simply a fixed blocks-to-bytes scale
-   factor either. Needs James to manually eyeball what Studio 5000 is
-   actually showing on one of these two specific capture batches before
-   either set gets trusted as real data.
+   factor either. Needs a manual read of what Studio 5000 actually shows on
+   one of these two capture batches before either set is trusted as real
+   data.
 
    Separately, and more plausibly real: the 1756-L81ES/L82ES/L83ES/L84ES
    (GuardLogix safety) rows across the same push show small, consistent,
@@ -102,8 +102,8 @@ the matching footnote at the bottom, not inline.
    captures, a plausible real safety-baseline refinement rather than a
    capture artifact. Not yet derived/wired.
 
-   2026-08-31, MYSTERY SOLVED (James, self-caught, real bug on his side):
-   his AHK/PowerShell capture pipeline was reading Studio 5000's I/O
+   2026-08-31, SOLVED — a real bug in the capture pipeline, not the model:
+   the AHK/PowerShell capture was reading Studio 5000's I/O
    memory field, not the logical (program) memory field this project
    actually sizes, for EVERY 1756-L7x (L71-L75) and 1769-family capture —
    confirmed directly: `fwmatrix_v31_1769_l33erm.ACD` real Logic
@@ -119,13 +119,12 @@ the matching footnote at the bottom, not inline.
    field) had their capture columns cleared 2026-08-31, not just the
    handful flagged above — 9 of the 60 were additionally garbled
    (`actual_bytes` values like `"Revision:"`/`"Type:"`, a second real
-   symptom of the same wrong-field capture). James: "I NEED ALL THE
-   1769/L7 files to re-test with new data" — awaiting his re-run with the
-   fixed pipeline. Also flagged a caveat on `catalog_baseline_delta` in
+   symptom of the same wrong-field capture). All 1769/L7x files need
+   re-testing against the fixed pipeline; awaiting that re-run. Also flagged a caveat on `catalog_baseline_delta` in
    `memory_model.yaml` (the 8 real 1769-series ASSUMED baseline deltas) —
    different capture METHOD (manual "Estimate" click, not this AHK
    automation) so unconfirmed whether the same bug applies there, not
-   changed numerically, but worth asking James directly.[^baseline]
+   changed numerically, but worth confirming directly.[^baseline]
 
 2. **OQ-CMPCPTLAYOUT** — down to one thread. Uniform, T1+T2, T1T3/T2T3,
    and (as of 2026-08-29) the all-3-tier mix are ALL solved and wired,
@@ -135,7 +134,7 @@ the matching footnote at the bottom, not inline.
    shows it's genuinely NOT monotonic in operand count, ruling out any
    simple per-count model. 2026-08-30: the 12 `cptmix_*` probe files
    (float1/real1/real2/real3 position/adjacency/nesting variants) got
-   real captures in James's latest push — all land within 0.7-1.3% (188-272
+   real captures in the latest push — all land within 0.7-1.3% (188-272
    bytes on ~20,500-byte totals), small and real but too tight/consistent
    across position/nesting variants on their own to isolate a clean new
    term from; still needs the dedicated architecture work, not more raw
@@ -147,7 +146,7 @@ the matching footnote at the bottom, not inline.
     KNOWN ("confirmed exact... 15 real points") but that claim was only
     ever checked at 3 widely-spaced instance counts per shape (n=1/10/25)
     — real dense data disproves it. Confidence downgraded to FITTED.
-    2026-08-30: the dense/isolating files got real captures in James's
+    2026-08-30: the dense/isolating files got real captures in the
     latest push. Pattern is now clearer, not yet closed: each `bc<N>`
     family (bit-count-per-element family, presumably) carries its OWN
     fixed offset that's constant across instance count within that family
@@ -182,8 +181,8 @@ the matching footnote at the bottom, not inline.
     same +4/instance signature before generalizing.
 
 4. **OQ-SAFETYSCOPE-SIZING** — Task/Program/Routine SHELL sub-thread
-   **decided and wired 2026-09-03** (James: "they are safety tasks and
-   safety programs therefore they need seperate sizing calculations").
+   **decided and wired 2026-09-03**: safety tasks and safety programs are
+   a separate memory pool and need their own sizing calculation.
    `report.py` now excludes Safety tasks/programs/routines from the
    ordinary `task_program_shell` aggregate entirely and charges a new
    flat `safety_task_program_shell` (296 bytes/file, see
@@ -203,7 +202,7 @@ the matching footnote at the bottom, not inline.
    warns rather than refuses on a Safety-rated project
    (`is_safety_project`, cli.py/ui/server.py), but these two Safety-classed
    tag types are still left unsized by convention, not by any code that
-   enforces the exclusion. James's shell decision doesn't resolve this —
+   enforces the exclusion. the shell decision doesn't resolve this —
    it was specifically about Task/Program/Routine containers, not tag
    content. Still needs a call: exclude Safety-class tags from sizing
    everywhere by design (and wire that exclusion explicitly), or size
@@ -211,9 +210,9 @@ the matching footnote at the bottom, not inline.
    warning wording.[^safetyscope]
 
 5. **OQ-AOIARRAYDIMENSION** — the `aoi_array_param_def_only.L5X` import
-   thread is **CLOSED 2026-09-03, real root cause** (James, live
-   controller testing: "the issue is BOOL/SINT/INT/DINT cannot be arrays
-   for Inputs. Arrays require InOut"). The two prior "fixes" (Required/
+   thread is **CLOSED 2026-09-03**. Real root cause, from live controller
+   testing: BOOL/SINT/INT/DINT cannot be arrays for Input parameters —
+   an array parameter must be InOut. The two prior "fixes" (Required/
    Visible forced true/true 2026-08-29, then a real `<Array>`/`<Element>`
    DefaultData body 2026-08-30) were chasing a formatting bug that never
    existed — an array-dimensioned atomic Input/Output Parameter is not a
@@ -252,9 +251,9 @@ the matching footnote at the bottom, not inline.
    capture.[^aoiarraydimension]
 
 6b. **OQ-MODULESTRUCTURAL** — NEW, 2026-09-04, and it changes the target
-   for OQ-MODULEIO below. James: *"the target application for this is to
-   have an unknown file tested and we cannot 100% capture all catalog
-   module numbers individually — you'll have to tell that a 16pt digital
+   for OQ-MODULEIO below. The target application is testing an unknown
+   file, and every catalog module number cannot be captured
+   individually — the model has to tell that a 16pt digital
    card has XX overhead + 16pts of data, whereas a 8pt analog card has
    different overhead."*
 
@@ -283,7 +282,7 @@ the matching footnote at the bottom, not inline.
      "1756 digital output config", `AB:1734_8SLOT:I:0` is an 8-slot
      PointIO adapter, `AB:MotionDevice_Diagnostics:S:0` a drive. This is
      catalog-INDEPENDENT and exactly the "16pt digital vs 8pt analog"
-     axis James is asking for -- 1756-IA16 and 1756-IB16 are different
+     axis needed here -- 1756-IA16 and 1756-IB16 are different
      catalogs but both `AB:1756_DI`. Across the 98 valid files there are
      143 distinct profile strings resolving to a much smaller set of
      class tokens (DI, DO, IB, OE, OF, SLOT, ...).
@@ -427,7 +426,7 @@ the matching footnote at the bottom, not inline.
     distinguish a fixed-plus-linear form from something else before
     wiring anything.
 
-    James, 2026-08-31, real, caught reviewing the target-content-scale
+    2026-08-31, real, caught reviewing the target-content-scale
     files: "if there was no jsr parameters then there is no sbr/ret
     instructions inside the called subroutine." Checked against all 8
     real customer L5X files in `samples/local/` (2,534 unique real JSR
@@ -459,7 +458,7 @@ the matching footnote at the bottom, not inline.
 
 9. **OQ-AOIORPHAN** — **CLOSED. Full entry and reasoning trail moved to `docs/RESOLVED_QUESTIONS.md`** ("Closed 2026-09-05" section).
 
-10. **OQ-BLOCKBYTE** — new, very serious if real. James, 2026-08-30:
+10. **OQ-BLOCKBYTE** — new, very serious if real. Raised 2026-08-30:
     Studio 5000's Capacity readout is labeled "bytes" for 1769/L7x
     processors but "blocks" for 5069/L8x processors — and this project has
     treated `actual_bytes` as one uniform unit across the whole
@@ -475,7 +474,7 @@ the matching footnote at the bottom, not inline.
     nothing else, both predicting 498,236 (480,000 of that is exactly
     120,000×4, zero packing ambiguity). Any real conversion factor will
     show up as an obvious clean ratio between the two files' real Capacity
-    readings. Awaiting capture on both (not yet in James's tooling as of
+    readings. Awaiting capture on both (not yet in the tooling as of
     2026-08-30 — only just pushed this session).
 
     Circumstantial evidence surfaced 2026-08-30 in OQ-BASELINE-PROCFW
@@ -490,8 +489,8 @@ the matching footnote at the bottom, not inline.
     on.[^blockbyte]
 
     **Import failure, 2026-08-30 — root-caused and fixed 2026-08-31.**
-    `blockbytetest_l71_dint120000` failed to import; James pulled the real
-    Studio 5000 error-log detail this time ("Name collision: imported
+    `blockbytetest_l71_dint120000` failed to import. The real
+    Studio 5000 error-log detail this time read ("Name collision: imported
     Module 'Local' renamed to 'Local1'" / "Required property 'Port' was
     missing" / Controller/EthernetPorts "Requested item could not be
     found"). Root cause: `wrapper.py`'s default branch assumed every
@@ -509,7 +508,7 @@ the matching footnote at the bottom, not inline.
     verifiable from here.
 
     **Circumstantial evidence now essentially CONFIRMED, 2026-08-31**
-    (James's real capture batch, merged into `manifest.csv` this pass).
+    (a real capture batch, merged into `manifest.csv` this pass).
     The full 1756-L7x/1769 firmware x catalog matrix came back with real
     Capacity numbers — and every one of them is flat, content- and
     firmware-independent:
@@ -552,11 +551,11 @@ the matching footnote at the bottom, not inline.
       reading regardless of content. Matches the tooling's own known
       quirk (`docs/TESTING_PLAN.md`: "the AHK capture pipeline couldn't
       read a 1769's Capacity value without a manual 'Estimate' button
-      click first... now resolved on James's end" — this data suggests
+      click first... now resolved on the end" — this data suggests
       that fix may not actually be reading the real value, just no
       longer erroring). **None of this 45-row batch should be treated as
-      real ground truth or used to tune any formula** until James can
-      confirm what the AHK script is actually reading for these two
+      real ground truth or used to tune any formula** until it is
+      confirmed what the AHK script is actually reading for these two
       families (a live screenshot/manual cross-check against Controller
       Properties → Capacity in Studio 5000 for one single 1769/L7x file
       would settle it immediately).
@@ -585,7 +584,7 @@ the matching footnote at the bottom, not inline.
       finding that "1769-series runs 69,600-98,944, far above the flat
       prediction." **Revised conclusion: this is very likely a real
       pre-5580-family baseline/overhead gap, not a unit-labeling bug** —
-      James's "bytes" vs "blocks" label difference may be a real Studio
+      the "bytes" vs "blocks" label difference may be a real Studio
       5000 UI distinction, but it doesn't appear to be *why* the L7x/1769
       numbers run high; a real per-family baseline term (analogous to the
       already-wired firmware-version baseline deltas) is the more likely
@@ -596,10 +595,10 @@ the matching footnote at the bottom, not inline.
       a family-level gap but can't separate "baseline is bigger" from "per
       element is bigger" on its own.
 
-11. **OQ-COMPOSITESCALE** — new, real, James 2026-08-30 directive after
-    the confidential-project review found a >20% real gap: "I expect at
-    least 50 large programs with io and logic to test your generation
-    knowledge and test aois and udts." Every calibration file in this
+11. **OQ-COMPOSITESCALE** — new, real, raised 2026-08-30 after a review of
+    a confidential project found a >20% real gap. The requirement: at
+    least 50 large programs with I/O and logic, exercising AOIs and UDTs
+    at production scale. Every calibration file in this
     project before now isolated ONE feature at a time — never tested
     whether the individually-confirmed formulas are actually additive at
     real project scale/density, or whether interaction effects between
@@ -626,7 +625,7 @@ the matching footnote at the bottom, not inline.
     interaction effect (or a formula that only breaks at
     scale/density) invisible to every prior isolated test.[^compositescale]
 
-    **Import failures, 2026-08-30 (James's l5x2acd run) — 14 of the 50
+    **Import failures, 2026-08-30 (the l5x2acd run) — 14 of the 50
     fail, not just "awaiting capture."** All 14 hit the same generic
     `XMLSrv_E_IMPORT_ABORTED_NO_CHANGES` wrapper text, no per-file detail.
     Cross-referenced every file's module catalog mix (deterministic,
@@ -650,8 +649,8 @@ the matching footnote at the bottom, not inline.
         1794-IB16XOB16P/A), `_44` (1794-OW8/A, 1794-VHSC/A,
         193-ECM-ETR/A, 193-ECM-ETR/B).
 
-        **Root-caused and fixed, 2026-08-31** (James pulled the real
-        Studio 5000 error-log detail for `_07`): "Slot number in use by
+        **Root-caused and fixed, 2026-08-31**, from the real
+        Studio 5000 error-log detail for `_07`: "Slot number in use by
         another module" + "Failed to set the 'ParentModule' property
         (Requested item could not be found.)". All three of `_07`'s
         catalogs were extracted from the SAME real reference export
@@ -691,12 +690,12 @@ the matching footnote at the bottom, not inline.
       without a byte comparison. Needs a real reconversion pass to
       confirm any of this — not independently verifiable from here.
 
-      **Renamed with a "_r2" suffix, 2026-08-31** (James: "confirm that
-      you will have different filenames for the 50 tests and abandon the
-      old ones" — real Studio 5000 verify errors found separately, see
+      **Renamed with a "_r2" suffix, 2026-08-31.** The 50 tests needed
+      new filenames and the old ones abandoned: real Studio 5000 verify
+      errors found separately (see
       OQ item covering aoi_call_arg_count_mismatch/XIC-OTE-data-type,
       meant every one of the 50 composite files changed real content
-      again after James had already pushed an l5x2acd batch against the
+      again after an l5x2acd batch had already run against the
       names above). All references to `composite_realistic_NN` in this
       section are the OLD, now-deleted filenames, describing what was
       diagnosed against them at the time — the CURRENT files are
@@ -707,7 +706,7 @@ the matching footnote at the bottom, not inline.
       they stay correctly flagged.
 
       **Real capture landed, 2026-08-31 — the core question is
-      essentially answered, and it's good news.** James's batch
+      essentially answered, and it's good news.** the batch
       captured real Capacity for 36 of the old-named files; 18 of those
       are among the 26 fully-predicted (not catalog-explained-broken,
       not unmodeled) composites — mapped onto the current `_r2` rows
@@ -758,9 +757,9 @@ the matching footnote at the bottom, not inline.
 
       **New v2 batch, 2026-09-02 — the residual reappears at a MUCH larger
       magnitude once composites actually exercise AOI-internal-logic and
-      JSR-target content, and this time it's explained and wired.** James,
-      2026-08-30: "I expect at least 50 large programs with io and logic to
-      test your generation knowledge" — `gen_composite_realistic_v2.py`
+      JSR-target content, and this time it's explained and wired.**
+      Against the 2026-08-30 requirement for 50 large programs with I/O and
+      logic, `gen_composite_realistic_v2.py`
       built 50 new files, same UDT/array/module/AOI-declaration shape as v1
       but with every referenced AOI now carrying real internal Logic-
       routine content (5-45 real instructions) and one real 0-param JSR-
@@ -770,7 +769,7 @@ the matching footnote at the bottom, not inline.
       capture landed against all 50 (5 files — `_07`/`_18`/`_19`/`_30`/
       `_50` — carry real Studio 5000 import errors unrelated to sizing: a
       193-ECM-ETR module-compatibility issue and a safety-drive-on-
-      non-safety-PLC issue in the module mix, both James-deprioritized as
+      non-safety-PLC issue in the module mix, both deprioritized as
       generator-script fixes, not sizing bugs; excluded from all figures
       below). Before any composite-scale fix, the 45 error-free files
       under-predicted by a mean **+5.16%** even with both isolated-test
@@ -805,12 +804,13 @@ the matching footnote at the bottom, not inline.
       rather than all three scaling together as they do in this batch —
       would sharpen or could disprove either constant. The 5 error-flagged
       files' generation-script fixes (module catalog compatibility,
-      sequential slot numbering) remain separately tracked, James-
+      sequential slot numbering) remain separately tracked and
       deprioritized until this tuning work lands.
 
-12. **OQ-AOIINTERNALLOGIC** — new, real, corpus-wide gap, James 2026-08-31:
-    "So you closed aois but never put logic inside? All aois have one
-    subroutine but they can have more, see the HomeToTorque aoi."
+12. **OQ-AOIINTERNALLOGIC** — new, real, corpus-wide gap, found 2026-08-31:
+    AOIs were closed out without ever putting logic inside one. Every AOI
+    has at least one internal subroutine and can have more (HomeToTorque
+    is the real example).
     `aoi_xml()` (builders.py) has hardcoded a self-closing
     `<Routine Name="Logic" Type="RLL"/>` for EVERY AOI test file this
     project has ever generated — $0 real internal-logic content has ever
@@ -894,7 +894,7 @@ the matching footnote at the bottom, not inline.
     either gap — that residual's real source is still unidentified.
 
 13. **OQ-IDENTNAMELEN** — new, real, found 2026-08-31 in the same push as
-    James's "5/10/15/20/50 subroutines... different routine name lengths"
+    the "5/10/15/20/50 subroutines... different routine name lengths"
     directive. `gen_jsr_multi_distinct_targets_scale.py`'s
     `group_name_length` (10 fixed JSR targets, name length swept 4/8/16/
     32/40 chars — 40 capped per Rockwell's real Logix identifier limit,
@@ -938,16 +938,16 @@ the matching footnote at the bottom, not inline.
     identifiers.
 
 14. **OQ-193ECMETR** — new, real, genuinely undiagnosed (now covering TWO
-    catalogs — see the correction below). James, 2026-09-02: real Studio
+    catalogs — see the correction below). 2026-09-02, real Studio
     5000 error on `composite_realistic_v2_18`/`_50` ("Error:
     TestMod2_193ECMETRA: Child module incompatible with parent module").
     Self-audit (checking for real currently-unreconciled `error_count`
-    data per CLAUDE.md's standing rule, not just the composite files James
-    named) found this is NOT composite-specific: BOTH standalone
+    data per CLAUDE.md's standing rule, not just the composite files
+    originally reported) found this is NOT composite-specific: BOTH standalone
     `modulesweep_193_ecm_etr_a`/`_b` already carry a real `error_count=1`
     in `manifest.csv` — sitting there uninvestigated since capture, never
     previously flagged. No real Studio 5000 error-log line exists for the
-    standalone repro (only James's composite-context quote above), so the
+    standalone repro (only the composite-context quote above), so the
     exact cause is unconfirmed — plausible candidates (EKey/revision
     mismatch between the extracted 1756-EN4TR adapter and the E300 relay
     child, or the E300 family needing a different real parent device
@@ -961,7 +961,7 @@ the matching footnote at the bottom, not inline.
     **CORRECTION, same day, within the hour:** `2198-S130-ERS3` was
     initially diagnosed below as "requires a safety-capable controller"
     and wired into `_SIL2_CATALOGS` — DISPROVEN by real evidence almost
-    immediately after: James's own real production file
+    immediately after: a real production file
     (`TitusvilleTrimmer_20260902r2.L5X`) runs a real `2198-D057-ERS3`
     module (`EM113_TrimmerLC_EM109_TrimInfdLC`) on a plain non-safety
     1756-L82E (`<SafetyInfo/>` empty, no SafetyTask anywhere) —
@@ -979,7 +979,7 @@ the matching footnote at the bottom, not inline.
     first when real error-log detail is available: this project's own
     genericized `2198-S130-ERS3`/`2198-D057-ERS3` blocks may be missing a
     real Motion/Axis association these Kinetix drives need beyond the
-    Diagnostics connection alone — James's real file's module carries
+    Diagnostics connection alone — a real file's module carries
     plain `DiagnosticInput`-only connections in the excerpt checked so
     far, so this isn't confirmed either, just a real lead not yet a
     guess turned into code.
@@ -987,7 +987,7 @@ the matching footnote at the bottom, not inline.
     **New real evidence, 2026-09-03 — the "missing Motion/Axis
     association" lead above is now DISPROVEN too.** All 50
     `composite_realistic_v3_*` files hit the exact same 2-error signature
-    on real Studio 5000 conversion (James): `Tag 'D012_23:SI': Invalid
+    on real Studio 5000 conversion: `Tag 'D012_23:SI': Invalid
     data type for safety tag` + `Project size exceeds controller
     capacity` — 2 errors, matching the "clean X/X correlation" pattern
     already noted above for other "-ERS3" catalogs. Critically, v3's
@@ -998,9 +998,9 @@ the matching footnote at the bottom, not inline.
     shape) plus a shared MOTION_GROUP tag, and STILL hits the identical
     error. So the "needs a real axis" theory doesn't hold either — every
     "-ERS3" catalog this project has ever generated fails this way
-    (with or without an axis bound), while only James's own real
+    (with or without an axis bound), while only a real
     Titusville production file has ever shown it working. Direct,
-    attribute-by-attribute comparison of James's real `2198-D057-ERS3`
+    attribute-by-attribute comparison of a real `2198-D057-ERS3`
     Module block (from Titusville) against this project's generated
     `2198-D012-ERS3` block found them structurally near-identical
     (same Ports/EKey/Communications/Connections shape, same
@@ -1010,8 +1010,8 @@ the matching footnote at the bottom, not inline.
     from every generated instance, but that can't be confirmed as the
     cause either: `gen_module_sweep_variants.py`'s own real-corpus-
     verbatim `2198-D012-ERS3` "2conn" block (source:
-    `motion_p208/p208_D012_NodeAndAxisDual3.L5X`, a real James-uploaded
-    file) ALSO has no `<ExtendedProperties>` and the exact same zeroed
+    `motion_p208/p208_D012_NodeAndAxisDual3.L5X`, a real reference
+    export) ALSO has no `<ExtendedProperties>` and the exact same zeroed
     `ControllerToDriveConnectionSize`/etc. diagnostic fields our
     generator produces — meaning that shape was already confirmed real
     once, not a generator bug in itself, so a missing `ConfigID` isn't a
@@ -1043,8 +1043,8 @@ the matching footnote at the bottom, not inline.
 
     **CORRECTION, same day, within the hour:** initially theorized Ch2
     might be internally reserved for the drive's Safe-Torque-Off/safety
-    channel, explaining the SI/SO auto-creation — James disproved this
-    immediately with two more real reference exports
+    channel, explaining the SI/SO auto-creation — disproven
+    immediately by two more real reference exports
     (`SampleAxis.L5X`/`SampleAxis_2and4.L5X`): a real 4-axis Kinetix 5700
     config genuinely uses all 4 channels — Ch1/Ch3 carry the two real
     motor axes (`AxisConfiguration="Position Loop"`), Ch2/Ch4 carry their
@@ -1064,11 +1064,11 @@ the matching footnote at the bottom, not inline.
     just happens to also be correct for an unrelated reason.
 
     **Real symptom clarified, real second bug found and fixed, still
-    2026-09-03.** James retested the Ch2->Ch3 fix (`modulemotion_
-    d012_dual_axis.L5X`): same 2-error signature. He also clarified the
+    2026-09-03.** A retest of the Ch2->Ch3 fix (`modulemotion_
+    d012_dual_axis.L5X`) gave the same 2-error signature, and clarified the
     actual crash: opening the **module's own I/O-tree profile page**
     (not the axis properties page) crashes Studio outright -- confirmed
-    by testing his own original, unmodified real source file
+    by testing the original, unmodified real source file
     (`p208_D012_NodeAndAxisDual.L5X`, the one this project's D012 module
     block is extracted from) side by side: **that file opens fine.**
     Definitive proof the bug is in how this project's own pipeline
@@ -1084,9 +1084,9 @@ the matching footnote at the bottom, not inline.
     project has ever generated (5 `modulemotion_*` files, all 50
     `composite_realistic_v3_*` files, all 18 `axis_scale_*` files) has
     been structurally malformed this way -- the leading real suspect for
-    the module-page crash, though NOT yet confirmed (James said "P208
-    isnt the issue" independently of this fix, before it was applied --
-    still needs a retest of the regenerated file to know either way).
+    the module-page crash, though NOT yet confirmed (the P208 module was
+    ruled out independently of this fix, before it was applied -- still
+    needs a retest of the regenerated file to know either way).
     Fixed: new `_dcbus_axis_tag()` helper using the real, verbatim-
     extracted DC-bus shape, wired into all 3 generators
     (`gen_module_motion.py`, `gen_composite_realistic_v3.py`,
@@ -1096,8 +1096,8 @@ the matching footnote at the bottom, not inline.
 
     **Two separate, real bugs found and fixed the same pass, NOT this
     one:**
-    - **Sequential slot numbering** (James: "lots of racks did not have
-      the slot numbers used in sequence... please add this check").
+    - **Sequential slot numbering.** Many racks did not use slot numbers in
+      sequence; a lint check for this was added.
       `gen_composite_realistic.py`'s `_modules_xml_unique_ips` keyed each
       catalog's assigned Local-ICP backplane slot off its raw index in the
       file's full catalog list (`slot=2+i`), regardless of whether that
@@ -1117,7 +1117,7 @@ the matching footnote at the bottom, not inline.
       a future generator can't reintroduce this silently. (Also flags 2
       pre-existing `modulerack_1756_local`/`_remote` files not touched by
       this fix — those may be intentionally sparse racks, not bugs; not
-      changed, flagged for James to confirm before any future regen.)
+      changed, flagged for confirmation before any future regen.)
     - **"Safety-rated module in a non-safety-declared composite"
       (`2198-S130-ERS3`, `composite_realistic_v2_19`/`_30`)** — this WAS
       diagnosed and fixed here initially, then disproven within the hour
@@ -1126,7 +1126,7 @@ the matching footnote at the bottom, not inline.
       requirement, and now sits in the same exclusion bucket as
       `193-ECM-ETR/A`/`/B`.
 
-15. **OQ-V3GENBUGS** — three real generator bugs found via James's actual
+15. **OQ-V3GENBUGS** — three real generator bugs found via the actual
     Studio 5000 ACD-conversion errors on the v3 composite batch (50 files,
     2026-09-02), all root-caused to the exact reported symptom and fixed:
     `_LOCAL_ICP_SLOT_RE` crossing `<Module>` boundaries in DOTALL mode
@@ -1150,14 +1150,14 @@ the matching footnote at the bottom, not inline.
     bytes, anchored against Titusville's real 496-byte `IO_Optm` instance),
     `bridge_placeholder_*` (2, real zero-connection `ETHERNET-BRIDGE`
     IP-only fan-out node). None of these have real capture data back yet
-    (James still validating ACD conversion as of 2026-09-02) — no sizing
+    (ACD conversion still being validated as of 2026-09-02) — no sizing
     formula changes from this item, generator-correctness only.
 
 16. **OQ-JSRSCALE / OQ-COMPOSITESCALE** — the composite AOI/JSR surcharge.
     **REFITTED ON REAL PROGRAMS 2026-09-04. Was the project's #1 error
     source; is now its largest remaining one, but 5x smaller.**
 
-    James supplied real Capacity readings for 8 whole real customer
+    supplied real Capacity readings for 8 whole real customer
     programs, joining `Cardin_TrimSortStack` for **9 real data points** —
     the first time this question has had more than one. Under the old model
     (`aoi=20`, `jsr=47`, file-wide cap 12,000) **all nine under-predicted**,
@@ -1218,8 +1218,8 @@ the matching footnote at the bottom, not inline.
     more substantive gap: OQ-AXISSTRUCT's real Capacity numbers don't
     match what's already wired into `memory_model.yaml`'s
     `predefined_structures` from OQ-PREDEFINED. Correction to the record:
-    axis content is NOT "100%-blind, priced at exactly $0" as described to
-    James earlier this session — AXIS_CIP_DRIVE/AXIS_SERVO/AXIS_VIRTUAL/
+    axis content is NOT "100%-blind, priced at exactly $0" as previously
+    stated — AXIS_CIP_DRIVE/AXIS_SERVO/AXIS_VIRTUAL/
     COORDINATE_SYSTEM are wired and sizing without error today (FITTED,
     single-sample-each). See footnote for the actual unreconciled numbers
     and what's needed to close this for real.
@@ -1255,10 +1255,9 @@ the matching footnote at the bottom, not inline.
     ST unchanged** and ST needs only a per-statement term and control-flow
     terms on top.
 
-    Sub-question, **OQ-STCOMMENT** (James, 2026-09-04: *"one thing not
-    modelled is st comments and if a comment line or block takes up data
-    memory or is like tag and rung comments and does not count towards data
-    usage"*). The RLL half of this is already ANSWERED and free:
+    Sub-question, **OQ-STCOMMENT** (2026-09-04): does an ST comment line or
+    block take up data memory, or is it free like tag and rung comments?
+    The RLL half of this is already ANSWERED and free:
     `instr_cpt_n05000_comment100` and `instr_cpt_n05000_nocomment` came
     back **byte-identical at 2,282,944**. But that result does not
     transfer, and assuming it would be a real mistake: an RLL rung comment
@@ -1280,15 +1279,15 @@ the matching footnote at the bottom, not inline.
     as-is), and whether an ST routine used as a JSR target is charged the
     same parameter cost as an RLL one (group F; all JSR param constants
     were fitted on RLL targets only, and 44 SBR / 42 RET in the corpus say
-    ST targets are a real shape). Blocked on capture — **not on James
+    ST targets are a real shape). Blocked on capture — **not on anyone
     writing samples: 24,017 real ST lines is more idiom than this needs,
     and every construct and call in the batch is taken from that corpus,
     not invented.**
 
-19. **OQ-EXPORTSCOPE** — new, 2026-09-04 (James: *"Can you please rewrite
-    the estimation script for handling controller, udt, aoi, programs,
-    routines, rungs logic exports... Anything that's not a controller
-    export can not use the prices sir base load, but rungs, routines and
+19. **OQ-EXPORTSCOPE** — new, 2026-09-04. The estimation path has to handle
+    controller, UDT, AOI, program, routine and rung-logic exports.
+    Anything that is not a controller export cannot use the base load, but
+    rungs, routines and
     programs might contain controller tags"*). The scope machinery is now
     WIRED (`parser/export_scope.py`): a partial export gets no project base
     load, no firmware/catalog/safety baseline delta and no task/program
@@ -1314,7 +1313,7 @@ the matching footnote at the bottom, not inline.
     Test shape needed: export one program from a known project, import it
     into a second known project, and read Capacity before and after. That
     is a controller-in-the-loop test, not a file-generation one, so it
-    needs James at the bench rather than a generator run.
+    needs a controller at the bench rather than a generator run.
 
 20. **OQ-ALARMCOND** — **CLOSED. Full entry and reasoning trail moved to `docs/RESOLVED_QUESTIONS.md`** ("Closed 2026-09-05" section).
 
@@ -1326,7 +1325,7 @@ the matching footnote at the bottom, not inline.
     re-run automatically), 13 were superseded by exact `realscale_*` tests,
     40 were obsolete composite v1/v2, 2 no longer exist. These 11 are real,
     and **nothing in this repo diagnoses any of them** — the generators'
-    own comments are silent, so the cause has to come from James's Studio
+    own comments are silent, so the cause has to come from the Studio
     5000 error log rather than from a guess (guessing is what produced the
     invented alarm `ConditionType` names that all four failed on).
 
@@ -1434,7 +1433,7 @@ the matching footnote at the bottom, not inline.
 
 
 25. **OQ-VERIFINSTR** — new, 2026-09-04. Eleven instructions now have
-    call shapes verified by James's own build-clean Studio 5000 export
+    call shapes verified by the build-clean Studio 5000 export
     (`instruction_shapes_20260904.L5X`), and none of them has a measured
     cost: **BRK, COS, LOG, SIN, PID, FBC, STOR, MCD, MCS, MCSV, MAG**.
     `gen_verified_instructions.py` builds each at n=10/100/1000 on an
@@ -1443,8 +1442,8 @@ the matching footnote at the bottom, not inline.
     each sweep's predicted total is flat across n — any real slope is the
     instruction's cost, read directly. **Blocked on capture.**
 
-    Provenance note worth keeping: NXT is excluded because James stated it
-    is not a valid RLL mnemonic, and MCLM was skipped at his direction.
+    Provenance note worth keeping: NXT is excluded because it is not a
+    valid RLL mnemonic, and MCLM was deliberately skipped.
     Neither was inferred from documentation — which matters, because every
     previous attempt in this project to compose predefined-structure or
     instruction XML from a manual (alarm `ConditionType`s, the bare
@@ -1485,8 +1484,8 @@ the matching footnote at the bottom, not inline.
 
 27. **OQ-CPTNARROW** — how the SINT/INT → DINT widening scales. 2026-09-04.
 
-    James, 2026-09-04: *"ints will use a behind the scenes conversion to
-    dint."* That is the mechanism, and it resolved two things at once:
+    2026-09-04: INTs use a behind-the-scenes conversion to DINT. That is
+    the mechanism, and it resolved two things at once:
     LINT operands cost **nothing** (already 64-bit, no widening), and
     SINT/INT operands cost **+256/rung** on the 3-operator all-REAL control.
 
@@ -1588,7 +1587,7 @@ the matching footnote at the bottom, not inline.
     **What would close it:** the direct ST analogue of what `cmpcpt_*` did
     for RLL — operator count 0..6 × DINT/REAL destination × with and
     without a float literal. Not yet generated; it is the obvious next ST
-    batch and is not blocked on James for anything.
+    batch and is not blocked on anything external.
 
     Also still open on ST, one thread each:
     - `st_jsr_param_target_n00100` is the only ST file not exact (−243,
@@ -1603,8 +1602,8 @@ the matching footnote at the bottom, not inline.
 
 
 30. **OQ-REAL5069** — **the 5069 platform has ZERO real-file validation.**
-    Found 2026-09-05, while checking a platform question from James
-    ("Elmsdale had 5069").
+    Found 2026-09-05, while checking which platforms the real corpus
+    actually covers.
 
     Every one of the nine real production exports in `samples/local/` is a
     **1756-L8x**:
@@ -1635,12 +1634,12 @@ the matching footnote at the bottom, not inline.
     **this tool is validated on 1756-L8x and unvalidated on 5069.**
 
     It matters more than the raw file count suggests: 1756-L7x and 1769 are
-    now formally dead architecture (James, 2026-09-05), which leaves
+    now formally dead architecture (2026-09-05), which leaves
     5069/CompactLogix 5380 as the platform this tool most likely gets used
     on going forward -- and it is the one with no real evidence behind it.
 
     **What is needed:** one real 5069 export with a controller capture.
-    James mentioned an "Elmsdale" project on 5069; that file is not in
+    An "Elmsdale" project is known to run on 5069, but that file is not in
     `samples/local/`. Any real 5069 program would do -- the point is a
     first real data point, not that specific one.
 
@@ -1652,17 +1651,17 @@ the matching footnote at the bottom, not inline.
 
 
 31. **OQ-AOISTRUCT** — **what an AOI costs to DECLARE, as a function of its
-    structure rather than its name.** New, 2026-09-06. Direct answer to
-    James: *"Like I said previously Murray AOIs are the same on other
-    projects. What new tests are you going to generate now for improving?"*
-    and, same day, *"Keep in mind that I plan on sharing this for people
-    outside my company and their code will be very different and use
-    different aois."*
+    structure rather than its name.** New, 2026-09-06, under two
+    constraints set the same day: the AOIs in the worst-predicting real
+    file also appear in other real projects, so they are not that file's
+    problem; and the tool is going to people outside the organisation whose
+    code will be different and whose AOI libraries will be entirely
+    unfamiliar.
 
     Those two together rule out the tempting move. MurrayBros' residual
     correlates hardest with AOI structure (aoiaxisparam +0.889, aoirungs
     +0.848, aoidefs +0.838, aoilocals +0.835), and the shared definitions
-    that recur across James's nine projects (`PTimer`, `HomeToTorque`,
+    that recur across the nine projects (`PTimer`, `HomeToTorque`,
     `SpecialInputs`, `T_ADD`, `T_DST`, `AnalogSensor`, `Debounce`,
     `ts_PilotLight`, `VirtualAxis`, `ts_AxisGap`, `TierPinchAOI`,
     `ts_TotalSB` are byte-identical across projects) would make a

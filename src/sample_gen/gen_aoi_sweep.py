@@ -1,4 +1,4 @@
-"""Big AOI data-sizing sweep (James, 2026-08-20: "based on all of this extra
+"""Big AOI data-sizing sweep (2026-08-20, "based on all of this extra
 stuff with the AOIs i expect another 10+ tests... totally nail off the data
 sizer estimation process"). Extends the confirmed UDT-definition-cost
 findings (168 + 16*member_count, type-independent except BOOL) to AOI
@@ -140,7 +140,7 @@ def group_nested_array_localtag() -> None:
 
 # ---------------------------------------------------------------------------
 # I. Realistic composite AOI (10 In + 10 Out + 10 Local), matching the
-#    scale of James's real Template AOIs (AnalogSensor_AOI etc: 10-30
+#    scale of a real Template AOIs (AnalogSensor_AOI etc: 10-30
 #    params/locals each) -- at 0/1/10 instances.
 # ---------------------------------------------------------------------------
 

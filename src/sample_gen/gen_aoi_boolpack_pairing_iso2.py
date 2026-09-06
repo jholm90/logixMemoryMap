@@ -1,7 +1,7 @@
 """OQ-AOIBOOLPACK-PAIRING per-boundary-crossing term isolation (2026-08-31,
-James: "Once again you got a new data point for AOI but no way to resolve
-it... if i get a test result that doesnt match my prediction i usually
-check my existing work and devise new tests to fix it").
+built because the previous pass produced a new AOI data point with no way
+to resolve it. Standing method: when a test result does not match the
+prediction, re-check the existing work and devise new tests to fix it).
 
 gen_aoi_boolpack_pairing.py's group_dense_membercount() found each
 bool_count family (bc=10/20/60) carries its own FIXED offset B that's
@@ -24,7 +24,7 @@ climbs smoothly across the whole range, B is a real function of
 bool_count itself, not a boundary-crossing effect.
 
 21 files (7 bool_counts x 3 instance counts). Suffixed `_iso2` per
-James's request to keep this follow-up round visually distinct from the
+the request to keep this follow-up round visually distinct from the
 original dense-membercount batch.
 
 Run: python -m sample_gen.gen_aoi_boolpack_pairing_iso2

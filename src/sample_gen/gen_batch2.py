@@ -1,4 +1,4 @@
-"""Second big test batch (James, 2026-08-20): nested UDTs, nested array
+"""Second big test batch (2026-08-20): nested UDTs, nested array
 UDTs, custom-length STRING validation, AOI generation (including nested
 AOIs and arrays inside AOIs), and large realistic multi-tag/UDT
 combination files at 100+ and 1000+ tag scale with no logic.
@@ -28,7 +28,7 @@ def _write(l5x: str, category: str, out_name: str, description: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Nested UDT / nested array UDT (James: "nested UDTs need to be tested.
+# Nested UDT / nested array UDT ("nested UDTs need to be tested.
 # nested array udts need to be tested.")
 # ---------------------------------------------------------------------------
 
@@ -67,7 +67,7 @@ def group_nested_udt() -> None:
 
 # ---------------------------------------------------------------------------
 # Custom STRING length validation, spot checks especially 500+ chars
-# (James: "custom length strings need to be validated. just a few spot
+# ("custom length strings need to be validated. just a few spot
 # checks, especially in the 500+ char range")
 # ---------------------------------------------------------------------------
 
@@ -82,14 +82,14 @@ def group_custom_string() -> None:
 
 
 # ---------------------------------------------------------------------------
-# AOI generation: basic, array-in-AOI, nested-AOI-in-AOI (James: "compile/
+# AOI generation: basic, array-in-AOI, nested-AOI-in-AOI ("compile/
 # update the udt generator to make up the nested aois and arrays inside
 # the aois")
 # ---------------------------------------------------------------------------
 
 def group_aoi() -> None:
     # Basic AOI: 2 Input, 1 Output, 2 LocalTags. No InOut param -- none of
-    # James's real AOI templates use one, so it's dropped here rather than
+    # a real AOI templates use one, so it's dropped here rather than
     # kept as an unconfirmed pattern on a second attempt at this batch.
     inputs = [MemberSpec("SetPoint", "REAL"), MemberSpec("Enable", "BOOL")]
     outputs = [MemberSpec("Status", "DINT")]
@@ -104,7 +104,7 @@ def group_aoi() -> None:
     _write(l5x_1inst, "aoi", "basic_aoi_1_instance", "Basic AOI (2 In/1 Out/2 Local), 1 instance")
 
     # Array of AOI-INSTANCE tags -- real shape confirmed 2026-08-20 against
-    # James's Aoi_Nested_requiredParams_UsedInMainPrgArray.L5X (a controller
+    # the Aoi_Nested_requiredParams_UsedInMainPrgArray.L5X (a controller
     # tag Dimensions="10" of the AOI type, same Array/Element/Structure
     # pattern already confirmed for array-of-UDT). This is the "arrays with
     # AOIs" case that's actually confirmed real -- separate from the
@@ -122,7 +122,7 @@ def group_aoi() -> None:
     l5x = build_l5x(target_name="ArrayLocalAOI", tags_xml=tag, extra_aoi_xml=definition2)
     _write(l5x, "aoi", "aoi_array_localtag_1_instance", "AOI with a 100-element array LocalTag, 1 instance")
 
-    # Real rule found 2026-09-03 (James, live controller testing): an
+    # Real rule found 2026-09-03 (live controller testing): an
     # array-dimensioned atomic Parameter can ONLY be Usage="InOut" -- Logix
     # does not allow an array Input or Output Parameter at all. This
     # generator previously built "aoi_array_param_def_only" with a
@@ -136,13 +136,13 @@ def group_aoi() -> None:
     # (LOG_HMIDisplay/BitArray, see OPEN_QUESTIONS.md OQ-AOIARRAYDIMENSION),
     # so regenerating this as InOut would just duplicate existing coverage.
 
-    # InOut parameters (James: real examples aoi_inOut_OneDint.L5X /
+    # InOut parameters (real examples aoi_inOut_OneDint.L5X /
     # aoi_inOut_OneString.L5X -- confirmed an InOut param carries zero
     # storage of its own; the real instance Tag's Structure body only ever
     # has EnableIn/EnableOut, InOut is completely absent from it). One
     # DINT InOut, one STRING InOut (STRING never gets a Radix attribute,
     # confirmed separately) -- both also keep the scalar DINT LocalTag
-    # "Buffer" his real files paired with the InOut param.
+    # "Buffer" the real files paired with the InOut param.
     inout_dint = [MemberSpec("InOut", "DINT")]
     dint_locals = [MemberSpec("Buffer", "DINT")]
     def_dint, storage_dint = aoi_xml("InOutDintAOI", [], [], inout_dint, dint_locals)
@@ -161,7 +161,7 @@ def group_aoi() -> None:
     _write(l5x, "aoi", "aoi_inout_string_1_instance", "AOI with 1 InOut STRING param + 1 DINT LocalTag, 1 instance -- confirms InOut adds no instance storage")
 
     # Nested AOI: outer AOI has a LocalTag whose type is the inner AOI
-    # (James: "nested aois need to be tested"). Data-space only -- the
+    # (nested aois need to be tested). Data-space only -- the
     # outer AOI's logic doesn't actually call the inner one (that's Phase
     # 4c/logic territory), this tests whether an AOI-typed LocalTag sizes
     # the same way an AOI-typed *tag* does (already confirmed, see
@@ -178,7 +178,7 @@ def group_aoi() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Large realistic multi-tag/UDT combination files, no logic (James: "start
+# Large realistic multi-tag/UDT combination files, no logic ("start
 # adding in a couple of multiple UDT/tag combinations ... a couple tests
 # with 100+ tags and a couple tests with 1000+ tags")
 # ---------------------------------------------------------------------------

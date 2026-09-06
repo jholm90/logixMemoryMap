@@ -1,4 +1,4 @@
-"""JSR/SBR/RET parameter-passing sweep (James, 2026-08-23): "the jsr/sbr/ret
+"""JSR/SBR/RET parameter-passing sweep (2026-08-23): "the jsr/sbr/ret
 pair of subroutine calls. We normally use JSR with no parameters other
 than the subroutine it's calling. We can have parameters of tags for the
 jsr that get passed to the sbr (always one instance as the first
@@ -35,13 +35,13 @@ this project only ever needed the RLL shape) and their real call sites in
 
 Both examples decode the same way: `JSR(name, N_in, in_1..in_N,
 out_1..out_M);` -- the second positional arg is the INPUT param count only
-(matches James: "always has input parameters first and return parameters
-at the end"), the input args fill SBR's own param list 1:1, and the
+(input parameters always come first and return parameters last), the input
+args fill SBR's own param list 1:1, and the
 trailing args (beyond N_in) are where the routine's RET value(s) land back
 in the CALLER's own tags. SBR's own param names and the JSR's input-arg
 names are unrelated tags (positional mapping, not name matching) -- same
 for RET vs the JSR's trailing output args. SBR is always the routine's
-first rung, exactly once (James: "never duplicated") -- confirmed both
+first rung, exactly once (never duplicated) -- confirmed both
 real examples put it at Rung 0 with nothing before it.
 
   A. group_param_count -- 1/5/10 pure INPUT params (no return), JSR called
@@ -52,8 +52,8 @@ real examples put it at Rung 0 with nothing before it.
   B. group_mixed_io -- a realistic mixed shape (5 in + 2 out, matching the
      real corpus's in+out pattern) at the same 1000-rung scale, directly
      comparable against group A's pure-input n=5 point.
-  C. group_multiple_ret -- James: "conditionally elsewhere as well with no
-     limit on Qty used." A target subroutine with 3 conditional
+  C. group_multiple_ret -- RET can appear conditionally, anywhere, in any
+     quantity. A target subroutine with 3 conditional
      XIC(cond)RET(...); rungs plus one final unconditional RET(...);  --
      tests whether RET count itself costs like any other repeated
      instruction, and confirms the "no limit on qty" real shape builds
@@ -137,7 +137,7 @@ def group_mixed_io() -> None:
 
 
 def group_multiple_ret() -> None:
-    # James: RET can appear conditionally, anywhere, any quantity -- not
+    # RET can appear conditionally, anywhere, any quantity -- not
     # just once at the end. 3 conditional early-exit RETs + 1 final
     # unconditional RET, each returning a different local tag combination
     # (mirrors a realistic early-exit-on-fault subroutine pattern).

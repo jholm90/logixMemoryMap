@@ -1,4 +1,4 @@
-"""Large sweep batch (James, 2026-08-20: "why are you only doing batches of
+"""Large sweep batch (2026-08-20, "why are you only doing batches of
 2? i want the next sample to be >50 ... you need to get a large sample size
 of data to ensure that tag structures are 100% confirmed"). One coherent
 drop covering every remaining gap in OQ-TAGOVERHEAD's model instead of one

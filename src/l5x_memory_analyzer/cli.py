@@ -8,7 +8,7 @@ end to end before the sizing engine existed.
 breakdown -- see docs/TASKS.md Phase 1 output-contract item.
 
 `ui`: serve the Phase 2 treemap UI over a local web server. l5x_path is
-optional -- omit it to start with the File->Open picker instead (James
+optional -- omit it to start with the File->Open picker instead (
 2026-08-20: desktop-shortcut launch shouldn't require a command prompt).
 
 `export`: write the same flat byte breakdown as `size` to a CSV or XLSX

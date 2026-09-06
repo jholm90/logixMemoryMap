@@ -1,10 +1,9 @@
 """Real-shaped AOI population tests, built from what actually correlates
 with the MurrayBros under-estimate.
 
-James, 2026-09-05: *"The generated projects were supposed to be your way of
-testing things you seen in the real projects that you didn't understand the
-significance of, not a spot for you to stack Lego blocks you already knew
-how high they were and what the answer was going to be."*
+2026-09-05: the generated projects exist to test things seen in the real
+projects whose significance was not understood -- not to restack shapes
+whose answer was already known before the file was built.
 
 That is a fair hit and this file is the response. A vocabulary diff of the
 real corpus against every file this project has ever generated found **60

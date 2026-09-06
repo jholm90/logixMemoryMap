@@ -1,6 +1,6 @@
-"""AOI-instance-array packing resolution sweep (James, 2026-08-25):
-"Your final notes on strings and aois need more work. Generate as many
-l5x files as needed to resolve all possible scenarios for 100% accuracy."
+"""AOI-instance-array packing resolution sweep (2026-08-25). Strings and
+AOIs both needed more work; this generates as many L5X files as it takes to
+resolve every remaining scenario.
 
 Follows up the 2026-08-24 OQ-AOIDEF finding: a BOOL-heavy AOI shape ("
 RealisticAOI"/"RealisticAOI50", 5 DINT+5 BOOL In / 5 DINT+5 BOOL Out /

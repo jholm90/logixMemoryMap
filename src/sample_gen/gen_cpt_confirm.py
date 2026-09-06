@@ -1,4 +1,4 @@
-"""CPT operator-tier linearity confirmation (James, 2026-08-25): "whats
+"""CPT operator-tier linearity confirmation (2026-08-25): "whats
 your CPT confidence? why is it not 100% yet? you need to generate tests
 to satisfy this."
 

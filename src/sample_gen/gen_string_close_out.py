@@ -1,5 +1,5 @@
-"""STRING closing batch, round 2 (James, 2026-08-26: "I want to close
-strings. Make up the tests needed so I can l5x them now").
+"""STRING closing batch, round 2 (2026-08-26), building whatever tests are
+needed to close strings outright.
 
 Array-of-STRING is now RESOLVED and wired (OQ-STRINGARRAYPAD, see
 memory_model.yaml string_array) -- real data landed and fit cleanly:

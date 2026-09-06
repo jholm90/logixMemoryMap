@@ -1,8 +1,7 @@
 """A DriveAxis-shaped AOI: AXIS parameter + nested AOI instance.
 
-James, 2026-09-05: *"I want you to emulate something like the DriveAxis AOI
-with axis input and a nested aoi instance as I think there's room for
-improvement and testing there."*
+2026-09-05: emulate something like the DriveAxis AOI -- an axis input plus
+a nested AOI instance -- where there is likely room for improvement.
 
 He is right that there is room, and the corpus shows why. `DriveAxis` is
 the single largest AOI definition charge in MurrayBros at **18,080 bytes**

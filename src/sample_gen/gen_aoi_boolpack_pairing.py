@@ -12,7 +12,7 @@ doesn't fit `8*ceil(n/2)+const` at all from only 3 sparse points (n=1/10/25).
 See docs/OPEN_QUESTIONS.md OQ-AOIBOOLPACK-PAIRING for the full data table.
 
 Two things this batch adds, deliberately NOT padded to the 60-file floor
-(James, 2026-08-25: "The 60-file floor is not a quota to pad toward"):
+(2026-08-25: The 60-file floor is not a quota to pad toward):
 
   A. group_dense_membercount -- dense/consecutive n (2,3,4,6,8,12) for each
      of bool_count=10/20/60 (all-Input, single section, matching the
@@ -95,7 +95,7 @@ def group_section_split_isolation() -> int:
 
 
 # ---------------------------------------------------------------------------
-# C. Pure-BOOL vs mixed BOOL+DINT isolation, James 2026-08-30: "are there
+# C. Pure-BOOL vs mixed BOOL+DINT isolation, 2026-08-30: "are there
 # new tests for all of those points?" -- caught while answering that a
 # prior write-up mischaracterized aoipack_ratio_XXbYYa as a 3-way-split
 # shape; it's actually the SAME single-section family as mc10/mc20 above,

@@ -1,7 +1,7 @@
 # Future Tests To Improve Modelling / Algorithms
 
-James, 2026-09-04: *"make note of future tests that should be done to
-improve your modelling/algorithms for testing."*
+Tests worth running to improve the modelling, kept as a standing list
+(started 2026-09-04).
 
 Standing rule for everything below: a test only counts once it comes back
 with `error_count = 0`, no `WINDOW TITLE MISMATCH`, no `ZERO CAPACITY` —
@@ -14,7 +14,7 @@ Ordered by expected impact on the <1%-on-a-real-file North Star.
 
 ## 0. Composite surcharge cap vs REAL-program scale — now the #1 error source
 
-**First real virgin-file measurement, 2026-09-04.** James supplied
+**First real virgin-file measurement, 2026-09-04.** supplied
 `Cardin_TrimSortStack_20260624r00` (1756-L83E, fw 35.13, 35 MB L5X, never
 seen by this project). Predicted **7,162,455**, actual **8,178,556** —
 **12.4% UNDER**, a miss of 1,016,101 bytes. That is the honest North Star
@@ -77,12 +77,12 @@ data point and must not be fitted on its own — the axis_scale lesson.
 - ~~Structured Text is completely unmodeled~~ — **FULL BATCH GENERATED
   2026-09-04**, `src/sample_gen/gen_st_sizing.py`, 24 files (OQ-STSIZING /
   OQ-STCOMMENT). The first draft of this was a naive assignment-only
-  ladder written from general ST knowledge; James pushed back (*"not just
-  tossing lines and hope they stick"*), the corpus was measured, and the
+  ladder written from general ST knowledge rather than measured against the
+  corpus. Once the corpus was measured, the
   ladder turned out to be representative of nothing — real ST is ~36%
   control flow, ~29% comments, and calls the same instructions the ladder
   does (297 routines / 24,017 lines across 23 real files). Rebuilt as: an
-  executable-only line ladder, a comment/blank-line group (James's own
+  executable-only line ladder, a comment/blank-line group (the
   question — an RLL rung comment is confirmed FREE, but it is a separate
   `<Comment>` element while an ST comment is inside the compiled source
   text, so that result does not transfer), a construct group
@@ -91,8 +91,7 @@ data point and must not be fitted on its own — the axis_scale lesson.
   `instr_*_n01000` captures, a CPT-expression mirror, and an ST JSR target
   with SBR/RET params. Every file predicts an identical 23,365 today, which
   is the point. Still unmodeled in code until the capture lands. **No
-  sample-writing needed from James** — the corpus has more idiom than this
-  requires.
+  sample-writing needed** — the corpus has more idiom than this requires.
 
 ## 1. Structural module model (OQ-MODULESTRUCTURAL) — highest value
 
@@ -199,8 +198,8 @@ roughly constant ~-50k regardless of filler size).
 
 ## 0b. Tag-based alarm conditions — new #2 error source (OQ-ALARMCOND)
 
-**Found 2026-09-04**, after the composite surcharge refit, when James asked
-about controller alarms. **3,463 real `AlarmCondition` elements across the
+**Found 2026-09-04**, after the composite surcharge refit, while reviewing
+controller alarms. **3,463 real `AlarmCondition` elements across the
 corpus, every one priced at zero**; 200-600 in each of the 8 real programs.
 The residual left over after the refit correlates **+0.583 with alarm
 count** — the strongest remaining identified driver.

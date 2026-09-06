@@ -1,7 +1,7 @@
 """AOI STRUCTURAL cost space -- the batch that has to work on other
-people's AOIs, not James's.
+people's AOIs, not the.
 
-James, 2026-09-05: *"Like I said previously Murray AOIs are the same on
+2026-09-05: *"Like I said previously Murray AOIs are the same on
 other projects. What new tests are you going to generate now for
 improving?"* and, the same day: *"Keep in mind that I plan on sharing this
 for people outside my company and their code will be very different and
@@ -10,7 +10,7 @@ use different aois."*
 Those two together rule out the obvious move. MurrayBros' residual
 correlates hardest with AOI structure (aoiaxisparam +0.889, aoirungs
 +0.848, aoidefs +0.838, aoilocals +0.835), and the tempting fix is to fit
-per-AOI corrections against the shared definitions that appear across his
+per-AOI corrections against the shared definitions that appear across the
 nine projects. That fit would be worth exactly nothing to a stranger
 importing an L5X full of AOIs this project has never seen. The cost has to
 be a function of AOI *structure*, so every file here varies one structural
@@ -61,7 +61,7 @@ today, which is a hypothesis nothing has ever tested:
   7. **Extra internal routines.** 7 of 81 real AOI definitions carry an
      EnableInFalse and/or Prescan routine besides Logic.
 
-GROUPS (56 files, every one answering a live question -- James, 2026-08-25:
+GROUPS (56 files, every one answering a live question -- 2026-08-25: 
 *"Don't just fill up the minimum 60 test roster with filler work"*):
 
   aoistr_namelen_c{04..40}        7  member NAME length, 20 DINT params

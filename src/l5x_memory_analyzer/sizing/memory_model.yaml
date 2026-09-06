@@ -11,13 +11,14 @@ atomic_types:
   DINT: { bytes: 4, confidence: KNOWN }
   LINT: { bytes: 8, confidence: KNOWN }
   REAL: { bytes: 4, confidence: KNOWN }
-  # Unsigned counterparts -- James, 2026-08-30, real gap found reviewing a
+  # Unsigned counterparts -- 2026-08-30: real gap found reviewing a
   # confidential customer project (not committed, never named here): "UINT
   # is the same as INT with the last bit being unsigned and disabling the
   # INT from having a negative value. you should assume INT/UINT are the
   # same size SINT/USINT same size DINT/UDINT same size." Same storage
   # width as the signed type, sign interpretation only -- ULINT follows
-  # the same rule (not explicitly named by James, but that project's own
+  # the same rule (not explicitly named in the source report, but that
+  # project's own
   # logic used a UDT with ULINT members directly, same pattern).
   USINT: { bytes: 1, confidence: KNOWN }
   UINT: { bytes: 2, confidence: KNOWN }
@@ -60,10 +61,9 @@ predefined_structures:
   # 3-DINT-status-structure convention. FITTED pending a documented-layout
   # citation to promote to KNOWN.
   MOTION_INSTRUCTION: { bytes: 12, confidence: FITTED }
-  # SFC/FBD-family native structures, James (2026-08-27): "You should know
-  # all of those native instructions data types." Not derived from a
+  # SFC/FBD-family native structures (2026-08-27). Not derived from a
   # documentation citation -- read directly off REAL Decorated-XML L5K
-  # data in James's own corpus (SJ_Gormley_20251112_r02.L5X, Bender134053_
+  # data in the corpus (SJ_Gormley_20251112_r02.L5X, Bender134053_
   # 201104.L5X, BAI10048_TrimmerTally_20250704.L5X, BT1XX_FFC_20240325.L5X)
   # the same way TIMER's own real shape would be read: each real instance's
   # <Data Format="L5K"> raw value array length x 4 bytes IS the real total
@@ -86,7 +86,7 @@ predefined_structures:
   SCALE: { bytes: 52, confidence: ASSUMED }      # 13 DINT-equivalent, n=1 real sample
   # SFC_STOP -- found 2026-08-28 re-checking the corpus after a regex bug
   # (didn't account for a <Description> block between Tag-open and Data)
-  # hid this real evidence on the first pass (James: "did a super in-depth
+  # hid this real evidence on the first pass ("did a super in-depth
   # memory analysis... it doesn't seem like you analyzed it enough"). Real
   # Decorated members: Status(DINT)+X(BOOL)+Reset(BOOL)+Count(DINT), but
   # the real L5K array has 5 raw values -- [8193,0,0,0,0], zero variance
@@ -123,8 +123,8 @@ predefined_structures:
   FBD_BOOLEAN_AND: { bytes: 12, confidence: ASSUMED }
   FBD_BOOLEAN_OR: { bytes: 12, confidence: ASSUMED }
   FBD_BOOLEAN_NOT: { bytes: 12, confidence: ASSUMED }
-  # Real capture batch, 2026-08-28/29 (James: "pushed the last round of tests"),
-  # James's own conversion pipeline built + captured all 184 predefprobe_*.L5X
+  # Real capture batch, 2026-08-28/29 (pushed the last round of tests),
+  # the conversion pipeline built + captured all 184 predefprobe_*.L5X
   # blank-tag discovery files (see gen_predefined_probe.py) -- 174 of 184 imported
   # clean and got a real Capacity delta (SFC_STOP already wired above matched
   # exactly, 0 residual, confirming the derivation method itself). Real total per
@@ -357,7 +357,7 @@ empty_project_baseline:
   bytes: 13296
   confidence: KNOWN
 
-# Per-module overhead (2026-08-27, OQ-MODULEIO, James's own methodology:
+# Per-module overhead (2026-08-27, OQ-MODULEIO, the methodology:
 # compare a module's auto-generated "Module-Defined" data type -- the raw
 # member-sum of its InputTag/OutputTag/ConfigTag Structure content, exactly
 # like sizing any other UDT -- against its real captured Capacity delta).
@@ -411,7 +411,7 @@ module_overhead:
 # much better estimate than a flat cross-catalog average, but not yet the
 # same confidence as tag/UDT/AOI sizing.
 #
-# 2026-08-31, James: "you need to model them" -- rack-aliased and legacy-
+# 2026-08-31, you need to model them -- rack-aliased and legacy-
 # network-bridge catalogs were blanket-excluded from this table entirely
 # (report.py fell back to a $0/unmodeled SizeError for ANY such module,
 # regardless of catalog) on the theory that zero real data existed to
@@ -604,7 +604,7 @@ module_overhead_by_catalog:
 # 2026-08-28) so they also fall through to default_bytes. Keyed by the
 # integer major version parsed from the L5X root's own SoftwareRevision
 # (e.g. "31.02" -> "31"). v30 added 2026-08-29 (found during a full
-# manifest.csv audit): one real MANUAL ENTRY point (James read Capacity
+# manifest.csv audit): one real MANUAL ENTRY point (read Capacity
 # directly off a real v30 controller -- this project's own SDK can't
 # build/convert v30 exports at all, so there's no automated capture path
 # and never will be), delta +11,160, close to but not exactly matching
@@ -644,7 +644,7 @@ safety_capable_baseline_delta:
   confidence: FITTED
   catalog_suffix_pattern: 'S[23]$'
 
-# James, 2026-08-31, real, for the record: SIL3-suffixed catalogs
+# 2026-08-31: real, for the record: SIL3-suffixed catalogs
 # ("MS3" -- 5069-L306ERMS3, 5069-L320ERMS3) do not support firmware v31
 # at all -- SIL3 requires v32 or higher. Does NOT apply to SIL2 ("MS2"/
 # "S2" suffix), which IS confirmed v31-capable (real safety_capable_
@@ -657,7 +657,7 @@ safety_capable_baseline_delta:
 # enormously from the flat empty_project_baseline, keyed by the L5X
 # Controller element's own EXACT ProcessorType string (OQ-BASELINE-PROCFW,
 # 1769-series thread, wired 2026-08-29 -- found during a full manifest.csv
-# audit, James: "make another in-depth pass"). 8 real 1769-series
+# audit, make another in-depth pass). 8 real 1769-series
 # (CompactLogix 5370) blank-baseline captures (all v35.05, all MANUAL
 # ENTRY -- Studio 5000's own "Estimate" button click requirement for this
 # family, see docs/TESTING_PLAN.md) sat unreconciled, previously
@@ -671,7 +671,7 @@ safety_capable_baseline_delta:
 # independence assumed (same convention as everywhere else in this
 # section) but genuinely UNCONFIRMED -- zero 1769 data exists at any
 # firmware other than v35.
-# CAVEAT added 2026-08-31: James found a real bug in his AHK/PowerShell
+# CAVEAT added 2026-08-31: found a real bug in the AHK/PowerShell
 # capture pipeline -- every 1756-L7x/1769-family automated capture was
 # reading Studio 5000's I/O memory field, not the logical (program) memory
 # field this project actually sizes (confirmed via fwmatrix_v31_1769_l33erm:
@@ -718,7 +718,7 @@ catalog_baseline_delta:
   #   v33 l71..l75  actual 87,888, internally consistent across all five but
   #     ~58KB above every other version of the same catalogs. Consistent
   #     enough to be real, far enough out to need a re-run before it is
-  #     trusted. Listed for James in OQ-BASELINE-PROCFW.
+  #     trusted. Listed in OQ-BASELINE-PROCFW.
   '1756-L71': { absolute_bytes: 25320, confidence: FITTED }
   '1756-L72': { absolute_bytes: 25320, confidence: FITTED }
   '1756-L73': { absolute_bytes: 25320, confidence: FITTED }
@@ -794,7 +794,7 @@ string:
   # with no clean pattern. Needs more lengths (2/3/4, 16/20/24) to
   # characterize properly before touching code again.
   #
-  # SOLVED 2026-08-26, James: "I want to close strings." gen_string_
+  # SOLVED 2026-08-26, I want to close strings gen_string_
   # close_out.py's dense sweep (every name length 1-16 plus 20/24/28/32/
   # 36/40, maxlen=100 fixed) landed: 22/22 points exact fit a clean step
   # function, `base + bucket * floor((name_len - offset) / bucket)` with
@@ -833,8 +833,8 @@ string:
   builtin_tag_overhead_correction: -2
   builtin_tag_overhead_correction_confidence: KNOWN
   # Custom StringFamily instance size: 2026-08-25 real-bug fix + full
-  # derivation, found while chasing the "maxlen mod 4" residual James
-  # flagged as needing 100% closure -- CONFIRMED KNOWN now, not a guess.
+  # derivation, found while chasing the "maxlen mod 4" residual that
+  # needed full closure -- CONFIRMED KNOWN now, not a guess.
   # The DATA array member (SINT[maxlen]) was being sized RAW (maxlen
   # bytes, no rounding at all). Real mechanism: DATA rounds to the
   # NEAREST multiple of 8, rounding DOWN at the exact tie (remainder 4)
@@ -865,8 +865,8 @@ string:
   # 9/9 real data points fit exactly with zero residual.
   custom_data_padding_confidence: KNOWN
 
-# Array-of-STRING (OQ-STRINGARRAYPAD, wired 2026-08-26, James: "I want
-# strings as a whole closed"). A DIFFERENT real mechanism from the scalar
+# Array-of-STRING (OQ-STRINGARRAYPAD, wired 2026-08-26 to close out
+# strings as a whole). A DIFFERENT real mechanism from the scalar
 # case above -- array elements do NOT get the scalar tag's -2/tag benefit,
 # and instead carry their own real, additive, per-element AND one-time
 # array-level cost on top of the already-correct N x (scalar element size).
@@ -898,7 +898,7 @@ string_array:
 
 udt:
   # No alignment/padding between members -- tight packing, declared order.
-  # Confirmed 2026-08-22 (OQ-ALIGN, RESOLVED_QUESTIONS.md): James's own
+  # Confirmed 2026-08-22 (OQ-ALIGN, RESOLVED_QUESTIONS.md): the
   # field-experience call, 100% confident, and every real UDT test across
   # the whole sweep (dozens of samples) landed on predictions consistent
   # with tight-packing. Was UNKNOWN, now KNOWN.
@@ -914,7 +914,7 @@ array:
   # rounding is applied. Was UNKNOWN; the rounding formula itself was
   # wired into sizing/udt.py's compute_array_size that same day, but this
   # constant was never flipped to match -- caught 2026-08-27 live-checking
-  # James's own real corpus (a 200-element array of a UDT with a nested
+  # a real corpus (a 200-element array of a UDT with a nested
   # UDT member, controller/Grading_LC, showed UNKNOWN in the UI despite
   # the formula being fully resolved).
   udt_confidence: KNOWN
@@ -980,7 +980,7 @@ aoi_array:
 
 # AOI *definition* cost (the AOI's own Parameters/LocalTags declaration,
 # separate from any tag that instantiates it) -- OQ-AOIDEF, wired 2026-08-26
-# after James's "fix this" push on Phase 2/2b's UI drill-down items. Real
+# after the "fix this" push on Phase 2/2b's UI drill-down items. Real
 # data: the local-tag-count sweep (localcount_n01/02/04/08/16/32_def_only)
 # and the param-count sweep (paramcount_n01/02/04/08/16/32_def_only) each
 # landed on the IDENTICAL formula independently -- base+20*n, exact at
@@ -1043,8 +1043,8 @@ aoi_definition:
     LINT: 24
   confidence: FITTED
   # AOI type-NAME length cost, OQ-AOIDEF closeout, wired 2026-08-29 (found
-  # during a full manifest.csv audit -- James: "AOI should have been
-  # closed by now" -- fair, `aoiname_len08/09/13/16/20/25/30` had real
+  # during a full manifest.csv audit; AOIs should already have been
+  # closed by then -- `aoiname_len08/09/13/16/20/25/30` had real
   # capture data since 2026-08-22/27 sitting unreconciled). Unlike
   # UDT-definition's own 8*ceil(len/8) step, an AOI type name does NOT
   # follow that convention: real actual bytes at len=8/9/13/16/20/25/30
@@ -1165,7 +1165,7 @@ udt_definition:
 # right total instead of over- or under-counting shared companions. Not
 # yet independently confirmed by real data at the composed level -- that's
 # exactly what gen_logic_random_mix.py's random-combination batch tests.
-# CPT's real cost, wired 2026-08-26 (OQ-CMPCPTLAYOUT, James's explicit
+# CPT's real cost, wired 2026-08-26 (OQ-CMPCPTLAYOUT, the explicit
 # top priority) -- REPLACES the old flat "CPT: 452" weight, which was
 # proven wrong 2026-08-23 (fit against exactly one complex expression
 # shape from the original calibration sweep, not CPT's actual cost --
@@ -1403,7 +1403,7 @@ cpt_expression:
     # control, so a LINT operand costs nothing extra. The old model charged
     # it 40 each and over-predicted that file by 26.79%.
     per_int_operand: 40
-    # James, 2026-09-04: "ints will use a behind the scenes conversion to
+    # 2026-09-04: "ints will use a behind the scenes conversion to
     # dint". A narrow integer operand (SINT/INT) is widened to DINT before
     # the float evaluation; LINT, already 64-bit, is not. cptrd_operand_sint
     # is +256/rung over the all-REAL control with 3 SINT operands.
@@ -1420,8 +1420,7 @@ cpt_expression:
     per_float_literal: 4
     confidence: FITTED
 
-# Operand-type surcharge (OQ-OPERANDTYPE, wired 2026-08-26, James: "touch
-# these and finalize them now"). Every weight in `logic_instructions.
+# Operand-type surcharge (OQ-OPERANDTYPE, finalized and wired 2026-08-26). Every weight in `logic_instructions.
 # weights` below was fit against DINT-operand sweeps -- real data
 # (typesweep_<instr>_<type>_n01000, 69 real captures, error_count=0,
 # matched shape/tag-count per instruction) shows SINT/INT/REAL/STRING
@@ -1652,8 +1651,7 @@ jsr_param_cost:
   confidence: FITTED
   # Real per-call cost of a trailing RETURN-value argument
   # (`JSR(name, N_in, in_1..in_N, out_1..out_M)`), wired 2026-08-29
-  # (OQ-JSRPARAMCOST, found during a full manifest.csv audit -- James:
-  # "make another in-depth pass"). Completely unmodeled before this: the
+  # (OQ-JSRPARAMCOST, found during a full manifest.csv audit). Completely unmodeled before this: the
   # original a_base/a_per_param/b_base/b_per_param fit (2026-08-25) only
   # used group_param_count's pure-input files, where RET() is always
   # empty -- zero real output-arg data went into that formula. Two
@@ -1677,7 +1675,7 @@ logic_instructions:
   confidence: FITTED
   # OQ-BRANCHDEPTH, wired 2026-08-30 -- real data (branchdepth_legs01/03/05,
   # branchdepthc_legs02/04/06/08/10/15/20/30, branchdepthstag_d01-06, all
-  # n=1000 rungs) had been sitting unreconciled since James's own local
+  # n=1000 rungs) had been sitting unreconciled since the local
   # branch capture on 2026-08-24 -- 16/16 real points, EXACT, once the real
   # mechanism is understood rather than curve-fit blind: every real branch
   # ("[...]") compiles to real BST/NXB/BND-family instructions, one BST +
@@ -1699,9 +1697,8 @@ logic_instructions:
   # independently confirmed at a 2nd rung count for this specific formula.
   branch_bracket_cost_per_instruction: 4
   branch_bracket_confidence: FITTED
-  # 2026-08-31, James: "you need to see the analysis and tuning of your
-  # estimation scripts to tune them closer to the results you got...
-  # obviously exclude the results with errors." Regression against 22
+  # 2026-08-31: tune the estimator against the captured results, excluding
+  # any result carrying errors. Regression against 22
   # error-free composite_realistic_v2 files (real capture, excluding the
   # 5 files with reported real errors -- 7/18/19/30/50) of real residual
   # (actual - predicted, AFTER the 2026-08-31 JSR-target-content and
@@ -1733,7 +1730,7 @@ logic_instructions:
   # old pair was fitted (against SYNTHETIC composites) and is kept because
   # it explains why they were wrong, not because they are current.
   #
-  # James supplied real Capacity readings for 8 whole real customer
+  # supplied real Capacity readings for 8 whole real customer
   # programs, joining Cardin_TrimSortStack from 2026-09-04 for 9 real
   # points. Under the old 20/47 + 12,000-cap model, ALL NINE
   # under-predicted, by +8.35% to +30.63%, aggregate +12.62%, mean
@@ -1833,7 +1830,7 @@ logic_instructions:
   aoi_logic_composite_surcharge_per_instr: 0
   jsr_target_composite_surcharge_per_instr: 0
   composite_surcharge_confidence: FITTED
-  # composite_surcharge_cap, wired 2026-09-03 (James: "tweak something else
+  # composite_surcharge_cap, wired 2026-09-03 ("tweak something else
   # in your algorithm and get a better result" -- real regression on all
   # 100 real-captured composite files now on file, the 22-file v2 fit above
   # PLUS 50 new composite_realistic_v3_* files real-captured this same
@@ -1875,7 +1872,7 @@ logic_instructions:
   # files showed. Kept as a live constant rather than deleted so the
   # mechanism is one number away if new data ever shows a real saturation.
   composite_surcharge_cap: 0
-  # OQ-SAFETYSCOPE-SIZING, wired 2026-09-03 (James: "they answered your
+  # OQ-SAFETYSCOPE-SIZING, wired 2026-09-03 ("they answered your
   # question - they are safety tasks and safety programs therefore they
   # need seperate sizing calculations"). Real fw_catalog_matrix rows show
   # a Safety Task+Program+MainRoutine triple was previously charged the
@@ -1942,7 +1939,7 @@ logic_instructions:
     TOF: 20      # solo -- unchanged
     RTO: 20      # solo -- unchanged
     CTU: 20      # solo -- unchanged
-    # CTD -- James, 2026-08-25, direct field-experience confirmation:
+    # CTD -- 2026-08-25: direct field-experience confirmation:
     # "i am 100% telling you the CTD is 100% the same as a CTU. this is
     # final and does not need to be tested." Real corpus usage of CTD is
     # ~0 (OQ-INSTRUCTIONSCOPE), so no real capture data exists or is
@@ -1957,7 +1954,7 @@ logic_instructions:
     # SIZE: added 2026-08-23 -- excluded from the original 244-file sweep
     # (real bracket-subscript bug, see docs/OPEN_QUESTIONS.md history) but
     # now has clean real data (5-point rung-count sweep, bare array-tag
-    # syntax per James's real COP_Samples.L5X): exact linear fit, 0
+    # syntax per a real COP_Samples.L5X): exact linear fit, 0
     # residual, once empty_project_baseline is subtracted -- no companion
     # instruction in its rung ("SIZE(Arr,0,Dest);" closes legally alone).
     SIZE: 128
@@ -1998,7 +1995,7 @@ logic_instructions:
     # MAM/MAJ/MAS/MRP: RESOLVED 2026-08-26 (was BUILD FAILED, OQ-MAMFAMILY).
     # Original generator used MAH/MSO's own bare 2-operand shape for these
     # 4 -- a real generator bug, not a Rockwell syntax question. Fixed with
-    # real full-parameter-list templates (James's own MAM template;
+    # real full-parameter-list templates (the MAM template;
     # MAJ/MAS/MRP transplanted position-for-position from real corpus
     # calls). All 4 now build error_count=0 at both n=10 and n=100 --
     # clean 2-point linear fit, exact. A separate n=1 keyword-combination
@@ -2070,7 +2067,7 @@ logic_instructions:
     # MAPC: FIXED 2026-08-25 (see OQ-MAPC-COMPAT) -- the original generator
     # had two real bugs (undeclared Axis_Cip_Drive tag, same axis reused for
     # both slave/master positions instead of two distinct axis tags).
-    # James: "100% needed instruction that needs 100% accuracy" -- corrected
+    # 100% needed instruction that needs 100% accuracy -- corrected
     # call (instrfirst_mapc_v2/_v2_x10) built error_count=0 on both n=1 and
     # n=10, real capture 2026-08-25: n=1 actual=61948, n=10 actual=64288 --
     # marginal (64288-61948)/9 = exactly 260/rung. Clean 2-point linear fit,
@@ -2080,13 +2077,13 @@ logic_instructions:
     MAPC: 260
     # CROUT deliberately NOT included: real build failure on its x10
     # capture (80 errors/10 rungs) -- reclassified out of scope, requires a
-    # Safety-task processor (James, 2026-08-24). See
+    # Safety-task processor (2026-08-24). See
     # docs/OPEN_QUESTIONS.md OQ-CROUT-MAPC-BUILDFAIL. Not guessing a weight
     # off broken-build data, and not in scope regardless.
 
 # Tag-based alarm conditions (OQ-ALARMCOND), SOLVED EXACTLY 2026-09-05.
 #
-# James, 2026-09-04: "see the alarms prefixed by 'Alarm1_' as they could be
+# 2026-09-04: "see the alarms prefixed by 'Alarm1_' as they could be
 # holding back some of your calcuations from being accurate." They were the
 # single biggest unpriced item in the model: 3,463 real AlarmCondition
 # elements across the corpus, 200-600 in every real program, all costing
@@ -2149,7 +2146,7 @@ alarm_conditions:
 # ST unchanged, and an ST assignment with an arithmetic right-hand side is
 # priced by the existing CPT expression model -- no second model needed.
 #
-# COMMENTS ARE FREE, which is what James asked (2026-09-04: "if a comment
+# COMMENTS ARE FREE, which is what asked (2026-09-04: "if a comment
 # line or block takes up data memory or is like tag and rung comments").
 # Answer: like rung comments. 100 short leading, 100 long leading (110
 # chars), 400 leading, and 100 trailing comments ALL read byte-identical to

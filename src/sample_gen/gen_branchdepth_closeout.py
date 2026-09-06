@@ -1,8 +1,8 @@
-"""OQ-BRANCHDEPTH closeout (2026-08-25, James: "Please do what it takes to
-close this. Does bst/bnd ([,]) branches take memory? If I have 30 deep or
-condition in ladder logic it must cost more than 30 xio").
+"""OQ-BRANCHDEPTH closeout (2026-08-25). The question: do BST/BND ([,])
+branches cost memory of their own? A 30-deep OR condition in ladder ought
+to cost more than 30 bare XIOs.
 
-The 3 existing branchdepth_legs01/03/05 points already ANSWER James's first
+The 3 existing branchdepth_legs01/03/05 points already ANSWER the first
 question with real data, no new capture needed: legs01 (no branch) is an
 exact 0.00% match to the plain per-instruction sum, but legs03 is
 under-predicted by +16/rung and legs05 by +24/rung -- the branch bracket
@@ -15,7 +15,7 @@ What's still open is the SHAPE of that cost as leg count grows -- only 2
 non-trivial points existed (legs03=+16/rung, legs05=+24/rung, a dropping
 per-leg marginal rate: +8/leg then +4/leg, not linear). This batch adds 8
 more leg-count points (2/4/6/8/10/15/20/30) to actually nail the curve,
-including legs=30 as a literal real data point for James's own "if I have
+including legs=30 as a literal real data point for the "if there are
 30 deep" example rather than an extrapolation from n=5.
 
 Same isolation shape as gen_branch_empty_rungs.py's group_branch_depth:

@@ -50,7 +50,7 @@ from sample_gen.wrapper import build_l5x
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "composite"
 OUT_ROOT.mkdir(parents=True, exist_ok=True)
 
-# James, 2026-08-31, real, caught on his own re-conversion (of the FIRST
+# 2026-08-31: real, caught on re-conversion (of the FIRST
 # v2 batch, before this fix): "SINT/INT/DINT cannot be used for bit level
 # instructions like XIO,XIC,OTE,OTU,OTL,ONS only bools and .Bits of
 # SINT/INT/DINT" and "conditional instructions like EQU with no operand

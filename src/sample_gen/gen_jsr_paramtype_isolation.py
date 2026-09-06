@@ -1,5 +1,5 @@
-"""OQ-JSRPARAMCOST param-TYPE isolation (2026-08-30). James: "Will this
-accommodate data types for udt vs base data types like dints and reals?"
+"""OQ-JSRPARAMCOST param-TYPE isolation (2026-08-30). Does the JSR param
+cost accommodate UDT parameters as well as base types like DINT and REAL?
 
 Real gap found answering that question: EVERY jsr_sbr_ret file ever built
 (gen_jsr_sbr_ret.py, gen_jsr_decompose.py, gen_jsr_paramcost_closeout.py --

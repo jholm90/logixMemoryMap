@@ -27,7 +27,7 @@ _BARE_TAG = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 # charging it per_int_operand over-predicted that file by 26.79%.
 _CPT_INTEGER_OPERAND_TYPES = frozenset({"SINT", "INT", "DINT"})
 
-# Narrow integers, widened to DINT before evaluation -- James, 2026-09-04:
+# Narrow integers, widened to DINT before evaluation -- 2026-09-04: 
 # "ints will use a behind the scenes conversion to dint". This is what makes
 # SINT cost +256/rung against that same control while LINT costs nothing.
 _CPT_NARROW_OPERAND_TYPES = frozenset({"SINT", "INT"})

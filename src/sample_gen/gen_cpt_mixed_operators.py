@@ -1,4 +1,4 @@
-"""CPT MIXED-OPERATOR-TIER cost sweep (James, 2026-08-26: "Add the mixed
+"""CPT MIXED-OPERATOR-TIER cost sweep (2026-08-26, "Add the mixed
 operator test batch for cpt instructions. Mix up to 15 operands per
 expression as needed. This needs to be 100% solved closed and no
 revisiting.").
@@ -205,11 +205,11 @@ def group_three_tier_mix() -> int:
 
 # ---------------------------------------------------------------------------
 # I. All-3-tier scaling extension, up to 15 operands (2026-08-27 follow-up,
-# James: "run all available tests on 4b at this time").
+# run all available tests on 4b at this time).
 #
 # group_three_tier_mix above only went to 10 operands -- every OTHER
 # tier-pair scaling sweep in this file (Groups B and H) went all the way
-# to 15, per James's original "mix up to 15 operands per expression"
+# to 15, per the original "mix up to 15 operands per expression"
 # instruction. The all-3-tier case was the one left short. Real captured
 # data at n=3/5/8/10 already showed "doesn't fit any simple model tried"
 # (see OQ-CMPCPTLAYOUT) -- these 2 extra points (11, 15) extend the same
@@ -369,7 +369,7 @@ def group_t1t3_t2t3_scaling() -> int:
 
 
 # ---------------------------------------------------------------------------
-# J. OQ-CMPCPTLAYOUT closeout, 2026-08-25 (James: "Only two unsolved
+# J. OQ-CMPCPTLAYOUT closeout, 2026-08-25 ("Only two unsolved
 # threads? Fix please"). Live-recomputing group C's real captures (already
 # on file, 2026-08-24) against a per-tier-count linear model (delta =
 # a*T1_count + b*T2_count + c*T3_count + d, fit from n=3/5/8/10) landed
@@ -492,7 +492,7 @@ def group_real_float_position_probe() -> int:
 
 
 # ---------------------------------------------------------------------------
-# I. 2-REAL-operand adjacency probe (James, 2026-08-30: "are you sure you
+# I. 2-REAL-operand adjacency probe (2026-08-30, "are you sure you
 # only need 4 tests for cpt?" -- correct, 4 wasn't enough. The position
 # probe above only ever varies ONE lone operand's position at fixed
 # count=1; it can't touch the actual documented anomaly this whole thread
@@ -517,7 +517,7 @@ def group_real_pair_adjacency_probe() -> int:
          "2 REAL operands SPREAD to opposite ends (slots 1 and 6 of 6) -- same total REAL-operand "
          "count as real2_adjacent, more promotion-point crossings if the layout matters; companion "
          "to real2_adjacent"),
-        # James, 2026-08-30: "have you got enough tests to fully close this?"
+        # 2026-08-30: have you got enough tests to fully close this?
         # -- no, the adjacent/spread pair only disambiguates 1-vs-2 REAL
         # operands; it can't say whether the non-monotonic dip continues,
         # reverses, or was a one-time artifact of exactly 2. Extends the
@@ -535,7 +535,7 @@ def group_real_pair_adjacency_probe() -> int:
 
 
 # ---------------------------------------------------------------------------
-# J. REAL-count x float-literal composition (James, 2026-08-30: "add more
+# J. REAL-count x float-literal composition (2026-08-30, "add more
 # tests to fully close this instead of guessing"). The real production
 # shape (`cptmix_stacked_original_shape`, "(L0+L1)*R1-R2/2+1.5") has 2 REAL
 # operands AND a float literal together -- but every REAL-count probe so
@@ -571,7 +571,7 @@ def group_real_count_float_composition() -> int:
 
 
 # ---------------------------------------------------------------------------
-# K. Alternate expression tree shape (James, 2026-08-30, same ask). Every
+# K. Alternate expression tree shape (2026-08-30, same ask). Every
 # probe so far uses ONE flat left-to-right 6-slot shape -- position-probe
 # tests WHERE in that flat token order an operand sits, but never whether
 # the type-promotion-point hypothesis holds for a structurally different

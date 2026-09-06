@@ -1,5 +1,5 @@
 """REAL-SCALE composite surcharge: the batch that targets the -12.4% miss on
-the first real virgin file (James, 2026-09-04: "youve made some more unique
+the first real virgin file (2026-09-04, "youve made some more unique
 tests to fix this 12% error?").
 
 Why this batch exists
@@ -82,10 +82,9 @@ C. group_aoi_internal_ladder (6 files)
 D. Structured Text -- MOVED OUT to gen_st_sizing.py, 2026-09-04.
    The first draft of this batch carried a naive ST ladder written from
    general knowledge with only its FOR shape copied from a real file.
-   James, same day: "I hope you are going to be able to write st language
-   based on your knowledge and skills, not just tossing lines and hope they
-   stick... can you extract enough from the sample code like bender and
-   some of the aois." Measuring the corpus first (297 real ST routines,
+   ST has to be written from measured corpus idiom rather than plausible-
+   looking lines, extracting enough from real sample code and AOIs to be
+   representative. Measuring the corpus first (297 real ST routines,
    24,017 lines across 23 files in samples/local/) showed that ladder was
    not representative of anything real -- 100% plain assignments, where
    real ST is ~36% control flow, ~29% comments, and calls the same

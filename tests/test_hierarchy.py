@@ -158,7 +158,7 @@ def test_program_with_no_known_task_is_kept_and_marked_unscheduled():
     live here, as do programs parked out of the scan). It still consumes
     controller memory while never executing, which is precisely what this
     tool exists to surface, so rendering it indistinguishable from a
-    scheduled program was hiding something real. James, 2026-09-05: "be
+    scheduled program was hiding something real. 2026-09-05: "be
     sure this is visible in the web gui."
     """
     tree = build_hierarchy(ENTRIES, program_to_task={"SomeOtherProgram": "SomeTask"})

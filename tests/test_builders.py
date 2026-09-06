@@ -18,7 +18,7 @@ def _wrap_datatypes(*fragments):
 
 
 def test_udt_xml_bool_run_matches_confirmed_packing_rule():
-    # James, 2026-08-20: BOOL,DINT,BOOL = 6 bytes; DINT,BOOL,BOOL = 5 bytes.
+    # 2026-08-20: BOOL,DINT,BOOL = 6 bytes; DINT,BOOL,BOOL = 5 bytes.
     root = _wrap_datatypes(
         udt_xml("BoolDintBool", [MemberSpec("A", "BOOL"), MemberSpec("C", "DINT"), MemberSpec("B", "BOOL")]),
         udt_xml("DintBoolBool", [MemberSpec("C", "DINT"), MemberSpec("A", "BOOL"), MemberSpec("B", "BOOL")]),
@@ -56,7 +56,7 @@ def test_tag_xml_parses_with_dimensions():
 
 
 def test_aoi_dimensioned_input_parameter_rejected():
-    # ROOT CAUSE FOUND 2026-09-03 (James, real controller testing): "the
+    # ROOT CAUSE FOUND 2026-09-03 (real controller testing): "the
     # issue is BOOL/SINT/INT/DINT cannot be arrays for Inputs. Arrays
     # require InOut." The real aoi_array_param_def_only import failure
     # that motivated the old (now-removed) Required/Visible-forcing

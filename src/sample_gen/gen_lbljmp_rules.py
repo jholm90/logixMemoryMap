@@ -1,13 +1,13 @@
-"""LBL/JMP validation-rule sweep (James, 2026-08-23): "you can have
-multiple jmp to one lbl but you must always have at least one lbl. You can
-have a lbl with no jmp, but you cannot have a jmp with no lbl. Jmp/lbl are
-limited to the same subroutine."
+"""LBL/JMP validation-rule sweep (2026-08-23). The real rules: multiple
+JMPs may target one LBL, but there must always be at least one LBL; an LBL
+with no JMP is legal, a JMP with no LBL is not; and JMP/LBL are limited to
+the same subroutine.
 
 The existing confirmed data (docs/MEMORY_MODEL.md, RESOLVED_QUESTIONS.md
 OQ-LBLJMP-STALE) is a combined 104-blocks/pair weight from a strict 1:1
 LBL:JMP pairing (`gen_logic_sweep.py`'s `group_lbl_jmp`) -- explicitly
 flagged as unvalidated for any other ratio. This generator tests the
-ratios James describes that the 1:1 sweep can't distinguish:
+ratios that the 1:1 sweep can't distinguish:
 
   A. group_many_jmp_one_lbl -- N JMPs all targeting the SAME single LBL
      (2/5/10). If LBL's own cost is genuinely a flat one-time thing and
@@ -16,7 +16,7 @@ ratios James describes that the 1:1 sweep can't distinguish:
      JMP's for the first time (the 1:1 sweep couldn't, since count scaled
      both together).
   B. group_lbl_no_jmp -- LBL rungs with ZERO corresponding JMPs (1/5/10).
-     A legal shape per James ("You can have a lbl with no jmp") -- isolates
+     A legal shape (an LBL with no JMP) -- isolates
      LBL's own per-instance marginal cost directly, no JMP mixed in at all.
   C. group_samename_different_routines -- the "same subroutine" scoping
      constraint: two separate subroutines, each with its own LBL/JMP pair
@@ -26,7 +26,7 @@ ratios James describes that the 1:1 sweep can't distinguish:
      subroutine programs that reuse common label names like "Start"/"End".
 
 Deliberately does NOT attempt a JMP with no matching LBL anywhere in the
-same routine (James: "you cannot have a jmp with no lbl") -- that's not a
+same routine (you cannot have a jmp with no lbl) -- that's not a
 real, buildable program, so there's nothing to generate; noted here for
 completeness rather than as a test case.
 

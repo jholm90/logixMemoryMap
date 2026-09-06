@@ -1,9 +1,9 @@
 """Whole-controller export, or a partial one? And which parts are real?
 
-James, 2026-09-04: "Can you please rewrite the estimation script for
-handling controller, udt, aoi, programs, routines, rungs logic exports...
-Anything that's not a controller export can not use the prices sir base
-load, but rungs, routines and programs might contain controller tags."
+2026-09-04: the estimation path has to handle controller, UDT, AOI,
+program, routine and rung-logic exports. Anything that is not a controller
+export cannot use the base load, but rungs, routines and programs can still
+reference controller tags.
 
 Studio 5000 exports at six granularities, and until this module every one of
 them was sized as though it were a whole project. That is not a rounding
@@ -46,7 +46,7 @@ WHAT THAT MEANS FOR SIZING
   the firmware/catalog/safety baseline deltas and the whole task/program
   shell decomposition are properties of a PROJECT. A program, routine, rung,
   AOI or UDT export has no project.
-* Context declarations are still real, and James's point about them is the
+* Context declarations are still real, and the point about them is the
   reason this module reports them rather than dropping them: "rungs,
   routines and programs might contain controller tags". A rung that
   references `CurrentTimeSTR` carries that controller tag along in its

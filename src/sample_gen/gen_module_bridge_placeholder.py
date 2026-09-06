@@ -1,5 +1,5 @@
 """Ethernet-bridge PLACEHOLDER modules -- no Connections, no PLC logic tie,
-just an IP-address bookkeeping entry (James, 2026-09-02, reviewing a real
+just an IP-address bookkeeping entry (2026-09-02, reviewing a real
 production file's memory estimate: "the bridge with no modules i used as a
 placeholder for IP addresses with no PLC logic connections. I suggest you
 generate a sample test file for those").
@@ -10,11 +10,11 @@ and an Ethernet Port carrying only its own IP Address -- no <Communications>
 element at all, so module_defined_bytes/stated_total_bytes are both 0.
 report.py's build_report() already treats this as unmodeled (flagged via
 SizeError, 2026-09-02 fix -- see that commit) rather than guessing an
-overhead value; James's message confirms the real-world intent behind the
+overhead value; the message confirms the real-world intent behind the
 shape (a network-topology placeholder, not a real I/O device) but doesn't
 by itself confirm what real Capacity cost, if any, it carries. This file
 exists to get a real capture and settle that empirically instead of relying
-on his description alone.
+on the description alone.
 
 Two files: one placeholder alone (isolates its own real cost, if any) and
 ten placeholders in one file (matches the real production file's actual
@@ -74,7 +74,7 @@ def main() -> None:
         sample_id=out_name,
         description=(
             "Ten ETHERNET-BRIDGE modules, same no-Connections IP-placeholder shape as "
-            "bridge_placeholder_single, at the real-world scale (10) James's production file "
+            "bridge_placeholder_single, at the real-world scale (10) the production file "
             "uses. See gen_module_bridge_placeholder.py."
         ),
         category="modules",

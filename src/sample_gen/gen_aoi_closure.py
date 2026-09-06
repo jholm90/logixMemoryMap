@@ -1,6 +1,6 @@
-"""Small, targeted AOI additions (James, 2026-08-25, after the 64-file
+"""Small, targeted AOI additions (2026-08-25, after the 64-file
 generalization batch: "If there are additional testing you think of for
-the aoi please process it" -- paired with his "don't just fill up the
+the AOI -- paired with the rule not to fill up the
 minimum 60 test roster with filler work" instruction from the same
 session, so this stays small and answers real, currently-open questions
 only, not padded to any target count.
@@ -15,7 +15,7 @@ only, not padded to any target count.
      points (10:20 and 20:10 split, mirroring 2 of the original 6 real
      ratios) x 2 non-BOOL types (REAL, SINT) x 2 instance counts.
 
-  B. group_aoi_constant_flag -- James's Constant="true" question (raised
+  B. group_aoi_constant_flag -- the Constant="true" question (raised
      for STRING/custom-string tags) applies just as naturally to an
      AOI-instance tag -- never tested for any UDT/AOI-typed tag in this
      project before. A simple AOI instance, Constant=true vs false.
@@ -72,7 +72,7 @@ def group_aoi_constant_flag() -> int:
         tag = tag_xml("TestInstance", aoi_name, udt_members=storage, constant=const)
         l5x = build_l5x(target_name=f"AoiConst{const_label.title()}", tags_xml=tag, extra_aoi_xml=definition)
         n += _write(l5x, f"aoiconst_{const_label}",
-                    f"1 AOI instance tag (2 Input params: DINT, BOOL), Constant={const} -- James's "
+                    f"1 AOI instance tag (2 Input params: DINT, BOOL), Constant={const} -- the "
                     f"Constant-flag question (raised for STRING) extended to AOI-instance tags, never "
                     f"tested for any UDT/AOI-typed tag in this project",
                     "aoi")

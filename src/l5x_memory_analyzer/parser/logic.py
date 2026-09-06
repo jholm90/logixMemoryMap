@@ -1,6 +1,6 @@
 """Parses RLL rung text out of Controller/Programs/Program/Routines.
 
-Only RLL (ladder) routines are handled -- 22% of real routines in James's
+Only RLL (ladder) routines are handled -- 22% of real routines in the
 corpus are Structured Text (OQ, see docs/TASKS.md Phase 4 note), which uses
 a completely different syntax and has its own unmeasured compiled-size
 characteristics. ST routines are skipped here, not guessed at.
@@ -365,7 +365,7 @@ class RoutineLogic:
     # the normal per-instruction model (charge_shell=False, so only its
     # fixed shell stays excluded).
     is_jsr_target: bool = False
-    # 2026-09-03, OQ-SAFETYSCOPE-SIZING (James: "they are safety tasks and
+    # 2026-09-03, OQ-SAFETYSCOPE-SIZING ("they are safety tasks and
     # safety programs therefore they need separate sizing calculations").
     # True when this routine's owning <Program> carries Class="Safety" --
     # real, unambiguous marker (confirmed on samples/generated/fw_catalog_

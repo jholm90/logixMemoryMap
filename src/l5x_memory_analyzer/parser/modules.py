@@ -1,8 +1,8 @@
 """Parses Controller/Modules out of an L5X document (2026-08-27, first pass
--- James's Phase 1 "Module/IO parsing is still open" gap, never started
+-- the Phase 1 "Module/IO parsing is still open" gap, never started
 before now).
 
-**2026-08-27, real gap found and fixed same day (James's own real-capture
+**2026-08-27, real gap found and fixed same day (a real-capture
 data forced the correction):** the original version of this parser assumed
 `InputSize`/`OutputSize`/`ConfigSize` attributes tell the whole story, and
 that InputTag/OutputTag sit as direct `<Communications>` children. Both
@@ -17,10 +17,10 @@ summing every atomic member of each InputTag/OutputTag/ConfigTag's own
 `<Data Format="Decorated"><Structure>` content (the same member-sum logic
 `compute_udt_size` already uses for an ordinary UDT) -- this is exactly the
 "Module-Defined" data type Logix Designer auto-generates under
-Data Types -> Module-Defined for every added module (James, 2026-08-27:
-"you should see a new UDT under module-defined... you will then have to do
-a % difference between those combined udts and how much actual space it
-takes up").
+Data Types -> Module-Defined for every added module (2026-08-27). Each
+added module produces a new UDT under Module-Defined; the question is the
+percentage difference between those combined UDTs and the actual space the
+modules take up.
 
 **That % difference is real, large, and already computed from 2 real
 captures (2026-08-27):** `module_defined_bytes` for a 1756-IB16 is 28
@@ -51,7 +51,7 @@ from dataclasses import dataclass, field
 # shape) -- so BOOL sizes as the standalone/unpacked 4 bytes, not packed.
 _ATOMIC_BYTES = {"SINT": 1, "INT": 2, "DINT": 4, "LINT": 8, "REAL": 4, "BOOL": 4}
 
-# James, 2026-08-30: "I thought we were excluding controlnet" / "And all
+# 2026-08-30: I thought we were excluding controlnet / "And all
 # legacy networks" -- a bridge module onto a pre-EtherNet/IP network
 # (ControlNet, DeviceNet, DH+/DH-485, Remote I/O) gets the same treatment
 # as a rack-aliased or processor-embedded module in report.py: zero real
@@ -77,11 +77,11 @@ class ModuleInfo:
     # Rockwell's own internal module-profile identifier, e.g.
     # "AB:5000_DI16:I:0" / "AB:5000_DI16:C:0" -- the Structure DataType on
     # each of InputTag/OutputTag/ConfigTag's own <Data Format="Decorated">
-    # body (2026-08-27, James: "add records from the L5X module profile as
+    # body (2026-08-27: add records from the L5X module profile as
     # a checkable item"). Kept separately per I/O direction rather than
     # collapsed into one field -- a module's Input and Config profiles are
     # DIFFERENT strings (same base type, different :I:/:O:/:C: suffix),
-    # not one shared identifier, and James asked for in/out/config kept
+    # not one shared identifier, and asked for in/out/config kept
     # separately marked throughout, not just for the byte counts.
     input_profile: str | None
     output_profile: str | None
@@ -90,7 +90,7 @@ class ModuleInfo:
     # "Module-Defined" data type (2026-08-27) -- computed from the actual
     # Structure content under InputTag/OutputTag/ConfigTag, NOT the
     # (frequently absent) InputSize/OutputSize attribute. This is the
-    # number James's methodology starts from: what you'd see if you sized
+    # number the methodology starts from: what you'd see if you sized
     # that Module-Defined UDT the normal way.
     module_defined_bytes: int = 0
     unknown_member_types: tuple[str, ...] = field(default_factory=tuple)

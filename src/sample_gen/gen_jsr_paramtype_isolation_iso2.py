@@ -1,7 +1,7 @@
 """OQ-JSRPARAMCOST STRING/UDT per-param surcharge isolation (2026-08-31,
-James: "seems like you have lots of work to do with your errors on JSR
-... if i get a test result that doesnt match my prediction i usually
-check my existing work and devise new tests to fix it").
+built after JSR errors persisted. Standing method: when a test result does
+not match the prediction, re-check the existing work and devise new tests
+to fix it).
 
 gen_jsr_paramtype_isolation.py's n=5 fixed-count probes found a real gap:
 STRING and UDT-typed JSR params are both off by ~9.8% (~4,050-4,100 bytes
@@ -16,7 +16,7 @@ to the existing n=5 point -- same routine/tag naming pattern, same call
 shape -- so a real per-param STRING/UDT surcharge shows up as the slope
 between the 3 points, cleanly separable from any flat one-time term.
 
-6 files total (3 N values x 2 types). Suffixed `_iso2` per James's request
+6 files total (3 N values x 2 types). Suffixed `_iso2` per the request
 to keep this follow-up round visually distinct from the original n=5
 paramtype-isolation batch.
 

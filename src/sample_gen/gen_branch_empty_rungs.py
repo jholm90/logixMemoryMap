@@ -1,6 +1,5 @@
-"""Phase 4 (bit logic round 1) closeout (2026-08-26, James: "TASKS.md Phase
-4 -- Logic sizing round 1 (bit logic) should be 100% complete by now... do
-what it takes to make it complete now"). Audit found XIC/OTE/XIO/OTL/OTU
+"""Phase 4 (bit logic round 1) closeout (2026-08-26), built to finish the
+phase outright rather than leave it partly done. Audit found XIC/OTE/XIO/OTL/OTU
 and comment-cost (OQ-COMMENTS, comments = 0 blocks) all genuinely CONFIRMED
 already -- but two checklist items had literally never been generated:
 branch depth variations, and empty rungs at scale. This batch closes both.

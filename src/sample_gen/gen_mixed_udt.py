@@ -1,6 +1,6 @@
-"""OQ-MIXEDUDT (2026-08-26, self-initiated per CLAUDE.md step 5 -- James:
-"why am i having to push you to generate up these open things instead of
-you adding them to the next round of tests automatically?"). The one item
+"""OQ-MIXEDUDT (2026-08-26, self-initiated per CLAUDE.md step 5: open items
+belong in the next round of tests automatically, without being asked for).
+The one item
 from the open-questions list with ZERO test coverage: a "realistic messy/
 nested UDT, arbitrary member mix," as opposed to a homogeneous array or
 the axis-specific composite shape gen_axis_composite.py already covers
@@ -72,7 +72,7 @@ def _messy_members() -> list[MemberSpec]:
     # Deliberately garbled declaration order -- BOOL/bit members scattered
     # between other types rather than grouped, atomics interleaved with
     # structured members, per the "mixed and garbled" real-world shape
-    # James described (not the clean same-type-grouped shape every other
+    # described (not the clean same-type-grouped shape every other
     # UDT test in this corpus uses).
     return [
         MemberSpec("Name", "STRING"),

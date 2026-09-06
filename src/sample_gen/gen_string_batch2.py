@@ -1,4 +1,4 @@
-"""STRING accuracy batch 2 (James, 2026-08-25): "Sounds like you still
+"""STRING accuracy batch 2 (2026-08-25): "Sounds like you still
 don't know what is going on with strings. Make another 20 tests to figure
 this out. You need 100% accuracy for strings and custom length strings."
 
@@ -141,7 +141,7 @@ def group_namelen_custom() -> int:
             base = f"S{suffix}"
             pad_needed = max(0, length - len(base))
             filler = ("_LONGNAME" * (pad_needed // 9 + 1))[:pad_needed]
-            # Real Rockwell tag-naming rule (James, 2026-08-25): double
+            # Real Rockwell tag-naming rule (2026-08-25): double
             # underscores are forbidden -- see gen_string_tagoverhead.py's
             # group_namelen for the real failure this guards against
             # (length=32 there hit filler ending in "_" abutting suffix's

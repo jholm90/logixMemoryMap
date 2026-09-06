@@ -1,5 +1,5 @@
 """Targeted test batch to close the specific gaps blocking model fixes
-(James, 2026-09-04: "can you generate a dozen or more tests that will help
+(2026-09-04, "can you generate a dozen or more tests that will help
 you fix your models and answer some questions that you want explored?").
 
 Every file here answers ONE named, currently-blocking question. Nothing is
@@ -258,9 +258,8 @@ def group_jsr_paramtype_count() -> None:
             # SBR(args)NOP(); -- NOT a bare SBR. SBR only receives the
             # caller's parameters and has no output of its own, so a rung
             # containing only SBR has nothing terminating it and real
-            # Studio 5000 rejects it exactly like a bare EQU (James,
-            # 2026-09-04: "the SBR is like a comparison and needs outputs
-            # afterwards"). sample_gen/lint.py now enforces this.
+            # Studio 5000 rejects it exactly like a bare EQU (2026-09-04:
+            # SBR behaves like a comparison and needs an output after it). sample_gen/lint.py now enforces this.
             + rung_xml(0, f"SBR({sbr_args})NOP();")
             + rung_xml(1, "RET();")
             + "</RLLContent></Routine>"

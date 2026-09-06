@@ -1,4 +1,4 @@
-"""I/O Module sizing sweep, first batch (James, 2026-08-22): "let's go back
+"""I/O Module sizing sweep, first batch (2026-08-22): "let's go back
 and play with some of the AB Io blocks, the balluff Io link block, local
 1756 modules to start. You'll have to swap to a 5069 processor to test the
 5069 modules (non safety stuff to start)... same catalog Phoenix rack with
@@ -12,22 +12,22 @@ real shape found in the corpus (builders.py has the file/tag citations).
 
   A. group_1756_local -- 1/3/10 local 1756-IB16 backplane modules
      (default 1756-L81E processor, pattern 1).
-  C. group_generic_ethernet_configvariance -- THE key test for James's
+  C. group_generic_ethernet_configvariance -- THE key test for the
      caution: same CatalogNumber="ETHERNET-MODULE" (the real Balluff/IFM
      IO-Link-master pattern), four files at different PrimCxnInputSize/
      OutputSize (2/2 up to 450/8, the real value seen in the corpus). If
      size really is config-driven and not catalog-driven, these must NOT
      come back at the same real byte cost.
 
-**2026-08-23, James: "purge the old shit... new stuff only."** Dropped two
+**2026-08-23, purge the old shit... new stuff only* Dropped two
 groups and one config-variance point that never once converted
 successfully (every attempt in convert_log.csv failed, going back days) --
 group_point_io (1734-AENT/1734-IB8, both n=2 and n=8) and group_5069_local
 (5069-IB16/A, both n=1 and n=3) entirely, plus the 1000/1000
-generic-Ethernet config point. James is rebuilding these himself with real
-samples rather than iterating blind on unconfirmed I/O-module XML syntax
-this project has no corpus reference for. If/when he sends real samples,
-re-add as their own generator rather than resurrecting this dead code.
+generic-Ethernet config point. These are being rebuilt from real samples
+rather than iterated on blind against unconfirmed I/O-module XML syntax
+this project has no corpus reference for. When real samples arrive, add
+them as their own generator rather than resurrecting this dead code.
 
 Run: python -m sample_gen.gen_io_modules
 """
@@ -70,7 +70,7 @@ def group_1756_local() -> None:
 
 def group_generic_ethernet_configvariance() -> None:
     # (input_bytes, output_bytes) -- 450/8 matches the real IFM_LugLoader1
-    # example found in the corpus, the rest span the range James described.
+    # example found in the corpus, the rest span the range described.
     # 1000/1000 dropped 2026-08-23 -- never converted successfully, see
     # module docstring.
     configs = [(2, 2), (8, 8), (32, 16), (450, 8)]

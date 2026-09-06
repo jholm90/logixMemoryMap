@@ -53,8 +53,8 @@ over-invest in perfecting the XML generator for edge cases that hit once.
 - Keep generator scripts in `src/sample_gen/` so a sample can be regenerated
   exactly (not hand-edited and drifted from its own generator)
 
-**Generator CLI built 2026-08-20** (James: "the l5x generator application
-where you make up the l5x files based on things you want to test"):
+**Generator CLI built 2026-08-20** — builds L5X files for whatever needs
+testing:
 `python -m sample_gen.cli {udt,tags,rungs} ...` -- see that module's
 docstring for exact flags. `udt` builds a UDT + one tag of it (matches the
 now-confirmed BOOL-packing-run rule exactly, see OQ-ALIGN); `tags` builds N
@@ -64,7 +64,7 @@ L5X, compute predicted_bytes via this project's own sizing engine, and log
 a manifest.csv row automatically -- actual_bytes stays blank until run
 through `scripts/batch_l5x_to_acd.ps1` + `scripts/batch_memory_capture.ps1`
 (both resumable, "press any key to stop" / "close the window at any time"
-per James's spec) or manually through Studio 5000.
+per the spec) or manually through Studio 5000.
 
 ## Feedback loop shape
 
@@ -80,22 +80,21 @@ comparison after every constant change, not just the sample that prompted it.
 
 ## Before hand-picking catalogs into any script (including one-off chat samples)
 
-James, 2026-09-03, real Studio 5000 errors that were both **already
+2026-09-03: two real Studio 5000 errors that were both **already
 diagnosed and fixed elsewhere in this codebase** before being rebuilt from
 scratch by hand: (1) `193-ECM-ETR/A` used directly in a scratch sample --
 already in `gen_composite_realistic.py`'s `_UNDIAGNOSED_COMPOSITE_CATALOGS`
 exclusion set with a documented real "Child module incompatible with
-parent module" error; James's response was to delete it from
+parent module" error; the response was to delete it from
 `_MODULE_CHAINS` entirely. (2) Several real 5069 Compact I/O catalogs
 combined onto the default 1756-L81E non-safety controller -- `gen_module_
 sweep.py` already documents (2026-08-27) that 5069 modules need
 `_5069_PROCESSOR_TYPE = "5069-L306ER"` (a 5069-series processor, not
 1756-L81E -- `Type="5069"` Ports only match a 5069 controller's own local
 bus) and that 2 of the 6 (`_5069_SAFETY_CATALOGS`) are
-`SafetyEnabled="true"`, needing `5069-L306ERMS2` (safety-rated). James:
-"You need to do better checking on safety stuff... you need to 'read'
-these modules and use your logic to verify safety stuff cannot go on
-non-safety processors."
+`SafetyEnabled="true"`, needing `5069-L306ERMS2` (safety-rated). The
+requirement: read each module and verify that safety-rated hardware cannot
+be placed on a non-safety processor.
 
 **Before writing ANY script that picks catalogs by name** (`_MODULE_CHAINS`
 keys, `_5069_*`, `_UNDIAGNOSED_*`, etc.), grep this file's own generators
@@ -109,11 +108,11 @@ scratch chat samples included, not just committed batches.
 
 ## After fixing a generator bug: the committed files don't fix themselves
 
-James, 2026-09-04, caught via his own `batch_l5x_to_acd.ps1` output showing
-files still queued for conversion that had already been reported "fixed" in
-chat. Real gap found: `gen_module_pointio_rack.py`'s Bus Size/slot-resize
+2026-09-04, caught via `batch_l5x_to_acd.ps1` output showing
+files still queued for conversion that had already been reported fixed.
+Real gap found: `gen_module_pointio_rack.py`'s Bus Size/slot-resize
 fix landed in the generator SOURCE (2026-09-03), and a direct in-memory
-test of the fixed function was reported to James as verification -- but the
+test of the fixed function was reported as verification -- but the
 actual COMMITTED `rack_pointio_n02...n07_full/_alt` files in `samples/
 generated/` were never regenerated afterward. They still had the old,
 pre-fix content (last touched by an earlier commit), so they kept showing
@@ -132,8 +131,7 @@ either way.
 
 ## Build a real-scale batch out of already-proven rung text
 
-James, 2026-09-04, on the first real virgin-file miss: *"youve made some
-more unique tests to fix this 12% error?"*
+2026-09-04, on the first real virgin-file miss, against a 12% error:
 
 The batch that answers a real-scale question has to actually BUILD at real
 scale, and this project has already spent one whole batch learning that the
@@ -167,10 +165,10 @@ this is the pattern to copy for any future large batch:
 
 ## SBR is a condition, not an output -- every rung still needs a terminator
 
-James, 2026-09-04, real Studio 5000 failure on `jsr_paramtype_udt_n*_r00100`:
-*"Your SBR rung has no output instructions and fails to build, please
-regenerate SBR with a NOP() afterwards and make a note that the SBR is like
-a comparison and needs outputs afterwards."*
+2026-09-04, real Studio 5000 failure on `jsr_paramtype_udt_n*_r00100`: an
+SBR rung with no output instruction fails to build. SBR behaves like a
+comparison and needs an output after it, so SBR rungs are generated with a
+trailing `NOP()`.
 
 `SBR` only RECEIVES the caller's parameters. It has no effect of its own, so
 a rung containing nothing but `SBR(...)` has nothing terminating it and
@@ -189,7 +187,7 @@ rule, and the real corpus carries bare `SBR( a, b, c );` ST statements
 
 **The lesson is about where a rule lives, not about SBR.** This project
 already knew it — `lint.py`'s `_rung_missing_output_findings` was written in
-August for exactly this class, off James's *"conditional instructions like
+August for exactly this class, off the *"conditional instructions like
 EQU with no operand at the end of the rung"*. `SBR` simply was not in
 `_PURE_CONDITION_INSTRUCTIONS`, so 8 of the 9 generators that emit an SBR
 got the `NOP()` right **by convention** and the 9th silently did not. A rule

@@ -14,9 +14,9 @@ into a UDT via MemberSpec(nested_members=...), same machinery
 gen_axis_composite.py's ts_CIPAxis-style test already uses for ordinary
 nested UDTs -- this just does it with an InOut-having AOI specifically.
 
-**2026-08-23 fix, after all 3 files here failed Build:** James hand-built
-and Studio-5000-verified 3 trial files that exposed the real gaps (not
-guessed, diffed byte-for-byte against what this generator was producing):
+**2026-08-23 fix, after all 3 files here failed Build:** three hand-built,
+Studio-5000-verified trial files exposed the real gaps -- not guessed,
+diffed byte-for-byte against what this generator was producing:
   1. The wrapper UDT's "AOI" member needs `Radix="NullType"
      ExternalAccess="Read/Write"` on its <Member> declaration -- a plain
      nested UDT member doesn't carry these (confirmed: gen_axis_composite.
@@ -26,7 +26,7 @@ guessed, diffed byte-for-byte against what this generator was producing):
   2. The AOI-with-InOut instance's required InOut parameter was never
      actually wired to anything -- no rung called the AOI, and there
      wasn't even a real AXIS_CIP_DRIVE tag in the file to wire it to.
-     James's real files always: (a) declare a real Axis+MotionGroup tag
+     a real files always: (a) declare a real Axis+MotionGroup tag
      pair (reused from gen_axis_composite.py's _AXIS_TAG_XML, same shape
      confirmed there), (b) call the AOI from an actual rung with the axis
      wired into the InOut slot, e.g. for the array case:
@@ -35,8 +35,8 @@ guessed, diffed byte-for-byte against what this generator was producing):
      BTD.
   3. The 0-instance ("def_only") variant doesn't actually make sense for
      this construct -- there's nothing to wire a required InOut parameter
-     to without an instance to call, and James's own real trial files
-     don't test it (his "def_only" file has a real single instance + a
+     to without an instance to call, and a real trial files
+     don't test it (the reference "def_only" file has a real single instance + a
      call, not zero instances). Dropped in favor of just 1/10.
 
 Run: python -m sample_gen.gen_aoi_nested_inout
@@ -67,7 +67,7 @@ def _write(l5x: str, out_name: str, description: str) -> None:
 
 
 def main() -> None:
-    # REAL BUG FOUND 2026-08-31 (James's real Studio 5000 verify errors +
+    # REAL BUG FOUND 2026-08-31 (a real Studio 5000 verify errors +
     # lint.py's new aoi_call_arg_count_mismatch check, same root cause as
     # gen_aoi_orphaned_def.py/gen_composite_realistic.py): required=False/
     # visible=False (the MemberSpec default) makes a param HIDDEN from

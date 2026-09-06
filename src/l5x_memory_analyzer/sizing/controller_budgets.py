@@ -1,6 +1,6 @@
 """Loads per-processor memory budgets from controller_budgets.yaml.
 
-James (2026-08-20): the UI's budget denominator was hardcoded to a flat
+2026-08-20: the UI's budget denominator was hardcoded to a flat
 4MB regardless of ProcessorType -- wrong, capacity is genuinely part-number
 specific and, per Rockwell's own docs, some controller generations divide
 memory into separate I/O vs. Data/Logic pools rather than one number. See

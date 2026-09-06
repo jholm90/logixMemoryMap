@@ -93,7 +93,7 @@ def append_manifest_row(sample_id: str, description: str, category: str, l5x_pat
         rows.append([sample_id, description, category, rel_path, str(bytes_predicted), "", "", "", "", "", "", "", "", "", "", ""])
 
     with open(MANIFEST_PATH, "w", newline="", encoding="utf-8") as f:
-        # QUOTE_ALL matches the convention James's own capture tooling
+        # QUOTE_ALL matches the convention the capture tooling
         # writes the file in (every field double-quoted) -- csv.writer's
         # QUOTE_MINIMAL default reformatted every unchanged row on the
         # next regeneration, producing a spurious full-file diff with zero

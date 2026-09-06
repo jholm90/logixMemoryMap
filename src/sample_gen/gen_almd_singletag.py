@@ -1,7 +1,7 @@
 """ALARM_DIGITAL (ALMD) structure sizing (OQ-PREDEFINED sibling gap, RM018A
-read 2026-08-27, James: "size all of these instruction data types" scoped to
+read 2026-08-27, size all of these instruction data types scoped to
 1756-RM018A). ALARM_DIGITAL was flagged 2026-08-27 as one of the predefined
-structures with ZERO real decorated-data evidence in James's 64-file corpus
+structures with ZERO real decorated-data evidence in the 64-file corpus
 -- confirmed again here directly: every real `DataType="ALARM_DIGITAL"` Tag
 found across `samples/local/` (16 real instances, 2 files) uses the
 specialized `Data Format="Alarm"` semantic view (an `<AlarmDigitalParameters>`
@@ -103,7 +103,7 @@ def _write(out_name: str, l5x: str, description: str) -> None:
 
 
 def main() -> None:
-    # ALMD's REAL operand list, read straight off James's Studio 5000
+    # ALMD's REAL operand list, read straight off the Studio 5000
     # faceplate 2026-09-05 after both files failed with "Rung 0, ALMD:
     # Invalid number of arguments for instruction."
     #

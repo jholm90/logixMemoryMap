@@ -1,4 +1,4 @@
-"""James, 2026-08-31: "You made many working l71 filed before this failed
+"""2026-08-31: "You made many working l71 filed before this failed
 test, why did you generate this failed ethernet port? These should be
 caught with your validation scripts better."
 
@@ -10,8 +10,8 @@ _local_ports_xml() (a separate, parallel implementation). The "no embedded
 Ethernet on 1756-L7x" bug was found and fixed in gen_fw_catalog_matrix.py
 on 2026-08-28 (commit 378f929) -- BEFORE gen_blockbyte_l71.py was even
 written (commit bd67504) -- but the fix never got ported to wrapper.py,
-so the same real fact had to be rediscovered the hard way when James ran
-blockbytetest_l71_dint120000.L5X through real Studio 5000.
+so the same real fact had to be rediscovered the hard way when
+blockbytetest_l71_dint120000.L5X was run through real Studio 5000.
 
 These tests exist so that can't happen silently again: they cross-check
 wrapper.py's shape for 1756-L71 against gen_fw_catalog_matrix.py's
@@ -49,7 +49,7 @@ def test_1756_l71_product_code_matches_fw_catalog_matrix_implementation():
     assert f'ProductCode="{_product_code("1756-L71")}"' in l5x
 
 
-# James, 2026-08-31, after the L71 bug: "validate there are no other
+# 2026-08-31: after the L71 bug: "validate there are no other
 # issues with missing porting for the other variations and hardware."
 # Found a bigger instance of the same class of bug: gen_fw_catalog_
 # matrix.py's real, verbatim per-catalog data (samples/generated/

@@ -1,14 +1,13 @@
 # Instruction Coverage
 
 What fraction of real logic is actually sized with confidence, instruction
-by instruction — James, 2026-08-23: "generate a table of all of the
-instructions natively supported on the controller, column with how
-confident you are on calculating size, and a column with how often it's
-used in the full sample programs I gave (both the new dnr set and the
-original set)... I'll probably push you to be 100% confident for all of
-the used instructions." **James, 2026-08-25: "I want this updated every
-time you get test results. No exceptions."** — this file gets refreshed
-every time real capture data lands, not just when someone remembers to.
+by instruction. The table covers every instruction natively supported on
+the controller, with a confidence column for size calculation and a
+frequency column for how often it appears across the full sample corpus
+(both the newer set and the
+original set). The target is full confidence on every instruction actually
+in use. **This file is refreshed every time real capture data lands**, with
+no exceptions.
 
 ## Methodology
 
@@ -85,8 +84,8 @@ every time real capture data lands, not just when someone remembers to.
 - **OUT OF SCOPE (Safety)** — requires a GuardLogix/Safety PLC CPU; this
   project is explicitly out-of-scope for Safety programs (`CLAUDE.md`
   OQ-SAFETY). DCS is a Safety-only instruction by design. CROUT joined
-  this category 2026-08-25 (James: "Crout is safety... requires a safety
-  plc cpu") — its earlier 100% build-failure reading on a standard
+  this category 2026-08-25 — CROUT is a Safety instruction and requires a
+  safety PLC CPU. Its earlier 100% build-failure reading on a standard
   5069-L306ER capture is now explained: not a bad corpus transplant, a
   fundamentally wrong controller class. Retesting CROUT on a standard
   controller will never succeed and isn't worth attempting again.
@@ -120,8 +119,8 @@ weight (204/48) resolved separately from their still-unmodeled CAM/
 MESSAGE operand cost. **The CAPTURED-preliminary category is now empty**
 — every instruction that had n=1 data and an x10 file waiting has been
 resolved one way or the other. The 33rd, CROUT, did NOT resolve clean at
-first — but James, 2026-08-25: "Crout is safety... requires a safety plc
-cpu." That's the real explanation for its 100% build failure (not a bad
+first. CROUT is a Safety instruction and requires a safety PLC CPU, which
+is the real explanation for its 100% build failure (not a bad
 corpus transplant) — CROUT moved to OUT OF SCOPE alongside DCS, not
 BUILD FAILED, since there is nothing to fix on a standard controller.
 MAPC's build failure was real and unrelated to Safety scope — root-caused
@@ -230,7 +229,7 @@ occurrences, 54 real corpus files (spans the original set and the
 | MRP | 0.02% | 41 | CONFIRMED (real capture 2026-08-26: generator bug fixed with real full-parameter template, exact fit, 128 blocks/rung) |
 | MDW | 0.02% | 36 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | BSL | 0.02% | 34 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| CROUT | 0.02% | 33 | OUT OF SCOPE (Safety instruction, requires a GuardLogix/Safety PLC CPU — James, 2026-08-25. Explains the 100% build failure on a standard 5069-L306ER capture: not a bad corpus transplant, a wrong controller class) |
+| CROUT | 0.02% | 33 | OUT OF SCOPE (Safety instruction, requires a GuardLogix/Safety PLC CPU, established 2026-08-25. Explains the 100% build failure on a standard 5069-L306ER capture: not a bad corpus transplant, a wrong controller class) |
 | NEG | 0.02% | 33 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | STOD | 0.02% | 31 | CONFIRMED (exact fit, 0.00% residual) |
 | BSR | 0.01% | 29 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
@@ -262,7 +261,7 @@ occurrences, 54 real corpus files (spans the original set and the
 | SQR | 0.00% | 2 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | SCP | 0.00% | 2 | NO DATA (0 contribution -- never tested, deliberately skipped rather than guessed, see OQ-INSTRFIRSTPASS) |
 | LFU | 0.00% | 1 | NO DATA (0 contribution -- never tested) |
-| CTD | 0.00% | 1 | CONFIRMED (James, 2026-08-25, direct confirmation: "100% the same as a CTU," no test needed) |
+| CTD | 0.00% | 1 | CONFIRMED (2026-08-25, direct confirmation: "100% the same as a CTU," no test needed) |
 | ALMD | 0.00% | 1 | NO DATA (0 contribution -- never tested) |
 | PIDE | 0.00% | 0 | NO DATA (0 contribution -- never tested) |
 | SQO | 0.00% | 0 | NO DATA (0 contribution -- never tested) |
@@ -284,8 +283,8 @@ project's corpus grows.
    history is worth keeping because it shows what moved the needle.
 
    **REAL-destination CPT is exact on all 47 captured calls** (was 8/11 on
-   the probes that isolate operand type). What unlocked it was James,
-   2026-09-04: *"ints will use a behind the scenes conversion to dint."*
+   the probes that isolate operand type). What unlocked it, 2026-09-04, was
+   that INTs use a behind-the-scenes conversion to DINT.
    Two corrections fell straight out of that:
    - **LINT operands cost NOTHING.** `cptrd_operand_lint` is the all-REAL
      control with only the operand type swapped and lands byte-identical
@@ -323,8 +322,8 @@ project's corpus grows.
    captures have one, while real logic writes `CPT(Dest,A*1.5+B)`
    routinely), and multiple `**` on the real-dest path. Blocked on capture.
 
-2. **MAPC (113 occurrences, 0.06%) — RESOLVED 2026-08-25.** James: "100%
-   needed instruction that needs 100% accuracy" — bug root-caused
+2. **MAPC (113 occurrences, 0.06%) — RESOLVED 2026-08-25.** Flagged as an
+   instruction needing full accuracy; bug root-caused
    (undeclared axis tag + reused axis for slave/master), fixed, corrected
    call built error_count=0 on real capture same day, logic weight
    260/rung wired. No longer a focus item.
@@ -335,7 +334,7 @@ project's corpus grows.
    all files build error_count=0, clean 2-point linear fit wired
    (MAM=224, MAJ=236, MAS=100, MRP=128 blocks/rung). No longer a focus
    item. CROUT (33 occurrences) is NOT in this category any
-   more — James confirmed it's a Safety-only instruction (needs a
+   more — confirmed it's a Safety-only instruction (needs a
    GuardLogix CPU), moved to OUT OF SCOPE, nothing to fix.
 4. **MCCP's CAM structure gap (129 occurrences, 0.06%)** — MCCP's own
    LOGIC weight is resolved; what's left is purely CAM's own byte-size
@@ -344,9 +343,9 @@ project's corpus grows.
    its Decorated shape exactly, no hidden fields like CAM_PROFILE has, a
    real and encouraging structural difference). Needs a dedicated CAM
    count sweep (e.g. 1/5/10/20/50 elements) to turn that into a formula.
-   **MSG (99 occurrences, 0.05%) downgraded from this list** — James,
-   2026-08-25: "Message size is fine for the 90% accuracy as it's not a
-   common usage instruction." Not pursuing a MESSAGE byte-size sweep
+   **MSG (99 occurrences, 0.05%) downgraded from this list** (2026-08-25):
+   MESSAGE size is acceptable at the 90% tier because MSG is not a common
+   instruction in practice. Not pursuing a MESSAGE byte-size sweep
    further; MSG's LOGIC weight (48/rung) stays resolved and wired, the
    still-unmodeled MESSAGE operand cost is deliberately left as-is.
 5. **RET (237) / SBR (128)** — 365 combined, 0.18%. Can't be tested as

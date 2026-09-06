@@ -1,11 +1,11 @@
-"""OQ-EMPTYROUTINE (2026-08-24, found while investigating James's manual
+"""OQ-EMPTYROUTINE (2026-08-24, found while investigating the manual
 l81_v35 fw_baseline entry). A self-closing `<Routine Name="X" Type="RLL"/>`
 (no RLLContent child at all) is currently silently skipped by
 parse_rll_routines -- charged 0 bytes, as if it doesn't exist. l81_v35
 (real Capacity 18,112 vs this engine's flat 13,296 prediction, a +4,816
 gap exactly equal to fixed_base_per_routine) is the first real evidence
 this might be wrong -- but it's only 1 data point, and real corpus
-inspection found this exact shape in 15 of James's own production files
+inspection found this exact shape in 15 of the production files
 (up to 10 such routines in one file, samples/local/SJ_Gormley...), so
 getting this right matters for real prediction accuracy, not just a
 synthetic edge case.

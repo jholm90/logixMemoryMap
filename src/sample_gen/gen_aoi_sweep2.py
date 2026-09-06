@@ -1,4 +1,4 @@
-"""Second AOI sweep, closing remaining open items (James, 2026-08-21: "add
+"""Second AOI sweep, closing remaining open items (2026-08-21, "add
 the open aoi items to the next run... be productive and analyze the most
 possible"). Builds on real data already captured from gen_aoi_sweep.py:
 
@@ -12,7 +12,7 @@ possible"). Builds on real data already captured from gen_aoi_sweep.py:
     1280. Only one count point (n=4) tested so far.
 
 This batch:
-  A. AOI type-NAME-length sweep (James asked about this explicitly
+  A. AOI type-NAME-length sweep (asked about this explicitly
      earlier: "just thinking of stuff that could be an issue" -- couldn't
      test it until aoi_xml() existed. Now it does. Mirrors the UDT-name-
      length test exactly: 4 DINT params held constant, only the AOI's own

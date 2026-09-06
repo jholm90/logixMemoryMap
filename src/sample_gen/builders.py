@@ -1,7 +1,6 @@
-"""Composable L5X fragment builders for the sample generator (James,
-2026-08-20: "the l5x generator application where you make up the l5x files
-based on things you want to test -- UDT size, comment length for bits or
-rungs etc.").
+"""Composable L5X fragment builders for the sample generator
+(2026-08-20). The generator builds L5X files for whatever needs testing:
+UDT size, comment length for bits or rungs, and so on.
 
 BOOL-run handling in udt_xml() matches the packing rule confirmed against
 real Logix Designer behavior 2026-08-20 (see docs/OPEN_QUESTIONS.md
@@ -26,7 +25,7 @@ class MemberSpec:
     data_type: str
     dimension: int = 0
     description: str | None = None
-    # Nested UDT support (James, 2026-08-20: "nested UDTs need to be
+    # Nested UDT support (2026-08-20, "nested UDTs need to be
     # tested"). When set, `data_type` names another UDT and this is that
     # UDT's own member list -- both the definition side (_udt_members_xml,
     # a plain type-name reference, no recursion needed) and the
@@ -35,7 +34,7 @@ class MemberSpec:
     # with `dimension` for "array of nested UDT" (a member that's an array
     # of another UDT's instances -- OQ-TAGOVERHEAD "nested array udts").
     nested_members: tuple["MemberSpec", ...] | None = None
-    # An AOI instance nested as a UDT member (James, 2026-08-23, real
+    # An AOI instance nested as a UDT member (2026-08-23, real
     # hand-built trial files after this was one of 5 real bugs behind a
     # batch of Build failures): renders differently from an ordinary
     # nested UDT member -- needs Radix="NullType" ExternalAccess=
@@ -43,7 +42,7 @@ class MemberSpec:
     # member does NOT carry (confirmed: axis_composite_udt_* already
     # passed real Build without them). See _udt_members_xml.
     is_aoi_member: bool = False
-    # AOI Parameter Required/Visible flags (James, 2026-08-23: real calling-
+    # AOI Parameter Required/Visible flags (2026-08-23, real calling-
     # instance semantics, not just cosmetic -- Required="true" means the
     # calling rung MUST have a tag wired to that parameter; Required="false"
     # + Visible="true" means the calling rung must have SOME value present
@@ -157,7 +156,7 @@ def collect_nested_datatypes(name: str, members: list["MemberSpec"], family: str
     <DataType> definition alongside the top one -- returns all of them,
     innermost-first, ready to concatenate into <DataTypes>.
 
-    2026-08-23 fix (James, real Studio 5000 error after a generated AOI-
+    2026-08-23 fix (real Studio 5000 error after a generated AOI-
     nested-in-UDT file failed import): "Unable to create AOI definition
     'DriveAxisNestTest' because it collides with a UDT of the same name."
     An AOI member sets nested_members too (so the *instance/Structure*
@@ -235,7 +234,7 @@ def tag_xml(
     description: str | None = None, udt_members: list["MemberSpec"] | None = None,
     string_max_len: int | None = None, constant: bool = False,
 ) -> str:
-    # REAL BUG FOUND 2026-08-31 (James, real Studio 5000 warning on
+    # REAL BUG FOUND 2026-08-31 (real Studio 5000 warning on
     # composite_realistic_07.L5X): "A warning occurred while setting
     # 'Radix' property (Invalid display style.)" on a REAL-typed array tag
     # (Arr2). This function defaulted radix="Decimal" for every atomic
@@ -381,7 +380,7 @@ def _aoi_default_data_xml(m: "MemberSpec") -> str:
 def _aoi_array_default_data_xml(m: "MemberSpec") -> str:
     """DefaultData for a DIMENSIONED atomic Parameter/LocalTag (an array
     Input/Output param, or a non-InOut array LocalTag) -- real bug found
-    2026-08-30 (James: aoi_array_param_def_only.L5X fails to import with
+    2026-08-30 (aoi_array_param_def_only.L5X fails to import with
     XMLSrv_E_IMPORT_ABORTED_NO_CHANGES, even after the earlier Required/
     Visible fix). Real corpus check (SJ_Gormley_20251112_r02.L5X,
     TS_TrackSts AOI): every non-InOut Parameter that carries ExternalAccess
@@ -412,7 +411,7 @@ def _aoi_array_default_data_xml(m: "MemberSpec") -> str:
 
 def _aoi_nested_default_data_xml(m: "MemberSpec") -> str:
     """DefaultData for a LocalTag whose type is a nested UDT/AOI -- real
-    shape confirmed 2026-08-20 (James's Aoi_Nested.L5X, LocalTag
+    shape confirmed 2026-08-20 (the Aoi_Nested.L5X, LocalTag
     "InReal_OutReal" of type InReal_OutReal): L5K is a positional value
     list `[1,val,val,...]` (leading 1 = EnableIn's real captured value, not
     modeled precisely here since it doesn't affect byte size -- 0 is fine),
@@ -437,16 +436,16 @@ def _aoi_description_xml(m: "MemberSpec") -> str:
 
 
 def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
-    # Real shape confirmed 2026-08-20 against James's own AOI templates
+    # Real shape confirmed 2026-08-20 against the AOI templates
     # (AOI_Definition.L5X, AOI_Definition2.L5X, Aoi_Nested*.L5X, and the
     # InOut examples aoi_inOut_OneDint.L5X/aoi_inOut_OneString.L5X) --
     # superseded an earlier guess built off one different real AOI that
     # turned out wrong on several attributes: Required/Visible are
     # author-chosen per parameter (both true and false appear across
-    # James's real files), not derivable from Usage, so "false"/"false" is
-    # used here for Input/Output as a safe default matching most of his
+    # a real files), not derivable from Usage, so "false"/"false" is
+    # used here for Input/Output as a safe default matching most of the
     # examples. ExternalAccess is "Read/Write" for Input, "Read Only" for
-    # Output/EnableIn/EnableOut -- confirmed across every one of his files,
+    # Output/EnableIn/EnableOut -- confirmed across every one of the reference files,
     # not "None" (the earlier guess).
     if m.name in ("EnableIn", "EnableOut"):
         radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
@@ -468,10 +467,10 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
         # completely absent -- so aoi_xml() already excludes inout_params
         # from the returned storage_members list, unchanged by this fix.
         #
-        # 2026-08-23 fix (James's real hand-built trial files, after 5
+        # 2026-08-23 fix (a real hand-built trial files, after 5
         # AXIS_CIP_DRIVE-InOut files all failed Build): STRING wasn't the
         # only non-atomic case -- AXIS_CIP_DRIVE is a predefined
-        # STRUCTURE type too, and James's real, Studio-5000-confirmed
+        # STRUCTURE type too, and a real, Studio-5000-confirmed
         # parameter for it is bare: `Usage="InOut" Required="true"
         # Visible="true"/>` -- no Radix, no Constant at all. The STRING
         # special case generalizes to "no atomic type, no Radix/Constant,"
@@ -503,10 +502,10 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
     # "Dimension" (singular, correct only for a plain UDT <Member>, see
     # datatypes.py), which self-consistently matched the SAME bug in
     # parser/aoi.py's own reader. Confirmed against 271 real <Parameter>/
-    # <LocalTag Dimensions="N"> elements in James's corpus, zero
+    # <LocalTag Dimensions="N"> elements in the corpus, zero
     # counter-examples.
     #
-    # ROOT CAUSE FOUND 2026-09-03 (James: "the issue is BOOL/SINT/INT/DINT
+    # ROOT CAUSE FOUND 2026-09-03 ("the issue is BOOL/SINT/INT/DINT
     # cannot be arrays for Inputs. Arrays require InOut"): the real
     # `aoi_array_param_def_only.L5X` import failure that OQ-AOIARRAYDIMENSION
     # spent two prior "fixes" chasing (Required/Visible, then DefaultData
@@ -534,7 +533,7 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
         raise ValueError(
             f"AOI Parameter {m.name!r}: array-dimensioned (Dimensions={m.dimension}) "
             f"atomic Parameters must be Usage=\"InOut\" -- Logix does not allow an array "
-            f"Input/Output Parameter (real bug found 2026-09-03, James's own controller "
+            f"Input/Output Parameter (real bug found 2026-09-03, the controller "
             f"testing). Use inout_params=, not input_params=/output_params=, for this member."
         )
     radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
@@ -572,7 +571,7 @@ def _aoi_local_tag_xml(m: "MemberSpec") -> str:
     )
 
 
-# Static but well-formed, matches the shape of James's real AOI exports
+# Static but well-formed, matches the shape of a real AOI exports
 # closely enough to import (these attributes don't affect byte size, only
 # well-formedness) -- doesn't need to be live/unique per generated file.
 _AOI_CREATED_DATE = "2026-08-20T12:00:00.000Z"
@@ -592,7 +591,7 @@ def aoi_xml(
     prescan_rungs_xml: str = "",
 ) -> tuple[str, list["MemberSpec"]]:
     """AddOnInstructionDefinition + the "storage member list" for generating
-    an instance tag of it. Real shape confirmed 2026-08-20 against James's
+    an instance tag of it. Real shape confirmed 2026-08-20 against the
     own real AOI export templates (AOI_Definition.L5X, AOI_Definition2.L5X,
     Aoi_Nested*.L5X) after an earlier version of this function (built off a
     different real AOI) failed Studio 5000 import -- fixed several real
@@ -609,8 +608,9 @@ def aoi_xml(
     local tags, usable directly with tag_xml(udt_members=...) the same way
     a UDT instance is.
 
-    logic_rungs_xml/extra_routines_xml (2026-08-31, James: "you closed
-    aois but never put logic inside?" -- real, corpus-wide gap: every AOI
+    logic_rungs_xml/extra_routines_xml (2026-08-31). AOIs had been closed
+    out without any logic ever being put inside one -- a real, corpus-wide
+    gap: every AOI
     test file this project has ever generated used the hardcoded
     self-closing `<Routine Name="Logic" Type="RLL"/>` below, meaning $0
     real internal-logic content was EVER exercised in any AOI calibration
@@ -621,8 +621,8 @@ def aoi_xml(
     self-closing shape byte-for-byte) lets a caller supply real
     `<Rung>...</Rung>` content for the Logic routine.
 
-    James also, same message: "All aois have one subroutine but they can
-    have more, see the HomeToTorque aoi" -- real, confirmed 2026-08-31
+    Every AOI has one internal subroutine and can have more (HomeToTorque
+    is the real example) -- confirmed 2026-08-31
     against a real confidential project (not committed, never named
     beyond this generic description): 8 of 39 real AOI definitions there
     have 2 internal RLL routines (Logic + a second, e.g. HomeToTorque's
@@ -705,11 +705,11 @@ def aoi_xml(
 def program_xml(name: str, tags_xml: str = "", rungs_xml_body: str = "") -> str:
     """A second/extra <Program> block, for build_l5x(extra_programs_xml=...).
     Same MainRoutine/RLL shape as the wrapper's own MainProgram. OQ-XPROGREF
-    -- James, 2026-08-22: "add it to the next batch" (cross-program tag
+    -- 2026-08-22: add it to the next batch (cross-program tag
     reference). Real Logix has no direct cross-program addressing syntax in
     logic (confirmed: no such pattern found anywhere in the real corpus,
     despite 47 real files including some with Public program tags) -- the
-    real mechanism James described earlier is a Controller-scoped global
+    real mechanism described earlier is a Controller-scoped global
     tag with a same-named Local alias in each program that needs it, which
     is what this builder is for."""
     rungs = rungs_xml_body if rungs_xml_body.strip() else (
@@ -940,7 +940,7 @@ def motion_instruction_tag_xml(name: str) -> str:
 # 20-element array). Deliberately NOT synthesized: the visible Decorated
 # shape exposes only one named member (Status, DINT) per element, but the
 # real L5K row for each element carries 14 numeric fields -- confirming
-# James's "voodoo... hides stuff not visible in the tag browser" (2026-08-22).
+# the "voodoo... hides stuff not visible in the tag browser" (2026-08-22).
 # There's no way to reconstruct the meaning of the other 13 fields from the
 # L5X alone, so rather than invent plausible-looking values (risking a
 # subtly-invalid encoding that fails import), every generated CAM_PROFILE
@@ -983,7 +983,7 @@ def cam_profile_tag_xml(name: str, count: int) -> str:
 # ---------------------------------------------------------------------------
 # I/O Module builders (OQ series pending, docs/IO_MODULES.md). Three real,
 # structurally distinct patterns confirmed against the corpus 2026-08-22 --
-# module sizing is NOT one-size-fits-all, exactly James's caution ("same
+# module sizing is NOT one-size-fits-all, exactly the caution ("same
 # catalog Phoenix rack with 2 input cards or 30... be careful looking at the
 # data sizes in the l5x module properties"):
 #
@@ -1055,8 +1055,8 @@ def module_generic_ethernet_xml(name: str, ip_address: str, input_bytes: int, ou
     regardless of what it physically is -- real per-instance size comes
     ONLY from PrimCxnInputSize/PrimCxnOutputSize, and the Structure
     DataType name literally encodes the configured byte count
-    (AB:ETHERNET_MODULE_SINT_{n}Bytes:{I,O}:0). Exactly the case James
-    flagged: same catalog, real size varies per instance -- this builder
+    (AB:ETHERNET_MODULE_SINT_{n}Bytes:{I,O}:0). Exactly the flagged case:
+    same catalog, real size varies per instance -- this builder
     exists specifically to generate several same-catalog files at
     different input_bytes/output_bytes and prove the sizing engine can't
     use a catalog lookup table for this class of module."""

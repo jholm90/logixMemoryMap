@@ -1,10 +1,9 @@
 # Open Build / Conversion Errors
 
-James, 2026-08-25 (first pass): high priority to work through while
-l5x→acd conversion is running. Every item from the first pass has now
-either been root-caused and fixed by James's own explanations, or
-confirmed as a scope decision (Safety) rather than a bug. **Nothing left
-needs an error code from you right now** — every fix below is generated,
+First pass 2026-08-25, worked through while l5x→acd conversion was running.
+Every item from that pass has since been either root-caused and fixed, or
+confirmed as a scope decision (Safety) rather than a bug. **Nothing here
+currently needs a new error code** — every fix below is generated,
 lint-clean, and just needs a recapture to confirm. New items will be added
 here the moment anything else shows up as FAILED/nonzero `error_count`.
 
@@ -17,7 +16,7 @@ Two different failure stages, kept separate below:
 ## All fixed, awaiting recapture
 
 **`stringoverhead_namelen32_n050.L5X`** — L5X→ACD conversion failure
-- James: "looks like you have a double underscore and that is forbidden."
+- Real cause: a double underscore in a tag name, which Logix forbids.
 - Root cause confirmed: the name-length padding filler
   (`"_LONGNAME" * k`, truncated to hit an exact target length) happened to
   end in `_` right where it abuts the tag's own `_NN` numeric suffix, at
@@ -31,10 +30,11 @@ Two different failure stages, kept separate below:
 
 **`axis_aoi_inout_1_instance.L5X`** / **`axis_full_combo.L5X`** —
 build/verify errors (2 each)
-- James: "your AOI has the tag name and the inout as required/visible,
-  but the calling routine has tagName,FaultResetVal,Axis_Cip_Drive. the
-  3rd tag has no where to go. you need to have as many tags on the
-  calling routine as required parameters in the aoi definition."
+- Real cause: the AOI declares the instance tag and the InOut as
+  required/visible, but the calling routine passes
+  `tagName,FaultResetVal,Axis_Cip_Drive` — the third argument has nowhere
+  to go. A call site needs exactly as many arguments as the definition has
+  required parameters.
 - Root cause confirmed: the AOI's BOOL Input param (`FaultReset`) was
   declared with `Required=False/Visible=False` (hidden — real semantics:
   no slot on the calling rung at all), but the rung text wired
@@ -49,14 +49,13 @@ build/verify errors (2 each)
 `motioninstr_mas_n00010`/`_n00100`, `motioninstr_mrp_n00010`/`_n00100`**
 (8 files) — build/verify errors, `error_count` == rung count (every rung
 failed)
-- James: "You need to put parameters in for motion instructions. right
-  now you are calling MAM(Axis_Cip_Drive,MotionInstr1) but you need to
-  have all of the parameters populated... See samples for details."
+- Real cause: motion instructions need all their parameters populated. The
+  call was `MAM(Axis_Cip_Drive,MotionInstr1)`, missing the rest.
 - Root cause confirmed: the bare 2-operand call these 4 used is MAH/MSO's
   own real shape, not theirs. Reading the real corpus directly confirmed
   four genuinely different real operand counts: MAM=20, MAJ=17, MAS=9,
   MRP=5.
-- Fixed in `gen_motion_instructions.py`: MAM uses James's own corrected
+- Fixed in `gen_motion_instructions.py`: MAM uses the corrected
   template verbatim; MAJ/MAS/MRP built as position-for-position
   transplants from one real corpus example each (same method as the MAPC
   fix below), real keywords/literals kept verbatim, only tag names
@@ -64,21 +63,19 @@ failed)
   lint-clean, stale error data cleared from the manifest.
 
 **`instrfirst_mapc_x10`** — 20 errors (2/rung × 10 rungs)
-- James: "you forgot to make the tag for the axis. also you need to have
-  a unique tag for master/slave they cannot cam to itself. duh." — matches
-  the root cause found independently: `Axis_Cip_Drive` was never declared
-  as a tag in the file, and the same axis tag was reused for both
-  slave/master. James also clarified the axis-type constraint is looser
-  than first assumed: "Mapc can use two axis of any type (virtual
-  master/virtual slave is ok)" — just needs two distinct tags, not a
-  required CIP-Drive/Virtual pairing.
+- Real cause, matching the one found independently: the axis tag
+  `Axis_Cip_Drive` was never declared in the file, and the same axis tag
+  was reused for both master and slave — an axis cannot cam to itself.
+  The axis-type constraint is looser than first assumed: MAPC accepts two
+  axes of any type (virtual master with virtual slave is fine); it only
+  needs two distinct tags, not a CIP-Drive/Virtual pairing.
 - Fixed in `instrfirst_mapc_v2`/`_v2_x10` (generated, lint-clean,
   awaiting capture). Original buggy files kept for the audit trail.
 
 ## Resolved, not a bug
 
 **`instrfirst_crout_x10`** — 80 errors (8/rung × 10 rungs)
-- James: "you fixed it -- needs a safety processor." Confirmed: CROUT is
+- Real cause: needs a safety processor. CROUT is
   a Safety-only instruction (GuardLogix CPU required), this project's
   test corpus is all standard controllers. Reclassified OUT OF SCOPE
   alongside DCS. Nothing to fix, nothing to retest on a standard

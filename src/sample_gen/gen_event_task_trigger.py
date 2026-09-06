@@ -1,13 +1,12 @@
-"""EVENT task trigger-source cost, James (2026-08-25): "Does an event task
-triggered by MAW cost more than an event task triggered by the EVENT
-instruction?"
+"""EVENT task trigger-source cost (2026-08-25): does an event task
+triggered by MAW cost more than one triggered by the EVENT instruction?
 
 Real corpus shape confirmed (SJ_Gormley_20251112_r02.L5X,
 Sorter1_20260722r00.L5X, 12 real Task elements grepped): the two real
 EventTrigger values are "EVENT Instruction Only" (no EventTag) and
 "Axis Watch" (EventTag pointing at a real AXIS_CIP_DRIVE tag -- confirmed
 against Gormley's own EM108_GradingLC axis). "Axis Watch" is a task-level
-config, not the MAW *instruction* itself -- James's "MAW" almost certainly
+config, not the MAW *instruction* itself -- the "MAW" almost certainly
 means this, since Axis Watch is exactly the task-scheduling trigger the
 MAW (Motion Axis Watch) instruction/concept maps to; there is no separate
 real corpus example of an EVENT task triggered any other way.
@@ -40,7 +39,7 @@ OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "logi
 # Real AXIS_CIP_DRIVE + companion MOTION_GROUP tag pair (see
 # gen_axis_composite.py's _AXIS_TAG_XML docstring for provenance), renamed
 # from "Axis_Cip_Drive" to "WatchedAxis" so the EventTag reference below
-# resolves. REAL BUG FOUND 2026-08-30 (James, live testing: "Line 33:
+# resolves. REAL BUG FOUND 2026-08-30 (live testing: "Line 33:
 # Invalid display style" + "Line 70: Tag being used for event task does
 # not exist" -- then, pointedly: "if you set it for axis watch then you
 # should have generated an axis - does this not sound very obvious?"):
@@ -57,7 +56,7 @@ OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "logi
 # other 5069-L306ER files use that identical Bus Size and import fine.
 _WATCHED_AXIS_TAG_XML = _AXIS_TAG_XML.replace('Name="Axis_Cip_Drive"', 'Name="WatchedAxis"')
 
-# REAL BUG FOUND 2026-08-31 (James, real Studio 5000 error on
+# REAL BUG FOUND 2026-08-31 (real Studio 5000 error on
 # eventtask_instronly.L5X): "Failed to set the 'Size' property (Chassis
 # size exceeds the allowable size for a chassis.)" on the Local module's
 # own backplane Bus, with NO axis tag involved at all -- proving the
@@ -123,7 +122,7 @@ def main() -> None:
 
     # EventTrigger="Axis Watch" -- needs a real controller-scope
     # AXIS_CIP_DRIVE tag as the EventTag target (confirmed real shape:
-    # Gormley's EM108_GradingLC). James's "MAW" question maps to this --
+    # Gormley's EM108_GradingLC). the "MAW" question maps to this --
     # Axis Watch is the real task-level trigger MAW (Motion Axis Watch)
     # corresponds to; there's no other real EVENT-trigger shape in the
     # corpus to test against.
@@ -139,7 +138,7 @@ def main() -> None:
         "1 Continuous + 1 EVENT Task (EventTrigger=\"Axis Watch\", EventTag pointing at a real "
         "AXIS_CIP_DRIVE controller-scope tag, real corpus shape confirmed against SJ_Gormley's "
         "DataMove_GradingLC task/EM108_GradingLC axis) -- identical to eventtask_instronly except "
-        "trigger source, isolating whether Axis-Watch-triggered EVENT tasks (what James's \"MAW\" "
+        "trigger source, isolating whether Axis-Watch-triggered EVENT tasks (what the \"MAW\" "
         "question maps to) cost differently from EVENT()-instruction-triggered ones. The extra "
         "AXIS_CIP_DRIVE tag itself has its own real, separately-modeled cost -- watch for that "
         "confound when reconciling captures.",

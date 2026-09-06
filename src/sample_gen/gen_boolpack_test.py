@@ -3,7 +3,7 @@ the same project plus 1000 standalone BOOL controller tags. The delta between
 their real compiled memory (Studio 5000, Controller Properties -> Memory tab,
 no download needed per TESTING_PLAN.md) divided by 1000 answers whether a
 standalone BOOL tag really costs 4 bytes (current model) or packs, per
-James's hunch (2026-08-20, docs/OPEN_QUESTIONS.md OQ-BOOLPACK).
+the hunch (2026-08-20, docs/OPEN_QUESTIONS.md OQ-BOOLPACK).
 
 Run: python -m sample_gen.gen_boolpack_test
 """

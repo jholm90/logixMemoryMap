@@ -5,9 +5,9 @@ just the Tags XML body -- this is Approach A from docs/SAMPLE_GENERATION.md.
 CORRECTED 2026-08-20 (Approach C, per SAMPLE_GENERATION.md): the
 hand-authored template failed real Studio 5000 import -- first with an
 unrecognized ProcessorType, then with "Child module incompatible with
-parent module" once that was fixed. James imported the failing sample via
-Studio 5000's own File->Import GUI, got the real error, then hand-built and
-exported a genuinely valid blank 1756-L81E project and sent it back. This
+parent module" once that was fixed. The failing sample was imported via
+Studio 5000's own File->Import GUI to get the real error, and a genuinely
+valid blank 1756-L81E project was then hand-built and exported. This
 template is now a direct copy of that real export's structure (down to the
 Controller element's full real attribute set, RedundancyInfo/Security/
 SafetyInfo/CST/WallClockTime/TimeSynchronize/EthernetPorts elements, and
@@ -23,25 +23,25 @@ from __future__ import annotations
 import re
 from datetime import datetime
 
-# v35 / ControlLogix 5580-class -- switched 2026-08-20 (James: "why didnt
+# v35 / ControlLogix 5580-class -- switched 2026-08-20 ("why didnt
 # you use 1756-L81? lets use that as default") from 5069-L306ER, which was
-# only ever chosen because it's the one physical unit James has for real
-# hardware spot-checks (OQ-EMULATE). 1756-L81E matches his actual primary
-# target per OQ-L5XVERSION (v35/L8-class) and is what his real production
+# only ever chosen because it is the one physical unit available for real
+# hardware spot-checks (OQ-EMULATE). 1756-L81E matches the actual primary
+# target per OQ-L5XVERSION (v35/L8-class) and is what the real production
 # files (BaillieLeitchField_Edger etc.) actually run on -- makes more sense
 # as the generator default. Using the exact string already confirmed twice
 # over: it's in controller_budgets.yaml (sourced, 3MB) and it's the literal
-# ProcessorType value seen in James's own real L5X files -- not a repeat of
+# ProcessorType value seen in a real L5X files -- not a repeat of
 # the earlier 5069-L306ERS suffix-guessing mistake.
 DEFAULT_PROCESSOR_TYPE = "1756-L81E"
 DEFAULT_MAJOR_REV = "35"
 DEFAULT_MINOR_REV = "11"
-# Matches James's actual Studio 5000 install exactly (confirmed via his
+# Matches the actual Studio 5000 install exactly (confirmed via the
 # real 2026-08-20 reference export) -- was guessed as 35.11 before, wrong.
 DEFAULT_SOFTWARE_REVISION = "35.05"
 
 
-# Real, Studio-5000-confirmed values for 1756-L81E (James, 2026-08-20 export).
+# Real, Studio-5000-confirmed values for 1756-L81E (2026-08-20, export).
 _PRODUCT_CODE = "164"
 _ICP_BUS_SIZE = "17"
 
@@ -49,13 +49,13 @@ _ICP_BUS_SIZE = "17"
 # shape, confirmed 2026-08-22 against samples/local/DnR_Personal/
 # BT1XX_FFC_20240325.L5X (5069-L330ERMS2): local bus Port Type="5069" (not
 # "ICP"), vs 1756's 17-slot-chassis convention, and TWO Ethernet ports
-# (dual embedded switch) rather than 1756's one. James, 2026-08-22:
+# (dual embedded switch) rather than 1756's one. 2026-08-22: 
 # "You'll have to swap to a 5069 processor to test the 5069 modules" -- a
 # naive processor_type string swap on the old ICP/single-Ethernet template
 # would still be structurally wrong, so this is a real separate shape, not
 # just a catalog-string substitution.
 #
-# BUG FOUND 2026-08-28 (James, real Studio 5000 error on
+# BUG FOUND 2026-08-28 (real Studio 5000 error on
 # modulesweep_5069_ib16_a.L5X): "Failed to set the 'Size' property
 # (Chassis size exceeds the allowable size for a chassis.)". The flat
 # Bus Size="32" used for EVERY 5069 catalog was only ever confirmed real
@@ -90,7 +90,7 @@ def _5069_bus_size(processor_type: str) -> str:
 
 
 # 1769-family (CompactLogix 5370, DIN-rail expansion I/O bus) real Local
-# Ports shape -- STRUCTURAL BUG FOUND 2026-08-28 (James: "the 5069 and
+# Ports shape -- STRUCTURAL BUG FOUND 2026-08-28 ("the 5069 and
 # 1769 have different backplane sizes based on the catalog number
 # ordered"): there was no is_1769 branch at all before this, so every
 # 1769 processor silently fell through to the generic ICP-chassis else
@@ -123,7 +123,7 @@ def _1769_bus_size(processor_type: str) -> str:
     m = re.match(r"1769-(L\d{2})", processor_type)
     return _1769_BUS_SIZE_BY_MODEL.get(m.group(1), _1769_BUS_SIZE_DEFAULT) if m else _1769_BUS_SIZE_DEFAULT
 
-# Real per-catalog ProductCode, 2026-08-26 (James's own real fw_baseline
+# Real per-catalog ProductCode, 2026-08-26 (a real fw_baseline
 # exports, samples/local/fw_versions/) -- found while investigating why
 # every stringconst_*_l8 file (Constant-flag x processor batch) failed to
 # convert. ProductCode is NOT just "164 for 1756, 223 for 5069" as this
@@ -178,9 +178,8 @@ def safety_partner_module_xml(
     to the right of the primary CPU, real and required whenever a program
     is SIL3/PLe (redundant safety processing across 2 physical modules);
     SIL2 uses a single non-redundant safety-capable primary with no
-    partner at all (2026-08-27, James: "One safety partner is located
-    beside the CPU on the right if the program is sil3. Sil2 has no
-    safety partner. You need to handle this.").
+    partner at all (2026-08-27): one safety partner sits beside the CPU on
+    the right for a SIL3 program; SIL2 has none.
 
     Confirmed real shape from samples/local/DnR_Personal/
     Bender134053_201104.L5X (a real SIL3/PLe program, Controller/
@@ -230,11 +229,11 @@ def build_l5x(
     "SIL2" (single non-redundant safety-capable primary -- any module with
     `SafetyEnabled="true"` real-errors "The Controller is not a Safety
     Controller" against a standard controller, confirmed 2026-08-27 on
-    James's own real conversion attempts of the 4conn Kinetix safety-drive
+    a real conversion attempts of the 4conn Kinetix safety-drive
     variants and PowerFlex 527-STO), or "SIL3" (redundant primary +
     partner -- see `safety_partner_module_xml`). Real, well-established
     IEC 61508/62061 SIL-to-PL correspondence used for `SafetyLevel`
-    (SIL2/PLd, SIL3/PLe) -- James, 2026-08-27: "One safety partner is
+    (SIL2/PLd, SIL3/PLe) -- 2026-08-27: "One safety partner is
     located beside the CPU on the right if the program is sil3. Sil2 has
     no safety partner." Callers must ALSO pass a real safety-rated
     `processor_type` (e.g. "1756-L81ES") -- this function does not
@@ -245,9 +244,9 @@ def build_l5x(
     )
     is_1769 = processor_type.startswith("1769")
     is_5069 = processor_type.startswith("5069")
-    # REAL GAP FOUND 2026-08-31, self-audit prompted by James ("validate
-    # there are no other issues with missing porting for the other
-    # variations and hardware") after the 1756-L71 Ethernet-port bug:
+    # REAL GAP FOUND 2026-08-31 in a self-audit for missing port definitions
+    # across the other variations and hardware, after the 1756-L71
+    # Ethernet-port bug:
     # gen_fw_catalog_matrix.py's real, verbatim per-catalog Modules blocks
     # (extracted from genuine Rockwell exports, samples/generated/
     # fw_baseline/v35_*.L5X) show 7 of the 9 real 1769 catalogs this
@@ -280,7 +279,7 @@ def build_l5x(
             f"_1769_MODULES_XML (real, verbatim per-catalog Modules content) instead -- see this "
             f"check's comment in wrapper.py for the full real corpus evidence."
         )
-    # REAL BUG FOUND 2026-08-31 (James, real Studio 5000 error on
+    # REAL BUG FOUND 2026-08-31 (real Studio 5000 error on
     # blockbytetest_l71_dint120000.L5X): "Name collision: imported Module
     # 'Local' renamed to 'Local1'" + "Required property 'Port' was missing"
     # + "Requested item could not be found" on Controller/EthernetPorts.
@@ -355,7 +354,7 @@ def build_l5x(
         # Ethernet ports -- without this a Safety Partner module in
         # extra_modules_xml is rejected as an invalid standalone import.
         # SafetyNetwork values are per-installation-unique in a real
-        # project; these are placeholder-format (not James's real
+        # project; these are placeholder-format (not a real
         # numbers) but keep the same real 16#0000_xxxx_xxxx_xxxx
         # bit-length/format.
         local_ports_xml = (
@@ -367,7 +366,7 @@ def build_l5x(
         )
         local_product_code = _PRODUCT_CODES.get(processor_type, _PRODUCT_CODE)
     elif safety_level == "SIL2":
-        # BUG FOUND 2026-08-28 (James: "did a super in-depth memory
+        # BUG FOUND 2026-08-28 ("did a super in-depth memory
         # analysis... review the last batch of l5x conversions"):
         # this branch previously assumed SIL2 (single non-redundant
         # safety-capable primary, no partner) needed no SafetyNetwork on
@@ -425,8 +424,8 @@ def build_l5x(
             f'<Port Id="2" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
         )
         local_product_code = _PRODUCT_CODES.get(processor_type, _PRODUCT_CODE)
-    # REAL BUG FOUND 2026-08-30 (James: "your L8 safety failed to generate
-    # acd files. You should have known that"). SafetyLocked="true" with no
+    # REAL BUG FOUND 2026-08-30: L8 safety files failed to generate ACD
+    # files. SafetyLocked="true" with no
     # SafetySignature attribute is an invalid combination -- see the same
     # fix in gen_fw_catalog_matrix.py's _build_xml for the full real-corpus
     # cross-check (9/9 files: every SafetyLocked="true" carries a real
@@ -447,13 +446,12 @@ def build_l5x(
     # Format matches the real reference export exactly (Python's ctime-style
     # strftime): "Thu Aug 20 11:19:00 2026".
     now = datetime.now().strftime("%a %b %d %H:%M:%S %Y")
-    # REAL BUG FOUND 2026-08-28 (James: "looks like your 5069-LxxERMSx has
-    # issues as well"). EtherNetIPMode="A1/A2: Dual-IP" is a real
+    # REAL BUG FOUND 2026-08-28 on the 5069-LxxERMSx catalogs. EtherNetIPMode="A1/A2: Dual-IP" is a real
     # Controller-level attribute confirmed present, identical value, in
     # EVERY 5069 corpus file checked (6/6, zero variance -- both plain
     # non-motion S2 catalogs and motion+safety ERMSx catalogs alike, so
     # this is a 5069-family-wide gap, not specific to the ERMSx subset
-    # James happened to be testing). Describes how the CPU's two embedded
+    # that was under test at the time). Describes how the CPU's two embedded
     # Ethernet ports are configured (Dual-IP addressing) -- something
     # only a 5069 processor has (1756/1769 have at most one embedded
     # port), so it's correctly omitted for every other family.

@@ -1,7 +1,7 @@
 // Vanilla JS/SVG squarified treemap -- no external deps by design, since this
 // runs on engineering workstations that are frequently airgapped OT networks.
 //
-// Infinite-depth lazy drill-down (James, 2026-08-20): a node's .children is
+// Infinite-depth lazy drill-down (2026-08-20): a node's .children is
 // only populated when the user actually drills into it, via /api/node --
 // never masks a large array or deep UDT nesting just because materializing
 // the whole tree up front would be enormous. Color is reserved for data
@@ -12,9 +12,9 @@ let REPORT = null;
 let CURRENT_NODE = null; // node currently shown as the treemap root
 let NODE_STACK = [];     // ancestors of CURRENT_NODE, for the breadcrumb
 let SORT_STATE = { key: "bytes", dir: -1 };
-let SPLIT_OPEN = false;  // James 2026-08-27: List/Type Summary docked
+let SPLIT_OPEN = false;  // 2026-08-27: List/Type Summary docked
                          // alongside the treemap, always-available toggle
-let DEPTH2_ENABLED = false; // James 2026-08-27: render grandchildren nested
+let DEPTH2_ENABLED = false; // 2026-08-27: render grandchildren nested
                              // inside their parent's tile
 
 async function main() {
@@ -84,7 +84,7 @@ function renderAll() {
     label.textContent =
       `${fmtBytes(REPORT.total_bytes)} / ${fmtBytes(REPORT.budget_bytes)} (${pct.toFixed(2)}%)${archNote}`;
   } else {
-    // James (2026-08-20): capacity is part-number specific, don't fake a
+    // (2026-08-20): capacity is part-number specific, don't fake a
     // number for a processor type we don't have real data for.
     fill.style.width = "0%";
     fill.classList.remove("over");
@@ -164,8 +164,8 @@ function isGroup(node) {
 }
 
 // Real rung count for a routine_logic leaf, keyed by the exact same
-// routine.path every such leaf's own node.path already carries (James,
-// 2026-08-27: "routines need to have indication how many rungs").
+// routine.path every such leaf's own node.path already carries
+// (2026-08-27: a routine needs to show how many rungs it holds).
 function rungCountFor(node) {
   return REPORT && REPORT.rung_counts ? REPORT.rung_counts[node.path] : null;
 }
@@ -194,7 +194,7 @@ function setupTabs() {
   });
 }
 
-// James 2026-08-27: "Type/list should be always visible but hidden. if
+// 2026-08-27: "Type/list should be always visible but hidden. if
 // clicked the treeview should resize to fit half size and share with the
 // type/list." A single always-visible toggle button splits the Treemap
 // panel in half, docking a mini List/Type-Summary pane (its own small
@@ -222,7 +222,7 @@ function setupSplitDock() {
   });
 }
 
-// James 2026-08-27: "the treeview shows a nice map on stuff that level, i
+// 2026-08-27: "the treeview shows a nice map on stuff that level, i
 // think we need the option/checkbox to see two levels deep with there
 // being some obvious difference between parent/children." See
 // renderTreemap's nested-squarify block for the paint side; nested tiles
@@ -288,7 +288,7 @@ function renderBreadcrumb() {
     });
 
     // Sibling browser: hover a crumb to jump sideways without backing all
-    // the way up and re-drilling down (James, 2026-08-20). The parent's
+    // the way up and re-drilling down (2026-08-20). The parent's
     // children are already sitting in memory -- every ancestor here got
     // onto the breadcrumb by having its children enumerated already.
     if (i > 0) {
@@ -466,9 +466,9 @@ const HATCH_PATTERN_SVG =
   '</pattern>';
 
 // Second line of a tile's label -- rung count for a routine, routine count
-// for a Program group, [DataType] for an ordinary tag/member leaf (James,
-// 2026-08-27: "all tags need [DataType] as a 2nd line", "routines need to
-// have indication how many rungs", "programs need indication how many
+// for a Program group, [DataType] for an ordinary tag/member leaf
+// (2026-08-27: every tag needs [DataType] as a second line, a routine needs
+// to show how many rungs it holds, and a program needs to show how many
 // routines"). Returns [] when there's nothing extra to say.
 function subLabelFor(node) {
   if (isGroup(node)) {
@@ -583,7 +583,7 @@ function paintTreemap(svg, children) {
       }
     }
 
-    // Depth-2 nesting (James, 2026-08-27): paint this tile's own children
+    // Depth-2 nesting (2026-08-27): paint this tile's own children
     // inset inside it, visually distinct (dashed stroke, reduced opacity,
     // smaller label) so a grandchild is never mistaken for a same-level
     // sibling. Reserves the header strip the label above already used.
@@ -628,7 +628,7 @@ function truncateLabel(name, widthPx) {
   return name.length > maxChars ? name.slice(0, maxChars - 1) + "…" : name;
 }
 
-// Color is reserved for data type (James, 2026-08-20) -- confidence is
+// Color is reserved for data type (2026-08-20) -- confidence is
 // shown via the hatch overlay instead, never by recoloring.
 const TYPE_COLORS = {
   SINT: "#5b8dd6", INT: "#4f7fc4", DINT: "#3d6bb0", LINT: "#2c5590",
@@ -659,8 +659,8 @@ function jsrCallsNote(node) {
 }
 
 // % of the CURRENT treemap root's total this node represents -- a half-
-// full bar means this element is half of its parent's usage (James,
-// 2026-08-27). Uses CURRENT_NODE (the treemap's current drill root), not
+// full bar means this element is half of its parent's usage
+// (2026-08-27). Uses CURRENT_NODE (the treemap's current drill root), not
 // the node's structural parent, since that's what the visible tiles are
 // actually being sized relative to.
 function tooltipParentBar(node) {
@@ -707,7 +707,7 @@ function hideTooltip() {
 }
 
 // ---- list view ----
-// Scoped to CURRENT_NODE's direct children (James, 2026-08-20: "if im down
+// Scoped to CURRENT_NODE's direct children (2026-08-20, "if im down
 // branches then those should represent the current level") -- not the
 // whole file. Re-rendered on every navigation via renderCurrentLevel so it
 // stays in sync even when this tab isn't the active one. Rendered into
@@ -741,7 +741,7 @@ function renderList() {
   for (const id of LIST_TABLE_IDS) renderListInto(id);
 }
 
-// James 2026-08-27: rows are now click-to-drill (same target a treemap
+// 2026-08-27: rows are now click-to-drill (same target a treemap
 // tile click would drill into), matching "List should be browsable to see
 // inside each element name or type."
 function renderListInto(tableId) {
@@ -818,9 +818,9 @@ function renderTypeSummaryInto(elId) {
   for (const t of rows) {
     const row = document.createElement("div");
     row.className = "type-row";
-    // type-name is a bounded, ellipsis-truncated flex item now (James,
-    // 2026-08-27: "Type summary needs to be more dynamic for
-    // REALLY_VERY_LONG_TAGS_AND_UDT_NAMES") -- the full name is always
+    // type-name is a bounded, ellipsis-truncated flex item now
+    // (2026-08-27: the type summary has to stay readable with very long tag
+    // and UDT names) -- the full name is always
     // available via the title attribute on hover.
     row.innerHTML =
       `<div class="type-swatch" style="background:${colorForType(t.data_type)}"></div>` +

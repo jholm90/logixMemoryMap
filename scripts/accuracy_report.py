@@ -5,7 +5,7 @@ manifest.csv row that has a real capture, and reports error by category.
 Never reads the stored predicted_bytes/delta columns -- those go stale the
 moment any constant changes (CLAUDE.md standing rule).
 
-VALIDITY FILTER (James, 2026-09-04: "some of those results had errors and
+VALIDITY FILTER (2026-09-04, "some of those results had errors and
 should not have been counted as a valid result. i am concerned that you
 are changing models with bad data - ensure it is all valid data!"). A row
 is only a valid fitting point if ALL of these hold:

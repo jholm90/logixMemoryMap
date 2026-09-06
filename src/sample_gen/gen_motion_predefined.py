@@ -1,7 +1,6 @@
-"""OQ-PREDEFINED: MOTION_INSTRUCTION and CAM_PROFILE, James 2026-08-22:
-"You need to refer to Logix documentation for this... I think your sample
-projects have majority of them in place and you can reference them
-yourself." Rockwell's own literature site is blocked by this session's
+"""OQ-PREDEFINED: MOTION_INSTRUCTION and CAM_PROFILE, 2026-08-22. These
+need Logix documentation, and the sample projects already contain most of
+them to reference directly. Rockwell's own literature site is blocked by this session's
 network egress proxy, so this went straight to the real corpus instead --
 which turned out to have everything needed:
 
@@ -9,13 +8,13 @@ which turned out to have everything needed:
     samples/local/BAI10048_TrimmerTally_20250704.L5X (AxisMotionControlMAG)
     -- a genuine 16-member Decorated Structure (FLAGS DINT, 10 status
     BOOLs, ERR INT, STATUS/STATE/EXERR SINT, SEGMENT DINT), dual L5K/
-    Decorated format like TIMER/COUNTER. James: "used as a common tag type
-    for most motion instructions... MAH, MSO, MASR... has the
-    Motion_Instruction and the Axis" -- confirmed structurally, one tag per
+    Decorated format like TIMER/COUNTER. It is the common tag type for most
+    motion instructions (MAH, MSO, MASR and the rest), carrying the
+    Motion_Instruction alongside the Axis -- confirmed structurally, one tag per
     motion-instruction call site, alongside the Axis tag.
   - CAM_PROFILE: real 20-element array found in
     samples/local/L5X_Samples/CMU_2025_10_14r00.L5X (HoldCamProfile) --
-    confirms exactly what James flagged ("some voodoo behind the scenes...
+    confirms exactly what flagged ("some voodoo behind the scenes...
     hides stuff not visible in the tag browser"): the Decorated view shows
     only ONE member (Status, DINT) per element, but the real L5K row per
     element carries 14 numeric fields. No way to size this structurally --

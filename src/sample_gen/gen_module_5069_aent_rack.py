@@ -1,4 +1,4 @@
-"""Real 5069-AENTR remote-rack module blocks, genericized from James's
+"""Real 5069-AENTR remote-rack module blocks, genericized from the
 uploaded reference (Remote5069.L5X, 2026-09-02: "see attached for 5069 AENT
 bus module to put 5069 cards remotely") -- structurally verbatim, only the
 Controller/processor wrapper stripped. One 5069-AENTR EtherNet/IP adapter
@@ -3835,9 +3835,9 @@ def _rack_xml(children: list[str], renumber: bool = False) -> str:
 
 
 def _combined_racks_xml(plans: dict[str, list[str]]) -> str:
-    """James, 2026-09-03, after the 10 random racks imported clean as
-    separate files: "i want all 10 in one file" -- 10 independent
-    5069-AENTR adapters in one project. Each _5069_AENT_CHAIN_BLOCKS
+    """2026-09-03: after the 10 random racks imported clean as separate
+    files, the same 10 go into ONE file -- 10 independent 5069-AENTR
+    adapters in one project. Each _5069_AENT_CHAIN_BLOCKS
     adapter block carries the SAME real captured Name ("AENT") and IP
     (192.168.1.1) -- fine standalone (matches _rack_xml/_write above,
     each its own file), a real collision the instant 2+ land in the same
@@ -3884,9 +3884,9 @@ def _write(out_name: str, children: list[str], renumber: bool = False) -> None:
         "including each module's own I/O Connection/ConfigTag content, is untouched." if renumber else ""
     )
     description = (
-        f"5069-AENTR remote rack (James, 2026-09-02, real reference upload; random-composition batch "
-        f"added 2026-09-03: \"I want 10 ethernet racks with random cards and random sizes to "
-        f"validate\"): one real 5069-AENTR EtherNet/IP adapter hosting {len(children)} real 5069-family "
+        f"5069-AENTR remote rack (2026-09-02, real reference upload; random-composition batch "
+        f"added 2026-09-03: 10 Ethernet racks with random cards and random sizes, "
+        f"for validation): one real 5069-AENTR EtherNet/IP adapter hosting {len(children)} real 5069-family "
         f"child modules on its own local bus ({', '.join(children)}), genericized structurally "
         f"verbatim from that reference.{renumber_note} Real floor total {total} (AENTR itself and "
         f"5069-SERIAL/A are unmodeled zero-connection/unresolved shapes -- real Capacity will run "
@@ -3898,7 +3898,7 @@ def _write(out_name: str, children: list[str], renumber: bool = False) -> None:
 
 
 def _write_combined(out_name: str, plans: dict[str, list[str]]) -> None:
-    """James, 2026-09-03, confirmed clean in real Studio 5000: "no errors,
+    """2026-09-03: confirmed clean in real Studio 5000: "no errors,
     valid ok. add to your arsenal for the next mass generation." Writes
     N independent 5069-AENTR racks (see _combined_racks_xml) into ONE
     project -- reusable for any future plans dict, not just _RANDOM_PLANS
@@ -3911,9 +3911,9 @@ def _write_combined(out_name: str, plans: dict[str, list[str]]) -> None:
     total = _floor_bytes(l5x)
     catalogs_summary = "; ".join(f"{i}:[{', '.join(c)}]" for i, c in enumerate(plans.values(), start=1))
     description = (
-        f"5069-AENTR combined multi-rack (James, 2026-09-03: \"i want all 10 in one file\" -- "
-        f"confirmed real Studio 5000 clean, then \"add to your arsenal for the next mass "
-        f"generation\"): {len(plans)} independent real 5069-AENTR EtherNet/IP adapters in one "
+        f"5069-AENTR combined multi-rack (2026-09-03, all 10 racks in one file -- "
+        f"confirmed real Studio 5000 clean, then kept for the next mass "
+        f"generation): {len(plans)} independent real 5069-AENTR EtherNet/IP adapters in one "
         f"project (AENT1..AENT{len(plans)}, each its own unique IP 192.168.N.1), each hosting its "
         f"own real 5069-family child modules -- {catalogs_summary}. Real floor total {total}. "
         f"See OQ-MODULEIO."
@@ -3924,7 +3924,7 @@ def _write_combined(out_name: str, plans: dict[str, list[str]]) -> None:
 
 # Rack size scaling (2/4/6/8/10/12, the full real set) plus alternate
 # catalog-mix compositions at a couple of fixed sizes to vary content, not
-# just count -- James: "10+ 5069 racks."
+# just count -- 10+ 5069 racks
 _PLANS: dict[str, list[str]] = {
     "n02": _ALL_CHILDREN[0:2],
     "n02_alt": _ALL_CHILDREN[2:4],
@@ -3939,9 +3939,10 @@ _PLANS: dict[str, list[str]] = {
     "n12_full": _ALL_CHILDREN[0:12],
 }
 
-# James, 2026-09-03, after confirming n12_full imports clean: "i think you
-# just copied my file. i want 10 ethernet racks with random cards and
-# random sizes to validate" -- fair: n12_full uses all 12 children in the
+# 2026-09-03: after confirming n12_full imports clean, it turned out to be
+# little more than a copy of the reference file. What was needed was 10
+# Ethernet racks with random cards and random sizes. Fair: n12_full uses
+# all 12 children in the
 # same fixed docstring order as the uploaded reference, and every _PLANS
 # entry above is a deterministic FIXED slice of _ALL_CHILDREN, not a real
 # mix of card selection and rack size. Fixed seed so this batch is

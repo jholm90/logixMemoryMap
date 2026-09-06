@@ -1,6 +1,6 @@
 """Tag-based alarm conditions must be found and reported, not silently zeroed.
 
-James, 2026-09-04: *"see the alarms prefixed by 'Alarm1_' as they could be
+2026-09-04: *"see the alarms prefixed by 'Alarm1_' as they could be
 holding back some of your calcuations from being accurate."* They were:
 3,463 real AlarmCondition elements across samples/local/, every one priced
 at zero, 200-600 in each of the 8 real programs whose Capacity readings the
@@ -124,8 +124,8 @@ def test_everything_except_count_and_associated_tags_is_free(name):
 
 @_gen
 def test_placeholder_tags_are_identical_across_the_batch():
-    """James: "the controller tags are placeholders and could be any tags so
-    you should mute them in your calculations." Muted by construction rather
+    """The controller tags here are placeholders and could be any tags, so
+    they are muted in the calculations. Muted by construction rather
     than by subtraction -- if this ever fails, the batch has stopped being a
     controlled experiment and every difference read off it is suspect."""
     import re

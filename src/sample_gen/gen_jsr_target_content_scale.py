@@ -1,8 +1,7 @@
 """OQ-JSRPARAMCOST: does JSR-target CONTENT cost actually stay folded into
-jsr_fixed_base_per_routine at real scale? (2026-08-31, James: real AccuTally
-review, "still out by 18%" -- and "if i get a test result that doesnt match
-my prediction i usually check my existing work and devise new tests to
-fix it.")
+jsr_fixed_base_per_routine at real scale? (2026-08-31, from a real review
+still out by 18%.) Standing method: when a test result does not match the
+prediction, re-check the existing work and devise new tests to fix it.
 
 The "a JSR target routine's own CONTENT cost is already folded into the
 caller's jsr_fixed_base_per_routine constant" finding (report.py,
@@ -15,7 +14,7 @@ against every real L5X already in samples/local/ (2,534 unique real JSR
 targets across 8 genuine customer files), 126/128 nonzero-param targets
 DO have a real SBR instruction.
 
-James, 2026-08-31, real, caught in review: "if there was no jsr parameters
+2026-08-31: real, caught in review: "if there was no jsr parameters
 then there is no sbr/ret instructions inside the called subroutine." Also
 confirmed against the same real corpus: 2,314/2,315 ZERO-param targets
 have NO SBR at all, and 2,218/2,315 (95.8%) have no RET either. This
@@ -59,7 +58,7 @@ TARGET_INSTR_COUNTS = (10, 50, 100, 150)
 # CLR/ADD/EQU dominate its 123 real JSR-target routines) -- cycled to hit
 # the requested instruction count exactly.
 #
-# James, 2026-08-31, real, caught on his own re-conversion: "SINT/INT/DINT
+# 2026-08-31: real, caught on re-conversion: "SINT/INT/DINT
 # cannot be used for bit level instructions like XIO,XIC,OTE,OTU,OTL,ONS
 # only bools and .Bits of SINT/INT/DINT" -- TC0-9 are all DINT (see
 # tc_tags below), so the original "XIC({t}2)OTE({t}3)" referenced whole
@@ -82,7 +81,7 @@ def main() -> None:
     for instr_count in TARGET_INSTR_COUNTS:
         target_name = f"JsrTargetContentScale{instr_count:03d}Target"
         # No SBR, no RET -- the real, representative shape for a 0-param
-        # JSR target (James, 2026-08-31; confirmed 99.96%/95.8% against
+        # JSR target (2026-08-31, ; confirmed 99.96%/95.8% against
         # the real corpus in samples/local/). The target routine is just
         # ordinary logic rungs, same as any plain routine.
         pieces = []
@@ -113,7 +112,7 @@ def main() -> None:
             f"JSR to a single target routine containing ~{instr_count} real instructions "
             f"(realistic MOV/XIC/OTE/CLR/ADD/EQU mix matching AccuTally's real JSR-target "
             f"composition), single call site, 0 params, NO SBR/RET (the real, representative "
-            f"shape for a 0-param target, James 2026-08-31 -- confirmed against the real corpus "
+            f"shape for a 0-param target, 2026-08-31: -- confirmed against the real corpus "
             f"in samples/local/, 99.96% of real 0-param targets have no SBR) -- OQ-JSRPARAMCOST "
             f"target-content-scale isolation: does the target's own logic content really stay "
             f"folded into the flat jsr_fixed_base_per_routine cost at real scale, or does "

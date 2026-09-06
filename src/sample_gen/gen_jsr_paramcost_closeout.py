@@ -23,7 +23,7 @@ and were badly stale, masking both:
    docstring is stale/wrong (n=8 is off by +8, live-verified). Sub-0.02% of
    file total, well within this project's own "logic sizing is a guess at
    best, not held to the exact-tier tolerance bar" convention (OQ-TOLERANCE)
-   -- but James asked to close this at 100%, so mapping the actual shape of
+   -- but asked to close this at 100%, so mapping the actual shape of
    this small offset as a function of n (not just shrugging at it as noise)
    is the goal. Since it's rung-count-independent, a dense n-sweep at a
    CHEAP rung count (r=10) is far more efficient than more rung-count
@@ -31,7 +31,7 @@ and were badly stale, masking both:
    demonstrated by the existing n=5/8/10 dual-rung-count points.
 
 Five files, each isolating exactly one open thread -- not padded to any
-floor (James, 2026-08-25: "The 60-file floor is not a quota to pad toward"):
+floor (2026-08-25: The 60-file floor is not a quota to pad toward):
 
   A. jsr_paramcount_n01_r00100 -- n=1 cross-check at a different rung count.
      If the anomaly is truly ~4/call, delta here should be ~400 (not ~8,
@@ -47,7 +47,7 @@ floor (James, 2026-08-25: "The 60-file floor is not a quota to pad toward"):
      existing jsr_multiret_n04's 4, same rung count, same 1-in/2-out shape.
      Isolates whether the existing +332 residual on jsr_multiret_n04 scales
      with RET-point-count (confirming RET costs like any other repeated
-     instruction, per the original James ask) or is itself a flat
+     instruction, as originally asked) or is itself a flat
      output-param effect unrelated to RET count.
 
 Run: python -m sample_gen.gen_jsr_paramcost_closeout

@@ -1,7 +1,7 @@
-"""Instructions whose call shape James verified by hand, 2026-09-04.
+"""Instructions whose call shape verified by hand, 2026-09-04.
 
-James built a project containing every one of these instructions, got it to
-BUILD CLEAN in Studio 5000, exported it, and handed the export over
+A project containing every one of these instructions was built by hand,
+verified BUILD CLEAN in Studio 5000, and exported
 (samples/local/instr_probes/instruction_shapes_20260904.L5X). Every rung
 template below is copied operand-for-operand from that export. Nothing here
 is composed from a manual.
@@ -11,15 +11,15 @@ invented alarm ConditionTypes (all four rejected), the bare 2-operand
 MAM/MAJ/MAS/MRP rungs (built as MAH/MSO's shape, failed every rung), the
 Kinetix `:SI` safety tags (Studio synthesises those itself). So the rule
 here is transplant, never compose: the rung strings and the backing tag XML
-(sample_gen/verified_tags.py) both come out of James's file verbatim.
+(sample_gen/verified_tags.py) both come out of the file verbatim.
 
-Two instructions from that export are deliberately NOT generated, per James
+Two instructions from that export are deliberately NOT generated, as specified
 2026-09-04:
   NXT   -- "NXT not valid instruction". It is not a Logix RLL mnemonic at
-           all; it appears in his scratch file but never built as one.
-  MCLM  -- "skip the MCLM". Coordinated linear move; James excluded it.
+           all; it appears in the scratch file but never built as one.
+  MCLM  -- coordinated linear move, deliberately excluded.
 
-Axis choice, James 2026-09-04: "note i used virtual axis and not the
+Axis choice, 2026-09-04: "note i used virtual axis and not the
 hardware, but any AXIS_** type tag should work. i dont know if you are
 aware of the difference between them." AXIS_VIRTUAL has no drive or module
 binding, so a file built on it measures the instruction and nothing else --
@@ -48,7 +48,7 @@ OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "veri
 COUNTS = [10, 100, 1000]
 
 # (mnemonic, rung text, tags the rung references) -- rung text verbatim from
-# James's verified export, tag names unchanged so the transplant stays exact.
+# the verified export, tag names unchanged so the transplant stays exact.
 _VERIFIED = [
     # --- no operands -------------------------------------------------------
     ("BRK", "BRK();", ()),
@@ -113,7 +113,7 @@ def main() -> None:
             out_path.write_text(l5x, encoding="utf-8")
             append_manifest_row(
                 out_name,
-                f"{n} rungs of {rung_text[:-1]} -- call shape VERBATIM from James's "
+                f"{n} rungs of {rung_text[:-1]} -- call shape VERBATIM from the "
                 f"2026-09-04 verified build-clean export (virtual axis, no module binding)",
                 "verified_instr",
                 out_path,

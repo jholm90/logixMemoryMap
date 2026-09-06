@@ -1,12 +1,11 @@
 """Blank-tag probe batch for every remaining unmodeled predefined data type,
-James 2026-08-27: "you need to generate all your missing predefined
-datatypes. just make it as a controller tag with no logic." Follows his
-earlier plan ("might have to get the remaining declared one tag at a time
-for analysis. no need for multiple copies of each") -- one file, one
-Controller-scoped tag, no rung logic, per type.
+2026-08-27: every missing predefined data type gets a file, declared as a
+plain controller tag with no logic. Following the earlier plan of taking
+the remaining types one tag at a time, with no need for multiple copies of
+each -- one file, one Controller-scoped tag, no rung logic, per type.
 
 Source of the full type list: the real Rockwell "Pre-defined data types"
-list James pasted directly (2026-08-27), cross-checked type-by-type against
+list supplied directly (2026-08-27), cross-checked type-by-type against
 this project's own memory_model.yaml (`predefined_structures` +
 `predefined_array_structures` + CAM) to find what's still missing. Plain
 atomic types (BOOL/SINT/INT/DINT/LINT/REAL/LREAL/UDINT/UINT/ULINT/USINT/
@@ -45,7 +44,7 @@ from sample_gen.wrapper import build_l5x
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "predefined"
 
-# Full real Rockwell "Pre-defined data types" list (James, 2026-08-27 paste),
+# Full real Rockwell "Pre-defined data types" list (2026-08-27, paste),
 # minus plain atomics, minus what's already wired in memory_model.yaml
 # (predefined_structures / predefined_array_structures / CAM), minus MODULE
 # (not a normal declarable Tag DataType -- see docstring).
@@ -134,8 +133,8 @@ def main() -> None:
             f"predefprobe_{slug}", l5x,
             f'Bare Controller tag "Probe1" DataType="{data_type}", no logic, empty placeholder '
             f"Structure body (real member layout unknown) -- discovery probe for Studio 5000 "
-            f"import/conversion, James 2026-08-27 (\"generate all your missing predefined "
-            f"datatypes... just make it as a controller tag with no logic\")",
+            f"import/conversion, 2026-08-27: every missing predefined data type as "
+            f"a plain controller tag with no logic",
         )
         print(f"Wrote predefprobe_{slug}.L5X")
     print(f"\nDone. {len(MISSING_TYPES)} files.")

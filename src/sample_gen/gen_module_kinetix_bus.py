@@ -1,10 +1,9 @@
 """Full Kinetix 5700 SHARED-BUS test -- multiple different real drive/power-
 supply catalogs on the same physical DC bus, with all their axes together
 in one real Motion Group, including the real "bus power" axis tag
-(2026-08-27, James: "there are lots of kinetix 5700 modules in the sample
-code so be sure to test all of those catalog numbers. You have seen how
-full bus systems compile there (all axis in motion group with bus power
-groups etc..)").
+(2026-08-27). The sample code carries many Kinetix 5700 modules, so every
+one of those catalog numbers needs testing, in the full-bus shape they
+really compile in: all axes in a motion group with bus power groups.
 
 Every individual Kinetix catalog is already covered as a standalone module
 by gen_module_sweep.py/gen_module_sweep_variants.py (confirmed 2026-08-27:
@@ -90,7 +89,7 @@ def main() -> None:
         _axis_tag("Bus2_Drive020_Sf_Axis", "Bus2_Drive_D020:Ch3"),
     ])
 
-    # REBUILT 2026-09-05 off James's real Studio 5000 errors:
+    # REBUILT 2026-09-05 off a real Studio 5000 errors:
     #     Tag 'Bus2_Drive_D020:SI': Invalid data type for safety tag.   (x3)
     #     Project size exceeds controller capacity.
     #
@@ -108,9 +107,9 @@ def main() -> None:
     # error demands.
     #
     # NOT a guess that -ERS3 always needs a safety controller: that theory
-    # was raised and DISPROVEN on 2026-09-02 (James's real TitusvilleTrimmer
+    # was raised and DISPROVEN on 2026-09-02 (a real TitusvilleTrimmer
     # runs a real 2198-D057-ERS3 on a non-safety 1756-L82E). The difference
-    # is that his real module carries no safety connections and no safety
+    # is that the real module carries no safety connections and no safety
     # config; this generator's blocks do. A non-safety -ERS3 shape is
     # buildable, it just needs config data captured from a real non-safety
     # module -- which this project does not have.

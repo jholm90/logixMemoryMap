@@ -22,7 +22,7 @@ priority:** v20/v30 cross-version schema differences remain completely
 unvalidated — no sample data for either. Revisit if/when a v20 or v30
 project shows up in the real corpus.
 
-**OQ-TOLERANCE.** James: 1% delta = good, 3% = acceptable, 5% = very poor
+**OQ-TOLERANCE.** 1% delta = good, 3% = acceptable, 5% = very poor
 — for the exact (tag/UDT/data-space) tier specifically. Logic/program
 structure ("a guess at best") isn't held to that bar.
 
@@ -33,14 +33,14 @@ it. Zero produced/consumed tags in the real corpus anyway. Deprioritized,
 not modeled further; `CONNECTION_STATUS` would need its own
 `predefined_structures` entry if a future real sample actually uses one.
 
-**OQ-ALARMPROPBYTES.** James, 2026-08-22: not in use on any of his live
-projects today, but might be in the future. Not worth a test right now —
+**OQ-ALARMPROPBYTES.** 2026-08-22: not in use on any live
+project today, but might be in the future. Not worth a test right now —
 added to the feature wish list instead: extended tag properties (alarm
 config, Min/Max, Engineering Units, that kind of thing) as a future sizing
 category once real usage shows up in the corpus.
 
-**L5X version cross-check.** James, 2026-08-22: keep on the feature wish
-list rather than test now. The 7 personal-project files he added to the
+**L5X version cross-check.** 2026-08-22: kept on the feature wish
+list rather than tested now. The 7 personal-project files added to the
 corpus this session (`samples/local/DnR_Personal/`, gitignored per the
 project's real-export policy) span SoftwareRevision 31.02–35.05 — still no
 v20/v30 example in hand, so there's nothing to test yet either way. Revisit
@@ -49,7 +49,7 @@ if an actual v20/v30 export turns up.
 **OQ-SAFETY.** Out of scope for launch entirely. Tool should warn/refuse
 on safety-enabled projects rather than attempt a wrong combined number.
 
-**OQ-EXPORTSCOPE.** James, 2026-08-22: yes, the tool needs to handle any
+**OQ-EXPORTSCOPE.** 2026-08-22: the tool needs to handle any
 L5X that comes in — Program/DataType/AOI-only exports, not just full
 controller exports — and identify which kind it's looking at in the UI.
 Also names the actual product differentiator while answering: Logix
@@ -126,11 +126,11 @@ blocks for an empty project):
 **OQ-BOOLPACK.** Resolved with real data: standalone BOOL tags show the
 same ~92/tag flat overhead as every other atomic type (`sample_0002`,
 1000 standalone BOOL tags, baseline-corrected to exactly 92/tag). No
-special packing behavior for standalone BOOL tags — James's hunch that
+special packing behavior for standalone BOOL tags — the hunch that
 "CTRL+W will pack it" turned out to be wrong, current model (4 bytes,
 unpacked) stands confirmed.
 
-**OQ-ALIGN.** James, 100% confident from field experience: no 4-byte
+**OQ-ALIGN.** Established from field experience with full confidence: no 4-byte
 alignment padding between UDT members at all (`BOOL,DINT,BOOL`=6 bytes,
 `DINT,BOOL,BOOL`=5 bytes), tight-packed except for the BOOL-run mechanic.
 Confirmed by the implementation already matching exactly, and by every
@@ -171,14 +171,14 @@ doesn't depend on length," which is wrong. What's actually flat is the
 overhead), not the total. Formula: `total ≈ maxlen + 302` (±2, likely a
 4-byte rounding artifact on maxlen itself).
 
-**OQ-AOIINSTANCE.** James, 2026-08-22, from field experience: every AOI
+**OQ-AOIINSTANCE.** 2026-08-22, from field experience: every AOI
 instance needs a parent tag — no inline/anonymous instances. That backing
 tag can be Program(Local)-scoped or Controller-scoped, but it always
 exists. Confirms the sizing model's existing assumption (an AOI instance
 is always a real Tag with Structure-shaped storage, same as a UDT
 instance) needs no special-case for a tag-less call.
 
-**OQ-AOIGEN.** Built `aoi_xml()`, real shape confirmed against James's own
+**OQ-AOIGEN.** Built `aoi_xml()`, real shape confirmed against the
 AOI export templates after an earlier version (built off a different real
 AOI) failed Studio 5000 import. Fixed real discrepancies: needs
 Vendor/CreatedDate/CreatedBy/EditedDate/EditedBy attributes;
@@ -198,7 +198,7 @@ against the raw engine prediction alone looks like a 34-82% miss — but
 that's because the raw engine doesn't yet include the empirically-found
 overhead constants above. Hand-applying the confirmed per-tag/UDT-def/
 UDT-instance formulas on top of the raw prediction brings every file to
-within ~0.3-2.6% of the real number — comfortably inside James's own
+within ~0.3-2.6% of the real number — comfortably inside the
 tolerance bands. This is the real payoff of the whole sweep: the
 individually-confirmed constants compose correctly in a realistic mixed
 file, not just in isolation.
@@ -208,7 +208,7 @@ audit:** `large_mixed_100tags` (+136, 0.49%) and `large_mixed_1100tags`
 (+1,336, 1.07%) still land comfortably inside band. `large_mixed_
 1000tags_arrays` now shows +4,416 (~3.38% of predicted) — drifted
 slightly above the 2.6% figure quoted above and right at the edge of
-James's "acceptable" ceiling, most likely because array-dimension/
+the "acceptable" ceiling, most likely because array-dimension/
 UDT-array formulas have changed since this was originally resolved
 (2026-08-22-era). Not re-investigated this pass (single data point, no
 isolation of which specific array/UDT-array formula moved) — flagged
@@ -302,8 +302,8 @@ constant below, not folded into the baseline itself. Wired in as
 KNOWN (zero variance across 200+ points is about as confirmed as this
 project's data gets).
 
-**Scope correction, 2026-08-23 (James):** "not a constant... will change
-based on processor and firmware." The "universal" framing above overstated
+**Scope correction, 2026-08-23:** the baseline is not a constant and
+changes with processor and firmware. The "universal" framing above overstated
 it -- every one of those 200+ points was generated on the same processor/
 firmware (`wrapper.py`'s 1756-L81E/35.05 default), so what's actually
 confirmed is 13,296 for THAT combo, not for any CompactLogix/ControlLogix
@@ -507,15 +507,16 @@ CAM's real Decorated/L5K shape: `base=8, per_element=12` blocks, KNOWN
 confidence, 5/5 points at or near zero residual (the small non-zero points
 are the same -4 universal noise seen elsewhere). Wired via the existing
 `predefined_array_structures` mechanism, same pattern CAM_PROFILE already
-used. MESSAGE's own byte cost remains unmodeled — deprioritized by James
-2026-08-25 ("fine for 90% accuracy, not a common instruction"); MSG's own
+used. MESSAGE's own byte cost remains unmodeled — deprioritized
+2026-08-25 as acceptable at the 90% tier, MSG not being a common
+instruction; MSG's own
 LOGIC weight (48/rung) is separately resolved and wired.
 
 ## Motion, CPT, string, and task-overhead batch, 2026-08-25–26
 
 **OQ-CROUT-MAPC-BUILDFAIL, resolved 2026-08-25.** CROUT's build failure is
-not a bug — CROUT is a Safety-only instruction (James: "requires a safety
-plc cpu"), reclassified OUT OF SCOPE alongside DCS. MAPC's build failure
+not a bug — CROUT is a Safety-only instruction requiring a safety PLC CPU,
+reclassified OUT OF SCOPE alongside DCS. MAPC's build failure
 was two real generator bugs (undeclared `Axis_Cip_Drive` tag, and
 slave/master axis reusing the same tag instead of two distinct axis tags)
 — fixed via `gen_axis_composite.py`/`gen_instruction_firstpass.py`'s
@@ -524,8 +525,8 @@ weight = 260/rung exactly, wired in `memory_model.yaml` (`MAPC: 260`).
 
 **OQ-MAMFAMILY-BUILDFAIL, resolved 2026-08-26.** MAM/MAJ/MAS/MRP's 100%
 build failure was a generator bug, not a syntax question — each needs its
-own full parameter list (James: the bare 2-operand call used is MAH/MSO's
-shape, not theirs). Real corpus operand counts confirmed: MAM=20, MAJ=17,
+own full parameter list — the bare 2-operand call used is MAH/MSO's
+shape, not theirs. Real corpus operand counts confirmed: MAM=20, MAJ=17,
 MAS=9, MRP=5. Fixed with real corpus-transplanted templates in
 `gen_motion_instructions.py`; all 4 now build clean and are wired:
 `MAM=224, MAJ=236, MAS=100, MRP=128` blocks/rung. Keyword-value variation
@@ -578,7 +579,7 @@ handling needed). FITTED confidence (single count point per type) —
 verified live: 67/67 real rows land on the same small baseline noise once
 the surcharge is applied (was off by 88-164/rung before).
 
-**OQ-CAPTURERACE, resolved 2026-08-26.** The 6 rows flagged by James's own
+**OQ-CAPTURERACE, resolved 2026-08-26.** The 6 rows flagged by the
 tooling as WINDOW TITLE MISMATCH were retested (`_v2` suffix) and
 reproduced the original readings almost exactly — not a capture race after
 all. n=1 and n=2 DINT arrays genuinely report the identical `actual_bytes`
@@ -626,7 +627,7 @@ bug: Studio 5000's same-instance "switch file without closing"
 batch-capture flow can't cleanly replace the "Local" module when the
 PROCESSOR changes between consecutive files (renames it to "Local1", which
 then fails validation) — affects any processor-varying batch run through
-that flow, including the `fw_baseline` files. Separately, James confirmed
+that flow, including the `fw_baseline` files. Separately, confirmed
 L8/L9/5069 compute constant-STRING sizing identically, so the processor
 axis in this particular test was never a real question — dropped, test
 rebuilt on a single default processor.
@@ -647,8 +648,8 @@ bugs found along the way (`xprogref_twoprog_shared_alias_n01000`
 
 **OQ-EMPTYROUTINE, resolved and wired 2026-08-27.** A `<Routine
 Type="RLL"/>` with no `RLLContent` child (a legitimate real construct —
-James: "you're allowed to have a SBR with no rungs," found in 15 of his
-real production files) was being silently skipped by `parse_rll_routines`,
+an SBR routine with no rungs is legal, and appears in 15 real production
+files) was being silently skipped by `parse_rll_routines`,
 charged 0 bytes. Real data (`emptyroutine_n01/n02/n03`) confirms it costs
 the same real per-routine shell tax as an ordinary routine (264/extra
 routine, matching the already-wired `task_program_overhead.routine_extra`)
@@ -666,8 +667,8 @@ needed.
 
 ## Stale-open-question sweep, 2026-08-25
 
-James asked for a review of every numbered OPEN_QUESTIONS.md item; 2 of
-them turned out to already be closed by real capture data that had landed
+A review of every numbered OPEN_QUESTIONS.md item found that 2 of
+them had to already be closed by real capture data that had landed
 on disk but was never reconciled back into a conclusion — same root cause
 as the CPT/JSR findings logged elsewhere this date.
 
@@ -711,8 +712,7 @@ formula (`delta(n,R) = A(n) + B(n)*R`, `B(n) = 4 + 20*n`, `A(n) = 104 +
 stayed unwired since `parser/logic.py` never parsed a JSR call's argument
 list, only the target routine name.
 
-James: "I hope you are going to have the jsr param cost sorted finally."
-Wired properly:
+JSR parameter cost, wired properly:
 - `parser/logic.py`'s new `_jsr_calls()` reads `n` straight off each real
   `JSR(...)` call's own 2nd argument (Studio 5000 itself writes the
   declared param count there — confirmed real shape via the full
@@ -737,8 +737,7 @@ counted case (single call) and the multiple-call-sites-to-one-target case
 params only.** `group_param_count`'s calibration files always called
 `RET()` empty (no return value), so B(n)/A(n) never saw a single real
 byte of output/return-param cost — a real, sizeable gap silently
-undetected until a full manifest.csv audit (James: "make another in-depth
-pass") found `jsr_mixedio_5in_2out_r01000`/`jsr_multiret_n04_r01000` (real
+undetected until a full manifest.csv audit found `jsr_mixedio_5in_2out_r01000`/`jsr_multiret_n04_r01000` (real
 captures from 2026-08-23) sitting unreconciled, both off by +40,040 and
 +40,332 respectively. Both isolate to ~20/output-arg (2 output args each,
 matching `b_per_param` exactly) — wired as `output_param_cost=20`,
@@ -791,9 +790,9 @@ captured).
 34/36 real instruction weights confirmed and wired. SCP/FBC/PID were the
 2 remaining gaps -- SCP had no second real example to validate a weight
 against, FBC and PID had zero real examples at all (PID also needs its
-own structure tag, never built). Deprioritized 2026-08-25 (James: "move
-to safety related feature"); explicitly closed as out-of-scope 2026-08-30
-(James: doesn't care about closing these) rather than left open
+own structure tag, never built). Deprioritized 2026-08-25 as a
+safety-related feature, then explicitly closed as out-of-scope 2026-08-30
+rather than left open
 indefinitely awaiting data that isn't coming.
 
 Small residual not worth reopening the question over: a flat +12 byte
@@ -803,8 +802,7 @@ files, ~0.06% of file total, narrowed to an interaction effect among the
 
 ## Real generator bug: SafetyLocked="true" with no SafetySignature, fixed 2026-08-30
 
-James: "your L8 safety failed to generate acd files. You should have
-known that." Root cause found by cross-checking all 9 real corpus files
+L8 safety files failed to generate ACD files. Root cause found by cross-checking all 9 real corpus files
 carrying a `SafetyInfo` element: every one with `SafetyLocked="true"`
 ALSO carries a real `SafetySignature` attribute (a GUID hash + timestamp
 from Studio 5000's actual sign/lock workflow); every one with
@@ -834,7 +832,7 @@ crashes, 0 remaining `SafetyLocked="true"` instances anywhere.
 
 ## OQ-PREDEFINED, CLOSED for all 195 known types
 
-James's own conversion+capture pipeline ran the full 184-file
+the conversion+capture pipeline ran the full 184-file
 `gen_predefined_probe.py` blank-tag discovery batch; 174 imported clean
 and got a real Capacity delta. Wired all 174 into `memory_model.yaml` in
 one batch (ASSUMED, n=1 real capture each). MESSAGE (688 bytes) and
@@ -869,10 +867,10 @@ precedent this project has seen repeatedly (AOI Required/Visible flags,
 etc.), but not yet directly confirmed for MESSAGE specifically.
 
 **Sibling native-structure gap, found 2026-08-27** verifying drill-down
-completeness (James: "confirm we can browse down to base structure level
-for all UDT/AOI"). Drill-down itself is fully confirmed for everything the
+completeness: the UI must browse down to base structure level for every
+UDT and AOI. Drill-down itself is fully confirmed for everything the
 engine CAN size -- a recursive walk of all 2,780 UDT/AOI definitions across
-James's real 64-file corpus reached 4,502,812 true leaves with zero bad
+a real 64-file corpus reached 4,502,812 true leaves with zero bad
 leaves and zero silent dead-ends. A real, separate gap surfaced along the
 way: any tag whose type transitively includes a member typed SFC_STEP/
 SFC_ACTION/FBD_TIMER/SCALE/CAM_PROFILE/DCI_STOP/RATE_LIMITER/
@@ -884,9 +882,8 @@ was silently excluded from the treemap/list, only showing up in the small
 errors footer). 1,277 tag-sizing errors across 24/64 real files traced to
 this.
 
-**Wired 2026-08-27** (James: "You should know all of those native
-instructions data types ... look for Rockwell instruction manual for data
-layout"): rather than trust an instruction-manual citation blind (this
+**Wired 2026-08-27.** Native instruction data types are documented in the
+Rockwell instruction manual, but rather than trust an instruction-manual citation blind (this
 project's own ground-truth discipline -- CLAUDE.md -- wants a real capture
 or real corpus evidence first), checked whether the real corpus itself
 already reveals the layout via `Data Format="Decorated"` -- it does.
@@ -914,10 +911,9 @@ so a fabricated even split would be worse than staying a correctly-sized,
 non-drillable leaf (`_THREE_FIELD_PREDEFINED` set).
 
 **MESSAGE and ALARM_DIGITAL member lists sourced from RM018A, 2026-08-27**
-(James: "you need to size all of these instruction data types... look for
-Rockwell instruction manual for data layout", scoped down to 1756-RM018A
-specifically per his follow-up clarification). Read directly from the real
-manual PDF James pushed (`samples/1756-rm018_-en-p.pdf`, 927 pages, via
+(every instruction data type needs sizing, scoped to 1756-RM018A
+specifically). Read directly from the real
+manual PDF (`samples/1756-rm018_-en-p.pdf`, 927 pages, via
 `pdftotext -layout` + form-feed page-indexed navigation), not guessed.
 
 *MESSAGE* (RM018A pages 142-147): real member list — `.FLAGS` INT (bit-
@@ -978,14 +974,14 @@ rather than only empirical black-box capture.
 technique that solved SFC_STEP/SFC_ACTION/FBD_TIMER/etc. (real `Data
 Format="L5K"` value-array length × 4 bytes = real total) does NOT work for
 either MESSAGE or ALARM_DIGITAL — grepped every real instance of both types
-across the full `samples/local/` corpus (not just James's 64-file subset)
+across the full `samples/local/` corpus (not just the 64-file subset)
 and confirmed zero use `Format="Decorated"` or `Format="L5K"`; Rockwell's
 export tooling always uses a specialized semantic view (`Format="Message"`/
 `Format="Alarm"`) for these two types instead. Don't re-attempt that
 technique on these two — go straight to a real capture.
 
 **RESOLVED 2026-08-29, real capture batch closes 174 of 184 probe files.**
-James's own conversion+capture pipeline ran the full `gen_predefined_probe.py`
+the conversion+capture pipeline ran the full `gen_predefined_probe.py`
 batch. Derivation method: the live engine, run fresh against each probe
 file, predicts a uniform `18128` for every still-unmodeled type (real
 `empty_project_baseline`(13296) + `task_program_shell`(4816) +
@@ -1039,8 +1035,7 @@ Several of the 174 (`DCI_*`, `SAFE_*`/`SAFELY_*`, `MUTING_*`,
 `LIGHT_CURTAIN`, `TWO_HAND_RUN_STATION`, `EMERGENCY_STOP`,
 `REDUNDANT_INPUT`/`OUTPUT`, `ENABLE_PENDANT`, `DIVERSE_INPUT`,
 `SAFETY_MAT`, `SAFETY_FEEDBACK_INTERFACE`, `DOMINANT_SET`/`RESET`, and
-`CONFIGURABLE_ROUT` — added 2026-08-29, James: "seems like a safety
-instruction," and he's right, its name root matches `CROUT`, the
+`CONFIGURABLE_ROUT` — added 2026-08-29; its name root matches `CROUT`, the
 already-confirmed Safety-only instruction requiring a GuardLogix/Safety
 CPU) are Safety-Instructions-family types. The VALUES are real and
 wired; whether Safety-scoped tags should be included in the displayed
@@ -1119,9 +1114,8 @@ figure above, which isolates the structure alone).
 
 ## Second real generator bug: L8xES Local module ports missing SafetyNetwork, fixed 2026-08-30
 
-James: "your generation of safety modules fails wildly when watching the
-conversion process... redo your module generator... does not require me
-to help with that process." Found this one without needing an error
+Generated safety modules were failing consistently during conversion, and
+the module generator needed rebuilding. Found without an error
 message -- same methodology as the SafetyLocked fix above, systematic
 attribute-by-attribute diff of a generated GuardLogix-ES file against a
 real one.
@@ -1155,12 +1149,11 @@ not a structural gap.
 
 ## OQ-BRANCHDEPTH, CLOSED 2026-08-30
 
-James: "I know I asked you to do these tests last week, why were they not
-decompiled yet?" -- correct catch, same recurring pattern as CPT/1769/AOI
-this session: 16 real capture points (`branchdepth_legs01/03/05`,
+Tests requested a week earlier had still not been decompiled -- the same
+recurring pattern as CPT/1769/AOI this session: 16 real capture points (`branchdepth_legs01/03/05`,
 `branchdepthc_legs02/04/06/08/10/15/20/30`, `branchdepthstag_d01-06`) were
 sitting in manifest.csv with real `actual_bytes` -- "Reconciled from
-James's local branch (james-capture-aug24)" -- unreconciled into the
+the local branch (james-capture-aug24)" -- unreconciled into the
 sizing engine this whole time.
 
 The real mechanism, once understood rather than curve-fit blind: every
@@ -1209,11 +1202,10 @@ at a 2nd rung count for this specific formula.
 
 ## Third real generator bug: GuardLogix 5580 (L8xES) wrong ProductCode, fixed 2026-08-30
 
-James: "this file fails to convert to acd as well" (`fwmatrix_v35_1756_
-l85es.L5X`) — reported AFTER the SafetyLocked and SafetyNetwork fixes
+A second conversion failure on `fwmatrix_v35_1756_l85es.L5X`, reported AFTER the SafetyLocked and SafetyNetwork fixes
 above had already landed and been pushed, ruling both out as the cause
 for this file (confirmed directly: `SafetyLocked="false"` already present
-in the file he named). Root cause was a third, independent bug: `gen_
+in the named file). Root cause was a third, independent bug: `gen_
 fw_catalog_matrix.py`'s `_L8XS_PRODUCT_CODES` assumed "L81ES uses the
 SAME ProductCode as plain L81E" (164) — a same-hardware plausibility
 argument, never actually checked against a real L81ES corpus file.
@@ -1243,13 +1235,13 @@ bugs above — all three needed fixing before any L8xES file could import.
 
 ## OQ-LEGACYNETOVERHEAD, CLOSED as deliberate scope exclusion, 2026-08-30
 
-James: "I thought we were excluding controlnet" / "And all legacy
-networks." Earlier the same day this had been wrongly reopened as a data
+ControlNet and all legacy networks are excluded from scope. Earlier the
+same day this had been wrongly reopened as a data
 gap: `modulesweep_1756_cnb_d` (a real ControlNet bridge module,
 genericized from real corpus, 2026-08-24 capture) shows a real +448 byte
 gap against the live engine, and got briefly wired as a flat
 `module_overhead_by_catalog['1756-CNB/D']` entry (2,120 bytes) before
-James's correction landed -- reverted.
+the correction landed -- reverted.
 
 Decision: ControlNet, DeviceNet, DH+, DH-485, and Remote I/O (RIO) bridge
 modules are excluded from sizing entirely, the same treatment this
@@ -1283,14 +1275,14 @@ grep of all 64 files in `samples/local/` (the real-capture reference
 corpus) for Port `Type=` attributes finds ZERO ControlNet, DeviceNet,
 DH+, or RIO entries anywhere -- the one real data point on hand
 (`RobbinsGrn_2026_05_13r00.L5X`) isn't even part of that corpus set.
-Nothing to isolate or decompose further unless a real project of James's
+Nothing to isolate or decompose further unless a real project of the
 starts using one of these networks.
 
 ## Two real bugs in the 1769-series re-add, found 2026-08-30 via live testing
 
-James, mid-batch-run: "Failed to set the 'Size' property (Chassis size
-exceeds the allowable size for a chassis.)" on `fwmatrix_v31_1769_
-l30erm`, and "chassis size again" on a second file shortly after -- real
+Mid-batch-run: "Failed to set the 'Size' property (Chassis size exceeds
+the allowable size for a chassis.)" on `fwmatrix_v31_1769_l30erm`, and the
+same chassis-size error on a second file shortly after -- real
 Studio 5000 rejections, not code-review catches, surfaced while the
 1769 re-add (same session, same day) was still being tested.
 
@@ -1309,7 +1301,7 @@ was the ONLY module emitted for every 1769 catalog.** Real data shows
 L16ER through L27ERM-QBFC1B all carry a second, real embedded module
 (`Name="Discrete_IO" CatalogNumber="Embedded"`, built-in discrete I/O
 points) with real `ConfigTag`/`Connection` content specific to each
-catalog's own I/O point count -- ranging from a a few hundred bytes of
+catalog's own I/O point count -- ranging from a few hundred bytes of
 XML (L16ER) to over 41KB (L24ER-QBFC1B/L27ERM-QBFC1B, many more I/O
 points). L30ERM/L33ERM genuinely have neither (bare processor-only
 units), confirmed by their own real reference exports also lacking it --
@@ -1344,14 +1336,14 @@ All 54 1769 files (9 catalogs x 6 firmware) regenerated. Full corpus
 re-swept (1847 files): 0 crashes. 140/140 tests.
 
 **CORRECTION, same day, a few hours later: this fix was itself wrong for
-5 of the 9 catalogs, and has been un-wired.** James's own minimal
+5 of the 9 catalogs, and has been un-wired.** the minimal
 hand-built repro file (`ProcessorType="1769-L24ER-QB1B"`) hit the exact
 same real Studio 5000 error this section describes fixing -- "Failed to
 set the 'Size' property (Chassis size exceeds the allowable size for a
 chassis.)" -- with `Bus Size="6"`, the value extracted verbatim above
-from `fw_baseline/v35_l24er.L5X`. Then: "you f'd up most chassis sizes" /
-"seems like you shouldnt be guessing chassis sizes and actually use ones
-that were referenced." The mistake: treating the `fw_baseline` reference
+from `fw_baseline/v35_l24er.L5X`. That broke most chassis sizes: chassis
+sizes must not be guessed, only taken from a referenced real file. The
+mistake: treating the `fw_baseline` reference
 files as ground truth because they're genuine Rockwell exports checked
 into the repo, without noticing that those specific files carry their
 own "MANUAL ENTRY... clicking Estimate" caveat (built by switching
@@ -1362,21 +1354,21 @@ Extracting "real-looking" content from an unverified source is still a
 guess, and this one was wrong. The only Bus Size value anywhere in the
 corpus with independent real confirmation is L33ERMS=17
 (`samples/local/DnR_Personal/TOYOTA_135453_20221024.L5X`, a genuine
-customer file) -- and even that catalog is included in James's "L24..L27
+customer file) -- and even that catalog is included in the "L24..L27
 and the L3 series fail" report, so something else about it is still
 unconfirmed too. See OQ-BASELINE-PROCFW in `docs/OPEN_QUESTIONS.md`:
 `_1769_CATALOGS` is back down to the 4 PointIO-bus catalogs only
-(empirically proven working in James's live batch), and the other 5 are
+(empirically proven working in the live batch), and the other 5 are
 pulled from automated generation -- 30 files and manifest rows removed --
 until real per-catalog data exists. Not re-guessing.
 
 ## 1756-L85ES removed from the automated matrix, 2026-08-30
 
-James, live testing: "l85es fails on line 1 of the l5x for multiple
-firmwares but works fine for l81es..l84es." L81ES(211)/L84ES(214) are
+Live testing: L85ES fails on line 1 of the L5X across multiple firmwares
+while L81ES..L84ES work. L81ES(211)/L84ES(214) are
 real (4 and 1 independent real corpus files respectively); L82ES(212)/
 L83ES(213)/L85ES(215) were all inferred from the same +1-per-catalog-
-step pattern anchored on those two real points. James's test shows
+step pattern anchored on those two real points. the test shows
 L82ES/L83ES import fine but L85ES does not -- real proof the sequence
 isn't linear all the way to the top of the range, not that the
 inference method itself is unsound (it correctly predicted 2 of 3).
@@ -1389,7 +1381,7 @@ ProductCode with no second real anchor left to re-derive it from
 too far away to trust a linear extrapolation across an already-proven-
 nonlinear stretch).
 
-Rather than guess again and cost James another test cycle, removed
+Rather than guess again and cost another test cycle, removed
 1756-L85ES entirely from `_L8XS_PRODUCT_CODES`/`_L8XS_CATALOGS` in
 `gen_fw_catalog_matrix.py` -- same treatment as 1756-L9x (see
 OPEN_QUESTIONS.md OQ-BASELINE-PROCFW): sourced but deliberately not
@@ -1432,8 +1424,8 @@ an unrelated CIP-Safety-catalog import bug, the rest not yet run).
 
 ## OQ-ALARMCOND — tag-based alarm conditions (SOLVED EXACTLY, 2026-09-05)
 
-James, 2026-09-04: *"see the alarms prefixed by 'Alarm1_' as they could be
-holding back some of your calcuations from being accurate."* They were the
+2026-09-04: the alarms prefixed `Alarm1_` were suspected of holding back
+the calculations, and they were. They were the
 single largest unpriced item in the model — 3,463 across the real corpus,
 200-600 in every real program, all costing exactly zero.
 
@@ -1457,7 +1449,7 @@ pricing it forced the composite AOI/JSR surcharge to be re-examined — which
 led directly to both rates being disproved and set to 0 (OQ-SHELLSCALE).
 
 Two things this batch got right that are worth repeating: the four
-placeholder arrays were byte-identical in every file, so James's *"mute
+placeholder arrays were byte-identical in every file, so the *"mute
 them in your calculations"* was handled by the experiment design rather
 than a subtraction; and assoc-tag count was varied independently of alarm
 count, which no real file can do (every real alarm has exactly 3).
@@ -1475,7 +1467,7 @@ Per plain assignment statement: **40 bytes**, exact at 25/100/400/1000.
 Control flow, per construct: IF 48, ELSIF 40, CASE branch 57, **FOR 248**,
 WHILE 72 — a loop-heavy ST routine is not priced like a branch-heavy one.
 
-**ST comments are FREE**, answering James's question directly: 100 short
+**ST comments are FREE**, answering the question directly: 100 short
 leading, 100 long (110-char) leading, 400 leading and 100 trailing comments
 all read byte-identical to the control, as do 400 blank lines. Same as rung
 comments — but this had to be measured, because a rung comment is a
@@ -1484,8 +1476,8 @@ source text.
 
 ## Closed 2026-09-05 — moved out of OPEN_QUESTIONS.md
 
-James, 2026-09-05: *"Are all closed questions moved on to the closed
-question list?"* They were not. Three items below had been marked solved
+2026-09-05, on whether every closed question had actually been moved to the
+closed list: they had not. Three items below had been marked solved
 in `OPEN_QUESTIONS.md` -- two of them explicitly claiming "moved to
 RESOLVED_QUESTIONS.md" -- while their full bodies stayed in the open file
 and this archive had only a passing one-line mention of each. The claim was
@@ -1495,10 +1487,9 @@ one-line pointer instead.
 
 ### **OQ-ALARMCOND** — **SOLVED EXACTLY 2026-09-05, moved to
     RESOLVED_QUESTIONS.md.** Original entry kept below for the trail.
-    Opened 2026-09-04 (James: *"Another thing to look at
-    is Controller Alarms that we use... see the alarms prefixed by
-    'Alarm1_' as they could be holding back some of your calcuations from
-    being accurate"*). He was right, measurably.
+    Opened 2026-09-04, on controller alarms in real use -- specifically the
+    ones prefixed `Alarm1_` -- as a suspected source of inaccuracy. They
+    were, measurably.
 
     **3,463 real `AlarmCondition` elements across `samples/local/`, every
     one priced at ZERO.** All 8 real programs fitted the same day carry
@@ -1529,16 +1520,16 @@ one-line pointer instead.
     varies independently of alarm count in any real program on file (always
     exactly 3), so the two are perfectly collinear and no regression can
     separate cost-per-alarm from cost-per-associated-tag. That is exactly
-    what James's four `Alarm1_*` probes break apart, and what the generated
+    what the four `Alarm1_*` probes break apart, and what the generated
     42-file `alarmcond_*` batch extends: count ladder bare and at the real
     shape, assoc count 0-4, assoc type DINT/STRING/REAL/BOOL, HMIGroup
     length, alarm-name length, the four analog condition types (0% of real
     conditions are anything but TRIP on a BOOL), and the behavioural
     attributes. The four placeholder arrays are byte-identical in every
-    file, so James's *"mute them in your calculations"* is handled by the
-    experiment design rather than by a subtraction. Blocked on capture.
+    file, so muting them is handled by the experiment design rather than by
+    a subtraction. Blocked on capture.
 
-    **Real build results, 2026-09-04 (James's first conversion pass).**
+    **Real build results, 2026-09-04 (the first conversion pass).**
     38 of the 42 built clean. The 4 failures are all mine, and two of them
     taught something:
     - `alarmcond_hmigroup_len64` — *"Failed to set the 'HMIGroup' property
@@ -1572,9 +1563,8 @@ one-line pointer instead.
 [^instrfirstpass]: CROUT (safety-only) and MAPC resolved separately
 (RESOLVED_QUESTIONS.md). SCP (no 2nd real example), FBC (0 real
 examples), PID (0 real examples, needs its own structure tag) —
-deprioritized 2026-08-25 (James: "move to safety related feature"),
-**explicitly closed as out-of-scope 2026-08-30 (James: doesn't care about
-these)** rather than left open awaiting data that was never coming.
+deprioritized 2026-08-25 as a safety-related feature, then
+**explicitly closed as out-of-scope 2026-08-30** rather than left open awaiting data that was never coming.
 Small residual noted for the record, not blocking closure: a flat
 **+12** byte gap (corrected from a misrecorded +6) across all 64 clean
 `instrfirst_*` files (~0.06% of file total), narrowed to an interaction
@@ -1618,17 +1608,16 @@ unable to build it at all):
 Firmware attribute shape (SoftwareRevision, AutoDiagsEnabled/
 WebServerEnabled presence, v38's DataExchangeId) is real per version,
 confirmed from the existing v31-35/v38 samples. **v36/v37 removed
-entirely 2026-08-28** (James: not asked for, told to leave out) — they
+entirely 2026-08-28** (not asked for, deliberately left out) — they
 were the only two ASSUMED/unconfirmed firmware majors in the table (no
 real v36/v37 L5X sample ever existed in this project); the batch is now
 174 files (6 firmware x 29 catalogs), all on real-confirmed firmware
 attribute shapes. Files sorted `fwmatrix_v{NN}_{catalog}` so a plain
 directory listing groups all of v31 together, then v32, etc.
 
-**Real, systemic structural bug found and fixed 2026-08-28** (James:
-"your controller firmware tests are really really bad. very high failure
-rate. you obviously have missed something" — followed by a fresh real
-Studio 5000 export of 1756-L71 sent for direct comparison; the exact same
+**Real, systemic structural bug found and fixed 2026-08-28.** The
+controller firmware tests had a very high failure rate, and a fresh real
+Studio 5000 export of 1756-L71 was supplied for direct comparison; the exact same
 evidence was ALSO already sitting unused in `samples/local/
 L7_v21_Sample.L5X`, meaning this generator was built without ever
 cross-checking against corpus evidence that was already available).
@@ -1662,16 +1651,16 @@ corpus examples anywhere, and zero real ProductCode/Module-signature data
 found anywhere publicly accessible despite thorough web search (Rockwell's
 own domains are all blocked by this environment's egress proxy; even
 distributor/3rd-party sites carry catalog numbers but never the internal
-ProductCode). James asked for one L9 sample minimum v38 — still blocked on
-this, needs either a real sample from him or explicit sign-off on a
-flagged best-effort placeholder. CompactLogix 5480 (5069-L4xx process
+ProductCode). One L9 sample at v38 minimum was requested — still blocked,
+needing either a real sample or explicit sign-off on a flagged best-effort
+placeholder. CompactLogix 5480 (5069-L4xx process
 controllers — L430ERMW/L450ERMW/L4100ERMW/L4200ERMW) — also zero real
-corpus examples, not yet requested by James. Building either without a
+corpus examples, not yet requested. Building either without a
 real sample risks fabricating a ProductCode/Module shape that fails
 Studio 5000 import outright.
 
 **1769-series real per-catalog baseline + v30 wired 2026-08-29** (found
-during a full manifest.csv audit, James: "make another in-depth pass" —
+during a full manifest.csv audit —
 these 9 real points had been sitting in the `fw_baseline` category,
 MANUAL ENTRY, since before this project even had a `firmware_baseline_
 delta` mechanism to wire them into, and were never revisited). 8 real
@@ -1687,7 +1676,7 @@ catalog beyond the 9 exact strings now confirmed correctly stays
 unmodeled. Firmware-independence assumed (same convention as
 `firmware_baseline_delta`) but genuinely unconfirmed — zero 1769 data
 exists at any firmware besides v35. Separately, `l81_v30` (real MANUAL
-ENTRY point, James read Capacity directly off a real v30 controller —
+ENTRY point, read from Capacity directly off a real v30 controller —
 this project's SDK can't build/convert v30 exports at all) added to
 `firmware_baseline_delta` at +11,160, ASSUMED confidence (single point).
 All 29 real `fw_baseline`-category rows now checked: 17 exact, 6 within
@@ -1706,8 +1695,8 @@ POW is present). See `sizing/constants.py` `CptExpressionModel.cost_for`.
 **All-3-tier mixes: CLOSED 2026-08-29.** The 3
 `cptmix_threetier_rem2_n06/n09/n12` files (plus the 4 disentangle files
 below) had real capture data from 2026-08-27 sitting unreconciled in
-manifest.csv this whole time — found and fixed the same day James pushed
-on why this wasn't closed already. The earlier `44*T1-116*T2+76*T3+72`
+manifest.csv this whole time — found and fixed the same day the question
+was raised of why this wasn't closed already. The earlier `44*T1-116*T2+76*T3+72`
 attempt was wrong (not just "misses n=15" — checked directly, it doesn't
 reproduce the n=3/5/8/10/11 points it was supposedly fit from either).
 Correct formula, confirmed 0 residual across ALL 9 real all-3-tier points
@@ -1743,9 +1732,9 @@ surcharge) stays the honest default. Full data: 9 total points across the
 disentangle_*` (4, captured 2026-08-27) sample sets.
 
 **Position-probe files built 2026-08-29** (`gen_cpt_mixed_operators.py`
-`group_real_float_position_probe`, James: "generate new tests... they
-have been dragging on for far too long" -- fair, the hypothesis above had
-sat undertested since it was written). 4 new files, all built/lint-clean/
+`group_real_float_position_probe`, built after this thread had dragged on
+too long -- the hypothesis above had sat undertested since it was
+written). 4 new files, all built/lint-clean/
 zero engine errors, awaiting real capture: `cptmix_real1_pos_first`/
 `cptmix_real1_pos_last` (1 REAL operand at slot 1 vs slot 6 of the same
 6-operand T1+T2 shape, "middle" position already on file as
@@ -1759,8 +1748,7 @@ tells us whether edge positions (fewer operator-adjacency "boundaries")
 cost less, which would directly support the type-promotion-point
 hypothesis.
 
-**James, 2026-08-30: "are you sure you only need 4 tests for cpt?" —
-correct, no.** The 4 position-probe files above hold REAL-operand/
+**2026-08-30: four CPT tests were not enough.** The 4 position-probe files above hold REAL-operand/
 float-literal COUNT fixed at 1 and only vary where that single factor
 sits — they can't touch the actual anomaly this whole thread exists to
 explain (2 REAL operands costing LESS than 1, non-monotonic in count).
@@ -1773,8 +1761,8 @@ measure the same (which would falsify the promotion-point hypothesis
 itself, not just leave it uncalibrated). Built, lint-clean, zero engine
 errors, awaiting capture — 6 CPT probe files on file total now, not 4.
 
-**James, 2026-08-30: "have you got enough tests to fully close this?"**
-— honest answer: no, still not guaranteed. The adjacent/spread pair only
+**2026-08-30: were there enough tests to fully close this?** No, still not
+guaranteed. The adjacent/spread pair only
 disambiguates 1-vs-2 REAL operands; it says nothing about whether the
 non-monotonic dip continues, reverses, or was specific to exactly 2.
 Added `cptmix_real3_adjacent` (3 REAL operands, slots 1-3, same shape) to
@@ -1785,8 +1773,7 @@ present at varying counts/positions together, and whether a different
 expression tree shape (not just this flat 6-slot layout) changes the
 answer.
 
-**James, 2026-08-30: "add more tests to fully close this instead of
-guessing."** Both remaining gaps now have dedicated files instead of
+**2026-08-30: more tests rather than guessing.** Both remaining gaps now have dedicated files instead of
 being left untested:
 - **REAL-count x float-literal composition**: `cptmix_real1_float1`,
   `real2_adjacent_float1`, `real3_adjacent_float1` -- same shapes as
@@ -1881,14 +1868,13 @@ the FIRST dense points at all for bool_count=60) and
 `aoibp_split_allinput30_n{01,05,10,16,25}` (5 files, same bool_count=30 as
 the already-solved 3-way-split shape but all-Input/single-section, at the
 same n values, to directly test the section-split hypothesis). 23 files
-total — not padded to the 60-file floor (James, 2026-08-25: not a quota).
+total — not padded to the 60-file floor, which is not a quota.
 
-**Wider dataset surfaced 2026-08-30** (James: "review open questions...
-full depth... no possible open items" — a full manifest.csv reconciliation
-sweep against the live engine, not just the mc10/20/60 family already
-covered above). **Correction to an initial write-up of this same finding**
-(James caught it directly: "are there new tests for all of those points"
-— checking the claim while answering surfaced the error): this is NOT the
+**Wider dataset surfaced 2026-08-30** during a full-depth open-questions
+review — a full manifest.csv reconciliation sweep against the live engine,
+not just the mc10/20/60 family already covered above. **Correction to an
+initial write-up of this same finding**, surfaced by checking whether new
+tests existed for all of those points: this is NOT the
 3-way-split shape (10 In + 10 Out + 10 Local) the original `aoipack_bool_*`
 finding used. `aoipack_ratio_01b29a` through `_29b01a`
 (`gen_batch3_followups.py` `group_b_ratio_sweep`, 6 BOOL:DINT ratios x
@@ -1922,9 +1908,9 @@ design (the UI's red warning banner) even though nothing in the code
 actually enforces that exclusion per-tag today -- it just happens that
 Safety AOI types are mostly unresolvable native structures. Wiring
 DCI_STOP would make Safety-scoped totals partially counted for the first
-time, which needs a decision from James (exclude Safety-class tags by
+time, which needs a deliberate decision — exclude Safety-class tags by
 design everywhere, or size everything resolvable including Safety and
-adjust the warning wording) before it's just silently changed.
+adjust the warning wording — before it is silently changed.
 
 `CONFIGURABLE_ROUT` -- CORRECTED 2026-08-29, an earlier pass had this
 wrong: it DOES have real capture data and IS wired (52 bytes, see
@@ -1950,8 +1936,8 @@ Dimension/Dimensions bug fix already put it in -- see
 No engine change made or needed here -- AOI array PARAMETER sizing is
 UNTESTED, not confirmed broken.
 
-[^aoiarraydimension]: James, 2026-08-27: "be sure you are handling the bit
-mapped bools from hidden sints" prompted a broader audit of AOI-local
+[^aoiarraydimension]: 2026-08-27, a check on whether bit-mapped BOOLs from
+hidden SINTs were being handled prompted a broader audit of AOI-local
 sizing, which surfaced a real, separate bug (verified via
 `compute_udt_size`, `is_bit_alias`/`hidden` in parser/datatypes.py: the
 BOOL-hidden-SINT question ITSELF was already correct and directly unit-
@@ -1995,8 +1981,8 @@ array-of-atomic/array-of-UDT member cost formula being assumed to apply
 unchanged to an AOI's own Parameter/LocalTag members too, which was never
 actually tested end-to-end against a real capture.
 
-**Real import-failure bug found and fixed, 2026-08-29** (James: "the file
-does not open, regenerate it"). `aoi_array_param_def_only` itself
+**Real import-failure bug found and fixed, 2026-08-29.**
+`aoi_array_param_def_only` itself
 wouldn't import into Studio 5000 at all -- a real, separate bug from the
 Dimension/Dimensions one above, not just a bad capture read. Root cause:
 `sample_gen/builders.py` `_aoi_parameter_xml` used the generic
@@ -2021,7 +2007,7 @@ attempt hit WINDOW TITLE MISMATCH, and the underlying file itself was
 broken this whole time under both attempts).
 
 **Correction, 2026-08-31: the 2026-08-29 Required/Visible fix did NOT
-actually resolve the import failure.** James's 2026-08-30 l5x2acd run
+actually resolve the import failure.** the 2026-08-30 l5x2acd run
 shows `aoi_array_param_def_only` still failing with the identical
 `XMLSrv_E_IMPORT_ABORTED_NO_CHANGES` generic wrapper text, on the
 regenerated (post-fix) file. The `Required="true" Visible="true"` change
@@ -2032,13 +2018,13 @@ on its own; there's still a real, separate import blocker. Task list
 previously (wrongly) marked this fixed — corrected here. Root cause
 remains unknown; the wrapper text carries no per-file detail, so guessing
 further isn't productive. Added to `samples/known_conversion_failures.csv`.
-Need the real Studio 5000 error-log line from James to make any further
-progress on this file.
+Needs the real Studio 5000 error-log line to make any further progress on
+this file.
 
 [^moduleio]: `module_overhead = 1,672 bytes/module` (flat, mean of 2 real
 deltas), wired as ESTIMATED tier. 141 files in `samples/generated/modules/`:
 per-catalog sweep (119/119 real corpus catalogs), rack-level tests, a full
-Kinetix 2-bus/8-axis subgraph, and a full-fidelity replica of James's real
+Kinetix 2-bus/8-axis subgraph, and a full-fidelity replica of a real
 Bender program (69 modules incl. GuardLogix Safety Partner). GuardLogix
 SIL2/SIL3 handling is a reusable `build_l5x(..., safety_level=...)`
 capability. Real Studio 5000 conversion errors from the 2026-08-24/25
@@ -2100,9 +2086,8 @@ same shape task_program_overhead already got for Task/Program/Routine
 counts — real architecture work, not a quick constant fix, so not rushed
 into this pass.
 
-**CORRECTION, 2026-08-28** (James: "did a super in-depth memory analysis
-on the last pushed file? ... review the last batch of l5x conversions,
-there was more than 50"): the "1734-OB8S/A/B, 442G-MABLB ... CIP Safety
+**CORRECTION, 2026-08-28**, on a full review of the last batch of L5X
+conversions (more than 50 files): the "1734-OB8S/A/B, 442G-MABLB ... CIP Safety
 connections needing a safety controller even without that attribute"
 claim above was WRONG/incomplete — the earlier fix (switching to a
 safety-rated processor_type) was necessary but not sufficient. These
@@ -2137,13 +2122,13 @@ corpus file (`samples/local/L306ERS2_Sample.L5X`, `5069-L306ERS2`): all
 THREE Local ports (the local "5069" bus and both Ethernet ports) carry a
 real `SafetyNetwork`. Both branches fixed 2026-08-28, regenerated (the
 `_r2`-suffixed retest files, matching the existing suffix convention so
-James's re-test run doesn't collide with old files): 12 of the 17 real
+the re-test run doesn't collide with old files): 12 of the 17 real
 failures now carry the fix (6× `2198-*-ERS3` 4conn variants,
 `1734-OB8S/A`+`B`, `PowerFlex 527-STO`, `442G-MABLB`, `FANUC Robot`,
 `5069-IB8S/A`, `5069-OBV8S/A`) — awaiting a real re-conversion to confirm
 this actually resolves the import error, not just structurally plausible.
-**The 4 remaining 5069 failures ALSO root-caused, 2026-08-28** (James sent
-the real Studio 5000 error this time, not just the generic CSV wrapper):
+**The 4 remaining 5069 failures ALSO root-caused, 2026-08-28**, from the
+real Studio 5000 error rather than the generic CSV wrapper:
 `5069-IB16/A`, `5069-IY4/A`, `5069-OB16/A`, `5069-OB16/B` all real-error
 `Failed to set the 'Size' property (Chassis size exceeds the allowable
 size for a chassis.)` at `Modules/Module[@Name="Local"]/Ports/Port/Bus` —
@@ -2170,8 +2155,8 @@ already-safety-fixed 5069 files keep their correct value too. All 17 of
 the original real failures now have a real, evidenced fix — awaiting
 real re-conversion of all 17 affected `_r2` files to confirm.
 
-**A second, separate real 5069 bug found 2026-08-28** (James: "looks
-like your 5069-LxxERMSx has issues as well"). `EtherNetIPMode="A1/A2:
+**A second, separate real 5069 bug found 2026-08-28** on the
+5069-LxxERMSx catalogs. `EtherNetIPMode="A1/A2:
 Dual-IP"` is a real Controller-level attribute confirmed present, with
 the identical value, in EVERY 5069 corpus file checked (6/6, zero
 variance) — describes how the CPU's two embedded Ethernet ports are
@@ -2179,8 +2164,8 @@ addressed, something only a 5069 processor has (1756/1769 have at most
 one embedded port). It was missing from both `wrapper.py`'s
 `build_l5x` (the primary template used across ~1300 already-tested
 files) and `gen_fw_catalog_matrix.py`, for every 5069 catalog, not
-specifically the ERMSx (motion+safety) subset James happened to be
-testing — confirmed by diffing a plain non-motion S2 catalog's real
+specifically the ERMSx (motion+safety) subset then under
+test — confirmed by diffing a plain non-motion S2 catalog's real
 export against a motion+safety ERMS2 one and finding the attribute
 identical in both. Fixed in both generators (conditional on
 `processor_type`/`catalog` starting with `"5069"`); regenerated all 90
@@ -2192,8 +2177,8 @@ optional is still unconfirmed — added regardless now that a real value
 exists, same reasoning as those two.
 
 **1769-family had the identical class of bug, found by generalizing**
-(James: "the 5069 and 1769 have different backplane sizes based on the
-catalog number ordered"). Worse than 5069's case: there was no `is_1769`
+(5069 and 1769 have different backplane sizes depending on the catalog
+number ordered). Worse than 5069's case: there was no `is_1769`
 branch in `wrapper.py` at all, so every 1769 processor silently fell
 through to the generic ICP-chassis `else` branch — wrong Port TYPE
 (`"ICP"`), not just a wrong Bus Size number. Real corpus evidence
@@ -2215,14 +2200,14 @@ pass conversion regardless (same "empty project never trips the
 validation" pattern already confirmed for 5069) — not regenerated, the
 structural fix matters for any NEW 1769 generation going forward.
 
-[^eventtrigger]: James, 2026-08-25: "Does an event task triggered by MAW
-cost more than an event task triggered by the EVENT instruction?" Real
+[^eventtrigger]: 2026-08-25: does an event task triggered by MAW cost more
+than one triggered by the EVENT instruction? Real
 corpus grep (12 real `Type="EVENT"` Tasks across SJ_Gormley_20251112_r02
 and Sorter1_20260722r00) confirms exactly two real `EventTrigger` values:
 "EVENT Instruction Only" (no EventTag) and "Axis Watch" (EventTag pointing
 at a real `AXIS_CIP_DRIVE` tag — confirmed against Gormley's
 `EM108_GradingLC`). "Axis Watch" is a Task-level config, not the MAW
-*instruction* itself, but it's the real mechanism James's "MAW" question
+*instruction* itself, but it's the real mechanism the "MAW" question
 maps to — there's no other real EVENT-trigger shape in the corpus.
 Genuinely untested axis: every existing task-overhead calibration file
 (`taskoverhead_n0Xtasks`, the ones that produced task_extra=+700) used
@@ -2238,7 +2223,7 @@ its own separately-modeled cost and will need subtracting from the raw
 capture delta before comparing trigger sources.
 
 **Import failure, 2026-08-30 — root-caused and fixed 2026-08-31.**
-`eventtask_instronly` failed to import; James pulled the real error this
+`eventtask_instronly` failed to import. The real error this
 time: "Failed to set the 'Size' property (Chassis size exceeds the
 allowable size for a chassis.)" on the Local module's own backplane Bus —
 with NO axis tag involved, which disproves the earlier (2026-08-30)

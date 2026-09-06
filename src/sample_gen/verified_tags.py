@@ -1,7 +1,7 @@
-"""Verbatim tag XML transplanted from James's own verified sample export.
+"""Verbatim tag XML transplanted from the verified sample export.
 
 Source: samples/local/instr_probes/instruction_shapes_20260904.L5X, exported
-2026-09-04 from a project James built and BUILT CLEAN in Studio 5000 himself.
+2026-09-04 from a project built by hand and verified BUILD CLEAN in Studio 5000.
 Every <Tag> block below is byte-for-byte what Studio wrote -- nothing here is
 composed from a manual, and nothing is edited. That is the entire point: the
 last three times this project invented predefined-structure XML from the
@@ -9,7 +9,7 @@ documentation (the alarm ConditionTypes, the MAM/MAJ bare-2-operand rungs, the
 Kinetix `:SI` safety tags) every single invented variant was rejected by the
 real toolchain.
 
-James, 2026-09-04: "note i used virtual axis and not the hardware, but any
+2026-09-04: "note i used virtual axis and not the hardware, but any
 AXIS_** type tag should work. i dont know if you are aware of the difference
 between them" -- AXIS_VIRTUAL carries no drive/module binding at all
 (MotionGroupInstance="<NA>", no associated module), where AXIS_CIP_DRIVE

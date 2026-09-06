@@ -1,6 +1,6 @@
 """What this engine did NOT price on the file it was just given.
 
-James, 2026-09-04, handing over a batch of unseen real programs: "beware
+2026-09-04: handing over a batch of unseen real programs: "beware
 there is going to be stuff that you might have never seen before inside. I
 need to make sure that in the long run all of the calculations are done
 inside the python logic for the total project scripts and not just claude

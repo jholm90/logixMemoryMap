@@ -1,6 +1,5 @@
-"""CIP-MODULE (generic CIP device) declared-I/O-size scaling (James,
-2026-09-02: "sure you can learn some more stuff about the CIP-MODULE
-generate up some more tests for those too" -- direct follow-up to his own
+"""CIP-MODULE (generic CIP device) declared-I/O-size scaling
+(2026-09-02) -- a direct follow-up to the
 real TitusvilleTrimmer file, whose 3 real "CIP-MODULE" instances (all
 496/496-byte connections) flagged this project's flat ~1,672-byte
 module_overhead default as a real risk: `ETHERNET-MODULE`/`ETHERNET-

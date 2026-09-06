@@ -1,4 +1,4 @@
-"""James, 2026-08-31: "If you were to take that udt and stand alone
+"""2026-08-31: "If you were to take that udt and stand alone
 generate it in a new program I wonder if you would get a different
 result." Direct empirical answer to that question.
 
@@ -65,7 +65,7 @@ def main() -> None:
         f"A real 22-member flat-atomic-scalar UDT (5 DINT + 13 INT + 4 SINT, verbatim member "
         f"names/types/order from a real confidential project's largest single tag, not "
         f"committed/named), array of {ARRAY_LEN} instances, isolated in an otherwise-empty "
-        f"project -- James, 2026-08-31: direct test of whether this exact real structure "
+        f"project -- 2026-08-31: direct test of whether this exact real structure "
         f"reproduces the same predicted total in isolation as it does inside the full real "
         f"file, or whether something about real project context/scale changes it.",
         "udt", out_path, bytes_,

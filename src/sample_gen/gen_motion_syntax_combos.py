@@ -1,13 +1,12 @@
-"""MAM/MAJ/MAS/MRP keyword-combination validation (James, 2026-08-25):
-"your next motion instruction test should be one L5X file per instruction
-with one instruction each - after validating these results then we can do
-a 10-pass for confirmation. you will need to investigate if we have stuff
-like MAM is a merged move takes up more space compared to disabling a
-merged move. something similar for MAS with use existing values compared
+"""MAM/MAJ/MAS/MRP keyword-combination validation (2026-08-25). Method:
+one L5X file per instruction with a single instruction each; once those
+results validate, a 10-pass run confirms them. The question is whether
+keyword choice costs memory -- whether a merged MAM move takes more space
+than a disabled merge, and similarly for MAS using existing values compared
 to using new values. you need to do investigations on syntax for these
 instructions and make sure you can handle ANY combination."
 
-Per James's explicit sequencing, this is a single-rung (n=1) validation
+Per the explicit sequencing, this is a single-rung (n=1) validation
 pass, deliberately BEFORE another rung-count sweep -- gen_motion_
 instructions.py's existing n=10/n=100 files (built from ONE fixed real-
 corpus-transplanted template per instruction) stay as-is, unconfirmed
@@ -18,9 +17,9 @@ original MAM/MAJ/MAS/MRP fix) for each keyword axis tested here:
 
   MAM -- Merge field (Enabled/Disabled): both values seen in the real
     corpus (`...S-Curve,Udt_Servo.MAJ_Jerk,Udt_Servo.MAJ_Jerk,% of
-    Maximum,Disabled,Programmed,...` and James's own template used
-    "Enabled"). James: does a merged move (Enabled) cost more than a
-    disabled merge? Direct test.
+    Maximum,Disabled,Programmed,...` and the template used
+    "Enabled"). Does a merged move (Enabled) cost more than a disabled
+    merge? Direct test.
 
   MAJ -- Profile field (Trapezoidal/S-Curve): both seen in the real
     corpus for MAJ specifically (2 of 3 real examples use Trapezoidal,
@@ -30,7 +29,7 @@ original MAM/MAJ/MAS/MRP fix) for each keyword axis tested here:
   MAS -- two Yes/No fields (real corpus: `MAS(Drive_Axis,MAS,All,No,
     Udt_Servo.MAJ_Decel,Units per sec2,No,Udt_Servo.MAJ_Jerk,% of Time)`
     and `MAS(Drive_Axis,Udt_Servo.MAS_Jog,Jog,Yes,MAJ_Decel,Units per
-    sec2,No,0,% of Time)`) -- James's "use existing values compared to
+    sec2,No,0,% of Time)`) -- the "use existing values compared to
     using new values" maps to these: Yes = use the DecelRate/Jerk operand
     supplied in the call, No = use the axis's already-configured/existing
     value instead (the operand is still present in the text either way,
@@ -97,7 +96,7 @@ def group_mam_merge() -> None:
                  f"Units per sec2,DecelRate,Units per sec2,S-Curve,AccelJerk,DecelJerk,% of Maximum,"
                  f"{merge},Programmed,LockPosn,None,EventDistance[0],CalculatedData[0]);")
         _one_rung(instr, f"MamMerge{merge}", f"motionsyntax_mam_merge{merge.lower()}_n01",
-                  f"1 rung of MAM with Merge={merge} -- James: does a merged move cost more than a disabled merge?")
+                  f"1 rung of MAM with Merge={merge} -- does a merged move cost more than a disabled merge?")
 
 
 def group_maj_profile() -> None:
@@ -118,7 +117,7 @@ def group_mas_combos() -> None:
                          f"{jerk_yn},DecelJerk,% of Time);")
                 _one_rung(instr, f"MasCombo{label.title().replace('_', '')}", f"motionsyntax_mas_{label}_n01",
                           f"1 rung of MAS, StopType={stop_type}/UseNewDecel={decel_yn}/UseNewJerk={jerk_yn} -- "
-                          f"James: 'use existing values compared to using new values', full combination coverage")
+                          f"existing values compared against new values, full combination coverage")
 
 
 def group_mrp_variants() -> None:

@@ -1,4 +1,4 @@
-"""OQ-BRANCHDEPTH staggered/nested-branch sweep (James, 2026-08-25):
+"""OQ-BRANCHDEPTH staggered/nested-branch sweep (2026-08-25):
 "factor in staggered branches where root has two elements, 1st branch has
 two elements over the root 1st, 2nd branch has 2 elements over 1st branch
 1st item etc.." -- a genuinely different axis from the existing flat
@@ -25,7 +25,7 @@ Shape at depth D (D=1 is the trivial 2-leg case, matching
   D=3: [XIC(B0)[XIC(B1)[XIC(B2),XIC(B3)],XIC(B4)],XIC(B5)]OTE(Out);
   ... each level adds 2 more BOOL tags and one more nested bracket pair,
   always recursing into the FIRST leg of the previous level (the
-  "staggered"/cascading shape James described, not a balanced tree).
+  "staggered"/cascading shape described, not a balanced tree).
 
 Fixed RUNG_COUNT=1000 (comparable to the flat leg-count sweep), depths
 1-6 tested (12 BOOL tags at the deepest level).

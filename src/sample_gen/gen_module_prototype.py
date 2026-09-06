@@ -1,15 +1,14 @@
-"""Module/IO prototype batch (2026-08-27, James: "generate me a sample with
-a 1756-ib16 in the local rack at slot 1... make another with a known
-ethernet module off of the local L81 ethernet port... make a 3rd file with
-a local ethernet card and an ethernet device located on that port. i
+"""Module/IO prototype batch (2026-08-27). Three shapes: a 1756-IB16 in the
+local rack at slot 1; a known Ethernet module off the local L81 Ethernet
+port; and a local Ethernet card with an Ethernet device located on that
+port. I
 refuse to generate you all the io stuff. you will need to make this work
 on your own. i will test your generated files. dont spam me with all the
 io module files right away youll need to validate your builder engines.").
 
 First 3 files (groups 1-3) validated clean against real Studio 5000 import.
-**2026-08-27, James: "generate a l5x file for each module from your sample
-dB ... keep in mind sizing for racks and slots ... all of the 'for claude'
-tests should be done now."** Extended using `samples/local/module_
+**2026-08-27:** one L5X per module from the sample database, with rack and
+slot sizing accounted for. Extended using `samples/local/module_
 extraction.csv` (1,212 real module rows, 130 distinct catalog numbers,
 built earlier this session) to pick real high-frequency catalog numbers,
 then re-verified each one's actual XML shape directly against the real

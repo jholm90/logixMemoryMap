@@ -1,6 +1,6 @@
 """Lazy, one-level-at-a-time recursive drill-down for the UI treemap.
 
-James (2026-08-20): infinite depth, no masking a large array just because
+2026-08-20 requirement: infinite depth, no masking a large array just because
 it's nested inside something else -- every level, down to individual BOOL
 bits, must be drillable. Materializing that whole tree eagerly for a 40k-tag
 project with 10k-element arrays would be enormous, so this computes exactly
@@ -33,7 +33,7 @@ class NotDrillableError(ValueError):
 # Predefined structures with a real, confirmed per-field byte breakdown
 # (each field an equal 1/3 share of the total, see _expand_predefined_
 # structure) -- deliberately NOT every key in model.predefined_structures.
-# The SFC/FBD-family additions (James, 2026-08-27) only have a confirmed
+# The SFC/FBD-family additions (2026-08-27) only have a confirmed
 # TOTAL (read off real Decorated-XML L5K array length), not a confirmed
 # per-field byte attribution or even a consistent field count (SFC_STEP
 # has 7 fields, SFC_ACTION has 4, RATE_LIMITER has 23...) -- showing them
@@ -183,7 +183,7 @@ def expand_definition_children(
     name: str, data_types: dict[str, DataTypeDef], model: MemoryModel
 ) -> list[Child]:
     """Breakdown of a UDT/AOI/custom-string *definition*'s own one-time
-    cost into its contributing pieces (James, 2026-08-26: "click-to-drill
+    cost into its contributing pieces (2026-08-26, "click-to-drill
     into a defs pool node -> locals+params breakdown").
 
     NOT the same drill as expand_children/_expand_udt above, which breaks

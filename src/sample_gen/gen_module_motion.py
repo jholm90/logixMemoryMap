@@ -1,7 +1,7 @@
-"""Motion node/drive module batch (2026-08-27, James uploaded real corpus
-files: "heres samples for power supply, single axis and dual axis drives.
-I gave you single instance and three copies of same axis. the dual drive
-i gave one sample doubled up for reference.").
+"""Motion node/drive module batch (2026-08-27), built from real corpus
+exports: a power supply, a single-axis drive and a dual-axis drive, with
+the single-axis case supplied both as one instance and as three copies of
+the same axis, and the dual drive doubled up for reference.
 
 Real files (samples/local/motion_p208/, gitignored): p208_Node.L5X (2198-
 P208 power supply alone, no axis -- baseline), p208_Node_axis.L5X (+ the
@@ -12,13 +12,13 @@ axis tag riding on it -- a real dual-axis-capable drive hosting 2 axes off
 one module, not two separate modules), p208_S086_NodeAndAxis.L5X (a
 2198-S086-ERS3 SAFETY-rated servo drive + its own axis). Every "NodeAndAxis"
 file keeps the P208's own on-board axis tag too (confirmed real, not
-assumed) -- James's own test design isolates each addition on top of a
+assumed) -- the test design isolates each addition on top of a
 consistent baseline, same convention this project uses everywhere else.
 
 Module XML genericized (customer names/IDs stripped) but structurally
 verbatim from these real files. The AXIS_CIP_DRIVE/MOTION_GROUP TAG shape
 reuses gen_axis_composite.py's own already-validated `_AXIS_TAG_XML`
-template (confirmed against James's real corpus previously) rather than
+template (confirmed against a real corpus previously) rather than
 building a new one from these files' own axis tags -- same predefined
 structure, no reason to introduce an unvalidated variant.
 
@@ -119,8 +119,8 @@ def _drive_module_xml(name: str, catalog: str, safety_enabled: str, address: str
 
     ExtendedProperties/ConfigID=33554537 confirmed real 2026-09-03 across
     THREE independent real captures: this project's own original
-    p208_D012_NodeAndAxisDual.L5X (2198-D012-ERS3), James's real
-    TitusvilleTrimmer (2198-D057-ERS3), and James's fresh from-scratch
+    p208_D012_NodeAndAxisDual.L5X (2198-D012-ERS3), a real
+    TitusvilleTrimmer (2198-D057-ERS3), and the fresh from-scratch
     SampleAxis.L5X (2198-D057-ERS3 again) -- same ConfigID on 2 different
     catalogs, so it's a shared per-family AOP config identifier, not
     catalog-specific; safe to reuse across D012/D020/D032/D057/S086.
@@ -128,7 +128,7 @@ def _drive_module_xml(name: str, catalog: str, safety_enabled: str, address: str
     entirely -- found via a byte-for-byte diff against SampleAxis.L5X.
 
     `address` defaults to a DIFFERENT IP than _P208_MODULE_XML's hardcoded
-    192.168.1.1 (2026-08-27, real Studio 5000 import bug found by James:
+    192.168.1.1 (2026-08-27, real Studio 5000 import bug found:
     every drive module built from this function used to hard-code the
     SAME 192.168.1.1 as the P208 power supply it's always paired with in
     this file, a real "Duplicate IP Address" error the moment both are
@@ -136,7 +136,7 @@ def _drive_module_xml(name: str, catalog: str, safety_enabled: str, address: str
     file here does. That duplicate-IP failure was also silently sinking
     the axis tags: when a module fails Ethernet import, nothing else in
     the file can resolve a MotionModule reference against it, so the
-    'axis tags never got made' symptom James reported was a downstream
+    'axis tags never got made' symptom reported was a downstream
     consequence of this one root cause, not a second bug)."""
     return f"""\
 <Module Name="{name}" CatalogNumber="{catalog}" Vendor="1" ProductType="45" ProductCode="11" Major="14" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="{safety_enabled}">
@@ -193,7 +193,7 @@ def _axis_tag(name: str, motion_module: str) -> str:
     per real file here, matching every real corpus example found.
 
     AxisID is also given a unique value here (2026-08-27, real Studio 5000
-    import bug found by James: every axis tag from this helper carried the
+    import bug found: every axis tag from this helper carried the
     SAME literal AxisID="510977205" from _AXIS_TAG_XML's single real
     reference value -- harmless with exactly one axis in a file, but a
     real "Duplicate Axis ID" import error the moment 2+ axis tags coexist,
@@ -219,7 +219,7 @@ def _axis_tag(name: str, motion_module: str) -> str:
 # no MotorDataSource/tuning/servo-loop-bandwidth parameters at all. Real
 # bug found the same day: every P208 axis this project ever generated
 # used `_axis_tag` (the full Position-Loop servo template) instead --
-# genuinely malformed for this axis type, the leading suspect for James's
+# genuinely malformed for this axis type, the leading suspect for the
 # real Studio 5000 "opening the module profile page crashes" report on
 # the very first regenerated test file. See OPEN_QUESTIONS.md
 # OQ-193ECMETR.

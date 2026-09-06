@@ -1,5 +1,5 @@
 """100 MORE large, realistic-scope composite test programs -- v4, 2026-09-03,
-James's explicit spec: "generate qty100 v4 unique files with 4 drives
+the explicit spec: "generate qty100 v4 unique files with 4 drives
 minimum and 50 ethernet nodes minimum. file size between 2-3MB" [confirmed
 via follow-up: "4 drives" means 4 SEPARATE drive modules, not 4 axes --
 could be satisfied by 2 dual-axis modules alone, so drive modules are
@@ -96,7 +96,7 @@ def _modules_xml_unique_ips_v4(catalogs: list[str]) -> str:
     v3's own established output byte-for-byte); only the 2nd+ occurrence
     gets its Name/ParentModule references suffixed.
 
-    2026-09-03, real Studio 5000 import bug found by James (every single
+    2026-09-03, real Studio 5000 import bug found (every single
     v4 file rejected on import, XMLSrv_E_IMPORT_ABORTED_NO_CHANGES): the
     original version of this function used a blanket `Name="([^"]+)"`
     regex to find "the module's own names" to rename, which also matched
@@ -184,7 +184,7 @@ def _profile_for_index(i: int) -> ProfileV4:
     n_arrays = 4 + (i % 5)  # 4..8
     base_size = 300 + (i * 47) % 4000
     array_sizes = [base_size + j * (211 + i * 5) for j in range(n_arrays)]
-    # James: "50 ethernet nodes minimum" -- guaranteed from
+    # 50 ethernet nodes minimum -- guaranteed from
     # _ETHERNET_ONLY_MODULE_CATALOGS (48 real catalogs), so >=50 forces at
     # least a couple of real catalogs to repeat -- see
     # _modules_xml_unique_ips_v4's own docstring for why that's now safe.
@@ -203,12 +203,12 @@ def _profile_for_index(i: int) -> ProfileV4:
     program_count = 5 + (i % 8)  # 5..12
     subs_per_program = [1 + ((i + p) % 3) for p in range(program_count)]  # 1..3 each
     string_count = 5 + (i % 5)  # 5..9
-    # James: "4 drives minimum" -- 4..8 real drive modules, mixed dual/
+    # 4 drives minimum -- 4..8 real drive modules, mixed dual/
     # single-axis (see _drive_specs_for_profile).
     n_drives = 4 + (i % 5)  # 4..8
-    # Linear spread 2,000,000 -> 3,000,000 across the batch (James:
-    # "file size between 2-3MB" -- confirmed predicted CPU memory bytes,
-    # same convention as v3's own "1.5-2.5MB" clarification).
+    # Linear spread 2,000,000 -> 3,000,000 across the batch, against a
+    # 2-3MB per-file target measured as predicted CPU memory bytes -- the
+    # same convention as v3's 1.5-2.5MB target.
     target_total = 2_000_000 + int((i - 1) / 99 * 1_000_000)
     return ProfileV4(
         i, udt_count, aoi_count, array_sizes, module_catalogs, rung_count, udt_array_len,
@@ -465,7 +465,7 @@ def _build(profile: ProfileV4) -> tuple[str, str, int]:
     n_dual = sum(1 for _n, _c, is_dual in _drive_specs_for_profile(profile) if is_dual)
     n_single = profile.n_drives - n_dual
     description = (
-        f"Composite realistic-scope test v4 #{profile.index}/100 (2026-09-03, James's explicit spec: "
+        f"Composite realistic-scope test v4 #{profile.index}/100 (2026-09-03, the explicit spec: "
         f"\"4 drives minimum and 50 ethernet nodes minimum, file size between 2-3MB\" -- confirmed 4 "
         f"drives means 4 separate drive MODULES, not axes): {profile.udt_count} UDTs (1 nested), "
         f"{profile.aoi_count} unique AOIs (1 with a real InOut AXIS_CIP_DRIVE param, the rest with real "

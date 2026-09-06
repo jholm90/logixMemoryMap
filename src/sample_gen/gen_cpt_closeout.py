@@ -1,6 +1,6 @@
 """The two things standing between CPT and 100%, isolated.
 
-James, 2026-09-04: "close cpt and get 100% accuracy. Keep in mind that ints
+2026-09-04: "close cpt and get 100% accuracy. Keep in mind that ints
 will use a behind the scenes conversion to dint." That hint closed the
 REAL-destination path -- 47/47 captured calls exact -- but it also exposed
 exactly what the existing corpus cannot answer. Both gaps below are

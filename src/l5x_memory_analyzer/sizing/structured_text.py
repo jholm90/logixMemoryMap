@@ -28,7 +28,7 @@ ST-specific part only -- routine shell, per statement, per control-flow
 construct -- and hands any instruction-style call found in the text back to
 the SAME weight table the rung sizer uses.
 
-Comments and blank lines are FREE, which was James's explicit question
+Comments and blank lines are FREE, which was the explicit question
 (2026-09-04: *"one thing not modelled is st comments and if a comment line
 or block takes up data memory or is like tag and rung comments and does not
 count towards data usage"*). Answer: they do not count, and it was worth
@@ -119,8 +119,8 @@ def strip_comments(text: str) -> str:
 def parse_st_routines(root: ET.Element) -> list[StructuredTextRoutine]:
     """Every ST routine in the file -- inside Programs AND inside AOIs.
 
-    The AOI half was missed in the first wiring (2026-09-04) and James
-    caught it immediately: "most of the st code is inside AOIs". Measured
+    The AOI half was missed in the first wiring (2026-09-04): most real ST
+    code is inside AOIs. Measured
     across the real corpus, 1,513 of 4,103 real ST lines -- **37%** -- live
     inside an AddOnInstructionDefinition rather than a Program, and all of
     them contributed exactly zero.

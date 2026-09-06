@@ -3,7 +3,7 @@
 Pulled directly from `samples/local/**/*.L5X` (54 real production files,
 gitignored, local-only) — 421 real `CMP(...)` calls and 1533 real
 `CPT(...)` calls, extracted with a paren-balanced scan of every `<Text>`
-element. Built 2026-08-22 after James's correction: don't guess/reinvent
+element. Built 2026-08-22 after the correction: don't guess/reinvent
 CMP-compound syntax, pull real examples from the corpus instead. Use this
 file as the reference before writing a new CMP/CPT test generator instead
 of re-deriving syntax from scratch.
@@ -33,10 +33,10 @@ STRING-array-member comparisons.
 
 ## CMP — compound (AND), real but rare (12/421, all one file/pattern)
 
-James, 2026-08-22, after seeing the generator's failing `&`/`|` version:
-**"CMP branches of AND/OR would be using the ladder logic editor and not
-internal to the CMP... apparent parenthesis is needed with all written
-statements for order of operations."** The corpus has exactly one real
+Real syntax rule, established 2026-08-22 after the generator's `&`/`|`
+version failed to build: **AND/OR branching is done in the ladder logic
+editor, not inside the CMP expression, and explicit parentheses are
+required in every written statement for order of operations.** The corpus has exactly one real
 compound-AND pattern (`EmporiumEdger_20250905r1.L5X`, 12 instances, all
 the same shape with different array indices/setpoints):
 

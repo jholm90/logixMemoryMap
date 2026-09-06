@@ -1,4 +1,4 @@
-"""OQ-AOIARRAYDIMENSION array-LocalTag isolation sweep (James, 2026-09-03:
+"""OQ-AOIARRAYDIMENSION array-LocalTag isolation sweep (2026-09-03, 
 "the two localTag needs more generated tests - generate more than enough
 tests to validate this").
 

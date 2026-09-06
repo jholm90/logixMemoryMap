@@ -1,4 +1,4 @@
-"""Comment/description-length sweep (James, 2026-08-20: "comment length in
+"""Comment/description-length sweep (2026-08-20, "comment length in
 the tag vs comment length in the udt element vs udt description vs udt tag
 description"). Four distinct places a human-readable comment can live in
 real L5X, tested independently with everything else held constant:

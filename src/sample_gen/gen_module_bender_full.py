@@ -1,7 +1,7 @@
-"""Full REAL PROGRAM replica -- every importable module from James's real
+"""Full REAL PROGRAM replica -- every importable module from a real
 DnR_Personal/Bender134053_201104.L5X, genericized but structurally
-verbatim (2026-08-27, James: "i want a full test like take all of the io
-from Bender program and put in this file to get 99.97% accuracy").
+verbatim (2026-08-27): all of the I/O from the Bender program in one file,
+as the test for full-program module accuracy.
 
 Unlike every other generator in this sweep -- which extracts ONE
 representative module per catalog, or a deduplicated subset for a rack
@@ -18,14 +18,13 @@ connections including its 2 real CIP Safety connections, see below), and
 a real GuardLogix Safety Partner (see below).
 
 **GuardLogix Safety Partner -- WRONG in an earlier pass, corrected
-2026-08-27.** James: "The large full program has the safety partner. For
-a second time I removed it temporarily for you to see the field io
-without complaining. I regret doing this. You need to handle safety
-partner. One safety partner is located beside the CPU on the right if the
+2026-08-27.** The large full program has a safety partner, temporarily
+removed from earlier exports to isolate the field I/O. The safety partner
+has to be handled: one sits beside the CPU on the right if the
 program is sil3. Sil2 has no safety partner. You need to handle this."
 An earlier pass excluded the Safety Partner outright after hitting a real
 Studio 5000 import error ("Invalid module type for import. Module type
-cannot be created independently.") -- wrong call: James's own stripped
+cannot be created independently.") -- wrong call: the stripped
 reference file had the partner manually removed ONLY so the field I/O
 would be visible without that error blocking the rest of the import, not
 because the partner should be dropped from the model. Root-caused
@@ -46,8 +45,8 @@ partner at all (`safety_level="SIL2"` -- no Width/partner, just a
 safety-rated processor_type + SafetyInfo) -- this capability is opt-in
 per file, not forced on every generated file.
 
-**EDS-dependent devices, James: "You will need to accommodate missing
-eds files. This is a 100% requirement."** 2 real TR-Electronic GmbH
+**EDS-dependent devices.** Missing EDS files must be accommodated; this is
+a hard requirement. 2 real TR-Electronic GmbH
 encoders (`LH_CART_ENC`/`RH_CART_ENC`, no CatalogNumber) and a Datalogic
 barcode reader (`Datalogic`, also no CatalogNumber) real-error "Module
 profile could not be found" -- confirmed genuinely independent failures
@@ -65,12 +64,12 @@ Its first-pass error was a bare "Module import failed" -- unlike the 3
 EDS devices above, it never said "profile could not be found." That
 weaker, vaguer error is the same shape as the OTHER modules that failed
 purely as a cascade of the Safety Partner's invalid standalone import
-(see James's message above) -- most likely the robot's failure was the
+(see the message above) -- most likely the robot's failure was the
 same cascade, not an independent EDS problem. With the Safety Partner now
 fixed, the robot is back in as its REAL, full, verbatim module (not a
-Generic Ethernet Module substitute) -- James: "The robot stays. Your
-purpose is to calculate memory usage of tags and logic... You need to
-take the possibility of safety [I/O] data into your programming." Its 2
+Generic Ethernet Module substitute). The robot stays: the job is to
+calculate memory usage of tags and logic, and safety I/O data has to be
+accounted for like any other. Its 2
 real CIP Safety connections (`A_Safety_Output` 8 bytes,
 `B_Safety_Input` 12 bytes) are included verbatim alongside its real
 Standard connection (16/16 bytes) -- real stated sizes, real Decorated
@@ -88,12 +87,12 @@ ExtendedProperties/Description/Comments stripped throughout.
 Sanity-checked before writing: 0 duplicate Names, 0 dangling
 ParentModule references, 0 lint findings, 0 sizing crashes.
 
-**Cross-checked 2026-08-27 against James's own "stripped" export**
+**Cross-checked 2026-08-27 against the "stripped" export**
 (samples/local/bender_stripped/Bender134053_stripper.L5X -- the real
 program with logic/UDTs/most Controller Tags removed but the Modules
 section left intact, gitignored real corpus): module catalog inventory
 matches this file's extraction exactly, module-for-module (the Safety
-Partner's absence there was James's own deliberate temporary removal,
+Partner's absence there was the deliberate temporary removal,
 confirmed above, not evidence it should stay excluded).
 
 Sizing this file returns real SizeErrors -- one per rack-aliased
@@ -102,9 +101,9 @@ documented (module_overhead was FITTED from only 2 discrete-Connection
 modules; zero real data confirms it applies the same way to a
 rack-aliased child, so it's deliberately not charged, per
 parser/modules.py's own docstring). **This is exactly the intended use
-of this file, not a bug to fix**: once James captures this exact
-module section's real controller-memory cost from the actual Bender
-controller, the residual between predicted and real can be divided
+of this file, not a bug to fix**: once this module section's real
+controller-memory cost is captured from the actual Bender controller, the
+residual between predicted and real can be divided
 across these modules to solve for their real per-module overhead -- the
 same fitting methodology that produced `module_overhead` itself.
 
@@ -5391,20 +5390,20 @@ def main() -> None:
         extra_modules_xml=modules_xml, processor_type="1756-L81ES",
         safety_level="SIL3",
     )
-    # Real l5x2acd conversion failure, James's 2026-08-27 push
+    # Real l5x2acd conversion failure in the 2026-08-27 push
     # (samples/convert_log.csv) -- this file contains the same PowerFlex
     # 527-STO / FANUC robot / safety-drive module shapes that also fail
     # standalone in gen_module_sweep.py/gen_module_sweep_variants.py
     # (undiagnosed there too, see those files' own _UNDIAGNOSED_RETEST_
     # comments), so no new/separate root cause was found here specifically
-    # -- regenerated unchanged, suffixed per James's own instruction so
-    # his re-test run doesn't collide with the still-present old failing
+    # -- regenerated unchanged, suffixed as instructed so
+    # the re-test run doesn't collide with the still-present old failing
     # file.
     out_path = OUT_ROOT / "modulerack_bender_full_program_r2.L5X"
     write_sample_unmodeled(l5x, out_path)
     append_manifest_row(
         "modulerack_bender_full_program_r2",
-        "Full real-program replica: all 69 non-CPU modules in James's real "
+        "Full real-program replica: all 69 non-CPU modules in a real "
         "DnR_Personal/Bender134053_201104.L5X now represented (5 Point I/O adapters with "
         "all 44 real children, 5 ArmorBlock I/O, 2 PowerFlex 527-STO safety drives, 2 "
         "EX260 valve manifolds, RMC150E, full 2-bus/5-module Kinetix 5700 subgraph with 8 "

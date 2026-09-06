@@ -259,7 +259,7 @@ class CptRealDestModel:
                             with only the operand type swapped, and the
                             LINT file lands byte-identical to the all-REAL
                             control at 244/rung.
-          narrow_widening_block  James, 2026-09-04: "ints will use a behind
+          narrow_widening_block  2026-09-04: "ints will use a behind
                             the scenes conversion to dint". SINT/INT are
                             widened first; LINT, already 64-bit, is not.
                             ONE-POINT FIT and the per-operand/per-call

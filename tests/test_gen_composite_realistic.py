@@ -1,5 +1,5 @@
 """Regression coverage for gen_composite_realistic.py's real generator bugs
--- James, 2026-09-02: "make sure this rule is hard coded correctly for
+-- 2026-09-02: "make sure this rule is hard coded correctly for
 your generator" (the IP-address-out-of-range fix). Locks in the fix so a
 future change to _modules_xml_unique_ips can't silently reintroduce an
 invalid IPv4 octet the way the original `base = 60 + (i+1)*10` formula did
@@ -23,7 +23,7 @@ def _octets_in_range(xml: str) -> bool:
 
 
 def test_large_catalog_list_never_produces_an_out_of_range_ip_octet():
-    # Real Studio 5000 error, James 2026-09-02: "Failed to set the
+    # Real Studio 5000 error, 2026-09-02: "Failed to set the
     # 'Address' property (Address out of range.)" on 5 different modules
     # across 2 different v3 files -- every one traced to a 4th-octet value
     # over 255 once a file's catalog list passed ~19 entries. Exercise a

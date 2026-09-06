@@ -1,10 +1,10 @@
-"""Axis + composite-UDT sweep (James, 2026-08-22): "the axis compost udt
-test" -- direct response to his feedback that real axis usage is never the
+"""Axis + composite-UDT sweep (2026-08-22): "the axis compost udt
+test" -- direct response to the feedback that real axis usage is never the
 bare AXIS_CIP_DRIVE predefined type alone, it's wrapped in a "mixed and
-garbled" custom UDT, used everywhere in his real programs at 0.01%-tolerance
+garbled" custom UDT, used everywhere in the real programs at 0.01%-tolerance
 stakes (OQ-AXISDEEP, OQ-MIXEDUDT).
 
-Modeled directly on a real UDT found in his own corpus: `ts_CIPAxis`
+Modeled directly on a real UDT found in the corpus: `ts_CIPAxis`
 (samples/local/BaillieLeitchField_Edger_20260812_r00.L5X and
 SJ_Gormley_20251112_r02.L5X). Real ts_CIPAxis members: AxisName(STRING),
 AutoSpeeds(nested UDT), Servo(nested UDT "udtServo"), AOI(nested AOI
@@ -72,7 +72,7 @@ def _write_unmodeled(l5x: str, out_name: str, description: str) -> None:
     print(f"Wrote {out_path} (predicted N/A -- unmodeled axis structure)")
 
 # Real shape, copied verbatim from samples/generated/axis/axis_cip_drive_only.L5X
-# (itself confirmed against James's real corpus) -- an AXIS_CIP_DRIVE tag
+# (itself confirmed against a real corpus) -- an AXIS_CIP_DRIVE tag
 # requires a MotionGroup tag to reference, both are needed together.
 _AXIS_TAG_XML = (
     '      <Tag Name="Axis_Cip_Drive" TagType="Base" DataType="AXIS_CIP_DRIVE" ExternalAccess="Read/Write">\n'
@@ -177,7 +177,7 @@ def group_composite_udt() -> None:
 # ---------------------------------------------------------------------------
 
 def group_axis_aoi_inout() -> None:
-    # required=True: James, 2026-08-25, real bug -- FaultReset defaulted to
+    # required=True: 2026-08-25: real bug -- FaultReset defaulted to
     # Required=False/Visible=False (hidden, "nowhere to go on the calling
     # rung"), but the rung text below wires FaultResetVal into it anyway.
     # Real AOI semantics need as many call-site tags as there are Required/
@@ -199,12 +199,12 @@ def group_axis_aoi_inout() -> None:
     l5x = build_l5x(target_name="AxisAoiInout", tags_xml=tags, extra_aoi_xml=definition, extra_rungs_xml=rung)
     _write_unmodeled(l5x, "axis_aoi_inout_1_instance",
            "Real AXIS_CIP_DRIVE tag + AOI with BOOL Input + InOut AXIS_CIP_DRIVE param, called from a rung, "
-           "1 instance -- FIXED 2026-08-25 (James: FaultReset now Required=True/Visible=True so the call-site "
+           "1 instance -- FIXED 2026-08-25 (FaultReset now Required=True/Visible=True so the call-site "
            "FaultResetVal arg has somewhere to go; the previous version's 2 build errors were exactly this)")
 
 
 # ---------------------------------------------------------------------------
-# 2b. James, 2026-08-25: "check if size is different when marking them as
+# 2b. 2026-08-25: "check if size is different when marking them as
 #     not visible vs visible vs required" -- a def_only (0 instances)
 #     Required/Visible sweep on the SAME BOOL Input + InOut AXIS_CIP_DRIVE
 #     shape as group_axis_aoi_inout, isolating the reqvis effect on
@@ -228,7 +228,7 @@ def group_axis_aoi_inout_reqvis_sweep() -> None:
                          extra_aoi_xml=definition)
         _write_unmodeled(l5x, f"axis_aoi_inout_reqvis_{label}_def_only",
                f"AOI with BOOL Input (FaultReset, Required={required}/Visible={visible}) + InOut "
-               f"AXIS_CIP_DRIVE param, 0 instances -- reqvis-vs-InOut interaction sweep, James 2026-08-25")
+               f"AXIS_CIP_DRIVE param, 0 instances -- reqvis-vs-InOut interaction sweep, 2026-08-25: ")
 
 
 # ---------------------------------------------------------------------------
@@ -241,7 +241,7 @@ def group_full_combo() -> None:
     datatypes = collect_nested_datatypes("ts_CIPAxis_Test", members)
     udt_tag = tag_xml("CompositeInst", "ts_CIPAxis_Test", udt_members=members)
 
-    # required=True: James, 2026-08-25, real bug -- FaultReset defaulted to
+    # required=True: 2026-08-25: real bug -- FaultReset defaulted to
     # Required=False/Visible=False (hidden, "nowhere to go on the calling
     # rung"), but the rung text below wires FaultResetVal into it anyway.
     # Real AOI semantics need as many call-site tags as there are Required/

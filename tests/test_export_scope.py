@@ -1,6 +1,6 @@
 """Partial exports must not be sized as whole projects.
 
-James, 2026-09-04: "Anything that's not a controller export can not use the
+2026-09-04: "Anything that's not a controller export can not use the
 prices sir base load, but rungs, routines and programs might contain
 controller tags."
 
@@ -106,7 +106,7 @@ def test_target_routine_inside_a_context_program_is_target_not_context():
     _root, _entries, _errors, _scope, totals = _report(TEMPLATE / "Flashers_Routine_RLL.L5X")
 
     assert totals["target"] > 0
-    # It really does carry controller tags along, which is James's point --
+    # It really does carry controller tags along, which is the point --
     # they are counted, just not as part of the routine itself.
     assert totals["context"] > 0
 
