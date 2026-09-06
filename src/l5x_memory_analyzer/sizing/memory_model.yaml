@@ -470,53 +470,35 @@ module_overhead:
 # dozen other ways at once. Closing it needs isolation files -- one
 # zero-connection module of one catalog, nothing else changing. See
 # OQ-MODULEZEROCONN.
-# Per-platform firmware baseline correction (OQ-BASELINE-PROCFW, wired
-# 2026-09-05). The existing firmware_baseline_delta applies ONE ladder to
-# every catalog. Grouping all 190 captured fwmatrix_* baseline files by
-# declared processor AND firmware -- which only became possible after the
-# manifest's controller_model column was corrected, see below -- shows the
-# ladder is platform-specific, and the pattern is exact and repeated:
+# Per-platform firmware baseline correction -- TRIED 2026-09-05, REVERTED
+# THE SAME DAY. Kept here as a warning, because the mistake is subtle and
+# the evidence for it looked excellent.
 #
-#   catalog class                                    fw31/32/33   fw34/35   fw38
-#   5069-L306*/L310ERS2/L320*  (class A, 9 catalogs)       +48       +32     +32
-#   5069-L3100ERM                                           +8        -8     +32
-#   5069-L330*/L340*           (class B, 4 catalogs)        +8        -8      +8
-#   1756-L8xE  (non-safety)                                   0       -16       0
-#   1756-L8xES (safety)                                       0       -16     -16
+# Grouping the 190 captured fwmatrix_* BASELINE files by declared processor
+# and firmware produces a beautifully consistent matrix: 5069 L306/L310/L320
+# want +48 at fw31-33 and +32 at fw34-38, L330/L340 want +8/-8, 1756-L8x
+# want -16 at fw34/35. Nine independent catalogs reproduce class A's row
+# byte-for-byte; four reproduce class B's; five reproduce the L8x row. That
+# repetition across independent catalogs looked like proof.
 #
-# Every catalog inside a class agrees exactly at every firmware -- 7
-# catalogs share class A's row byte-for-byte, 4 share class B's, 8 share the
-# 1756-L8x rows. That repetition across independent catalogs is what makes
-# these measurements rather than 190 one-off fits.
+# It is not a PLATFORM effect. Wiring it took fwmatrix on L8x/5069 to 136 of
+# 136 exact -- and simultaneously broke 612 previously-EXACT files, every
+# one of which landed on exactly +16, the size of the L8x correction. Those
+# 612 are also 1756-L81E at fw 35.05: the SAME platform and firmware as the
+# baseline files that wanted -16, and they want 0.
 #
-# Small (8-48 bytes) but free and exact. 1756-L7x and 1769 are deliberately
-# ABSENT: James declared both dead architecture 2026-09-05, and their rows
-# also carry the contaminated captures flagged in OQ-BASELINE-PROCFW.
+# So the -16 belongs to something the fwmatrix files have and the rest of
+# the corpus does not -- their near-empty content, most likely -- and not to
+# the processor or the firmware. Fitting it as a platform constant
+# generalised a property of 190 nearly-identical files onto 1,900 files that
+# merely share their catalog string.
 #
-# NOTE the prefix trap this table is written to avoid: 5069-L3100ERM starts
-# with "5069-L310", and 5069-L310ERS2 is class A while L3100ERM is not. The
-# catalogs are therefore listed EXPLICITLY, never prefix-matched -- the same
-# rule module_overhead_by_catalog already follows for the same reason.
-platform_firmware_correction:
-  classes:
-    class_a_5069:
-      catalogs: ['5069-L306ER', '5069-L306ERM', '5069-L306ERMS2', '5069-L306ERMS3',
-                 '5069-L306ERS2', '5069-L310ERS2', '5069-L320ER', '5069-L320ERMS2',
-                 '5069-L320ERMS3']
-      by_firmware_major: { 31: 48, 32: 48, 33: 48, 34: 32, 35: 32, 38: 32 }
-    l3100erm_5069:
-      catalogs: ['5069-L3100ERM']
-      by_firmware_major: { 31: 8, 32: 8, 33: 8, 34: -8, 35: -8, 38: 32 }
-    class_b_5069:
-      catalogs: ['5069-L330ER', '5069-L330ERMS2', '5069-L340ER', '5069-L340ERS2']
-      by_firmware_major: { 31: 8, 32: 8, 33: 8, 34: -8, 35: -8, 38: 8 }
-    l8x_standard:
-      catalogs: ['1756-L81E', '1756-L82E', '1756-L83E', '1756-L84E', '1756-L85E']
-      by_firmware_major: { 31: 0, 32: 0, 33: 0, 34: -16, 35: -16, 38: 0 }
-    l8x_safety:
-      catalogs: ['1756-L81ES', '1756-L82ES', '1756-L83ES', '1756-L84ES']
-      by_firmware_major: { 31: 0, 32: 0, 33: 0, 34: -16, 35: -16, 38: -16 }
-  confidence: FITTED
+# This is the same error the shell-scale and composite-surcharge fits made,
+# in a new costume, and it got as far as being committed because the
+# within-family evidence was so clean. The corpus-wide check is what caught
+# it. Do not re-wire this without a control group: files on the same
+# platform and firmware with NON-trivial content, confirming they move the
+# same way. See OQ-BASELINE-PROCFW.
 
 zero_connection_module:
   bytes: 2344
