@@ -1649,3 +1649,105 @@ the matching footnote at the bottom, not inline.
     rather than built, because a warning banner claiming more precision
     about its own uncertainty than the data supports would be its own kind
     of dishonesty.
+
+
+31. **OQ-AOISTRUCT** — **what an AOI costs to DECLARE, as a function of its
+    structure rather than its name.** New, 2026-09-06. Direct answer to
+    James: *"Like I said previously Murray AOIs are the same on other
+    projects. What new tests are you going to generate now for improving?"*
+    and, same day, *"Keep in mind that I plan on sharing this for people
+    outside my company and their code will be very different and use
+    different aois."*
+
+    Those two together rule out the tempting move. MurrayBros' residual
+    correlates hardest with AOI structure (aoiaxisparam +0.889, aoirungs
+    +0.848, aoidefs +0.838, aoilocals +0.835), and the shared definitions
+    that recur across James's nine projects (`PTimer`, `HomeToTorque`,
+    `SpecialInputs`, `T_ADD`, `T_DST`, `AnalogSensor`, `Debounce`,
+    `ts_PilotLight`, `VirtualAxis`, `ts_AxisGap`, `TierPinchAOI`,
+    `ts_TotalSB` are byte-identical across projects) would make a
+    per-AOI-name correction table easy to fit and worth exactly nothing to
+    a stranger importing an L5X full of AOIs this project has never seen.
+
+    **What the model prices today**, read straight out of
+    `compute_aoi_definition_cost` + `AoiDefinitionModel.bytes_for`: base
+    1184, plus a per-type rate (BOOL 16 / SINT 18 / INT 18 / LINT 24,
+    single-type definitions only) or a flat 20 per declared item, plus AOI
+    TYPE-name length buckets. That is the entire function.
+
+    **Seven structural properties are therefore priced at exactly ZERO**,
+    each of them an untested assumption rather than a measurement, and
+    each measured against the real corpus (81 AOI definitions / 2,120
+    Parameters+LocalTags in `samples/local`):
+
+    | # | unpriced property | real corpus evidence |
+    |---|---|---|
+    | 1 | member NAME length | mean 12.1 chars, max 32; tag names elsewhere in this model cost 8 bytes per 8-char chunk |
+    | 2 | member DESCRIPTIONS | 803 of 2,120 carry one; **zero** generated files ever emitted one |
+    | 3 | InOut parameters | skipped outright by `compute_aoi_definition_cost`; 94 real ones, and the only legal way to pass an array/STRING/MESSAGE/UDT into an AOI |
+    | 4 | predefined-structure members | TIMER 557 real member uses, DateTime 120, COUNTER 66, STRING 58, MOTION_INSTRUCTION 36, MESSAGE 15 — **none ever generated**; all fall off the per-type table onto the flat atomic rate |
+    | 5 | array dimensions | a member counts once whether scalar or `Dimensions="1024"`; 46 real dimensioned AOI members |
+    | 6 | member counts past the fitted range | real AOIs run to 102 params / 128 locals / 85 internal rungs (median 12/11/11); the generated corpus topped out near 6/2/1 |
+    | 7 | extra internal routines | 7 of 81 real definitions carry an EnableInFalse and/or Prescan routine besides Logic |
+
+    #6 is the identical extrapolation shape as OQ-SHELLSCALE (a constant
+    fitted at n=2, applied at n=200, wrong by 8 bytes/unit and invisible
+    until the ladder was built) and OQ-DEFSCALE. Both of those were real.
+
+    **`gen_aoi_structure.py`, 56 files**, one property per group, everything
+    else held fixed — including the AOI type name, which IS priced and
+    would otherwise contaminate every reading:
+
+    | group | files | varies |
+    |---|---:|---|
+    | `aoistr_namelen_c{04,08,12,16,20,28,40}` | 7 | member name length, 20 DINT params |
+    | `aoistr_desc_l{000,016,064,256}`, `_all_l{000,064}`, `_aoidesc_l256`, `_aoirevnote_l256` | 8 | member and AOI-level description text |
+    | `aoistr_inout_n{00,04,16,48}` | 4 | InOut param count |
+    | `aoistr_predef_{base,timer,counter,motion,string,msg_inout}_n{01,08}` | 11 | predefined-structure member type |
+    | `aoistr_dim_{base,local_atomic,local_timer,inout}_d{8,64,512}` | 9 | array dimension |
+    | `aoistr_scale_{param,local,rung}_n*` | 12 | member/rung count to the real p90 and past it |
+    | `aoistr_routines_n{1,2,3}` | 3 | internal routine count, total rungs held at 24 |
+    | `aoistr_real_{median,p90}` | 2 | composite: do the isolated parts add? |
+
+    **The design property that makes this readable**: the model predicts a
+    DEAD FLAT line across every group except the three scale sweeps —
+    19,712 for all seven name-length files, 19,472 for all nine
+    inout/predefined files, 19,392 for all nine dimension files, 20,352 for
+    all three routine-count files. Any spread at all in the captured
+    numbers is an unpriced item, with no fitting or disentangling required
+    to see it.
+
+    Platform is 1756-L81E fw35.05 for all 56 — the same processor and
+    firmware as MurrayBros and MRFP_Edger, so nothing here is confounded by
+    OQ-BASELINE-PROCFW.
+
+    Only the two composites are instantiated; the other 54 are
+    definition-only, so what is captured is the declaration cost itself
+    with no tag_overhead or member storage mixed in.
+
+    Three generator gaps had to be closed to build this and are worth
+    recording, because each one was a silent hole rather than a deliberate
+    omission:
+    - `builders.py` could not emit a predefined-structure AOI member at
+      all. The atomic path writes a bare `Radix` + scalar `DataValue`
+      (wrong for TIMER); the nested-UDT path writes an L5K value list that
+      does not match the real positional encoding (a real TIMER LocalTag's
+      L5K default is `[0,1500,0]` — three fields for five members, because
+      EN/TT/DN alias into the leading status word). `predefined_members.py`
+      now supplies the exact block captured from the real corpus rather
+      than a guessed encoding that would only have failed in Studio 5000,
+      costing a capture run to discover.
+    - `builders.py` could not emit a member `<Description>`, an AOI-level
+      `<Description>`/`<RevisionNote>`, or an `EnableInFalse`/`Prescan`
+      routine. All three now render in the real shape and order
+      (Description then RevisionNote before `<Parameters>`; routines
+      alphabetical as EnableInFalse/Logic/Prescan, with the matching
+      `ExecuteEnableInFalse`/`ExecutePrescan` attribute flipped to "true").
+    - `lint.py`'s missing-array-subscript rule fired on an array InOut
+      Parameter passed bare to an AOI call — which is the correct real
+      form (LOG_HMIDisplay `Dimensions="25"`, BitArray
+      `Dimensions="1024"`). Exempted at the AOI call site. This project had
+      never before wired an array InOut param to an actual caller, so the
+      rule had never been exercised against it.
+
+    **Blocked on capture.**

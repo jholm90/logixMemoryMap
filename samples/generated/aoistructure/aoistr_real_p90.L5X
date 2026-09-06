@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="AoiRealP90" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Sep 06 10:40:32 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="AoiRealP90" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Sep 06 10:40:32 2026" LastModifiedDate="Sun Sep 06 10:40:32 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+    <AddOnInstructionDefinition Name="AoiStructProbe" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Description><![CDATA[Composite AOI at the real corpus p90 structural size]]></Description>
+      <RevisionNote><![CDATA[Generated composite -- see gen_aoi_structure.py]]></RevisionNote>
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="Cmd00_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 0 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd01_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 1 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd02_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 2 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd03_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 3 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd04_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 4 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd05_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 5 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd06_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 6 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd07_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 7 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd08_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 8 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd09_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 9 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd10_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 10 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd11_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 11 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd12_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 12 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd13_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 13 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd14_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 14 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd15_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 15 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd16_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 16 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd17_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 17 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd18_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 18 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd19_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 19 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd20_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 20 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd21_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 21 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd22_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 22 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd23_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 23 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd24_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 24 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd25_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 25 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd26_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 26 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd27_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 27 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd28_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 28 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd29_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 29 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd30_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 30 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd31_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 31 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd32_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 32 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd33_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 33 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd34_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 34 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd35_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 35 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd36_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 36 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd37_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 37 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd38_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 38 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd39_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 39 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd40_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 40 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd41_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 41 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd42_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 42 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd43_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 43 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="Cmd44_Setpoint" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><Description><![CDATA[Setpoint 44 for the controlled element]]></Description><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="SharedBuffer00" TagType="Base" DataType="DINT" Dimensions="32" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="SharedBuffer01" TagType="Base" DataType="DINT" Dimensions="32" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="SharedBuffer02" TagType="Base" DataType="DINT" Dimensions="32" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="DwellTmr00" DataType="TIMER" ExternalAccess="None"><Description><![CDATA[Dwell timer 0]]></Description><DefaultData Format="L5K"><![CDATA[[0,0,0]]]></DefaultData><DefaultData Format="Decorated"><Structure DataType="TIMER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/><DataValueMember Name="EN" DataType="BOOL" Value="0"/><DataValueMember Name="TT" DataType="BOOL" Value="0"/><DataValueMember Name="DN" DataType="BOOL" Value="0"/></Structure></DefaultData></LocalTag>
+<LocalTag Name="DwellTmr01" DataType="TIMER" ExternalAccess="None"><Description><![CDATA[Dwell timer 1]]></Description><DefaultData Format="L5K"><![CDATA[[0,0,0]]]></DefaultData><DefaultData Format="Decorated"><Structure DataType="TIMER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/><DataValueMember Name="EN" DataType="BOOL" Value="0"/><DataValueMember Name="TT" DataType="BOOL" Value="0"/><DataValueMember Name="DN" DataType="BOOL" Value="0"/></Structure></DefaultData></LocalTag>
+<LocalTag Name="DwellTmr02" DataType="TIMER" ExternalAccess="None"><Description><![CDATA[Dwell timer 2]]></Description><DefaultData Format="L5K"><![CDATA[[0,0,0]]]></DefaultData><DefaultData Format="Decorated"><Structure DataType="TIMER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/><DataValueMember Name="EN" DataType="BOOL" Value="0"/><DataValueMember Name="TT" DataType="BOOL" Value="0"/><DataValueMember Name="DN" DataType="BOOL" Value="0"/></Structure></DefaultData></LocalTag>
+<LocalTag Name="DwellTmr03" DataType="TIMER" ExternalAccess="None"><Description><![CDATA[Dwell timer 3]]></Description><DefaultData Format="L5K"><![CDATA[[0,0,0]]]></DefaultData><DefaultData Format="Decorated"><Structure DataType="TIMER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/><DataValueMember Name="EN" DataType="BOOL" Value="0"/><DataValueMember Name="TT" DataType="BOOL" Value="0"/><DataValueMember Name="DN" DataType="BOOL" Value="0"/></Structure></DefaultData></LocalTag>
+<LocalTag Name="DwellTmr04" DataType="TIMER" ExternalAccess="None"><Description><![CDATA[Dwell timer 4]]></Description><DefaultData Format="L5K"><![CDATA[[0,0,0]]]></DefaultData><DefaultData Format="Decorated"><Structure DataType="TIMER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/><DataValueMember Name="EN" DataType="BOOL" Value="0"/><DataValueMember Name="TT" DataType="BOOL" Value="0"/><DataValueMember Name="DN" DataType="BOOL" Value="0"/></Structure></DefaultData></LocalTag>
+<LocalTag Name="DwellTmr05" DataType="TIMER" ExternalAccess="None"><Description><![CDATA[Dwell timer 5]]></Description><DefaultData Format="L5K"><![CDATA[[0,0,0]]]></DefaultData><DefaultData Format="Decorated"><Structure DataType="TIMER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/><DataValueMember Name="EN" DataType="BOOL" Value="0"/><DataValueMember Name="TT" DataType="BOOL" Value="0"/><DataValueMember Name="DN" DataType="BOOL" Value="0"/></Structure></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator00" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 0]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator01" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 1]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator02" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 2]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator03" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 3]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator04" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 4]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator05" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 5]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator06" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 6]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator07" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 7]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator08" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 8]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator09" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 9]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator10" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 10]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator11" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 11]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator12" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 12]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator13" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 13]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator14" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 14]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator15" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 15]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator16" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 16]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator17" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 17]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator18" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 18]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator19" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 19]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator20" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 20]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator21" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 21]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator22" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 22]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+<LocalTag Name="WorkAccumulator23" DataType="REAL" Radix="Float" ExternalAccess="None"><Description><![CDATA[Working accumulator 23]]></Description><DefaultData Format="L5K"><![CDATA[0.0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="1" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="2" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="3" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="4" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="5" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="6" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="7" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="8" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="9" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="10" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="11" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="12" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="13" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="14" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="15" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="16" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="17" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="18" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="19" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="20" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="21" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="22" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="23" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="24" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="25" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="26" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="27" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="28" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="29" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="30" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="31" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="32" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="33" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="34" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung>
+              <Rung Number="35" Type="N">
+                <Text><![CDATA[XIC(EnableIn)MOV(Cmd00_Setpoint,Cmd01_Setpoint);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+</AddOnInstructionDefinitions>
+<Tags>
+      <Tag Name="AoiInst" TagType="Base" DataType="AoiStructProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AoiStructProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="Cmd00_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd01_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd02_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd03_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd04_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd05_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd06_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd07_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd08_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd09_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd10_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd11_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd12_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd13_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd14_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd15_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd16_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd17_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd18_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd19_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd20_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd21_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd22_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd23_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd24_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd25_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd26_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd27_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd28_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd29_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd30_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd31_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd32_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd33_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd34_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd35_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd36_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd37_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd38_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd39_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd40_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd41_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd42_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd43_Setpoint" DataType="DINT" Value="0" /><DataValueMember Name="Cmd44_Setpoint" DataType="DINT" Value="0" /><!-- unsupported member DwellTmr00:TIMER --><!-- unsupported member DwellTmr01:TIMER --><!-- unsupported member DwellTmr02:TIMER --><!-- unsupported member DwellTmr03:TIMER --><!-- unsupported member DwellTmr04:TIMER --><!-- unsupported member DwellTmr05:TIMER --><DataValueMember Name="WorkAccumulator00" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator01" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator02" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator03" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator04" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator05" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator06" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator07" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator08" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator09" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator10" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator11" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator12" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator13" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator14" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator15" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator16" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator17" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator18" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator19" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator20" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator21" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator22" DataType="REAL" Value="0.0" /><DataValueMember Name="WorkAccumulator23" DataType="REAL" Value="0.0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Arg00" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg01" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg02" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg03" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg04" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg05" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg06" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg07" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg08" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg09" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg10" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg11" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg12" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg13" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg14" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg15" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg16" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg17" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg18" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg19" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg20" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg21" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg22" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg23" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg24" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg25" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg26" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg27" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg28" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg29" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg30" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg31" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg32" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg33" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg34" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg35" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg36" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg37" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg38" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg39" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg40" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg41" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg42" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg43" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Arg44" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="SharedBuf00" TagType="Base" DataType="DINT" Dimensions="32" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Array DataType="DINT" Dimensions="32" Radix="Decimal"><Element Index="[0]" Value="0" /><Element Index="[1]" Value="0" /><Element Index="[2]" Value="0" /><Element Index="[3]" Value="0" /><Element Index="[4]" Value="0" /><Element Index="[5]" Value="0" /><Element Index="[6]" Value="0" /><Element Index="[7]" Value="0" /><Element Index="[8]" Value="0" /><Element Index="[9]" Value="0" /><Element Index="[10]" Value="0" /><Element Index="[11]" Value="0" /><Element Index="[12]" Value="0" /><Element Index="[13]" Value="0" /><Element Index="[14]" Value="0" /><Element Index="[15]" Value="0" /><Element Index="[16]" Value="0" /><Element Index="[17]" Value="0" /><Element Index="[18]" Value="0" /><Element Index="[19]" Value="0" /><Element Index="[20]" Value="0" /><Element Index="[21]" Value="0" /><Element Index="[22]" Value="0" /><Element Index="[23]" Value="0" /><Element Index="[24]" Value="0" /><Element Index="[25]" Value="0" /><Element Index="[26]" Value="0" /><Element Index="[27]" Value="0" /><Element Index="[28]" Value="0" /><Element Index="[29]" Value="0" /><Element Index="[30]" Value="0" /><Element Index="[31]" Value="0" /></Array></Data>
+      </Tag>
+      <Tag Name="SharedBuf01" TagType="Base" DataType="DINT" Dimensions="32" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Array DataType="DINT" Dimensions="32" Radix="Decimal"><Element Index="[0]" Value="0" /><Element Index="[1]" Value="0" /><Element Index="[2]" Value="0" /><Element Index="[3]" Value="0" /><Element Index="[4]" Value="0" /><Element Index="[5]" Value="0" /><Element Index="[6]" Value="0" /><Element Index="[7]" Value="0" /><Element Index="[8]" Value="0" /><Element Index="[9]" Value="0" /><Element Index="[10]" Value="0" /><Element Index="[11]" Value="0" /><Element Index="[12]" Value="0" /><Element Index="[13]" Value="0" /><Element Index="[14]" Value="0" /><Element Index="[15]" Value="0" /><Element Index="[16]" Value="0" /><Element Index="[17]" Value="0" /><Element Index="[18]" Value="0" /><Element Index="[19]" Value="0" /><Element Index="[20]" Value="0" /><Element Index="[21]" Value="0" /><Element Index="[22]" Value="0" /><Element Index="[23]" Value="0" /><Element Index="[24]" Value="0" /><Element Index="[25]" Value="0" /><Element Index="[26]" Value="0" /><Element Index="[27]" Value="0" /><Element Index="[28]" Value="0" /><Element Index="[29]" Value="0" /><Element Index="[30]" Value="0" /><Element Index="[31]" Value="0" /></Array></Data>
+      </Tag>
+      <Tag Name="SharedBuf02" TagType="Base" DataType="DINT" Dimensions="32" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Array DataType="DINT" Dimensions="32" Radix="Decimal"><Element Index="[0]" Value="0" /><Element Index="[1]" Value="0" /><Element Index="[2]" Value="0" /><Element Index="[3]" Value="0" /><Element Index="[4]" Value="0" /><Element Index="[5]" Value="0" /><Element Index="[6]" Value="0" /><Element Index="[7]" Value="0" /><Element Index="[8]" Value="0" /><Element Index="[9]" Value="0" /><Element Index="[10]" Value="0" /><Element Index="[11]" Value="0" /><Element Index="[12]" Value="0" /><Element Index="[13]" Value="0" /><Element Index="[14]" Value="0" /><Element Index="[15]" Value="0" /><Element Index="[16]" Value="0" /><Element Index="[17]" Value="0" /><Element Index="[18]" Value="0" /><Element Index="[19]" Value="0" /><Element Index="[20]" Value="0" /><Element Index="[21]" Value="0" /><Element Index="[22]" Value="0" /><Element Index="[23]" Value="0" /><Element Index="[24]" Value="0" /><Element Index="[25]" Value="0" /><Element Index="[26]" Value="0" /><Element Index="[27]" Value="0" /><Element Index="[28]" Value="0" /><Element Index="[29]" Value="0" /><Element Index="[30]" Value="0" /><Element Index="[31]" Value="0" /></Array></Data>
+      </Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+              <Rung Number="0" Type="N">
+                <Text><![CDATA[AoiStructProbe(AoiInst,Arg00,Arg01,Arg02,Arg03,Arg04,Arg05,Arg06,Arg07,Arg08,Arg09,Arg10,Arg11,Arg12,Arg13,Arg14,Arg15,Arg16,Arg17,Arg18,Arg19,Arg20,Arg21,Arg22,Arg23,Arg24,Arg25,Arg26,Arg27,Arg28,Arg29,Arg30,Arg31,Arg32,Arg33,Arg34,Arg35,Arg36,Arg37,Arg38,Arg39,Arg40,Arg41,Arg42,Arg43,Arg44,SharedBuf00,SharedBuf01,SharedBuf02);]]></Text>
+              </Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

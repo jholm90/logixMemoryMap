@@ -59,6 +59,21 @@ class MemberSpec:
     # hidden default) so existing callers are unaffected.
     required: bool = False
     visible: bool = False
+    # Verbatim <DefaultData> block for an AOI Parameter/LocalTag whose type
+    # is a PREDEFINED STRUCTURE (TIMER/COUNTER/STRING/MOTION_INSTRUCTION/...).
+    # 2026-09-06: these types appear all over real AOIs (557 TIMER, 66
+    # COUNTER, 58 STRING, 36 MOTION_INSTRUCTION member uses across the nine
+    # real programs) and had NEVER been generated once -- the ordinary
+    # atomic path emits a bare Radix + scalar DataValue, which is wrong for
+    # them, and the nested-UDT path emits an L5K value list that does not
+    # match the real positional encoding (a real TIMER LocalTag's L5K is
+    # `[0,1500,0]` -- three fields for five members, because EN/TT/DN alias
+    # into the leading status word). Rather than guess an encoding that
+    # would only fail later in Studio 5000, predefined_members.py supplies
+    # the exact real block captured from the corpus and it is emitted here
+    # verbatim. When set, no Radix attribute is written (matching every
+    # real predefined-struct Parameter/LocalTag on file).
+    raw_default_data: str | None = None
 
 
 _FLOAT_TYPES = {"REAL"}
@@ -410,6 +425,17 @@ def _aoi_nested_default_data_xml(m: "MemberSpec") -> str:
     )
 
 
+def _aoi_description_xml(m: "MemberSpec") -> str:
+    """<Description> on an AOI Parameter/LocalTag. 2026-09-06: 803 of the
+    2,120 real AOI Parameters/LocalTags on file carry one and no generated
+    file had ever emitted a single one, so the model's implicit "member
+    descriptions are free" assumption was untested. Real shape: first
+    child, CDATA-wrapped, before any DefaultData."""
+    if not m.description:
+        return ""
+    return f"<Description><![CDATA[{m.description}]]></Description>"
+
+
 def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
     # Real shape confirmed 2026-08-20 against James's own AOI templates
     # (AOI_Definition.L5X, AOI_Definition2.L5X, Aoi_Nested*.L5X, and the
@@ -462,10 +488,15 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
         dim_attr = f' Dimensions="{m.dimension}"' if m.dimension else ""
         radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"' if is_atomic else ""
         constant_attr = ' Constant="false"' if is_atomic else ""
-        return (
+        desc = _aoi_description_xml(m)
+        head = (
             f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{dim_attr}{radix_attr} Usage="InOut" '
-            f'Required="true" Visible="true"{constant_attr}/>'
+            f'Required="true" Visible="true"{constant_attr}'
         )
+        # Real corpus (311DGeneratedProgram.L5X MsgModuleReset,
+        # BaillieLeitchField MESSAGE_Fault): a described InOut Parameter is
+        # NOT self-closing -- it wraps a <Description> child.
+        return f"{head}>{desc}</Parameter>" if desc else f"{head}/>"
 
     # Real bug fix, 2026-08-27: <Parameter>/<LocalTag> array size is a
     # "Dimensions" (PLURAL) attribute in real Rockwell exports -- was
@@ -489,6 +520,16 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
     # A dimensioned atomic Input/Output Parameter can therefore never be
     # generated correctly -- hard-fail here instead of emitting invalid XML
     # that only fails later, in Studio.
+    if m.raw_default_data is not None and not m.dimension:
+        # Predefined structure type -- see MemberSpec.raw_default_data.
+        external_access = "Read Only" if usage == "Output" else "Read/Write"
+        required_attr = "true" if m.required else "false"
+        visible_attr = "true" if (m.required or m.visible) else "false"
+        return (
+            f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}" Usage="{usage}" '
+            f'Required="{required_attr}" Visible="{visible_attr}" '
+            f'ExternalAccess="{external_access}">{_aoi_description_xml(m)}{m.raw_default_data}</Parameter>'
+        )
     if m.dimension and usage != "InOut":
         raise ValueError(
             f"AOI Parameter {m.name!r}: array-dimensioned (Dimensions={m.dimension}) "
@@ -504,7 +545,7 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
     return (
         f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}" Usage="{usage}"'
         f'{radix_attr} Required="{required_attr}" Visible="{visible_attr}" '
-        f'ExternalAccess="{external_access}">{default}</Parameter>'
+        f'ExternalAccess="{external_access}">{_aoi_description_xml(m)}{default}</Parameter>'
     )
 
 
@@ -512,16 +553,22 @@ def _aoi_local_tag_xml(m: "MemberSpec") -> str:
     # See the matching comment in _aoi_parameter_xml -- same real
     # Dimension->Dimensions attribute-name fix, same reason.
     dim_attr = f' Dimensions="{m.dimension}"' if m.dimension else ""
+    if m.raw_default_data is not None:
+        # Predefined structure type -- see MemberSpec.raw_default_data.
+        return (
+            f'<LocalTag Name="{m.name}" DataType="{m.data_type}"{dim_attr} '
+            f'ExternalAccess="None">{_aoi_description_xml(m)}{m.raw_default_data}</LocalTag>'
+        )
     if m.nested_members is not None:
         # Real shape confirmed: a nested-UDT/nested-AOI LocalTag has no
         # Radix attribute at all (matches the same UDT-typed-tag rule).
         default = "" if m.dimension else _aoi_nested_default_data_xml(m)
-        return f'<LocalTag Name="{m.name}" DataType="{m.data_type}"{dim_attr} ExternalAccess="None">{default}</LocalTag>'
+        return f'<LocalTag Name="{m.name}" DataType="{m.data_type}"{dim_attr} ExternalAccess="None">{_aoi_description_xml(m)}{default}</LocalTag>'
     radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
     default = "" if m.dimension else _aoi_default_data_xml(m)
     return (
         f'<LocalTag Name="{m.name}" DataType="{m.data_type}"{dim_attr}{radix_attr} '
-        f'ExternalAccess="None">{default}</LocalTag>'
+        f'ExternalAccess="None">{_aoi_description_xml(m)}{default}</LocalTag>'
     )
 
 
@@ -539,6 +586,10 @@ def aoi_xml(
     local_tags: list["MemberSpec"] | None = None,
     logic_rungs_xml: str = "",
     extra_routines_xml: str = "",
+    description: str | None = None,
+    revision_note: str | None = None,
+    enable_in_false_rungs_xml: str = "",
+    prescan_rungs_xml: str = "",
 ) -> tuple[str, list["MemberSpec"]]:
     """AddOnInstructionDefinition + the "storage member list" for generating
     an instance tag of it. Real shape confirmed 2026-08-20 against James's
@@ -597,6 +648,34 @@ def aoi_xml(
     local_parts = [_aoi_local_tag_xml(m) for m in local_tags]
     locals_xml = ("<LocalTags>\n" + "\n".join(local_parts) + "\n      </LocalTags>") if local_parts else "<LocalTags/>"
 
+    # AOI-level <Description>/<RevisionNote> and the real EnableInFalse/
+    # Prescan routines (2026-09-06). Real shape confirmed against the
+    # corpus: Description then RevisionNote, both CDATA-wrapped, sitting
+    # between the element's attributes and <Parameters>; the extra
+    # routines are emitted in the real alphabetical order EnableInFalse,
+    # Logic, Prescan and their presence flips the matching
+    # ExecuteEnableInFalse/ExecutePrescan attribute to "true" (real:
+    # PTimer, HomeToTorque, fbInput, fbOutput all carry
+    # ExecuteEnableInFalse="true" alongside an EnableInFalse routine;
+    # AOI_CIP_Motion_Fault_Alarm_Log_Reader adds ExecutePrescan="true" and
+    # a Prescan routine). 7 of the 81 real AOI definitions on file have
+    # more than one internal routine; no generated file ever had.
+    header_children = ""
+    if description:
+        header_children += f"<Description><![CDATA[{description}]]></Description>\n      "
+    if revision_note:
+        header_children += f"<RevisionNote><![CDATA[{revision_note}]]></RevisionNote>\n      "
+    execute_eif = "true" if enable_in_false_rungs_xml else "false"
+    execute_prescan = "true" if prescan_rungs_xml else "false"
+    eif_routine_xml = (
+        f'        <Routine Name="EnableInFalse" Type="RLL"><RLLContent>{enable_in_false_rungs_xml}</RLLContent></Routine>\n'
+        if enable_in_false_rungs_xml else ""
+    )
+    prescan_routine_xml = (
+        f'        <Routine Name="Prescan" Type="RLL"><RLLContent>{prescan_rungs_xml}</RLLContent></Routine>\n'
+        if prescan_rungs_xml else ""
+    )
+
     logic_routine_xml = (
         f'        <Routine Name="Logic" Type="RLL"><RLLContent>{logic_rungs_xml}</RLLContent></Routine>\n'
         if logic_rungs_xml else
@@ -606,13 +685,15 @@ def aoi_xml(
 
     definition = (
         f'    <AddOnInstructionDefinition Name="{name}" Revision="1.0" Vendor="LogixMemoryMap" '
-        f'ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" '
+        f'ExecutePrescan="{execute_prescan}" ExecutePostscan="false" ExecuteEnableInFalse="{execute_eif}" '
         f'CreatedDate="{_AOI_CREATED_DATE}" CreatedBy="Generator" EditedDate="{_AOI_CREATED_DATE}" '
         f'EditedBy="Generator" SoftwareRevision="v35.05">\n'
-        f'      <Parameters>\n' + "\n".join(param_parts) + "\n      </Parameters>\n"
+        f'      {header_children}<Parameters>\n' + "\n".join(param_parts) + "\n      </Parameters>\n"
         f'      {locals_xml}\n'
         f'      <Routines>\n'
+        f'{eif_routine_xml}'
         f'{logic_routine_xml}'
+        f'{prescan_routine_xml}'
         f'{extra_routines_block}'
         f'      </Routines>\n'
         f"    </AddOnInstructionDefinition>"

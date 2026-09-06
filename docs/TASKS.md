@@ -32,6 +32,24 @@ Local Flask server, vanilla JS/SVG squarified treemap, no CDN dependency.
       into defs pool, AOI definition cost wired[^aoidef], inline/anonymous
       AOI instances confirmed a zero-occurrence case (not built)
 
+- 🟡 **AOI declaration cost as a function of STRUCTURE, not name**
+      (2026-09-06, OQ-AOISTRUCT). The definition-cost function prices
+      base + per-item rate + AOI TYPE-name length and nothing else, which
+      leaves seven structural properties at exactly zero: member name
+      length, member descriptions, InOut params, predefined-structure
+      members (TIMER/COUNTER/STRING/MOTION_INSTRUCTION/MESSAGE — 752 real
+      member uses, never generated once before today), array dimensions,
+      member counts past the fitted range (real AOIs reach 102 params /
+      128 locals / 85 internal rungs against a corpus that topped out near
+      6/2/1), and extra internal routines. `gen_aoi_structure.py`, 56
+      files, one property per group. Deliberately NOT fitted per-AOI-name
+      against the definitions shared across James's projects — James,
+      2026-09-05: *"I plan on sharing this for people outside my company
+      and their code will be very different and use different aois."*
+      The model predicts a dead-flat line across every group except the
+      three scale sweeps, so any spread in the captured numbers is an
+      unpriced item with no disentangling required. **Blocked on capture.**
+
 ## Phase 3 — Sample validation round 1 — **CLOSED 2026-08-24**
 Exit criterion met: tag/UDT/AOI predictions match real Capacity data with
 0.00% residual across the confirmed-formula majority; every discrepancy is

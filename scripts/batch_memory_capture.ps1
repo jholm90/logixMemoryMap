@@ -65,20 +65,30 @@
   constants must point at the exact same two paths -- update them once and
   you're done, no more copy-pasting a path into two places every run.
 
+.NOTES
+  Controller model and firmware are NOT parameters. They are read from each
+  L5X's own Controller/@ProcessorType and RSLogix5000Content/@SoftwareRevision.
+
+  They used to be mandatory switches, and that was a mistake that quietly
+  corrupted the dataset for weeks: the values typed on the command line were
+  stamped onto every manifest row regardless of what the file actually
+  declared. 1,926 of 1,959 captured rows ended up carrying a processor that
+  contradicted their own XML -- a whole corpus labelled "5069-L306ER" when
+  2,149 of the files were really 1756-L81E. Every per-platform comparison
+  built on that column was therefore meaningless until it was rebuilt from
+  the files (2026-09-05). The L5X is authoritative and free to read; a
+  human typing it in can only ever be a second, worse source of truth.
+
 .EXAMPLE
   # Smoke test on the first 10 files before committing to a full run:
-  ./batch_memory_capture.ps1 -ConvertLog C:\l5x_scratch\acd\convert_log.csv `
-      -ControllerModel "5069-L306ER" -FirmwareRev "35.11" -Limit 10
+  ./batch_memory_capture.ps1 -ConvertLog C:\l5x_scratch\acd\convert_log.csv -Limit 10
 
   # Full run, same command without -Limit:
-  ./batch_memory_capture.ps1 -ConvertLog C:\l5x_scratch\acd\convert_log.csv `
-      -ControllerModel "5069-L306ER" -FirmwareRev "35.11"
+  ./batch_memory_capture.ps1 -ConvertLog C:\l5x_scratch\acd\convert_log.csv
 #>
 param(
     [Parameter(Mandatory = $true)][string]$ConvertLog,
     [string]$ManifestPath = (Join-Path $PSScriptRoot "..\samples\manifest.csv"),
-    [Parameter(Mandatory = $true)][string]$ControllerModel,
-    [Parameter(Mandatory = $true)][string]$FirmwareRev,
     [string]$HandoffPath = (Join-Path $PSScriptRoot "ahk_runtime\ahk_handoff.csv"),
     [string]$OpenRequestPath = (Join-Path $PSScriptRoot "ahk_runtime\open_request.txt"),
     [int]$TimeoutSeconds = 1200,
@@ -363,10 +373,14 @@ foreach ($row in $remaining) {
     # (2,149 files really declare 1756-L81E). That is operator metadata
     # masquerading as measurement, and it silently poisons any per-platform
     # analysis -- which is exactly what it did until the mismatch was
-    # spotted. The file is authoritative and free to read; the switches are
-    # kept only as a fallback for a file we cannot parse.
-    $declaredProc = $ControllerModel
-    $declaredFw   = $FirmwareRev
+    # spotted. The switches were REMOVED outright 2026-09-06 (James: "the
+    # ps1 script asking for firmware and processor is garbage and should
+    # never have been there it should be determined bu the l5x file
+    # anyways") -- not demoted to a fallback, because a fallback is exactly
+    # how the wrong values got into 1,926 rows in the first place. A file
+    # we cannot parse records UNKNOWN and carries a PROCTYPE-UNREAD note.
+    $declaredProc = "UNKNOWN"
+    $declaredFw   = "UNKNOWN"
     try {
         [xml]$l5xHead = Get-Content -LiteralPath $l5xPath -TotalCount 40 -ErrorAction Stop
         if ($l5xHead.RSLogix5000Content.SoftwareRevision) {
@@ -376,8 +390,10 @@ foreach ($row in $remaining) {
             $declaredProc = $l5xHead.RSLogix5000Content.Controller.ProcessorType
         }
     } catch {
-        # Truncated read or malformed head -- fall back to the switches and
-        # leave a note rather than recording a value we did not verify.
+        # Truncated read or malformed head. Record UNKNOWN and flag the row
+        # rather than inventing a value -- there is no operator-supplied
+        # fallback any more, deliberately: a guessed processor is worse than
+        # an admitted gap, because it looks like data.
         $notes = ($notes + " PROCTYPE-UNREAD").Trim()
     }
 

@@ -776,6 +776,24 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
         findings.extend(_bit_level_findings(_all_rung_texts(aoi_el), aoi_tag_types))
 
     for text in rung_texts:
+        # An AOI InOut Parameter declared with Dimensions takes the WHOLE
+        # array as its argument, bare, with no [index] -- real corpus:
+        # LOG_HMIDisplay Dimensions="25" and BitArray Dimensions="1024"
+        # are both passed that way. Same class of exception as SIZE/MCSV
+        # below, but it cannot be a mnemonic lookbehind because the array
+        # can sit at any argument position of any AOI call, so the whole
+        # call site is exempted instead (2026-09-06, found generating
+        # aoistr_real_* -- the first files this project ever built with an
+        # array InOut param actually wired to a caller).
+        aoi_call_spans = [
+            m.span() for m in _INSTRUCTION_CALL.finditer(text)
+            if m.group(1) in aoi_names
+        ]
+        aoi_arg_regions = []
+        for start, _ in aoi_call_spans:
+            close = text.find(")", start)
+            aoi_arg_regions.append((start, len(text) if close < 0 else close))
+
         for tag in array_tags:
             # SIZE is a confirmed exception to the bracket rule (James's
             # own Studio-5000-verified COP_Samples.L5X, 2026-08-22:
@@ -795,7 +813,11 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
             # blanket CAM_PROFILE exemption, because MAPC/MCCP DO take a
             # subscripted element and must still be caught.
             pattern = re.compile(r"(?<!SIZE\()(?<!MCSV\(MCSV,)\b" + re.escape(tag) + r"\b(?!\s*\[)")
-            if pattern.search(text):
+            hits = [
+                m for m in pattern.finditer(text)
+                if not any(lo <= m.start() < hi for lo, hi in aoi_arg_regions)
+            ]
+            if hits:
                 findings.append(LintFinding(
                     "missing_array_subscript",
                     f"array-typed tag '{tag}' referenced without a [index] subscript in rung text: {text.strip()!r}",

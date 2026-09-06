@@ -56,6 +56,41 @@ instruction table almost did.
 
 ## UNKNOWN — real, open, no formula yet (this is the actual gap)
 
+0. **THE STRUCTURAL BLIND SPOT (2026-09-06, OQ-AOISTRUCT) — read this
+   first, it reframes everything below.** The definition-cost function is
+   `base 1184 + per-item rate (or per-TYPE rate for a single-type def) +
+   AOI TYPE-name length buckets`, and that is the whole of it. Seven
+   structural properties of an AOI are therefore priced at exactly zero,
+   with the real-corpus frequency of each measured across 81 real AOI
+   definitions / 2,120 real Parameters+LocalTags:
+
+   | unpriced | real corpus |
+   |---|---|
+   | member NAME length | mean 12.1 chars, max 32 |
+   | member DESCRIPTIONS | 803 of 2,120 have one; zero ever generated |
+   | InOut parameters | 94 real; skipped outright by `compute_aoi_definition_cost` |
+   | predefined-struct members | TIMER 557, DateTime 120, COUNTER 66, STRING 58, MOTION_INSTRUCTION 36, MESSAGE 15 — none ever generated |
+   | array dimensions | 46 real dimensioned members, counted as one item each |
+   | counts past the fitted range | real AOIs reach 102 params / 128 locals / 85 internal rungs; corpus topped out near 6/2/1 |
+   | extra internal routines | 7 of 81 have EnableInFalse and/or Prescan besides Logic |
+
+   Why it matters more than the byte counts suggest: this tool is going to
+   strangers (James, 2026-09-05, *"I plan on sharing this for people
+   outside my company and their code will be very different and use
+   different aois"*), and every item in that table is a property their AOIs
+   will have in different amounts than James's. A correction fitted against
+   the definitions that recur across his nine projects — `PTimer`,
+   `HomeToTorque`, `T_ADD`, `Debounce` and the other byte-identical shared
+   AOIs — would score well here and be worthless there.
+
+   `gen_aoi_structure.py` (56 files) isolates each property, one per group,
+   with the AOI type name held constant across all 56 so the one priced
+   name term cannot contaminate the readings. The model predicts a dead
+   flat line across every group except the three scale sweeps, so any
+   spread in the captured numbers is an unpriced item. **Blocked on
+   capture.**
+
+
 1. **AOI DEFINITION cost — WIRED 2026-08-27, close but not total closure.**
    The full `localtype_*`/`paramtype_*`/`aoidefcost_type*` def_only batch
    (85/85 AOI manifest rows) had landed captured but sat unprocessed —

@@ -48,18 +48,26 @@ safe to leave running overnight against the full corpus.
 
 ```powershell
 # Smoke test on the first 10 files before committing to a full run:
-./batch_memory_capture.ps1 -ConvertLog C:\l5x_scratch\acd\convert_log.csv `
-    -ControllerModel "5069-L306ER" -FirmwareRev "35.11" -Limit 10
+./batch_memory_capture.ps1 -ConvertLog C:\l5x_scratch\acd\convert_log.csv -Limit 10
 
 # Full run, same command without -Limit:
-./batch_memory_capture.ps1 -ConvertLog C:\l5x_scratch\acd\convert_log.csv `
-    -ControllerModel "5069-L306ER" -FirmwareRev "35.11"
+./batch_memory_capture.ps1 -ConvertLog C:\l5x_scratch\acd\convert_log.csv
 ```
 
-Params: `-ConvertLog` (required), `-ControllerModel` (required),
-`-FirmwareRev` (required), `-ManifestPath` (default
+Params: `-ConvertLog` (required), `-ManifestPath` (default
 `samples/manifest.csv`), `-HandoffPath`, `-OpenRequestPath`,
 `-TimeoutSeconds` (default 1200), `-Limit`.
+
+Controller model and firmware are **not** parameters — they are read from
+each L5X's own `Controller/@ProcessorType` and
+`RSLogix5000Content/@SoftwareRevision`. They used to be mandatory switches
+(removed 2026-09-06, James: *"the ps1 script asking for firmware and
+processor is garbage and should never have been there it should be
+determined bu the l5x file anyways"*), and whatever was typed on the
+command line got stamped onto every manifest row regardless of what the
+file declared: 1,926 of 1,959 captured rows ended up carrying a processor
+that contradicted their own XML. A file whose head cannot be parsed now
+records `UNKNOWN` and a `PROCTYPE-UNREAD` note rather than a guess.
 
 Auto-pushes `samples/manifest.csv` to `main` when it finishes — same
 mechanism as 1a. Window-title-mismatch and zero-Capacity rows are
