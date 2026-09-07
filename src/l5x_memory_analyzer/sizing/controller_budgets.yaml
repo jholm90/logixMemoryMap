@@ -14,7 +14,7 @@
 #     data-logic pool that's the number usually quoted as "memory size".
 #
 # Sourced 2026-08-20 via aggregated web search (Rockwell's own literature
-# site is blocked by this session's egress proxy, so these are converged
+# site is blocked by the build environment's egress proxy, so these are converged
 # secondary-source figures -- distributor/reseller spec listings that
 # agree with each other across multiple independent queries -- not a
 # direct read of Rockwell's own PDF). Tagged ASSUMED, not KNOWN, per this

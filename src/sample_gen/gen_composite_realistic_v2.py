@@ -2,7 +2,7 @@
 
 Direct follow-up to gen_composite_realistic.py's 50-file batch. That batch's
 own ~3% real residual was checked directly against the two fixes just wired
-this session (JSR-target-content weighing, AOI-internal-logic weighing) and
+in that pass (JSR-target-content weighing, AOI-internal-logic weighing) and
 found to be UNMOVED by either (see OPEN_QUESTIONS.md OQ-COMPOSITESCALE,
 2026-08-31 correction) -- root cause: v1's AOIs all use the old hardcoded
 empty `<Routine Name="Logic" Type="RLL"/>` shape (zero internal content) and

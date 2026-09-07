@@ -475,7 +475,7 @@ the matching footnote at the bottom, not inline.
     120,000×4, zero packing ambiguity). Any real conversion factor will
     show up as an obvious clean ratio between the two files' real Capacity
     readings. Awaiting capture on both (not yet in the tooling as of
-    2026-08-30 — only just pushed this session).
+    2026-08-30 — only just pushed at the time).
 
     Circumstantial evidence surfaced 2026-08-30 in OQ-BASELINE-PROCFW
     above: two different 1769/L7x-family capture batches (the restored
@@ -888,7 +888,7 @@ the matching footnote at the bottom, not inline.
     Name="Logic" Type="RLL"/>` shape (never updated to use `aoi_xml()`'s
     new `logic_rungs_xml` param), so its AOIs have zero internal content to
     weigh either way. **Correcting the composite-residual hypothesis
-    written earlier this session** (see OQ-COMPOSITESCALE below): neither
+    written earlier in the same pass** (see OQ-COMPOSITESCALE below): neither
     this fix nor the JSR-target-content fix explains the composite
     batch's residual, since composite files don't currently exercise
     either gap — that residual's real source is still unidentified.
@@ -908,7 +908,7 @@ the matching footnote at the bottom, not inline.
 
     **Real capture landed 2026-08-31 for both sweeps at namelen04/08/16/
     32 (namelen40 not yet captured — that variant failed import under the
-    old, invalid namelen48; see this session's fix) — and the two
+    old, invalid namelen48; see the fix below) — and the two
     independent sweeps show the SAME real pattern.** Deltas (against the
     flat predicted baseline, so pure name-length signal) at len 4/8/16/32,
     10 items per file:

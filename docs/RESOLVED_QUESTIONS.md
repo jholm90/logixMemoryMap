@@ -41,7 +41,7 @@ category once real usage shows up in the corpus.
 
 **L5X version cross-check.** 2026-08-22: kept on the feature wish
 list rather than tested now. The 7 personal-project files added to the
-corpus this session (`samples/local/DnR_Personal/`, gitignored per the
+corpus in that batch (`samples/local/DnR_Personal/`, gitignored per the
 project's real-export policy) span SoftwareRevision 31.02–35.05 — still no
 v20/v30 example in hand, so there's nothing to test yet either way. Revisit
 if an actual v20/v30 export turns up.
@@ -52,7 +52,7 @@ on safety-enabled projects rather than attempt a wrong combined number.
 **OQ-EXPORTSCOPE.** 2026-08-22: the tool needs to handle any
 L5X that comes in — Program/DataType/AOI-only exports, not just full
 controller exports — and identify which kind it's looking at in the UI.
-Also names the actual product differentiator while answering: Logix
+The same discussion named the actual product differentiator: Logix
 Designer already shows a UDT's total size in bytes, it just never shows
 *why* it's that size. The UI's per-member/per-tag breakdown is the value
 add, not just a total-bytes number Logix already gives you. Not yet built
@@ -134,7 +134,7 @@ unpacked) stands confirmed.
 alignment padding between UDT members at all (`BOOL,DINT,BOOL`=6 bytes,
 `DINT,BOOL,BOOL`=5 bytes), tight-packed except for the BOOL-run mechanic.
 Confirmed by the implementation already matching exactly, and by every
-real UDT test this session (dozens, across every sweep) landing on
+real UDT test in that batch (dozens, across every sweep) landing on
 predictions consistent with tight-packing. Reordering members does affect
 footprint — a real, worthwhile future UI finding.
 
@@ -1150,7 +1150,7 @@ not a structural gap.
 ## OQ-BRANCHDEPTH, CLOSED 2026-08-30
 
 Tests requested a week earlier had still not been decompiled -- the same
-recurring pattern as CPT/1769/AOI this session: 16 real capture points (`branchdepth_legs01/03/05`,
+recurring pattern as CPT/1769/AOI in that batch: 16 real capture points (`branchdepth_legs01/03/05`,
 `branchdepthc_legs02/04/06/08/10/15/20/30`, `branchdepthstag_d01-06`) were
 sitting in manifest.csv with real `actual_bytes` -- "Reconciled from
 the local branch (james-capture-aug24)" -- unreconciled into the
@@ -1641,7 +1641,7 @@ own already-working template omits both and still imports fine across
 rather than the actual failure cause, but added for fidelity now that
 real values exist. All 174 files regenerated — awaiting real
 re-conversion to confirm the L7x fix actually resolves the failure rate,
-not just structurally plausible like the module fixes earlier today.
+not just structurally plausible like the module fixes made earlier the same day.
 
 **Sourced but deliberately NOT generated, real ProductCode still
 unconfirmed:** ControlLogix 5590 (1756-L9x, "TS" suffix — L902TS/L905TS/
@@ -1695,7 +1695,7 @@ POW is present). See `sizing/constants.py` `CptExpressionModel.cost_for`.
 **All-3-tier mixes: CLOSED 2026-08-29.** The 3
 `cptmix_threetier_rem2_n06/n09/n12` files (plus the 4 disentangle files
 below) had real capture data from 2026-08-27 sitting unreconciled in
-manifest.csv this whole time — found and fixed the same day the question
+manifest.csv this whole time — found and fixed the same day it was raised
 was raised of why this wasn't closed already. The earlier `44*T1-116*T2+76*T3+72`
 attempt was wrong (not just "misses n=15" — checked directly, it doesn't
 reproduce the n=3/5/8/10/11 points it was supposedly fit from either).
@@ -1860,7 +1860,7 @@ different, still-open shape from the 3 points on file.
 Confidence downgraded `aoi_array`: KNOWN → FITTED (`memory_model.yaml`,
 2026-08-30) — the formula is left un-replaced rather than guessing a
 generalized fix from underdetermined data (this project already ate one
-overfit formula this session, the CPT three-tier bug — not repeating it).
+overfit formula in that batch, the CPT three-tier bug — not repeating it).
 New dense/isolating test files generated instead, not yet captured:
 `gen_aoi_boolpack_pairing.py` → `aoibp_dense_bc{10,20,60}_n{02,03,04,06,08,12}`
 (18 files, dense n right where the pairing period would show, including

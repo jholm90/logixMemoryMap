@@ -685,7 +685,7 @@ def _build(profile: Profile) -> tuple[str, str]:
 
 # 2026-08-31: the 50 tests needed new filenames, with the old ones
 # abandoned -- every one of the 50 original
-# composite_realistic_NN files changed real content this session (AOI
+# composite_realistic_NN files changed real content in that pass (AOI
 # Required=true fix, XIC/OTE bit-subscript fix, and for 5 files the
 # backplane-slot-collision fix), after a real l5x2acd/capture batch had
 # already run against the OLD names. Renamed with a "_r2" suffix

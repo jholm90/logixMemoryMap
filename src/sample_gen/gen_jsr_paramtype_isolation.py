@@ -1,7 +1,7 @@
 """OQ-JSRPARAMCOST param-TYPE isolation (2026-08-30). Does the JSR param
 cost accommodate UDT parameters as well as base types like DINT and REAL?
 
-Real gap found answering that question: EVERY jsr_sbr_ret file ever built
+Real gap found while checking that: EVERY jsr_sbr_ret file ever built
 (gen_jsr_sbr_ret.py, gen_jsr_decompose.py, gen_jsr_paramcost_closeout.py --
 14 existing real captures plus the 5-file closeout batch just built) uses
 DINT for every single JSR/SBR param, with zero exceptions. The sizing engine

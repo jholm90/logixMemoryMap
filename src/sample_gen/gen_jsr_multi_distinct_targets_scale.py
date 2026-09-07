@@ -11,7 +11,7 @@ tags/UDTs/AOI definitions, which all have a real, empirically-confirmed
 name-length bucket cost (see memory_model.yaml aoi_definition.name_length_
 bucket_bytes etc.). Whether JSR-target routine names carry the same kind
 of real cost has never been tested, because every JSR calibration file
-built to date (old corpus and this session's new ones) used short, roughly
+built to date (old corpus and the new ones) used short, roughly
 fixed-length target names.
 
 Two groups:

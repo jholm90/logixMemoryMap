@@ -969,7 +969,7 @@ array:
 # `8*ceil(n/2)+const` at all -- multi-word packing is a materially
 # different, still-unsolved shape. NOT fixed here: guessing a generalized
 # replacement risks the same overfit mistake this project has already hit
-# once this session (the CPT three-tier formula). New dense/isolating test
+# once already (the CPT three-tier formula). New dense/isolating test
 # files generated instead (gen_aoi_boolpack_pairing.py) -- see
 # OPEN_QUESTIONS.md OQ-AOIBOOLPACK-PAIRING for the full real-data table.
 aoi_array:
@@ -1234,7 +1234,7 @@ udt_definition:
 #   and a float literal) -- no way from 3 data points to tell which
 #   factor(s) drive the 150-byte gap. Deliberately NOT patched by fitting
 #   a 4th constant to this one point -- that would repeat the exact
-#   mistake this project already caught and reverted once this session
+#   mistake this project already caught and reverted once alreads session
 #   (a formula fit to too few points that broke on the fuller dataset).
 #   Needs a dedicated mixed-operator test batch (tier-pair sweep, isolate
 #   literal position, isolate REAL-vs-DINT) before this branch can be

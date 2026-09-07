@@ -96,7 +96,7 @@ def group_section_split_isolation() -> int:
 
 # ---------------------------------------------------------------------------
 # C. Pure-BOOL vs mixed BOOL+DINT isolation, 2026-08-30: "are there
-# new tests for all of those points?" -- caught while answering that a
+# new tests for all of those points?" -- caught while re-checking that a
 # prior write-up mischaracterized aoipack_ratio_XXbYYa as a 3-way-split
 # shape; it's actually the SAME single-section family as mc10/mc20 above,
 # just with a fixed 30-member total and a MIXED (not pure) type

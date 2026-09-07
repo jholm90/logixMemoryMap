@@ -235,7 +235,7 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
                     input_bytes += _int_attr(conn_el, "InputSize")
                     output_bytes += _int_attr(conn_el, "OutputSize")
                     # InputTag/OutputTag live INSIDE their owning Connection
-                    # in every real shape found this session, not as a
+                    # in every real shape found in that pass, not as a
                     # Communications sibling -- see module docstring.
                     input_tag_el = conn_el.find("InputTag")
                     if input_tag_el is not None:
@@ -253,7 +253,7 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
                         unknown_types.extend(unk)
 
             # ConfigTag (Decorated Structure content available -- e.g. every
-            # I/O module found this session) vs ConfigData (2026-08-27,
+            # I/O module found in that pass) vs ConfigData (2026-08-27,
             # found in the real motion/drive corpus -- P208/D012/S086 all
             # use this instead: an L5K-only blob, NO Decorated structure at
             # all, just a real stated ConfigSize). Both carry a real

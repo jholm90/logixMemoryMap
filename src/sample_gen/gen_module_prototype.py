@@ -10,7 +10,7 @@ First 3 files (groups 1-3) validated clean against real Studio 5000 import.
 **2026-08-27:** one L5X per module from the sample database, with rack and
 slot sizing accounted for. Extended using `samples/local/module_
 extraction.csv` (1,212 real module rows, 130 distinct catalog numbers,
-built earlier this session) to pick real high-frequency catalog numbers,
+built earlier in the same pass) to pick real high-frequency catalog numbers,
 then re-verified each one's actual XML shape directly against the real
 corpus file it came from before genericizing -- same standard as groups
 1-3, never guessed. Groups 4-5 below cover two more real shapes this

@@ -38,7 +38,7 @@ before a variant sweep can be built, same "never guess" bar as
 everywhere else).
 
 Real VFD-specific shape, genuinely different from every module found
-earlier this session: `ConfigData` (L5K only, real stated ConfigSize) PLUS
+earlier in the same pass: `ConfigData` (L5K only, real stated ConfigSize) PLUS
 a SEPARATE `ConfigScript` element (L5K only, real stated Size -- the
 drive's own full parameter-database blob, by far the largest real
 contributor: 8,728 bytes for the 525, 2,204 for the 755) alongside ONE
