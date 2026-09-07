@@ -467,3 +467,21 @@ def test_zero_connection_module_is_charged_and_still_flagged():
     assert any(e.path.startswith("coverage/module_zero_connection/") for e in errors)
     assert not any("TestLocal" in e.message for e in errors)
     assert not any(e.path == "modules/Local" for e in errors)
+
+
+def test_confidence_audit_finds_no_stale_assumed_tiers():
+    """Guard for the 2026-09-06 finding: 174 of 185 ASSUMED predefined
+    structures already had error-free, exactly-0.0000% capture data on
+    disk. The numbers were right; the tiers had never been updated when
+    the questions closed. Because weakest() propagates a tier upward, that
+    marked 11.53% of all real-file bytes as assumed against a true 4.33%.
+
+    A confidence tier is a claim about evidence, so it gets checked rather
+    than remembered."""
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    script = Path(__file__).resolve().parent.parent / "scripts" / "audit_confidence.py"
+    result = subprocess.run([sys.executable, str(script)], capture_output=True, text=True)
+    assert result.returncode == 0, result.stdout

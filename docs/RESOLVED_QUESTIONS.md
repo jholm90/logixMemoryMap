@@ -2377,3 +2377,77 @@ change made) pending it.
    bug) — a larger/varied corroboration, not a reopening of the core
    question.
 
+
+---
+
+## Closed 2026-09-06
+
+**OQ-PREDEFINED confidence audit — 174 structures were already known.**
+185 predefined structures carried `confidence: ASSUMED`. An audit against
+the manifest found that 173 of them had `predefprobe_<type>` capture data
+sitting on disk at **exactly 0.0000% residual with zero errors**, and
+OUTPUT_COMPENSATION at −8 bytes, which is the universal per-file offset
+seen corpus-wide rather than a structure-size error. All 174 upgraded to
+KNOWN. No byte value changed.
+
+This was a bookkeeping failure, not a knowledge gap, and it was not
+cosmetic: `weakest()` propagates a tier upward, so a stale ASSUMED on a
+leaf type marks every containing UDT and every real file that uses one.
+Combined with the same staleness on BOOL sizing (fixed the same day), the
+model was reporting **11.53%** of all real-file bytes as ASSUMED when the
+true figure was **4.33%**.
+
+Standing rule from this: a constant carries the tier its evidence supports
+on the day the capture lands. `scripts/audit_confidence.py` now checks
+this automatically so it cannot drift again.
+
+**OQ-2198ERS3 — root cause found, was never a Rockwell mystery.**
+Six 2198 Kinetix `-ERS3` catalogs were recorded as "undiagnosed" import
+failures for two weeks, and were the single largest ASSUMED exposure on
+real files at 4.07% of total bytes. The evidence was already in the
+manifest:
+
+- Every non-safety 2198 (C4004-ERS, H008-ERS, P031, P070, P141, P208,
+  RP200) captured error-free and exact on a standard 1756-L81E.
+- Every `-ERS3` catalog failed, and only those.
+- The failing 2conn shape carries `SafetyEnabled="false"` and **no Safety
+  connections at all**, yet Studio still synthesised `:SI`/`:SO` safety
+  tags for it and errored twice.
+
+Studio keys off the **catalog** being safety hardware, not off the
+attributes in the XML. A `-ERS3` drive needs a safety-capable controller
+in every shape it appears in. `gen_module_sweep_variants.py` applied the
+safety processor only to the 4conn variants, which is why the 2conn ones
+kept failing — a generator bug. The 4conn `_r2` files were regenerated
+correctly and then never captured at all, so "still failing" was never
+established for them either.
+
+Fixed three ways: `gen_assumed_closeout.py` rebuilds every `-ERS3` shape on
+a real SIL2 controller and count-sweeps it; `lint.py` now flags a
+safety-rated catalog on a non-safety controller regardless of
+`SafetyEnabled`, closing the false negative that hid this; and two
+regression tests pin the `-ERS3` vs `-ERS` distinction, which matters
+because the plain `-ERS` suffix is **not** a safety marker.
+
+**OQ-FBDSFC — the last 10 unmeasured predefined structures.** FBD_TIMER,
+FBD_ONESHOT, FBD_MATH, FBD_BOOLEAN_AND/OR/NOT, SCALE, RATE_LIMITER,
+SFC_STEP and SFC_ACTION were the only predefined types with no capture
+behind them. Probe files built (`gen_assumed_closeout.py` group C), same
+one-bare-tag shape that closed the other 174.
+
+**Closed as out of scope, not as measured:**
+
+- **v30 firmware baseline.** A single manual reading, and the SDK cannot
+  convert v30 exports at all, so it can never be re-measured through the
+  capture pipeline. v30 is below the supported firmware range.
+- **1769-series per-catalog baselines (9 catalogs).** 1769 is dead
+  architecture by decision. The existing captures are also contaminated by
+  the I/O-memory-field capture bug and would need a re-run that is not
+  coming. Wiring stays in place; nothing further is invested.
+- **AXIS_GENERIC.** Predicted and actual agree exactly (35,008) but the
+  capture carries a real error — "AXIS_GENERIC axes are not supported by
+  this controller" — so it cannot be made a valid fitting point on
+  1756-L8x or 5069. Out of scope for both active platforms.
+- **~175 predefined structures that no real file uses.** Sized from
+  RM018A and now confirmed by probe capture, but they are not exposure on
+  any real program. Tracked as KNOWN, not as open risk.

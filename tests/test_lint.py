@@ -253,3 +253,31 @@ def test_flags_bare_lbl_with_nothing_after_it():
 def test_does_not_flag_lbl_followed_by_nop():
     l5x = build_l5x(target_name="T", tags_xml="", extra_rungs_xml=rung_xml(0, "LBL(L1)NOP();"))
     assert not any(f.kind == "lbl_missing_trailing_instruction" for f in lint_l5x(l5x))
+
+
+def test_flags_safety_rated_catalog_even_when_safety_enabled_is_false():
+    # The 2198 -ERS3 root cause, 2026-09-06. Studio synthesises :SI/:SO
+    # safety tags from the catalog itself, so a safety-rated drive fails to
+    # import on a standard controller even carrying SafetyEnabled="false"
+    # and no Safety connections at all. Six catalogs sat recorded as
+    # "undiagnosed" behind exactly this false negative.
+    modules = (
+        '<Module Name="Drive1" CatalogNumber="2198-D012-ERS3" SafetyEnabled="false">'
+        '<Ports><Port Id="1" Address="192.168.1.10" Type="Ethernet" Upstream="true"/></Ports>'
+        "</Module>"
+    )
+    findings = lint_l5x(_MODULE_WRAPPER.format(modules=modules))
+    assert any(f.kind == "safety_module_on_non_safety_controller" for f in findings)
+
+
+def test_does_not_flag_a_non_safety_2198_drive():
+    # "-ERS" alone is not a safety marker: 2198-C4004-ERS, H008-ERS, P031,
+    # P070, P141, P208 and RP200 all captured error-free and exact on a
+    # standard controller. Only "-ERS3" is safety hardware.
+    modules = (
+        '<Module Name="Drive1" CatalogNumber="2198-C4004-ERS" SafetyEnabled="false">'
+        '<Ports><Port Id="1" Address="192.168.1.10" Type="Ethernet" Upstream="true"/></Ports>'
+        "</Module>"
+    )
+    findings = lint_l5x(_MODULE_WRAPPER.format(modules=modules))
+    assert not any(f.kind == "safety_module_on_non_safety_controller" for f in findings)

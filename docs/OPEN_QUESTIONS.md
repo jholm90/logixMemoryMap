@@ -1750,3 +1750,30 @@ the matching footnote at the bottom, not inline.
       rule had never been exercised against it.
 
     **Blocked on capture.**
+
+
+32. **OQ-MODULEMARGINAL** — the last ASSUMED exposure that reaches a real
+    file. 4.33% of real-file bytes, of which the 2198 `-ERS3` drives are
+    4.07% and thirteen other catalogs are 0.25%.
+
+    Not an analysis question any more — the `-ERS3` root cause is found and
+    closed (see RESOLVED_QUESTIONS.md, "Closed 2026-09-06"). What remains is
+    that `module_overhead_by_catalog` cannot be turned from ASSUMED into a
+    measurement from a single capture point per catalog: one point confirms
+    a total, it cannot separate the per-module cost from the one-time cost
+    of the first module of that type.
+
+    `gen_assumed_closeout.py` (76 files) sweeps every affected catalog at
+    n=1/2/4 so the marginal cost of the Nth identical module is read
+    directly off the differences. Group A rebuilds all six `-ERS3` catalogs
+    on a real SIL2 controller in both their real shapes; group B does the
+    same for the thirteen other unpriced catalogs; group C is the ten
+    remaining predefined-structure probes.
+
+    One catalog is deliberately not covered and is reported rather than
+    faked: **150 SMC Flex-E** (0.069% exposure) has no real module XML in
+    either sweep table, so there is nothing verbatim to build from. It needs
+    a real export before it can be tested at all.
+
+    **Blocked on capture.** When it lands, every ASSUMED entry that touches
+    a real file is either measured or explicitly out of scope.
