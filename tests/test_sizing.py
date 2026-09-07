@@ -28,13 +28,13 @@ def test_atomic_array():
 
 
 def test_bool_standalone_scalar_is_4_bytes_not_bit_packed():
-    assert size("BOOL") == (4, "ASSUMED")
+    assert size("BOOL") == (4, "KNOWN")
 
 
 def test_bool_array_bit_packs_32_per_dint():
-    assert size("BOOL", (100,)) == (16, "ASSUMED")  # ceil(100/32)=4 words * 4 bytes
-    assert size("BOOL", (32,)) == (4, "ASSUMED")  # exact word boundary
-    assert size("BOOL", (33,)) == (8, "ASSUMED")  # rolls into a second word
+    assert size("BOOL", (100,)) == (16, "KNOWN")  # ceil(100/32)=4 words * 4 bytes
+    assert size("BOOL", (32,)) == (4, "KNOWN")  # exact word boundary
+    assert size("BOOL", (33,)) == (8, "KNOWN")  # rolls into a second word
 
 
 def test_builtin_string_default():

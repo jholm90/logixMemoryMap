@@ -59,9 +59,9 @@ def test_alias_tags_size_not_error():
     aoi_instance = by_path["controller/DebSensor1"]
     # EnableIn(BOOL,4) + DebTmr(TIMER,12), InOut excluded, + tag_overhead("DebSensor1", 10 chars)
     assert aoi_instance.bytes == 16 + 92
-    # UDT-alignment is KNOWN now; standalone BOOL's own ASSUMED tag is the
-    # weakest remaining link for this AOI instance.
-    assert aoi_instance.basis == "ASSUMED"
+    # Every component is KNOWN: UDT alignment and standalone BOOL sizing were
+    # both closed by real capture, the BOOL tier corrected 2026-09-06.
+    assert aoi_instance.basis == "KNOWN"
 
     # AOI *definition* cost (2026-08-26, OQ-AOIDEF wiring; name-length term
     # added 2026-08-29) -- separate line item from the instance above, one
