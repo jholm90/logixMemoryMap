@@ -62,6 +62,7 @@ import re
 from pathlib import Path
 
 from sample_gen.builders import tag_xml
+from sample_gen.gen_module_motion import _drive_module_xml
 from sample_gen.gen_module_sweep import _MODULE_CHAINS
 from sample_gen.gen_module_sweep_variants import _MODULE_VARIANTS
 from sample_gen.manifest import append_manifest_row, write_sample_unmodeled
@@ -175,25 +176,55 @@ def _module_file(catalog: str, label: str, xml: str, count: int, safety: bool,
     )
 
 
-def group_a_ers3_safety_drives() -> int:
-    """Every -ERS3 shape, on a safety controller, count-swept."""
+def group_a_ers3_drives() -> int:
+    """Every -ERS3 catalog on a PLAIN NON-SAFETY controller, count-swept.
+
+    CORRECTED 2026-09-06, second pass. The first pass of this file asserted
+    that a -ERS3 drive needs a safety controller. That was wrong, and the
+    disproof was already in the repo: `composite_realistic_v4_001` through
+    `_031` carry -ERS3 drives on a plain 1756-L81E with no SafetyLevel and
+    captured at ZERO errors.
+
+    The real cause of the -ERS3 import failures is the one already
+    diagnosed on 2026-09-03 and recorded in `_drive_module_xml`'s own
+    docstring: the drive module was missing its `<ExtendedProperties>`
+    block (Vendor/CatNum/FeedbackDevice1-4/ConfigID), found by a
+    byte-for-byte diff against a real SampleAxis export. That fix landed in
+    `gen_module_motion.py`, which is what the working composite files use.
+    `gen_module_sweep_variants.py` keeps its own hardcoded copy of the
+    module XML and never got the fix, so its blocks still lack the element
+    -- and carry a corrupted ConfigData payload besides, 119 L5K values
+    against the real 118.
+
+    So this group builds from `_drive_module_xml`, the function whose
+    output is proven by 31 zero-error captures, rather than from the
+    variants table whose output is proven to fail.
+    """
     n = 0
-    for catalog, variants in _MODULE_VARIANTS.items():
-        if catalog not in _ERS3_CATALOGS:
-            continue
-        for label, xml, source, _chain in variants:
-            for count in COUNTS:
-                _module_file(
-                    catalog, label, xml, count, safety=True, source=source,
-                    why=(
-                        "ROOT CAUSE, 2026-09-06: a -ERS3 drive is safety hardware, so Studio "
-                        "synthesises :SI/:SO safety tags for it regardless of SafetyEnabled or "
-                        "the connection list -- which is why even the 2conn shape, carrying "
-                        "SafetyEnabled=\"false\" and no Safety connections, still failed with 2 "
-                        "errors on a standard controller. Every shape needs a safety CPU."
-                    ),
-                )
-                n += 1
+    for catalog in sorted(_ERS3_CATALOGS):
+        for count in COUNTS:
+            blocks = "\n".join(
+                _drive_module_xml(f"Drv{i + 1}", catalog, "false", address=f"192.168.1.{20 + i}")
+                for i in range(count)
+            )
+            target = ("AsmDrv" + "".join(c for c in catalog if c.isalnum())[:14])[:24]
+            l5x = build_l5x(target_name=target, tags_xml="", extra_modules_xml=blocks)
+            name = f"asmclose_{_slug(catalog)}_n{count:02d}"
+            out = OUT_MODULES / f"{name}.L5X"
+            write_sample_unmodeled(l5x, out)
+            append_manifest_row(
+                name,
+                f"{catalog} x{count} on a plain non-safety 1756-L81E, built from the same "
+                f"_drive_module_xml() whose output captured at zero errors across "
+                f"composite_realistic_v4_001..031. A -ERS3 drive does NOT require a safety "
+                f"controller -- the earlier import failures were a missing <ExtendedProperties> "
+                f"block, fixed 2026-09-03 in gen_module_motion.py but never propagated to "
+                f"gen_module_sweep_variants.py's own hardcoded copy. n=1/2/4 so the marginal "
+                f"cost of the Nth identical drive is read directly; a single point can only "
+                f"confirm a total, never separate per-module cost from the cost of the first.",
+                "modules", out, 0,
+            )
+            n += 1
     return n
 
 
@@ -252,10 +283,10 @@ def group_c_fbd_sfc_probes() -> int:
 def main() -> None:
     OUT_MODULES.mkdir(parents=True, exist_ok=True)
     OUT_PREDEF.mkdir(parents=True, exist_ok=True)
-    a = group_a_ers3_safety_drives()
+    a = group_a_ers3_drives()
     b = group_b_unpriced_catalogs()
     c = group_c_fbd_sfc_probes()
-    print(f"Group A (2198 -ERS3 safety drives): {a}")
+    print(f"Group A (2198 -ERS3 drives, non-safety CPU): {a}")
     print(f"Group B (unpriced catalogs):        {b}")
     print(f"Group C (FBD/SFC probes):           {c}")
     print(f"Total: {a + b + c}")

@@ -975,14 +975,27 @@ the matching footnote at the bottom, not inline.
     unexplained — `2198-S130-ERS3` moves into the SAME genuinely-
     undiagnosed bucket as `193-ECM-ETR/A`/`/B` above
     (`_UNDIAGNOSED_COMPOSITE_CATALOGS`) rather than standing on a second
-    guessed theory. A real, still-untested alternative worth checking
-    first when real error-log detail is available: this project's own
-    genericized `2198-S130-ERS3`/`2198-D057-ERS3` blocks may be missing a
-    real Motion/Axis association these Kinetix drives need beyond the
-    Diagnostics connection alone — a real file's module carries
-    plain `DiagnosticInput`-only connections in the excerpt checked so
-    far, so this isn't confirmed either, just a real lead not yet a
-    guess turned into code.
+    guessed theory.
+
+    **SOLVED 2026-09-06, and the lead above was close.** The genericized
+    `-ERS3` blocks were indeed missing something the real modules carry: the
+    `<ExtendedProperties>` element (Vendor, CatNum, FeedbackDevice1-4,
+    ConfigID), plus a corrupted ConfigData payload of 119 L5K values against
+    the real 118. Both confirmed by diffing against
+    `composite_realistic_v4_001`, which carries the same catalogs on a plain
+    non-safety 1756-L81E and captured at zero errors — one of 31 such files.
+    The `<ExtendedProperties>` fix had already been made on 2026-09-03 in
+    `gen_module_motion.py`'s `_drive_module_xml()`;
+    `gen_module_sweep_variants.py` keeps a separate hardcoded copy of the
+    module XML and never received it. Full entry in RESOLVED_QUESTIONS.md.
+
+    **Worth recording, because it cost real time:** the safety-controller
+    theory was disproven here, in writing, with real evidence — and was then
+    re-derived from scratch two weeks later and briefly wired into a lint
+    rule that flagged the known-good files. The disproof was in this
+    document the whole time. Read the correction before re-opening a
+    question, and check the repo for files that already work before
+    theorising about why one does not.
 
     **New real evidence, 2026-09-03 — the "missing Motion/Axis
     association" lead above is now DISPROVEN too.** All 50
@@ -1757,18 +1770,22 @@ the matching footnote at the bottom, not inline.
     4.07% and thirteen other catalogs are 0.25%.
 
     Not an analysis question any more — the `-ERS3` root cause is found and
-    closed (see RESOLVED_QUESTIONS.md, "Closed 2026-09-06"). What remains is
+    closed: a missing `<ExtendedProperties>` block plus a corrupted
+    ConfigData payload in one generator's hardcoded module XML, nothing to
+    do with safety controllers (see RESOLVED_QUESTIONS.md, "Closed
+    2026-09-06"). What remains is
     that `module_overhead_by_catalog` cannot be turned from ASSUMED into a
     measurement from a single capture point per catalog: one point confirms
     a total, it cannot separate the per-module cost from the one-time cost
     of the first module of that type.
 
-    `gen_assumed_closeout.py` (76 files) sweeps every affected catalog at
+    `gen_assumed_closeout.py` (64 files) sweeps every affected catalog at
     n=1/2/4 so the marginal cost of the Nth identical module is read
-    directly off the differences. Group A rebuilds all six `-ERS3` catalogs
-    on a real SIL2 controller in both their real shapes; group B does the
-    same for the thirteen other unpriced catalogs; group C is the ten
-    remaining predefined-structure probes.
+    directly off the differences. Group A builds all six `-ERS3` catalogs on
+    a plain non-safety controller from `_drive_module_xml()`, the function
+    with 31 zero-error captures behind it; group B does the same for the
+    thirteen other unpriced catalogs; group C is the ten remaining
+    predefined-structure probes.
 
     One catalog is deliberately not covered and is reported rather than
     faked: **150 SMC Flex-E** (0.069% exposure) has no real module XML in

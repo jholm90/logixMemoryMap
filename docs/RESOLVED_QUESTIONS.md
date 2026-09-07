@@ -2401,33 +2401,46 @@ Standing rule from this: a constant carries the tier its evidence supports
 on the day the capture lands. `scripts/audit_confidence.py` now checks
 this automatically so it cannot drift again.
 
-**OQ-2198ERS3 — root cause found, was never a Rockwell mystery.**
+**OQ-2198ERS3 — root cause found. Not safety-related.**
 Six 2198 Kinetix `-ERS3` catalogs were recorded as "undiagnosed" import
-failures for two weeks, and were the single largest ASSUMED exposure on
-real files at 4.07% of total bytes. The evidence was already in the
-manifest:
+failures and were the largest single ASSUMED exposure on real files at
+4.07% of total bytes.
 
-- Every non-safety 2198 (C4004-ERS, H008-ERS, P031, P070, P141, P208,
-  RP200) captured error-free and exact on a standard 1756-L81E.
-- Every `-ERS3` catalog failed, and only those.
-- The failing 2conn shape carries `SafetyEnabled="false"` and **no Safety
-  connections at all**, yet Studio still synthesised `:SI`/`:SO` safety
-  tags for it and errored twice.
+**A 2198 `-ERS3` drive runs on a standard, non-safety controller.**
+`composite_realistic_v4_001` through `_031` carry `-ERS3` drives on a plain
+1756-L81E with no `SafetyLevel`, and all 31 captured at **zero errors**.
 
-Studio keys off the **catalog** being safety hardware, not off the
-attributes in the XML. A `-ERS3` drive needs a safety-capable controller
-in every shape it appears in. `gen_module_sweep_variants.py` applied the
-safety processor only to the 4conn variants, which is why the 2conn ones
-kept failing — a generator bug. The 4conn `_r2` files were regenerated
-correctly and then never captured at all, so "still failing" was never
-established for them either.
+The real cause is two defects in `gen_module_sweep_variants.py`'s own
+hardcoded copy of the module XML, both confirmed by diffing it against that
+known-good file:
 
-Fixed three ways: `gen_assumed_closeout.py` rebuilds every `-ERS3` shape on
-a real SIL2 controller and count-sweeps it; `lint.py` now flags a
-safety-rated catalog on a non-safety controller regardless of
-`SafetyEnabled`, closing the false negative that hid this; and two
-regression tests pin the `-ERS3` vs `-ERS` distinction, which matters
-because the plain `-ERS` suffix is **not** a safety marker.
+1. **No `<ExtendedProperties>` block** — Vendor, CatNum, FeedbackDevice1-4,
+   ConfigID. This omission was already found and fixed on **2026-03**
+   in `gen_module_motion.py`'s `_drive_module_xml()`, by a byte-for-byte
+   diff against a real SampleAxis export. `gen_composite_realistic_v4.py`
+   uses that function, which is why its files import cleanly.
+   `gen_module_sweep_variants.py` keeps a separate hardcoded copy and never
+   received the fix.
+2. **A corrupted ConfigData payload** — 119 L5K values against the real
+   118, with a spurious `0` at index 114.
+
+So the fix already existed in the repo for three days, in one generator,
+while a second generator kept shipping the broken block and the failures
+were recorded as an unexplained Rockwell behaviour.
+
+**Correction to an earlier entry in this file.** A first pass at this
+concluded that Studio synthesises `:SI`/`:SO` safety tags from the catalog
+and that every `-ERS3` therefore needs a safety controller. That was wrong.
+It was inferred from the failures alone without checking the repo for
+`-ERS3` files that already worked, and 31 of them did. The wrong conclusion
+also produced a lint rule flagging any `-ERS3` on a non-safety controller,
+which fired on five modules in each of those known-good files. Rule
+reverted, with a regression test pinning that a non-safety `-ERS3` is
+**not** a finding.
+
+Fixed: `gen_assumed_closeout.py` group A now builds every `-ERS3` catalog
+from `_drive_module_xml()` on a plain non-safety controller, count-swept
+n=1/2/4.
 
 **OQ-FBDSFC — the last 10 unmeasured predefined structures.** FBD_TIMER,
 FBD_ONESHOT, FBD_MATH, FBD_BOOLEAN_AND/OR/NOT, SCALE, RATE_LIMITER,

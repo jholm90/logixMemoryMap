@@ -4203,6 +4203,24 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 }
 
 
+# CORRECTED 2026-09-06. The "2conn" blocks below for the 2198 -ERS3 catalogs
+# were the cause of every -ERS3 import failure, and the cause was neither
+# safety-related nor undiagnosed. Two real defects, both confirmed by diffing
+# against composite_realistic_v4_001, which carries the same catalogs on a
+# plain non-safety 1756-L81E and captured at ZERO errors:
+#
+#   1. No <ExtendedProperties> block (Vendor/CatNum/FeedbackDevice1-4/
+#      ConfigID). That omission was already found and fixed on 2026-09-03 in
+#      gen_module_motion.py's _drive_module_xml() -- see its docstring -- but
+#      this file keeps its own hardcoded copy of the module XML and never
+#      received the fix.
+#   2. A corrupted ConfigData payload: 119 L5K values against the real 118,
+#      with a spurious 0 at index 114.
+#
+# A 2198 -ERS3 drive runs on a standard controller. Anything in this project
+# that needs one should build it from _drive_module_xml(), whose output has 31
+# zero-error captures behind it, rather than from a hand-transcribed block.
+
 # Real 4-Connection Kinetix variants add SafetyInputDataDriven/
 # SafetyOutputDataDriven connections with SafetyEnabled="true" -- real
 # Studio 5000 error found 2026-08-27: "Failed to set the

@@ -668,26 +668,6 @@ def _chassis_size_findings(root: ET.Element) -> list[LintFinding]:
     return findings
 
 
-def _is_safety_rated_catalog(catalog: str) -> bool:
-    """Is this catalog number safety hardware, independent of its XML flags?
-
-    Confirmed by the real capture record rather than by naming convention
-    alone: every 2198 "-ERS3" catalog failed Studio import on a standard
-    controller, and every 2198 without that suffix (C4004-ERS, H008-ERS,
-    P031, P070, P141, P208, RP200) captured error-free and exact on the
-    same standard controller. So the plain "-ERS" suffix is NOT a safety
-    marker and must not be treated as one -- it is specifically "-ERS3",
-    plus the already-confirmed 5069 "S"-suffixed Compact I/O safety
-    modules and the 1734 "-IB8S"/"-OB8S" POINT Guard family.
-    """
-    c = catalog.upper()
-    return (
-        c.endswith("-ERS3")
-        or c.startswith("5069-") and c.split("/")[0].endswith("S")
-        or "IB8S" in c or "OB8S" in c or "OBV8S" in c
-    )
-
-
 def _safety_module_findings(root: ET.Element) -> list[LintFinding]:
     """2026-09-03: real Studio 5000 error caught combining several
     real 5069 Compact I/O catalogs into a scratch sample: "Failed to set
@@ -727,25 +707,6 @@ def _safety_module_findings(root: ET.Element) -> list[LintFinding]:
                 f"attribute (non-safety controller) -- real Studio 5000 rejects this with "
                 f"\"The Controller is not a Safety Controller.\" Build with a safety_level "
                 f"(build_l5x) or exclude this catalog.",
-            ))
-        elif _is_safety_rated_catalog(catalog):
-            # SafetyEnabled="false" is NOT a get-out. Root cause found
-            # 2026-09-06 on the 2198 -ERS3 Kinetix drives: every -ERS3
-            # catalog failed conversion, every non-safety 2198 captured
-            # clean, and the failing 2conn shape carried SafetyEnabled=
-            # "false" with no Safety connections at all -- yet Studio still
-            # synthesised :SI/:SO safety tags for it and errored twice.
-            # Studio keys off the CATALOG being safety hardware, not off
-            # the attributes in the XML, so the attribute check above is a
-            # false negative for a whole product family. Six catalogs sat
-            # recorded as "undiagnosed" for two weeks behind this gap.
-            findings.append(LintFinding(
-                "safety_module_on_non_safety_controller",
-                f"Module '{name}' (CatalogNumber={catalog}) is a safety-rated catalog on a "
-                f"controller whose <SafetyInfo> has no SafetyLevel attribute. Studio 5000 "
-                f"synthesises :SI/:SO safety tags from the catalog regardless of "
-                f"SafetyEnabled, so this fails to import even with SafetyEnabled=\"false\" "
-                f"and no Safety connections. Build with a safety_level (build_l5x).",
             ))
     return findings
 

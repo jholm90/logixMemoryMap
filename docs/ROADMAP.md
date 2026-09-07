@@ -41,13 +41,13 @@ programs, and the correlation is unambiguous: against the current residual,
 AOI axis parameters score +0.889, AOI internal rungs +0.848, AOI definition
 count +0.838, AOI local tags +0.835.
 
-### Immediate — waiting on capture (375 files queued)
+### Immediate — waiting on capture (363 files queued)
 
 Nothing here needs new design work; it needs the capture run.
 
 | batch | files | closes |
 |---|---:|---|
-| `asmclose` | 76 | `OQ-MODULEMARGINAL` — every remaining ASSUMED item that reaches a real file |
+| `asmclose` | 64 | `OQ-MODULEMARGINAL` — every remaining ASSUMED item that reaches a real file |
 | `aoistructure` | 56 | `OQ-AOISTRUCT` — the seven unpriced AOI structural properties |
 | `defscale` | 30 | `OQ-DEFSCALE` — per-definition cost at real scale |
 | `cpt_closeout` | 58 | `OQ-CPTNARROW`, `OQ-CPTARRANGE` |
