@@ -309,7 +309,16 @@ if (-not $stopRequested) {
 # lives outside the repo, next to the .ACD binaries, so without this step
 # conversion failures are never visible unless pasted in by hand.
 $repoLogPath = Join-Path $repoRoot "samples\convert_log.csv"
-Copy-Item -Path $logPath -Destination $repoLogPath -Force
+# Redact machine-specific absolute paths on the way into the repo. The
+# scratch log records full Windows paths, which carry the operator's
+# username into a public repository, and this file is auto-pushed. Doing it
+# here rather than after the fact means it cannot drift: a manual cleanup
+# was undone by the very next capture run, reintroducing 4,514 of them.
+$logText = Get-Content -LiteralPath $logPath -Raw
+$logText = $logText -replace [regex]::Escape("$repoRoot\"), ""
+$logText = $logText -replace 'C:\\Users\\[^\\]+\\source\\repos\\ra-logix-designer-vcs-custom-tools\\', '<logix-sdk-tools>\'
+$logText = $logText -replace 'C:\\Users\\[^\\",]+\\', 'C:\Users\<user>\'
+Set-Content -LiteralPath $repoLogPath -Value $logText -NoNewline
 . (Join-Path $PSScriptRoot "_autopush.ps1")
 
 # 2026-08-30: the push must cover ALL files in the project directory --
