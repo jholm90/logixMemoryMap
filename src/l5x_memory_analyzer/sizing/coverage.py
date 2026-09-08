@@ -218,19 +218,20 @@ def audit_coverage(root: ET.Element, weighted_mnemonics) -> list[CoverageGap]:
     # zero and reported nothing at all -- the exact silent-zero this audit
     # exists to prevent. Reported as a gap until real capture data says
     # what a definition costs; see OQ-ALARMDEF.
+    # Keyed on the DEFINITION, not on its member alarms: a definition
+    # holding zero members is still unpriced content, and gating the notice
+    # on member count alone reproduced the same silence one level up.
+    datatype_defs = root.findall(".//DatatypeAlarmDefinition")
     member_defs = root.findall(".//DatatypeAlarmDefinition/MemberAlarmDefinition")
-    if member_defs:
-        owners = sorted({
-            el.get("Name") or "?"
-            for el in root.findall(".//DatatypeAlarmDefinition")
-        })
+    if datatype_defs:
+        owners = sorted({el.get("Name") or "?" for el in datatype_defs})
         gaps.append(CoverageGap(
             kind="alarm_definition", detail="DatatypeAlarmDefinition",
-            count=len(member_defs),
+            count=len(member_defs) or len(datatype_defs),
             path="coverage/alarm_definitions",
             message=(
                 f"{len(member_defs)} MemberAlarmDefinition across "
-                f"{len(owners)} DatatypeAlarmDefinition ({', '.join(owners[:4])}"
+                f"{len(datatype_defs)} DatatypeAlarmDefinition ({', '.join(owners[:4])}"
                 f"{', ...' if len(owners) > 4 else ''}) priced at zero. This is a "
                 f"datatype-level alarm TEMPLATE (v38), not the tag-level "
                 f"AlarmCondition the engine sizes exactly. Unmodelled -- OQ-ALARMDEF."

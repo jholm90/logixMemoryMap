@@ -290,3 +290,52 @@ def test_flags_sequential_underscore_name():
 def test_does_not_flag_a_valid_name():
     l5x = build_l5x(target_name="T", tags_xml=tag_xml("Good_Name01", "DINT"))
     assert not any(f.kind == "invalid_logix_name" for f in lint_l5x(l5x))
+
+
+# --- chassis_size_mismatch -------------------------------------------------
+# The real 1769 L16/L18/L19 shape: the controller's own Local module owns a
+# PointIO backplane and is self-parented (ParentModule points at itself),
+# with a single embedded Discrete_IO module actually occupying the bus.
+# Bus Size=2 is correct there -- the adapter plus its one child.
+_POINTIO_CHASSIS = """
+<RSLogix5000Content SchemaRevision="1.0">
+  <Controller Name="Test">
+    <DataTypes/>
+    <Modules>
+      <Module Name="Local" CatalogNumber="1769-L16ER-BB1B" ParentModule="Local" ParentModPortId="1">
+        <Ports><Port Id="1" Address="0" Type="PointIO" Upstream="false"><Bus Size="{size}"/></Port></Ports>
+      </Module>
+      <Module Name="Discrete_IO" CatalogNumber="Embedded" ParentModule="Local" ParentModPortId="1">
+        <Ports><Port Id="1" Address="1" Type="PointIO" Upstream="true"/></Ports>
+      </Module>
+    </Modules>
+    <AddOnInstructionDefinitions/>
+    <Tags/>
+    <Programs>
+      <Program Name="MainProgram">
+        <Tags/>
+        <Routines>
+          <Routine Name="MainRoutine" Type="RLL">
+            <RLLContent>
+              <Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+            </RLLContent>
+          </Routine>
+        </Routines>
+      </Program>
+    </Programs>
+    <Tasks/>
+  </Controller>
+</RSLogix5000Content>
+"""
+
+
+def test_self_parented_local_module_is_not_its_own_child():
+    """Bus Size=2 with one real child is correct, not a mismatch."""
+    findings = lint_l5x(_POINTIO_CHASSIS.format(size="2"))
+    assert not any(f.kind == "chassis_size_mismatch" for f in findings)
+
+
+def test_chassis_size_mismatch_still_flags_a_real_undersize():
+    """One child needs Size=2; declaring 1 leaves no room for it."""
+    findings = lint_l5x(_POINTIO_CHASSIS.format(size="1"))
+    assert any(f.kind == "chassis_size_mismatch" for f in findings)

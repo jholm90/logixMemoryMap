@@ -637,6 +637,17 @@ def _chassis_size_findings(root: ET.Element) -> list[LintFinding]:
         parent_port_id = mod_el.get("ParentModPortId")
         if not parent_module or parent_port_id is None:
             continue
+        # A controller's own "Local" module is self-parented -- it carries
+        # ParentModule pointing at itself, which is the real Rockwell
+        # convention in every export checked, generated and real alike.
+        # It is the chassis owner, not something occupying a slot on its
+        # own backplane, so counting it as its own child inflated the
+        # expected Bus Size by one. That mis-flagged the real, verbatim
+        # 1769 L16/L18/L19 module blocks (Port Type="PointIO", Bus Size=2
+        # with a single embedded Discrete_IO child) and aborted whole
+        # generator runs on correct data.
+        if mod_el.get("Name") == parent_module:
+            continue
         key = (parent_module, parent_port_id)
         children_count[key] = children_count.get(key, 0) + 1
 

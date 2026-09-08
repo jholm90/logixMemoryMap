@@ -1810,10 +1810,25 @@ the matching footnote at the bottom, not inline.
     visible as unpriced rather than vanishing into the total. The byte cost
     itself is still unknown.
 
-    **What is needed:** a blank-vs-populated pair on the same processor --
-    one export with no AlarmDefinitions, one with N member alarms -- so the
-    per-definition and per-member cost separate. Cheap to generate once the
-    L9 v38 wrapper shape is built.
+    **Test files built 2026-09-08**, `samples/generated/alarmdefs/`, 40
+    files, awaiting capture. Every one is at v38: the element is absent
+    from all 26 real corpus exports at MajorRev 20-35 and present in all
+    four at 38, so a v35 control would not be a control. Each group is
+    built twice, on 1756-L81E and 1756-L902TS, which also answers whether
+    the feature is firmware-wide or L9-specific.
+
+      - Group A, `alarmdef_{proc}_d1_m{00,01,02,04,08,16}` and
+        `alarmdef_{proc}_d{02,04,08}_m1`: member-count slope and
+        per-definition intercept, swept independently so they are not
+        collinear the way the single real example leaves them.
+      - Group B, `alarmdef_{proc}_inst_t{00,01,04,16}` against
+        `alarmdef_{proc}_noinst_t{01,04,16}`: whether an uninstantiated
+        template costs anything. Worth asking because the real exports
+        carry a P_PID definition while `<DataTypes/>` is empty and no
+        P_PID tag exists anywhere -- a template can outlive any instance
+        of its type.
+      - Group C, `alarmdef_{proc}_msg_{none,s,m,l}`: whether the operator
+        message CDATA counts, definition and member count held fixed.
 
 34. **OQ-L9BUDGET** — no memory budget for the 1756-L9xTS family.
     `controller_budgets.yaml` returns None for all four catalogs, so the UI
@@ -1827,3 +1842,9 @@ the matching footnote at the bottom, not inline.
 
     The UI degrades correctly today -- it shows the byte total without a
     percentage rather than inventing one.
+
+    **Test files built 2026-09-08**: `fwmatrix_v38_1756_l9{02,05,08,15}ts`.
+    A blank baseline's Capacity Total is the budget, read directly, so
+    these four close the question outright once captured. Generated at v38
+    only -- the family postdates the v31-v37 firmwares in the matrix, and
+    building an L9 at v31 would fabricate a firmware that never shipped.

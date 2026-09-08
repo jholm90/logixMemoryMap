@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="38.02" TargetName="FwMatrix381756L902TS" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Tue Sep 08 13:39:04 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="FwMatrix381756L902TS" ProcessorType="1756-L902TS" MajorRev="38" MinorRev="11" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Tue Sep 08 13:39:04 2026" LastModifiedDate="Tue Sep 08 13:39:04 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" EtherNetIPMode="A1/A2: Dual-IP" AutoDiagsEnabled="false" WebServerEnabled="false" DataExchangeId="{8D79BF56-B536-4F9D-99C4-0C3BBB1D3DC0}">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo SafetyEnabled="false"/>
+<DataTypes/>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L902TS" Vendor="1" ProductType="14" ProductCode="316" Major="38" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="4"/>
+</Port>
+<Port Id="3" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+<Port Id="4" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags/>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags/>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="A1" PortEnabled="true"/>
+<EthernetPort Port="2" Label="A2" PortEnabled="true"/>
+</EthernetPorts>
+<OpcUaInfo EnabledPorts=""/>
+</Controller>
+</RSLogix5000Content>

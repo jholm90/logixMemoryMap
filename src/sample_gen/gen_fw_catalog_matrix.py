@@ -337,7 +337,16 @@ _L8XS_PRODUCT_CODES = {
 _L8XS_INFERRED = {"1756-L82ES", "1756-L83ES"}
 _L8XS_CATALOGS = list(_L8XS_PRODUCT_CODES)
 
-ALL_CATALOGS = _L8X_CATALOGS + _5069_CATALOGS + _L7X_CATALOGS + _1769_CATALOGS
+# ControlLogix 5590 is a v38-era family: the four real exports are all
+# MajorRev 38, and the product line postdates the v31-v37 firmwares in
+# FIRMWARE_TABLE. Building an L9 at v31 would fabricate a firmware that
+# never shipped for this hardware and burn a conversion cycle proving it,
+# so the family is gated to v38+ the same way _SIL3_CATALOGS is gated to
+# v32+. Raise this floor's companion only when a real sub-v38 L9 export
+# exists.
+_L9X_MIN_FIRMWARE_MAJOR = "38"
+
+ALL_CATALOGS = _L8X_CATALOGS + _5069_CATALOGS + _L7X_CATALOGS + _1769_CATALOGS + _L9X_CATALOGS
 SAFETY_CATALOGS = _L8XS_CATALOGS
 ALL_INFERRED = _L7X_INFERRED | _L8XS_INFERRED
 
@@ -351,6 +360,8 @@ def _product_code(catalog: str) -> str:
         return _L7X_PRODUCT_CODES[catalog]
     if catalog in _L8XS_PRODUCT_CODES:
         return _L8XS_PRODUCT_CODES[catalog]
+    if catalog in _L9X_PRODUCT_CODES:
+        return str(_L9X_PRODUCT_CODES[catalog])
     raise KeyError(f"No confirmed real ProductCode for {catalog!r} -- refusing to guess")
 
 
@@ -405,6 +416,20 @@ def _local_ports_xml(catalog: str, is_safety: bool = False) -> str:
         # the same physical ControlLogix 5570 form factor so treated the
         # same, not independently confirmed per-catalog.
         return f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n<Bus Size="4"/>\n</Port>'
+    if catalog in _L9X_PRODUCT_CODES:
+        # ControlLogix 5590 real shape, read directly from the four real
+        # v38 exports: a 1756 chassis backplane (Type="ICP") but only
+        # Bus Size="4", plus TWO embedded Ethernet ports numbered Id 3
+        # and Id 4 -- not the 1/2 every other 1756 family uses. That
+        # numbering is the 5069 convention on 1756 hardware, and it is
+        # verbatim from the real exports rather than normalized.
+        return (
+            f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n'
+            f'<Bus Size="4"/>\n'
+            f'</Port>\n'
+            f'<Port Id="3" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>\n'
+            f'<Port Id="4" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
+        )
     if catalog.startswith("1769"):
         # CompactLogix 5370 real shape, same source/derivation as wrapper.
         # py's _1769_bus_size (samples/local/DnR_Personal/TOYOTA_135453_
@@ -458,7 +483,17 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
     # here is deliberately minimal (a bare NOP, no real signing performed),
     # the correct real value is SafetyLocked="false", matching every real
     # file that similarly has no signature.
-    safety_info_xml = '<SafetyInfo SafetyLocked="false" SignatureRunModeProtect="false" ConfigureSafetyIOAlways="true" SafetyLevel="SIL2/PLd"/>' if is_safety else '<SafetyInfo/>'
+    if is_safety:
+        safety_info_xml = '<SafetyInfo SafetyLocked="false" SignatureRunModeProtect="false" ConfigureSafetyIOAlways="true" SafetyLevel="SIL2/PLd"/>'
+    elif catalog in _L9X_PRODUCT_CODES:
+        # v38 ControlLogix 5590 states safety capability explicitly as an
+        # attribute on an otherwise empty element. Every other family in
+        # this project emits a bare <SafetyInfo/> for a non-safety CPU;
+        # this form appears only in the real L9 exports, so it is carried
+        # verbatim rather than normalized to the bare element.
+        safety_info_xml = '<SafetyInfo SafetyEnabled="false"/>'
+    else:
+        safety_info_xml = '<SafetyInfo/>'
     safety_program_xml = (
         '<Program Name="SafetyProgram" TestEdits="false" MainRoutineName="MainRoutine" '
         'Disabled="false" Class="Safety" UseAsFolder="false">\n<Tags/>\n<Routines>\n'
@@ -491,6 +526,13 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
         ethernet_ports_xml = ""
     elif catalog.startswith("1769"):
         ethernet_ports_xml = _1769_ETHERNET_XML
+    elif catalog in _L9X_PRODUCT_CODES:
+        ethernet_ports_xml = (
+            '<EthernetPorts>\n'
+            '<EthernetPort Port="1" Label="A1" PortEnabled="true"/>\n'
+            '<EthernetPort Port="2" Label="A2" PortEnabled="true"/>\n'
+            '</EthernetPorts>\n'
+        )
     else:
         ethernet_ports_xml = '<EthernetPorts>\n<EthernetPort Port="1" Label="1" PortEnabled="true"/>\n</EthernetPorts>\n'
     # REAL BUG FOUND 2026-08-28 on the 5069-LxxERMSx catalogs. EtherNetIPMode="A1/A2: Dual-IP" is a real
@@ -499,7 +541,11 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
     # 5069-family-wide gap (describes the CPU's two embedded Ethernet
     # ports' addressing mode), not specific to the ERMSx subset that was
     # under test at the time. See wrapper.py's build_l5x for the same fix.
-    ethernet_ip_mode_attr = ' EtherNetIPMode="A1/A2: Dual-IP"' if catalog.startswith("5069") else ""
+    # Dual embedded Ethernet is not a 5069-only trait any more: the real
+    # L9 exports carry the identical attribute value, matching their two
+    # A1/A2 labelled ports.
+    _dual_ip = catalog.startswith("5069") or catalog in _L9X_PRODUCT_CODES
+    ethernet_ip_mode_attr = ' EtherNetIPMode="A1/A2: Dual-IP"' if _dual_ip else ""
     # 1769 (CompactLogix 5370) uses the real, verbatim per-catalog Modules
     # block (embedded Discrete_IO and all) instead of the generic single-
     # Local-module template every other family uses -- see
@@ -518,6 +564,16 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
             f'</Module>\n'
             f'</Modules>'
         )
+    # The real L9 exports carry <OpcUaInfo> and carry NO <DataLogs>. This
+    # family has zero conversion history in this project, so its element
+    # set is reproduced exactly as exported rather than assuming Studio
+    # tolerates the generic template's spare <DataLogs/>.
+    if catalog in _L9X_PRODUCT_CODES:
+        datalogs_xml = ""
+        opcua_xml = '<OpcUaInfo EnabledPorts=""/>\n'
+    else:
+        datalogs_xml = "<DataLogs/>\n"
+        opcua_xml = ""
     return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="{software_revision}" TargetName="{target_name}" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="{now}" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
 <Controller Use="Target" Name="{target_name}" ProcessorType="{catalog}" MajorRev="{major_rev}" MinorRev="{MINOR_REV}"{time_slice_attrs} ProjectCreationDate="{now}" LastModifiedDate="{now}" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false"{ethernet_ip_mode_attr}{extra_attrs}>
@@ -550,9 +606,8 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
 <CST MasterID="0"/>
 <WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
 <Trends/>
-<DataLogs/>
-<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
-{ethernet_ports_xml}</Controller>
+{datalogs_xml}<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+{ethernet_ports_xml}{opcua_xml}</Controller>
 </RSLogix5000Content>
 """
 
@@ -583,6 +638,8 @@ def main() -> None:
     all_catalogs = ALL_CATALOGS + SAFETY_CATALOGS
     for major_rev, software_revision, extra_attrs, assumed in FIRMWARE_TABLE:
         for catalog in all_catalogs:
+            if catalog in _L9X_PRODUCT_CODES and major_rev < _L9X_MIN_FIRMWARE_MAJOR:
+                continue
             if catalog in _SIL3_CATALOGS and major_rev < _SIL3_MIN_FIRMWARE_MAJOR:
                 print(f"Skipping fwmatrix_v{major_rev}_{catalog.lower().replace('-', '_')} "
                       f"-- SIL3 requires firmware v{_SIL3_MIN_FIRMWARE_MAJOR}+ (2026-08-31, real).")

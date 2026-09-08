@@ -3,7 +3,7 @@
 Current focus and the next few days of planned work. Structural phases live
 in `PROJECT_PLAN.md`; individual open items live in `OPEN_QUESTIONS.md`.
 
-Last updated 2026-09-06.
+Last updated 2026-09-08.
 
 ---
 
@@ -43,13 +43,15 @@ programs, and the correlation is unambiguous: against the current residual,
 AOI axis parameters score +0.889, AOI internal rungs +0.848, AOI definition
 count +0.838, AOI local tags +0.835.
 
-### Immediate — waiting on capture (363 files queued)
+### Immediate — waiting on capture (407 files queued)
 
 Nothing here needs new design work; it needs the capture run.
 
 | batch | files | closes |
 |---|---:|---|
 | `asmclose` | 64 | `OQ-MODULEMARGINAL` — every remaining ASSUMED item that reaches a real file |
+| `alarmdefs` | 40 | `OQ-ALARMDEF` — per-definition, per-member, instantiation and message-text cost |
+| `fwmatrix` L9 | 4 | `OQ-L9BUDGET` — per-catalog user memory for the 1756-L9xTS family |
 | `aoistructure` | 56 | `OQ-AOISTRUCT` — the seven unpriced AOI structural properties |
 | `defscale` | 30 | `OQ-DEFSCALE` — per-definition cost at real scale |
 | `cpt_closeout` | 58 | `OQ-CPTNARROW`, `OQ-CPTARRANGE` |
@@ -57,6 +59,11 @@ Nothing here needs new design work; it needs the capture run.
 | `mbshape` | 14 | AOI-dense composite shapes |
 | `verified_instructions` | 33 | `OQ-VERIFINSTR` |
 | others | 92 | firmware matrix, module sweeps, shell scaling |
+
+The `alarmdefs` and L9 rows are new on 2026-09-08, built from the four real
+1756-L9xTS v38 exports. Both are v38-only by design: `<AlarmDefinitions>`
+appears in none of the 26 real corpus exports at MajorRev 20-35 and in all
+four at 38, and the L9 family itself postdates the v31-v37 firmwares.
 
 After this run, every ASSUMED constant that touches a real file is either
 measured or explicitly out of scope. The one exception is reported rather

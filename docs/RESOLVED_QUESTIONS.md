@@ -2512,3 +2512,27 @@ Dual-IP"` -- the 5069 dual-IP shape on a 1756 chassis; and
 had not seen.
 
 The engine parses all four cleanly: 13,296 predicted, zero blocking errors.
+
+**Chassis-size lint counted a module as its own child — CLOSED.** Not a
+sizing question, but it silently blocked a generator for five days and is
+worth the trail.
+
+`chassis_size_mismatch` (added 2026-09-03) compared a `PointIO`/`Flex`
+port's declared `Bus Size` against the number of modules parented to it,
+expecting `children + 1` for the adapter itself. A controller's own `Local`
+module is self-parented — it carries `ParentModule` pointing at itself,
+the real Rockwell convention in every export checked, generated and real
+alike, including the four L9 v38 files. It was therefore counted as a child
+on its own backplane, inflating the expected size by one.
+
+The effect: `gen_fw_catalog_matrix.py` aborted partway through v31 on
+`fwmatrix_v31_1769_l16er_bb1b`, whose module block is real, verbatim 1769
+data (`Port Type="PointIO"`, `Bus Size="2"`, one embedded `Discrete_IO`
+child). Correct data, wrong rule. Because `lint_or_raise` aborts the whole
+run, no file after that point could be regenerated at all — which is why
+the L9 catalogs, added the same day, produced nothing until this was found.
+
+Fixed by skipping any module whose own `Name` equals its `ParentModule`.
+The rule had no test coverage at all, which is how it shipped broken;
+`tests/test_lint.py` now pins both the real self-parented shape and a
+genuine undersize.
