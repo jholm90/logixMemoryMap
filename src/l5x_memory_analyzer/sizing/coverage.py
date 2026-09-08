@@ -209,4 +209,32 @@ def audit_coverage(root: ET.Element, weighted_mnemonics) -> list[CoverageGap]:
     # alarm -- the gap list has to shrink when a hole is actually closed,
     # or it stops meaning anything.
 
+    # --- datatype-level alarm definitions (v38) -----------------------
+    # <AlarmDefinitions><DatatypeAlarmDefinition><MemberAlarmDefinition>
+    # is a v38 shape: an alarm TEMPLATE attached to a data type, distinct
+    # from the tag-level <AlarmConditions> this engine already prices
+    # exactly. Found 2026-09-08 in real blank 1756-L9xTS v38 exports, where
+    # a stock P_PID definition carrying six member alarms was priced at
+    # zero and reported nothing at all -- the exact silent-zero this audit
+    # exists to prevent. Reported as a gap until real capture data says
+    # what a definition costs; see OQ-ALARMDEF.
+    member_defs = root.findall(".//DatatypeAlarmDefinition/MemberAlarmDefinition")
+    if member_defs:
+        owners = sorted({
+            el.get("Name") or "?"
+            for el in root.findall(".//DatatypeAlarmDefinition")
+        })
+        gaps.append(CoverageGap(
+            kind="alarm_definition", detail="DatatypeAlarmDefinition",
+            count=len(member_defs),
+            path="coverage/alarm_definitions",
+            message=(
+                f"{len(member_defs)} MemberAlarmDefinition across "
+                f"{len(owners)} DatatypeAlarmDefinition ({', '.join(owners[:4])}"
+                f"{', ...' if len(owners) > 4 else ''}) priced at zero. This is a "
+                f"datatype-level alarm TEMPLATE (v38), not the tag-level "
+                f"AlarmCondition the engine sizes exactly. Unmodelled -- OQ-ALARMDEF."
+            ),
+        ))
+
     return gaps

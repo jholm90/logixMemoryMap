@@ -2464,3 +2464,51 @@ one-bare-tag shape that closed the other 174.
 - **~175 predefined structures that no real file uses.** Sized from
   RM018A and now confirmed by probe capture, but they are not exposure on
   any real program. Tracked as KNOWN, not as open risk.
+
+
+---
+
+## Closed 2026-09-08
+
+**OQ-REAL5069 — CLOSED. The 5069 platform now has real validation.**
+`Elmsdale_20251017r01.L5X`, a real 5069-L330ERM production program on fw
+35.11, 4.8 MB, Capacity 1,147,896.
+
+Predicted 1,083,267 -> **-5.63%**. Second-worst of the ten real files,
+ahead only of MurrayBros at -5.88%.
+
+Until this file, every one of the nine real programs was a 1756-L8x, so
+everything the model knew about 5069 came from files it had been fitted on
+itself. That is no longer true.
+
+**OQ-BLOCKBYTE — resolved for 5069 by the same file.** The Capacity figure
+was reported as "blocks". Treated 1:1 against predicted bytes it gives
+-5.63%, in line with every other real file. A 4-byte block reading gives
+-76.41% and an 8-byte reading -88.20%, both absurd. So on 5069 the readout
+is labelled blocks but the unit is directly comparable to what this project
+calls bytes; no conversion is applied, and none should be.
+
+**OQ-L9PRODUCTCODE — CLOSED.** Real ProductCodes for the ControlLogix 5590
+family, read directly from four real blank v38 exports rather than
+web-sourced or inferred:
+
+| catalog | ProductCode |
+|---|---:|
+| 1756-L902TS | 316 |
+| 1756-L905TS | 317 |
+| 1756-L908TS | 319 |
+| 1756-L915TS | 320 |
+
+318 is absent between L905TS and L908TS, and L925TS/L950TS/L980TS have no
+real export, so nothing beyond these four is generated -- the same rule
+that kept 1756-L85ES out until it was confirmed.
+
+Real structural notes, all four identical apart from catalog and code:
+ProductType 14, MajorRev 38, MinorRev 11; backplane `Port Id="1"
+Address="0" Type="ICP"` with `Bus Size="4"`; **two Ethernet ports at Port
+Id 3 and 4**, not 1 and 2, labelled A1/A2 with `EtherNetIPMode="A1/A2:
+Dual-IP"` -- the 5069 dual-IP shape on a 1756 chassis; and
+`<SafetyInfo SafetyEnabled="false"/>` as an attribute, a form this project
+had not seen.
+
+The engine parses all four cleanly: 13,296 predicted, zero blocking errors.

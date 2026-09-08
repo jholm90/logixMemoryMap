@@ -295,6 +295,39 @@ def _1769_module_xml(catalog: str, major_rev: str) -> str:
 # as OQ-BASELINE-PROCFW already treats 1756-L9x: sourced but deliberately
 # NOT generated until a real L85ES sample (or its real ProductCode)
 # surfaces. See docs/OPEN_QUESTIONS.md.
+# ControlLogix 5590 (1756-L9xTS). REAL ProductCodes, read directly from
+# four real blank v38 exports supplied 2026-09-08 -- the sample this family
+# was blocked on since 2026-08-25. Not inferred, not web-sourced.
+#
+# Only these four are on file. 318 is absent between L905TS(317) and
+# L908TS(319), and the wider family (L925TS/L950TS/L980TS) has no real
+# export, so nothing beyond these four is generated -- same rule that kept
+# 1756-L85ES out until it was confirmed.
+#
+# Real structural notes from those exports, all four identical apart from
+# catalog and ProductCode:
+#   - ProductType 14, MajorRev 38, MinorRev 11
+#   - backplane Port Id=1 Address=0 Type="ICP" with Bus Size="4"
+#   - TWO Ethernet ports at Port Id=3 and Id=4 (not 1/2), with
+#     <EthernetPorts> labelling them A1 and A2 and
+#     EtherNetIPMode="A1/A2: Dual-IP" -- the same dual-IP shape as 5069,
+#     on a 1756 chassis
+#   - <SafetyInfo SafetyEnabled="false"/> as an ATTRIBUTE, a v38 shape this
+#     project has not seen before (elsewhere SafetyInfo is empty or carries
+#     SafetyLevel)
+#   - new v38 elements: <OpcUaInfo EnabledPorts=""/>, and <AlarmDefinitions>
+#     carrying DatatypeAlarmDefinition/MemberAlarmDefinition -- a
+#     datatype-level alarm template distinct from the tag-level
+#     AlarmCondition this project already prices. Unmodelled today; see
+#     OQ-ALARMDEF.
+_L9X_PRODUCT_CODES = {
+    "1756-L902TS": 316,
+    "1756-L905TS": 317,
+    "1756-L908TS": 319,
+    "1756-L915TS": 320,
+}
+_L9X_CATALOGS = list(_L9X_PRODUCT_CODES)
+
 _L8XS_PRODUCT_CODES = {
     "1756-L81ES": "211",
     "1756-L82ES": "212",

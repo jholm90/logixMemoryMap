@@ -9,22 +9,24 @@ Last updated 2026-09-06.
 
 ## Where the tool actually stands
 
-Measured on the nine real production exports, which are the only accuracy
-evidence that counts:
+Measured on the ten real production exports, which are the only accuracy
+evidence that counts. Nine are 1756-L8x; `elmsdale` is the first real 5069,
+added 2026-09-08, and it closes OQ-REAL5069:
 
-| file | actual | predicted | delta |
-|---|---:|---:|---:|
-| `mrfp_edger_2026_06_01_r00` | 2,281,316 | 2,282,655 | +0.06% |
-| `k3m16_edgers_20220808r00` | 4,044,994 | 4,009,539 | −0.88% |
-| `emporiumedger_20250905r1` | 1,703,932 | 1,685,256 | −1.10% |
-| `emporium_2025_05_28r01` | 7,136,625 | 7,018,569 | −1.65% |
-| `pukall_gang_20260414_r00` | 2,502,336 | 2,460,139 | −1.69% |
-| `cmu_2025_10_14r00` | 5,217,440 | 5,110,641 | −2.05% |
-| `accutally_20260803` | 5,999,972 | 5,843,055 | −2.62% |
-| `ipc_edgerline_20251217r1` | 2,255,773 | 2,177,942 | −3.45% |
-| `murraybros_20260122r1` | 923,320 | 869,030 | −5.88% |
+| file | processor | actual | predicted | delta |
+|---|---|---:|---:|---:|
+| `mrfp_edger_2026_06_01_r00` | 1756-L81E | 2,281,316 | 2,282,655 | +0.06% |
+| `k3m16_edgers_20220808r00` | 1756-L82E | 4,044,994 | 4,009,539 | −0.88% |
+| `emporiumedger_20250905r1` | 1756-L81E | 1,703,932 | 1,685,256 | −1.10% |
+| `emporium_2025_05_28r01` | 1756-L83E | 7,136,625 | 7,018,569 | −1.65% |
+| `pukall_gang_20260414_r00` | 1756-L81E | 2,502,336 | 2,460,139 | −1.69% |
+| `cmu_2025_10_14r00` | 1756-L82E | 5,217,440 | 5,110,641 | −2.05% |
+| `accutally_20260803` | 1756-L83E | 5,999,972 | 5,843,055 | −2.62% |
+| `ipc_edgerline_20251217r1` | 1756-L81E | 2,255,773 | 2,177,942 | −3.45% |
+| `elmsdale_20251017r01` | **5069-L330ERM** | 1,147,896 | 1,083,267 | −5.63% |
+| `murraybros_20260122r1` | 1756-L81E | 923,320 | 869,030 | −5.88% |
 
-Mean absolute error **2.15%**, five of nine inside 2%, two inside 1%. Every
+Mean absolute error **2.50%** across ten files, five inside 2%, two inside 1%. Every
 file still under-predicts, so what remains is a missing cost rather than
 noise.
 

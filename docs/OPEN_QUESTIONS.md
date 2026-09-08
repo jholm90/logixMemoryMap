@@ -1794,3 +1794,36 @@ the matching footnote at the bottom, not inline.
 
     **Blocked on capture.** When it lands, every ASSUMED entry that touches
     a real file is either measured or explicitly out of scope.
+
+
+33. **OQ-ALARMDEF** — datatype-level alarm definitions are priced at zero.
+    New, 2026-09-08, found in the real 1756-L9xTS v38 exports.
+
+    `<AlarmDefinitions><DatatypeAlarmDefinition><MemberAlarmDefinition>` is
+    a v38 shape: an alarm TEMPLATE attached to a data type, distinct from
+    the tag-level `<AlarmConditions>` this engine already sizes exactly
+    (OQ-ALARMCOND, closed). A stock Rockwell P_PID definition carrying six
+    member alarms was priced at zero and reported nothing at all.
+
+    That silence was the real problem, and it is fixed: `audit_coverage()`
+    now emits a `coverage/alarm_definitions` notice, so the content is
+    visible as unpriced rather than vanishing into the total. The byte cost
+    itself is still unknown.
+
+    **What is needed:** a blank-vs-populated pair on the same processor --
+    one export with no AlarmDefinitions, one with N member alarms -- so the
+    per-definition and per-member cost separate. Cheap to generate once the
+    L9 v38 wrapper shape is built.
+
+34. **OQ-L9BUDGET** — no memory budget for the 1756-L9xTS family.
+    `controller_budgets.yaml` returns None for all four catalogs, so the UI
+    has no denominator on an L9 file and cannot show headroom.
+
+    Deliberately not guessed. The catalog digits look like they encode
+    memory (L902/L905/L908/L915), but that is a pattern, not a source, and
+    this project has been wrong before inferring a constant from a catalog
+    name. Needs the real per-catalog user memory from a datasheet or a
+    controller.
+
+    The UI degrades correctly today -- it shows the byte total without a
+    percentage rather than inventing one.
