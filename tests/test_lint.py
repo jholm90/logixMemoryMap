@@ -271,3 +271,22 @@ def test_non_safety_ers3_drive_is_not_flagged():
     )
     findings = lint_l5x(_MODULE_WRAPPER.format(modules=modules))
     assert not any(f.kind == "safety_module_on_non_safety_controller" for f in findings)
+
+
+def test_flags_trailing_underscore_name():
+    # Real Studio 5000 failure 2026-09-06: "Error creating 'Parameter'
+    # (Invalid name.)" on `InParam00___`. One padding helper that filled
+    # names to an exact length with underscores broke 52 of 56 files in a
+    # single batch.
+    l5x = build_l5x(target_name="T", tags_xml=tag_xml("BadName_", "DINT"))
+    assert any(f.kind == "invalid_logix_name" for f in lint_l5x(l5x))
+
+
+def test_flags_sequential_underscore_name():
+    l5x = build_l5x(target_name="T", tags_xml=tag_xml("Bad__Name", "DINT"))
+    assert any(f.kind == "invalid_logix_name" for f in lint_l5x(l5x))
+
+
+def test_does_not_flag_a_valid_name():
+    l5x = build_l5x(target_name="T", tags_xml=tag_xml("Good_Name01", "DINT"))
+    assert not any(f.kind == "invalid_logix_name" for f in lint_l5x(l5x))

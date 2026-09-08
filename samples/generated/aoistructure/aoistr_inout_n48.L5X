@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="AoiInOut48" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Sep 06 10:40:25 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="AoiInOut48" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Sep 06 10:40:25 2026" LastModifiedDate="Sun Sep 06 10:40:25 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="AoiInOut48" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Tue Sep 08 11:04:00 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="AoiInOut48" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Tue Sep 08 11:04:00 2026" LastModifiedDate="Tue Sep 08 11:04:00 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -26,62 +26,62 @@
       <Parameters>
 <Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
 <Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
-<Parameter Name="InParam00___" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="InParam01___" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="InParam02___" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="InParam03___" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="InParam04___" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="InParam05___" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="InParam06___" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="InParam07___" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="IoRef00_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef01_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef02_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef03_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef04_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef05_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef06_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef07_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef08_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef09_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef10_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef11_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef12_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef13_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef14_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef15_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef16_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef17_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef18_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef19_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef20_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef21_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef22_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef23_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef24_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef25_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef26_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef27_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef28_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef29_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef30_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef31_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef32_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef33_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef34_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef35_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef36_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef37_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef38_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef39_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef40_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef41_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef42_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef43_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef44_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef45_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef46_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
-<Parameter Name="IoRef47_____" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="InParam00xxx" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InParam01xxx" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InParam02xxx" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InParam03xxx" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InParam04xxx" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InParam05xxx" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InParam06xxx" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InParam07xxx" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="IoRef00xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef01xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef02xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef03xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef04xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef05xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef06xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef07xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef08xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef09xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef10xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef11xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef12xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef13xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef14xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef15xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef16xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef17xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef18xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef19xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef20xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef21xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef22xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef23xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef24xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef25xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef26xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef27xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef28xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef29xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef30xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef31xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef32xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef33xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef34xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef35xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef36xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef37xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef38xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef39xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef40xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef41xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef42xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef43xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef44xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef45xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef46xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
+<Parameter Name="IoRef47xxxxx" TagType="Base" DataType="DINT" Radix="Decimal" Usage="InOut" Required="true" Visible="true" Constant="false"/>
       </Parameters>
       <LocalTags/>
       <Routines>

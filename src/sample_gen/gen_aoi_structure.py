@@ -111,11 +111,25 @@ def _write(l5x: str, name: str, description: str) -> None:
 
 
 def _member_name(prefix: str, index: int, total_len: int) -> str:
-    """A valid Logix identifier of EXACTLY total_len characters."""
+    """A valid Logix identifier of EXACTLY total_len characters.
+
+    Padding is filler LETTERS, not underscores. Real Logix name rules,
+    confirmed by a real Studio 5000 import failure on this batch
+    ("Error creating 'Parameter' (Invalid name.)" on `InParam00___`):
+
+      - no TRAILING underscore
+      - no SEQUENTIAL underscores
+      - no LEADING digit
+
+    The first version padded with "_" to hit an exact length, which
+    violates the first two rules at once and broke 52 of the 56 files here.
+    Length is still exact, because the whole point of the namelen group is
+    that only the character count varies -- the filler just has to be legal.
+    """
     if total_len < 3:
         raise ValueError("member names need room for a 2-digit index plus a letter")
     stem = f"{prefix[: total_len - 2]}{index:02d}"
-    return stem + "_" * (total_len - len(stem))
+    return stem + "x" * (total_len - len(stem))
 
 
 def _def_only(aoi_definition: str, target: str) -> str:
@@ -375,7 +389,7 @@ def _group_scale() -> None:
         definition, _ = aoi_xml(
             AOI_TYPE,
             input_params=_dint_params(4),
-            logic_rungs_xml=rungs_xml(n, lambda i: "XIC(EnableIn)MOV(InParam00___,InParam01___);"),
+            logic_rungs_xml=rungs_xml(n, lambda i: "XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);"),
         )
         _write(
             _def_only(definition, f"AoiScaleRung{n:03d}"),
@@ -392,7 +406,7 @@ def _group_scale() -> None:
 def _group_routines() -> None:
     """Internal routine COUNT at constant total rung count. 24 rungs split
     1/2/3 ways, so anything that moves is per-routine, not per-rung."""
-    body = "XIC(EnableIn)MOV(InParam00___,InParam01___);"
+    body = "XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);"
     for n in (1, 2, 3):
         per = 24 // n
         kwargs = {"logic_rungs_xml": rungs_xml(per, lambda i: body)}

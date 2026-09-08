@@ -195,3 +195,25 @@ enforced by convention across nine copies is a rule that will be broken by
 the tenth. When a build-validity rule turns up, add it to `lint.py` — a
 comment in the generator you happen to be editing does not protect the
 others.
+
+
+## Logix identifier rules (enforced by lint)
+
+Every element that carries a user-chosen name -- Parameter, LocalTag, Tag,
+Member, Routine, Program, Task, DataType, AddOnInstructionDefinition,
+Module -- must satisfy all three:
+
+- **No trailing underscore.** `InParam00___` fails with "Error creating
+  'Parameter' (Invalid name.)".
+- **No sequential underscores.** `Bad__Name` fails the same way.
+- **No leading digit.**
+
+Both underscore rules had been hit before, in 2026-08 on a string
+name-length batch and again on 2026-09-06 when a padding helper filled
+names to an exact length with underscores and broke 52 of 56 files in one
+batch. Each time the fix was applied only inside the generator that failed,
+so the next generator to pad a name reintroduced it.
+
+`lint.py`'s `invalid_logix_name` check now enforces all three centrally on
+every generated file. Pad a name to a target length with filler LETTERS,
+never underscores.

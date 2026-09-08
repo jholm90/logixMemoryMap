@@ -668,6 +668,54 @@ def _chassis_size_findings(root: ET.Element) -> list[LintFinding]:
     return findings
 
 
+_NAMED_ELEMENTS = (
+    "Parameter", "LocalTag", "Tag", "Member", "Routine", "Program", "Task",
+    "DataType", "AddOnInstructionDefinition", "Module",
+)
+
+
+def _invalid_logix_name_findings(root: ET.Element) -> list[LintFinding]:
+    """Real Logix identifier rules, each confirmed by a real Studio 5000
+    import failure on this project's own generated files:
+
+      - no TRAILING underscore   -- "Error creating 'Parameter' (Invalid
+        name.)" on `InParam00___`, 2026-09-06, which broke 52 of the 56
+        files in one batch from a single padding helper
+      - no SEQUENTIAL underscores -- the earlier `stringoverhead_namelen32`
+        failure, where name-length filler abutted a numeric suffix
+      - no LEADING digit
+
+    Both underscore rules were already known here as one-off fixes in
+    individual generators. Neither was ever enforced, so the next generator
+    to pad a name reintroduced it. Checked centrally now, on every element
+    that carries a user-chosen name.
+    """
+    findings: list[LintFinding] = []
+    seen: set[tuple[str, str]] = set()
+    for tag in _NAMED_ELEMENTS:
+        for el in root.iter(tag):
+            name = el.get("Name")
+            if not name:
+                continue
+            if name.endswith("_"):
+                reason = "ends with an underscore"
+            elif "__" in name:
+                reason = "contains sequential underscores"
+            elif name[0].isdigit():
+                reason = "starts with a digit"
+            else:
+                continue
+            if (tag, name) in seen:
+                continue
+            seen.add((tag, name))
+            findings.append(LintFinding(
+                "invalid_logix_name",
+                f"<{tag} Name=\"{name}\"> is not a valid Logix identifier: it {reason}. "
+                f"Real Studio 5000 rejects it with \"Invalid name.\"",
+            ))
+    return findings
+
+
 def _safety_module_findings(root: ET.Element) -> list[LintFinding]:
     """2026-09-03: real Studio 5000 error caught combining several
     real 5069 Compact I/O catalogs into a scratch sample: "Failed to set
@@ -750,6 +798,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
 
     findings.extend(_module_slot_findings(root))
     findings.extend(_chassis_size_findings(root))
+    findings.extend(_invalid_logix_name_findings(root))
     findings.extend(_safety_module_findings(root))
     findings.extend(_aoi_array_param_usage_findings(root))
 

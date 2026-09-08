@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="AoiRoutines3" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Sep 06 10:40:32 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="AoiRoutines3" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Sep 06 10:40:32 2026" LastModifiedDate="Sun Sep 06 10:40:32 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="AoiRoutines3" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Tue Sep 08 11:04:05 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="AoiRoutines3" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Tue Sep 08 11:04:05 2026" LastModifiedDate="Tue Sep 08 11:04:05 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -26,84 +26,84 @@
       <Parameters>
 <Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
 <Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
-<Parameter Name="InParam00___" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="InParam01___" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="InParam02___" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
-<Parameter Name="InParam03___" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InParam00xxx" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InParam01xxx" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InParam02xxx" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InParam03xxx" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
       </Parameters>
       <LocalTags/>
       <Routines>
         <Routine Name="EnableInFalse" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="1" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="2" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="3" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="4" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="5" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="6" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="7" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung></RLLContent></Routine>
         <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="1" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="2" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="3" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="4" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="5" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="6" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="7" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung></RLLContent></Routine>
         <Routine Name="Prescan" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="1" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="2" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="3" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="4" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="5" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="6" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung>
               <Rung Number="7" Type="N">
-                <Text><![CDATA[XIC(EnableIn)MOV(InParam00___,InParam01___);]]></Text>
+                <Text><![CDATA[XIC(EnableIn)MOV(InParam00xxx,InParam01xxx);]]></Text>
               </Rung></RLLContent></Routine>
       </Routines>
     </AddOnInstructionDefinition>
