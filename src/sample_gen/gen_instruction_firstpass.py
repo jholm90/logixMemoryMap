@@ -60,11 +60,14 @@ docs/OPEN_QUESTIONS.md.
     operand position isn't independently verified, just the shape.
 
 **Skipped, not guessed (docs/OPEN_QUESTIONS.md has the detail):**
-  - SCP (2 real occurrences): only one real corpus example, 3 arguments,
-    but official Rockwell SCP documentation describes a 6-argument
-    (Source,InMin,InMax,ScaledMin,ScaledMax,Dest) signature -- the
-    mismatch isn't resolved without a second real example, and forcing
-    either shape risks a wrong-argument-count Build failure.
+  - SCP: RESOLVED 2026-09-10, and the resolution is that it does not
+    belong in this list at all. The unexplained "3 arguments in the corpus
+    vs 6 in Rockwell's documentation" mismatch had a simple cause: the
+    corpus calls are not the built-in instruction. They are calls to
+    user-defined AOIs named SCP, and the two projects define different
+    ones -- a 3-argument form and a 7-argument form -- which is why no
+    single signature ever fit. The built-in SCP is FBD/ST only and cannot
+    appear in a ladder rung, so there is no ladder shape to guess.
   - FBC (8 real occurrences): 0 real corpus examples, genuinely complex
     (Source A, Source B, Compare Control, Result Control, Cmp, Store) --
     too much surface area for a first guess.

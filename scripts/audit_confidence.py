@@ -57,7 +57,7 @@ def _clean_capture(row: dict) -> bool:
 
 def main() -> int:
     model = yaml.safe_load(MODEL.read_text(encoding="utf-8"))
-    rows = {r["sample_id"]: r for r in csv.DictReader(MANIFEST.open(encoding="utf-8"))}
+    rows = {r["sample_id"]: r for r in csv.DictReader(MANIFEST.open(encoding="utf-8-sig"))}
 
     stale: list[tuple[str, str]] = []
     for type_name, spec in (model.get("predefined_structures") or {}).items():

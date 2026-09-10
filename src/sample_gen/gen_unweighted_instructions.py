@@ -43,6 +43,13 @@ OUT = Path(__file__).parent.parent.parent / "samples" / "generated" / "logic"
 COUNTS = (10, 100, 1000)   # same ladder shape as the instr_*_n* sweep
 
 # mnemonic -> (rung text, the REAL corpus call it was copied from)
+#
+# SCP is deliberately absent. It was here as a 6-argument built-in emitted
+# into a ladder routine, which is wrong twice over: the built-in SCP is an
+# FBD/ST instruction and cannot appear in RLL at all, and the real corpus
+# calls that motivated this entry are calls to a USER-DEFINED AOI that
+# happens to be named SCP. Generating it here produced a rung referencing
+# an instruction the file never defines. See lint.py's _NON_LAD_INSTRUCTIONS.
 _INSTRUCTIONS = {
     "AND": ("AND(D0,D1,D2);",
             "AND(FillErrorBins[0],ChangedErrorBins[0],NewErrorBins[0])"),
@@ -58,8 +65,6 @@ _INSTRUCTIONS = {
               "UPPER(gAccess.UserNew.Name,gAccess.UserNew.Name)"),
     "RTOS": ("RTOS(R0,STR0);",
              "RTOS(jsonRealValue1,jsonValue1)"),
-    "SCP": ("SCP(R0,R1,R2,R3,R4,R5);",
-            "SCP(SCL_FunctionTorque,Local:5:I.Ch00.Data,SCL_FunctionTorque.Scaled)"),
     "LFU": ("LFU(ARR0[0],ARR0[11],CTRL0,?,?);",
             "LFU(ProcessPart_ID[0],ProcessPart_ID[11],ProcessPartControl,?,?)"),
 }

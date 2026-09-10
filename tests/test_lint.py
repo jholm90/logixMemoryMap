@@ -339,3 +339,60 @@ def test_chassis_size_mismatch_still_flags_a_real_undersize():
     """One child needs Size=2; declaring 1 leaves no room for it."""
     findings = lint_l5x(_POINTIO_CHASSIS.format(size="1"))
     assert any(f.kind == "chassis_size_mismatch" for f in findings)
+
+
+# --- non_lad_instruction_in_ladder -----------------------------------------
+# The built-in SCP is a Function Block / Structured Text instruction and
+# cannot appear in a ladder rung. The subtlety worth pinning: SCP calls DO
+# appear in ladder across 5 real corpus files, but every one is a call to a
+# user-defined AOI named SCP. A declared AOI of the same name shadows the
+# built-in and must not be flagged.
+_SCP_LADDER = """
+<RSLogix5000Content SchemaRevision="1.0">
+  <Controller Name="Test">
+    <DataTypes/>
+    <Modules/>
+    <AddOnInstructionDefinitions>{aois}</AddOnInstructionDefinitions>
+    <Tags/>
+    <Programs>
+      <Program Name="MainProgram">
+        <Tags/>
+        <Routines>
+          <Routine Name="MainRoutine" Type="{rtype}">
+            <RLLContent>
+              <Rung Number="0" Type="N"><Text><![CDATA[{text}]]></Text></Rung>
+            </RLLContent>
+          </Routine>
+        </Routines>
+      </Program>
+    </Programs>
+    <Tasks/>
+  </Controller>
+</RSLogix5000Content>
+"""
+
+_SCP_AOI = '<AddOnInstructionDefinition Name="SCP" Revision="1.0"><Parameters/><Routines/></AddOnInstructionDefinition>'
+
+
+def _scp_findings(text, aois="", rtype="RLL"):
+    xml = _SCP_LADDER.format(text=text, aois=aois, rtype=rtype)
+    return [f for f in lint_l5x(xml) if f.kind == "non_lad_instruction_in_ladder"]
+
+
+def test_flags_builtin_scp_in_a_ladder_rung():
+    assert _scp_findings("SCP(R0,R1,R2,R3,R4,R5)NOP();")
+
+
+def test_does_not_flag_scp_when_an_aoi_of_that_name_is_declared():
+    """The real corpus shape -- an AOI named SCP shadows the built-in."""
+    assert not _scp_findings("SCP(Inst,R0,R1);", aois=_SCP_AOI)
+
+
+def test_does_not_flag_a_tag_merely_named_scp():
+    """Bushing1.SCP.InRawMin is a UDT member, not an instruction call."""
+    assert not _scp_findings("MOV(0,Bushing1.SCP.InRawMin)NOP();")
+
+
+def test_does_not_flag_scp_outside_a_ladder_routine():
+    """FBD/ST is exactly where the built-in is legal."""
+    assert not _scp_findings("SCP(R0,R1,R2,R3,R4,R5);", rtype="ST")

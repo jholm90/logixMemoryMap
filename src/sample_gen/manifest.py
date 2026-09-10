@@ -80,7 +80,14 @@ def append_manifest_row(sample_id: str, description: str, category: str, l5x_pat
     rel_path = str(l5x_path.relative_to(REPO_ROOT))
     rows = []
     if MANIFEST_PATH.exists():
-        with open(MANIFEST_PATH, newline="", encoding="utf-8") as f:
+        # utf-8-SIG, not utf-8: the capture tooling is PowerShell Export-Csv,
+        # which writes UTF-8 with a BOM. Reading it as plain utf-8 pulls the
+        # BOM into the first header cell, and the write below then re-quotes
+        # that mangled cell -- the header stops being "sample_id" and every
+        # DictReader consumer (scripts/audit_confidence.py) fails with a
+        # KeyError. Round-tripping BOM-aware keeps the file byte-compatible
+        # with the tool that also writes it.
+        with open(MANIFEST_PATH, newline="", encoding="utf-8-sig") as f:
             rows = list(csv.reader(f))[1:]  # drop header, rewritten below
 
     updated = False
@@ -92,7 +99,7 @@ def append_manifest_row(sample_id: str, description: str, category: str, l5x_pat
     if not updated:
         rows.append([sample_id, description, category, rel_path, str(bytes_predicted), "", "", "", "", "", "", "", "", "", "", ""])
 
-    with open(MANIFEST_PATH, "w", newline="", encoding="utf-8") as f:
+    with open(MANIFEST_PATH, "w", newline="", encoding="utf-8-sig") as f:
         # QUOTE_ALL matches the convention the capture tooling
         # writes the file in (every field double-quoted) -- csv.writer's
         # QUOTE_MINIMAL default reformatted every unchanged row on the

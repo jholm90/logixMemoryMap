@@ -148,7 +148,11 @@ _KNOWN_NATIVE_INSTRUCTIONS = {
     # not because they are not real Logix instructions. The corpus call
     # site is recorded in gen_unweighted_instructions.py per instruction.
     "MSF", "MAW", "MAR", "MDR", "MAG", "MCD", "MCS", "MCSV", "MCLM",
-    "AND", "OR", "DTR", "UPPER", "RTOS", "SFR", "LFU", "SCP", "FOR",
+    # SCP removed 2026-09-10: it is not a built-in that can appear in RLL.
+    # The real corpus occurrences are calls to a user-defined AOI named SCP,
+    # which the AOI-name path already resolves; the built-in of that name is
+    # FBD/ST only. See _NON_LAD_INSTRUCTIONS.
+    "AND", "OR", "DTR", "UPPER", "RTOS", "SFR", "LFU", "FOR",
     "BRK", "NXT", "EVENT", "SBR", "RET",
 }
 
@@ -333,6 +337,58 @@ _PURE_CONDITION_INSTRUCTIONS = {
     # worth remembering when adding any future compare-like mnemonic.
     "DTR",
 }
+# Instructions that exist in Logix but CANNOT appear in a ladder (RLL)
+# routine -- they are Function Block / Structured Text only. Emitting one
+# into a rung produces a file Studio 5000 rejects, and no operand fiddling
+# fixes it.
+#
+# Deliberately small and evidence-backed rather than transcribed from a
+# reference table: each entry is here because a real rejection or an
+# explicit confirmation put it there.
+#
+# SCP (2026-09-10): confirmed FBD/ST only. The trap that motivated this
+# check is that SCP calls DO appear in ladder across 5 real corpus files --
+# but every one is a call to a user-defined AOI named SCP, not the built-in.
+# Two projects define different AOIs under that name (a 3-argument and a
+# 7-argument form), which is exactly why the built-in's documented
+# 6-argument signature never matched the corpus and why this project spent
+# a cycle treating that as an unresolved argument-count mystery. An AOI
+# call is therefore NOT flagged: the check skips any name the file declares
+# as an AddOnInstructionDefinition, the same precedence the sizing engine
+# already applies.
+_NON_LAD_INSTRUCTIONS = {"SCP"}
+
+
+def _non_lad_instruction_findings(root: ET.Element) -> list[LintFinding]:
+    """An FBD/ST-only instruction used in a ladder rung, where the file does
+    not declare an AOI of that name to shadow it."""
+    findings: list[LintFinding] = []
+    declared = {
+        el.get("Name") for el in root.iter("AddOnInstructionDefinition") if el.get("Name")
+    }
+    suspect = sorted(_NON_LAD_INSTRUCTIONS - declared)
+    if not suspect:
+        return findings
+    for routine_el in root.iter("Routine"):
+        if routine_el.get("Type") != "RLL":
+            continue
+        for rung_el in routine_el.iter("Rung"):
+            text_el = rung_el.find("Text")
+            if text_el is None or not text_el.text:
+                continue
+            for mnemonic in suspect:
+                if re.search(r"(?:^|[\s,\[\]])" + mnemonic + r"\(", text_el.text):
+                    findings.append(LintFinding(
+                        "non_lad_instruction_in_ladder",
+                        f"Routine '{routine_el.get('Name')}' rung "
+                        f"{rung_el.get('Number')} calls {mnemonic}(), a Function "
+                        f"Block/Structured Text instruction that cannot be used in "
+                        f"ladder. No AddOnInstructionDefinition named '{mnemonic}' "
+                        f"is declared in this file to shadow it.",
+                    ))
+    return findings
+
+
 _BIT_SUBSCRIPT_RE = re.compile(r"\.\d+$")
 _BASE_TAG_NAME_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)")
 
@@ -824,6 +880,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     findings.extend(_invalid_logix_name_findings(root))
     findings.extend(_safety_module_findings(root))
     findings.extend(_aoi_array_param_usage_findings(root))
+    findings.extend(_non_lad_instruction_findings(root))
 
     array_tags = _array_tag_names(root)
     aoi_names = _declared_aoi_names(root)
