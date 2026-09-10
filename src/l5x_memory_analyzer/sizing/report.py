@@ -235,6 +235,18 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                 if surcharge:
                     content_bytes += surcharge
                     content_basis = weakest(content_basis, model.logic_instructions.composite_surcharge_confidence)
+                # Per-rung cost of AOI-internal logic, over and above the
+                # per-instruction weights. Measured 2026-09-10 from
+                # aoistr_scale_rung_n{011,024,048,085} -- identical rungs, only
+                # the count varies -- where the residual is a dead-straight
+                # 4 bytes per rung (slope exactly 4.0 between every consecutive
+                # pair, over the real corpus range of 11 to 85 internal rungs).
+                per_rung = model.logic_instructions.aoi_internal_per_rung
+                if per_rung and internal_routine.rung_count:
+                    content_bytes += per_rung * internal_routine.rung_count
+                    content_basis = weakest(
+                        content_basis, model.logic_instructions.aoi_internal_per_rung_confidence
+                    )
                 def_bytes += content_bytes
                 def_basis = weakest(def_basis, content_basis)
             definition_entries.append((

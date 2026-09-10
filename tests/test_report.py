@@ -70,8 +70,12 @@ def test_alias_tags_size_not_error():
     # excluded already at parse time since it's InOut): base(1184) + 20*1
     # + name_length_bytes("fbDebounce"). "fbDebounce" is 10 chars ->
     # bucket=max(0,(10-7)//4)=0 -> 8*0 + (-8) = -8.
+    #
+    # Member-name term added 2026-09-10: each declared member also costs its
+    # own name at 1 byte/char with the first 3 free. The one counted member
+    # here is "DebTmr" (6 chars) -> max(0, 6-3) * 1 = 3.
     aoi_def = by_path["udt_definitions/fbDebounce"]
-    assert aoi_def.bytes == 1184 + 20 - 8
+    assert aoi_def.bytes == 1184 + 20 - 8 + 3
     assert aoi_def.basis == "FITTED"
 
     # total now also includes the project_baseline entry (2026-08-23,

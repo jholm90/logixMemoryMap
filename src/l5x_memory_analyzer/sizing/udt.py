@@ -247,12 +247,18 @@ def compute_aoi_definition_cost(
     """
     aoi = data_types[name]
     type_counts: dict[str, int] = {}
+    member_names: list[str] = []
     for m in aoi.members:
         if m.name in ("EnableIn", "EnableOut"):
             continue
         type_counts[m.data_type] = type_counts.get(m.data_type, 0) + 1
-    confidence = weakest(model.aoi_definition.confidence, model.aoi_definition.name_length_bucket_confidence)
-    return model.aoi_definition.bytes_for(type_counts, name), confidence
+        member_names.append(m.name)
+    confidence = weakest(
+        model.aoi_definition.confidence,
+        model.aoi_definition.name_length_bucket_confidence,
+        model.aoi_definition.member_name_confidence,
+    )
+    return model.aoi_definition.bytes_for(type_counts, name, member_names), confidence
 
 
 def referenced_data_type_names(

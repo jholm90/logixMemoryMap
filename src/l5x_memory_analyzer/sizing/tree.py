@@ -228,8 +228,18 @@ def _expand_aoi_definition(aoi: DataTypeDef, model: MemoryModel) -> list[Child]:
     conf = model.aoi_definition.confidence
     declared_items = [m for m in aoi.members if m.name not in ("EnableIn", "EnableOut")]
     children = [Child("Base", ".base", "OVERHEAD", (), model.aoi_definition.base, conf, False)]
+    # Each member carries its flat declared-item rate PLUS the cost of its own
+    # name, so the breakdown still sums to compute_aoi_definition_cost and a
+    # long-named member visibly costs more than a short-named one -- which is
+    # the whole point of showing this per member rather than as one lump.
+    member_conf = weakest(conf, model.aoi_definition.member_name_confidence)
     for m in declared_items:
-        children.append(Child(m.name, f".{m.name}", m.data_type, (), model.aoi_definition.per_declared_item, conf, False))
+        children.append(Child(
+            m.name, f".{m.name}", m.data_type, (),
+            model.aoi_definition.per_declared_item
+            + model.aoi_definition.member_name_bytes([m.name]),
+            member_conf, False,
+        ))
     name_conf = weakest(conf, model.aoi_definition.name_length_bucket_confidence)
     children.append(
         Child("Type name length", ".namelen", "OVERHEAD", (),

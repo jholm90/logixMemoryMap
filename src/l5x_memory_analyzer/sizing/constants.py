@@ -109,8 +109,38 @@ class AoiDefinitionModel:
     name_length_bucket_bytes: int
     name_length_floor_bytes: int
     name_length_bucket_confidence: str
+    member_name_char_bytes: int = 0
+    member_name_free_chars: int = 0
+    member_name_confidence: str = "FITTED"
 
-    def bytes_for(self, type_counts: dict[str, int], name: str = "") -> int:
+    def member_name_bytes(self, member_names) -> int:
+        """Cost of the declared members' own NAMES.
+
+        Measured 2026-09-10 from aoistr_namelen_c04..c40 -- 20 DINT Input
+        params identical in every way except how many characters their names
+        use. The slope is exactly 1 byte per character with the first 3
+        characters free, fitting all 7 points with ZERO residual:
+
+            c04 c08 c12 c16 c20 c28 c40
+            +24 +104 +184 +264 +344 +504 +744   = 20 * (len - 3) + 4
+
+        Cross-checks against the two independent count sweeps, which hold
+        name length at the real-corpus median of 12 chars and vary the COUNT
+        instead -- so they predict 9 bytes per member and land within 4 bytes
+        across 8 more points (scale_param n=12/24/48/102, scale_local
+        n=11/32/64/128).
+
+        This is why AOI-dense real files under-predicted: real AOI member
+        names average 12.1 characters, so every declared member was being
+        under-charged about 9 bytes and nothing in the model saw it.
+        """
+        return sum(
+            max(0, len(n) - self.member_name_free_chars) * self.member_name_char_bytes
+            for n in member_names
+        )
+
+    def bytes_for(self, type_counts: dict[str, int], name: str = "",
+                  member_names=()) -> int:
         # per_type_rate only applies when every declared item shares the
         # SAME type -- confirmed real that per-type rates do NOT compose
         # additively once BOOL sits alongside another type (see
@@ -124,7 +154,7 @@ class AoiDefinitionModel:
             total = self.base + rate * total_items
         else:
             total = self.base + self.per_declared_item * total_items
-        return total + self.name_length_bytes(name)
+        return total + self.name_length_bytes(name) + self.member_name_bytes(member_names)
 
     def name_length_bytes(self, name: str) -> int:
         # OQ-AOIDEF closeout, wired 2026-08-29 -- real data
@@ -518,6 +548,8 @@ class LogicInstructionModel:
     composite_surcharge_cap: int
     safety_task_program_shell: int
     safety_task_program_shell_confidence: str
+    aoi_internal_per_rung: int = 0
+    aoi_internal_per_rung_confidence: str = "FITTED"
 
 
 @dataclass(frozen=True)
@@ -945,6 +977,9 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
         aoi_definition=AoiDefinitionModel(
             base=raw["aoi_definition"]["base"],
             per_declared_item=raw["aoi_definition"]["per_declared_item"],
+            member_name_char_bytes=raw["aoi_definition"].get("member_name_char_bytes", 0),
+            member_name_free_chars=raw["aoi_definition"].get("member_name_free_chars", 0),
+            member_name_confidence=raw["aoi_definition"].get("member_name_confidence", "FITTED"),
             per_type_rate=raw["aoi_definition"].get("per_type_rate", {}),
             confidence=raw["aoi_definition"]["confidence"],
             name_length_bucket_bytes=raw["aoi_definition"]["name_length_bucket_bytes"],
@@ -1036,6 +1071,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             branch_bracket_cost_per_instruction=raw["logic_instructions"]["branch_bracket_cost_per_instruction"],
             branch_bracket_confidence=raw["logic_instructions"]["branch_bracket_confidence"],
             aoi_logic_composite_surcharge_per_instr=raw["logic_instructions"]["aoi_logic_composite_surcharge_per_instr"],
+            aoi_internal_per_rung=raw["logic_instructions"].get("aoi_internal_per_rung", 0),
+            aoi_internal_per_rung_confidence=raw["logic_instructions"].get("aoi_internal_per_rung_confidence", "FITTED"),
             jsr_target_composite_surcharge_per_instr=raw["logic_instructions"]["jsr_target_composite_surcharge_per_instr"],
             composite_surcharge_confidence=raw["logic_instructions"]["composite_surcharge_confidence"],
             composite_surcharge_cap=raw["logic_instructions"]["composite_surcharge_cap"],

@@ -1069,6 +1069,18 @@ aoi_array:
 aoi_definition:
   base: 1184
   per_declared_item: 20
+  # Declared members' own NAME cost, measured 2026-09-10 from
+  # aoistr_namelen_c04..c40 (20 DINT Input params, identical except for name
+  # length): exactly 1 byte per character with the first 3 free, fitting all
+  # 7 points with ZERO residual as 20*(len-3)+4. Cross-checked against the
+  # two count sweeps, which hold length at the real median of 12 chars and
+  # vary count instead -- they predict 9 bytes/member and land within 4 bytes
+  # over 8 further points (scale_param 12/24/48/102, scale_local
+  # 11/32/64/128). FITTED, not KNOWN: the fit is exact but rests on one
+  # generated sweep, not on a real controller reading of a named member.
+  member_name_char_bytes: 1
+  member_name_free_chars: 3
+  member_name_confidence: FITTED
   per_type_rate:
     BOOL: 16
     SINT: 18
@@ -1861,6 +1873,24 @@ logic_instructions:
   # shellscale_* batch exists to fit it from isolation instead of from 8
   # collinear real files.
   aoi_logic_composite_surcharge_per_instr: 0
+  # Per-rung cost of AOI-internal logic, additive with the per-instruction
+  # weights above. Measured 2026-09-10 from aoistr_scale_rung_n{011,024,048,
+  # 085}: identical rungs, only the count varies, and the residual is a
+  # dead-straight 4 bytes per rung -- slope exactly 4.0 between every
+  # consecutive pair, spanning the real corpus range (median 11 internal
+  # rungs, p90 36, max 85). FITTED: the slope is exact but each test rung
+  # carries 2 instructions, so this is equally consistent with 2 bytes per
+  # AOI-internal INSTRUCTION. Separating the two needs a sweep that varies
+  # instructions-per-rung at a fixed rung count, which does not exist yet.
+  # REJECTED 2026-09-10, kept at 0 with the evidence, because the fit looked
+  # perfect and still failed: adding 4 bytes/rung took the 122-file `aoi`
+  # calibration family from a mean absolute residual of 168 bytes to 842. A
+  # slope that is exact on its own sweep and wrong everywhere else is a
+  # property of that sweep's file shape, not of AOI-internal rungs. The
+  # residual in aoistr_scale_rung is real and still unexplained; whatever
+  # causes it is not proportional to rung count in general.
+  aoi_internal_per_rung: 0
+  aoi_internal_per_rung_confidence: FITTED
   jsr_target_composite_surcharge_per_instr: 0
   composite_surcharge_confidence: FITTED
   # composite_surcharge_cap, wired 2026-09-03 ("tweak something else
