@@ -217,3 +217,39 @@ so the next generator to pad a name reintroduced it.
 `lint.py`'s `invalid_logix_name` check now enforces all three centrally on
 every generated file. Pad a name to a target length with filler LETTERS,
 never underscores.
+
+## Racks: bus size and slot numbers are properties of the rack, not the module
+
+Module blocks in this project are copied verbatim from real exports. That is
+deliberate and it is what makes them import cleanly -- but a real module
+carries two values that belong to the application it came from, not to the
+rack being built:
+
+- its **bus size**, which is the size of that plant's rack, and
+- its **slot address**, which is where it happened to be installed.
+
+An OB8E found at slot 8 in one application is not an OB8E that must live at
+slot 8. Next application it may be slot 2. Both values have to be recomputed
+by the generator; inheriting them is how a one-card rack ends up declaring
+fourteen slots.
+
+**Fixed backplanes -- 1756 (`Port Type="ICP"`).** The slot count is a
+property of the physical chassis catalog: 4, 10, 13 or 17 slots. An
+under-populated 1756 chassis is a normal design, not a defect, and is never
+flagged.
+
+**Dynamic backplanes -- Point I/O (`PointIO`), Flex, and 5069.** There is no
+physical chassis; the bus is exactly as long as what is plugged into it. The
+bus coupler occupies one position and each card occupies one more, so a
+correctly generated rack declares the SMALLEST size that fits:
+
+    Bus Size = 1 (coupler) + number of cards
+
+Use `builders.chassis_bus_size(card_count)` for the size and
+`builders.renumber_rack_slots(modules_xml)` to renumber the cards from slot 1
+upward. `renumber_rack_slots` only touches the card-side port -- a card
+connects upward to its coupler, so its own address lives on the port carrying
+`Upstream="true"`; the coupler's own `Address="0"` downstream port is its
+position, not a card slot.
+
+`lint.py`'s `chassis_size_mismatch` enforces this for dynamic backplanes only.

@@ -396,3 +396,61 @@ def test_does_not_flag_a_tag_merely_named_scp():
 def test_does_not_flag_scp_outside_a_ladder_routine():
     """FBD/ST is exactly where the built-in is legal."""
     assert not _scp_findings("SCP(R0,R1,R2,R3,R4,R5);", rtype="ST")
+
+
+# --- dynamic vs fixed backplanes -------------------------------------------
+# A 1756 chassis has a FIXED slot count set by its catalog (4/10/13/17), so an
+# under-populated 1756 rack is normal and must never be flagged. Point I/O,
+# Flex and 5069 have no physical chassis: the bus is as long as what is
+# plugged in, so the coupler plus its cards is the only correct size.
+_RACK = """
+<RSLogix5000Content SchemaRevision="1.0">
+  <Controller Name="Test">
+    <DataTypes/>
+    <Modules>
+      <Module Name="Local" CatalogNumber="1756-L81E" ParentModule="Local" ParentModPortId="1">
+        <Ports><Port Id="1" Address="0" Type="ICP" Upstream="false"><Bus Size="17"/></Port></Ports>
+      </Module>
+      <Module Name="Coupler" CatalogNumber="1734-AENT/C" ParentModule="Local" ParentModPortId="1">
+        <Ports><Port Id="1" Address="0" Type="{ptype}" Upstream="false"><Bus Size="{size}"/></Port></Ports>
+      </Module>
+      <Module Name="Card1" CatalogNumber="1734-IB8" ParentModule="Coupler" ParentModPortId="1">
+        <Ports><Port Id="1" Address="1" Type="{ptype}" Upstream="true"/></Ports>
+      </Module>
+    </Modules>
+    <AddOnInstructionDefinitions/>
+    <Tags/>
+    <Programs>
+      <Program Name="MainProgram"><Tags/><Routines>
+        <Routine Name="MainRoutine" Type="RLL"><RLLContent>
+          <Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+        </RLLContent></Routine>
+      </Routines></Program>
+    </Programs>
+    <Tasks/>
+  </Controller>
+</RSLogix5000Content>
+"""
+
+
+def _chassis(ptype, size):
+    return [f for f in lint_l5x(_RACK.format(ptype=ptype, size=size))
+            if f.kind == "chassis_size_mismatch"]
+
+
+def test_dynamic_rack_sized_to_its_cards_is_clean():
+    """Coupler occupies one position, the single card occupies one more."""
+    for ptype in ("PointIO", "Flex", "5069"):
+        assert not _chassis(ptype, 2), ptype
+
+
+def test_dynamic_rack_carrying_a_donor_bus_size_is_flagged():
+    """A module block copied from a real export brings that application's rack
+    size with it; the rack being built has one card, so 14 is a leftover."""
+    for ptype in ("PointIO", "Flex", "5069"):
+        assert _chassis(ptype, 14), ptype
+
+
+def test_fixed_1756_chassis_is_never_flagged():
+    """A 13-slot ICP chassis holding two cards is a normal design."""
+    assert not _chassis("ICP", 13)

@@ -723,6 +723,33 @@ def _slot_sequence_findings(
     return findings
 
 
+# A backplane is either FIXED or DYNAMIC, and only the dynamic kind can be
+# wrong here (2026-09-10, stated directly):
+#
+#   FIXED -- 1756 ICP. The slot count is a property of the physical chassis
+#     catalog (4, 10, 13, 17 slots). A 13-slot chassis holding two cards is
+#     completely normal and is NOT a defect, so ICP is deliberately absent
+#     from the set below and never flagged.
+#
+#   DYNAMIC -- Point I/O ("PointIO"), Flex, and 5069 Compact I/O. There is no
+#     physical chassis: the bus is exactly as long as what is plugged into
+#     it. The bus coupler itself occupies one position and every card
+#     occupies one more, so a correctly generated rack declares
+#     Size = 1 + number of cards -- the SMALLEST size that fits. Anything
+#     larger is a leftover, not a design choice.
+#
+# Where the leftovers come from is worth recording, because it is a
+# generation trap rather than a one-off: this project's module blocks are
+# copied verbatim from real exports, and a real module carries the bus size
+# AND the slot address it happened to have in the application it came from.
+# An OB8E found at slot 8 in one plant is not an OB8E that must live at slot
+# 8 -- next application it may be slot 2. Bus size and slot address are
+# properties of the rack being BUILT, not of the donor module, so a generator
+# must recompute both rather than inherit them. See chassis_bus_size() and
+# renumber_rack_slots() in builders.py.
+_DYNAMIC_BACKPLANE_PORT_TYPES = ("PointIO", "Flex", "5069")
+
+
 def _chassis_size_findings(root: ET.Element) -> list[LintFinding]:
     """2026-09-03: real issue found reviewing the v4 Studio 5000
     I/O tree: a PointIO/Flex adapter's declared Bus Size can be stale even
@@ -772,7 +799,7 @@ def _chassis_size_findings(root: ET.Element) -> list[LintFinding]:
         if ports_el is None:
             continue
         for port_el in ports_el.findall("Port"):
-            if port_el.get("Type") not in ("PointIO", "Flex"):
+            if port_el.get("Type") not in _DYNAMIC_BACKPLANE_PORT_TYPES:
                 continue
             bus_el = port_el.find("Bus")
             if bus_el is None:

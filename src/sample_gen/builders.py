@@ -14,6 +14,8 @@ a simplified stand-in.
 
 from __future__ import annotations
 
+import re
+
 from dataclasses import dataclass
 
 BOOL_BITS_PER_BACKING_SINT = 8
@@ -320,6 +322,49 @@ def tag_xml(
         f'        <Data Format="Decorated">{data_body}</Data>\n'
         f"      </Tag>"
     )
+
+
+# Backplane port types with no physical chassis behind them -- the bus is
+# exactly as long as what is plugged in. 1756 "ICP" is deliberately absent:
+# its slot count is fixed by the chassis catalog (4/10/13/17) and an
+# under-populated 1756 rack is normal, not a defect.
+DYNAMIC_BACKPLANE_PORT_TYPES = ("PointIO", "Flex", "5069")
+
+
+def chassis_bus_size(card_count: int) -> int:
+    """Smallest Bus Size that fits `card_count` cards on a dynamic backplane.
+
+    The bus coupler occupies one position and each card occupies one more, so
+    a coupler plus one card is Size=2. Use this instead of whatever Bus Size a
+    donor module block happened to carry: that number is the size of the rack
+    the module was copied OUT of, and has nothing to do with the rack being
+    built."""
+    if card_count < 0:
+        raise ValueError("card_count cannot be negative")
+    return 1 + card_count
+
+
+def renumber_rack_slots(modules_xml: str, start: int = 1) -> str:
+    """Renumber the slot addresses of the cards in a dynamic rack, in order.
+
+    A module block copied from a real export carries the slot address it had
+    in THAT application. An OB8E found at slot 8 in one plant is not an OB8E
+    that must live at slot 8 -- next application it may be slot 2. Slot
+    address is a property of the rack being built, not of the donor module,
+    so it is recomputed here.
+
+    Only the card-side port is touched: a card connects UPWARD to its coupler,
+    so its own Address lives on the port carrying Upstream="true". The
+    coupler's own downstream port (Upstream="false", Address="0") is left
+    alone -- that is the coupler's position, not a card slot."""
+    slot = start
+    out: list[str] = []
+    for line in modules_xml.split("\n"):
+        if 'Upstream="true"' in line and 'Address="' in line:
+            line = re.sub(r'Address="\d+"', f'Address="{slot}"', line, count=1)
+            slot += 1
+        out.append(line)
+    return "\n".join(out)
 
 
 def tags_xml(specs: list[tuple[str, str] | tuple[str, str, tuple[int, ...]]]) -> str:
