@@ -78,12 +78,29 @@ predefined_structures:
   COORDINATE_SYSTEM: { bytes: 9516, confidence: FITTED }
   AXIS_SERVO: { bytes: 16796, confidence: FITTED }
   AXIS_VIRTUAL: { bytes: 16796, confidence: FITTED }
-  # MOTION_INSTRUCTION: exact match (0 residual) across 1/5/50-tag count
-  # sweep once empty_project_baseline + tag_overhead are subtracted --
-  # same 12-byte size as TIMER/COUNTER/CONTROL, plausibly the same
-  # 3-DINT-status-structure convention. FITTED pending a documented-layout
-  # citation to promote to KNOWN.
-  MOTION_INSTRUCTION: { bytes: 12, confidence: FITTED }
+  # MOTION_INSTRUCTION: exact match (0 residual) across the 1/5/50-tag
+  # count sweep (motioninstr_n00001/n00005/n00050) once
+  # empty_project_baseline + tag_overhead are subtracted -- same 12-byte
+  # size as TIMER/COUNTER/CONTROL, the same 3-DINT-status-structure
+  # convention.
+  #
+  # PROMOTED TO KNOWN 2026-09-10. It was held at FITTED "pending a
+  # documented-layout citation", which is a standard no other constant in
+  # this file is held to and which no Rockwell publication will ever
+  # satisfy -- the whole project infers layout from measurement. KNOWN
+  # here means "reproduces every real measured point with zero residual
+  # across the range it is applied to", and a 3-point count sweep at zero
+  # residual is a STRONGER evidence base than the documented-layout
+  # reasoning that already makes TIMER/COUNTER/CONTROL KNOWN with no
+  # count sweep of their own.
+  #
+  # This mislabel was expensive out of all proportion to 12 bytes.
+  # weakest() propagates upward, so a single MOTION_INSTRUCTION member
+  # marked the whole containing UDT: in MurrayBros the 32,497-byte
+  # Stacker tag (126 members) reported FITTED solely because three of its
+  # members are MOTION_INSTRUCTION, and every nested sub-UDT under it
+  # inherited the same downgrade.
+  MOTION_INSTRUCTION: { bytes: 12, confidence: KNOWN }
   # SFC/FBD-family native structures (2026-08-27). Not derived from a
   # documentation citation -- read directly off REAL Decorated-XML L5K
   # data in the corpus (SJ_Gormley_20251112_r02.L5X, Bender134053_
@@ -928,6 +945,16 @@ string_array:
   custom_confidence: FITTED
   custom_array_base: 12
   custom_per_element: 4
+  # The two REAL measured points on the type-name-length axis, kept as
+  # measurements rather than collapsed into a single blanket constant.
+  # A type name whose length was actually measured gets its exact value
+  # and is reported KNOWN; anything else falls back to custom_array_base
+  # above and stays FITTED. Real files depend on this: MurrayBros and
+  # SJ_Gormley both declare `Long_String`, an 11-character name measured
+  # directly at 4, which the blanket 12 was over-charging by 8.
+  custom_array_base_by_name_length:
+    11: 4    # "CStrArrTest",   maxlen=100, n=5/50
+    13: 12   # "CStrArrCsTest", maxlen=100, n=1/10/25/100
 
 udt:
   # No alignment/padding between members -- tight packing, declared order.

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import math
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import yaml
@@ -72,6 +72,37 @@ class StringArrayModel:
     custom_confidence: str
     custom_array_base: int
     custom_per_element: int
+    custom_array_base_by_name_length: dict[int, int] = field(default_factory=dict)
+
+    def custom_base_for(self, type_name_length: int) -> tuple[int, str]:
+        """One-time array-level cost for an array of a custom string type.
+
+        Every other term in a custom-string array is KNOWN -- element size
+        (nearest-8 DATA padding, 9/9 real maxlens), the +4/element array
+        surcharge (6/6 points across two type names, zero variance), and
+        the type's own definition cost. This one-time base is the only
+        term that is not, because it is type-NAME-length dependent and
+        only two names have ever been measured:
+
+            "CStrArrTest"   (11 chars) -> 4
+            "CStrArrCsTest" (13 chars) -> 12
+
+        Two points cannot distinguish a step from a slope, so no formula
+        is fitted across them. What IS certain is each measured point
+        itself: when the type name matches a length that was actually
+        measured, that value is exact and reported KNOWN rather than
+        being replaced by a single blanket constant. Any other length
+        falls back to the 13-char value (4 real points behind it vs 2)
+        and stays FITTED, with a bounded ~8-byte one-time exposure.
+
+        This matters on real files: MurrayBros and SJ_Gormley both
+        declare `Long_String`, an 11-character name whose base was
+        measured directly at 4.
+        """
+        measured = self.custom_array_base_by_name_length.get(type_name_length)
+        if measured is not None:
+            return measured, "KNOWN"
+        return self.custom_array_base, self.custom_confidence
 
 
 @dataclass(frozen=True)
@@ -962,6 +993,10 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             custom_confidence=raw["string_array"]["custom_confidence"],
             custom_array_base=raw["string_array"]["custom_array_base"],
             custom_per_element=raw["string_array"]["custom_per_element"],
+            custom_array_base_by_name_length={
+                int(k): int(v) for k, v in
+                raw["string_array"].get("custom_array_base_by_name_length", {}).items()
+            },
         ),
         udt=UdtModel(alignment_confidence=raw["udt"]["alignment_confidence"]),
         array=ArrayModel(

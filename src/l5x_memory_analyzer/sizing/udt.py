@@ -94,14 +94,15 @@ def compute_array_size(
         # Array-of-custom-string: same real "different from scalar"
         # mechanism as builtin STRING above, different confirmed rate
         # (4/element vs 2/element) -- see memory_model.yaml string_array.
-        # custom_array_base is FITTED, not KNOWN: real data shows it's
-        # type-name-length-dependent (an already-separately-flagged, still
-        # -open effect on the custom-string scalar definition cost too),
-        # so this is confirmed exact for the specific type name it was
-        # fit against, a good approximation for others.
+        # Only the one-time array_base is uncertain here, and only for a
+        # type name whose length was never measured -- see
+        # StringArrayModel.custom_base_for. The element size and the
+        # +4/element surcharge are both KNOWN, so an array of a custom
+        # string type with a measured name length is KNOWN end to end.
         sa = model.string_array
-        total = sa.custom_array_base + (element_bytes + sa.custom_per_element) * element_count
-        return total, weakest(element_confidence, sa.custom_confidence)
+        array_base, base_confidence = sa.custom_base_for(len(data_type))
+        total = array_base + (element_bytes + sa.custom_per_element) * element_count
+        return total, weakest(element_confidence, base_confidence)
     if data_type in data_types and data_types[data_type].is_aoi:
         # Array-of-AOI-instances: a real, DIFFERENT formula from plain
         # array-of-UDT below -- confirmed 2026-08-26, see memory_model.yaml

@@ -234,5 +234,34 @@ def test_custom_string_array_matches_confirmed_real_formula():
     # scalar element = LEN(4) + DATA(100 rounds DOWN to 96, exact mod-8
     # tie per the nearest-8 padding rule) = 100. total = array_base(12) +
     # (100 + per_element(4)) * n
-    assert size("CStrArrCsTest", (1,), data_types=data_types) == (12 + 104 * 1, "FITTED")
-    assert size("CStrArrCsTest", (100,), data_types=data_types) == (12 + 104 * 100, "FITTED")
+    #
+    # KNOWN, not FITTED: 13 is one of the two type-name lengths whose
+    # array_base was measured directly, so nothing in this size is
+    # extrapolated -- element size and the +4/element surcharge are both
+    # already KNOWN.
+    assert size("CStrArrCsTest", (1,), data_types=data_types) == (12 + 104 * 1, "KNOWN")
+    assert size("CStrArrCsTest", (100,), data_types=data_types) == (12 + 104 * 100, "KNOWN")
+
+
+def test_custom_string_array_uses_the_measured_base_for_its_own_name_length():
+    """The array_base is type-NAME-length dependent, and both measured
+    points are honoured rather than collapsed to one blanket constant.
+
+    An 11-character name measured 4, a 13-character name measured 12.
+    `Long_String` in the real corpus is 11 characters, so the blanket 12
+    was over-charging every real custom-string array by 8 bytes."""
+    def _named(type_name):
+        d = DataTypeDef(
+            name=type_name, family="StringFamily",
+            members=[Member(name="LEN", data_type="DINT", dimension=0),
+                     Member(name="DATA", data_type="SINT", dimension=100)],
+        )
+        return {type_name: d}
+
+    # 11 chars -- measured directly at 4.
+    assert size("Long_String", (10,), data_types=_named("Long_String")) == (4 + 104 * 10, "KNOWN")
+    # 20 chars -- never measured, so it falls back to the 13-char value
+    # and must NOT claim certainty it does not have.
+    unmeasured = "CustomStringName20ch"
+    assert len(unmeasured) == 20
+    assert size(unmeasured, (10,), data_types=_named(unmeasured)) == (12 + 104 * 10, "FITTED")
