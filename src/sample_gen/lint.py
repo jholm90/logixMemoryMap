@@ -356,6 +356,54 @@ _PURE_CONDITION_INSTRUCTIONS = {
 # call is therefore NOT flagged: the check skips any name the file declares
 # as an AddOnInstructionDefinition, the same precedence the sizing engine
 # already applies.
+# A structure-typed tag must carry <Structure>/<DataValueMember>, never a
+# scalar <DataValue>, and must not carry a Radix at all.
+#
+# Real Studio 5000 rejection, 2026-09-10: "Format of data element is invalid
+# for a structure . Use Structure." plus "Invalid display style." -- both from
+# the same cause. builders.tag_xml decided structure-vs-atomic from whether
+# the CALLER passed udt_members rather than from the type, so any UDT or
+# predefined-structure tag built without an explicit member list came out as
+# a scalar zero with a Radix. That is what failed the predefprobe_* FBD/SFC
+# probes, and the identical defect then reappeared in the alarm-definition
+# batch: 94 tags across 22 files from one silent fallback.
+#
+# tag_xml no longer allows it, but a generator can always hand-build a Tag
+# element, so this is the net underneath.
+_ATOMIC_TAG_TYPES = frozenset({
+    "BOOL", "SINT", "INT", "DINT", "LINT", "REAL", "LREAL",
+    "USINT", "UINT", "UDINT", "ULINT", "BIT", "STRING",
+})
+
+
+def _structure_tag_data_findings(root: ET.Element) -> list[LintFinding]:
+    findings: list[LintFinding] = []
+    for tag_el in root.iter("Tag"):
+        data_type = (tag_el.get("DataType") or "").split("[")[0]
+        if not data_type or data_type in _ATOMIC_TAG_TYPES:
+            continue
+        name = tag_el.get("Name") or "?"
+        if tag_el.get("Radix"):
+            findings.append(LintFinding(
+                "structure_tag_has_radix",
+                f"Tag '{name}' is type '{data_type}', which is a structure, but carries "
+                f"Radix=\"{tag_el.get('Radix')}\". Studio 5000 rejects that with "
+                f"\"Invalid display style.\" -- only atomic-rooted tags take a Radix.",
+            ))
+        for data_el in tag_el.findall("Data"):
+            if data_el.get("Format") != "Decorated":
+                continue
+            if data_el.find("DataValue") is not None:
+                findings.append(LintFinding(
+                    "structure_tag_scalar_data",
+                    f"Tag '{name}' is type '{data_type}', which is a structure, but its "
+                    f"Decorated data is a scalar <DataValue>. Studio 5000 rejects that with "
+                    f"\"Format of data element is invalid for a structure. Use Structure.\"",
+                ))
+    return findings
+
+
+
 _NON_LAD_INSTRUCTIONS = {"SCP"}
 
 
@@ -881,6 +929,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     findings.extend(_safety_module_findings(root))
     findings.extend(_aoi_array_param_usage_findings(root))
     findings.extend(_non_lad_instruction_findings(root))
+    findings.extend(_structure_tag_data_findings(root))
 
     array_tags = _array_tag_names(root)
     aoi_names = _declared_aoi_names(root)

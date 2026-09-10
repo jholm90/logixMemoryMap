@@ -229,6 +229,15 @@ def string_array_tag_xml(name: str, count: int, max_len: int = 82, data_type: st
     )
 
 
+# Types whose storage is a single value with a display radix. Anything else
+# is a structure and must carry <Structure>/<DataValueMember>, never a scalar
+# <DataValue> -- see the bug note in tag_xml.
+_ATOMIC_TYPES = frozenset({
+    "BOOL", "SINT", "INT", "DINT", "LINT", "REAL", "LREAL",
+    "USINT", "UINT", "UDINT", "ULINT", "BIT",
+})
+
+
 def tag_xml(
     name: str, data_type: str, dimensions: tuple[int, ...] = (), radix: str | None = None,
     description: str | None = None, udt_members: list["MemberSpec"] | None = None,
@@ -250,6 +259,22 @@ def tag_xml(
     # tag via the plain tag_xml(name, "REAL") call (no radix override) was
     # silently hitting this same warning. Fixed by defaulting per-type
     # instead of one universal literal -- explicit caller radix still wins.
+    # REAL BUG FOUND 2026-09-10. This function decided "is this a structure?"
+    # purely from whether the CALLER passed udt_members -- it never looked at
+    # the type. Hand it a UDT or predefined-structure type name without
+    # members and it silently emitted BOTH of the things Studio 5000 rejects
+    # on a structure tag: a Radix attribute ("Invalid display style.") and a
+    # scalar <DataValue> instead of a <Structure> ("Format of data element is
+    # invalid for a structure. Use Structure."). That is the exact pair of
+    # errors the predefprobe_* FBD/SFC files failed conversion with, and the
+    # same defect then reappeared in the alarm-definition batch -- 94 tags
+    # across 22 files, all from this one silent fallback.
+    #
+    # The type now decides, not the caller. A non-atomic type with no member
+    # list gets no Radix and no <Data> block at all: Studio populates a tag's
+    # initial values on import, and omitting them is honest about not knowing
+    # the member layout, where guessing a scalar zero was actively wrong.
+    is_structure = data_type.split("[")[0] not in _ATOMIC_TYPES and string_max_len is None
     if radix is None:
         radix = "Float" if data_type == "REAL" else "Decimal"
     dims_attr = f' Dimensions="{" ".join(str(d) for d in dimensions)}"' if dimensions else ""
@@ -258,7 +283,17 @@ def tag_xml(
 
     # Real exports (2026-08-20): a UDT-typed Tag element carries no Radix
     # attribute at all -- only atomic-rooted tags (scalar or array) do.
-    radix_attr = f' Radix="{radix}"' if udt_members is None and string_max_len is None else ""
+    radix_attr = "" if (is_structure or string_max_len is not None) else f' Radix="{radix}"'
+
+    # Structure type, members unknown: declare the tag and let Studio fill in
+    # the initial values rather than asserting a layout this project does not
+    # have (every predefined FBD/SFC probe is in exactly this position).
+    if is_structure and udt_members is None:
+        return (
+            f'      <Tag Name="{name}" TagType="Base" DataType="{data_type}"{dims_attr}'
+            f' Constant="{constant_attr}" ExternalAccess="Read/Write">{desc_xml}\n'
+            f"      </Tag>"
+        )
 
     if string_max_len is not None:
         return (

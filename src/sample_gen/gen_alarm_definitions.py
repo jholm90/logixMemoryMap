@@ -100,8 +100,12 @@ def _alarm_member_name(i: int) -> str:
     return f"Alm_A{i:02d}"
 
 
+def _source_udt_members() -> list[MemberSpec]:
+    return [MemberSpec(_udt_member_name(i), "BOOL") for i in range(_MAX_MEMBERS)]
+
+
 def _source_udt_xml() -> str:
-    return udt_xml(_UDT_NAME, [MemberSpec(_udt_member_name(i), "BOOL") for i in range(_MAX_MEMBERS)])
+    return udt_xml(_UDT_NAME, _source_udt_members())
 
 
 def _message_xml(text: str | None) -> str:
@@ -274,7 +278,14 @@ def main() -> None:
 
         # --- Group B: does an uninstantiated template cost anything? ------
         for n_tags in (0, 1, 4, 16):
-            tags = "".join(tag_xml(f"AlarmSrc{i:02d}", _UDT_NAME) for i in range(n_tags))
+            # Pass the member list: a UDT-typed tag needs a full
+            # <Structure>/<DataValueMember> block. Without it tag_xml used to
+            # emit a scalar <DataValue> plus a Radix, which Studio rejects on
+            # a structure ("Use Structure." / "Invalid display style.").
+            tags = "".join(
+                tag_xml(f"AlarmSrc{i:02d}", _UDT_NAME, udt_members=_source_udt_members())
+                for i in range(n_tags)
+            )
             with_def = f"alarmdef_{slug}_inst_t{n_tags:02d}"
             l5x = _build_xml(catalog, _target_name(with_def), major_rev, software_revision, datatypes_xml=udt,
                              alarm_definitions_xml=_alarm_definitions_xml(
