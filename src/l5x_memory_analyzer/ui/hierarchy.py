@@ -18,12 +18,17 @@ def _scope_and_name(path: str) -> tuple[str, str]:
     return scope, name
 
 
+UDT_GROUP_NAME = "User-Defined Data Types"
+AOI_GROUP_NAME = "Add-On Instructions"
+
+
 def build_hierarchy(
     entries: list[SizeEntry],
     data_types: dict[str, DataTypeDef] | None = None,
     model: MemoryModel | None = None,
     tag_dimensions: dict[str, tuple[int, ...]] | None = None,
     program_to_task: dict[str, str] | None = None,
+    aoi_names: set[str] | frozenset[str] | None = None,
 ) -> dict:
     """Root -> {"Controller Tags", "Program: <name>", ...} -> leaf tag nodes.
 
@@ -64,7 +69,7 @@ def build_hierarchy(
     # never drillable (has_children always false -- neither has a nested
     # structure to descend into).
     NON_TAG_GROUPS = {
-        "udt_definition": "Type Definitions",
+        "udt_definition": UDT_GROUP_NAME,
         "project_baseline": "Project Overhead",
         # task_program_shell (2026-08-27, OQ-TASKOVERHEAD wiring): a single
         # once-per-file entry, path "task_program_shell" with no "/" --
@@ -123,10 +128,17 @@ def build_hierarchy(
             # expand_definition_children. project_baseline has no breakdown
             # (data_types lookup would miss it entirely, correctly false).
             kids = e.category == "udt_definition" and data_types is not None and name in data_types
+            # A UDT and an Add-On Instruction are different things to a user
+            # even though both are priced as "udt_definition" here. Split
+            # them so "User-Defined Data Types" means what it says and AOIs
+            # are findable as AOIs.
+            if name in (aoi_names or ()):
+                group_name = AOI_GROUP_NAME
         elif e.path.startswith("aoi_definitions/"):
-            # AOI-internal ST logic (2026-09-05). Belongs with the AOI
-            # definitions pool, not as a top-level pseudo-program.
-            group_name = "Type Definitions"
+            # AOI-internal logic. It belongs UNDER its own AOI rather than
+            # loose in the definitions pool -- a routine called "Logic" tells
+            # you nothing without the AOI it came from.
+            group_name = AOI_GROUP_NAME
             parts = e.path.split("/")
             name = f"{parts[1]}/{parts[2]}" if len(parts) > 2 else parts[-1]
             kids = False
@@ -156,6 +168,10 @@ def build_hierarchy(
             "tier": e.tier,
             "basis": e.basis,
             "has_children": kids,
+            # Emitted so the UI can label an array as "Tag[64]" rather than
+            # "Tag" -- the dimensions were already resolved here, they were
+            # just never passed on.
+            "dimensions": list(dims) if dims else [],
         }
         if e.category == "routine_logic":
             routine_groups.setdefault(group_name, []).append(leaf)
@@ -166,7 +182,56 @@ def build_hierarchy(
     for g in group_order:
         kids = list(groups[g])
         routines = routine_groups.get(g)
-        if routines:
+        # A program's tags go in their own "Program Tags" container, the same
+        # way its routines already do. Without it the single "Routines" tile
+        # sits among dozens of loose tag tiles and is easy to lose; with both
+        # containers a program reads as "here are the routines, here are the
+        # tags". Only applied where there is actually something to contain --
+        # a non-program group (Controller Tags, Modules) keeps its flat shape.
+        if g == AOI_GROUP_NAME and routines:
+            # An AOI's internal routines belong UNDER that AOI, not in a
+            # sibling folder: a routine called "Logic" is meaningless without
+            # the AOI it came from. Routine names arrive as "<AOI>/<Routine>".
+            by_aoi: dict[str, list[dict]] = {}
+            for r in routines:
+                owner, _, rname = str(r["name"]).partition("/")
+                if rname:
+                    r = {**r, "name": rname}
+                by_aoi.setdefault(owner, []).append(r)
+            attached = []
+            for k in kids:
+                own = by_aoi.pop(k["name"], None)
+                if own:
+                    # The definition keeps its own cost as a sibling entry so
+                    # the parent total stays the sum of its children.
+                    attached.append({
+                        "name": k["name"], "path": k["path"],
+                        "children": [{**k, "name": "Definition"}] + own,
+                    })
+                else:
+                    attached.append(k)
+            # An AOI with routines but no priced definition still shows up.
+            for owner, own in by_aoi.items():
+                attached.append({
+                    "name": owner, "path": f"aoi_definitions/{owner}", "children": own,
+                })
+            kids = attached
+        elif g.startswith("Program: "):
+            # Only a real program gets the Tags/Routines split -- the other
+            # groups (Controller Tags, Modules) have no such two-part shape.
+            if routines and kids:
+                tags_total = sum(k["value"] for k in kids if "value" in k)
+                kids = [{
+                    "name": "Program Tags", "path": f"{g}/Program Tags",
+                    "value": tags_total, "children": kids,
+                }]
+            if routines:
+                routines_total = sum(r["value"] for r in routines)
+                kids.append({
+                    "name": "Routines", "path": f"{g}/Routines", "value": routines_total,
+                    "children": routines,
+                })
+        elif routines:
             routines_total = sum(r["value"] for r in routines)
             kids.append({
                 "name": "Routines", "path": f"{g}/Routines", "value": routines_total,

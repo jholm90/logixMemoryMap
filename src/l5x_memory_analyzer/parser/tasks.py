@@ -31,6 +31,12 @@ class TaskInfo:
     # not the Type="PERIODIC" schedule-type attribute shared with ordinary
     # periodic tasks.
     is_safety: bool = False
+    # Schedule type as the L5X states it: CONTINUOUS / PERIODIC / EVENT.
+    # Directly read, never inferred -- same category as the scheduling
+    # relationship above. Rate is only meaningful for PERIODIC.
+    task_type: str = ""
+    rate: str = ""
+    priority: str = ""
 
 
 def parse_tasks(root: ET.Element) -> list[TaskInfo]:
@@ -51,6 +57,9 @@ def parse_tasks(root: ET.Element) -> list[TaskInfo]:
         result.append(TaskInfo(
             name=name, scheduled_program_names=tuple(programs),
             is_safety=task_el.get("Class") == "Safety",
+            task_type=(task_el.get("Type") or "").upper(),
+            rate=task_el.get("Rate") or "",
+            priority=task_el.get("Priority") or "",
         ))
     return result
 

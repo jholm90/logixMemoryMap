@@ -377,3 +377,84 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
   font-size: 0.8rem;
 }
 #errors-footer.hidden { display: none; }
+
+/* ---- navigation row: Back button beside the breadcrumb ---- */
+#nav-row { display: flex; align-items: center; gap: 8px; }
+#nav-row #breadcrumb { flex: 1 1 auto; min-width: 0; }
+#back-btn { flex: 0 0 auto; }
+#back-btn[disabled] { opacity: .4; cursor: default; }
+
+/* ---- depth stepper (replaces the 2-levels checkbox) ---- */
+.depth-stepper { display: inline-flex; align-items: center; gap: 4px; }
+.depth-stepper .step-btn {
+  width: 22px; height: 22px; line-height: 1; padding: 0;
+  border: 1px solid var(--border, #444); background: transparent;
+  color: inherit; cursor: pointer; border-radius: 3px;
+}
+.depth-stepper .step-btn:hover { background: rgba(255,255,255,.12); }
+.depth-stepper input[type="number"] {
+  width: 42px; text-align: center; background: transparent;
+  color: inherit; border: 1px solid var(--border, #444); border-radius: 3px;
+  padding: 2px 0;
+}
+
+/* ---- errors: tab chip, fixed banner, detail tab ---- */
+#errors-tab-btn.has-errors { color: #ffb4a8; font-weight: 600; }
+#errors-banner {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+  display: block; width: 100%; text-align: left;
+  padding: 8px 14px; border: 0; border-top: 2px solid #a33;
+  background: #3a1d1d; color: #ffd9d2; cursor: pointer;
+  font: inherit;
+}
+#errors-banner:hover { background: #4a2424; }
+#errors-banner.hidden { display: none; }
+.errors-empty { opacity: .7; padding: 12px; }
+.error-group { margin: 0 0 18px; }
+.error-group h3 {
+  margin: 0 0 6px; font-size: 13px; text-transform: uppercase;
+  letter-spacing: .04em; opacity: .85;
+}
+.error-count {
+  display: inline-block; margin-left: 6px; padding: 0 6px;
+  border-radius: 8px; background: #a33; color: #fff; font-size: 11px;
+}
+.error-table { width: 100%; border-collapse: collapse; }
+.error-table td { padding: 3px 8px; vertical-align: top; border-bottom: 1px solid rgba(255,255,255,.07); }
+.error-path { white-space: nowrap; opacity: .8; font-family: ui-monospace, monospace; font-size: 12px; }
+.error-msg { font-size: 12px; }
+
+/* ---- confidence as a measured percentage, not a single badge ---- */
+.conf-bar {
+  display: flex; height: 6px; width: 100%; margin-top: 5px;
+  border-radius: 3px; overflow: hidden; background: rgba(255,255,255,.08);
+}
+.conf-bar-sm { width: 68px; height: 5px; margin: 0; }
+.conf-seg { display: block; height: 100%; }
+.conf-known { background: #4a9d5f; }
+.conf-fitted { background: #c9a227; }
+.conf-assumed { background: #b3552f; }
+.conf-unknown { background: #666; }
+.conf-label { font-size: 11px; opacity: .8; margin-top: 2px; }
+.conf-cell { display: flex; align-items: center; gap: 6px; }
+.conf-pct { font-size: 11px; opacity: .85; min-width: 30px; }
+
+/* ---- resizable list columns ---- */
+#list-table th, #list-table-dock th { position: relative; }
+.col-grip {
+  position: absolute; top: 0; right: 0; width: 6px; height: 100%;
+  cursor: col-resize; user-select: none;
+}
+.col-grip:hover { background: rgba(255,255,255,.25); }
+
+/* ---- second tooltip bar: share of the whole controller ---- */
+.tooltip-bar-controller { background: #6aa9d8; }
+
+/* Ladder source for a single rung, shown in its tooltip. */
+.rung-text {
+  max-width: 460px; margin: 4px 0; padding: 4px 6px;
+  background: rgba(0,0,0,.35); border-radius: 3px;
+  font-family: ui-monospace, monospace; font-size: 11px;
+  white-space: pre-wrap; word-break: break-all;
+  max-height: 140px; overflow: hidden;
+}

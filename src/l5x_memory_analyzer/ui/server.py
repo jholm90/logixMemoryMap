@@ -20,9 +20,9 @@ from flask import Flask, Response, jsonify, request
 from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
 from l5x_memory_analyzer.parser.datatypes import DataTypeDef, parse_data_types
 from l5x_memory_analyzer.parser.load import L5XDocument, L5XFormatError, load_l5x, load_l5x_bytes
-from l5x_memory_analyzer.parser.logic import parse_rll_routines
+from l5x_memory_analyzer.parser.logic import count_instructions_in_text, parse_rll_routines
 from l5x_memory_analyzer.parser.tags import parse_tags
-from l5x_memory_analyzer.parser.tasks import program_to_task_map
+from l5x_memory_analyzer.parser.tasks import parse_tasks, program_to_task_map
 from l5x_memory_analyzer.sizing.constants import MemoryModel, load_memory_model
 from l5x_memory_analyzer.sizing.controller_budgets import load_controller_budgets
 from l5x_memory_analyzer.sizing.export import write_csv, write_xlsx
@@ -101,10 +101,25 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         "hierarchy": build_hierarchy(
             entries, data_types, model, {p: d for p, (dt, d) in tag_index.items()},
             program_to_task_map(doc.root),
+            aoi_names=set(parse_aoi_definitions(doc.root)),
         ),
         "type_summary": type_utilization(entries),
         "jsr_calls": jsr_calls,
         "rung_counts": rung_counts,
+        # Schedule type per task, for the treeview's task description line.
+        # Read straight off the L5X, never inferred.
+        "task_info": {
+            t.name: {
+                "type": t.task_type,
+                "rate": t.rate,
+                "priority": t.priority,
+                "is_safety": t.is_safety,
+            }
+            for t in parse_tasks(doc.root)
+        },
+        # Program-scoped tag count per program, so a program tile can say how
+        # many tags it holds alongside its routine count.
+        "program_tag_counts": _program_tag_counts(entries),
         "entries": [
             {
                 "path": e.path,
@@ -126,6 +141,21 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
 
     return DocState(doc=doc, model=model, data_types=data_types, tag_index=tag_index,
                      report_json=report_json, entries=entries, errors=errors)
+
+
+def _program_tag_counts(entries) -> dict[str, int]:
+    """Program name -> number of program-scoped tags in it."""
+    counts: dict[str, int] = {}
+    for e in entries:
+        if e.category != "program_tag":
+            continue
+        # Real path shape is "program:<Program>/<Tag>" -- confirmed against a
+        # real export rather than assumed.
+        if not e.path.startswith("program:") or "/" not in e.path:
+            continue
+        program = e.path[len("program:"):].split("/", 1)[0]
+        counts[program] = counts.get(program, 0) + 1
+    return counts
 
 
 def create_app(l5x_path: str | Path | None = None) -> Flask:
@@ -198,6 +228,54 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
             data, mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             headers={"Content-Disposition": f'attachment; filename="{download_name}"'},
         )
+
+    @app.get("/api/rungs")
+    def rungs():
+        """Every rung of one routine, so the treemap can drill below routine
+        level. Deliberately its own endpoint rather than part of the report
+        payload: a large program has tens of thousands of rungs and shipping
+        all of their text on every load would dwarf the rest of the JSON."""
+        state: DocState | None = app.config["state"]
+        if state is None:
+            return jsonify({"error": "no file loaded"}), 400
+        # Routine leaf paths are "program:<Program>/<Routine>" (real shape,
+        # read off a real export). Rung TEXT is not retained by
+        # parse_rll_routines -- it keeps counts only -- so this goes back to
+        # the XML for the one routine being opened rather than making every
+        # parse carry every rung's source.
+        path = request.args.get("path", "")
+        if not path.startswith("program:") or "/" not in path:
+            return jsonify({"error": f"not a routine path: {path!r}"}), 400
+        program_name, routine_name = path[len("program:"):].split("/", 1)
+
+        weights = state.model.logic_instructions.weights
+        for owner in list(state.doc.root.iter("Program")) + list(
+            state.doc.root.iter("AddOnInstructionDefinition")
+        ):
+            if (owner.get("Name") or "") != program_name:
+                continue
+            for routine_el in owner.iter("Routine"):
+                if (routine_el.get("Name") or "") != routine_name:
+                    continue
+                out = []
+                for rung_el in routine_el.iter("Rung"):
+                    text_el = rung_el.find("Text")
+                    text = (text_el.text or "").strip() if text_el is not None else ""
+                    # Takes a LIST of rung texts, not one string -- passing a
+                    # bare string iterates it character by character and
+                    # silently returns nothing.
+                    counts = count_instructions_in_text([text])
+                    out.append({
+                        "number": int(rung_el.get("Number") or len(out)),
+                        "text": text,
+                        # Priced from the SAME weight table the routine total
+                        # uses, so the rungs sum to their routine rather than
+                        # being a second, differently-derived number.
+                        "value": sum(weights.get(m, 0) * n for m, n in counts.items()),
+                        "instructions": sorted(counts),
+                    })
+                return jsonify({"path": path, "rungs": out})
+        return jsonify({"error": f"unknown routine path {path!r}"}), 404
 
     @app.get("/api/node")
     def node():

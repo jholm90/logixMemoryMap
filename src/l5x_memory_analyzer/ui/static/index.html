@@ -30,15 +30,21 @@
     <button class="tab-btn active" data-tab="treemap">Treemap</button>
     <button class="tab-btn" data-tab="list">List</button>
     <button class="tab-btn" data-tab="types">Type Summary</button>
+    <button class="tab-btn" data-tab="errors" id="errors-tab-btn">0 Errors</button>
     <span class="tabs-spacer"></span>
-    <label class="tab-toggle" title="Nest each tile's own children inside it">
-      <input type="checkbox" id="depth2-toggle">
-      2 levels deep
+    <label class="tab-toggle depth-stepper" title="How many levels to nest inside each tile">
+      <span>Depth</span>
+      <button type="button" id="depth-minus" class="step-btn" aria-label="Fewer levels">&minus;</button>
+      <input type="number" id="depth-input" min="1" max="10" step="1" value="1">
+      <button type="button" id="depth-plus" class="step-btn" aria-label="More levels">+</button>
     </label>
     <button id="split-toggle" class="tab-btn split-toggle-btn" title="Show List / Type Summary alongside the treemap">⊞ Details</button>
   </nav>
 
-  <div id="breadcrumb"></div>
+  <div id="nav-row">
+    <button id="back-btn" class="toolbar-btn" title="Back to where you came from" disabled>&larr;&nbsp;Back</button>
+    <div id="breadcrumb"></div>
+  </div>
 
   <div id="empty-state" class="hidden">
     <p>No file loaded.</p>
@@ -67,7 +73,8 @@
                   <th data-sort="name">Name</th>
                   <th data-sort="data_type">Type</th>
                   <th data-sort="bytes">Bytes</th>
-                  <th data-sort="pct_of_total">%</th>
+                  <th data-sort="pct_of_total">% of Parent</th>
+                  <th data-sort="pct_of_controller">% of Controller</th>
                   <th data-sort="basis">Confidence</th>
                 </tr>
               </thead>
@@ -88,7 +95,8 @@
             <th data-sort="name">Name</th>
             <th data-sort="data_type">Type</th>
             <th data-sort="bytes">Bytes</th>
-            <th data-sort="pct_of_total">%</th>
+            <th data-sort="pct_of_total">% of Parent</th>
+            <th data-sort="pct_of_controller">% of Controller</th>
             <th data-sort="basis">Confidence</th>
           </tr>
         </thead>
@@ -99,9 +107,14 @@
     <section id="panel-types" class="panel">
       <div id="type-summary"></div>
     </section>
+
+    <section id="panel-errors" class="panel">
+      <div id="errors-detail"></div>
+    </section>
   </main>
 
-  <footer id="errors-footer" class="hidden"></footer>
+  <button id="errors-banner" class="hidden" type="button"
+          title="Open the Errors tab"></button>
 
   <script src="app.js"></script>
 </body>

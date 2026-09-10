@@ -117,6 +117,11 @@ def test_routine_logic_nests_under_a_routines_subgroup_not_flat_with_tags():
     # Phase 5 (2026-08-27): a program's routine_logic entries must NOT sit
     # as flat siblings next to that program's tags -- they get their own
     # "Routines" subgroup within the program's group.
+    #
+    # Extended 2026-09-10: the tags get a "Program Tags" container of their
+    # own for the same reason. With only one side contained, the single
+    # "Routines" tile sat among dozens of loose tag tiles and was easy to
+    # lose; a program now reads as exactly two parts.
     entries = ENTRIES + [
         SizeEntry(
             path="program:MainProgram/MainRoutine", category="routine_logic",
@@ -129,8 +134,11 @@ def test_routine_logic_nests_under_a_routines_subgroup_not_flat_with_tags():
     ]
     tree = build_hierarchy(entries)
     program_group = next(c for c in tree["children"] if c["name"] == "Program: MainProgram")
-    tag_names = {c["name"] for c in program_group["children"] if "children" not in c}
-    assert tag_names == {"LocalFlag", "LocalDint"}  # tags stay flat, routines excluded
+    subgroups = {c["name"]: c for c in program_group["children"]}
+    assert set(subgroups) == {"Program Tags", "Routines"}
+
+    tag_names = {c["name"] for c in subgroups["Program Tags"]["children"]}
+    assert tag_names == {"LocalFlag", "LocalDint"}  # tags together, routines excluded
 
     routines_group = next(c for c in program_group["children"] if c["name"] == "Routines")
     assert {c["name"] for c in routines_group["children"]} == {"MainRoutine", "SecondRoutine"}

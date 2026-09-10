@@ -14,13 +14,22 @@ let NODE_STACK = [];     // ancestors of CURRENT_NODE, for the breadcrumb
 let SORT_STATE = { key: "bytes", dir: -1 };
 let SPLIT_OPEN = false;  // 2026-08-27: List/Type Summary docked
                          // alongside the treemap, always-available toggle
-let DEPTH2_ENABLED = false; // 2026-08-27: render grandchildren nested
-                             // inside their parent's tile
+let NEST_DEPTH = 1;      // how many levels to nest inside each tile (1..10).
+                         // Replaced the old two-state "2 levels deep"
+                         // checkbox: depth is a range, not a boolean.
+let NAV_HISTORY = [];    // every location visited, for the Back button --
+                         // distinct from NODE_STACK, which is only the
+                         // ANCESTOR chain. Going "back" after a sideways
+                         // sibling jump or a breadcrumb click cannot be
+                         // recovered from ancestors alone.
 
 async function main() {
   setupTabs();
   setupSplitDock();
-  setupDepth2Toggle();
+  setupDepthStepper();
+  setupBackButton();
+  setupErrorsBanner();
+  setupColumnResize();
   setupTreemapResize();
   setupFileOpen();
   await loadReport();
@@ -81,30 +90,28 @@ function renderAll() {
     fill.style.width = `${Math.min(pct, 100)}%`;
     fill.classList.toggle("over", pct > 100);
     const archNote = REPORT.budget_architecture === "divided" ? " (I/O + Data/Logic pools summed)" : "";
+    // Show the exact block counts as well as the rounded MB. "1.00 MB /
+    // 2.00 MB" hides the number the controller actually reports on its
+    // Capacity tab, which is what a user cross-checks against.
     label.textContent =
-      `${fmtBytes(REPORT.total_bytes)} / ${fmtBytes(REPORT.budget_bytes)} (${pct.toFixed(2)}%)${archNote}`;
+      `${fmtBytes(REPORT.total_bytes)} / ${fmtBytes(REPORT.budget_bytes)} (${pct.toFixed(2)}%)${archNote}` +
+      `  ·  ${fmtBlocks(REPORT.total_bytes)} / ${fmtBlocks(REPORT.budget_bytes)} blocks`;
   } else {
     // (2026-08-20): capacity is part-number specific, don't fake a
     // number for a processor type we don't have real data for.
     fill.style.width = "0%";
     fill.classList.remove("over");
     label.textContent =
-      `${fmtBytes(REPORT.total_bytes)} used -- budget unknown for processor "${REPORT.processor_type || "?"}"`;
+      `${fmtBytes(REPORT.total_bytes)} (${fmtBlocks(REPORT.total_bytes)} blocks) used ` +
+      `-- budget unknown for processor "${REPORT.processor_type || "?"}"`;
   }
 
-  const errEl = document.getElementById("errors-footer");
-  if (REPORT.errors && REPORT.errors.length) {
-    errEl.classList.remove("hidden");
-    errEl.textContent = `${REPORT.errors.length} tag(s) could not be sized: ` +
-      REPORT.errors.slice(0, 5).map(e => `${e.path} (${e.message})`).join("; ") +
-      (REPORT.errors.length > 5 ? ` ...and ${REPORT.errors.length - 5} more` : "");
-  } else {
-    errEl.classList.add("hidden");
-  }
+  renderErrors();
 
   CURRENT_NODE = REPORT.hierarchy;
   annotateTagPaths(CURRENT_NODE);
   NODE_STACK = [];
+  NAV_HISTORY = [];
 
   renderCurrentLevel();
 }
@@ -113,7 +120,9 @@ function renderAll() {
 // navigation (drill in, breadcrumb click, sibling jump) so the List and
 // Type Summary tabs (and their docked twins, see setupSplitDock) stay in
 // sync with wherever the treemap is, even when they're not the active tab.
-function renderCurrentLevel() {
+function renderCurrentLevel(recordHistory = true) {
+  if (recordHistory === false) { /* Back already restored the location */ }
+  document.getElementById("back-btn").disabled = NAV_HISTORY.length === 0;
   renderBreadcrumb();
   renderTreemap();
   renderList();
@@ -130,12 +139,158 @@ function renderCurrentLevel() {
 // already "udt_definitions/<Name>" (see hierarchy.py), which /api/node's
 // dedicated branch resolves the same way (2026-08-26, defs-pool drill-down).
 function annotateTagPaths(root) {
-  for (const group of root.children || []) {
-    for (const leaf of group.children || []) {
-      leaf._tagPath = leaf.path;
-      leaf._subPath = "";
+  // Walks the WHOLE initial tree, not a fixed two levels. The hierarchy is
+  // not always 3 deep: _nest_programs_under_tasks inserts a "Task: Y" level
+  // above "Program: X", and a program with routines gets a "Routines"
+  // subgroup under that -- so a real tag leaf can sit 4 or 5 levels down.
+  // The old fixed root->group->leaf walk left every one of those without a
+  // _tagPath, so drilling one requested /api/node?tag=&path= (both empty)
+  // and got a 404. That is why array drill-down worked on a file with no
+  // task nesting and failed on one with it.
+  //
+  // Any node that has no children of its own is a lazy-expansion candidate
+  // and needs its own path, whatever depth it sits at.
+  const visit = node => {
+    if (!node.children) {
+      node._tagPath = node.path;
+      node._subPath = "";
+      return;
     }
+    for (const child of node.children) visit(child);
+  };
+  for (const group of root.children || []) visit(group);
+}
+
+// Errors get their own tab, a count in the tab label, and a compact fixed
+// banner. The old footer was a single long line of concatenated messages
+// that scrolled away with the page and was unreadable past the second item.
+function renderErrors() {
+  const errors = (REPORT && REPORT.errors) || [];
+  const banner = document.getElementById("errors-banner");
+  const tabBtn = document.getElementById("errors-tab-btn");
+  const detail = document.getElementById("errors-detail");
+
+  tabBtn.textContent = `${errors.length} Error${errors.length === 1 ? "" : "s"}`;
+  tabBtn.classList.toggle("has-errors", errors.length > 0);
+
+  if (!errors.length) {
+    banner.classList.add("hidden");
+    detail.innerHTML = `<p class="errors-empty">Nothing went unpriced in this file.</p>`;
+    return;
   }
+
+  // Banner stays short on purpose -- a count and an invitation, not detail.
+  banner.classList.remove("hidden");
+  banner.textContent =
+    `${errors.length} item${errors.length === 1 ? "" : "s"} could not be priced — click for detail`;
+
+  // Grouped by the leading path segment, so 40 variations of one underlying
+  // gap read as one heading rather than 40 unrelated lines.
+  const groups = {};
+  for (const e of errors) {
+    const key = (e.path || "").split("/")[0] || "other";
+    (groups[key] = groups[key] || []).push(e);
+  }
+  detail.innerHTML = Object.entries(groups)
+    .sort((a, b) => b[1].length - a[1].length)
+    .map(([key, items]) =>
+      `<section class="error-group">` +
+      `<h3>${key} <span class="error-count">${items.length}</span></h3>` +
+      `<table class="error-table"><tbody>` +
+      items.map(e =>
+        `<tr><td class="error-path">${e.path}</td><td class="error-msg">${e.message}</td></tr>`
+      ).join("") +
+      `</tbody></table></section>`
+    ).join("");
+}
+
+function fmtBlocks(n) {
+  return n == null ? "-" : Math.round(n).toLocaleString();
+}
+
+// ---- confidence as a measured PERCENTAGE (#confidence bar) ----
+//
+// A single KNOWN/FITTED/ASSUMED badge is misleading on any aggregate,
+// because weakest()-style propagation lets one small unmeasured term label
+// a node that is overwhelmingly measured. A real case: a String_L010[100]
+// array is 1,600 bytes of KNOWN element cost plus a 12-byte FITTED
+// one-time array_base -- 99.3% measured, yet it reads simply "FITTED".
+//
+// So confidence is reported the way the bytes actually divide: what share
+// of this subtree's bytes rests on each basis. Leaves still show their own
+// single basis, which is exactly what a leaf's percentage degenerates to.
+function confidenceBreakdown(node) {
+  const acc = { KNOWN: 0, FITTED: 0, ASSUMED: 0, UNKNOWN: 0 };
+  const visit = n => {
+    const kids = n.children;
+    if (kids && kids.length) {
+      for (const k of kids) visit(k);
+      return;
+    }
+    const bytes = nodeValue(n);
+    const key = (n.basis || "UNKNOWN").toUpperCase();
+    acc[key in acc ? key : "UNKNOWN"] += bytes;
+  };
+  visit(node);
+  const total = acc.KNOWN + acc.FITTED + acc.ASSUMED + acc.UNKNOWN;
+  return { ...acc, total, knownPct: total ? (acc.KNOWN / total) * 100 : 0 };
+}
+
+function confidenceBarHtml(node) {
+  const c = confidenceBreakdown(node);
+  if (!c.total) return "";
+  const seg = (v, cls) => v > 0
+    ? `<span class="conf-seg ${cls}" style="width:${(v / c.total) * 100}%"></span>` : "";
+  return `<div class="conf-bar">${seg(c.KNOWN, "conf-known")}${seg(c.FITTED, "conf-fitted")}` +
+    `${seg(c.ASSUMED, "conf-assumed")}${seg(c.UNKNOWN, "conf-unknown")}</div>` +
+    `<div class="conf-label">${c.knownPct.toFixed(1)}% measured` +
+    (c.FITTED ? ` · ${((c.FITTED / c.total) * 100).toFixed(1)}% fitted` : "") +
+    (c.ASSUMED ? ` · ${((c.ASSUMED / c.total) * 100).toFixed(1)}% assumed` : "") +
+    `</div>`;
+}
+
+// A group node has no data_type, but "(group)" tells the user nothing.
+// Name the kind of container it actually is.
+function groupKind(node) {
+  const n = node.name || "";
+  if (n === "root") return "Controller";
+  if (n.startsWith("Task: ")) return "Task";
+  if (n.startsWith("Program: ")) return "Program";
+  if (n === "Routines") return "Routine folder";
+  if (n === "Program Tags") return "Tag folder";
+  if (n === "Controller Tags") return "Tag scope";
+  if (n === "Type Definitions") return "User-Defined Data Types";
+  if (n === "Modules") return "I/O modules";
+  if (n === "Axis Definitions") return "Axis pool";
+  if (n === "Add-On Instructions") return "Add-On Instruction";
+  if (n === "User-Defined Data Types") return "User-Defined Data Type";
+  if (n === "Project Overhead") return "Project overhead";
+  if (n === "Alarm Conditions") return "Alarm scope";
+  return "Folder";
+}
+
+// Task schedule type for the treeview description line.
+function taskInfoFor(node) {
+  if (!REPORT || !REPORT.task_info || !node.name.startsWith("Task: ")) return null;
+  return REPORT.task_info[node.name.slice("Task: ".length)] || null;
+}
+
+function programTagCountFor(node) {
+  if (!REPORT || !REPORT.program_tag_counts || !node.name.startsWith("Program: ")) return null;
+  // The group name carries a trailing "(unscheduled)" marker on programs no
+  // task schedules; the count is keyed by the bare program name.
+  const bare = node.name.slice("Program: ".length).replace(/\s*\(unscheduled\)$/, "");
+  const n = REPORT.program_tag_counts[bare];
+  return n == null ? null : n;
+}
+
+// An array tag should say so in its own label -- "Motors" and "Motors[64]"
+// are very different things to find in a memory map.
+function displayName(node) {
+  const dims = node.dimensions || node.dims;
+  if (Array.isArray(dims) && dims.length) return `${node.name}[${dims.join(",")}]`;
+  if (typeof node.array_length === "number") return `${node.name}[${node.array_length}]`;
+  return node.name;
 }
 
 function fmtBytes(n) {
@@ -155,6 +310,12 @@ function nodeValue(node) {
 // A node is drillable if it already has children, or the backend says it
 // would (lazy -- not fetched yet). A true leaf has neither.
 function isDrillable(node) {
+  // A ladder routine is always drillable -- into its rungs -- even though the
+  // backend hierarchy marks it as a leaf.
+  if (node.data_type === "RLL" && node.path) {
+    const rc = rungCountFor(node);
+    return rc == null ? true : rc > 0;
+  }
   return !!(node.children || node.has_children);
 }
 
@@ -228,11 +389,83 @@ function setupSplitDock() {
 // renderTreemap's nested-squarify block for the paint side; nested tiles
 // get a dashed stroke + reduced opacity + smaller label so they're never
 // mistaken for a same-level sibling.
-function setupDepth2Toggle() {
-  document.getElementById("depth2-toggle").addEventListener("change", ev => {
-    DEPTH2_ENABLED = ev.target.checked;
+// Depth is a range (1..10), not a two-state checkbox. 1 means "just this
+// level", matching the old unchecked behaviour, so the default is unchanged.
+function setupDepthStepper() {
+  const input = document.getElementById("depth-input");
+  const apply = v => {
+    NEST_DEPTH = Math.max(1, Math.min(10, Number(v) || 1));
+    input.value = NEST_DEPTH;
     renderTreemap();
+  };
+  input.addEventListener("change", () => apply(input.value));
+  document.getElementById("depth-minus").addEventListener("click", () => apply(NEST_DEPTH - 1));
+  document.getElementById("depth-plus").addEventListener("click", () => apply(NEST_DEPTH + 1));
+}
+
+// Back walks the actual visit history, so it also undoes a sibling jump or a
+// breadcrumb click -- neither of which the ancestor stack can reverse.
+function setupBackButton() {
+  document.getElementById("back-btn").addEventListener("click", () => {
+    const prev = NAV_HISTORY.pop();
+    if (!prev) return;
+    CURRENT_NODE = prev.node;
+    NODE_STACK = prev.stack;
+    renderCurrentLevel(false);
   });
+}
+
+function pushHistory() {
+  NAV_HISTORY.push({ node: CURRENT_NODE, stack: [...NODE_STACK] });
+  if (NAV_HISTORY.length > 100) NAV_HISTORY.shift();
+}
+
+function setupErrorsBanner() {
+  document.getElementById("errors-banner").addEventListener("click", () => {
+    const btn = document.querySelector('.tab-btn[data-tab="errors"]');
+    if (btn) btn.click();
+  });
+}
+
+// Drag a header edge to resize that column. Widths persist for the session
+// so re-rendering the rows does not snap them back.
+const COLUMN_WIDTHS = {};
+
+function setupColumnResize() {
+  for (const table of document.querySelectorAll("#list-table, #list-table-dock")) {
+    table.querySelectorAll("th").forEach(th => {
+      const grip = document.createElement("span");
+      grip.className = "col-grip";
+      grip.addEventListener("click", ev => ev.stopPropagation()); // not a sort
+      grip.addEventListener("mousedown", ev => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const startX = ev.clientX;
+        const startW = th.offsetWidth;
+        const onMove = e => {
+          const w = Math.max(40, startW + (e.clientX - startX));
+          COLUMN_WIDTHS[th.dataset.sort] = w;
+          applyColumnWidths();
+        };
+        const onUp = () => {
+          document.removeEventListener("mousemove", onMove);
+          document.removeEventListener("mouseup", onUp);
+        };
+        document.addEventListener("mousemove", onMove);
+        document.addEventListener("mouseup", onUp);
+      });
+      th.appendChild(grip);
+    });
+  }
+}
+
+function applyColumnWidths() {
+  for (const table of document.querySelectorAll("#list-table, #list-table-dock")) {
+    table.querySelectorAll("th").forEach(th => {
+      const w = COLUMN_WIDTHS[th.dataset.sort];
+      if (w) th.style.width = w + "px";
+    });
+  }
 }
 
 function setupTreemapResize() {
@@ -298,6 +531,8 @@ function renderBreadcrumb() {
     const crumb = document.createElement("span");
     crumb.textContent = node.name === "root" ? "All" : node.name;
     crumb.addEventListener("click", () => {
+      if (node === CURRENT_NODE) return;
+      pushHistory();
       NODE_STACK = chain.slice(0, i);
       CURRENT_NODE = node;
       renderCurrentLevel();
@@ -362,6 +597,7 @@ function hideSiblingPreview() {
 async function jumpToSibling(sibling, parentStack) {
   const kids = await ensureChildren(sibling);
   if (!kids || !kids.length) return; // leaf sibling -- nothing to show as a treemap root
+  pushHistory();
   NODE_STACK = parentStack;
   CURRENT_NODE = sibling;
   renderCurrentLevel();
@@ -369,6 +605,33 @@ async function jumpToSibling(sibling, parentStack) {
 
 async function ensureChildren(node) {
   if (node.children) return node.children;
+
+  // A ladder routine drills into its own RUNGS. Routines were previously the
+  // hard floor of the tree; a routine with 400 rungs was a single opaque
+  // tile. Rungs come from their own endpoint (see /api/rungs) because a
+  // large program has tens of thousands of them and shipping every rung's
+  // text in the main report payload would dwarf the rest of the JSON.
+  if (node.data_type === "RLL" && node.path) {
+    const res = await fetch(`/api/rungs?path=${encodeURIComponent(node.path)}`);
+    if (!res.ok) {
+      console.error("failed to load rungs", node.path, await res.text());
+      return null;
+    }
+    const data = await res.json();
+    node.children = data.rungs.map(r => ({
+      name: `Rung ${r.number}`,
+      value: r.value,
+      data_type: "Rung",
+      basis: node.basis,
+      tier: node.tier,
+      has_children: false,
+      rung_text: r.text,
+      rung_instructions: r.instructions,
+      path: `${node.path}#${r.number}`,
+    }));
+    return node.children;
+  }
+
   if (!node.has_children) return null;
 
   const params = new URLSearchParams({ tag: node._tagPath || "", path: node._subPath || "" });
@@ -395,6 +658,7 @@ async function drillInto(node) {
   if (!isDrillable(node)) return;
   const kids = await ensureChildren(node);
   if (!kids || !kids.length) return;
+  pushHistory();
   NODE_STACK.push(CURRENT_NODE);
   CURRENT_NODE = node;
   renderCurrentLevel();
@@ -486,20 +750,42 @@ const HATCH_PATTERN_SVG =
 // (2026-08-27: every tag needs [DataType] as a second line, a routine needs
 // to show how many rungs it holds, and a program needs to show how many
 // routines"). Returns [] when there's nothing extra to say.
+// Up to two description lines under a tile's name. Every tile ends with its
+// own size, because "how big is this" is the question the whole tool exists
+// to answer and it was previously only visible on hover.
 function subLabelFor(node) {
+  const lines = [];
   if (isGroup(node)) {
-    if (node.name.startsWith("Program: ")) {
-      const n = routineCountFor(node);
-      if (n != null) return [`${n} routine${n === 1 ? "" : "s"}`];
+    const task = taskInfoFor(node);
+    if (task) {
+      // Real schedule type off the L5X: CONTINUOUS / PERIODIC / EVENT.
+      const bits = [task.type || "TASK"];
+      if (task.type === "PERIODIC" && task.rate) bits.push(`${task.rate} ms`);
+      if (task.is_safety) bits.push("safety");
+      lines.push(bits.join(" · "));
+    } else if (node.name.startsWith("Program: ")) {
+      const r = routineCountFor(node);
+      const t = programTagCountFor(node);
+      const bits = [];
+      if (r != null) bits.push(`${r} routine${r === 1 ? "" : "s"}`);
+      if (t != null) bits.push(`${t} program tag${t === 1 ? "" : "s"}`);
+      if (bits.length) lines.push(bits.join("; "));
+    } else if (node.children) {
+      lines.push(`${node.children.length} item${node.children.length === 1 ? "" : "s"}`);
     }
-    return [];
-  }
-  if (node.data_type === "RLL") {
+  } else if (node.data_type === "RLL") {
     const rc = rungCountFor(node);
-    if (rc != null) return [`${rc} rung${rc === 1 ? "" : "s"}`];
-    return [];
+    if (rc != null) lines.push(`${rc} rung${rc === 1 ? "" : "s"}`);
+  } else if (node.data_type === "Rung") {
+    // "[Rung]" restates the tile name. The instructions in it are the useful
+    // second line.
+    const instr = node.rung_instructions || [];
+    if (instr.length) lines.push(instr.slice(0, 4).join(" "));
+  } else if (node.data_type) {
+    lines.push(`[${node.data_type}]`);
   }
-  return [`[${node.data_type}]`];
+  lines.push(fmtBytes(nodeValue(node)));
+  return lines;
 }
 
 async function renderTreemap() {
@@ -510,8 +796,14 @@ async function renderTreemap() {
   // Depth-2 mode needs every visible node's own children loaded before we
   // can lay any of it out -- fetch them all up front (they're cheap local
   // Flask JSON round-trips) rather than trying to paint incrementally.
-  if (DEPTH2_ENABLED) {
-    await Promise.all(children.filter(isDrillable).map(ensureChildren));
+  // Pre-load every level we are about to draw. Each level is a cheap local
+  // round-trip; drawing cannot start until the geometry is known.
+  if (NEST_DEPTH > 1) {
+    let level = children;
+    for (let d = 1; d < NEST_DEPTH && level.length; d++) {
+      await Promise.all(level.filter(isDrillable).map(ensureChildren));
+      level = level.flatMap(n => n.children || []);
+    }
   }
 
   paintTreemap(svg, children);
@@ -540,7 +832,7 @@ function paintTreemap(svg, children) {
     rect.setAttribute("width", Math.max(r.w, 0));
     rect.setAttribute("height", Math.max(r.h, 0));
     rect.classList.add("tm-rect");
-    rect.style.fill = isGroup(node) ? "var(--group-fill)" : colorForType(node.data_type);
+    rect.style.fill = fillForNode(node);
     rect.addEventListener("click", () => drillInto(node));
     rect.addEventListener("mousemove", ev => showTooltip(ev, node));
     rect.addEventListener("mouseleave", hideTooltip);
@@ -583,59 +875,78 @@ function paintTreemap(svg, children) {
       label.setAttribute("x", r.x + 4);
       label.setAttribute("y", r.y + 14);
       label.classList.add("tm-label");
-      label.textContent = truncateLabel(node.name, r.w);
+      label.textContent = truncateLabel(displayName(node), r.w);
       g.appendChild(label);
       labelLinesUsed = 1;
 
+      // Second and third lines: what it is, then how big it is.
       const subLines = subLabelFor(node);
-      if (subLines.length && r.h > 28) {
-        const label2 = document.createElementNS(svgNS, "text");
-        label2.setAttribute("x", r.x + 4);
-        label2.setAttribute("y", r.y + 27);
-        label2.classList.add("tm-label", "tm-label-sub");
-        label2.textContent = truncateLabel(subLines[0], r.w);
-        g.appendChild(label2);
-        labelLinesUsed = 2;
-      }
+      subLines.slice(0, 2).forEach((line, i) => {
+        const minH = 28 + i * 13;
+        if (r.h <= minH) return;
+        const sub = document.createElementNS(svgNS, "text");
+        sub.setAttribute("x", r.x + 4);
+        sub.setAttribute("y", r.y + 27 + i * 13);
+        sub.classList.add("tm-label", "tm-label-sub");
+        sub.textContent = truncateLabel(line, r.w);
+        g.appendChild(sub);
+        labelLinesUsed = 2 + i;
+      });
     }
 
     // Depth-2 nesting (2026-08-27): paint this tile's own children
     // inset inside it, visually distinct (dashed stroke, reduced opacity,
     // smaller label) so a grandchild is never mistaken for a same-level
     // sibling. Reserves the header strip the label above already used.
-    if (DEPTH2_ENABLED && isDrillable(node) && node.children && node.children.length) {
-      const inset = 3;
-      const headerH = labelLinesUsed === 2 ? 28 : labelLinesUsed === 1 ? 14 : 0;
-      const nx = r.x + inset, ny = r.y + inset + headerH;
-      const nw = Math.max(r.w - 2 * inset, 0), nh = Math.max(r.h - 2 * inset - headerH, 0);
-      const innerRects = [];
-      squarify(node.children, nx, ny, nw, nh, innerRects);
-      for (const ir of innerRects) {
-        const cnode = ir.node;
-        const crect = document.createElementNS(svgNS, "rect");
-        crect.setAttribute("x", ir.x);
-        crect.setAttribute("y", ir.y);
-        crect.setAttribute("width", Math.max(ir.w, 0));
-        crect.setAttribute("height", Math.max(ir.h, 0));
-        crect.classList.add("tm-rect", "tm-rect-nested");
-        crect.style.fill = isGroup(cnode) ? "var(--group-fill)" : colorForType(cnode.data_type);
-        crect.addEventListener("click", () => drillInto(cnode));
-        crect.addEventListener("mousemove", ev => showTooltip(ev, cnode));
-        crect.addEventListener("mouseleave", hideTooltip);
-        g.appendChild(crect);
-
-        if (ir.w > 26 && ir.h > 12) {
-          const clabel = document.createElementNS(svgNS, "text");
-          clabel.setAttribute("x", ir.x + 3);
-          clabel.setAttribute("y", ir.y + 10);
-          clabel.classList.add("tm-label", "tm-label-nested");
-          clabel.textContent = truncateLabel(cnode.name, ir.w);
-          g.appendChild(clabel);
-        }
-      }
+    if (NEST_DEPTH > 1) {
+      const headerH = labelLinesUsed >= 2 ? 28 : labelLinesUsed === 1 ? 14 : 0;
+      paintNested(svg, g, node, r, headerH, 1);
     }
 
     svg.appendChild(g);
+  }
+}
+
+// Draws a tile's own children inset inside it, recursively, down to
+// NEST_DEPTH. Nested tiles are visually distinct (dashed, dimmed, smaller
+// label) so a grandchild is never mistaken for a sibling.
+function paintNested(svg, g, node, r, headerH, depth) {
+  if (depth >= NEST_DEPTH) return;
+  if (!isDrillable(node) || !node.children || !node.children.length) return;
+
+  const svgNS = "http://www.w3.org/2000/svg";
+  const inset = 3;
+  const nx = r.x + inset, ny = r.y + inset + headerH;
+  const nw = Math.max(r.w - 2 * inset, 0), nh = Math.max(r.h - 2 * inset - headerH, 0);
+  if (nw < 8 || nh < 8) return;   // no room left to nest into
+
+  const innerRects = [];
+  squarify(node.children, nx, ny, nw, nh, innerRects);
+  for (const ir of innerRects) {
+    const cnode = ir.node;
+    const crect = document.createElementNS(svgNS, "rect");
+    crect.setAttribute("x", ir.x);
+    crect.setAttribute("y", ir.y);
+    crect.setAttribute("width", Math.max(ir.w, 0));
+    crect.setAttribute("height", Math.max(ir.h, 0));
+    crect.classList.add("tm-rect", "tm-rect-nested");
+    crect.style.fill = fillForNode(cnode);
+    crect.addEventListener("click", ev => { ev.stopPropagation(); drillInto(cnode); });
+    crect.addEventListener("mousemove", ev => showTooltip(ev, cnode));
+    crect.addEventListener("mouseleave", hideTooltip);
+    g.appendChild(crect);
+
+    let usedH = 0;
+    if (ir.w > 26 && ir.h > 12) {
+      const clabel = document.createElementNS(svgNS, "text");
+      clabel.setAttribute("x", ir.x + 3);
+      clabel.setAttribute("y", ir.y + 10);
+      clabel.classList.add("tm-label", "tm-label-nested");
+      clabel.textContent = truncateLabel(displayName(cnode), ir.w);
+      g.appendChild(clabel);
+      usedH = 11;
+    }
+    paintNested(svg, g, cnode, ir, usedH, depth + 1);
   }
 }
 
@@ -651,6 +962,19 @@ const TYPE_COLORS = {
   REAL: "#3ba17a", BOOL: "#c98a2c", BIT: "#c98a2c", STRING: "#8a5fbf",
   ALIAS: "#5c6472", TIMER: "#d1607a", COUNTER: "#c14f6b", CONTROL: "#a83f5a",
 };
+
+// Groups used to share one flat --group-fill, so MainTask, Controller Tags
+// and Axis Definitions were indistinguishable blocks of the same colour at
+// the root. Give each group its own hue derived from its name -- stable
+// across reloads, and distinct from the type palette by being lighter.
+function fillForNode(node) {
+  if (!isGroup(node)) return colorForType(node.data_type);
+  const name = node.name || "";
+  if (name === "root") return "var(--group-fill)";
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = (hash * 37 + name.charCodeAt(i)) >>> 0;
+  return `hsl(${hash % 360}, 34%, 34%)`;
+}
 
 function colorForType(dataType) {
   if (TYPE_COLORS[dataType]) return TYPE_COLORS[dataType];
@@ -690,32 +1014,78 @@ function tooltipParentBar(node) {
   );
 }
 
+// Second bar: this node's share of the WHOLE controller, not just of its
+// parent. At depth the parent share alone is misleading -- 80% of a small
+// folder can be a rounding error against the controller total.
+function tooltipControllerBar(node) {
+  if (!REPORT || !REPORT.total_bytes) return "";
+  const pct = (nodeValue(node) / REPORT.total_bytes) * 100;
+  return `<div class="tooltip-bar-wrap"><div class="tooltip-bar tooltip-bar-controller" ` +
+    `style="width:${Math.min(pct, 100).toFixed(1)}%"></div></div>` +
+    `<div class="tooltip-bar-label">${pct.toFixed(2)}% of controller total</div>`;
+}
+
 function showTooltip(ev, node) {
   const tooltip = document.getElementById("tooltip");
   tooltip.classList.remove("hidden");
-  const wrap = document.getElementById("treemap-main").getBoundingClientRect();
-  tooltip.style.left = (ev.clientX - wrap.left + 12) + "px";
-  tooltip.style.top = (ev.clientY - wrap.top + 12) + "px";
 
   if (isGroup(node)) {
     const routines = routineCountFor(node);
-    tooltip.innerHTML = `<strong>${node.name}</strong><br>${fmtBytes(nodeValue(node))}` +
+    const task = taskInfoFor(node);
+    tooltip.innerHTML = `<strong>${displayName(node)}</strong><br>` +
+      `<span class="text-dim-on-dark">${groupKind(node)}</span><br>` +
+      `${fmtBytes(nodeValue(node))} (${fmtBlocks(nodeValue(node))} blocks)` +
+      (task ? `<br>${task.type}${task.type === "PERIODIC" && task.rate ? ` @ ${task.rate} ms` : ""}` +
+        `${task.priority ? `, priority ${task.priority}` : ""}` : "") +
       (routines != null ? `<br>${routines} routine${routines === 1 ? "" : "s"}` : "") +
       tooltipParentBar(node) +
+      tooltipControllerBar(node) +
+      confidenceBarHtml(node) +
       (isDrillable(node) ? " (click to drill in)" : "");
   } else {
     const rc = node.data_type === "RLL" ? rungCountFor(node) : null;
     tooltip.innerHTML =
-      `<strong>${node.name}</strong><br>` +
-      `${node.data_type}<br>` +
+      `<strong>${displayName(node)}</strong><br>` +
+      (node.rung_text
+        ? `<div class="rung-text">${node.rung_text.replace(/[&<>]/g, ch =>
+            ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[ch]))}</div>`
+        : `${node.data_type}<br>`) +
       (rc != null ? `${rc} rung${rc === 1 ? "" : "s"}<br>` : "") +
-      `${fmtBytes(node.value)}<br>` +
+      `${fmtBytes(node.value)} (${fmtBlocks(node.value)} blocks)<br>` +
       (node.tier === "estimated" ? `<span class="tier-chip">ESTIMATED</span>` : "") +
       `<span class="basis-chip basis-${node.basis}">${node.basis}</span>` +
       jsrCallsNote(node) +
       tooltipParentBar(node) +
+      tooltipControllerBar(node) +
+      confidenceBarHtml(node) +
       (isDrillable(node) ? " (click to drill in)" : "");
   }
+
+  positionTooltip(tooltip, ev);
+}
+
+// Flip the tooltip to the other side of the cursor near the right/bottom
+// edge, so it never runs off screen. Measured against the VIEWPORT rather
+// than the treemap pane: the pane can extend past the window, and it is the
+// window edge that actually clips.
+function positionTooltip(tooltip, ev) {
+  const wrap = document.getElementById("treemap-main").getBoundingClientRect();
+  const GAP = 12;
+  const tw = tooltip.offsetWidth;
+  const th = tooltip.offsetHeight;
+
+  const flipX = ev.clientX > window.innerWidth * 0.75 || ev.clientX + GAP + tw > window.innerWidth;
+  const flipY = ev.clientY > window.innerHeight * 0.75 || ev.clientY + GAP + th > window.innerHeight;
+
+  let left = flipX ? ev.clientX - GAP - tw : ev.clientX + GAP;
+  let top = flipY ? ev.clientY - GAP - th : ev.clientY + GAP;
+
+  // Never push it off the opposite edge either.
+  left = Math.max(4, Math.min(left, window.innerWidth - tw - 4));
+  top = Math.max(4, Math.min(top, window.innerHeight - th - 4));
+
+  tooltip.style.left = (left - wrap.left) + "px";
+  tooltip.style.top = (top - wrap.top) + "px";
 }
 
 function hideTooltip() {
@@ -738,10 +1108,13 @@ function currentLevelRows() {
     const bytes = nodeValue(c);
     return {
       node: c,
-      name: c.name,
-      data_type: c.data_type || "(group)",
+      name: displayName(c),
+      // Name the container instead of the useless "(group)".
+      data_type: c.data_type || groupKind(c),
       bytes,
       pct_of_total: total ? (bytes / total) * 100 : 0,
+      pct_of_controller: (REPORT && REPORT.total_bytes) ? (bytes / REPORT.total_bytes) * 100 : 0,
+      known_pct: confidenceBreakdown(c).knownPct,
       basis: c.basis || "",
       tier: c.tier || "",
       jsr_targets: (REPORT && REPORT.jsr_calls && REPORT.jsr_calls[c.path]) || null,
@@ -784,13 +1157,23 @@ function renderListInto(tableId) {
       : e.routine_count != null
       ? `<br><span class="text-dim">${e.routine_count} routine${e.routine_count === 1 ? "" : "s"}</span>`
       : "";
+    // Confidence as a measured share of bytes, not a single badge -- see
+    // confidenceBreakdown for why a badge misleads on any aggregate.
+    const conf =
+      `<div class="conf-cell"><div class="conf-bar conf-bar-sm">` +
+      `<span class="conf-seg conf-known" style="width:${e.known_pct}%"></span>` +
+      `<span class="conf-seg conf-fitted" style="width:${100 - e.known_pct}%"></span>` +
+      `</div><span class="conf-pct">${e.known_pct.toFixed(0)}%</span>` +
+      (e.basis ? `<span class="basis-chip basis-${e.basis}">${e.basis}</span>` : "") +
+      (e.tier === "estimated" ? `<span class="tier-chip">ESTIMATED</span>` : "") +
+      `</div>`;
     tr.innerHTML =
       `<td>${e.name}${subNote}</td>` +
       `<td>${e.data_type}</td>` +
       `<td class="num">${Math.round(e.bytes).toLocaleString()}</td>` +
       `<td class="num">${e.pct_of_total.toFixed(2)}%</td>` +
-      `<td>${e.tier === "estimated" ? `<span class="tier-chip">ESTIMATED</span>` : ""}` +
-      `${e.basis ? `<span class="basis-chip basis-${e.basis}">${e.basis}</span>` : ""}</td>`;
+      `<td class="num">${e.pct_of_controller.toFixed(2)}%</td>` +
+      `<td>${conf}</td>`;
     tbody.appendChild(tr);
   }
 
@@ -801,6 +1184,7 @@ function renderListInto(tableId) {
       SORT_STATE.key = key;
       renderList();
     };
+    applyColumnWidths();
   });
 }
 
@@ -822,7 +1206,7 @@ function renderTypeSummaryInto(elId) {
   const kids = CURRENT_NODE.children || [];
   const totals = {};
   for (const c of kids) {
-    const key = c.data_type || "(group)";
+    const key = c.data_type || groupKind(c);
     totals[key] = (totals[key] || 0) + nodeValue(c);
   }
   const grandTotal = Object.values(totals).reduce((s, v) => s + v, 0);
