@@ -320,6 +320,18 @@ _PURE_CONDITION_INSTRUCTIONS = {
     # got the NOP right by convention and the 9th silently did not. That is
     # why it belongs HERE rather than as another comment in one generator.
     "SBR",
+    # DTR added 2026-09-08, same story a second time: "DTR is a comparison
+    # and is not an instruction, you will need a NOP after for
+    # testing/generating". DTR (data transitional) compares a source against
+    # a reference bit pattern and conditions the rung on the result -- it
+    # writes nothing, so a rung of nothing but DTR() has no terminating
+    # output and Studio 5000 rejects it, exactly like a bare EQU or SBR.
+    # DTR was already in the known-mnemonic set below, so it parsed and
+    # sized fine; it just never reached THIS check. That is twice now that
+    # a conditional was known to the linter as a valid instruction while
+    # being absent from the set that decides whether a rung terminates --
+    # worth remembering when adding any future compare-like mnemonic.
+    "DTR",
 }
 _BIT_SUBSCRIPT_RE = re.compile(r"\.\d+$")
 _BASE_TAG_NAME_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)")

@@ -68,8 +68,20 @@ _POOL = "\n".join(
     + [tag_xml(f"S{i}", "SINT") for i in range(4)]
     + [tag_xml(f"I{i}", "INT") for i in range(4)]
     + [tag_xml(f"L{i}", "DINT") for i in range(12)]
+    + [tag_xml(f"N{i}", "LINT") for i in range(4)]
     + [tag_xml("Dest", "DINT")]
 )
+# The N* tags are the LINT operands _lint_files() sweeps. They were
+# referenced by every cptwide_* expression and declared nowhere, so all
+# five of those files failed real Studio 5000 import and the batch
+# contained no LINT tag at all -- the one type the family exists to
+# measure. Note L* is DINT, not LINT, which is what invited the mistake.
+#
+# They belong in the SHARED pool rather than in the five files that use
+# them: every file this generator writes carries a byte-identical pool, so
+# it cancels exactly in any file-to-file difference. Declaring N* only
+# where referenced would put four extra tags on one side of every
+# comparison and quietly bias the LINT cost the batch is measuring.
 
 
 def _write(l5x: str, name: str, description: str) -> None:

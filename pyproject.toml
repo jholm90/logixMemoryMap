@@ -9,11 +9,16 @@ description = "WinDirStat for CompactLogix controller memory -- parses an L5X ex
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
-dependencies = ["pyyaml>=6.0", "flask>=3.0"]
+# openpyxl is a core dependency, not an extra: the UI and CLI both offer
+# XLSX export as a first-class button, and shipping it optional meant the
+# feature failed at click time with a "pip install openpyxl" error rather
+# than at install time.
+dependencies = ["pyyaml>=6.0", "flask>=3.0", "openpyxl>=3.1"]
 
 [project.optional-dependencies]
 dev = ["pytest>=7.0"]
-xlsx = ["openpyxl>=3.1"]
+# Kept as a no-op alias so an existing `pip install .[xlsx]` still resolves.
+xlsx = []
 
 [project.scripts]
 l5x-memory-analyzer = "l5x_memory_analyzer.cli:main"

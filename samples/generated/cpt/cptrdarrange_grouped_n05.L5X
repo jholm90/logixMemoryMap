@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="RdArrGrou5" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sat Sep 05 01:05:00 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="RdArrGrou5" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sat Sep 05 01:05:00 2026" LastModifiedDate="Sat Sep 05 01:05:00 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="RdArrGrou5" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Tue Sep 08 16:40:58 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="RdArrGrou5" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Tue Sep 08 16:40:58 2026" LastModifiedDate="Tue Sep 08 16:40:58 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -99,6 +99,18 @@
       </Tag>
       <Tag Name="L11" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="N0" TagType="Base" DataType="LINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="LINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="N1" TagType="Base" DataType="LINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="LINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="N2" TagType="Base" DataType="LINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="LINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="N3" TagType="Base" DataType="LINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="LINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
       <Tag Name="Dest" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>

@@ -48,7 +48,11 @@ _INSTRUCTIONS = {
             "AND(FillErrorBins[0],ChangedErrorBins[0],NewErrorBins[0])"),
     "OR": ("OR(D0,D1,D2);",
            "OR(WasteWoodNE,WasteWoodFE,WasteWood)"),
-    "DTR": ("DTR(D0,-1,D1);",
+    # DTR conditions the rung rather than writing to it, so it needs a
+    # terminating output the way EQU/SBR do -- see lint.py's
+    # _PURE_CONDITION_INSTRUCTIONS. The NOP is the same convention the
+    # other condition-shaped generators in this project already use.
+    "DTR": ("DTR(D0,-1,D1)NOP();",
             "DTR(THG._2_RxAsyncBuf.HeartbeatCounter,-1,THGComms_RxAsync_Buf_HeartbeatCounter)"),
     "UPPER": ("UPPER(STR0,STR1);",
               "UPPER(gAccess.UserNew.Name,gAccess.UserNew.Name)"),
