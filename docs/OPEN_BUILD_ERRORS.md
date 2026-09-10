@@ -1,11 +1,21 @@
 # Open Build / Conversion Errors
 
 First pass 2026-08-25, worked through while l5x→acd conversion was running.
-Every item from that pass has since been either root-caused and fixed, or
-confirmed as a scope decision (Safety) rather than a bug. **Nothing here
-currently needs a new error code** — every fix below is generated,
-lint-clean, and just needs a recapture to confirm. New items will be added
-here the moment anything else shows up as FAILED/nonzero `error_count`.
+Every item from *that pass* has since been either root-caused and fixed, or
+confirmed as a scope decision (Safety) rather than a bug.
+
+**The claim that once stood here — "nothing currently needs a new error
+code" — was wrong, and is corrected below (2026-09-10).** It was written
+without running the cross-reference that would have tested it. A
+systematic pass of every committed `samples/generated/**/*.L5X` against
+the last recorded status per filename in `samples/convert_log.csv` finds
+**59 committed files whose last record is FAILED**, and thirty of them are
+a module family that had never been surfaced in any batch summary.
+
+The lesson is the process one: a conversion-failure list assembled from
+what someone reports is not the same as one assembled from the log, and
+only the second kind can be trusted. This file is now regenerated from
+`convert_log.csv`, never from recollection.
 
 Two different failure stages, kept separate below:
 - **L5X→ACD conversion failure** — the `l5x2acd` tool couldn't even open
@@ -80,3 +90,69 @@ failed)
   test corpus is all standard controllers. Reclassified OUT OF SCOPE
   alongside DCS. Nothing to fix, nothing to retest on a standard
   controller.
+
+
+## Open conversion failures, from convert_log.csv (2026-09-10)
+
+Every committed generated file whose LAST recorded status is FAILED. A
+later success supersedes an earlier failure, so these are current, not
+historical. 57 of the 59 report the same generic
+`XMLSrv_E_IMPORT_ABORTED_NO_CHANGES` — that is the import refusing as a
+whole, not a diagnosis, and it does not distinguish these causes from one
+another.
+
+### Already tracked elsewhere (36 files)
+
+| files | where |
+|---|---|
+| `daxis_*` (8), `mbshape_axis_k3` | OQ-AXISINOUT — axis passed as an AOI InOut |
+| `modulerack_kinetix_full_bus` | Distinct error, `E_INVALIDARG`; built against 1756-L1/v13, a processor and version that were never in scope |
+| `predefprobe_*` (18) | Caused by the scalar-`DataValue` structure-tag bug fixed in `c85fab5`; regenerated, awaiting recapture |
+| `modulesweep_2198_*_ers3_variant_4conn` (10) | OQ-MODULEIO, and see the corrected `-ERS3` diagnosis — not a safety-controller mismatch, a missing XML block |
+| `l81_v30` | Not a defect: the SDK does not support Logix v30 or earlier. Cannot be captured on this toolchain and should not be retried |
+
+### Not previously recorded anywhere (11 files)
+
+These appear in no document and in no batch summary. Cause is **not
+established**, and no fix is claimed here.
+
+| file | notes |
+|---|---|
+| `modulesweep_5069_ib16_a` | |
+| `modulesweep_5069_iy4_a` | |
+| `modulesweep_5069_ob16_a` / `_a_r2` / `_b` / `_b_r2` | |
+| `modulesweep_5069_ib8s_a` | safety-rated catalog |
+| `modulesweep_5069_obv8s_a` | safety-rated catalog |
+| `modulesweep_powerflex_527_sto_cip_safety` / `_r2` | CIP Safety |
+| `modulerack_bender_full_program` / `_r2` | verbatim real donor modules |
+
+The tempting hypothesis is that the safety-rated catalogs fail because
+they sit on a plain non-safety controller. **That exact hypothesis has
+already been wrong once** — it was the original diagnosis for the 2198
+`-ERS3` failures, and it was disproved by `composite_realistic_v4_001`
+through `_031`, which carry `-ERS3` drives on a plain 1756-L81E with no
+`SafetyLevel` at zero errors. It is not asserted again here, and it does
+not explain `5069_ib16`, `5069_iy4` or `5069_ob16` at all, none of which
+are safety catalogs.
+
+**What is needed:** the raw Studio 5000 error-log line for one 5069
+`modulesweep` file and one `modulerack_bender_full_program`. The generic
+import-aborted message cannot distinguish a bad slot, an unsupported
+catalog, a missing XML block, or a connection-config mismatch, and
+guessing between those has already cost one wrong diagnosis. The AHK
+capture harness now records the error-log text into the manifest's
+`error_log` column, so a recapture of these eleven files will carry the
+real line without anyone reading it off a screen.
+
+### No conversion record at all
+
+`composite_realistic_{10,11,22,32,34,36,46,47,48}_r2` — nine committed
+files with no row in `convert_log.csv` in either direction. They were
+never converted, rather than converted and failed. Lint flags real defects
+in several (`safety_module_on_non_safety_controller` on 10/11/34,
+`duplicate_module_slot` and `non_sequential_module_slots` on 22/34), so
+these need the lint findings cleared and then a first conversion attempt.
+
+Awaiting first capture, not failures: the 40 `alarmdef_*`, 4 `fwmatrix_v38_1756_l9*`,
+and the 77 `csarrbase_*`/`csarrcount_*`/`csarrmaxlen_*`/`strarrcount_*`
+files built for OQ-CSARRAYBASE and OQ-STRARRAYLARGEN.
