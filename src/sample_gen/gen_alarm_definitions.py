@@ -14,12 +14,24 @@ priced the whole block at zero while reporting nothing at all. The silence
 is fixed (`audit_coverage()` now emits a `coverage/alarm_definitions`
 notice). The byte cost is what this batch measures.
 
-WHY v38 ONLY
-------------
-The element is absent from every one of the 26 real corpus exports at
-MajorRev 20 through 35, and present in all four at 38. Treated as a v38-era
-feature accordingly: every file here is built at v38, so a v35 control
-would not be a control at all.
+FIRMWARE: v35 PRIMARY, v38 AS A CONTROL
+---------------------------------------
+This project standardises generated tests on v35 so every batch differences
+cleanly against the ~2,400 existing v35 captures. This batch briefly did not,
+on the reasoning that <AlarmDefinitions> is absent from all 26 real corpus
+exports at MajorRev 20-35 and present in all four at 38.
+
+That reasoning was wrong, and worth recording so it is not repeated: those 26
+files are projects that did not USE the feature. Absence from them is not
+evidence that v35 rejects the element -- no v35 file carrying one was ever
+tested. Building the whole batch off-standard on that basis cost the
+comparability the standard exists to provide.
+
+So the primary arm is v35, matching every other batch. A matching v38 arm is
+kept deliberately, and now earns its place as a real control: it answers
+whether firmware changes the cost at all, and if v35 turns out to reject the
+element outright, the v38 arm still closes OQ-ALARMDEF while the v35 failures
+prove the version boundary.
 
 WHAT EACH GROUP SEPARATES
 -------------------------
@@ -42,14 +54,13 @@ real exports is a long CDATA string with embedded format directives. Four
 files hold the definition and member count fixed and vary only that text:
 absent, ~16, ~128 and ~512 characters.
 
-TWO PROCESSORS, ON PURPOSE
---------------------------
-Every file is built twice, on 1756-L81E and on 1756-L902TS, both at v38.
-The L9 arm is the shape proven to carry the element -- it is copied from
-the real exports. The L8 arm tests whether the feature is firmware-wide or
-L9-specific, and differences against the existing real l81_v38 fw_baseline.
-If the L8 arm fails to import, the L9 arm still closes the question; if it
-imports, the answer covers the family this project actually targets.
+ONE PROCESSOR, TWO FIRMWARES
+----------------------------
+Every file is built twice on 1756-L81E: once at v35 and once at v38. Holding
+the processor fixed and varying only firmware makes the v35-vs-v38 difference
+readable directly. 1756-L81E is the catalog the existing baseline and most of
+the real corpus already use, so the v35 arm slots straight into the rest of
+the measured data.
 
 Run: python -m sample_gen.gen_alarm_definitions
 """
@@ -66,11 +77,13 @@ from .manifest import append_manifest_row, write_sample
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "alarmdefs"
 
-# Both at v38: the firmware the element is confirmed to exist at.
-_PROCESSORS = [("1756-L81E", "l81"), ("1756-L902TS", "l902ts")]
-_MAJOR_REV = "38"
+# (catalog, slug, major_rev, software_revision). v35 is the project standard
+# and the primary arm; v38 is the control -- see the module docstring.
+_PROCESSORS = [
+    ("1756-L81E", "l81_v35", "35", "35.05"),
+    ("1756-L81E", "l81_v38", "38", "38.02"),
+]
 _MINOR_REV = "11"
-_SOFTWARE_REVISION = "38.02"
 
 # The UDT the definitions attach to. BOOL status members are what a real
 # MemberAlarmDefinition's Input points at -- ".Sts_Fail" in the real P_PID
@@ -134,8 +147,9 @@ def _alarm_definitions_xml(definitions: list[tuple[str, list[str]]]) -> str:
     return f"<AlarmDefinitions>\n{body}</AlarmDefinitions>\n"
 
 
-def _build_xml(catalog: str, target_name: str, *, datatypes_xml: str = "",
-               alarm_definitions_xml: str = "", tags_xml: str = "") -> str:
+def _build_xml(catalog: str, target_name: str, major_rev: str, software_revision: str, *,
+               datatypes_xml: str = "", alarm_definitions_xml: str = "",
+               tags_xml: str = "") -> str:
     """Controller shell copied from the real 1756-L9xTS v38 exports, with
     the 1756-L81E port shape substituted for the L8 arm. Deliberately does
     not route through wrapper.py's build_l5x: that function has no hook for
@@ -144,6 +158,11 @@ def _build_xml(catalog: str, target_name: str, *, datatypes_xml: str = "",
     now = datetime.now().strftime("%a %b %d %H:%M:%S %Y")
     guid = "{" + str(uuid.uuid4()).upper() + "}"
     is_l9 = catalog.startswith("1756-L9")
+    is_v38 = major_rev == "38"
+    # DataExchangeId is a v38 addition -- confirmed present in the real v38
+    # exports and absent from every v35 one. Emitting it on a v35 file would
+    # make the firmware arms differ by more than the firmware.
+    dx = f' DataExchangeId="{guid}"' if is_v38 else ""
     # Both real families carry these v38 attributes; only the L9 exports
     # carry SafetyEnabled, dual-IP mode, OpcUaInfo and the A1/A2 port pair.
     safety_info = '<SafetyInfo SafetyEnabled="false"/>' if is_l9 else "<SafetyInfo/>"
@@ -160,15 +179,15 @@ def _build_xml(catalog: str, target_name: str, *, datatypes_xml: str = "",
     else:
         ethernet_ports = '<EthernetPorts>\n<EthernetPort Port="1" Label="1" PortEnabled="true"/>\n</EthernetPorts>\n'
     return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="{_SOFTWARE_REVISION}" TargetName="{target_name}" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="{now}" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="{target_name}" ProcessorType="{catalog}" MajorRev="{_MAJOR_REV}" MinorRev="{_MINOR_REV}" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="{now}" LastModifiedDate="{now}" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false"{dual_ip} AutoDiagsEnabled="false" WebServerEnabled="false" DataExchangeId="{guid}">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="{software_revision}" TargetName="{target_name}" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="{now}" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="{target_name}" ProcessorType="{catalog}" MajorRev="{major_rev}" MinorRev="{_MINOR_REV}" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="{now}" LastModifiedDate="{now}" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false"{dual_ip} AutoDiagsEnabled="false" WebServerEnabled="false"{dx}>
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 {safety_info}
 <DataTypes>
 {datatypes_xml}</DataTypes>
 <Modules>
-<Module Name="Local" CatalogNumber="{catalog}" Vendor="1" ProductType="14" ProductCode="{_product_code(catalog)}" Major="{_MAJOR_REV}" Minor="{_MINOR_REV}" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<Module Name="Local" CatalogNumber="{catalog}" Vendor="1" ProductType="14" ProductCode="{_product_code(catalog)}" Major="{major_rev}" Minor="{_MINOR_REV}" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
 <EKey State="Disabled"/>
 <Ports>
 {_local_ports_xml(catalog)}
@@ -221,7 +240,7 @@ def main() -> None:
     written = 0
     udt = _source_udt_xml()
 
-    for catalog, slug in _PROCESSORS:
+    for catalog, slug, major_rev, software_revision in _PROCESSORS:
         # --- Group A: definition and member marginal cost -----------------
         # Member sweep: one definition, N members. m00 is also the control
         # for the definition sweep -- an AlarmDefinitions element that
@@ -229,11 +248,11 @@ def main() -> None:
         for n_members in (0, 1, 2, 4, 8, 16):
             out_name = f"alarmdef_{slug}_d1_m{n_members:02d}"
             defs = [(_UDT_NAME, [_member_alarm_xml(i) for i in range(n_members)])]
-            l5x = _build_xml(catalog, _target_name(out_name), datatypes_xml=udt,
+            l5x = _build_xml(catalog, _target_name(out_name), major_rev, software_revision, datatypes_xml=udt,
                              alarm_definitions_xml=_alarm_definitions_xml(defs))
             _write(l5x, out_name,
                    f"OQ-ALARMDEF group A: 1 datatype alarm definition holding {n_members} "
-                   f"member alarm(s), {catalog} at v{_MAJOR_REV}. Member-count slope.")
+                   f"member alarm(s), {catalog} at v{major_rev}. Member-count slope.")
             written += 1
 
         # Definition sweep: N definitions, one member each. Needs N distinct
@@ -245,11 +264,11 @@ def main() -> None:
                 udt_xml(t, [MemberSpec(_udt_member_name(0), "BOOL")]) for t in type_names
             )
             defs = [(t, [_member_alarm_xml(0)]) for t in type_names]
-            l5x = _build_xml(catalog, _target_name(out_name), datatypes_xml=types_xml,
+            l5x = _build_xml(catalog, _target_name(out_name), major_rev, software_revision, datatypes_xml=types_xml,
                              alarm_definitions_xml=_alarm_definitions_xml(defs))
             _write(l5x, out_name,
                    f"OQ-ALARMDEF group A: {n_defs} datatype alarm definitions, 1 member alarm "
-                   f"each, {catalog} at v{_MAJOR_REV}. Per-definition intercept. Differences "
+                   f"each, {catalog} at v{major_rev}. Per-definition intercept. Differences "
                    f"against alarmdef_{slug}_d1_m01.")
             written += 1
 
@@ -257,23 +276,23 @@ def main() -> None:
         for n_tags in (0, 1, 4, 16):
             tags = "".join(tag_xml(f"AlarmSrc{i:02d}", _UDT_NAME) for i in range(n_tags))
             with_def = f"alarmdef_{slug}_inst_t{n_tags:02d}"
-            l5x = _build_xml(catalog, _target_name(with_def), datatypes_xml=udt,
+            l5x = _build_xml(catalog, _target_name(with_def), major_rev, software_revision, datatypes_xml=udt,
                              alarm_definitions_xml=_alarm_definitions_xml(
                                  [(_UDT_NAME, [_member_alarm_xml(0)])]),
                              tags_xml=tags)
             _write(l5x, with_def,
                    f"OQ-ALARMDEF group B: 1 definition with 1 member alarm, plus {n_tags} tag(s) "
-                   f"of the defined type, {catalog} at v{_MAJOR_REV}. Instantiation ladder.")
+                   f"of the defined type, {catalog} at v{major_rev}. Instantiation ladder.")
             written += 1
 
             if n_tags == 0:
                 continue  # the no-definition control at 0 tags is d1_m00's sibling
             without_def = f"alarmdef_{slug}_noinst_t{n_tags:02d}"
-            l5x = _build_xml(catalog, _target_name(without_def), datatypes_xml=udt,
+            l5x = _build_xml(catalog, _target_name(without_def), major_rev, software_revision, datatypes_xml=udt,
                              tags_xml=tags)
             _write(l5x, without_def,
                    f"OQ-ALARMDEF group B control: {n_tags} tag(s) of the same type with NO alarm "
-                   f"definition at all, {catalog} at v{_MAJOR_REV}. Differences against "
+                   f"definition at all, {catalog} at v{major_rev}. Differences against "
                    f"alarmdef_{slug}_inst_t{n_tags:02d} to isolate the template.")
             written += 1
 
@@ -284,13 +303,13 @@ def main() -> None:
                             ("l", "Status bit tripped: " + "detail text " * 41)):
             out_name = f"alarmdef_{slug}_msg_{label}"
             defs = [(_UDT_NAME, [_member_alarm_xml(0, message=text)])]
-            l5x = _build_xml(catalog, _target_name(out_name), datatypes_xml=udt,
+            l5x = _build_xml(catalog, _target_name(out_name), major_rev, software_revision, datatypes_xml=udt,
                              alarm_definitions_xml=_alarm_definitions_xml(defs))
             length = 0 if text is None else len(text)
             _write(l5x, out_name,
                    f"OQ-ALARMDEF group C: 1 definition, 1 member alarm, operator message text "
                    f"{length} chars ({'no AlarmConfig element' if text is None else label}), "
-                   f"{catalog} at v{_MAJOR_REV}. Message-text slope.")
+                   f"{catalog} at v{major_rev}. Message-text slope.")
             written += 1
 
     print(f"Done. {written} files in {OUT_ROOT}.")

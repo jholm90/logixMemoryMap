@@ -1811,11 +1811,21 @@ the matching footnote at the bottom, not inline.
     itself is still unknown.
 
     **Test files built 2026-09-08**, `samples/generated/alarmdefs/`, 40
-    files, awaiting capture. Every one is at v38: the element is absent
-    from all 26 real corpus exports at MajorRev 20-35 and present in all
-    four at 38, so a v35 control would not be a control. Each group is
-    built twice, on 1756-L81E and 1756-L902TS, which also answers whether
-    the feature is firmware-wide or L9-specific.
+    files, awaiting capture. Rebuilt 2026-09-10 onto the v35 standard.
+
+    The batch was first built entirely at v38, reasoning that the element
+    is absent from all 26 real corpus exports at MajorRev 20-35 and present
+    in all four at 38. That reasoning does not hold: those 26 files are
+    projects that did not USE the feature, so their silence says nothing
+    about whether v35 accepts one. Building off-standard on that basis cost
+    the comparability against the ~2,400 existing v35 captures that the
+    standard exists to provide.
+
+    Now 20 files at v35 (primary, matching every other batch) and 20 at v38
+    on the same 1756-L81E, so firmware is the only variable between the two
+    arms and the v35-vs-v38 difference is readable directly. If v35 does
+    reject the element, the v35 arm's conversion failures establish the
+    version boundary while the v38 arm still closes the question.
 
       - Group A, `alarmdef_{proc}_d1_m{00,01,02,04,08,16}` and
         `alarmdef_{proc}_d{02,04,08}_m1`: member-count slope and
