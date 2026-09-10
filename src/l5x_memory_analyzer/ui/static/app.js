@@ -252,16 +252,32 @@ function setupFileOpen() {
       if (!file) return;
       const formData = new FormData();
       formData.append("file", file);
-      document.getElementById("file-info").textContent = `Loading ${file.name}...`;
-      const res = await fetch("/api/load", { method: "POST", body: formData });
-      const data = await res.json();
-      if (!res.ok) {
-        alert(`Failed to load ${file.name}: ${data.error || res.statusText}`);
-        return;
+      const info = document.getElementById("file-info");
+      info.textContent = `Loading ${file.name}...`;
+      try {
+        const res = await fetch("/api/load", { method: "POST", body: formData });
+        // Never assume the body is JSON. A crash inside the sizing engine used
+        // to come back as an HTML traceback page, res.json() threw, and this
+        // handler died before reaching the !res.ok branch below -- leaving
+        // "Loading ..." on screen with no error at all.
+        const raw = await res.text();
+        let data = null;
+        try { data = JSON.parse(raw); } catch (_) { /* not JSON -- handled below */ }
+        if (!res.ok || data === null) {
+          const detail = (data && data.error) || raw.slice(0, 300) || res.statusText;
+          info.textContent = `Failed to load ${file.name}`;
+          alert(`Failed to load ${file.name}:\n\n${detail}`);
+          return;
+        }
+        REPORT = data;
+        renderAll();
+      } catch (err) {
+        // Network-level failure, or the server died outright.
+        info.textContent = `Failed to load ${file.name}`;
+        alert(`Failed to load ${file.name}:\n\n${err}`);
+      } finally {
+        ev.target.value = "";
       }
-      REPORT = data;
-      renderAll();
-      ev.target.value = "";
     });
   }
 }

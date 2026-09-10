@@ -178,7 +178,7 @@ def parse_st_routines(root: ET.Element) -> list[StructuredTextRoutine]:
 def size_st_assignments(routine: StructuredTextRoutine, model, tag_types=None):
     """Cost of every assignment in the routine, plus the shapes we cannot price.
 
-    Returns (bytes, unmeasured_shapes) where unmeasured_shapes lists
+    Returns (bytes, unmeasured_shapes, unpriced_operators). unmeasured_shapes lists
     "<n_operators>|<dest_is_real>" keys this routine used that the measured
     table does not cover. Those fall back to the CPT model, which is known
     to be wrong for at least the 1-operator cases, so the caller surfaces
@@ -187,6 +187,7 @@ def size_st_assignments(routine: StructuredTextRoutine, model, tag_types=None):
     st = model.structured_text
     total = 0
     unmeasured: list[str] = []
+    unpriced_ops: set[str] = set()
     for call in routine.cpt_calls:
         dest_is_real = bool(tag_types) and tag_types.get(call.dest) == "REAL"
         measured = st.assignment_cost(len(call.operators), dest_is_real)
@@ -202,7 +203,12 @@ def size_st_assignments(routine: StructuredTextRoutine, model, tag_types=None):
             # The shape is reported as a coverage gap either way.
             total += model.logic_instructions.cpt_expression.cost_for(call.operators)
             unmeasured.append(f"{len(call.operators)}|{str(dest_is_real).lower()}")
-    return total, unmeasured
+        # Reported regardless of whether the measured table covered the shape:
+        # an operator with no measured tier is unpriced either way, and it is
+        # exactly what used to abort the whole report with a KeyError.
+        for op in model.logic_instructions.cpt_expression.unpriced_operators(call.operators):
+            unpriced_ops.add(op)
+    return total, unmeasured, sorted(unpriced_ops)
 
 
 def size_st_control_flow(routine: StructuredTextRoutine, model) -> int:

@@ -423,8 +423,17 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # between an ST routine and an RLL one, which that generic accounting
     # already absorbs. Charging content only keeps the empty control exact.
     for st_routine in parse_st_routines(root):
-        st_assign_bytes, st_unmeasured = size_st_assignments(st_routine, model, tag_types)
+        st_assign_bytes, st_unmeasured, st_unpriced_ops = size_st_assignments(st_routine, model, tag_types)
         st_bytes = size_st_control_flow(st_routine, model) + st_assign_bytes
+        if st_unpriced_ops:
+            errors.append(SizeError(
+                path=f"coverage/st_operator/{st_routine.program_name}/{st_routine.routine_name}",
+                message=(
+                    f"ST assignment uses operator(s) {', '.join(st_unpriced_ops)} that have no "
+                    f"measured tier cost in this model, so their contribution is not priced. "
+                    f"The rest of each expression is still charged. See OQ-STBOOLOP."
+                ),
+            ))
         for shape in sorted(set(st_unmeasured)):
             n_ops, is_real = shape.split("|")
             errors.append(SizeError(

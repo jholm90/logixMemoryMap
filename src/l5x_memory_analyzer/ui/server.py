@@ -152,6 +152,23 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
             state = _load_state(f.read(), f.filename, from_bytes=True)
         except L5XFormatError as exc:
             return jsonify({"error": str(exc)}), 400
+        except Exception as exc:  # noqa: BLE001 -- see below
+            # Any other failure is a BUG in the sizing engine, not bad input,
+            # and it must still come back as JSON. Flask's default is an HTML
+            # traceback page, which the browser cannot parse as JSON, so the
+            # fetch handler threw before it could report anything and the UI
+            # sat on "Loading <file>..." forever with no error shown (real
+            # report 2026-09-09, a KeyError out of the ST operator table).
+            # The traceback still goes to the server log for diagnosis; the
+            # user gets a message naming the failure instead of a hang.
+            app.logger.exception("Failed to size %s", f.filename)
+            return jsonify({
+                "error": (
+                    f"Could not size {f.filename}: {type(exc).__name__}: {exc}. "
+                    f"This is a bug in the analyzer, not a problem with the file. "
+                    f"The full traceback is in the server console."
+                ),
+            }), 500
         app.config["state"] = state
         return jsonify(state.report_json)
 

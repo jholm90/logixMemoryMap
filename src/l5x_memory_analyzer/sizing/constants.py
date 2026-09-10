@@ -295,6 +295,39 @@ class CptExpressionModel:
     three_tier_mix_per_pow_operand: int
     real_dest: "CptRealDestModel"
 
+    @staticmethod
+    def _normalize(op: str) -> str:
+        """Word operators are matched case-insensitively by the ST tokenizer
+        but keyed uppercase in the model, so "mod" and "MOD" must land on the
+        same entry. Symbol operators are returned unchanged."""
+        return op.upper() if op.isalpha() else op
+
+    def priced_operators(self, operators) -> list[str]:
+        """Only the operators this model has a measured tier cost for."""
+        return [
+            self._normalize(op) for op in operators
+            if self._normalize(op) in self.operator_tier_costs
+        ]
+
+    def unpriced_operators(self, operators) -> list[str]:
+        """Operators the ST/RLL tokenizer recognises but this model has never
+        measured a cost for -- AND/OR/XOR today.
+
+        These used to raise KeyError straight out of cost_for, which aborted
+        the whole report and made the UI fail to load the file at all (real
+        traceback, 2026-09-09, on an ST assignment containing AND). A missing
+        measurement is a coverage gap, not a crash: the expression is charged
+        for the operators that ARE measured and the rest are reported, the
+        same discipline every other unpriced construct in this engine follows.
+        """
+        seen, out = set(), []
+        for op in operators:
+            n = self._normalize(op)
+            if n not in self.operator_tier_costs and n not in seen:
+                seen.add(n)
+                out.append(n)
+        return out
+
     def cost_for(self, operators: list[str]) -> int:
         """Real per-call CPT cost from its expression's operator tokens
         (OQ-CMPCPTLAYOUT, wired 2026-08-26) -- see memory_model.yaml
@@ -343,6 +376,13 @@ class CptExpressionModel:
         for its own base constant.
         """
         if not operators:
+            return self.base_read
+        operators = self.priced_operators(operators)
+        if not operators:
+            # Every operator in the expression is one this project has never
+            # measured (see unpriced_operators). Charging a tier for them
+            # would be inventing a constant, so only the read cost stands and
+            # the caller reports the expression as unpriced.
             return self.base_read
         tiers = [self.operator_tier_costs[op] for op in operators]
         if len(set(tiers)) == 1:
