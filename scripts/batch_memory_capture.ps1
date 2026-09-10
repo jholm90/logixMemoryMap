@@ -180,7 +180,7 @@ function Get-RelPath($fullPath) {
 }
 
 $ManifestColumns = "sample_id,description,category,l5x_path,predicted_bytes,actual_bytes,delta,delta_pct," +
-    "controller_model,firmware_rev,date_tested,notes,error_count,warning_count,message_value,window_title"
+    "controller_model,firmware_rev,date_tested,notes,error_count,warning_count,message_value,window_title,error_log"
 
 if (-not (Test-Path $ManifestPath)) {
     $ManifestColumns | Out-File -FilePath $ManifestPath -Encoding utf8
@@ -300,6 +300,12 @@ foreach ($row in $remaining) {
     $warningCount = $result.warning_count
     $messageValue = $result.message_value
     $windowTitle = $result.window_title
+    # Text99 is Studio's build/verify error-log pane. AHK truncates it to its
+    # own MAX_ERROR_LOG_CHARS (from the START -- the first error is the
+    # root cause) and validates the "Complete -" summary marker was present
+    # before truncating, so a partial read announces itself here rather than
+    # arriving as plausible-looking text.
+    $errorLog = if ($result.PSObject.Properties.Name -contains 'error_log') { $result.error_log } else { "" }
     Remove-Item $HandoffPath -Force  # consumed -- next file must produce a fresh one
 
     # Independent cross-check (2026-08-22, "window title is valid
@@ -397,6 +403,19 @@ foreach ($row in $remaining) {
         $notes = ($notes + " PROCTYPE-UNREAD").Trim()
     }
 
+    # 2026-09-10: a non-zero error count, or an error-log read that failed its
+    # own validation, gets a RED line. Everything above this point flags into
+    # the notes column, which is only seen later -- this is the signal for the
+    # operator watching the run, so a bad build is noticed while the batch is
+    # still going rather than during reconciliation afterwards.
+    $buildUnclean = ($errorCount -ne "0" -and $errorCount -ne "")
+    $logSuspect   = ($errorLog -like "(*")
+    if ($buildUnclean -or $logSuspect) {
+        $why = if ($buildUnclean) { "BUILD REPORTED $errorCount ERROR(S)" } else { "ERROR-LOG READ SUSPECT" }
+        Write-Host ("  !! {0} : {1}" -f $why, $meta.Id) -ForegroundColor Red
+        if ($errorLog) { Write-Host ("     {0}" -f $errorLog) -ForegroundColor Red }
+    }
+
     if ($existing) {
         $existing.actual_bytes = $blocksUsed
         $existing.delta = $delta
@@ -409,13 +428,18 @@ foreach ($row in $remaining) {
         $existing.warning_count = $warningCount
         $existing.message_value = $messageValue
         $existing.window_title = $windowTitle
+        if ($existing.PSObject.Properties.Name -contains 'error_log') {
+            $existing.error_log = $errorLog
+        } else {
+            $existing | Add-Member -NotePropertyName error_log -NotePropertyValue $errorLog
+        }
     } else {
         $manifest += [pscustomobject]@{
             sample_id = $meta.Id; description = $meta.Desc; category = $category; l5x_path = $relPath
             predicted_bytes = ""; actual_bytes = $blocksUsed; delta = $delta; delta_pct = $deltaPct
             controller_model = $declaredProc; firmware_rev = $declaredFw; date_tested = $date; notes = $notes
             error_count = $errorCount; warning_count = $warningCount; message_value = $messageValue
-            window_title = $windowTitle
+            window_title = $windowTitle; error_log = $errorLog
         }
     }
     $manifest | Export-Csv -Path $ManifestPath -NoTypeInformation -Encoding utf8

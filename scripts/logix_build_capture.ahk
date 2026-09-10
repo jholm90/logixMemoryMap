@@ -56,6 +56,18 @@ global WarningValue := ""
 global MessageValue := ""
 global WindowTitle := ""
 global BUILD_SKIP_CATALOGS := "*1769-*;*1756-L7*"
+global ErrorLog := ""
+; Text99 is the build/verify error-log pane. Its full text can run to many
+; KB; only the FIRST MAX_ERROR_LOG_CHARS characters are kept, because the
+; first lines carry the first (and usually root-cause) error. Truncating
+; from the end would keep the summary and throw away the diagnosis.
+; Adjustable -- raise it if real errors are being cut mid-message.
+global MAX_ERROR_LOG_CHARS := 300
+; A complete read of that pane always ends with Studio's own summary line,
+; "Complete - N error(s), M warning(s)". Its presence is the proof that the
+; whole pane was captured rather than a partial/stale read, so it is checked
+; on the FULL text before any truncation.
+global ERROR_LOG_DONE_MARKER := "Complete -"
 
 ; Pulls the leading integer out of button/label text like "0 Warnings",
 ; "3 Errors", "1 Warning" -- handles singular/plural and any wording since
@@ -125,6 +137,30 @@ StripCommas(text) {
 ; punctuation preserved (e.g. "Logix Designer - BoolPackBaseline in
 ; sample_0001...ACD [1756-L81E 35.11]") -- quote it for the CSV instead of
 ; stripping anything out of it.
+; Read the build error-log pane (Text99) and validate it.
+; Returns the first MAX_ERROR_LOG_CHARS characters on a good read, or a
+; "(...)" marker string on a bad one -- never a silent empty value, because
+; a blank error_log is indistinguishable from "no errors" downstream.
+ReadErrorLog() {
+    txt := ""
+    try txt := ControlGetText("Text99", "A")
+    catch
+        return "(Text99 unreadable)"
+    txt := Trim(txt)
+    if (txt = "")
+        return "(Text99 empty)"
+    ; Validate against the FULL text: the summary line proves the pane was
+    ; fully rendered when it was read. Studio writes it last, so a read that
+    ; lands mid-build has everything except this.
+    if !InStr(txt, ERROR_LOG_DONE_MARKER)
+        return "(incomplete read -- no '" ERROR_LOG_DONE_MARKER "' marker) " SubStr(txt, 1, MAX_ERROR_LOG_CHARS)
+    ; Collapse newlines/tabs so the value stays one CSV field.
+    txt := StrReplace(StrReplace(StrReplace(txt, "`r`n", " | "), "`n", " | "), "`t", " ")
+    if (StrLen(txt) > MAX_ERROR_LOG_CHARS)
+        txt := SubStr(txt, 1, MAX_ERROR_LOG_CHARS)
+    return txt
+}
+
 CsvQuote(text) {
     return '"' StrReplace(text, '"', '""') '"'
 }
@@ -443,8 +479,9 @@ Status(msg) {
 
         ; --- Hand results back to PowerShell ---
         handoffFile := FileOpen(HANDOFF_PATH, "w")
-        handoffFile.Write("error_count,warning_count,message_value,ocd_value,window_title`n")
-        handoffFile.Write(StripCommas(ErrorValue) "," StripCommas(WarningValue) "," StripCommas(MessageValue) "," OCDValue "," CsvQuote(WindowTitle) "`n")
+        ErrorLog := ReadErrorLog()
+        handoffFile.Write("error_count,warning_count,message_value,ocd_value,window_title,error_log`n")
+        handoffFile.Write(StripCommas(ErrorValue) "," StripCommas(WarningValue) "," StripCommas(MessageValue) "," OCDValue "," CsvQuote(WindowTitle) "," CsvQuote(ErrorLog) "`n")
         handoffFile.Close()
 
         Status("Looping -- waiting for next file...")

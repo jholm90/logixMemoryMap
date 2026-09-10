@@ -20,7 +20,7 @@ MANIFEST_PATH = REPO_ROOT / "samples" / "manifest.csv"
 MANIFEST_COLUMNS = (
     "sample_id,description,category,l5x_path,predicted_bytes,actual_bytes,"
     "delta,delta_pct,controller_model,firmware_rev,date_tested,notes,"
-    "error_count,warning_count,message_value,window_title"
+    "error_count,warning_count,message_value,window_title,error_log"
 ).split(",")
 
 
@@ -79,6 +79,7 @@ def append_manifest_row(sample_id: str, description: str, category: str, l5x_pat
     survives a regeneration untouched."""
     rel_path = str(l5x_path.relative_to(REPO_ROOT))
     rows = []
+    header = list(MANIFEST_COLUMNS)
     if MANIFEST_PATH.exists():
         # utf-8-SIG, not utf-8: the capture tooling is PowerShell Export-Csv,
         # which writes UTF-8 with a BOM. Reading it as plain utf-8 pulls the
@@ -88,7 +89,10 @@ def append_manifest_row(sample_id: str, description: str, category: str, l5x_pat
         # KeyError. Round-tripping BOM-aware keeps the file byte-compatible
         # with the tool that also writes it.
         with open(MANIFEST_PATH, newline="", encoding="utf-8-sig") as f:
-            rows = list(csv.reader(f))[1:]  # drop header, rewritten below
+            all_rows = list(csv.reader(f))
+            if all_rows:
+                header = all_rows[0]     # the file's own header wins
+            rows = all_rows[1:]
 
     updated = False
     for row in rows:
@@ -97,7 +101,11 @@ def append_manifest_row(sample_id: str, description: str, category: str, l5x_pat
             updated = True
             break
     if not updated:
-        rows.append([sample_id, description, category, rel_path, str(bytes_predicted), "", "", "", "", "", "", "", "", "", "", ""])
+        # Width comes from the header, not a hardcoded count: the capture
+        # tooling has added columns before (error_log, 2026-09-10) and a
+        # fixed-length literal here silently writes short rows when it does.
+        row = [sample_id, description, category, rel_path, str(bytes_predicted)]
+        rows.append(row + [""] * (len(header) - len(row)))
 
     with open(MANIFEST_PATH, "w", newline="", encoding="utf-8-sig") as f:
         # QUOTE_ALL matches the convention the capture tooling
@@ -106,5 +114,5 @@ def append_manifest_row(sample_id: str, description: str, category: str, l5x_pat
         # next regeneration, producing a spurious full-file diff with zero
         # actual data change (2026-08-24, caught reviewing a real diff).
         writer = csv.writer(f, quoting=csv.QUOTE_ALL)
-        writer.writerow(MANIFEST_COLUMNS)
+        writer.writerow(header)
         writer.writerows(rows)
