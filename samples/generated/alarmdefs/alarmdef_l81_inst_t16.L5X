@@ -60,7 +60,8 @@
 <Tags>
       <Tag Name="AlarmSrc00" TagType="Base" DataType="AlarmSrcType" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="AlarmSrcType" Radix="Decimal" Value="0" /></Data>
-      </Tag>      <Tag Name="AlarmSrc01" TagType="Base" DataType="AlarmSrcType" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      </Tag>      
+			<Tag Name="AlarmSrc01" TagType="Base" DataType="AlarmSrcType" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="AlarmSrcType" Radix="Decimal" Value="0" /></Data>
       </Tag>      <Tag Name="AlarmSrc02" TagType="Base" DataType="AlarmSrcType" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="AlarmSrcType" Radix="Decimal" Value="0" /></Data>
