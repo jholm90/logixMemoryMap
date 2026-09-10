@@ -57,7 +57,7 @@ global MessageValue := ""
 global WindowTitle := ""
 global BUILD_SKIP_CATALOGS := "*1769-*;*1756-L7*"
 global ErrorLog := ""
-; Text99 is the build/verify error-log pane. Its full text can run to many
+; RICHEDIT50W2 is the build/verify error-log pane. Its full text can run to many
 ; KB; only the FIRST MAX_ERROR_LOG_CHARS characters are kept, because the
 ; first lines carry the first (and usually root-cause) error. Truncating
 ; from the end would keep the summary and throw away the diagnosis.
@@ -68,6 +68,8 @@ global MAX_ERROR_LOG_CHARS := 300
 ; whole pane was captured rather than a partial/stale read, so it is checked
 ; on the FULL text before any truncation.
 global ERROR_LOG_DONE_MARKER := "Complete -"
+; ClassNN of that pane, confirmed via Window Spy 2026-09-10.
+global ERROR_LOG_CTRL := "RICHEDIT50W2"
 
 ; Pulls the leading integer out of button/label text like "0 Warnings",
 ; "3 Errors", "1 Warning" -- handles singular/plural and any wording since
@@ -137,18 +139,30 @@ StripCommas(text) {
 ; punctuation preserved (e.g. "Logix Designer - BoolPackBaseline in
 ; sample_0001...ACD [1756-L81E 35.11]") -- quote it for the CSV instead of
 ; stripping anything out of it.
-; Read the build error-log pane (Text99) and validate it.
+; Read the build error-log pane and validate it.
+;
+; The control is a rich-edit, ClassNN "RICHEDIT50W2" (confirmed via Window
+; Spy, 2026-09-10 -- an earlier note calling it "Text99" was wrong). The
+; trailing index on a ClassNN is positional, so it can shift if Studio
+; changes that dialog's control order; if the exact name is not present the
+; read falls back to scanning every RICHEDIT* control and taking the first
+; one carrying the completion marker, rather than silently returning blank.
 ; Returns the first MAX_ERROR_LOG_CHARS characters on a good read, or a
 ; "(...)" marker string on a bad one -- never a silent empty value, because
 ; a blank error_log is indistinguishable from "no errors" downstream.
 ReadErrorLog() {
     txt := ""
-    try txt := ControlGetText("Text99", "A")
+    try txt := ControlGetText(ERROR_LOG_CTRL, "A")
     catch
-        return "(Text99 unreadable)"
+        txt := ""
     txt := Trim(txt)
+    if (txt = "" || !InStr(txt, ERROR_LOG_DONE_MARKER)) {
+        found := FindErrorLogControl()
+        if (found != "")
+            txt := found
+    }
     if (txt = "")
-        return "(Text99 empty)"
+        return "(" ERROR_LOG_CTRL " unreadable/empty)"
     ; Validate against the FULL text: the summary line proves the pane was
     ; fully rendered when it was read. Studio writes it last, so a read that
     ; lands mid-build has everything except this.
@@ -159,6 +173,28 @@ ReadErrorLog() {
     if (StrLen(txt) > MAX_ERROR_LOG_CHARS)
         txt := SubStr(txt, 1, MAX_ERROR_LOG_CHARS)
     return txt
+}
+
+; Fallback for when ERROR_LOG_CTRL's positional index has shifted: return the
+; text of the first RICHEDIT* control that carries the completion marker.
+FindErrorLogControl() {
+    ctrls := ""
+    try ctrls := WinGetControls("A")
+    catch
+        return ""
+    if !IsObject(ctrls)
+        return ""
+    for ctrl in ctrls {
+        if !RegExMatch(ctrl, "i)^RICHEDIT")
+            continue
+        t := ""
+        try t := Trim(ControlGetText(ctrl, "A"))
+        catch
+            continue
+        if (t != "" && InStr(t, ERROR_LOG_DONE_MARKER))
+            return t
+    }
+    return ""
 }
 
 CsvQuote(text) {
