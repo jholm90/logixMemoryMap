@@ -21,9 +21,11 @@ from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
 from l5x_memory_analyzer.parser.datatypes import DataTypeDef, parse_data_types
 from l5x_memory_analyzer.parser.load import L5XDocument, L5XFormatError, load_l5x, load_l5x_bytes
 from l5x_memory_analyzer.parser.logic import count_instructions_in_text, parse_rll_routines
+from l5x_memory_analyzer.parser.modules import parse_modules
 from l5x_memory_analyzer.parser.tags import parse_tags
 from l5x_memory_analyzer.parser.tasks import parse_tasks, program_to_task_map
 from l5x_memory_analyzer.sizing.constants import MemoryModel, load_memory_model
+from l5x_memory_analyzer.sizing.alarms import alarm_conditions_for_host, alarm_lookup_tables
 from l5x_memory_analyzer.sizing.controller_budgets import load_controller_budgets
 from l5x_memory_analyzer.sizing.xref import find_usages
 from l5x_memory_analyzer.sizing.export import write_csv, write_xlsx
@@ -112,6 +114,10 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
             entries, data_types, model, {p: d for p, (dt, d) in tag_index.items()},
             program_to_task_map(doc.root),
             aoi_names=set(parse_aoi_definitions(doc.root)),
+            # Real chassis/network topology, off each Module's own
+            # ParentModule attribute -- purely a display nesting, no
+            # sizing consequence.
+            module_parents={m.name: m.parent_module for m in parse_modules(doc.root)},
         ),
         "type_summary": type_utilization(entries),
         "jsr_calls": jsr_calls,
@@ -315,6 +321,30 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
                 return jsonify({"path": path, "rungs": out})
         return jsonify({"error": f"unknown routine path {path!r}"}), 404
 
+    @app.get("/api/alarms")
+    def alarms():
+        """Individual alarm conditions on one host tag.
+
+        Its own endpoint for the same reason /api/rungs is: a real program
+        carries hundreds to thousands of these, and shipping every one on
+        every load would dwarf the rest of the payload for a view most
+        sessions never open.
+        """
+        state: DocState | None = app.config["state"]
+        if state is None:
+            return jsonify({"error": "no file loaded"}), 400
+        path = request.args.get("path", "")
+        if not path.startswith("alarms/"):
+            return jsonify({"error": f"not an alarm path: {path!r}"}), 400
+        host = path[len("alarms/"):]
+        tag_types, udt_members = alarm_lookup_tables(state.doc.root)
+        rows = alarm_conditions_for_host(
+            state.doc.root, state.model, host, tag_types, udt_members
+        )
+        if not rows:
+            return jsonify({"error": f"no alarm conditions on {host!r}"}), 404
+        return jsonify({"path": path, "conditions": rows})
+
     @app.get("/api/node")
     def node():
         state: DocState | None = app.config["state"]
@@ -340,7 +370,25 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
             def_name = tag_path[len("udt_definitions/"):]
             if def_name not in state.data_types:
                 return jsonify({"error": f"unknown type definition {def_name!r}"}), 404
-            children = expand_children(def_name, (), state.data_types, state.model)
+            # Instance mode descends like any ordinary tag of this type --
+            # the definition itself is just the starting point. Without
+            # resolving the subpath, drilling one level below a definition
+            # in instance mode failed outright ("no further nested path"),
+            # so a UDT was browsable exactly one member deep.
+            try:
+                resolved_type, resolved_dims = resolve_type_at_path(
+                    def_name, (), _PATH_SEGMENT_RE.findall(subpath),
+                    state.data_types, state.model,
+                )
+                children = expand_children(
+                    resolved_type, resolved_dims, state.data_types, state.model
+                )
+            except NotDrillableError as exc:
+                return jsonify({"error": str(exc)}), 400
+            except RecursiveUdtError as exc:
+                return jsonify({"error": f"recursive type reference: {exc}"}), 400
+            except UnknownDataTypeError as exc:
+                return jsonify({"error": f"unknown data type: {exc}"}), 400
             return jsonify({"mode": "instance", "children": [
                 {
                     "name": c.name, "segment": c.segment, "data_type": c.data_type,

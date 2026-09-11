@@ -184,3 +184,85 @@ def test_type_utilization_rolls_up_across_scopes():
     assert by_type["BOOL"]["bytes"] == 4
     # sorted descending by bytes
     assert rows[0]["data_type"] == "DINT"
+
+
+def _module_entry(name: str, catalog: str, size: int) -> SizeEntry:
+    return SizeEntry(
+        path=f"modules/{name}", category="module_io", data_type=catalog,
+        bytes=size, pct_of_total=0.0, tier="estimated", basis="FITTED",
+    )
+
+
+def test_module_tile_is_labelled_by_module_name_not_catalog_twice():
+    # A module's data_type IS its catalog number, so labelling by data_type
+    # rendered "PowerFlex 525-EENET / PowerFlex 525-EENET" -- the catalog
+    # twice and the module's own name nowhere.
+    tree = build_hierarchy([_module_entry("EM101_InfdPkgDeck1", "PowerFlex 525-EENET", 900)])
+    group = next(c for c in tree["children"] if c["name"] == "I/O Modules")
+    leaf = group["children"][0]
+    assert leaf["name"] == "EM101_InfdPkgDeck1"
+    assert leaf["data_type"] == "PowerFlex 525-EENET"
+
+
+def test_modules_nest_under_their_stated_parent_module():
+    entries = [
+        _module_entry("JB101_IO", "1734-AENT/B", 1636),
+        _module_entry("JB101_IO_SLOT1", "1734-IB8/C", 0),
+        _module_entry("JB101_IO_SLOT2", "1734-IE4C/C", 1887),
+        _module_entry("EM101", "PowerFlex 525-EENET", 900),
+    ]
+    parents = {
+        "JB101_IO": "Local",
+        "JB101_IO_SLOT1": "JB101_IO",
+        "JB101_IO_SLOT2": "JB101_IO",
+        "EM101": "Local",
+    }
+    tree = build_hierarchy(entries, module_parents=parents)
+    group = next(c for c in tree["children"] if c["name"] == "I/O Modules")
+    # "Local" is the processor's own entry and is never emitted, so both
+    # local-chassis modules stay at the top level.
+    assert [c["name"] for c in group["children"]] == ["JB101_IO", "EM101"]
+
+    adapter = group["children"][0]
+    assert [c["name"] for c in adapter["children"]] == [
+        "Module", "JB101_IO_SLOT1", "JB101_IO_SLOT2",
+    ]
+    # The adapter's own cost moves into its "Module" child rather than
+    # being counted twice or dropped.
+    assert adapter["children"][0]["value"] == 1636
+    assert "value" not in adapter
+    assert sum(c["value"] for c in adapter["children"]) == 1636 + 0 + 1887
+
+
+def test_module_parent_cycle_does_not_recurse_forever():
+    entries = [_module_entry("A", "cat", 10), _module_entry("B", "cat", 20)]
+    tree = build_hierarchy(entries, module_parents={"A": "B", "B": "A"})
+    group = next(c for c in tree["children"] if c["name"] == "I/O Modules")
+    names = [c["name"] for c in group["children"]]
+    assert names  # terminated at all, rather than hanging
+
+
+def test_non_tag_entry_first_does_not_leak_or_crash_on_dimensions():
+    # dims used to be assigned only on the tag branch, so a leading non-tag
+    # entry raised UnboundLocalError -- real, on 4 of the sample exports.
+    entries = [
+        SizeEntry(path="project_baseline", category="project_baseline",
+                  data_type="Baseline", bytes=100, pct_of_total=0.0,
+                  tier="estimated", basis="FITTED"),
+    ] + ENTRIES
+    tree = build_hierarchy(entries)
+    overhead = next(c for c in tree["children"] if c["name"] == "Project Overhead")
+    assert overhead["children"][0]["dimensions"] == []
+
+
+def test_alarm_host_tag_is_drillable_into_its_conditions():
+    entries = [SizeEntry(
+        path="alarms/AlarmActive_TiltHoist", category="alarm_condition",
+        data_type="200 condition(s)", bytes=221600, pct_of_total=0.0,
+        tier="estimated", basis="KNOWN",
+    )]
+    tree = build_hierarchy(entries)
+    group = next(c for c in tree["children"] if c["name"] == "Alarm Conditions")
+    leaf = group["children"][0]
+    assert leaf["name"] == "AlarmActive_TiltHoist"
+    assert leaf["has_children"] is True

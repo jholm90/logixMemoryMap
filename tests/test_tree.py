@@ -211,3 +211,18 @@ def test_expand_aoi_definition_sums_to_compute_aoi_definition_cost_and_excludes_
     assert "RawInput" in names and "DebTmr" in names
     assert "EnableIn" not in names
     assert all(c.has_children is False for c in children)
+
+
+def test_predefined_array_structure_expands_instead_of_raising():
+    # CAM/CAM_PROFILE are priced base + per_element*N and have no scalar
+    # size, so asking for one element's size raised UnknownDataTypeError --
+    # the array advertised itself as drillable and then refused to open.
+    for name in ("CAM", "CAM_PROFILE"):
+        struct = MODEL.predefined_array_structures[name]
+        assert has_children(name, (10,), DATA_TYPES, MODEL) is True
+        children = expand_children(name, (10,), DATA_TYPES, MODEL)
+        elements = [c for c in children if c.name != "Array base"]
+        assert len(elements) == 10
+        assert all(c.bytes == struct.per_element for c in elements)
+        # Children sum to exactly what the array itself is priced at.
+        assert sum(c.bytes for c in children) == struct.base + struct.per_element * 10

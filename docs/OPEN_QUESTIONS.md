@@ -2020,3 +2020,56 @@ the matching footnote at the bottom, not inline.
       - `camx_scalar_{cam,prof}` probes the scalar case. A conversion
         failure there is a RESULT, closing it as not legal rather than
         leaving an unsized hole.
+
+39. **OQ-AOIDEFITEMIZE** — an AOI's priced definition cost and its own
+    itemized member breakdown are two different computations, and they
+    disagree by a large margin on every real AOI.
+
+    Found 2026-09-11 while making the treemap sum to the report. For each
+    AOI, `report.py` charges a definition cost (per-declared-member rate
+    table plus the type-name-length bucket, OQ-AOIDEF's wiring), while
+    `sizing/tree.py`'s `expand_definition_children` enumerates the same
+    definition member by member. The enumeration always comes in LOWER.
+    On Elmsdale, all 21 AOIs:
+
+        AOI               priced    itemized    unexplained
+        DriveAxis         18,873       3,633         15,240
+        T_DST             12,344       3,000          9,344
+        TS_VFD            10,581       3,361          7,220
+        T_Clock            6,975       2,231          4,744
+        VirtualAxis        6,589       2,085          4,504
+        HomeToTorque       6,122       1,902          4,220
+        TS_TrackSts        5,268       1,568          3,700
+        ... (21 total)                              66,908
+
+    66,908 bytes, 6.1% of that file's whole predicted total, is charged by
+    the report and accounted for by nothing in the breakdown. It is not
+    a rounding effect and it is not uniform: it scales with something the
+    member enumeration does not see.
+
+    Two possibilities, and they need separating before either is acted on:
+
+      - The per-member rate table is right and the enumeration is
+        incomplete — it is missing whole categories of declared thing
+        (nested UDT members expanded at the wrong depth, InOut parameters,
+        local tags of structured type). This would be a pure display bug.
+      - The rate table over-charges and the real definition cost is closer
+        to the enumeration. This would be a SIZING error worth 6% on a
+        real file, which is six times the whole error budget.
+
+    The first is more likely — the rate table was fitted against real
+    capture data and the real-file error is currently 2.17%, which a 6%
+    over-charge would not survive — but "more likely" is not measured.
+
+    The isolation test is cheap and exists in shape already: a
+    single-AOI file whose definition declares a known member roster,
+    captured, differenced against the same file with one member added.
+    `aoidef_*` covers the flat single-type case; what is missing is an AOI
+    whose members are themselves structured (a UDT member, a TIMER, an
+    InOut of UDT type), which is exactly what every real AOI above has and
+    every existing test file lacks.
+
+    Until then the UI carries the difference as an explicit
+    "Unitemized definition cost" row rather than dropping it, so the
+    treemap sums to the report total and the size of the unexplained part
+    is visible instead of silent.

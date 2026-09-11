@@ -171,6 +171,29 @@ def _expand_array(
             for i in range(count)
         ]
 
+    if data_type in model.predefined_array_structures:
+        # CAM/CAM_PROFILE are priced as base + per_element*N and have no
+        # scalar size at all, so asking for one element's size raised
+        # UnknownDataTypeError -- the array said it was drillable (it has
+        # dimensions) and then refused to open, which is what a real file
+        # with cam profiles showed: every CAM and CAM_PROFILE tag a dead
+        # end with a 400 in the console. The per-element rate IS the
+        # element's size; the one-time base belongs to the array, not to
+        # any element, so it is shown as its own row rather than smeared
+        # across them.
+        struct = model.predefined_array_structures[data_type]
+        elements = [
+            Child(f"[{i}]", f"[{i}]", data_type, (), struct.per_element,
+                  struct.confidence, has_children=False)
+            for i in range(count)
+        ]
+        if struct.base:
+            elements.insert(0, Child(
+                "Array base", "", data_type, (), struct.base, struct.confidence,
+                has_children=False,
+            ))
+        return elements
+
     element_bytes, element_basis = compute_element_size(data_type, data_types, model, _stack)
     kids = has_children(data_type, (), data_types, model)
     return [

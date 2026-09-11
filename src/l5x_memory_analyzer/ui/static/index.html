@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <title>L5X Memory Analyzer</title>
+<!-- Inline data-URI icon: this runs on airgapped OT workstations, and a
+     missing favicon.ico is otherwise a 404 in every session's console. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%231f2430'/%3E%3Crect x='2' y='2' width='7' height='9' fill='%234a90d9'/%3E%3Crect x='10' y='2' width='4' height='4' fill='%237ec27e'/%3E%3Crect x='10' y='7' width='4' height='4' fill='%23d9a34a'/%3E%3Crect x='2' y='12' width='12' height='2' fill='%23888'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -36,14 +39,14 @@
     <label class="tab-toggle depth-stepper" title="How many levels to nest inside each tile">
       <span>Depth</span>
       <button type="button" id="depth-minus" class="step-btn" aria-label="Fewer levels">&minus;</button>
-      <input type="number" id="depth-input" min="1" max="10" step="1" value="1">
+      <input type="number" id="depth-input" min="1" max="10" step="1" value="2">
       <button type="button" id="depth-plus" class="step-btn" aria-label="More levels">+</button>
     </label>
     <button id="split-toggle" class="tab-btn split-toggle-btn" title="Show List / Type Summary alongside the treemap">⊞ Details</button>
   </nav>
 
   <div id="nav-row">
-    <button id="back-btn" class="toolbar-btn" title="Back to where you came from" disabled>&larr;&nbsp;Back</button>
+    <button id="back-btn" title="Back to where you came from" disabled>&larr;&nbsp;Back</button>
     <div id="breadcrumb"></div>
     <div id="node-actions"></div>
   </div>
@@ -121,6 +124,17 @@
 
   <button id="errors-banner" class="hidden" type="button"
           title="Open the Errors tab"></button>
+
+  <!-- One shared modal for every long operation the user would otherwise
+       only see in the Python console: loading a file, and expanding a node
+       with enough children that the fetches take visible time. -->
+  <div id="progress-modal" class="hidden">
+    <div id="progress-box">
+      <div id="progress-title"></div>
+      <div class="progress-track"><div id="progress-fill"></div></div>
+      <div id="progress-detail"></div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>

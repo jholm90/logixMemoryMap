@@ -400,10 +400,17 @@ def test_legacy_network_module_excluded_from_sizing():
     # (see test_legacy_network_module_WITH_real_catalog_data_gets_charged
     # below, 2026-08-31). Uses a catalog with no real entry to keep
     # testing the general "no real data -> unmodeled" rule in isolation.
+    #
+    # "Excluded from sizing" means charged ZERO bytes, not absent from the
+    # report. The entry is still emitted so the module remains visible in
+    # the UI tree -- dropping it entirely made whole racks of modules
+    # disappear from the I/O view rather than merely go unpriced.
     for port_type in ("ControlNet", "DeviceNet", "DH+", "DH-485", "RIO"):
         root = _root_with_legacy_network_module(port_type)
         entries, errors = build_report(root, MODEL)
-        assert not any(e.category == "module_io" for e in entries), port_type
+        module_entries = [e for e in entries if e.category == "module_io"]
+        assert all(e.bytes == 0 for e in module_entries), port_type
+        assert all(e.basis == "UNKNOWN" for e in module_entries), port_type
         assert any("legacy-network" in e.message for e in errors), port_type
 
 

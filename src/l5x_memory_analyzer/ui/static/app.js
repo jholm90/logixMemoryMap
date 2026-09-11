@@ -14,9 +14,12 @@ let NODE_STACK = [];     // ancestors of CURRENT_NODE, for the breadcrumb
 let SORT_STATE = { key: "bytes", dir: -1 };
 let SPLIT_OPEN = false;  // 2026-08-27: List/Type Summary docked
                          // alongside the treemap, always-available toggle
-let NEST_DEPTH = 1;      // how many levels to nest inside each tile (1..10).
+let NEST_DEPTH = 2;      // how many levels to nest inside each tile (1..10).
                          // Replaced the old two-state "2 levels deep"
                          // checkbox: depth is a range, not a boolean.
+                         // Defaults to 2: one level shows only what you
+                         // already picked, and the point of a treemap is
+                         // seeing what is inside without clicking first.
 let DEF_MODE = "definition";  // or "instance" -- see renderNodeActions
 let NAV_HISTORY = [];    // every location visited, for the Back button --
                          // distinct from NODE_STACK, which is only the
@@ -113,6 +116,12 @@ function renderAll() {
   annotateTagPaths(CURRENT_NODE);
   NODE_STACK = [];
   NAV_HISTORY = [];
+  // A newly loaded file starts at the root, on the treemap, in the default
+  // definition reading -- carrying the previous file's tab or type-view
+  // over showed the new file through the old file's lens.
+  DEF_MODE = "definition";
+  const treemapBtn = document.querySelector('.tab-btn[data-tab="treemap"]');
+  if (treemapBtn && !treemapBtn.classList.contains("active")) treemapBtn.click();
 
   renderCurrentLevel();
 }
@@ -299,19 +308,9 @@ function wireDefinitionLinks(scope) {
 
 function navigateToDefinition(typeName) {
   const wanted = [`udt_definitions/${typeName}`, `aoi_definitions/${typeName}`];
-  const find = n => {
-    if (wanted.includes(n.path || n._tagPath)) return n;
-    for (const k of n.children || []) {
-      const hit = find(k);
-      if (hit) return hit;
-    }
-    return null;
-  };
-  const target = REPORT && REPORT.hierarchy ? find(REPORT.hierarchy) : null;
-  if (target) {
-    drillInto(target);
-    document.querySelector('.tab-btn[data-tab="treemap"]').click();
-  }
+  const chain = findChain(REPORT && REPORT.hierarchy,
+    n => wanted.includes(n.path || n._tagPath));
+  if (chain) navigateToChain(chain);
 }
 
 function confidenceBarHtml(node) {
@@ -503,6 +502,7 @@ function setupSplitDock() {
 // level", matching the old unchecked behaviour, so the default is unchanged.
 function setupDepthStepper() {
   const input = document.getElementById("depth-input");
+  input.value = NEST_DEPTH;
   const apply = v => {
     NEST_DEPTH = Math.max(1, Math.min(10, Number(v) || 1));
     input.value = NEST_DEPTH;
@@ -597,17 +597,22 @@ function setupFileOpen() {
       formData.append("file", file);
       const info = document.getElementById("file-info");
       info.textContent = `Loading ${file.name}...`;
+      showProgress(`Loading ${file.name}`, "Uploading...");
       try {
-        const res = await fetch("/api/load", { method: "POST", body: formData });
-        // Never assume the body is JSON. A crash inside the sizing engine used
-        // to come back as an HTML traceback page, res.json() threw, and this
-        // handler died before reaching the !res.ok branch below -- leaving
-        // "Loading ..." on screen with no error at all.
-        const raw = await res.text();
+        // XHR rather than fetch purely for upload progress: a real export is
+        // tens of megabytes and fetch cannot report how much of it has gone.
+        // Once the body is up there is no percentage to report -- the server
+        // is parsing and sizing -- so the bar switches to indeterminate
+        // instead of sitting frozen at 100%.
+        const { status, statusText, raw } = await uploadWithProgress(formData);
         let data = null;
+        // Never assume the body is JSON. A crash inside the sizing engine
+        // comes back as an HTML traceback page, and parsing that as JSON
+        // threw before the error could ever be shown -- leaving "Loading ..."
+        // on screen with nothing else.
         try { data = JSON.parse(raw); } catch (_) { /* not JSON -- handled below */ }
-        if (!res.ok || data === null) {
-          const detail = (data && data.error) || raw.slice(0, 300) || res.statusText;
+        if (status < 200 || status >= 300 || data === null) {
+          const detail = (data && data.error) || raw.slice(0, 300) || statusText;
           info.textContent = `Failed to load ${file.name}`;
           alert(`Failed to load ${file.name}:\n\n${detail}`);
           return;
@@ -619,10 +624,30 @@ function setupFileOpen() {
         info.textContent = `Failed to load ${file.name}`;
         alert(`Failed to load ${file.name}:\n\n${err}`);
       } finally {
+        hideProgress();
         ev.target.value = "";
       }
     });
   }
+}
+
+function uploadWithProgress(formData) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/load");
+    xhr.upload.onprogress = ev => {
+      if (!ev.lengthComputable) return setProgressIndeterminate("Uploading...");
+      setProgress(ev.loaded / ev.total,
+        `Uploading ${fmtBytes(ev.loaded)} of ${fmtBytes(ev.total)}`);
+    };
+    xhr.upload.onload = () =>
+      setProgressIndeterminate("Parsing and sizing on the server...");
+    xhr.onload = () => resolve({
+      status: xhr.status, statusText: xhr.statusText, raw: xhr.responseText || "",
+    });
+    xhr.onerror = () => reject(new Error("network error"));
+    xhr.send(formData);
+  });
 }
 
 // ---- breadcrumb / drill ----
@@ -742,9 +767,40 @@ async function ensureChildren(node) {
     return node.children;
   }
 
+  // An alarmed host tag opens into its individual conditions, from their
+  // own endpoint for the same reason rungs have one: a real program has
+  // hundreds to thousands of them.
+  if ((node.path || node._tagPath || "").startsWith("alarms/") && !node._subPath) {
+    const alarmPath = node.path || node._tagPath;
+    const res = await fetch(`/api/alarms?path=${encodeURIComponent(alarmPath)}`);
+    if (!res.ok) {
+      console.error("failed to load alarms", alarmPath, await res.text());
+      return null;
+    }
+    const data = await res.json();
+    node.children = data.conditions.map(c => ({
+      name: c.name,
+      value: c.bytes,
+      data_type: c.condition_type || "Alarm",
+      basis: node.basis,
+      tier: node.tier,
+      has_children: false,
+      alarm_detail: c.detail,
+      alarm_severity: c.severity,
+      path: `${alarmPath}/${c.name}`,
+    }));
+    return node.children;
+  }
+
   if (!node.has_children) return null;
 
   const params = new URLSearchParams({ tag: node._tagPath || "", path: node._subPath || "" });
+  // Descending below a type definition keeps whichever reading the user
+  // selected. Dropping the mode here sent the deeper fetch to the
+  // definition-cost branch, which has no nested path and answered 400.
+  if (DEF_MODE === "instance" && (node._tagPath || "").startsWith("udt_definitions/")) {
+    params.set("mode", "instance");
+  }
   const res = await fetch(`/api/node?${params}`);
   if (!res.ok) {
     console.error("failed to expand node", node, await res.text());
@@ -755,6 +811,16 @@ async function ensureChildren(node) {
     name: c.name,
     value: c.value,
     data_type: c.data_type,
+    // Dimensions, alias target and the subtree confidence summary are all
+    // sent by /api/node and were all being dropped here. Without
+    // dimensions a drilled array member renders as a scalar -- a real
+    // report: "Messages_TiltHoist.Message is also an array and it does
+    // not mark the [size] anywhere" -- while displayName/confidenceBar
+    // already knew what to do with them the moment they arrive.
+    dimensions: c.dimensions || [],
+    alias_of: c.alias_of,
+    alias_bit: c.alias_bit,
+    confidence: c.confidence,
     basis: c.basis,
     has_children: c.has_children,
     tier: "exact",
@@ -764,14 +830,84 @@ async function ensureChildren(node) {
   return node.children;
 }
 
-async function drillInto(node) {
+// `ancestors` are the levels BETWEEN the current view and `node` -- the
+// tiles a nested (depth > 1) click passed through on its way down. Without
+// them the breadcrumb jumped straight from "All" to the leaf, losing every
+// level in between: a real report, "i navigated to Tags/Messages_TiltHoist
+// and the path just shows 'ALL > Messages_TiltHoist'". A same-level click
+// passes none and behaves exactly as before.
+// How many children opening this node is about to produce, where that is
+// knowable before the fetch: an array states its own dimensions, a routine
+// its rung count, and an already-expanded node simply has them. Returns 0
+// when the count cannot be known up front (an ordinary UDT), which is
+// fine -- those are bounded by their member count and open instantly.
+function expectedChildCount(node) {
+  if (node.children) return node.children.length;
+  const dims = node.dimensions || node.dims;
+  if (Array.isArray(dims) && dims.length) return dims.reduce((a, b) => a * b, 1);
+  if (node.data_type === "RLL") return rungCountFor(node) || 0;
+  return 0;
+}
+
+async function drillInto(node, ancestors = []) {
   if (!isDrillable(node)) return;
-  const kids = await ensureChildren(node);
+  // One fetch, no countable progress inside it -- but a 5,000-element
+  // array or a 900-rung routine takes long enough that silence reads as a
+  // hang. Say what is happening before starting it.
+  const expected = expectedChildCount(node);
+  const heavy = !node.children && expected > BULK_EXPAND_THRESHOLD;
+  if (heavy) {
+    showProgress(`Opening ${displayName(node)}`, "");
+    setProgressIndeterminate(`${expected.toLocaleString()} items to load`);
+  }
+  let kids;
+  try {
+    kids = await ensureChildren(node);
+  } finally {
+    if (heavy) hideProgress();
+  }
   if (!kids || !kids.length) return;
   pushHistory();
-  NODE_STACK.push(CURRENT_NODE);
+  NODE_STACK.push(CURRENT_NODE, ...ancestors);
   CURRENT_NODE = node;
   renderCurrentLevel();
+}
+
+// Jump to an arbitrary node identified by an ancestor chain (root first,
+// target last) rather than by drilling. Used by the cross-reference and
+// the definition links, both of which previously landed on the target with
+// an empty ancestor stack and so showed a one-crumb path.
+async function navigateToChain(chain) {
+  if (!chain || !chain.length) return;
+  const target = chain[chain.length - 1];
+  const kids = await ensureChildren(target);
+  // A node with children becomes the view; a true leaf cannot be a
+  // treemap root, so the view lands on its parent with the leaf visible
+  // inside it.
+  const depthShown = kids && kids.length ? chain.length : chain.length - 1;
+  if (depthShown < 1) return;
+  pushHistory();
+  NODE_STACK = chain.slice(0, depthShown - 1);
+  CURRENT_NODE = chain[depthShown - 1];
+  renderCurrentLevel();
+  const treemapBtn = document.querySelector('.tab-btn[data-tab="treemap"]');
+  if (treemapBtn) treemapBtn.click();
+}
+
+// Depth-first search for a node, returning the FULL chain from the root
+// to it (root first, match last) rather than just the match -- the chain
+// is what the breadcrumb needs.
+function findChain(root, matches) {
+  const walk = (node, trail) => {
+    const here = [...trail, node];
+    if (matches(node)) return here;
+    for (const k of node.children || []) {
+      const hit = walk(k, here);
+      if (hit) return hit;
+    }
+    return null;
+  };
+  return root ? walk(root, []) : null;
 }
 
 // ---- squarified treemap ----
@@ -886,6 +1022,10 @@ function subLabelFor(node) {
   } else if (node.data_type === "RLL") {
     const rc = rungCountFor(node);
     if (rc != null) lines.push(`${rc} rung${rc === 1 ? "" : "s"}`);
+  } else if (node.alarm_detail) {
+    // What the alarm actually watches is the useful line; the condition
+    // type is already the [type] line every other leaf gets.
+    lines.push(node.alarm_detail);
   } else if (node.data_type === "Rung") {
     // "[Rung]" restates the tile name. The instructions in it are the useful
     // second line.
@@ -897,6 +1037,64 @@ function subLabelFor(node) {
   lines.push(fmtBytes(nodeValue(node)));
   return lines;
 }
+
+// ---- shared progress modal --------------------------------------------
+//
+// Anything that takes visible time needs to say so IN the UI. Both users of
+// this previously showed nothing at all: a file load sat on a static
+// "Loading X..." string in the header, and expanding a wide node fired
+// hundreds of fetches whose only visible progress was the Flask request log
+// in the terminal behind the browser.
+
+function showProgress(title, detail) {
+  const modal = document.getElementById("progress-modal");
+  if (!modal) return;
+  document.getElementById("progress-title").textContent = title;
+  document.getElementById("progress-detail").textContent = detail || "";
+  setProgress(0);
+  modal.classList.remove("hidden");
+}
+
+function setProgress(fraction, detail) {
+  const fill = document.getElementById("progress-fill");
+  if (!fill) return;
+  fill.classList.remove("indeterminate");
+  fill.style.width = `${Math.max(0, Math.min(1, fraction)) * 100}%`;
+  if (detail != null) document.getElementById("progress-detail").textContent = detail;
+}
+
+// No percentage available -- the server is working and will answer when it
+// answers. A sweeping bar says "busy" without inventing a number.
+function setProgressIndeterminate(detail) {
+  const fill = document.getElementById("progress-fill");
+  if (!fill) return;
+  fill.style.width = "";
+  fill.classList.add("indeterminate");
+  if (detail != null) document.getElementById("progress-detail").textContent = detail;
+}
+
+function hideProgress() {
+  const modal = document.getElementById("progress-modal");
+  if (modal) modal.classList.add("hidden");
+}
+
+// Await many promises while reporting how many have settled. Used for the
+// bulk child-expansion below; the count is the only honest progress signal
+// available, since each fetch is atomic.
+async function awaitWithProgress(promises, label) {
+  let done = 0;
+  const total = promises.length;
+  setProgress(0, `${label} 0 / ${total}`);
+  await Promise.all(promises.map(promise => promise.then(value => {
+    done += 1;
+    setProgress(done / total, `${label} ${done} / ${total}`);
+    return value;
+  })));
+}
+
+// Expanding this many children is where the wait becomes noticeable, so
+// it is also where the modal earns its interruption.
+const BULK_EXPAND_THRESHOLD = 100;
 
 async function renderTreemap() {
   const svg = document.getElementById("treemap-svg");
@@ -910,9 +1108,26 @@ async function renderTreemap() {
   // round-trip; drawing cannot start until the geometry is known.
   if (NEST_DEPTH > 1) {
     let level = children;
-    for (let d = 1; d < NEST_DEPTH && level.length; d++) {
-      await Promise.all(level.filter(isDrillable).map(ensureChildren));
-      level = level.flatMap(n => n.children || []);
+    let shownModal = false;
+    try {
+      for (let d = 1; d < NEST_DEPTH && level.length; d++) {
+        const pending = level.filter(n => isDrillable(n) && !n.children);
+        if (pending.length > BULK_EXPAND_THRESHOLD) {
+          if (!shownModal) {
+            showProgress(
+              `Expanding ${displayName(CURRENT_NODE)}`,
+              "This level has more than a hundred items to open.",
+            );
+            shownModal = true;
+          }
+          await awaitWithProgress(pending.map(ensureChildren), "Opened");
+        } else if (pending.length) {
+          await Promise.all(pending.map(ensureChildren));
+        }
+        level = level.flatMap(n => n.children || []);
+      }
+    } finally {
+      if (shownModal) hideProgress();
     }
   }
 
@@ -1010,7 +1225,7 @@ function paintTreemap(svg, children) {
     // sibling. Reserves the header strip the label above already used.
     if (NEST_DEPTH > 1) {
       const headerH = labelLinesUsed >= 2 ? 28 : labelLinesUsed === 1 ? 14 : 0;
-      paintNested(svg, g, node, r, headerH, 1);
+      paintNested(svg, g, node, r, headerH, 1, [node]);
     }
 
     svg.appendChild(g);
@@ -1020,7 +1235,7 @@ function paintTreemap(svg, children) {
 // Draws a tile's own children inset inside it, recursively, down to
 // NEST_DEPTH. Nested tiles are visually distinct (dashed, dimmed, smaller
 // label) so a grandchild is never mistaken for a sibling.
-function paintNested(svg, g, node, r, headerH, depth) {
+function paintNested(svg, g, node, r, headerH, depth, ancestors) {
   if (depth >= NEST_DEPTH) return;
   if (!isDrillable(node) || !node.children || !node.children.length) return;
 
@@ -1041,7 +1256,7 @@ function paintNested(svg, g, node, r, headerH, depth) {
     crect.setAttribute("height", Math.max(ir.h, 0));
     crect.classList.add("tm-rect", "tm-rect-nested");
     crect.style.fill = fillForNode(cnode);
-    crect.addEventListener("click", ev => { ev.stopPropagation(); drillInto(cnode); });
+    crect.addEventListener("click", ev => { ev.stopPropagation(); drillInto(cnode, ancestors); });
     crect.addEventListener("mousemove", ev => showTooltip(ev, cnode));
     crect.addEventListener("mouseleave", hideTooltip);
     g.appendChild(crect);
@@ -1056,7 +1271,7 @@ function paintNested(svg, g, node, r, headerH, depth) {
       g.appendChild(clabel);
       usedH = 11;
     }
-    paintNested(svg, g, cnode, ir, usedH, depth + 1);
+    paintNested(svg, g, cnode, ir, usedH, depth + 1, [...ancestors, cnode]);
   }
 }
 
@@ -1257,21 +1472,35 @@ function renderNodeActions() {
   const isDefinition = path.startsWith("udt_definitions/") || path.startsWith("aoi_definitions/");
   let html = definitionLinkHtml(node);
   if (isDefinition) {
+    // A radio pair, not a checkbox. These are two readings of the same
+    // type and neither is the "off" state of the other, which is exactly
+    // what a lone checkbox implies.
+    // An AOI is priced under the same "udt_definitions/" path as a real
+    // UDT, so the path cannot tell them apart -- the declared AOI names
+    // can, and labelling an AOI "UDT Size" is exactly the blurring this
+    // selector exists to undo.
+    const defName = path.slice(path.indexOf("/") + 1);
+    const kind = (REPORT && (REPORT.aoi_names || []).includes(defName))
+      || path.startsWith("aoi_definitions/") ? "AOI" : "UDT";
+    const opt = (value, label) =>
+      `<label class="defmode-opt"><input type="radio" name="defmode" value="${value}"` +
+      `${DEF_MODE === value ? " checked" : ""}><span>${label}</span></label>`;
     html +=
-      `<label class="defmode-toggle" title="Definition cost is a flat per-declared-member rate, ` +
+      `<span class="defmode-toggle" title="Definition cost is a flat per-declared-member rate, ` +
       `so a BOOL, a DINT and a TIMER all cost the same. Instance size is what one copy occupies.">` +
-      `<input type="checkbox" id="defmode-instance" ${DEF_MODE === "instance" ? "checked" : ""}>` +
-      `<span>Show instance size</span></label>`;
+      `<span class="defmode-legend">${kind} Size:</span>` +
+      opt("instance", "instance") + opt("definition", "definition") +
+      `</span>`;
   }
   host.innerHTML = html;
   wireDefinitionLinks(host);
-  const cb = document.getElementById("defmode-instance");
-  if (cb) {
-    cb.onchange = () => {
-      DEF_MODE = cb.checked ? "instance" : "definition";
+  host.querySelectorAll('input[name="defmode"]').forEach(radio => {
+    radio.onchange = () => {
+      if (!radio.checked) return;
+      DEF_MODE = radio.value;
       reloadDefinitionChildren();
     };
-  }
+  });
 }
 
 // Re-fetch the current definition node's children in the newly selected
@@ -1315,13 +1544,25 @@ function resetXref() {
   XREF_STATE = { type: null, loading: false, data: null };
 }
 
+// The tab only means something on a UDT or AOI, so it is HIDDEN rather
+// than greyed out everywhere else -- a permanently disabled tab reads as
+// a broken feature. If it disappears while it happens to be the open tab
+// (navigating off a type to an ordinary tag), fall back to the treemap
+// rather than leaving an empty panel with no tab selected.
 function syncXrefTab() {
   const btn = document.getElementById("xref-tab-btn");
   if (!btn) return;
   const type = xrefTypeForNode(CURRENT_NODE);
+  const wasActive = btn.classList.contains("active");
+  btn.hidden = !type;
   btn.disabled = !type;
   btn.title = type ? `Where ${type} is used` : "Select a UDT or AOI to cross-reference";
-  if (btn.classList.contains("active")) renderXref();
+  if (!type && wasActive) {
+    const treemapBtn = document.querySelector('.tab-btn[data-tab="treemap"]');
+    if (treemapBtn) treemapBtn.click();
+    return;
+  }
+  if (wasActive) renderXref();
 }
 
 async function renderXref() {
@@ -1376,19 +1617,9 @@ function renderXrefTable(el, data) {
 // knows how to do from there.
 function navigateToPath(path) {
   const tagPath = path.split(/[.[]/)[0];
-  const find = n => {
-    if ((n.path || n._tagPath) === tagPath) return n;
-    for (const k of n.children || []) {
-      const hit = find(k);
-      if (hit) return hit;
-    }
-    return null;
-  };
-  const target = REPORT && REPORT.hierarchy ? find(REPORT.hierarchy) : null;
-  if (target) {
-    drillInto(target);
-    document.querySelector('.tab-btn[data-tab="treemap"]').click();
-  }
+  const chain = findChain(REPORT && REPORT.hierarchy,
+    n => (n.path || n._tagPath) === tagPath);
+  if (chain) navigateToChain(chain);
 }
 
 // ---- list filters (name / type) -----------------------------------------
@@ -1486,8 +1717,10 @@ function renderListInto(tableId) {
   const tbody = table.querySelector("tbody");
   const rows = applyListFilters(currentLevelRows()).sort((a, b) => {
     const { key, dir } = SORT_STATE;
-    if (typeof a[key] === "string") return a[key].localeCompare(b[key]) * dir;
-    return (a[key] - b[key]) * dir;
+    if (typeof a[key] === "string") return String(a[key]).localeCompare(String(b[key])) * dir;
+    // A null (no-storage row) sorts as zero rather than producing NaN,
+    // which compares false both ways and leaves the order arbitrary.
+    return ((a[key] || 0) - (b[key] || 0)) * dir;
   });
 
   tbody.innerHTML = "";
@@ -1506,14 +1739,18 @@ function renderListInto(tableId) {
       : "";
     // Confidence as a measured share of bytes, not a single badge -- see
     // confidenceBreakdown for why a badge misleads on any aggregate.
-    const conf =
-      `<div class="conf-cell"><div class="conf-bar conf-bar-sm">` +
-      `<span class="conf-seg conf-known" style="width:${e.known_pct}%"></span>` +
-      `<span class="conf-seg conf-fitted" style="width:${100 - e.known_pct}%"></span>` +
-      `</div><span class="conf-pct">${e.known_pct.toFixed(0)}%</span>` +
-      (e.basis ? `<span class="basis-chip basis-${e.basis}">${e.basis}</span>` : "") +
-      (e.tier === "estimated" ? `<span class="tier-chip">ESTIMATED</span>` : "") +
-      `</div>`;
+    // known_pct is null for a row that occupies no bytes (a BIT alias, an
+    // unmodeled module): there is nothing to be confident ABOUT, and the
+    // bar used to throw outright on reaching one.
+    const conf = e.known_pct == null
+      ? `<div class="conf-cell"><span class="conf-pct text-dim">no storage</span></div>`
+      : `<div class="conf-cell"><div class="conf-bar conf-bar-sm">` +
+        `<span class="conf-seg conf-known" style="width:${e.known_pct}%"></span>` +
+        `<span class="conf-seg conf-fitted" style="width:${100 - e.known_pct}%"></span>` +
+        `</div><span class="conf-pct">${e.known_pct.toFixed(0)}%</span>` +
+        (e.basis ? `<span class="basis-chip basis-${e.basis}">${e.basis}</span>` : "") +
+        (e.tier === "estimated" ? `<span class="tier-chip">ESTIMATED</span>` : "") +
+        `</div>`;
     tr.innerHTML =
       `<td>${escapeHtml(e.name)}${subNote}</td>` +
       `<td>${escapeHtml(e.data_type)}</td>` +

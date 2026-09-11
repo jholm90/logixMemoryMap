@@ -81,7 +81,95 @@ def _aoi_definition_containers(
             "value": sum(c.bytes for c in tags),
             "children": [wrap(c) for c in tags],
         })
-    return containers or [{**definition_node, "name": "Definition"}]
+    if not containers:
+        return [{**definition_node, "name": "Definition"}]
+
+    # The member breakdown and the priced definition entry are two
+    # different computations, and on every real AOI the breakdown comes in
+    # LOWER: 21 AOIs on one real file account for 66,908 fewer bytes in
+    # their members than the report charges their definitions, roughly 6%
+    # of that file's whole total. Drawing only the itemized part silently
+    # dropped those bytes out of the treemap, so it stopped summing to the
+    # controller total -- the one property the whole view depends on.
+    # Carried as its own row instead, which both restores the sum and
+    # makes the size of the unexplained part visible. See
+    # docs/OPEN_QUESTIONS.md OQ-AOIDEFITEMIZE for why the two disagree.
+    itemized = sum(c["value"] for c in containers)
+    priced = definition_node.get("value")
+    if isinstance(priced, (int, float)) and priced - itemized > 0:
+        containers.append({
+            "name": "Unitemized definition cost",
+            "path": f"{path}/Unitemized",
+            "value": priced - itemized,
+            "data_type": "OVERHEAD",
+            "basis": definition_node.get("basis"),
+        })
+    return containers
+
+MODULE_GROUP_NAME = "I/O Modules"
+
+
+def _nest_modules_in_racks(
+    module_leaves: list[dict], module_parents: dict[str, str]
+) -> list[dict]:
+    """Re-draw the flat module list as the real chassis/network tree.
+
+    Logix Designer's I/O Configuration tree is a hierarchy -- a 1734-AENT
+    adapter with its POINT I/O modules inside it, a drive behind a bridge
+    -- and a flat alphabetical list of forty modules is not the same
+    picture at all. The parent of each module is stated by the L5X itself
+    (Module/@ParentModule, see parser/modules.py), so this is real
+    topology, never inferred from catalog numbers or slot adjacency.
+
+    A module whose stated parent is not itself in the list stays at the
+    top level. That covers the ordinary local-chassis case -- those name
+    the processor's own "Local" entry, which report.py deliberately does
+    not emit -- as well as any module whose parent went unpriced.
+
+    A parent that gains children becomes a container, and its OWN cost
+    becomes a "Module" child inside it. Every byte stays exactly once in
+    the tree: a container has no value of its own, so the treemap still
+    sums to the controller total.
+    """
+    by_name = {m["name"]: m for m in module_leaves}
+
+    def has_real_parent(name: str) -> bool:
+        """True when walking this module's parent chain reaches a module
+        that is not in the list (the normal case -- the chain ends at the
+        processor's own "Local" entry, which is never emitted). A chain
+        that loops back on itself has no root, and every module on it
+        would otherwise vanish from the tree entirely, so a cycle is
+        treated as no parent at all."""
+        seen = {name}
+        current = module_parents.get(name, "")
+        while current and current in by_name:
+            if current in seen:
+                return False
+            seen.add(current)
+            current = module_parents.get(current, "")
+        return bool(module_parents.get(name, "")) and module_parents[name] in by_name
+
+    children_of: dict[str, list[dict]] = {}
+    roots: list[dict] = []
+    for m in module_leaves:
+        if has_real_parent(m["name"]):
+            children_of.setdefault(module_parents[m["name"]], []).append(m)
+        else:
+            roots.append(m)
+
+    def build(leaf: dict) -> dict:
+        kids = children_of.get(leaf["name"], [])
+        if not kids:
+            return leaf
+        return {
+            "name": leaf["name"],
+            "path": leaf["path"],
+            "data_type": leaf.get("data_type"),
+            "children": [{**leaf, "name": "Module", "path": f"{leaf['path']}/#self"}]
+            + [build(k) for k in kids],
+        }
+
+    return [build(r) for r in roots]
 
 def build_hierarchy(
     entries: list[SizeEntry],
@@ -90,6 +178,7 @@ def build_hierarchy(
     tag_dimensions: dict[str, tuple[int, ...]] | None = None,
     program_to_task: dict[str, str] | None = None,
     aoi_names: set[str] | frozenset[str] | None = None,
+    module_parents: dict[str, str] | None = None,
 ) -> dict:
     """Root -> {"Controller Tags", "Program: <name>", ...} -> leaf tag nodes.
 
@@ -141,7 +230,7 @@ def build_hierarchy(
         # Program/Controller-Tags scope, so the split below would still
         # try scope.split(':', 1)[1] and crash the same way. Own top-level
         # group instead, same fix shape as the others above.
-        "module_io": "I/O Modules",
+        "module_io": MODULE_GROUP_NAME,
         # alarm_condition (2026-09-04): alarms get their own tree section,
         # the same way axes do. Path is
         # "alarms/<host tag>", which contains "/" but whose first segment
@@ -176,19 +265,41 @@ def build_hierarchy(
     AXIS_GROUP_NAME = "Axis Definitions"
 
     for e in entries:
+        # Reset per entry. Only the tag branch below resolves real
+        # dimensions, and leaving this to fall through from the previous
+        # iteration crashed outright (UnboundLocalError) whenever the very
+        # first entry was a non-tag one -- real, on 4 of the sample
+        # exports -- and silently labelled a non-tag row with the previous
+        # tag's array size whenever it was not.
+        dims: tuple[int, ...] = ()
         if e.category in NON_TAG_GROUPS:
             group_name = NON_TAG_GROUPS[e.category]
             # Alarm entries carry the host tag in the path and a
             # "<n> condition(s)" summary in data_type, so the tree label has
             # to come from the path -- using data_type would render every
-            # row as an indistinguishable count.
-            name = e.path.partition("/")[2] if e.category == "alarm_condition" else e.data_type
+            # row as an indistinguishable count. A module is the same shape:
+            # its data_type is the CATALOG number, so labelling by data_type
+            # rendered every tile as "Powerflex 525-EENET / Powerflex
+            # 525-EENET", the catalog twice and the module's own name --
+            # the thing that distinguishes one drive from the next eleven --
+            # nowhere on it.
+            name = (
+                e.path.partition("/")[2]
+                if e.category in ("alarm_condition", "module_io")
+                else e.data_type
+            )
             # udt_definition entries ARE drillable now (2026-08-26, /api/node's
             # "udt_definitions/<Name>" branch) -- locals+params/members
             # breakdown of the definition's own cost, see sizing/tree.py's
             # expand_definition_children. project_baseline has no breakdown
             # (data_types lookup would miss it entirely, correctly false).
             kids = e.category == "udt_definition" and data_types is not None and name in data_types
+            # An alarmed host tag opens into its individual conditions
+            # (/api/alarms). Its data_type already reads "200 condition(s)";
+            # drawing 200 conditions as one block was the tree saying that
+            # number and then refusing to show it.
+            if e.category == "alarm_condition":
+                kids = True
             # A UDT and an Add-On Instruction are different things to a user
             # even though both are priced as "udt_definition" here. Split
             # them so "User-Defined Data Types" means what it says and AOIs
@@ -304,6 +415,8 @@ def build_hierarchy(
                 "name": "Routines", "path": f"{g}/Routines", "value": routines_total,
                 "children": routines,
             })
+        if g == MODULE_GROUP_NAME and module_parents:
+            kids = _nest_modules_in_racks(kids, module_parents)
         children.append({"name": g, "path": g, "children": kids})
 
     if program_to_task:

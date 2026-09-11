@@ -111,7 +111,15 @@ class ModuleInfo:
     # "ICP", "Ethernet", "ControlNet", "DeviceNet", "RIO") -- see
     # _LEGACY_NETWORK_PORT_TYPES above. Kept as the raw set rather than a
     # collapsed bool so report.py can name which network in its SizeError.
-    port_types: frozenset[str] = field(default_factory=frozenset)
+    port_types: frozenset[str] = frozenset()
+    # The module this one hangs off, straight from the L5X's own
+    # ParentModule attribute (the processor's "Local" entry for a module
+    # in the local chassis; a bridge's Name for anything on a remote
+    # network). This is the real rack/network topology Logix Designer's
+    # I/O tree draws, stated by the file rather than inferred -- no sizing
+    # consequence at all, it only decides what is drawn inside what.
+    # Empty string on the root module, which names no parent.
+    parent_module: str = ""
 
     @property
     def is_legacy_network(self) -> bool:
@@ -199,6 +207,7 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
     for module_el in modules_el.findall("Module"):
         name = module_el.get("Name", "")
         catalog = module_el.get("CatalogNumber", "")
+        parent_module = module_el.get("ParentModule", "") or ""
 
         slot: int | None = None
         port_types: set[str] = set()
@@ -292,5 +301,6 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
             module_defined_bytes=module_defined_bytes, unknown_member_types=tuple(unknown_types),
             uses_rack_connection=uses_rack_connection, config_script_bytes=config_script_bytes,
             port_types=frozenset(port_types),
+            parent_module=parent_module,
         ))
     return result

@@ -726,6 +726,16 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                     f"not summed into the total either, controller-memory cost unmodeled for now"
                 ),
             ))
+            # Charged nothing, but still EMITTED. Skipping the entry
+            # outright removed the module from the tree as well as from
+            # the total, so a POINT I/O rack behind a 1734-AENT (every
+            # module of which is rack-aliased) simply had no children at
+            # all in the UI -- reported as "the 1734-AENT does not have
+            # the modules as children and lots of the modules are
+            # missing". A zero-byte entry says the true thing: the module
+            # is there and this model charges it nothing yet. The
+            # SizeError above remains the record of why.
+            module_entries.append((f"modules/{label}", "module_io", module.catalog_number, 0, "UNKNOWN"))
             continue
         # 2026-08-29, OQ-MODULEIO: real per-catalog overhead (memory_model.yaml
         # module_overhead_by_catalog) replaces the flat cross-catalog FITTED

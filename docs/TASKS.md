@@ -109,6 +109,55 @@ files; PID and ASCII-module instructions dropped (zero real occurrences).
       drill, subroutine call-tree (JSR cost-included tooltip), Estimated
       badge/dashed-outline styling, combined root view[^rootview]
 
+## Phase 6b — UI browsing pass (2026-09-11)
+Eleven reported browsing defects, all fixed and browser-verified against
+the real Elmsdale and TrimmerTally exports.
+- ✅ Breadcrumb keeps intermediate levels. Drilling from a nested
+      (depth > 1) tile jumped straight from "All" to the leaf; the
+      ancestor chain the click passed through is now carried into the
+      stack, and the cross-reference/definition links navigate by chain
+      instead of landing with an empty one.
+- ✅ Array `[size]` on drilled members. `/api/node` had always sent
+      `dimensions`; the client dropped it, so a UDT member array read as a
+      scalar once opened (`Message` rather than `Message[200]`).
+      `alias_of`/`alias_bit`/`confidence` were being dropped the same way.
+- ✅ Module tiles carry the module NAME. A module's data_type IS its
+      catalog number, so labelling by data_type rendered
+      "PowerFlex 525-EENET / PowerFlex 525-EENET" with the name nowhere.
+- ✅ Rack hierarchy. Modules nest under their stated `ParentModule`, so a
+      1734-AENT draws its POINT I/O inside it the way Logix Designer's I/O
+      tree does. Unmodeled shapes (rack-aliased, processor-embedded,
+      legacy-network) are now emitted as zero-byte entries instead of
+      being skipped entirely -- they were missing from the tree, not just
+      from the total. Charged bytes are unchanged.
+- ✅ "AOI Size: ( ) instance ( ) definition" radio pair replaces the lone
+      checkbox, and reads AOI or UDT from the declared AOI names rather
+      than from the path, which cannot tell them apart.
+- ✅ Back button matches the breadcrumb's own size and colour.
+- ✅ File load shows real progress (upload percentage, then an
+      indeterminate parse phase) and resets to root/All on the Treemap.
+- ✅ Depth defaults to 2.
+- ✅ Cross-Reference tab is hidden, not merely disabled, off a UDT/AOI.
+- ✅ Opening more than 100 children shows a modal with a live count.
+- ✅ Alarm Conditions drill into their individual conditions (`/api/alarms`),
+      200 rows summing exactly to the host tag's priced entry, instead of
+      one undifferentiated block.
+
+Four defects found while verifying the above, none of them reported:
+- ✅ The treemap did not sum to the report. An AOI's member breakdown
+      comes in lower than its priced definition entry on every real AOI
+      (66,908 bytes, 6.1% of Elmsdale) -- carried as an explicit
+      "Unitemized definition cost" row rather than dropped. See
+      OQ-AOIDEFITEMIZE for the underlying disagreement.
+- ✅ `build_hierarchy` raised UnboundLocalError on any file whose first
+      entry was a non-tag category -- 4 of the 10 sample exports would not
+      open at all.
+- ✅ A CAM/CAM_PROFILE array advertised itself as drillable and then
+      answered 400, because those types are priced per element and have no
+      scalar size.
+- ✅ The List tab threw on a zero-byte row (BIT alias, unmodeled module):
+      confidence is null there by design and only the treemap honoured it.
+
 ## Phase 6 — Polish
 - ✅ Safety-project warning (UI banner + CLI stderr)[^safety]
 - ✅ Generator-side safety check (2026-09-03): verify that safety-rated
