@@ -501,13 +501,46 @@ FORMATS = {
 }
 
 
-def _modules_xml(fmt: str, cards: int) -> str:
+# --- naming dimension -----------------------------------------------------
+#
+# Every 1734-IB8/C card in all three real exports carries NO Name attribute
+# at all -- catalog and slot only. That is the unusual shape, not the
+# normal one: a module you name in the I/O tree gets module-defined tags of
+# its own, and this project already knows that a tag's NAME LENGTH costs
+# real bytes (memory_model.yaml alias_tag, and the AOI/UDT type-name-length
+# buckets). So naming a card plausibly costs something, plausibly scales
+# with the name, and plausibly differs by connection format -- a
+# rack-aliased card has no tag of its own to name, so it may well be free
+# there and not free in the other two.
+#
+# None of that is measured. These arms measure it, holding everything else
+# at the values the unnamed files already use so the difference is the name
+# and nothing else.
+
+# Minimum 5: the "Crd<nn>" stem itself is 5 characters. Padded with
+# letters, never underscores -- see builders.validate_logix_name.
+NAME_LENGTHS = (5, 8, 16, 24, 32)
+DEFAULT_NAME_LENGTH = 8
+
+
+def _card_name(index: int, length: int) -> str:
+    stem = f"Crd{index:02d}"
+    if length < len(stem):
+        raise ValueError(f"name length {length} is shorter than the {len(stem)}-char stem")
+    return stem + "X" * (length - len(stem))
+
+
+def _modules_xml(fmt: str, cards: int, name_length: int | None = None) -> str:
+    """`name_length` None leaves the cards nameless, exactly as the real
+    exports have them."""
     adapter_fn, card_xml, _catalog, _note = FORMATS[fmt]
     parts = [adapter_fn(cards)]
-    parts += [
-        card_xml.format(adapter=ADAPTER_NAME, slot=slot)
-        for slot in range(1, cards + 1)
-    ]
+    for slot in range(1, cards + 1):
+        card = card_xml.format(adapter=ADAPTER_NAME, slot=slot)
+        if name_length is not None:
+            name = _card_name(slot, name_length)
+            card = card.replace("<Module ", f'<Module Name="{name}" ', 1)
+        parts.append(card)
     return "\n".join(parts)
 
 
@@ -525,7 +558,7 @@ def _write(l5x: str, name: str, description: str) -> None:
 _TARGET_STEM = {"enhanced": "PioEnh", "enhdata": "PioEnhData", "optimized": "PioOpt"}
 
 
-def main() -> None:
+def _connection_format_sweep() -> None:
     for fmt, (_fn, _card, catalog, note) in FORMATS.items():
         for count in CARD_COUNTS:
             _write(
@@ -541,6 +574,78 @@ def main() -> None:
                 f"three real 16-card captures cannot, having the same card "
                 f"count. OQ-POINTIOCONN.",
             )
+
+
+def _naming_sweep() -> None:
+    """Named vs nameless cards, and what a name costs.
+
+    Three questions, one per arm, each differenced against a file that
+    already exists rather than against a fresh control:
+
+      1. Does naming a card cost anything, and does that depend on the
+         connection format? One named file per format at 8 cards, against
+         the nameless pioconn_<fmt>_n08. A rack-aliased card has no tag of
+         its own, so Optimized may well be free where the other two are
+         not -- that contrast is the point.
+      2. Does the cost scale with the name, the way every other
+         name-length cost in this model does? 5/8/16/24/32 characters at 8
+         cards, Enhanced Data.
+      3. Is it per-card or once per file? 1/2/4/16 cards at a fixed name
+         length, against the 8-card point from arm 1.
+    """
+    # 1. name presence, across all three connection formats
+    for fmt, (_fn, _card, catalog, note) in FORMATS.items():
+        _write(
+            build_l5x(
+                target_name=f"{_TARGET_STEM[fmt]}Nm08",
+                tags_xml="",
+                extra_modules_xml=_modules_xml(fmt, 8, DEFAULT_NAME_LENGTH),
+            ),
+            f"pioname_{fmt}_named_n08",
+            f"{catalog} adapter with 8 NAMED 1734-IB8/C cards "
+            f"({DEFAULT_NAME_LENGTH}-character names), {note}. Against the "
+            f"nameless pioconn_{fmt}_n08 this is the cost of naming a card, "
+            f"per connection format -- every card in all three real exports "
+            f"is nameless, which is the unusual shape and has never been "
+            f"differenced against the normal one. OQ-POINTIOCONN.",
+        )
+
+    # 2. name length, Enhanced Data
+    for length in NAME_LENGTHS:
+        _write(
+            build_l5x(
+                target_name=f"PioNmLen{length:02d}",
+                tags_xml="",
+                extra_modules_xml=_modules_xml("enhdata", 8, length),
+            ),
+            f"pioname_enhdata_len{length:02d}_n08",
+            f"8 named 1734-IB8/C cards with {length}-character names, Enhanced "
+            f"Data. Swept against the other lengths this says whether a card "
+            f"name is charged by the character the way every other "
+            f"name-length cost in this model is, or at a flat rate. "
+            f"OQ-POINTIOCONN.",
+        )
+
+    # 3. named-card count, Enhanced Data
+    for count in (1, 2, 4, 16):
+        _write(
+            build_l5x(
+                target_name=f"PioNmCnt{count:02d}",
+                tags_xml="",
+                extra_modules_xml=_modules_xml("enhdata", count, DEFAULT_NAME_LENGTH),
+            ),
+            f"pioname_enhdata_named_n{count:02d}",
+            f"{count} named 1734-IB8/C card(s), Enhanced Data, "
+            f"{DEFAULT_NAME_LENGTH}-character names. With the 8-card point "
+            f"this separates a per-card naming cost from a once-per-file one, "
+            f"and differences cleanly against the nameless "
+            f"pioconn_enhdata_n{count:02d} at the same count. OQ-POINTIOCONN.",
+        )
+
+
+def main() -> None:
+    _connection_format_sweep()
+    _naming_sweep()
 
 
 if __name__ == "__main__":

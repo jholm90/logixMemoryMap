@@ -2157,6 +2157,30 @@ the matching footnote at the bottom, not inline.
     both the Decorated structure and the type definition, and zero sizing
     errors in the two arms the model can price.
 
+    **Naming arm, 12 more files** (`pioname_*`). Every card in all three
+    real exports is NAMELESS -- catalog and slot only. That is the unusual
+    shape, not the normal one: a module you name in the I/O tree gets
+    module-defined tags of its own, and this model already charges real
+    bytes for a tag's NAME LENGTH elsewhere (`alias_tag`, the AOI and UDT
+    type-name-length buckets). So naming a card plausibly costs something,
+    plausibly scales with the name, and plausibly differs by connection
+    format -- a rack-aliased card has no tag of its own to name, so it may
+    be free there and not free in the other two.
+
+      - `pioname_{enhanced,enhdata,optimized}_named_n08` — 8 named cards,
+        8-character names, one per format. Differences against the
+        nameless `pioconn_<fmt>_n08` at the same count.
+      - `pioname_enhdata_len{05,08,16,24,32}_n08` — the same 8 cards at
+        five name lengths. Flat rate or per character?
+      - `pioname_enhdata_named_n{01,02,04,16}` — named-card count, against
+        the nameless file at each count. Per card or once per file?
+
+    The engine currently predicts **exactly the same total named or
+    nameless, at every length and every count** — it has no term for a
+    module name at all. That makes all twelve direct measurements of an
+    unmodeled quantity: any nonzero capture delta is a gap, and a zero
+    delta confirms the zero rather than leaving it assumed.
+
     Stake: this is not a corner case. Elmsdale alone has three of these
     racks (JB101_IO, C102_IO, MCP101_IO — 19 cards), all currently priced
     at either a flat 1,672 they do not cost or, for the rack-aliased ones,

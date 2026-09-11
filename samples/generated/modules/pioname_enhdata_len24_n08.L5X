@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="PioEnhDataN08" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 11 19:07:47 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="PioEnhDataN08" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 11 19:07:47 2026" LastModifiedDate="Fri Sep 11 19:07:47 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="PioNmLen24" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 11 19:07:49 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="PioNmLen24" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 11 19:07:49 2026" LastModifiedDate="Fri Sep 11 19:07:49 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -55,7 +55,7 @@
 <public><ConfigID>67108864</ConfigID><CatNum>1734-AENTR</CatNum><DataTypes><DataType Name="AB:1734_ERACK_5FE9A870:I:0" Class="IO"><Members><Member Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary"/><Member Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary"/><Member Name="pad" Radix="Decimal" DataType="SINT" Dimension="9" Hidden="true"/></Members></DataType><DataType Name="AB:1734_ERACK_86364FC6:O:0" Class="IO"><Members><Member Name="SlotControlBits0_31" DataType="DINT" Radix="Decimal" Hidden="true"/><Member Name="SlotControlBits32_63" DataType="DINT" Radix="Decimal" Hidden="true"/><Member Name="pad" Radix="Decimal" DataType="SINT" Dimension="9" Hidden="true"/></Members></DataType></DataTypes></public>
 </ExtendedProperties>
 </Module>
-<Module CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<Module Name="Crd01XXXXXXXXXXXXXXXXXXX" CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule"/>
 <Ports>
 <Port Id="1" Address="1" Type="PointIO" Upstream="true"/>
@@ -103,7 +103,7 @@
 <public><ConfigID>300</ConfigID><CatNum>1734-IB8</CatNum></public>
 </ExtendedProperties>
 </Module>
-<Module CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<Module Name="Crd02XXXXXXXXXXXXXXXXXXX" CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule"/>
 <Ports>
 <Port Id="1" Address="2" Type="PointIO" Upstream="true"/>
@@ -151,7 +151,7 @@
 <public><ConfigID>300</ConfigID><CatNum>1734-IB8</CatNum></public>
 </ExtendedProperties>
 </Module>
-<Module CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<Module Name="Crd03XXXXXXXXXXXXXXXXXXX" CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule"/>
 <Ports>
 <Port Id="1" Address="3" Type="PointIO" Upstream="true"/>
@@ -199,7 +199,7 @@
 <public><ConfigID>300</ConfigID><CatNum>1734-IB8</CatNum></public>
 </ExtendedProperties>
 </Module>
-<Module CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<Module Name="Crd04XXXXXXXXXXXXXXXXXXX" CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule"/>
 <Ports>
 <Port Id="1" Address="4" Type="PointIO" Upstream="true"/>
@@ -247,7 +247,7 @@
 <public><ConfigID>300</ConfigID><CatNum>1734-IB8</CatNum></public>
 </ExtendedProperties>
 </Module>
-<Module CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<Module Name="Crd05XXXXXXXXXXXXXXXXXXX" CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule"/>
 <Ports>
 <Port Id="1" Address="5" Type="PointIO" Upstream="true"/>
@@ -295,7 +295,7 @@
 <public><ConfigID>300</ConfigID><CatNum>1734-IB8</CatNum></public>
 </ExtendedProperties>
 </Module>
-<Module CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<Module Name="Crd06XXXXXXXXXXXXXXXXXXX" CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule"/>
 <Ports>
 <Port Id="1" Address="6" Type="PointIO" Upstream="true"/>
@@ -343,7 +343,7 @@
 <public><ConfigID>300</ConfigID><CatNum>1734-IB8</CatNum></public>
 </ExtendedProperties>
 </Module>
-<Module CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<Module Name="Crd07XXXXXXXXXXXXXXXXXXX" CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule"/>
 <Ports>
 <Port Id="1" Address="7" Type="PointIO" Upstream="true"/>
@@ -391,7 +391,7 @@
 <public><ConfigID>300</ConfigID><CatNum>1734-IB8</CatNum></public>
 </ExtendedProperties>
 </Module>
-<Module CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<Module Name="Crd08XXXXXXXXXXXXXXXXXXX" CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule"/>
 <Ports>
 <Port Id="1" Address="8" Type="PointIO" Upstream="true"/>
