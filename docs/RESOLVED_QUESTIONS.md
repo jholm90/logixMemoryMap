@@ -2585,3 +2585,77 @@ were over-charged by exactly 4 bytes (SFC_ACTION 16 -> 12, FBD_TIMER
 
 The -4 is a real correction rather than the familiar universal noise: the
 other 19 structures, captured in the same run, land dead on.
+
+
+## OQ-CAMSHAPE — CLOSED 2026-09-11, and it corrected a wired constant
+
+CAM and CAM_PROFILE were fitted on standalone tags while every real use is
+a UDT member. `gen_cam_closure.py`'s 27 files captured 2026-09-11 and the
+answer is that the container does not matter — but the original CAM
+constant was wrong, and the member arm is what exposed it.
+
+**CAM base corrected 8 -> 4, plus 8-byte element-block alignment.** The old
+value read exact at n=1/5 and "a flat -4 of already-familiar small
+universal noise" at n=10/20/50. It was not noise: the -4 fell exactly on
+the EVEN element counts, which is where `12*n` is already 8-aligned. The
+real rule is
+
+    CAM array bytes = 4 + align8(12 * n)
+
+and it lands at zero residual on every captured CAM point — the
+1/2/5/10/11/20/30/50/100 count sweep, the 04/10/20/30 UDT-member
+dimensions, and the 5-tag multi-tag file. The old base-8 form had 3 of
+those 15 exact and 12 off by +4.
+
+The same rule is a no-op for CAM_PROFILE, whose 56-byte element is always
+8-aligned, so its 13 captured points are untouched. That is the
+cross-check: one mechanism explains the type that needed it and leaves the
+other exactly where it already was. **CAM_PROFILE promoted FITTED ->
+KNOWN** on those 13 points (the original 4-point count sweep plus camx's
+tag, UDT-member and multi-tag arms — the independent shapes that were
+missing).
+
+Container shape: confirmed a non-effect. `camx_member_*` matches
+`camx_tag_*` at every dimension once the alignment rule is applied, and
+`camx_nested_i01/i05` follow the instance count.
+
+Still open, and moved into their own thread rather than left inside a
+closed item: `camx_scalar_cam` (-104) and `camx_scalar_prof` (-144) — a
+SCALAR CAM/CAM_PROFILE, which the corpus contains zero real examples of
+and which this model prices as though it were an array of one.
+`camx_mixed_d10/d20` (+4), `camx_nested_i01/i05` (+4/+20) and
+`camx_udtarray_n05` (+28) each carry one additional unknown beyond the cam
+types themselves.
+
+
+## RET / SBR — CLOSED 2026-09-11, measured at exactly zero
+
+Both were ABSENT from `logic_instructions.weights`, which charged them zero
+as an absence of data rather than as a measurement, and coverage.py
+correctly reported them as unpriced every time a real file used one.
+
+All 12 `subrtn_*` files captured 2026-09-11 predict at **zero residual** —
+`shell` / `sbronly` / `sbrret` at 1, 5, 25 and 100 extra routines, 12 of
+12 exact. An SBR or RET costs nothing beyond the routine shell that holds
+it, and the three arms agree with each other, which is the cross-check on
+both weights at once.
+
+Now listed explicitly at `SBR: 0` and `RET: 0`. Absent from that table
+means "no data"; present at 0 means "measured zero". The two must not look
+the same, and the coverage error is correctly gone.
+
+
+## FOR — CLOSED 2026-09-11, weight 80
+
+Also previously absent and charged zero. `forloop_for_r{001,005,025,100}`
+came back short by exactly **80 x rung_count** — -80, -400, -2000, -8000.
+Four points, perfectly linear, zero intercept.
+
+Cross-checked against its own control arm rather than against zero:
+differencing `forloop_for_r<N>` against `forloop_ctl_r<N>` (the same N
+target routines reached by JSR instead) gives 8, 40, 200, 800 — a FOR rung
+costs exactly 8 bytes more than a JSR rung, at every count. `FOR: 80`
+wired; all four files now predict exactly.
+
+The control arm itself does NOT predict exactly, and that is a separate
+finding rather than a caveat on this one — see OQ-JSRFOLD.

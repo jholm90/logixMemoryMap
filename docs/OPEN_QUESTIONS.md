@@ -1936,92 +1936,131 @@ the matching footnote at the bottom, not inline.
     building an L9 at v31 would fabricate a firmware that never shipped.
 
 
-37. **OQ-UDTBOOLMEMBER** — the alarm-definition residual is not an alarm
-    cost at all. It tracks the UDT, and specifically its BOOL members.
+37. **OQ-UDTMEMBERNAME** (supersedes OQ-UDTBOOLMEMBER) — a UDT member's
+    NAME LENGTH is unmodelled, and the whole corpus is blind to it because
+    every generator ever written used two-character member names.
 
-    New, 2026-09-11, from the now-complete alarm batch. The inst/noinst
-    shapes finally captured and they say something the earlier groups
-    could not:
+    The `alarmsep` batch captured 2026-09-11 and its 15 points fit one law
+    with **zero residual**:
 
-        inst_t00   1 definition, 0 tags   +72
-        inst_t01   1 definition, 1 tag    +74
-        inst_t04   1 definition, 4 tags   +80
-        inst_t16   1 definition, 16 tags  +104
+        deficit = udt_definitions x (8 + 8 * floor(bool_members / 2))
 
-    That is a flat +72 plus exactly **2 bytes per tag** of the alarm-source
-    type. And `noinst_t01/t04/t16` -- the same UDT and tags with NO
-    `<AlarmDefinitions>` element anywhere in the file -- measure 74/80/104,
-    **identical**. Whether an alarm definition exists changes nothing.
+            u\b      1     2     4     8    16
+              1     -8   -16   -24   -40   -72
+              2    -16   -32   -48   -80  -144
+              4    -32   -64   -96  -160  -288
 
-    So the alarm definitions cost nothing measurable, and the residual
-    belongs to the UDT. The +72 is very likely its BOOL members: this UDT
-    declares 16 BOOLs plus 2 hidden backing SINTs, and the `d0N` group's
-    2-member UDTs cost 8 each -- 4 bytes per member in both cases
-    (2 members -> 8, 18 members -> 72).
+    That reads as a BOOL-member cost, which is what OQ-UDTBOOLMEMBER
+    predicted, and it is **wrong**. `udttype_bool_n4` is a structural twin
+    of `alarmsep_u01_b04` — one UDT, one hidden backing SINT, four BIT
+    members, no tags, both type names bucketing to the same ceil(len/8) —
+    and it predicts EXACTLY while alarmsep_u01_b04 is 24 short. The one
+    thing that differs is the member names: `M0`..`M3` against
+    `Sts_A00`..`Sts_A03`. Two characters against seven.
 
-    Not wired, because the plain `udt` family sits at a median of +2, so
-    a blanket per-member change would break 61 rows that are currently
-    right. The difference has to be the BOOL/BIT-alias shape specifically,
-    and that is exactly what `gen_alarm_separation.py` was built to
-    separate -- 33 files pairing every UDT shape with and without alarms,
-    already generated and still never converted.
+    So the driver is member name length, or something travelling with it,
+    and alarmsep cannot separate them because it varies BOOL count and
+    total name length together. Nothing is wired off that law.
 
-    **This is now the most promising open lead.** A per-BOOL-member
-    under-charge would touch every UDT in every real file, which is the
-    right shape for an error that scales with program size.
+    `udt_definition` charges for the TYPE name (`name_per_8_chars`) and
+    nothing at all for member names. Real programs are nothing like the
+    fixtures:
+
+        311DGeneratedProgram          689 members, avg  8.2 chars
+        BaillieLeitchField_Edger      619 members, avg 10.2 chars
+        Elmsdale                      877 members, avg 10.7 chars
+        SJ_Gormley                    509 members, avg  9.8 chars
+        FlareFunction_311D          2,284 members, avg  9.7 chars
+        BAI10048_TrimmerTally       1,861 members, avg 12.3 chars
+
+    **Test files built 2026-09-11**, `gen_udt_membername.py`, 24 files, all
+    1756-L81E v35, type name held at exactly 8 characters throughout so the
+    already-modelled type-name bucket cannot move. The engine predicts
+    IDENTICALLY across every name length in every arm, so all 24 are direct
+    measurements of an unmodelled quantity:
+
+      - `udtmn_bool_short_b{01,02,04,08,16}` — BOOL count at 2-char names.
+        The control; should predict exactly, matching udttype_bool_n4.
+      - `udtmn_bool_l07_b{01,02,04,08,16}` — the same counts at alarmsep's
+        7-char names, with no alarm definitions in the file at all.
+      - `udtmn_bool_len{02,04,08,12,16,24,32}_b04` — the pure name-length
+        sweep. Free, per character, or bucketed by 8 like every other name
+        cost in this model?
+      - `udtmn_dint_len{02,07,16,32}_n04` — the same on DINT. BOOLs are the
+        one member kind with a hidden backing SINT, so this rules a
+        BOOL-specific explanation in or out.
+      - `udtmn_bool_len{02,07,16}_b16` — name length where a second backing
+        SINT appears, and where the alarmsep law needed floor(b/2) rather
+        than a flat per-member rate.
+
+    **Do not oversell this as the fix for the real-file error.** Checked
+    directly: the real-file deficit per declared member/parameter/local tag
+    ranges from **+15 to −46 bytes** across the 16 real programs, and four
+    of them over-predict. Whatever drives the 2–5% real-file error is not
+    one missing per-name term, and this is not it. It is a real gap worth
+    closing on its own terms, not the headline.
+
+    Also confirmed by this batch, and worth keeping: **alarm DEFINITIONS
+    cost nothing.** Every `alarmsep_*_alarm` measured byte-identical to its
+    `_noalarm` twin, and `def1/def2/def3` identical again.
 
 
-38. **OQ-CAMSHAPE** — CAM and CAM_PROFILE are fitted on a shape real
-    programs never use.
+38. **OQ-JSRFOLD** — new, 2026-09-11. A JSR and its target routine are
+    over-charged at low counts and under-charged per unit, and the shape
+    points at how the target's cost is folded in.
 
-    Both have a standalone-TAG count sweep and both fit cleanly: CAM at
-    base + 12/element, CAM_PROFILE at base(4) + 56/element, the latter
-    exact to the byte at n=1/5/20/50. That is not the issue.
+    `forloop_ctl_r{001,005,025,100}` — N JSR rungs against N target
+    routines, built as the control arm for FOR:
 
-    The issue is that **every real use is a UDT member, and not one test
-    covers that container**. Across the corpus:
+        N      predicted   actual   delta
+        1         18,831   18,552    +279
+        5         20,235   19,960    +275
+       25         27,255   27,000    +255
+      100         53,580   53,400    +180
 
-        UDT members   CAM[20] x9   CAM[10] x8   CAM_PROFILE[20] x7
-                      CAM_PROFILE[10] x6   CAM_PROFILE[30] x3   CAM[30] x2
-        tags          dimensions 2, 5, 10, 11, 20, 30, 50, 100
+    Both arms are exactly linear and they disagree in two ways at once:
+    actual is `18,552 + 352(N-1)`, predicted is `18,831 + 351(N-1)`. So a
+    fixed **+279 excess** plus **1 byte per unit short**.
 
-    Elmsdale's `CamArray` is the canonical shape -- CAM[10] and
-    CAM_PROFILE[10] in one UDT, wrapped by an outer UDT, reached from a
-    tag two levels down -- and nothing like it has ever been built.
+    Routine shells alone are not the problem: `subrtn_shell_r100` adds 100
+    extra routines and predicts exactly, 12 of 12 across that family. What
+    differs here is that these targets are JSR TARGETS, and report.py
+    deliberately never emits a JSR target as its own SizeEntry — its cost
+    is folded into the caller instead (`RoutineLogic.is_jsr_target`). The
+    FOR arm has the same 100 target routines and, once FOR was weighted,
+    predicts exactly at all four counts; those targets are NOT JSR targets
+    and so are emitted normally. That asymmetry is the suspect.
 
-    Also worth pinning: there are **zero scalar uses** in the corpus. No
-    Dimension="0" member, no undimensioned tag. The engine cannot size one
-    and probably never needs to, but that should be a measured fact rather
-    than an assumption.
+    Not wired. A 1-byte-per-unit term is not a plausible memory quantity on
+    its own, so the fold-in is probably misattributing a larger cost rather
+    than being off by one, and guessing at that would be fitting noise. The
+    isolation needed is a JSR-target sweep that varies the TARGET's own
+    content while holding the call count fixed, which nothing covers:
+    every existing JSR file uses a one-rung target.
 
-    Practical stake: `CAM_PROFILE` currently carries a FITTED tier, and
-    because `weakest()` propagates upward that one tier marks every UDT
-    containing a cam profile. In Elmsdale it drags `CamArray`,
-    `EdgerArbor`, `EdgerMachine` and `SawCams` down with it -- 8
-    CAM_PROFILE tags totalling 24,520 bytes.
+    Stake: real programs are full of JSRs. Small per-file, but it applies
+    everywhere.
 
-    **Test files built 2026-09-11**, `gen_cam_closure.py`, 27 files, all
-    1756-L81E v35:
 
-      - `camx_tag_{cam,prof}_n{002,010,011,030,100}` extends the tag sweep
-        onto sizes real tags declare (11 and 100 were never tested).
-      - `camx_member_{cam,prof}_d{04,10,20,30}` puts each type in a UDT at
-        the four real member dimensions. Differenced against the tag files
-        at the same count, any container-specific cost falls out.
-      - `camx_mixed_d{10,20}` is CamArray's exact shape, testing whether
-        the two types compose additively.
-      - `camx_nested_i{01,05}` reproduces the real
-        EdgerArbor -> SawCams -> CamArray depth, one instance and five, so
-        per-instance separates from the one-time definition.
-      - `camx_udtarray_n05` is an array of a UDT containing arrays of a
-        predefined -- a nesting nothing in the project covers.
-      - `camx_multitag_{cam,prof}_t05` separates per-tag overhead from
-        per-element cost, which no one-tag-per-file sweep can.
-      - `camx_scalar_{cam,prof}` probes the scalar case. A conversion
-        failure there is a RESULT, closing it as not legal rather than
-        leaving an unsized hole.
+39. **OQ-CAMSCALAR** — CLOSED as OQ-CAMSHAPE 2026-09-11 (see
+    RESOLVED_QUESTIONS.md: container shape is a non-effect, the CAM base was
+    corrected 8 -> 4 with 8-byte element-block alignment, CAM_PROFILE
+    promoted to KNOWN). What survives is narrower and stays open:
 
-39. **OQ-AOIDEFITEMIZE** — an AOI's priced definition cost and its own
+      - `camx_scalar_cam` (-104) and `camx_scalar_prof` (-144). A SCALAR
+        CAM or CAM_PROFILE — no dimension at all. The corpus contains ZERO
+        real examples of one, and this model prices it as an array of one
+        element, which these two files say is wrong by about a hundred
+        bytes. Whether a scalar is even legal in real Logix is part of the
+        question; the files converted, so it is.
+      - `camx_mixed_d10/d20` (+4), `camx_nested_i01/i05` (+4/+20) and
+        `camx_udtarray_n05` (+28). Each carries one unknown beyond the cam
+        types themselves — two cam members in one UDT, depth, and an array
+        of a UDT containing arrays of a predefined. All four are small and
+        none is explained by the cam constants, which are now exact
+        standalone and as members.
+
+40. **OQ-AOIDEFITEMIZE** — an AOI's priced definition cost and its own
     itemized member breakdown are two different computations, and they
     disagree by a large margin on every real AOI.
 
@@ -2074,7 +2113,7 @@ the matching footnote at the bottom, not inline.
     treemap sums to the report total and the size of the unexplained part
     is visible instead of silent.
 
-40. **OQ-POINTIOCONN** — a POINT I/O card's memory cost depends on its
+41. **OQ-POINTIOCONN** — a POINT I/O card's memory cost depends on its
     connection format, which the model does not represent at all, and the
     flat rate it charges instead is wrong in both directions.
 

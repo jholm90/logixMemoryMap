@@ -203,13 +203,14 @@ occurrences, 54 real corpus files (spans the original set and the
 | TOF | 0.14% | 292 | CONFIRMED (exact fit, 0.00% residual) |
 | RTO | 0.13% | 262 | CONFIRMED (exact fit, 0.00% residual) |
 | MAS | 0.12% | 249 | CONFIRMED (real capture 2026-08-26: generator bug fixed with real full-parameter template, exact fit, 100 blocks/rung) |
-| RET | 0.12% | 237 | NO DATA (0 contribution -- never tested; structurally tied to JSR/SBR, can't be isolated as a bare instruction) |
+| FOR | (not in the real-corpus frequency table -- ST/LAD loop header) | - | CONFIRMED (2026-09-11, weight 80: forloop_for_r{001,005,025,100} short by exactly 80 x rung_count, four points, zero intercept; cross-checked against its JSR control arm at +8/rung) |
+| RET | 0.12% | 237 | CONFIRMED ZERO (2026-09-11, subrtn_* 12/12 exact -- an isolated RET in its own routine costs nothing beyond the routine shell; listed at 0 rather than absent, so it is a measurement and not a gap) |
 | MID | 0.11% | 212 | CONFIRMED (exact fit, 0.00% residual) |
 | CMP | 0.10% | 203 | CONFIRMED (exact fit, 0.00% residual) |
 | INSERT | 0.10% | 192 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
 | MAM | 0.09% | 186 | CONFIRMED (real capture 2026-08-26: generator bug fixed with real full-parameter template, exact fit, 224 blocks/rung) |
-| MCCP | 0.06% | 129 | CAPTURED, blocked on unmodeled CAM structure (LOGIC weight resolved/wired 2026-08-25 -- 204/rung -- but CAM operand's own tag data space still unmodeled) |
-| SBR | 0.06% | 128 | NO DATA (0 contribution -- never tested; structurally tied to JSR, can't be isolated as a bare instruction) |
+| MCCP | 0.06% | 129 | CONFIRMED (logic weight 204/rung wired 2026-08-25; the CAM operand's own data space was closed 2026-09-11 -- base 4 + align8(12*n), zero residual on all 15 captured CAM points) |
+| SBR | 0.06% | 128 | CONFIRMED ZERO (2026-09-11, subrtn_* 12/12 exact -- sbronly and sbrret agree with the bare shell at 1/5/25/100 routines, which cross-checks both weights at once) |
 | MAPC | 0.06% | 113 | CONFIRMED (real capture 2026-08-25: bug fixed — undeclared axis tag + same-axis reuse — corrected call built error_count=0, logic weight 260/rung, wired) |
 | MAJ | 0.05% | 106 | CONFIRMED (real capture 2026-08-26: generator bug fixed with real full-parameter template, exact fit, 236 blocks/rung) |
 | MSG | 0.05% | 99 | CAPTURED, blocked on unmodeled MESSAGE structure (LOGIC weight resolved/wired 2026-08-25 -- 48/rung -- but MESSAGE operand's own tag data space still unmodeled) |

@@ -71,8 +71,20 @@ def compute_array_size(
         # rather than a flat scalar -- CAM_PROFILE etc, always used as an
         # array in real Logix. See memory_model.yaml predefined_array_
         # structures for the derivation.
+        #
+        # The ELEMENT BLOCK is padded to an 8-byte boundary; the base sits
+        # outside it. Confirmed 2026-09-11 across every captured CAM and
+        # CAM_PROFILE point, 15 of 15 at zero residual. It only shows up on
+        # CAM, whose 12-byte element leaves 12*N off an 8-byte boundary at
+        # odd N -- CAM_PROFILE's 56-byte element is always 8-aligned
+        # already, so the padding term is identically zero there and the
+        # formula is unchanged for it. That is the cross-check: the same
+        # rule explains the one type that needed it and leaves the other
+        # exactly where 13 captured points already put it.
         struct = model.predefined_array_structures[data_type]
-        return struct.base + struct.per_element * element_count, struct.confidence
+        element_block = struct.per_element * element_count
+        padded = -(-element_block // 8) * 8  # ceil to the next 8-byte boundary
+        return struct.base + padded, struct.confidence
 
     if data_type == "STRING":
         # Array-of-builtin-STRING: a DIFFERENT real mechanism from a

@@ -199,12 +199,41 @@ def test_builtin_string_array_matches_confirmed_real_formula():
     assert size("STRING", (100,)) == (6 + 88 * 100, "KNOWN")
 
 
+def _align8(n: int) -> int:
+    return -(-n // 8) * 8
+
+
 def test_cam_predefined_array_structure_matches_confirmed_real_formula():
-    # OQ-PREDEFINED item 8, wired 2026-08-26: base(8) + per_element(12),
-    # confirmed via a 5-point real count sweep (2/5 exact, 3/5 within the
-    # same small universal noise band seen throughout this project).
-    assert size("CAM", (1,)) == (8 + 12 * 1, "KNOWN")
-    assert size("CAM", (50,)) == (8 + 12 * 50, "KNOWN")
+    # CORRECTED 2026-09-11: base(4) + align8(per_element(12) * n), not the
+    # original base(8) + 12*n. The old form read exact at n=1/5 and "a flat
+    # -4 of small universal noise" at n=10/20/50 -- the noise reading was
+    # wrong, and the tell is that the -4 fell exactly on the EVEN element
+    # counts, which is where 12*n is already 8-aligned. Every captured CAM
+    # point now lands at zero residual: n=1,2,5,10,11,20,30,50,100, four
+    # UDT-member dimensions, and a 5-tag file.
+    assert size("CAM", (1,)) == (4 + _align8(12 * 1), "KNOWN")     # 4 + 16
+    assert size("CAM", (2,)) == (4 + _align8(12 * 2), "KNOWN")     # 4 + 24
+    assert size("CAM", (11,)) == (4 + _align8(12 * 11), "KNOWN")   # 4 + 136
+    assert size("CAM", (50,)) == (4 + _align8(12 * 50), "KNOWN")   # 4 + 600
+
+
+def test_cam_profile_is_unaffected_by_the_alignment_term():
+    # CAM_PROFILE's 56-byte element is always 8-aligned, so the padding is
+    # identically zero and its 13 captured points are untouched. This is
+    # the cross-check on the CAM correction above: one rule, both types.
+    for n in (1, 5, 11, 20, 50):
+        assert size("CAM_PROFILE", (n,)) == (4 + 56 * n, "KNOWN")
+
+
+def test_sbr_and_ret_are_measured_zero_not_absent():
+    # 12 of 12 subrtn_* files at zero residual: an SBR or RET costs nothing
+    # beyond the routine shell holding it. Listed at 0 rather than left out
+    # so coverage.py stops reporting them as unpriced -- absent means "no
+    # data", present at 0 means "measured zero".
+    weights = MODEL.logic_instructions.weights
+    assert weights["SBR"] == 0
+    assert weights["RET"] == 0
+    assert weights["FOR"] == 80
 
 
 def test_custom_string_definition_cost_matches_confirmed_namelen_step_function():

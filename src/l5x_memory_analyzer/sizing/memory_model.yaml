@@ -384,7 +384,13 @@ predefined_structures:
 # fields is visible in the Decorated XML -- this empirical fit independently
 # confirms that field count.
 predefined_array_structures:
-  CAM_PROFILE: { base: 4, per_element: 56, confidence: FITTED }
+  # CAM_PROFILE: KNOWN 2026-09-11. 13 captured points at zero residual --
+  # the original 1/5/20/50 count sweep plus camx's 2/10/11/30/100 tag
+  # sweep, its 04/10/20/30 UDT-member sweep and the 5-tag multitag file.
+  # Held at FITTED only because the original fit was a 4-point count
+  # sweep; the member and multi-tag arms are the independent shapes that
+  # were missing, and both reproduce it exactly.
+  CAM_PROFILE: { base: 4, per_element: 56, confidence: KNOWN }
   # CAM (used by MCCP/MAPC's cam-profile operand -- NOT CAM_PROFILE, a
   # different predefined structure with a different real shape, see the
   # CAM_PROFILE entry above and OPEN_QUESTIONS.md OQ-PREDEFINED item 8).
@@ -396,7 +402,20 @@ predefined_array_structures:
   # format shows no hidden fields (unlike CAM_PROFILE), so a clean
   # base+12*count (not CAM_PROFILE's much larger 56/element, which DOES
   # hide fields) was the expected shape, now confirmed.
-  CAM: { base: 8, per_element: 12, confidence: KNOWN }
+  # CAM base CORRECTED 8 -> 4, 2026-09-11. The old value was fitted from a
+  # 5-point sweep that read exact at n=1/5 and "a flat -4 of already-
+  # familiar small universal noise" at n=10/20/50. It was not noise. With
+  # base 4 and the 8-byte element-block padding in udt.py's
+  # compute_array_size, every captured CAM point lands at zero residual:
+  #
+  #   count sweep  n=1,2,5,10,11,20,30,50,100   9/9 exact
+  #   UDT member   d=04,10,20,30                4/4 exact
+  #   multi-tag    5 tags in one file           exact
+  #
+  # The old base-8 form had 3 of those 15 exact and 12 off by +4, and the
+  # +4 fell exactly on the EVEN element counts -- which is what pointed at
+  # alignment rather than noise, since 12*N is 8-aligned only at even N.
+  CAM: { base: 4, per_element: 12, confidence: KNOWN }
 
 # Fixed per-project overhead the sizing engine never modeled before
 # 2026-08-23 -- controller/module/task/program scaffolding that exists in
@@ -2050,6 +2069,27 @@ logic_instructions:
   safety_task_program_shell: 296
   safety_task_program_shell_confidence: FITTED
   weights:
+    # FOR / SBR / RET -- measured 2026-09-11, gen_subroutine_and_for.py.
+    # All three were previously ABSENT from this table, which charged them
+    # zero as an absence of data rather than as a measurement.
+    #
+    # FOR: 80. forloop_for_r{001,005,025,100} came back short by exactly
+    # 80 x rung_count -- -80, -400, -2000, -8000, four points, perfectly
+    # linear, zero intercept. Cross-checked against its own control arm:
+    # differencing forloop_for_r<N> against forloop_ctl_r<N> (the same N
+    # target routines reached by JSR instead) gives 8, 40, 200, 800 -- a
+    # FOR rung costs exactly 8 bytes more than a JSR rung, at every count.
+    #
+    # SBR and RET: 0, and that zero is now MEASURED. All 12 subrtn_* files
+    # predict at zero residual --  shell/sbronly/sbrret at 1, 5, 25 and 100
+    # routines, 12 of 12 exact. An SBR or RET costs nothing beyond the
+    # routine shell that holds it. Listed explicitly at 0 rather than left
+    # out, so coverage.py stops reporting them as unpriced: absent from
+    # this table means "no data", present at 0 means "measured zero", and
+    # the two must not look the same.
+    FOR: 80
+    SBR: 0
+    RET: 0
     ABS: 120
     XPY: 116
     CONCAT: 104
