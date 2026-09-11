@@ -141,6 +141,7 @@ function renderCurrentLevel(recordHistory = true) {
   resetXref();
   renderBreadcrumb();
   renderNodeActions();
+  renderLevelStats();
   renderTreemap();
   renderList();
   renderTypeSummary();
@@ -1194,7 +1195,11 @@ function paintTreemap(svg, children) {
       g.appendChild(outline);
     }
 
-    let labelLinesUsed = 0;
+    // Height of the label block actually drawn, in pixels. Counted rather
+    // than inferred: a group tile draws three lines (name, description,
+    // size) and the old `>= 2 ? 28` cap reserved room for two, so the
+    // third was painted over by the nested children sitting on top of it.
+    let labelBlockH = 0;
     if (r.w > 40 && r.h > 14) {
       const label = document.createElementNS(svgNS, "text");
       label.setAttribute("x", r.x + 4);
@@ -1202,7 +1207,7 @@ function paintTreemap(svg, children) {
       label.classList.add("tm-label");
       label.textContent = truncateLabel(displayName(node), r.w);
       g.appendChild(label);
-      labelLinesUsed = 1;
+      labelBlockH = 16;
 
       // Second and third lines: what it is, then how big it is.
       const subLines = subLabelFor(node);
@@ -1215,7 +1220,7 @@ function paintTreemap(svg, children) {
         sub.classList.add("tm-label", "tm-label-sub");
         sub.textContent = truncateLabel(line, r.w);
         g.appendChild(sub);
-        labelLinesUsed = 2 + i;
+        labelBlockH = 29 + i * 13;
       });
     }
 
@@ -1224,8 +1229,7 @@ function paintTreemap(svg, children) {
     // smaller label) so a grandchild is never mistaken for a same-level
     // sibling. Reserves the header strip the label above already used.
     if (NEST_DEPTH > 1) {
-      const headerH = labelLinesUsed >= 2 ? 28 : labelLinesUsed === 1 ? 14 : 0;
-      paintNested(svg, g, node, r, headerH, 1, [node]);
+      paintNested(svg, g, node, r, labelBlockH, 1, [node]);
     }
 
     svg.appendChild(g);
@@ -1501,6 +1505,42 @@ function renderNodeActions() {
       reloadDefinitionChildren();
     };
   });
+}
+
+// What the level currently on screen costs, always on, far right of the nav
+// row. Three numbers because "how big" alone does not answer the question
+// the tool exists for: the share of the parent says whether this branch is
+// where the memory went, and the share of the controller says whether that
+// matters at all.
+//
+// The parent is the last entry on the ancestor stack, so at the root there
+// is no parent share to show and the row says so rather than printing 100%
+// against nothing.
+function renderLevelStats() {
+  const host = document.getElementById("level-stats");
+  if (!host) return;
+  const node = CURRENT_NODE;
+  if (!node) { host.innerHTML = ""; return; }
+
+  const bytes = nodeValue(node);
+  const parent = NODE_STACK.length ? NODE_STACK[NODE_STACK.length - 1] : null;
+  const parentBytes = parent ? nodeValue(parent) : 0;
+  const controllerBytes = (REPORT && REPORT.total_bytes) || 0;
+
+  const stat = (label, value) =>
+    `<span><span class="stat-label">${label}</span>` +
+    `<span class="stat-value">${value}</span></span>`;
+  const pct = (part, whole) => whole ? `${((part / whole) * 100).toFixed(2)}%` : "-";
+
+  host.innerHTML =
+    `<span><span class="stat-label">Size</span>` +
+    `<span class="stat-value stat-size">${fmtBytes(bytes)}</span></span>` +
+    stat("of parent", parent ? pct(bytes, parentBytes) : "-- (root)") +
+    stat("of controller", pct(bytes, controllerBytes));
+  host.title =
+    `${displayName(node)}: ${Math.round(bytes).toLocaleString()} bytes` +
+    (parent ? `, ${pct(bytes, parentBytes)} of ${displayName(parent)}` : "") +
+    `, ${pct(bytes, controllerBytes)} of the controller total`;
 }
 
 // Re-fetch the current definition node's children in the newly selected

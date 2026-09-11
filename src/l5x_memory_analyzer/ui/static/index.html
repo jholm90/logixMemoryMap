@@ -49,6 +49,10 @@
     <button id="back-btn" title="Back to where you came from" disabled>&larr;&nbsp;Back</button>
     <div id="breadcrumb"></div>
     <div id="node-actions"></div>
+    <!-- Always visible, far right: what the level currently on screen
+         costs, and what share of its parent and of the whole controller
+         that is. Previously only reachable by hovering a tile. -->
+    <div id="level-stats"></div>
   </div>
 
   <div id="empty-state" class="hidden">
@@ -75,8 +79,8 @@
             <table id="list-table-dock">
               <thead>
                 <tr>
-                  <th data-sort="name">Name <span class="filter-wrap"><button type="button" class="funnel-btn" data-filter="name" title="Filter by name">&#9660;&#9662;</button></span></th>
-                  <th data-sort="data_type">Type <span class="filter-wrap"><button type="button" class="funnel-btn" data-filter="data_type" title="Filter by type">&#9660;&#9662;</button></span></th>
+                  <th data-sort="name">Name <span class="filter-wrap"><button type="button" class="funnel-btn" data-filter="name" title="Filter by name"><svg class="funnel-icon" viewBox="0 0 512 512" width="11" height="11" aria-hidden="true" focusable="false"><path d="M12 26h488L316 258v182l-120 54V258z" fill="none" stroke="currentColor" stroke-width="42" stroke-linejoin="round" stroke-linecap="round"/></svg></button></span></th>
+                  <th data-sort="data_type">Type <span class="filter-wrap"><button type="button" class="funnel-btn" data-filter="data_type" title="Filter by type"><svg class="funnel-icon" viewBox="0 0 512 512" width="11" height="11" aria-hidden="true" focusable="false"><path d="M12 26h488L316 258v182l-120 54V258z" fill="none" stroke="currentColor" stroke-width="42" stroke-linejoin="round" stroke-linecap="round"/></svg></button></span></th>
                   <th data-sort="bytes">Bytes</th>
                   <th data-sort="pct_of_total">% of Parent</th>
                   <th data-sort="pct_of_controller">% of Controller</th>
@@ -97,8 +101,8 @@
       <table id="list-table">
         <thead>
           <tr>
-            <th data-sort="name">Name <span class="filter-wrap"><button type="button" class="funnel-btn" data-filter="name" title="Filter by name">&#9660;&#9662;</button></span></th>
-            <th data-sort="data_type">Type <span class="filter-wrap"><button type="button" class="funnel-btn" data-filter="data_type" title="Filter by type">&#9660;&#9662;</button></span></th>
+            <th data-sort="name">Name <span class="filter-wrap"><button type="button" class="funnel-btn" data-filter="name" title="Filter by name"><svg class="funnel-icon" viewBox="0 0 512 512" width="11" height="11" aria-hidden="true" focusable="false"><path d="M12 26h488L316 258v182l-120 54V258z" fill="none" stroke="currentColor" stroke-width="42" stroke-linejoin="round" stroke-linecap="round"/></svg></button></span></th>
+            <th data-sort="data_type">Type <span class="filter-wrap"><button type="button" class="funnel-btn" data-filter="data_type" title="Filter by type"><svg class="funnel-icon" viewBox="0 0 512 512" width="11" height="11" aria-hidden="true" focusable="false"><path d="M12 26h488L316 258v182l-120 54V258z" fill="none" stroke="currentColor" stroke-width="42" stroke-linejoin="round" stroke-linecap="round"/></svg></button></span></th>
             <th data-sort="bytes">Bytes</th>
             <th data-sort="pct_of_total">% of Parent</th>
             <th data-sort="pct_of_controller">% of Controller</th>
