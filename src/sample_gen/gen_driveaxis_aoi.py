@@ -150,7 +150,11 @@ def main() -> None:
         p = MemberSpec("Drive_Axis", axis_type, required=True)
         outer, storage = _outer("DaxOuter", extra_params=[p])
         _write(
-            build_l5x(target_name=f"DaxAx{axis_type[5:9]}",
+            # A fixed slice of the type name lands on an underscore for
+            # AXIS_CIP_DRIVE ("CIP_"), which is an illegal Logix
+            # identifier and failed the real import. Strip the
+            # underscores before slicing so every arm is alphanumeric.
+            build_l5x(target_name=f"DaxAx{axis_type[5:].replace('_', '')[:4]}",
                       tags_xml="\n".join([_AXIS_TAG_XML,
                                           tag_xml("Inst", "DaxOuter", udt_members=storage)]),
                       extra_aoi_xml=outer),

@@ -822,10 +822,14 @@ def _chassis_size_findings(root: ET.Element) -> list[LintFinding]:
     return findings
 
 
-_NAMED_ELEMENTS = (
-    "Parameter", "LocalTag", "Tag", "Member", "Routine", "Program", "Task",
-    "DataType", "AddOnInstructionDefinition", "Module",
-)
+# Element tags whose "Name" attribute is NOT a Logix identifier and so is
+# not subject to the identifier rules. Derived empirically rather than
+# guessed: scanning every Name attribute across all 80 real exports in
+# samples/local/ (3.6M of them) turns up exactly one kind of name that
+# breaks the rules and is nonetheless accepted by Studio 5000 --
+# <Version Name="1.1"> on an AOI revision, which is a version string, not
+# an identifier. Everything else, on every element, obeys them.
+_NON_IDENTIFIER_NAME_ELEMENTS = frozenset({"Version"})
 
 
 # The generated-corpus platform standard. Every generated test file is
@@ -905,8 +909,10 @@ def _platform_standard_findings(root: ET.Element) -> list[LintFinding]:
     return findings
 
 
-def _invalid_logix_name_findings(root: ET.Element) -> list[LintFinding]:
-    """Real Logix identifier rules, each confirmed by a real Studio 5000
+def _name_rule_violation(name: str) -> str | None:
+    """Which identifier rule `name` breaks, if any.
+
+    Real Logix identifier rules, each confirmed by a real Studio 5000
     import failure on this project's own generated files:
 
       - no TRAILING underscore   -- "Error creating 'Parameter' (Invalid
@@ -915,35 +921,61 @@ def _invalid_logix_name_findings(root: ET.Element) -> list[LintFinding]:
       - no SEQUENTIAL underscores -- the earlier `stringoverhead_namelen32`
         failure, where name-length filler abutted a numeric suffix
       - no LEADING digit
+    """
+    if not name:
+        return None
+    if name.endswith("_"):
+        return "ends with an underscore"
+    if "__" in name:
+        return "contains sequential underscores"
+    if name[0].isdigit():
+        return "starts with a digit"
+    return None
 
-    Both underscore rules were already known here as one-off fixes in
-    individual generators. Neither was ever enforced, so the next generator
-    to pad a name reintroduced it. Checked centrally now, on every element
-    that carries a user-chosen name.
+
+def _invalid_logix_name_findings(root: ET.Element) -> list[LintFinding]:
+    """Enforce the identifier rules on EVERY name in the file.
+
+    This used to walk a hand-maintained list of ten element tags, which
+    meant the rule was only as good as that list. It was not good enough:
+    `daxis_axis_cip_drive` shipped with a controller called `DaxAxCIP_`,
+    a trailing underscore that failed the real import, because
+    <Controller> was not one of the ten -- nor was the export's own
+    TargetName, which carries the same name a second time.
+
+    So the rule is now universal, which is what it always should have
+    been: no trailing underscore, no sequential underscores and no leading
+    digit anywhere -- tags, programs, routines, tasks, modules, UDT
+    members, AOI parameters, the controller itself. The one empirically
+    confirmed exemption is in _NON_IDENTIFIER_NAME_ELEMENTS.
     """
     findings: list[LintFinding] = []
     seen: set[tuple[str, str]] = set()
-    for tag in _NAMED_ELEMENTS:
-        for el in root.iter(tag):
-            name = el.get("Name")
-            if not name:
-                continue
-            if name.endswith("_"):
-                reason = "ends with an underscore"
-            elif "__" in name:
-                reason = "contains sequential underscores"
-            elif name[0].isdigit():
-                reason = "starts with a digit"
-            else:
-                continue
-            if (tag, name) in seen:
-                continue
-            seen.add((tag, name))
-            findings.append(LintFinding(
-                "invalid_logix_name",
-                f"<{tag} Name=\"{name}\"> is not a valid Logix identifier: it {reason}. "
-                f"Real Studio 5000 rejects it with \"Invalid name.\"",
-            ))
+
+    def record(tag: str, attr: str, name: str) -> None:
+        reason = _name_rule_violation(name)
+        if reason is None or (tag, name) in seen:
+            return
+        seen.add((tag, name))
+        findings.append(LintFinding(
+            "invalid_logix_name",
+            f"<{tag} {attr}=\"{name}\"> is not a valid Logix identifier: it {reason}. "
+            f"Real Studio 5000 rejects it with \"Invalid name.\"",
+        ))
+
+    # The export header names the target a second time, in its own
+    # attribute. A controller renamed to a legal name but left with a bad
+    # TargetName is still a failed import.
+    target_name = root.get("TargetName")
+    if target_name:
+        record(root.tag, "TargetName", target_name)
+
+    for el in root.iter():
+        if el.tag in _NON_IDENTIFIER_NAME_ELEMENTS:
+            continue
+        name = el.get("Name")
+        if name:
+            record(el.tag, "Name", name)
     return findings
 
 

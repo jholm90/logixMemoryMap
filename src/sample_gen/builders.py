@@ -21,6 +21,44 @@ from dataclasses import dataclass
 BOOL_BITS_PER_BACKING_SINT = 8
 
 
+class InvalidLogixNameError(ValueError):
+    """A name Studio 5000 will reject on import as "Invalid name."."""
+
+
+def validate_logix_name(name: str, what: str) -> str:
+    """Raise unless `name` is a legal Logix identifier.
+
+    A HARD REQUIREMENT, on everything: tags, programs, routines, tasks,
+    modules, UDT members, AOI parameters, the controller itself. A name
+    may not end in an underscore, may not contain two underscores in a
+    row, and may not start with a digit. Real Studio 5000 rejects all
+    three with "Invalid name." and aborts the whole import, so one bad
+    name costs the entire file.
+
+    Checked here, at the point a name enters a file, rather than only in
+    sample_gen.lint -- the lint catch comes after a batch is written and
+    sometimes after it has been converted. Every instance so far came
+    from a helper composing a name out of parts (padding filler abutting
+    a numeric suffix; a fixed slice of a type name, `"AXIS_CIP_DRIVE"[5:9]`,
+    landing on the underscore), which is exactly the case a generator
+    author cannot see by reading their own call site.
+    """
+    if not name:
+        raise InvalidLogixNameError(f"{what}: name is empty")
+    if name.endswith("_"):
+        reason = "ends with an underscore"
+    elif "__" in name:
+        reason = "contains sequential underscores"
+    elif name[0].isdigit():
+        reason = "starts with a digit"
+    else:
+        return name
+    raise InvalidLogixNameError(
+        f"{what}: {name!r} is not a valid Logix identifier -- it {reason}. "
+        f"Real Studio 5000 rejects the whole import with \"Invalid name.\""
+    )
+
+
 @dataclass(frozen=True)
 class MemberSpec:
     name: str
@@ -75,6 +113,13 @@ class MemberSpec:
     # verbatim. When set, no Radix attribute is written (matching every
     # real predefined-struct Parameter/LocalTag on file).
     raw_default_data: str | None = None
+
+    def __post_init__(self) -> None:
+        # Every member, parameter and local tag passes through here, so
+        # this one hook covers the whole family. Composed names are where
+        # the bad ones come from, and a composed name is invisible at the
+        # call site that made it.
+        validate_logix_name(self.name, f"MemberSpec({self.data_type})")
 
 
 _FLOAT_TYPES = {"REAL"}
@@ -212,6 +257,7 @@ def string_array_tag_xml(name: str, count: int, max_len: int = 82, data_type: st
     varies (this generator emits empty/zero-length strings, matching a
     freshly-created array before any runtime value is written) --
     OQ-STRINGARRAY, never previously tested."""
+    validate_logix_name(name, "string array tag")
     l5k_padding = "$00" * max_len
     l5k_elements = ",".join([f"[0,'{l5k_padding}'\n\t\t]"] * count)
     decorated_elements = "".join(
@@ -245,6 +291,7 @@ def tag_xml(
     description: str | None = None, udt_members: list["MemberSpec"] | None = None,
     string_max_len: int | None = None, constant: bool = False,
 ) -> str:
+    validate_logix_name(name, "tag")
     # REAL BUG FOUND 2026-08-31 (real Studio 5000 warning on
     # composite_realistic_07.L5X): "A warning occurred while setting
     # 'Radix' property (Invalid display style.)" on a REAL-typed array tag
@@ -420,6 +467,7 @@ def _udt_members_xml(members: list[MemberSpec]) -> str:
 
 def udt_xml(name: str, members: list[MemberSpec], family: str = "NoFamily",
             description: str | None = None) -> str:
+    validate_logix_name(name, "UDT")
     members_xml = _udt_members_xml(members)
     # Real exports (2026-08-20, samples/local/SJ_Gormley_20251112_r02.L5X):
     # a DataType-level Description sits right after the opening tag, before
@@ -433,6 +481,7 @@ def udt_xml(name: str, members: list[MemberSpec], family: str = "NoFamily",
 
 
 def custom_string_type_xml(name: str, max_len: int) -> str:
+    validate_logix_name(name, "string type")
     # Real shape confirmed 2026-08-20, samples/local/SJ_Gormley_20251112_r02.L5X
     # (DataType Name="Long_String", DATA Dimension="128").
     return (
@@ -809,6 +858,8 @@ def program_xml(name: str, tags_xml: str = "", rungs_xml_body: str = "") -> str:
     real mechanism described earlier is a Controller-scoped global
     tag with a same-named Local alias in each program that needs it, which
     is what this builder is for."""
+    validate_logix_name(name, "program")
+    validate_logix_name(name, "AOI")
     rungs = rungs_xml_body if rungs_xml_body.strip() else (
         '<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>'
     )
@@ -975,6 +1026,7 @@ def program_tag_xml(name: str, data_type: str, usage: str | None = None) -> str:
     convention, not something specific to Usage="Public" -- confirmed by
     checking a same-file Local-scope tag (DLugNum, no Usage attribute) shows
     the identical dual-Data shape. OQ-TAGSCOPE."""
+    validate_logix_name(name, "program tag")
     usage_attr = f' Usage="{usage}"' if usage else ""
     val = _default_value(data_type)
     radix = "Float" if data_type in _FLOAT_TYPES else "Decimal"
@@ -992,6 +1044,7 @@ def alias_tag_xml(name: str, alias_for: str, radix: str = "Decimal") -> str:
     files, e.g. samples/local/BAI10048_TrimmerTally_20250704.L5X): self-
     closed, no Data element at all, just AliasFor pointing at the real
     target tag's path. OQ-ALIASSIZE."""
+    validate_logix_name(name, "alias tag")
     return f'      <Tag Name="{name}" TagType="Alias" Radix="{radix}" AliasFor="{alias_for}" ExternalAccess="Read/Write"/>'
 
 
@@ -1192,6 +1245,8 @@ def module_generic_ethernet_xml(name: str, ip_address: str, input_bytes: int, ou
 def task_xml(task_name: str, program_name: str, task_type: str = "CONTINUOUS",
              priority: int = 10, watchdog: int = 500,
              event_trigger: str | None = None, event_tag: str | None = None) -> str:
+    validate_logix_name(task_name, "task")
+    validate_logix_name(program_name, "program")
     """A second/extra <Task> block (with its own <ScheduledPrograms>), for
     build_l5x(extra_tasks_xml=...). Real shape matches the wrapper's own
     MainTask element exactly, just parametrized. Only CONTINUOUS Type is

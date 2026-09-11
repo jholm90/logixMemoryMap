@@ -23,6 +23,8 @@ from __future__ import annotations
 import re
 from datetime import datetime
 
+from sample_gen.builders import validate_logix_name
+
 # v35 / ControlLogix 5580-class -- switched 2026-08-20 ("why didnt
 # you use 1756-L81? lets use that as default") from 5069-L306ER, which was
 # only ever chosen because it is the one physical unit available for real
@@ -239,6 +241,11 @@ def build_l5x(
     `processor_type` (e.g. "1756-L81ES") -- this function does not
     silently upgrade a plain processor_type on the caller's behalf, real
     processor catalog choice stays explicit."""
+    # The controller's own name is a Logix identifier like any other, and
+    # it is written into the file twice (Controller/@Name and the export
+    # header's TargetName). It was the one name nothing checked, which is
+    # how daxis_axis_cip_drive shipped as "DaxAxCIP_".
+    validate_logix_name(target_name, "controller/target")
     rungs = extra_rungs_xml if extra_rungs_xml.strip() else (
         '<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>'
     )

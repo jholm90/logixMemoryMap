@@ -273,18 +273,61 @@ def test_non_safety_ers3_drive_is_not_flagged():
     assert not any(f.kind == "safety_module_on_non_safety_controller" for f in findings)
 
 
+# The builders now refuse to emit an illegal name at all, so these have to
+# hand-write the XML to produce one. Both layers matter: the builder guard
+# stops a generator making the file, and the lint rule catches a file that
+# reached the corpus some other way (hand-edited, or built before the
+# guard existed).
+_BAD_NAME_WRAPPER = """
+<RSLogix5000Content SchemaRevision="1.0" TargetName="{target}">
+  <Controller Name="{target}">
+    <DataTypes/>
+    <Tags><Tag Name="{tag}" TagType="Base" DataType="DINT"/></Tags>
+  </Controller>
+</RSLogix5000Content>
+"""
+
+
 def test_flags_trailing_underscore_name():
     # Real Studio 5000 failure 2026-09-06: "Error creating 'Parameter'
     # (Invalid name.)" on `InParam00___`. One padding helper that filled
     # names to an exact length with underscores broke 52 of 56 files in a
     # single batch.
-    l5x = build_l5x(target_name="T", tags_xml=tag_xml("BadName_", "DINT"))
+    l5x = _BAD_NAME_WRAPPER.format(target="T", tag="BadName_")
     assert any(f.kind == "invalid_logix_name" for f in lint_l5x(l5x))
 
 
 def test_flags_sequential_underscore_name():
-    l5x = build_l5x(target_name="T", tags_xml=tag_xml("Bad__Name", "DINT"))
+    l5x = _BAD_NAME_WRAPPER.format(target="T", tag="Bad__Name")
     assert any(f.kind == "invalid_logix_name" for f in lint_l5x(l5x))
+
+
+def test_flags_trailing_underscore_on_the_controller_itself():
+    # The exact real miss: daxis_axis_cip_drive shipped a controller named
+    # DaxAxCIP_ because the old rule only walked ten element tags and
+    # <Controller> was not one of them.
+    l5x = _BAD_NAME_WRAPPER.format(target="DaxAxCIP_", tag="Good")
+    findings = [f for f in lint_l5x(l5x) if f.kind == "invalid_logix_name"]
+    assert any("Controller" in f.detail for f in findings)
+    assert any("TargetName" in f.detail for f in findings)
+
+
+def test_does_not_flag_an_aoi_revision_version_string():
+    # <Version Name="1.1"> on an AOI revision is a version string, not an
+    # identifier -- confirmed across all 80 real exports, where it is the
+    # only Name that breaks the identifier rules and still imports.
+    l5x = """
+    <RSLogix5000Content SchemaRevision="1.0" TargetName="T">
+      <Controller Name="T"><DataTypes/>
+        <AddOnInstructionDefinitions>
+          <AddOnInstructionDefinition Name="MyAoi">
+            <Revisions><Revision><Version Name="1.1"/></Revision></Revisions>
+          </AddOnInstructionDefinition>
+        </AddOnInstructionDefinitions>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    assert not any(f.kind == "invalid_logix_name" for f in lint_l5x(l5x))
 
 
 def test_does_not_flag_a_valid_name():

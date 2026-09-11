@@ -197,26 +197,49 @@ comment in the generator you happen to be editing does not protect the
 others.
 
 
-## Logix identifier rules (enforced by lint)
+## Logix identifier rules — a hard requirement, on everything
 
-Every element that carries a user-chosen name -- Parameter, LocalTag, Tag,
-Member, Routine, Program, Task, DataType, AddOnInstructionDefinition,
-Module -- must satisfy all three:
+**Every** name in the file, with no exceptions: tags, programs, routines,
+tasks, modules, UDT members, AOI parameters, local tags, data types, the
+**controller/processor name** and the export header's `TargetName`.
 
 - **No trailing underscore.** `InParam00___` fails with "Error creating
   'Parameter' (Invalid name.)".
 - **No sequential underscores.** `Bad__Name` fails the same way.
 - **No leading digit.**
 
-Both underscore rules had been hit before, in 2026-08 on a string
-name-length batch and again on 2026-09-06 when a padding helper filled
-names to an exact length with underscores and broke 52 of 56 files in one
-batch. Each time the fix was applied only inside the generator that failed,
-so the next generator to pad a name reintroduced it.
+Pad a name to a target length with filler LETTERS, never underscores.
 
-`lint.py`'s `invalid_logix_name` check now enforces all three centrally on
-every generated file. Pad a name to a target length with filler LETTERS,
-never underscores.
+Enforced in two places, deliberately:
+
+- `builders.validate_logix_name` refuses to BUILD an illegal name.
+  `MemberSpec` validates in `__post_init__`, so every member, parameter
+  and local tag is covered by one hook; `tag_xml`, `udt_xml`,
+  `aoi_xml`, `program_xml`, `task_xml`, `custom_string_type_xml`,
+  `string_array_tag_xml`, `program_tag_xml`, `alias_tag_xml` and
+  `build_l5x`'s `target_name` each check their own.
+- `lint.py`'s `invalid_logix_name` check scans **every element with a
+  `Name` attribute**, plus the header's `TargetName`, on every file. The
+  one exemption is `<Version Name="1.1">` on an AOI revision, which is a
+  version string rather than an identifier — established by scanning all
+  3.6M `Name` attributes across the 80 real exports, where it is the only
+  name that breaks these rules and still imports.
+
+This has now been hit three times, and each of the first two fixes was
+applied only inside the generator that failed:
+
+- 2026-08, a string name-length batch.
+- 2026-09-06, a padding helper that filled names to an exact length with
+  underscores, breaking 52 of 56 files in one batch.
+- 2026-09-11, `daxis_axis_cip_drive` shipped a controller named
+  `DaxAxCIP_` — `"AXIS_CIP_DRIVE"[5:9]`, a fixed slice landing on the
+  underscore. The lint rule existed by then and did not catch it, because
+  it walked a hand-maintained list of ten element tags and `<Controller>`
+  was not one of them. That list is gone; the rule is universal.
+
+Every instance came from a name COMPOSED out of parts, which is exactly
+what a generator author cannot see by reading their own call site. That is
+why the build-time guard exists alongside the lint check.
 
 ## Racks: bus size and slot numbers are properties of the rack, not the module
 
