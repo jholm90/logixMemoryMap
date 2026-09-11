@@ -1832,8 +1832,31 @@ the matching footnote at the bottom, not inline.
     alarm term — but that is a hypothesis, and wiring 8/definition while
     a 64-byte hole sits next to it would bake the hole into the model.
 
-    **What is needed:** a `d1` file whose UDT matches the `d0N` shape
-    (2 members, not 18), which separates the two. One file settles it.
+    **The "one file settles it" note above was wrong, and is corrected
+    here.** The problem is not one bad data point, it is that the first
+    batch has no control. In `d0N` the UDT count, BIT-member count,
+    backing-SINT count and definition count are ALL N, so "8 per UDT",
+    "8 per definition", "8 per BIT member" and "8 per backing SINT" fit
+    it identically, and `d1` fits none of them (8 / 8 / 128 / 16 against
+    an actual 72). That is a two-variable surface, and no single extra
+    file resolves one.
+
+    **Test files built 2026-09-11**, `gen_alarm_separation.py`, 33 files.
+    `alarmsep_u{01,02,04}_b{01,02,04,08,16}_{alarm,noalarm}` builds every
+    point TWICE -- once with a DatatypeAlarmDefinition on each UDT, once
+    with identical DataTypes and no `<AlarmDefinitions>` element at all.
+    Differencing a pair cancels the UDT cost, the backing-SINT packing,
+    the baseline and the shell exactly, so the remainder is the alarm
+    cost with nothing else in it. The engine prices alarm definitions at
+    0 today, so each pair differences to 0 in prediction and the measured
+    difference IS the answer.
+
+    Read along the `_noalarm` arm alone, the same files measure how a
+    UDT's BOOL members and hidden backing SINTs are priced with no alarm
+    content present; B=8 fills one backing SINT exactly and B=16 two, so
+    a packing term cannot hide. `alarmsep_u04_b04_def{1,2,3}` decouples
+    definition count from UDT count, giving five points on the definition
+    axis with everything else frozen.
 
     Not captured: `inst_t{01,04,16}` and `noinst_t{01,04,16}` failed
     conversion in both arms (12 files), so whether an uninstantiated
