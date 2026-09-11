@@ -765,6 +765,31 @@ catalog_baseline_delta:
   '1756-L74': { absolute_bytes: 25320, confidence: FITTED }
   '1756-L75': { absolute_bytes: 25320, confidence: FITTED }
 
+  # 1756-L9xTS, wired 2026-09-11 from the first captures this family has
+  # ever had. An empty v38 project measures 20,404 on all four catalogs
+  # against 18,128 for a 1756-L81E on the same firmware -- a flat +2,276,
+  # identical across L902TS/L905TS/L908TS/L915TS with ZERO variance.
+  #
+  # A delta, not an absolute: unlike the L7x family this sits on top of the
+  # firmware ladder rather than ignoring it, which is what an additive term
+  # expresses. Only v38 has been captured (the family postdates v31-v37 and
+  # building an L9 at v31 would fabricate a firmware that never shipped), so
+  # there is exactly one firmware point behind the additive claim and the
+  # tier says so.
+  #
+  # Independently replicated by the alarm-definition batch: every
+  # alarmdef_l902ts_* file sits exactly 2,276 above its alarmdef_l81_*
+  # twin once the shared +72 alarm offset is removed, across 14 more files
+  # that were built for a different purpose entirely.
+  #
+  # This does NOT close OQ-L9BUDGET. These captures give the baseline
+  # USED, not the capacity denominator -- message_value came back 0 on all
+  # four -- so the UI still has no headroom percentage for an L9.
+  '1756-L902TS': { bytes: 2276, confidence: FITTED }
+  '1756-L905TS': { bytes: 2276, confidence: FITTED }
+  '1756-L908TS': { bytes: 2276, confidence: FITTED }
+  '1756-L915TS': { bytes: 2276, confidence: FITTED }
+
 bool:
   # Standalone BOOL controller/program tags: allocated as a full DINT, not
   # bit-packed. CONFIRMED by real capture (OQ-BOOLPACK, RESOLVED_QUESTIONS.md):

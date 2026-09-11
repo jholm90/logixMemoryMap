@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="38.02" TargetName="AlarmdefL902tsD04M1" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 10 17:22:35 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="AlarmdefL902tsD04M1" ProcessorType="1756-L902TS" MajorRev="38" MinorRev="11" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Thu Sep 10 17:22:35 2026" LastModifiedDate="Thu Sep 10 17:22:35 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" EtherNetIPMode="A1/A2: Dual-IP" AutoDiagsEnabled="false" WebServerEnabled="false" DataExchangeId="{DE2FB4EA-E488-4F49-A785-9AFF6B9E886B}">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo SafetyEnabled="false"/>
+<DataTypes>
+    <DataType Name="AlarmSrcType00" Family="NoFamily" Class="User">
+      <Members>
+      <Member Name="ZZZZZZZZZZBoolMember00" DataType="SINT" Dimension="0" Hidden="true"/>
+      <Member Name="Sts_A00" DataType="BIT" Dimension="0" Hidden="false" Target="ZZZZZZZZZZBoolMember00" BitNumber="0"/>
+      </Members>
+    </DataType>    <DataType Name="AlarmSrcType01" Family="NoFamily" Class="User">
+      <Members>
+      <Member Name="ZZZZZZZZZZBoolMember00" DataType="SINT" Dimension="0" Hidden="true"/>
+      <Member Name="Sts_A00" DataType="BIT" Dimension="0" Hidden="false" Target="ZZZZZZZZZZBoolMember00" BitNumber="0"/>
+      </Members>
+    </DataType>    <DataType Name="AlarmSrcType02" Family="NoFamily" Class="User">
+      <Members>
+      <Member Name="ZZZZZZZZZZBoolMember00" DataType="SINT" Dimension="0" Hidden="true"/>
+      <Member Name="Sts_A00" DataType="BIT" Dimension="0" Hidden="false" Target="ZZZZZZZZZZBoolMember00" BitNumber="0"/>
+      </Members>
+    </DataType>    <DataType Name="AlarmSrcType03" Family="NoFamily" Class="User">
+      <Members>
+      <Member Name="ZZZZZZZZZZBoolMember00" DataType="SINT" Dimension="0" Hidden="true"/>
+      <Member Name="Sts_A00" DataType="BIT" Dimension="0" Hidden="false" Target="ZZZZZZZZZZBoolMember00" BitNumber="0"/>
+      </Members>
+    </DataType></DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L902TS" Vendor="1" ProductType="14" ProductCode="316" Major="38" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="4"/>
+</Port>
+<Port Id="3" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+<Port Id="4" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<AlarmDefinitions>
+<DatatypeAlarmDefinition Name="AlarmSrcType00">
+<MemberAlarmDefinition Name="Alm_A00" Input=".Sts_A00" ConditionType="TRIP" Limit="0.0" Severity="500" OnDelay="0" OffDelay="0" ShelveDuration="480" MaxShelveDuration="480" Deadband="0.0" Required="false"
+ AlarmSetOperIncluded="true" AlarmSetRollupIncluded="true" AckRequired="true" Latched="false" EvaluationPeriod="500 millisecond" Expression="= 1" IsTemplate="true">
+<AlarmConfig>
+<Messages>
+<Message Type="ADM">
+<Text Lang="en-US">
+<![CDATA[Alarm on status bit]]>
+</Text>
+</Message>
+</Messages>
+</AlarmConfig>
+</MemberAlarmDefinition>
+</DatatypeAlarmDefinition>
+<DatatypeAlarmDefinition Name="AlarmSrcType01">
+<MemberAlarmDefinition Name="Alm_A00" Input=".Sts_A00" ConditionType="TRIP" Limit="0.0" Severity="500" OnDelay="0" OffDelay="0" ShelveDuration="480" MaxShelveDuration="480" Deadband="0.0" Required="false"
+ AlarmSetOperIncluded="true" AlarmSetRollupIncluded="true" AckRequired="true" Latched="false" EvaluationPeriod="500 millisecond" Expression="= 1" IsTemplate="true">
+<AlarmConfig>
+<Messages>
+<Message Type="ADM">
+<Text Lang="en-US">
+<![CDATA[Alarm on status bit]]>
+</Text>
+</Message>
+</Messages>
+</AlarmConfig>
+</MemberAlarmDefinition>
+</DatatypeAlarmDefinition>
+<DatatypeAlarmDefinition Name="AlarmSrcType02">
+<MemberAlarmDefinition Name="Alm_A00" Input=".Sts_A00" ConditionType="TRIP" Limit="0.0" Severity="500" OnDelay="0" OffDelay="0" ShelveDuration="480" MaxShelveDuration="480" Deadband="0.0" Required="false"
+ AlarmSetOperIncluded="true" AlarmSetRollupIncluded="true" AckRequired="true" Latched="false" EvaluationPeriod="500 millisecond" Expression="= 1" IsTemplate="true">
+<AlarmConfig>
+<Messages>
+<Message Type="ADM">
+<Text Lang="en-US">
+<![CDATA[Alarm on status bit]]>
+</Text>
+</Message>
+</Messages>
+</AlarmConfig>
+</MemberAlarmDefinition>
+</DatatypeAlarmDefinition>
+<DatatypeAlarmDefinition Name="AlarmSrcType03">
+<MemberAlarmDefinition Name="Alm_A00" Input=".Sts_A00" ConditionType="TRIP" Limit="0.0" Severity="500" OnDelay="0" OffDelay="0" ShelveDuration="480" MaxShelveDuration="480" Deadband="0.0" Required="false"
+ AlarmSetOperIncluded="true" AlarmSetRollupIncluded="true" AckRequired="true" Latched="false" EvaluationPeriod="500 millisecond" Expression="= 1" IsTemplate="true">
+<AlarmConfig>
+<Messages>
+<Message Type="ADM">
+<Text Lang="en-US">
+<![CDATA[Alarm on status bit]]>
+</Text>
+</Message>
+</Messages>
+</AlarmConfig>
+</MemberAlarmDefinition>
+</DatatypeAlarmDefinition>
+</AlarmDefinitions>
+<Tags>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags/>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="A1" PortEnabled="true"/>
+<EthernetPort Port="2" Label="A2" PortEnabled="true"/>
+</EthernetPorts>
+<OpcUaInfo EnabledPorts=""/>
+</Controller>
+</RSLogix5000Content>

@@ -1799,6 +1799,46 @@ the matching footnote at the bottom, not inline.
 33. **OQ-ALARMDEF** — datatype-level alarm definitions are priced at zero.
     New, 2026-09-08, found in the real 1756-L9xTS v38 exports.
 
+    **CAPTURED 2026-09-11, 28 files across two processors. Three of the
+    four questions are answered; one result does not fit and is not being
+    wired until it does.**
+
+    Answered, and replicated independently on 1756-L81E and 1756-L902TS
+    with identical numbers:
+
+      - **Operator message text is FREE.** `msg_none/s/m/l` all measure
+        byte-identical (18,696 on L81, 20,972 on L902TS). Message length
+        contributes nothing, the same result RLL rung comments and ST
+        comments already gave.
+      - **Member alarm count is FREE.** `d1_m00` through `d1_m16` — zero
+        to sixteen `MemberAlarmDefinition` elements under one
+        `DatatypeAlarmDefinition` — are all byte-identical. A definition
+        costs what it costs regardless of how many members hang off it.
+      - **Definition count is linear at exactly 8 bytes per
+        `DatatypeAlarmDefinition`**, zero residual:
+
+            d02 -> +16    d04 -> +32    d08 -> +64
+
+        Both processors give the identical increments (L81 18,592 /
+        19,056 / 19,984; L902TS 20,868 / 21,332 / 22,260 — differences of
+        464 and 928 in both).
+
+    **Does not fit, and is the reason nothing is wired yet:** every file
+    in the `d1_*` family sits at +72, not the +8 that one definition
+    should cost by the slope above. The extra 64 bytes are constant
+    across all eleven `d1_*` files and appear on both processors. The
+    `d1_*` UDT carries 18 members against 2 in the `d0N_*` files, so the
+    suspect is a UDT-shape term leaking into this residual rather than an
+    alarm term — but that is a hypothesis, and wiring 8/definition while
+    a 64-byte hole sits next to it would bake the hole into the model.
+
+    **What is needed:** a `d1` file whose UDT matches the `d0N` shape
+    (2 members, not 18), which separates the two. One file settles it.
+
+    Not captured: `inst_t{01,04,16}` and `noinst_t{01,04,16}` failed
+    conversion in both arms (12 files), so whether an uninstantiated
+    template costs anything is still completely open.
+
     `<AlarmDefinitions><DatatypeAlarmDefinition><MemberAlarmDefinition>` is
     a v38 shape: an alarm TEMPLATE attached to a data type, distinct from
     the tag-level `<AlarmConditions>` this engine already sizes exactly
@@ -1854,8 +1894,21 @@ the matching footnote at the bottom, not inline.
     percentage rather than inventing one.
 
     **Test files built 2026-09-08**: `fwmatrix_v38_1756_l9{02,05,08,15}ts`.
-    A blank baseline's Capacity Total is the budget, read directly, so
-    these four close the question outright once captured. Generated at v38
+
+    **CAPTURED 2026-09-11, and they do NOT close it.** The premise above
+    was wrong: the capture harness records memory USED, not the capacity
+    denominator, and `message_value` came back 0 on all four. What the
+    four files did settle is the **baseline**, which was a different
+    question — an empty v38 L9 project measures 20,404 against 18,128 for
+    a 1756-L81E on the same firmware, a flat **+2,276 with zero variance
+    across all four catalogs**. Wired as a `catalog_baseline_delta`, and
+    independently replicated by the 14 `alarmdef_l902ts_*` files, which
+    sit exactly 2,276 above their L81 twins once the shared alarm offset
+    is removed.
+
+    The budget itself still needs the real per-catalog user memory from a
+    datasheet or a controller. The UI continues to degrade correctly,
+    showing the byte total with no percentage rather than inventing one. Generated at v38
     only -- the family postdates the v31-v37 firmwares in the matrix, and
     building an L9 at v31 would fabricate a firmware that never shipped.
 
