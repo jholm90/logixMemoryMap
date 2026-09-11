@@ -25,6 +25,7 @@ from l5x_memory_analyzer.parser.tags import parse_tags
 from l5x_memory_analyzer.parser.tasks import parse_tasks, program_to_task_map
 from l5x_memory_analyzer.sizing.constants import MemoryModel, load_memory_model
 from l5x_memory_analyzer.sizing.controller_budgets import load_controller_budgets
+from l5x_memory_analyzer.sizing.xref import find_usages
 from l5x_memory_analyzer.sizing.export import write_csv, write_xlsx
 from l5x_memory_analyzer.sizing.report import SizeEntry, SizeError, build_report
 from l5x_memory_analyzer.sizing.tree import (
@@ -103,6 +104,10 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         "is_controller_export": doc.is_controller_export,
         "is_safety_project": doc.is_safety_project,
         "safety_level": doc.safety_level,
+        # Declared UDT/AOI names, so the UI can tell a type it can
+        # cross-reference from an atomic it cannot.
+        "type_names": sorted(data_types),
+        "aoi_names": sorted(n for n, d in data_types.items() if d.is_aoi),
         "hierarchy": build_hierarchy(
             entries, data_types, model, {p: d for p, (dt, d) in tag_index.items()},
             program_to_task_map(doc.root),
@@ -323,6 +328,30 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
         # not a tag instance -- drill into its own cost breakdown instead
         # (2026-08-26, locals+params breakdown for a defs-pool node).
         # Always exactly one level deep, no further subpath to resolve.
+        # The definition drill has two readings and they answer different
+        # questions. `mode=definition` (the default) shows what the type
+        # costs to EXIST -- a flat per-declared-member table rate, which
+        # is why a BOOL, a DINT and a TIMER all show the same number and
+        # why that looks wrong until you know what it is. `mode=instance`
+        # shows what one instance of the type OCCUPIES, where those same
+        # three members are 4, 4 and 12. Neither is more correct; showing
+        # only the first made the definition view read as a broken size.
+        if tag_path.startswith("udt_definitions/") and request.args.get("mode") == "instance":
+            def_name = tag_path[len("udt_definitions/"):]
+            if def_name not in state.data_types:
+                return jsonify({"error": f"unknown type definition {def_name!r}"}), 404
+            children = expand_children(def_name, (), state.data_types, state.model)
+            return jsonify({"mode": "instance", "children": [
+                {
+                    "name": c.name, "segment": c.segment, "data_type": c.data_type,
+                    "dimensions": list(c.dimensions), "value": c.bytes,
+                    "basis": c.basis, "has_children": c.has_children,
+                    "alias_of": c.alias_of, "alias_bit": c.alias_bit,
+                    "confidence": _child_confidence(c, state),
+                }
+                for c in children
+            ]})
+
         if tag_path.startswith("udt_definitions/"):
             def_name = tag_path[len("udt_definitions/"):]
             if def_name not in state.data_types:
@@ -403,6 +432,36 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
                 ]
             }
         )
+
+
+    @app.get("/api/xref")
+    def api_xref():
+        """Every navigable path that reaches a given UDT/AOI type.
+
+        Deliberately its own endpoint rather than part of /api/report: on
+        a wide controller this walks every tag through the member graph,
+        and most sessions never open the tab. The client asks only when
+        the tab is opened and shows progress while it waits.
+        """
+        state: DocState | None = app.config["state"]
+        if state is None:
+            return jsonify({"error": "no file loaded"}), 400
+        target = request.args.get("type", "")
+        if target not in state.data_types:
+            return jsonify({"error": f"unknown type {target!r}"}), 404
+        usages = find_usages(target, state.data_types, state.tag_index)
+        return jsonify({
+            "type": target,
+            "count": len(usages),
+            "usages": [
+                {
+                    "path": u.path, "tag_path": u.tag_path,
+                    "member_path": u.member_path, "scope": u.scope,
+                    "via": u.via, "direct": u.direct,
+                }
+                for u in usages
+            ],
+        })
 
     return app
 

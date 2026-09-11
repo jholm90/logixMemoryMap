@@ -17,6 +17,7 @@ let SPLIT_OPEN = false;  // 2026-08-27: List/Type Summary docked
 let NEST_DEPTH = 1;      // how many levels to nest inside each tile (1..10).
                          // Replaced the old two-state "2 levels deep"
                          // checkbox: depth is a range, not a boolean.
+let DEF_MODE = "definition";  // or "instance" -- see renderNodeActions
 let NAV_HISTORY = [];    // every location visited, for the Back button --
                          // distinct from NODE_STACK, which is only the
                          // ANCESTOR chain. Going "back" after a sideways
@@ -123,10 +124,18 @@ function renderAll() {
 function renderCurrentLevel(recordHistory = true) {
   if (recordHistory === false) { /* Back already restored the location */ }
   document.getElementById("back-btn").disabled = NAV_HISTORY.length === 0;
+  // Any move to a different level clears the list filter. Carrying it
+  // across would hide rows at the new location with no visible cause.
+  clearListFilters();
+  // The cross-reference is per-type, so it belongs to the node you were
+  // on, not the one you just moved to.
+  resetXref();
   renderBreadcrumb();
+  renderNodeActions();
   renderTreemap();
   renderList();
   renderTypeSummary();
+  syncXrefTab();
 }
 
 // The initial /api/report hierarchy is always exactly 3 levels: root ->
@@ -263,6 +272,46 @@ function confidenceBreakdown(node) {
   visit(node);
   const total = acc.KNOWN + acc.FITTED + acc.ASSUMED + acc.UNKNOWN;
   return { ...acc, total, knownPct: total ? (acc.KNOWN / total) * 100 : null };
+}
+
+// A tag of a UDT/AOI type gets a link to the definition that declares it.
+// Knowing an instance costs 12KB is rarely the end of the question -- the
+// next one is always "what is in it", and that lives on the definition.
+function definitionLinkHtml(node) {
+  if (!node || !node.data_type) return "";
+  const names = (REPORT && REPORT.type_names) || [];
+  if (!names.includes(node.data_type)) return "";
+  const path = (node.path || node._tagPath || "");
+  if (path.startsWith("udt_definitions/") || path.startsWith("aoi_definitions/")) return "";
+  const isAoi = (REPORT.aoi_names || []).includes(node.data_type);
+  return `<span class="def-link" data-def-type="${escapeHtml(node.data_type)}">` +
+    `${isAoi ? "AOI DEFINITION" : "UDT DEFINITION"}: ${escapeHtml(node.data_type)}</span>`;
+}
+
+function wireDefinitionLinks(scope) {
+  (scope || document).querySelectorAll("[data-def-type]").forEach(el => {
+    el.onclick = ev => {
+      ev.stopPropagation();
+      navigateToDefinition(el.dataset.defType);
+    };
+  });
+}
+
+function navigateToDefinition(typeName) {
+  const wanted = [`udt_definitions/${typeName}`, `aoi_definitions/${typeName}`];
+  const find = n => {
+    if (wanted.includes(n.path || n._tagPath)) return n;
+    for (const k of n.children || []) {
+      const hit = find(k);
+      if (hit) return hit;
+    }
+    return null;
+  };
+  const target = REPORT && REPORT.hierarchy ? find(REPORT.hierarchy) : null;
+  if (target) {
+    drillInto(target);
+    document.querySelector('.tab-btn[data-tab="treemap"]').click();
+  }
 }
 
 function confidenceBarHtml(node) {
@@ -410,6 +459,7 @@ function setupTabs() {
       document.getElementById(`panel-${btn.dataset.tab}`).classList.add("active");
       syncTreemapOnlyControls(btn.dataset.tab);
       if (btn.dataset.tab === "treemap") renderTreemap();
+      if (btn.dataset.tab === "xref") renderXref();
     });
   });
   syncTreemapOnlyControls("treemap");
@@ -1193,11 +1243,248 @@ function renderList() {
 // 2026-08-27: rows are now click-to-drill (same target a treemap
 // tile click would drill into), matching "List should be browsable to see
 // inside each element name or type."
+
+
+
+// The per-node action strip beside the breadcrumb: a link to the type's
+// definition, and on a definition itself the toggle between what the type
+// costs to exist and what one instance of it occupies.
+function renderNodeActions() {
+  const host = document.getElementById("node-actions");
+  if (!host) return;
+  const node = CURRENT_NODE || {};
+  const path = node.path || node._tagPath || "";
+  const isDefinition = path.startsWith("udt_definitions/") || path.startsWith("aoi_definitions/");
+  let html = definitionLinkHtml(node);
+  if (isDefinition) {
+    html +=
+      `<label class="defmode-toggle" title="Definition cost is a flat per-declared-member rate, ` +
+      `so a BOOL, a DINT and a TIMER all cost the same. Instance size is what one copy occupies.">` +
+      `<input type="checkbox" id="defmode-instance" ${DEF_MODE === "instance" ? "checked" : ""}>` +
+      `<span>Show instance size</span></label>`;
+  }
+  host.innerHTML = html;
+  wireDefinitionLinks(host);
+  const cb = document.getElementById("defmode-instance");
+  if (cb) {
+    cb.onchange = () => {
+      DEF_MODE = cb.checked ? "instance" : "definition";
+      reloadDefinitionChildren();
+    };
+  }
+}
+
+// Re-fetch the current definition node's children in the newly selected
+// mode and redraw in place, so the toggle is a view switch rather than a
+// navigation.
+async function reloadDefinitionChildren() {
+  const node = CURRENT_NODE;
+  const path = node.path || node._tagPath || "";
+  if (!path.startsWith("udt_definitions/") && !path.startsWith("aoi_definitions/")) return;
+  const url = `/api/node?tag=${encodeURIComponent(path)}` +
+    (DEF_MODE === "instance" ? "&mode=instance" : "");
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    node.children = data.children.map(c => ({ ...c, _tagPath: path, _subPath: c.segment }));
+    renderCurrentLevel(false);
+  } catch (err) {
+    console.error("definition mode switch failed", err);
+  }
+}
+
+// ---- cross-reference tab -------------------------------------------------
+//
+// Populated ONLY when the tab is opened. Walking every tag down through the
+// member graph is real work on a wide controller, and most sessions never
+// ask for it, so doing it on load would tax every file to serve a few.
+let XREF_STATE = { type: null, loading: false, data: null };
+
+function xrefTypeForNode(node) {
+  if (!node) return null;
+  const path = node.path || node._tagPath || "";
+  if (path.startsWith("udt_definitions/")) return path.slice("udt_definitions/".length);
+  if (path.startsWith("aoi_definitions/")) return path.slice("aoi_definitions/".length);
+  // A plain instance node: cross-reference its declared type.
+  const dt = node.data_type;
+  return REPORT && REPORT.type_names && REPORT.type_names.includes(dt) ? dt : null;
+}
+
+function resetXref() {
+  XREF_STATE = { type: null, loading: false, data: null };
+}
+
+function syncXrefTab() {
+  const btn = document.getElementById("xref-tab-btn");
+  if (!btn) return;
+  const type = xrefTypeForNode(CURRENT_NODE);
+  btn.disabled = !type;
+  btn.title = type ? `Where ${type} is used` : "Select a UDT or AOI to cross-reference";
+  if (btn.classList.contains("active")) renderXref();
+}
+
+async function renderXref() {
+  const el = document.getElementById("xref-detail");
+  if (!el) return;
+  const type = xrefTypeForNode(CURRENT_NODE);
+  if (!type) {
+    el.innerHTML = `<p class="errors-empty">Select a UDT or Add-On Instruction to see where it is used.</p>`;
+    return;
+  }
+  if (XREF_STATE.type === type && XREF_STATE.data) return renderXrefTable(el, XREF_STATE.data);
+  if (XREF_STATE.type === type && XREF_STATE.loading) return;
+
+  XREF_STATE = { type, loading: true, data: null };
+  el.innerHTML =
+    `<p>Finding every use of <strong>${escapeHtml(type)}</strong>&hellip;</p>` +
+    `<div class="xref-progress"><div></div></div>` +
+    `<p class="text-dim">Walking every tag through the member graph, including nested types.</p>`;
+  try {
+    const res = await fetch(`/api/xref?type=${encodeURIComponent(type)}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    if (XREF_STATE.type !== type) return;  // navigated away mid-flight
+    XREF_STATE = { type, loading: false, data };
+    renderXrefTable(el, data);
+  } catch (err) {
+    XREF_STATE = { type, loading: false, data: null };
+    el.innerHTML = `<p class="errors-empty">Cross-reference failed: ${escapeHtml(err.message)}</p>`;
+  }
+}
+
+function renderXrefTable(el, data) {
+  if (!data.usages.length) {
+    el.innerHTML = `<p class="errors-empty">${escapeHtml(data.type)} is declared but never used by any tag.</p>`;
+    return;
+  }
+  const rows = data.usages.map(u =>
+    `<tr><td class="xref-path" data-path="${escapeHtml(u.path)}">${escapeHtml(u.path)}</td>` +
+    `<td>${escapeHtml(u.scope)}</td>` +
+    `<td>${u.direct ? "tag" : "member of " + escapeHtml(u.via)}</td></tr>`).join("");
+  el.innerHTML =
+    `<p><strong>${escapeHtml(data.type)}</strong> &mdash; ${data.count} usage` +
+    `${data.count === 1 ? "" : "s"}. An array shows its [0] element; the path is navigable either way.</p>` +
+    `<table><thead><tr><th>Path</th><th>Scope</th><th>Reached via</th></tr></thead><tbody>${rows}</tbody></table>`;
+  el.querySelectorAll(".xref-path").forEach(td => {
+    td.onclick = () => navigateToPath(td.dataset.path);
+  });
+}
+
+// Best effort: jump to the owning tag, which is always a real node in the
+// loaded hierarchy. Deeper member segments are a drill the tree already
+// knows how to do from there.
+function navigateToPath(path) {
+  const tagPath = path.split(/[.[]/)[0];
+  const find = n => {
+    if ((n.path || n._tagPath) === tagPath) return n;
+    for (const k of n.children || []) {
+      const hit = find(k);
+      if (hit) return hit;
+    }
+    return null;
+  };
+  const target = REPORT && REPORT.hierarchy ? find(REPORT.hierarchy) : null;
+  if (target) {
+    drillInto(target);
+    document.querySelector('.tab-btn[data-tab="treemap"]').click();
+  }
+}
+
+// ---- list filters (name / type) -----------------------------------------
+//
+// Partial match by default, with * as a wildcard, because both are what a
+// tag name actually needs: "hoist" should find TiltHoistCmd, and
+// "*Timer*Dn" should find the one member you remember the shape of.
+//
+// The filter is scoped to the List tab ONLY and is cleared on any
+// navigation. A filter that survived a drill would silently hide rows at
+// the new level, and a treemap that quietly stopped summing to its parent
+// because a filter was left on somewhere else is a worse bug than no
+// filter at all.
+const LIST_FILTERS = { name: "", data_type: "" };
+
+function filterRegex(pattern) {
+  const trimmed = String(pattern || "").trim();
+  if (!trimmed) return null;
+  // Escape everything regex-special, then turn the escaped \* back into
+  // a wildcard. Substring semantics, so no anchors unless the user wrote
+  // them as wildcards.
+  const body = trimmed
+    .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    .replace(/\\\*/g, ".*");
+  try {
+    return new RegExp(body, "i");
+  } catch {
+    return null;
+  }
+}
+
+function filtersActive() {
+  return Boolean(LIST_FILTERS.name || LIST_FILTERS.data_type);
+}
+
+function applyListFilters(rows) {
+  const rxName = filterRegex(LIST_FILTERS.name);
+  const rxType = filterRegex(LIST_FILTERS.data_type);
+  if (!rxName && !rxType) return rows;
+  return rows.filter(r =>
+    (!rxName || rxName.test(String(r.name || ""))) &&
+    (!rxType || rxType.test(String(r.data_type || ""))));
+}
+
+function clearListFilters() {
+  LIST_FILTERS.name = "";
+  LIST_FILTERS.data_type = "";
+  document.querySelectorAll(".filter-popup").forEach(el => el.remove());
+}
+
+function setupFilterButtons(table) {
+  table.querySelectorAll(".funnel-btn").forEach(btn => {
+    const key = btn.dataset.filter;
+    btn.classList.toggle("active", Boolean(LIST_FILTERS[key]));
+    btn.onclick = ev => {
+      ev.stopPropagation();  // the header itself sorts; the funnel must not
+      const existing = btn.parentElement.querySelector(".filter-popup");
+      document.querySelectorAll(".filter-popup").forEach(el => el.remove());
+      if (existing) return;
+      const pop = document.createElement("div");
+      pop.className = "filter-popup";
+      pop.innerHTML =
+        `<input type="text" value="${escapeHtml(LIST_FILTERS[key])}" ` +
+        `placeholder="${key === "name" ? "e.g. hoist or *Timer*Dn" : "e.g. DINT or *STRING*"}">` +
+        `<div class="filter-hint">Partial match. * matches anything.</div>` +
+        `<div class="filter-actions"><button type="button" data-act="clear">Clear</button></div>`;
+      pop.addEventListener("click", e => e.stopPropagation());
+      const input = pop.querySelector("input");
+      input.addEventListener("input", () => {
+        LIST_FILTERS[key] = input.value;
+        renderList();
+      });
+      input.addEventListener("keydown", e => {
+        if (e.key === "Escape") { document.querySelectorAll(".filter-popup").forEach(el => el.remove()); }
+      });
+      pop.querySelector('[data-act="clear"]').onclick = () => {
+        LIST_FILTERS[key] = "";
+        pop.remove();
+        renderList();
+      };
+      btn.parentElement.appendChild(pop);
+      input.focus();
+      input.select();
+    };
+  });
+}
+
+document.addEventListener("click", () => {
+  document.querySelectorAll(".filter-popup").forEach(el => el.remove());
+});
+
 function renderListInto(tableId) {
   const table = document.getElementById(tableId);
   if (!table) return;
   const tbody = table.querySelector("tbody");
-  const rows = currentLevelRows().sort((a, b) => {
+  const rows = applyListFilters(currentLevelRows()).sort((a, b) => {
     const { key, dir } = SORT_STATE;
     if (typeof a[key] === "string") return a[key].localeCompare(b[key]) * dir;
     return (a[key] - b[key]) * dir;
@@ -1262,6 +1549,7 @@ function renderListInto(tableId) {
     };
     applyColumnWidths();
   });
+  setupFilterButtons(table);
 }
 
 // ---- type summary ----
