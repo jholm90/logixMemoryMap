@@ -61,23 +61,35 @@ predefined_structures:
   TIMER: { bytes: 12, confidence: KNOWN }
   COUNTER: { bytes: 12, confidence: KNOWN }
   CONTROL: { bytes: 12, confidence: KNOWN }
-  # Motion/axis predefined structures -- derived 2026-08-23 from the
-  # 2026-08-22 real-capture batch (gen_axis_composite.py/gen_motion_
-  # predefined.py "*_only" isolation files), which previously all failed
-  # to size at all (SizeError, OQ-PREDEFINED). Each file wraps exactly one
-  # unmodeled tag alongside the newly-confirmed empty_project_baseline
-  # below and the (also real, exact) per-tag overhead formula -- pure
-  # structure cost = actual_bytes - empty_project_baseline - tag_overhead
-  # (- MotionGroup's own cost too, for the 4 Axis/CoordinateSystem files,
-  # which always also declare a MotionGroup tag it depends on). FITTED,
-  # single-sample-each -- not a count sweep, so no independent
-  # cross-check the way TIMER/COUNTER/CONTROL's documented layout gets;
-  # treat as a solid real measurement, not yet KNOWN-grade.
-  MOTION_GROUP: { bytes: 1076, confidence: FITTED }
-  AXIS_CIP_DRIVE: { bytes: 22636, confidence: FITTED }
-  COORDINATE_SYSTEM: { bytes: 9516, confidence: FITTED }
-  AXIS_SERVO: { bytes: 16796, confidence: FITTED }
-  AXIS_VIRTUAL: { bytes: 16796, confidence: FITTED }
+  # Motion/axis predefined structures. These are TAG sizes -- fixed
+  # predefined data structures, the same category as TIMER or a UDT. Data
+  # space is exactly calculable, so a structure has one size and knowing
+  # it is not a matter of degree.
+  #
+  # Each is confirmed by its own isolation capture (gen_axis_composite.py
+  # / gen_motion_predefined.py "*_only"): one unmodeled tag in an
+  # otherwise empty project, structure cost recovered as actual_bytes -
+  # empty_project_baseline - tag_overhead (- MotionGroup's own cost for
+  # the Axis/CoordinateSystem files, which must also declare one). Every
+  # one lands at zero residual, error_count 0:
+  #
+  #   axis_baseline_motiongroup_only   19,296 = 19,296
+  #   axis_cip_drive_only              42,024 = 42,024
+  #   axis_coordinate_system_only      28,912 = 28,912
+  #   axis_servo_only                  36,184 = 36,184
+  #   axis_virtual_only                36,184 = 36,184
+  #
+  # KNOWN 2026-09-11. They had been held at FITTED for being
+  # "single-sample-each, not a count sweep" -- a bar that AXIS_CONSUMED
+  # and AXIS_GENERIC_DRIVE already sit above at KNOWN on identical
+  # evidence, and one that confuses a data-space fact with a fitted
+  # logic weight. Re-measuring a fixed structure N times does not make a
+  # zero-residual measurement more true.
+  MOTION_GROUP: { bytes: 1076, confidence: KNOWN }
+  AXIS_CIP_DRIVE: { bytes: 22636, confidence: KNOWN }
+  COORDINATE_SYSTEM: { bytes: 9516, confidence: KNOWN }
+  AXIS_SERVO: { bytes: 16796, confidence: KNOWN }
+  AXIS_VIRTUAL: { bytes: 16796, confidence: KNOWN }
   # MOTION_INSTRUCTION: exact match (0 residual) across the 1/5/50-tag
   # count sweep (motioninstr_n00001/n00005/n00050) once
   # empty_project_baseline + tag_overhead are subtracted -- same 12-byte
