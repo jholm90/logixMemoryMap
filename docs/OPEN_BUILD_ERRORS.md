@@ -199,7 +199,30 @@ none converted. None carried a capture, all were off the platform standard
 replaces them correctly. A scan confirms the 12 were the only files in the
 batch still carrying the defect.
 
-### Cannot be repaired today: modulerack_kinetix_full_bus
+### REPAIRED 2026-09-11: modulerack_kinetix_full_bus
+
+Rebuilt on **1756-L83E, no safety**. The section below records why the
+previous attempt concluded this was impossible, and why that conclusion
+was wrong -- both halves of its reasoning failed.
+
+The E_INVALIDARG was the 1756-L85ES ProductCode, a guess this project
+already records elsewhere as "fails on line 1 of the l5x".
+
+The claim that a non-safety -ERS3 shape "needs config data captured from
+a real non-safety module, which this project does not have" was false
+when it was written. The 2conn module blocks this rack uses were donated
+by BaillieLeitchField_Edger_20260812_r00.L5X -- a **1756-L83E, a plain
+non-safety controller** -- and every one already carries
+SafetyEnabled="false". The config was in the corpus the whole time; the
+note simply never checked the donor.
+
+L83E rather than L81E for the one part that did hold: three dual-axis
+drives plus two power supplies do not fit an L81E's 3 MB. L83E is the
+smallest standard catalog with the headroom, and is what the donor runs.
+It is a named exemption in the platform-standard lint rule, with that
+reason recorded beside it.
+
+### Superseded: the earlier "cannot be repaired" finding
 
 Its topology is already correct -- byte-for-byte the same parent/port shape
 as the `composite_realistic_v4_*` files that convert clean. The blocker is

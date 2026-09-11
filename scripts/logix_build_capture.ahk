@@ -71,6 +71,15 @@ global ERROR_LOG_DONE_MARKER := "Complete -"
 ; ClassNN of that pane, confirmed via Window Spy 2026-09-10.
 global ERROR_LOG_CTRL := "RICHEDIT50W2"
 
+; A transient Studio failure on a complex project, not a defect in the
+; file: one or two more build attempts normally clear it. Matched against
+; the error-log text, so it catches the condition wherever in the log it
+; appears rather than relying on the error COUNT, which is also non-zero
+; for real errors that retrying will never fix.
+global COMPILER_ERROR_MARKER := "Compiler Error"
+; Retries AFTER the first attempt, so a file gets at most 6 builds total.
+global MAX_COMPILER_ERROR_RETRIES := 5
+
 ; Pulls the leading integer out of button/label text like "0 Warnings",
 ; "3 Errors", "1 Warning" -- handles singular/plural and any wording since
 ; it only looks for digits at the start. Returns "" (not "0") if nothing
@@ -150,7 +159,11 @@ StripCommas(text) {
 ; Returns the first MAX_ERROR_LOG_CHARS characters on a good read, or a
 ; "(...)" marker string on a bad one -- never a silent empty value, because
 ; a blank error_log is indistinguishable from "no errors" downstream.
-ReadErrorLog() {
+; The raw, untruncated pane text. The retry check needs this rather than
+; ReadErrorLog()'s first-300-characters value: a "Compiler Error" can sit
+; well past that cut, and deciding not to retry because the evidence was
+; truncated away would defeat the whole point of the check.
+ReadErrorLogRaw() {
     txt := ""
     try txt := ControlGetText(ERROR_LOG_CTRL, "A")
     catch
@@ -161,6 +174,11 @@ ReadErrorLog() {
         if (found != "")
             txt := found
     }
+    return txt
+}
+
+ReadErrorLog() {
+    txt := ReadErrorLogRaw()
     if (txt = "")
         return "(" ERROR_LOG_CTRL " unreadable/empty)"
     ; Validate against the FULL text: the summary line proves the pane was
@@ -340,35 +358,57 @@ Status(msg) {
         if !buildRan {
             Status("Build SKIPPED by BUILD_SKIP_CATALOGS (no popup possible for this controller): " preBuildTitle)
         } else {
-        Status("Alt")
-        Send "{Alt}"
-        Sleep 50
-        Status("l")
-        Send "l"
-        Sleep 50
-        Status("b")
+        ; A "Compiler Error" is not a defect in the file -- it is Studio
+        ; failing transiently on a complex project, and one or two more
+        ; build attempts clear it. Retrying here rather than letting the
+        ; file land as a failure is the difference between a real result
+        ; and a spurious one, and the retry is bounded so a genuinely
+        ; broken file cannot spin forever.
+        buildAttempt := 0
+        loop {
+            buildAttempt += 1
+            if (buildAttempt > 1)
+                Status("Compiler Error -- rebuild attempt " buildAttempt " of " (MAX_COMPILER_ERROR_RETRIES + 1))
 
+            Status("Alt")
+            Send "{Alt}"
+            Sleep 50
+            Status("l")
+            Send "l"
+            Sleep 50
+            Status("b")
+            Send "b"
+            Sleep 300
 
-				Send "b"
-				Sleep 300
-				
-				
-				
+            buildPopupTitle := "Building"
+            maxAppearSeconds := 120   ; a big file can take minutes just to START
+            maxWaitSeconds := 600     ; ceiling so a hung build doesn't loop forever
 
-				buildPopupTitle := "Building"
-				maxAppearSeconds := 120   ; a big file can take minutes just to START
-				maxWaitSeconds := 600     ; ceiling so a hung build doesn't loop forever
+            Status("Waiting for build to start")
+            if WinWait(buildPopupTitle, , maxAppearSeconds) {
+                Status("Build started -- waiting for it to finish")
+                if !WinWaitClose(buildPopupTitle, , maxWaitSeconds)
+                    MsgBox "Build popup didn't close within " maxWaitSeconds "s -- possible hang, check manually."
+                else
+                    Status("Build finished")
+            } else {
+                Status("WARNING: build popup never seen within " maxAppearSeconds "s -- build may not have run, or finished too fast to catch. Counter values below are suspect.")
+            }
 
-				Status("Waiting for build to start")
-				if WinWait(buildPopupTitle, , maxAppearSeconds) {
-						Status("Build started -- waiting for it to finish")
-						if !WinWaitClose(buildPopupTitle, , maxWaitSeconds)
-								MsgBox "Build popup didn't close within " maxWaitSeconds "s -- possible hang, check manually."
-						else
-								Status("Build finished")
-				} else {
-						Status("WARNING: build popup never seen within " maxAppearSeconds "s -- build may not have run, or finished too fast to catch. Counter values below are suspect.")
-				}
+            ; Peek at the error log NOW, purely to decide whether to retry.
+            ; The recorded value is read again later, after the Capacity
+            ; dialog, so this read never becomes the logged one.
+            Sleep 200
+            if !InStr(ReadErrorLogRaw(), COMPILER_ERROR_MARKER)
+                break
+            if (buildAttempt > MAX_COMPILER_ERROR_RETRIES) {
+                Status("Compiler Error persisted through " buildAttempt " attempts -- recording it as a real failure.")
+                break
+            }
+            Sleep 1000   ; let Studio settle before driving the menu again
+        }
+        if (buildAttempt > 1)
+            Status("Build needed " buildAttempt " attempt(s).")
         }   ; end: if buildRan
 
 

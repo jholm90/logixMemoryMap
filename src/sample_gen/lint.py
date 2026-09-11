@@ -847,11 +847,21 @@ _NAMED_ELEMENTS = (
 STANDARD_PROCESSOR_TYPE = "1756-L81E"
 STANDARD_MAJOR_REV = "35"
 
-# The firmware-matrix generators are the one legitimate exception: sweeping
-# processor and firmware IS their variable, so a rule that forbids it would
-# forbid the test. Matched on the Controller Name, which those generators
-# derive from the sample_id.
-_PLATFORM_EXEMPT_NAME_PREFIXES = ("FwMatrix", "FwBaseline")
+# Exemptions are named one at a time, each with the reason it cannot meet
+# the standard. A general opt-out would make the rule advisory, which is
+# exactly what failed before it existed -- the deviation always looks
+# justified from inside the generator making it.
+#
+#   FwMatrix / FwBaseline -- sweeping processor and firmware IS the
+#     variable under test, so the rule would forbid the test itself.
+#
+#   KinetixFullBus -- three dual-axis Kinetix 5700 drives plus two power
+#     supplies do not fit a 1756-L81E's 3 MB; Studio rejects the import
+#     for capacity before it reads anything else. 1756-L83E is the
+#     smallest standard catalog with the headroom, and is what the real
+#     donor file this rack was built from (BaillieLeitchField_Edger)
+#     actually runs. Non-safety, matching that donor.
+_PLATFORM_EXEMPT_NAME_PREFIXES = ("FwMatrix", "FwBaseline", "KinetixFullBus")
 
 
 def _platform_standard_findings(root: ET.Element) -> list[LintFinding]:
