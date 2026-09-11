@@ -10,12 +10,51 @@ without running the cross-reference that would have tested it. A
 systematic pass of every committed `samples/generated/**/*.L5X` against
 the last recorded status per filename in `samples/convert_log.csv` finds
 **59 committed files whose last record is FAILED**, and thirty of them are
-a module family that had never been surfaced in any batch summary.
+a module family that had never been surfaced in any batch summary. (That
+figure was correct on 2026-09-10; it is 41 as of 2026-09-11 — see the
+dated status block below, which is the one to read.)
 
 The lesson is the process one: a conversion-failure list assembled from
 what someone reports is not the same as one assembled from the log, and
 only the second kind can be trusted. This file is now regenerated from
 `convert_log.csv`, never from recollection.
+
+## Status as of 2026-09-11
+
+Re-run against the current `convert_log.csv` (5,296 rows) and the current
+committed tree (2,783 files), matching on filename with the LAST row per
+file winning, so a later success supersedes an earlier failure:
+
+| | count |
+|---|---|
+| committed `samples/generated/**/*.L5X` | 2,783 |
+| last record `ok` | 2,682 |
+| last record FAILED | **41** |
+| no conversion record at all | **60** |
+
+**41, down from 59.** The batch converted a large part of what was
+outstanding. What is left splits cleanly:
+
+- **40 of the 41 share one error**, `XMLSrv_E_IMPORT_ABORTED_NO_CHANGES`,
+  which names nothing on its own — it only says the import was refused and
+  to read Studio's own error log. These are the `modulesweep_*` safety and
+  4-connection variants, the `predefprobe_ref_to_*` reference probes, and
+  `modulerack_bender_full_program`, all already tracked below.
+- **1 is new in this batch and is already fixed.**
+  `daxis_axis_cip_drive.L5X` failed 2026-09-11 with a controller named
+  `DaxAxCIP_` — a trailing underscore, from `"AXIS_CIP_DRIVE"[5:9]`, a
+  fixed slice landing on the underscore. Regenerated as `DaxAxCIPD` and
+  the whole class is now impossible to reintroduce: `validate_logix_name`
+  refuses to build one and the lint rule checks every element carrying a
+  Name plus the export header's TargetName. **Needs re-submitting.**
+- `l81_v30.L5X` is not a defect: "SDK does not support Logix Designer
+  versions 30 and earlier". Out of scope by tooling, not by the file.
+
+Of the **60 with no record at all**, 51 are new and simply awaiting their
+first run — the 27 `pioconn_*`/`pioname_*` POINT I/O files and the 24
+`udtmn_*` member-name files, both built 2026-09-11. The remaining **nine
+are not new and have never been submitted even once** — see "No conversion
+record at all" below; they have been in that state since 2026-09-10.
 
 Two different failure stages, kept separate below:
 - **L5X→ACD conversion failure** — the `l5x2acd` tool couldn't even open

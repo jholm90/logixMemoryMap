@@ -109,6 +109,41 @@ files; PID and ASCII-module instructions dropped (zero real occurrences).
       drill, subroutine call-tree (JSR cost-included tooltip), Estimated
       badge/dashed-outline styling, combined root view[^rootview]
 
+## Batch review — 2026-09-11 capture (87 rows)
+
+Ran the standing eight-step sequence on the batch as pushed.
+
+1. ✅ **Reconciled** by row-level CSV merge on `sample_id`, never a git
+      merge: 2,833 remote rows kept, 27 local ones added, nothing dropped.
+      Every delta recomputed live against the current engine.
+2. ✅ **Conversion status** cross-referenced, last row per filename wins.
+      2,682 `ok`, **41 FAILED**, 60 with no record. 40 of the 41 share the
+      one uninformative `XMLSrv_E_IMPORT_ABORTED_NO_CHANGES` error and were
+      already tracked; the 41st is new, diagnosed and fixed
+      (`daxis_axis_cip_drive`, trailing underscore). Nine
+      `composite_realistic_*_r2` have still never been submitted at all.
+      See docs/OPEN_BUILD_ERRORS.md.
+3. ✅ **Re-derived and wired**: CAM base 8 → 4 plus 8-byte element-block
+      alignment (15/15 exact, was 3/15), CAM_PROFILE FITTED → KNOWN on 13
+      points, `FOR: 80` (4 points, zero intercept), `SBR: 0` / `RET: 0` as
+      measured zeros rather than absences (12/12 exact).
+4. ✅ **Open-questions review.** OQ-CAMSHAPE, RET/SBR and FOR closed and
+      moved out. OQ-UDTBOOLMEMBER superseded by OQ-UDTMEMBERNAME after a
+      structural twin contradicted it. New OQ-JSRFOLD, OQ-CAMSCALAR.
+5. ✅ Docs brought current together: OPEN_QUESTIONS, RESOLVED_QUESTIONS,
+      OPEN_BUILD_ERRORS, TASKS.
+6. ✅ INSTRUCTION_COVERAGE.md updated — FOR added, RET/SBR moved from
+      "NO DATA" to "CONFIRMED ZERO", MCCP unblocked now that the CAM
+      operand's data space is closed.
+7. ✅ **Next batch decided and built**: 24 `udtmn_*` member-name files and
+      27 `pioconn_*`/`pioname_*` POINT I/O files. Every one answers a
+      currently-open question.
+8. ✅ Reported, including the conversion-failure log from step 2.
+
+Real-file accuracy after this batch: **2.17% mean |error|, 4/16 within 1%,
+9/16 within 2%** — unchanged. The wirings were exact on their own families
+and worth a few bytes each on real files; none of them is the 2–5%.
+
 ## Phase 6b — UI browsing pass (2026-09-11)
 Eleven reported browsing defects, all fixed and browser-verified against
 the real Elmsdale and TrimmerTally exports.
