@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="AddProbe" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 11 21:28:16 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="AddProbe" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 11 21:28:16 2026" LastModifiedDate="Fri Sep 11 21:28:16 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="DiMod00" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports><Port Id="1" Address="1" Type="ICP" Upstream="true"/></Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]]]></Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0"><DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/><DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/><DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/></Structure></Data>
+</ConfigTag>
+<Connections><Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0"><DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/><DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/></Structure></Data></InputTag>
+</Connection></Connections>
+</Communications>
+</Module>
+<Module Name="DiMod01" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports><Port Id="1" Address="2" Type="ICP" Upstream="true"/></Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]]]></Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0"><DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/><DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/><DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/></Structure></Data>
+</ConfigTag>
+<Connections><Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0"><DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/><DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/></Structure></Data></InputTag>
+</Connection></Connections>
+</Communications>
+</Module>
+<Module Name="DiMod02" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports><Port Id="1" Address="3" Type="ICP" Upstream="true"/></Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]]]></Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0"><DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/><DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/><DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/></Structure></Data>
+</ConfigTag>
+<Connections><Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0"><DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/><DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/></Structure></Data></InputTag>
+</Connection></Connections>
+</Communications>
+</Module>
+<Module Name="DiMod03" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports><Port Id="1" Address="4" Type="ICP" Upstream="true"/></Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]]]></Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0"><DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/><DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/><DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/></Structure></Data>
+</ConfigTag>
+<Connections><Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0"><DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/><DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/></Structure></Data></InputTag>
+</Connection></Connections>
+</Communications>
+</Module>
+<Module Name="DiMod04" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports><Port Id="1" Address="5" Type="ICP" Upstream="true"/></Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]]]></Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0"><DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/><DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/><DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/></Structure></Data>
+</ConfigTag>
+<Connections><Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0"><DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/><DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/></Structure></Data></InputTag>
+</Connection></Connections>
+</Communications>
+</Module>
+<Module Name="DiMod05" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports><Port Id="1" Address="6" Type="ICP" Upstream="true"/></Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]]]></Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0"><DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/><DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/><DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/></Structure></Data>
+</ConfigTag>
+<Connections><Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0"><DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/><DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/></Structure></Data></InputTag>
+</Connection></Connections>
+</Communications>
+</Module>
+<Module Name="DiMod06" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports><Port Id="1" Address="7" Type="ICP" Upstream="true"/></Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]]]></Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0"><DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/><DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/><DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/></Structure></Data>
+</ConfigTag>
+<Connections><Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0"><DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/><DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/></Structure></Data></InputTag>
+</Connection></Connections>
+</Communications>
+</Module>
+<Module Name="DiMod07" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports><Port Id="1" Address="8" Type="ICP" Upstream="true"/></Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]]]></Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0"><DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/><DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/><DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/></Structure></Data>
+</ConfigTag>
+<Connections><Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0"><DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/><DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/></Structure></Data></InputTag>
+</Connection></Connections>
+</Communications>
+</Module>
+<Module Name="DiMod08" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports><Port Id="1" Address="9" Type="ICP" Upstream="true"/></Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]]]></Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0"><DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/><DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/><DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/></Structure></Data>
+</ConfigTag>
+<Connections><Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0"><DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/><DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/></Structure></Data></InputTag>
+</Connection></Connections>
+</Communications>
+</Module>
+<Module Name="DiMod09" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports><Port Id="1" Address="10" Type="ICP" Upstream="true"/></Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]]]></Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0"><DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/><DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/><DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/></Structure></Data>
+</ConfigTag>
+<Connections><Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0"><DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/><DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/></Structure></Data></InputTag>
+</Connection></Connections>
+</Communications>
+</Module>
+<Module Name="DiMod10" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports><Port Id="1" Address="11" Type="ICP" Upstream="true"/></Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]]]></Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0"><DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/><DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/><DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/></Structure></Data>
+</ConfigTag>
+<Connections><Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0"><DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/><DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/></Structure></Data></InputTag>
+</Connection></Connections>
+</Communications>
+</Module>
+<Module Name="DiMod11" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports><Port Id="1" Address="12" Type="ICP" Upstream="true"/></Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]]]></Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0"><DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/><DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/><DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/></Structure></Data>
+</ConfigTag>
+<Connections><Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0"><DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/><DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/></Structure></Data></InputTag>
+</Connection></Connections>
+</Communications>
+</Module>
+<Module Name="DiMod12" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports><Port Id="1" Address="13" Type="ICP" Upstream="true"/></Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]]]></Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0"><DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/><DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/><DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/></Structure></Data>
+</ConfigTag>
+<Connections><Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0"><DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/><DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/></Structure></Data></InputTag>
+</Connection></Connections>
+</Communications>
+</Module>
+<Module Name="DiMod13" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports><Port Id="1" Address="14" Type="ICP" Upstream="true"/></Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]]]></Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0"><DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/><DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/><DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/></Structure></Data>
+</ConfigTag>
+<Connections><Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0"><DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/><DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/></Structure></Data></InputTag>
+</Connection></Connections>
+</Communications>
+</Module>
+<Module Name="DiMod14" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports><Port Id="1" Address="15" Type="ICP" Upstream="true"/></Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]]]></Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0"><DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/><DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/><DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/></Structure></Data>
+</ConfigTag>
+<Connections><Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0"><DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/><DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/></Structure></Data></InputTag>
+</Connection></Connections>
+</Communications>
+</Module>
+<Module Name="DiMod15" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule"/>
+<Ports><Port Id="1" Address="16" Type="ICP" Upstream="true"/></Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">
+<Data Format="L5K"><![CDATA[[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]]]></Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0"><DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/><DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/><DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/><DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/><DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/></Structure></Data>
+</ConfigTag>
+<Connections><Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0"><DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/><DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/></Structure></Data></InputTag>
+</Connection></Connections>
+</Communications>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions>
+    <AddOnInstructionDefinition Name="AddAoiProbe" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutA" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Wrk" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutA);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+</AddOnInstructionDefinitions>
+<Tags>
+      <Tag Name="AoiInst0000" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0001" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0002" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0003" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0004" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0005" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0006" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0007" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0008" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0009" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0010" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0011" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0012" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0013" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0014" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0015" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0016" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0017" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0018" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0019" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Bit0" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Bit1" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Dst0" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+              <Rung Number="0" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0000,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="1" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0001,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="2" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0002,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="3" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0003,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="4" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0004,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="5" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0005,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="6" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0006,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="7" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0007,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="8" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0008,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="9" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0009,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="10" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0010,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="11" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0011,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="12" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0012,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="13" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0013,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="14" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0014,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="15" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0015,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="16" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0016,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="17" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0017,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="18" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0018,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="19" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0019,0,Bit1);]]></Text>
+              </Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>
