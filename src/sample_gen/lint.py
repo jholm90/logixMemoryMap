@@ -865,7 +865,14 @@ STANDARD_MAJOR_REV = "35"
 #     smallest standard catalog with the headroom, and is what the real
 #     donor file this rack was built from (BaillieLeitchField_Edger)
 #     actually runs. Non-safety, matching that donor.
-_PLATFORM_EXEMPT_NAME_PREFIXES = ("FwMatrix", "FwBaseline", "KinetixFullBus")
+_PLATFORM_EXEMPT_NAME_PREFIXES = (
+    "FwMatrix", "FwBaseline", "KinetixFullBus",
+    # gen_platform_equivalence.py: the processor IS the variable under
+    # test, the same stated reason the firmware/catalog matrices are
+    # exempt. Its 1756-L81E arm is the control and stays on the
+    # standard, so the batch still anchors to the rest of the corpus.
+    "PlatEqL",
+)
 
 
 def _platform_standard_findings(root: ET.Element) -> list[LintFinding]:
