@@ -92,6 +92,26 @@ def _write(l5x: str, name: str, description: str) -> None:
     print(f"Wrote {out}")
 
 
+# Atomic parameters can be Input; anything structured cannot. An
+# Input/Output Parameter is passed BY VALUE and Logix only accepts an
+# atomic there, so an AXIS_* -- or any UDT or nested AOI -- has to be
+# InOut, which passes a reference instead.
+#
+# Getting this wrong is what failed every daxis_* file in the batch, with
+# a generic import-aborted message that named nothing. builders.py now
+# raises on it at build time rather than emitting an export that only
+# fails later inside Studio.
+_ATOMIC_PARAM_TYPES = frozenset({"BOOL", "SINT", "INT", "DINT", "LINT", "REAL", "LREAL"})
+
+
+def _split_by_passing_mode(params):
+    """(input_params, inout_params) -- structures must travel as InOut."""
+    params = list(params or [])
+    atomic = [p for p in params if p.data_type in _ATOMIC_PARAM_TYPES]
+    structured = [p for p in params if p.data_type not in _ATOMIC_PARAM_TYPES]
+    return atomic, structured
+
+
 def _outer(name: str, extra_params=None, extra_locals=None, n_rungs: int = 4):
     """The DriveAxis-shaped outer AOI, with a fixed baseline of members so
     every file differs only by what the caller adds."""
@@ -99,9 +119,11 @@ def _outer(name: str, extra_params=None, extra_locals=None, n_rungs: int = 4):
            MemberSpec("Cmd", "DINT", required=True)]
     outs = [MemberSpec("Done", "BOOL", required=True)]
     locals_ = [MemberSpec("Work1", "REAL"), MemberSpec("Work2", "DINT")]
+    extra_atomic, extra_structured = _split_by_passing_mode(extra_params)
     return aoi_xml(
         name,
-        input_params=ins + list(extra_params or []),
+        input_params=ins + extra_atomic,
+        inout_params=extra_structured,
         output_params=outs,
         local_tags=locals_ + list(extra_locals or []),
         logic_rungs_xml=rungs_xml(n_rungs, lambda i: "XIC(Enable)OTE(Done);"),

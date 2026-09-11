@@ -108,12 +108,20 @@ def _build(name: str, profile, axis_indices=(), description: str = "") -> None:
     defs, tags = [], []
     for idx, (np_, nl, nr) in enumerate(profile):
         params = _members("P", np_)
+        axis_params = []
         if idx in axis_indices:
-            params = [MemberSpec("Drive_Axis", "AXIS_CIP_DRIVE")] + params[1:]
+            # An axis is a structure, so it travels as InOut -- an
+            # Input/Output Parameter is passed by value and Logix accepts
+            # only atomics there. Declaring it Input is what failed every
+            # mbshape_axis_* and daxis_* file in the batch; builders.py
+            # now raises on it rather than emitting a bad export.
+            axis_params = [MemberSpec("Drive_Axis", "AXIS_CIP_DRIVE", required=True)]
+            params = params[1:]
         aoi_name = f"MbAoi{idx:02d}"
         aoi, storage = aoi_xml(
             aoi_name,
             input_params=params,
+            inout_params=axis_params,
             local_tags=_members("L", nl),
             logic_rungs_xml=rungs_xml(nr, lambda i: "XIC(EnableIn)OTE(EnableOut);") if nr else "",
         )

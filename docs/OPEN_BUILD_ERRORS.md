@@ -156,3 +156,67 @@ these need the lint findings cleared and then a first conversion attempt.
 Awaiting first capture, not failures: the 40 `alarmdef_*`, 4 `fwmatrix_v38_1756_l9*`,
 and the 77 `csarrbase_*`/`csarrcount_*`/`csarrmaxlen_*`/`strarrcount_*`
 files built for OQ-CSARRAYBASE and OQ-STRARRAYLARGEN.
+
+
+## The 21-file failure list, resolved 2026-09-11
+
+Three distinct causes, none of which the generic
+`XMLSrv_E_IMPORT_ABORTED_NO_CHANGES` message distinguished.
+
+### Repaired: 8 axis files (generator bug, now impossible to reintroduce)
+
+`daxis_axis_{cip_drive,servo,virtual}`, `daxis_axisn_k{1,2,3}`,
+`daxis_full`, `mbshape_axis_k3`.
+
+Every one declared its axis as `Usage="Input"`:
+
+    <Parameter Name="Drive_Axis" DataType="AXIS_CIP_DRIVE"
+               Usage="Input" Radix="Decimal" .../>
+
+An AOI Input/Output Parameter is passed BY VALUE and Logix accepts only an
+atomic type there. Anything structured -- a UDT, a nested AOI, a STRING, an
+AXIS_* -- must be `Usage="InOut"`, which passes a reference. The `Radix` on
+a structure is wrong for the same reason a structure tag never carries one.
+
+Fixed in `builders.py`, which now RAISES on a structure Input parameter at
+build time, next to the existing guard for array Input parameters that was
+found the same way. Both generators updated to route structures through
+`inout_params=`. All 30 axis-family files regenerate lint-clean.
+
+### Deleted: 12 alarm-definition files (superseded, and defective)
+
+`alarmdef_{l81,l902ts}_{inst,noinst}_t{01,04,16}`.
+
+They carried the structure-tag bug fixed in `c85fab5` -- a UDT-typed tag
+emitted as a scalar `<DataValue>` with a `Radix`:
+
+    <Tag Name="AlarmSrc00" DataType="AlarmSrcType" Radix="Decimal">
+      <Data Format="Decorated"><DataValue DataType="AlarmSrcType" .../></Data>
+
+which is why exactly the files declaring a tag failed while the ones with
+none converted. None carried a capture, all were off the platform standard
+(v38, or a 1756-L9x), and `alarmdef_l81_v35_{inst,noinst}_t*` already
+replaces them correctly. A scan confirms the 12 were the only files in the
+batch still carrying the defect.
+
+### Cannot be repaired today: modulerack_kinetix_full_bus
+
+Its topology is already correct -- byte-for-byte the same parent/port shape
+as the `composite_realistic_v4_*` files that convert clean. The blocker is
+the processor: it is built on 1756-L85ES, and `gen_fw_catalog_matrix.py`
+records that catalog's ProductCode as a guess that "fails on line 1 of the
+l5x", which is exactly the `E_INVALIDARG` seen here.
+
+The obvious fix is not available either. The generator's own note explains
+why it chose L85ES: three dual-axis drives plus two power supplies do not
+fit an L81E's 3 MB, and the -ERS3 blocks it emits carry safety connections
+and safety config, which a non-safety controller rejects. A non-safety
+-ERS3 shape is buildable -- a real 2198-D057-ERS3 runs on a non-safety
+1756-L82E in the field -- but it needs config data captured from a real
+non-safety module, which this project does not have.
+
+NOT deleted, because it holds the only capture for this shape (230,896
+bytes). That capture is contaminated: it was taken at error_count=4, so it
+is not a usable fitting point either. It is kept as a record rather than
+as data, and the file stays off the platform standard until one of the two
+missing inputs arrives.

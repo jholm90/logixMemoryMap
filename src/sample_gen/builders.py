@@ -616,6 +616,23 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
             f"Input/Output Parameter (real bug found 2026-09-03, the controller "
             f"testing). Use inout_params=, not input_params=/output_params=, for this member."
         )
+    if m.data_type not in _ATOMIC_TYPES and usage != "InOut":
+        # Same class of rule as the array guard above, found the same way.
+        # An Input/Output Parameter is passed BY VALUE and Logix only
+        # allows an atomic there; anything structured -- a UDT, a nested
+        # AOI, a STRING, an AXIS_* -- has to be InOut, which passes a
+        # reference instead.
+        #
+        # This cost eight files: every daxis_* and mbshape_axis_k3 declared
+        # AXIS_CIP_DRIVE as Usage="Input" and failed conversion with a
+        # generic import-aborted message that named nothing. Raising here
+        # turns a silent bad export into a generator error at build time.
+        raise ValueError(
+            f"AOI Parameter {m.name!r}: {m.data_type!r} is a structure, and a structure "
+            f"Parameter must be Usage=\"InOut\" -- an Input/Output Parameter is passed by "
+            f"value and Logix allows only atomic types there. Use inout_params= for this "
+            f"member."
+        )
     radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
     external_access = "Read Only" if usage == "Output" else "Read/Write"
     default = _aoi_default_data_xml(m)
