@@ -2118,28 +2118,44 @@ the matching footnote at the bottom, not inline.
     and the intercept is that adapter's own cost, each fitted
     independently of the other.
 
-    **Built 2026-09-11**, `gen_pointio_conn_sweep.py`, 5 files
-    (`pioconn_enhdata_n01/n02/n04/n08/n16`), 1756-L81E v35, module blocks
-    verbatim from the real export. Enhanced Data ONLY, and that
-    restriction is the finding rather than an oversight: in that format
-    the adapter's own InputTag is just the two status DINTs and every card
-    carries its own self-contained Connection, so card count is the only
-    thing that changes.
+    **Built 2026-09-11**, `gen_pointio_conn_sweep.py`, **15 files** --
+    `pioconn_{enhanced,enhdata,optimized}_n{01,02,04,08,16}`, 1756-L81E
+    v35, every module block verbatim from the real exports. Only what
+    genuinely depends on the card count is rewritten, and the three
+    formats need different rewrites because they carry the rack
+    differently:
 
-    The other two arms cannot be synthesised honestly and need real
-    Studio 5000 exports at **N = 1, 2, 4, 8** to match:
+      - **Enhanced Data** -- the adapter's InputTag is just the two status
+        DINTs and every card carries its own self-contained Connection.
+        Only the card count, the adapter's Bus Size, the L5K per-slot
+        blobs and the rack-sized `pad` arrays on its input and output
+        types change.
+      - **Enhanced** -- the adapter's InputTag holds one StructureMember
+        per card (`Slot01`..`Slot16`), and the file DEFINES that
+        module-scoped type itself under `<ExtendedProperties>`, so the
+        slot list is rewritten in both places alongside the status arrays
+        and the output pad. The type NAME carries a Studio-computed hash,
+        `AB:1734_ERACK_649387C8:I:0`, which is not derivable from the
+        L5X, so it is kept verbatim; the file supplies the matching
+        definition. Whether Studio 5000 accepts a self-described type
+        whose hash it would have computed differently is something a real
+        conversion answers and guesswork does not.
+      - **Optimized** -- every card is rack-aliased into the adapter's own
+        SINT array and the profile is named after the slot count,
+        `AB:1734_17SLOT:I:0`. Systematic rather than hashed, so it is
+        rewritten to match along with the array dimensions and element
+        lists. Unlike the Enhanced case this type is NOT defined in the
+        file -- it is a catalog profile -- so if `AB:1734_<n>SLOT` does
+        not exist at some n, that file fails to import.
 
-      - **Enhanced** — the adapter's InputTag holds one StructureMember
-        per card (Slot01..Slot16) inside a module-defined type whose name
-        carries a Studio-computed hash, `AB:1734_ERACK_649387C8:I:0`. A
-        different card count is a different type with a different hash,
-        and that hash is not derivable from the L5X.
-      - **Optimized** — the adapter's type name encodes the slot count
-        literally, `AB:1734_17SLOT:I:0`, alongside a `SINT[17]` data
-        array. Systematic rather than hashed, so it is guessable — but a
-        guessed profile that does not exist fails the import, and one that
-        exists with different content would silently produce a wrong size,
-        which is the worse of the two outcomes.
+    A conversion failure in either of the latter two arms is a RESULT, not
+    a defect: it says the rack-optimized profile exists only at certain
+    sizes, or that the ERACK hash must match. Logged, not worked around.
+
+    Verified before shipping: slots 1..N, adapter Bus Size N+1, per-slot
+    L5K arrays and pad dimensions all N+1, slot member lists trimmed in
+    both the Decorated structure and the type definition, and zero sizing
+    errors in the two arms the model can price.
 
     Stake: this is not a corner case. Elmsdale alone has three of these
     racks (JB101_IO, C102_IO, MCP101_IO — 19 cards), all currently priced

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="PioEnhDataN01" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 11 19:04:55 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="PioEnhDataN01" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 11 19:04:55 2026" LastModifiedDate="Fri Sep 11 19:04:55 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="PioOptN01" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 11 19:04:56 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="PioOptN01" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 11 19:04:56 2026" LastModifiedDate="Fri Sep 11 19:04:56 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -19,7 +19,7 @@
 </Port>
 </Ports>
 </Module>
-<Module Name="PioAdapter" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="7" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false"
+<Module Name="PioAdapter" CatalogNumber="1734-AENT/A" Vendor="1" ProductType="12" ProductCode="108" Major="3" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false"
 >
 <EKey State="CompatibleModule"/>
 <Ports>
@@ -28,14 +28,18 @@
 </Port>
 <Port Id="2" Address="192.168.69.69" Type="Ethernet" Upstream="true"/>
 </Ports>
-<Communications>
+<Communications CommMethod="805306369">
 <Connections>
 <Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:1734_ERACK_5FE9A870:I:0">
+<Structure DataType="AB:1734_2SLOT:I:0">
 <DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
 <DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<ArrayMember Name="Data" DataType="SINT" Dimensions="2" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000"/>
+<Element Index="[1]" Value="2#0000_0000"/>
+</ArrayMember>
 </Structure>
 </Data>
 </InputTag>
@@ -44,7 +48,11 @@
 <![CDATA[[0,0,[0,0]]]]>
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:1734_ERACK_86364FC6:O:0">
+<Structure DataType="AB:1734_2SLOT:O:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="2" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000"/>
+<Element Index="[1]" Value="2#0000_0000"/>
+</ArrayMember>
 </Structure>
 </Data>
 </OutputTag>
@@ -52,15 +60,15 @@
 </Connections>
 </Communications>
 <ExtendedProperties>
-<public><ConfigID>67108864</ConfigID><CatNum>1734-AENTR</CatNum><DataTypes><DataType Name="AB:1734_ERACK_5FE9A870:I:0" Class="IO"><Members><Member Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary"/><Member Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary"/><Member Name="pad" Radix="Decimal" DataType="SINT" Dimension="2" Hidden="true"/></Members></DataType><DataType Name="AB:1734_ERACK_86364FC6:O:0" Class="IO"><Members><Member Name="SlotControlBits0_31" DataType="DINT" Radix="Decimal" Hidden="true"/><Member Name="SlotControlBits32_63" DataType="DINT" Radix="Decimal" Hidden="true"/><Member Name="pad" Radix="Decimal" DataType="SINT" Dimension="2" Hidden="true"/></Members></DataType></DataTypes></public>
+<public><ConfigID>262145</ConfigID><CatNum>1734-AENT</CatNum></public>
 </ExtendedProperties>
 </Module>
 <Module CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
-<EKey State="CompatibleModule"/>
+<EKey State="ExactMatch"/>
 <Ports>
 <Port Id="1" Address="1" Type="PointIO" Upstream="true"/>
 </Ports>
-<Communications CommMethod="536870913">
+<Communications CommMethod="1073741824">
 <ConfigTag ConfigSize="36" ExternalAccess="Read/Write">
 <Data Format="L5K">
 <![CDATA[[40,103,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]>
@@ -87,20 +95,13 @@
 </Data>
 </ConfigTag>
 <Connections>
-<Connection Name="InputData" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:1734_DI8:I:0">
-<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
-<DataValueMember Name="Data" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
-</Structure>
-</Data>
-</InputTag>
-</Connection>
+<RackConnection>
+<InAliasTag/>
+</RackConnection>
 </Connections>
 </Communications>
 <ExtendedProperties>
-<public><ConfigID>300</ConfigID><CatNum>1734-IB8</CatNum></public>
+<public><ConfigID>262147</ConfigID><CatNum>1734-IB8</CatNum></public>
 </ExtendedProperties>
 </Module>
 </Modules>

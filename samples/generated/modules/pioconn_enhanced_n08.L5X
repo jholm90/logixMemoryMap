@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="PioEnhDataN08" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 11 19:04:55 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="PioEnhDataN08" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 11 19:04:55 2026" LastModifiedDate="Fri Sep 11 19:04:55 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="PioEnhN08" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 11 19:04:55 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="PioEnhN08" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 11 19:04:55 2026" LastModifiedDate="Fri Sep 11 19:04:55 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -33,9 +33,33 @@
 <Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:1734_ERACK_5FE9A870:I:0">
+<Structure DataType="AB:1734_ERACK_649387C8:I:0">
 <DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
 <DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<StructureMember Name="Slot01" DataType="AB:1734_DI8_ERACK:I:0">
+<DataValueMember Name="Data" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+</StructureMember>
+<StructureMember Name="Slot02" DataType="AB:1734_DI8_ERACK:I:0">
+<DataValueMember Name="Data" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+</StructureMember>
+<StructureMember Name="Slot03" DataType="AB:1734_DI8_ERACK:I:0">
+<DataValueMember Name="Data" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+</StructureMember>
+<StructureMember Name="Slot04" DataType="AB:1734_DI8_ERACK:I:0">
+<DataValueMember Name="Data" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+</StructureMember>
+<StructureMember Name="Slot05" DataType="AB:1734_DI8_ERACK:I:0">
+<DataValueMember Name="Data" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+</StructureMember>
+<StructureMember Name="Slot06" DataType="AB:1734_DI8_ERACK:I:0">
+<DataValueMember Name="Data" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+</StructureMember>
+<StructureMember Name="Slot07" DataType="AB:1734_DI8_ERACK:I:0">
+<DataValueMember Name="Data" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+</StructureMember>
+<StructureMember Name="Slot08" DataType="AB:1734_DI8_ERACK:I:0">
+<DataValueMember Name="Data" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+</StructureMember>
 </Structure>
 </Data>
 </InputTag>
@@ -52,7 +76,7 @@
 </Connections>
 </Communications>
 <ExtendedProperties>
-<public><ConfigID>67108864</ConfigID><CatNum>1734-AENTR</CatNum><DataTypes><DataType Name="AB:1734_ERACK_5FE9A870:I:0" Class="IO"><Members><Member Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary"/><Member Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary"/><Member Name="pad" Radix="Decimal" DataType="SINT" Dimension="9" Hidden="true"/></Members></DataType><DataType Name="AB:1734_ERACK_86364FC6:O:0" Class="IO"><Members><Member Name="SlotControlBits0_31" DataType="DINT" Radix="Decimal" Hidden="true"/><Member Name="SlotControlBits32_63" DataType="DINT" Radix="Decimal" Hidden="true"/><Member Name="pad" Radix="Decimal" DataType="SINT" Dimension="9" Hidden="true"/></Members></DataType></DataTypes></public>
+<public><ConfigID>67108864</ConfigID><CatNum>1734-AENTR</CatNum><DataTypes><DataType Use="Target" Name="AB:1734_DI8_ERACK:I:0" Family="NoFamily" Class="IO" DeletionProhibited="false"><Members><Member Name="Data" DataType="SINT" Dimension="0" Radix="Binary" Hidden="false" ExternalAccess="Read/Write"/></Members></DataType><DataType Name="AB:1734_ERACK_649387C8:I:0" Class="IO"><Members><Member Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary"/><Member Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary"/><Member Name="Slot01" DataType="AB:1734_DI8_ERACK:I:0" Radix="NullType"/><Member Name="Slot02" DataType="AB:1734_DI8_ERACK:I:0" Radix="NullType"/><Member Name="Slot03" DataType="AB:1734_DI8_ERACK:I:0" Radix="NullType"/><Member Name="Slot04" DataType="AB:1734_DI8_ERACK:I:0" Radix="NullType"/><Member Name="Slot05" DataType="AB:1734_DI8_ERACK:I:0" Radix="NullType"/><Member Name="Slot06" DataType="AB:1734_DI8_ERACK:I:0" Radix="NullType"/><Member Name="Slot07" DataType="AB:1734_DI8_ERACK:I:0" Radix="NullType"/><Member Name="Slot08" DataType="AB:1734_DI8_ERACK:I:0" Radix="NullType"/></Members></DataType><DataType Name="AB:1734_ERACK_86364FC6:O:0" Class="IO"><Members><Member Name="SlotControlBits0_31" DataType="DINT" Radix="Decimal" Hidden="true"/><Member Name="SlotControlBits32_63" DataType="DINT" Radix="Decimal" Hidden="true"/><Member Name="pad" Radix="Decimal" DataType="SINT" Dimension="9" Hidden="true"/></Members></DataType></DataTypes></public>
 </ExtendedProperties>
 </Module>
 <Module CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
@@ -60,13 +84,13 @@
 <Ports>
 <Port Id="1" Address="1" Type="PointIO" Upstream="true"/>
 </Ports>
-<Communications CommMethod="536870913">
-<ConfigTag ConfigSize="36" ExternalAccess="Read/Write">
+<Communications>
+<ConfigTag ConfigSize="48" ExternalAccess="Read/Write">
 <Data Format="L5K">
-<![CDATA[[40,103,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]>
+<![CDATA[[52,103,0,4,1,0,190,0,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]>
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:1734_DI8:C:0">
+<Structure DataType="AB:1734_DI8_ERACK:C:0">
 <DataValueMember Name="Pt0FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
 <DataValueMember Name="Pt0FilterOnOff" DataType="INT" Radix="Decimal" Value="1000"/>
 <DataValueMember Name="Pt1FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
@@ -86,21 +110,10 @@
 </Structure>
 </Data>
 </ConfigTag>
-<Connections>
-<Connection Name="InputData" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:1734_DI8:I:0">
-<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
-<DataValueMember Name="Data" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
-</Structure>
-</Data>
-</InputTag>
-</Connection>
-</Connections>
+<Connections/>
 </Communications>
 <ExtendedProperties>
-<public><ConfigID>300</ConfigID><CatNum>1734-IB8</CatNum></public>
+<public><ConfigID>67108866</ConfigID><CatNum>1734-IB8</CatNum><ModuleInformation><Input Values="00"/></ModuleInformation></public>
 </ExtendedProperties>
 </Module>
 <Module CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
@@ -108,13 +121,13 @@
 <Ports>
 <Port Id="1" Address="2" Type="PointIO" Upstream="true"/>
 </Ports>
-<Communications CommMethod="536870913">
-<ConfigTag ConfigSize="36" ExternalAccess="Read/Write">
+<Communications>
+<ConfigTag ConfigSize="48" ExternalAccess="Read/Write">
 <Data Format="L5K">
-<![CDATA[[40,103,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]>
+<![CDATA[[52,103,0,4,1,0,190,0,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]>
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:1734_DI8:C:0">
+<Structure DataType="AB:1734_DI8_ERACK:C:0">
 <DataValueMember Name="Pt0FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
 <DataValueMember Name="Pt0FilterOnOff" DataType="INT" Radix="Decimal" Value="1000"/>
 <DataValueMember Name="Pt1FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
@@ -134,21 +147,10 @@
 </Structure>
 </Data>
 </ConfigTag>
-<Connections>
-<Connection Name="InputData" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:1734_DI8:I:0">
-<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
-<DataValueMember Name="Data" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
-</Structure>
-</Data>
-</InputTag>
-</Connection>
-</Connections>
+<Connections/>
 </Communications>
 <ExtendedProperties>
-<public><ConfigID>300</ConfigID><CatNum>1734-IB8</CatNum></public>
+<public><ConfigID>67108866</ConfigID><CatNum>1734-IB8</CatNum><ModuleInformation><Input Values="00"/></ModuleInformation></public>
 </ExtendedProperties>
 </Module>
 <Module CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
@@ -156,13 +158,13 @@
 <Ports>
 <Port Id="1" Address="3" Type="PointIO" Upstream="true"/>
 </Ports>
-<Communications CommMethod="536870913">
-<ConfigTag ConfigSize="36" ExternalAccess="Read/Write">
+<Communications>
+<ConfigTag ConfigSize="48" ExternalAccess="Read/Write">
 <Data Format="L5K">
-<![CDATA[[40,103,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]>
+<![CDATA[[52,103,0,4,1,0,190,0,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]>
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:1734_DI8:C:0">
+<Structure DataType="AB:1734_DI8_ERACK:C:0">
 <DataValueMember Name="Pt0FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
 <DataValueMember Name="Pt0FilterOnOff" DataType="INT" Radix="Decimal" Value="1000"/>
 <DataValueMember Name="Pt1FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
@@ -182,21 +184,10 @@
 </Structure>
 </Data>
 </ConfigTag>
-<Connections>
-<Connection Name="InputData" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:1734_DI8:I:0">
-<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
-<DataValueMember Name="Data" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
-</Structure>
-</Data>
-</InputTag>
-</Connection>
-</Connections>
+<Connections/>
 </Communications>
 <ExtendedProperties>
-<public><ConfigID>300</ConfigID><CatNum>1734-IB8</CatNum></public>
+<public><ConfigID>67108866</ConfigID><CatNum>1734-IB8</CatNum><ModuleInformation><Input Values="00"/></ModuleInformation></public>
 </ExtendedProperties>
 </Module>
 <Module CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
@@ -204,13 +195,13 @@
 <Ports>
 <Port Id="1" Address="4" Type="PointIO" Upstream="true"/>
 </Ports>
-<Communications CommMethod="536870913">
-<ConfigTag ConfigSize="36" ExternalAccess="Read/Write">
+<Communications>
+<ConfigTag ConfigSize="48" ExternalAccess="Read/Write">
 <Data Format="L5K">
-<![CDATA[[40,103,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]>
+<![CDATA[[52,103,0,4,1,0,190,0,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]>
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:1734_DI8:C:0">
+<Structure DataType="AB:1734_DI8_ERACK:C:0">
 <DataValueMember Name="Pt0FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
 <DataValueMember Name="Pt0FilterOnOff" DataType="INT" Radix="Decimal" Value="1000"/>
 <DataValueMember Name="Pt1FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
@@ -230,21 +221,10 @@
 </Structure>
 </Data>
 </ConfigTag>
-<Connections>
-<Connection Name="InputData" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:1734_DI8:I:0">
-<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
-<DataValueMember Name="Data" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
-</Structure>
-</Data>
-</InputTag>
-</Connection>
-</Connections>
+<Connections/>
 </Communications>
 <ExtendedProperties>
-<public><ConfigID>300</ConfigID><CatNum>1734-IB8</CatNum></public>
+<public><ConfigID>67108866</ConfigID><CatNum>1734-IB8</CatNum><ModuleInformation><Input Values="00"/></ModuleInformation></public>
 </ExtendedProperties>
 </Module>
 <Module CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
@@ -252,13 +232,13 @@
 <Ports>
 <Port Id="1" Address="5" Type="PointIO" Upstream="true"/>
 </Ports>
-<Communications CommMethod="536870913">
-<ConfigTag ConfigSize="36" ExternalAccess="Read/Write">
+<Communications>
+<ConfigTag ConfigSize="48" ExternalAccess="Read/Write">
 <Data Format="L5K">
-<![CDATA[[40,103,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]>
+<![CDATA[[52,103,0,4,1,0,190,0,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]>
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:1734_DI8:C:0">
+<Structure DataType="AB:1734_DI8_ERACK:C:0">
 <DataValueMember Name="Pt0FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
 <DataValueMember Name="Pt0FilterOnOff" DataType="INT" Radix="Decimal" Value="1000"/>
 <DataValueMember Name="Pt1FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
@@ -278,21 +258,10 @@
 </Structure>
 </Data>
 </ConfigTag>
-<Connections>
-<Connection Name="InputData" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:1734_DI8:I:0">
-<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
-<DataValueMember Name="Data" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
-</Structure>
-</Data>
-</InputTag>
-</Connection>
-</Connections>
+<Connections/>
 </Communications>
 <ExtendedProperties>
-<public><ConfigID>300</ConfigID><CatNum>1734-IB8</CatNum></public>
+<public><ConfigID>67108866</ConfigID><CatNum>1734-IB8</CatNum><ModuleInformation><Input Values="00"/></ModuleInformation></public>
 </ExtendedProperties>
 </Module>
 <Module CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
@@ -300,13 +269,13 @@
 <Ports>
 <Port Id="1" Address="6" Type="PointIO" Upstream="true"/>
 </Ports>
-<Communications CommMethod="536870913">
-<ConfigTag ConfigSize="36" ExternalAccess="Read/Write">
+<Communications>
+<ConfigTag ConfigSize="48" ExternalAccess="Read/Write">
 <Data Format="L5K">
-<![CDATA[[40,103,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]>
+<![CDATA[[52,103,0,4,1,0,190,0,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]>
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:1734_DI8:C:0">
+<Structure DataType="AB:1734_DI8_ERACK:C:0">
 <DataValueMember Name="Pt0FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
 <DataValueMember Name="Pt0FilterOnOff" DataType="INT" Radix="Decimal" Value="1000"/>
 <DataValueMember Name="Pt1FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
@@ -326,21 +295,10 @@
 </Structure>
 </Data>
 </ConfigTag>
-<Connections>
-<Connection Name="InputData" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:1734_DI8:I:0">
-<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
-<DataValueMember Name="Data" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
-</Structure>
-</Data>
-</InputTag>
-</Connection>
-</Connections>
+<Connections/>
 </Communications>
 <ExtendedProperties>
-<public><ConfigID>300</ConfigID><CatNum>1734-IB8</CatNum></public>
+<public><ConfigID>67108866</ConfigID><CatNum>1734-IB8</CatNum><ModuleInformation><Input Values="00"/></ModuleInformation></public>
 </ExtendedProperties>
 </Module>
 <Module CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
@@ -348,13 +306,13 @@
 <Ports>
 <Port Id="1" Address="7" Type="PointIO" Upstream="true"/>
 </Ports>
-<Communications CommMethod="536870913">
-<ConfigTag ConfigSize="36" ExternalAccess="Read/Write">
+<Communications>
+<ConfigTag ConfigSize="48" ExternalAccess="Read/Write">
 <Data Format="L5K">
-<![CDATA[[40,103,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]>
+<![CDATA[[52,103,0,4,1,0,190,0,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]>
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:1734_DI8:C:0">
+<Structure DataType="AB:1734_DI8_ERACK:C:0">
 <DataValueMember Name="Pt0FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
 <DataValueMember Name="Pt0FilterOnOff" DataType="INT" Radix="Decimal" Value="1000"/>
 <DataValueMember Name="Pt1FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
@@ -374,21 +332,10 @@
 </Structure>
 </Data>
 </ConfigTag>
-<Connections>
-<Connection Name="InputData" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:1734_DI8:I:0">
-<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
-<DataValueMember Name="Data" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
-</Structure>
-</Data>
-</InputTag>
-</Connection>
-</Connections>
+<Connections/>
 </Communications>
 <ExtendedProperties>
-<public><ConfigID>300</ConfigID><CatNum>1734-IB8</CatNum></public>
+<public><ConfigID>67108866</ConfigID><CatNum>1734-IB8</CatNum><ModuleInformation><Input Values="00"/></ModuleInformation></public>
 </ExtendedProperties>
 </Module>
 <Module CatalogNumber="1734-IB8/C" Vendor="1" ProductType="7" ProductCode="216" Major="3" Minor="1" ParentModule="PioAdapter" ParentModPortId="1" Inhibited="false" MajorFault="false">
@@ -396,13 +343,13 @@
 <Ports>
 <Port Id="1" Address="8" Type="PointIO" Upstream="true"/>
 </Ports>
-<Communications CommMethod="536870913">
-<ConfigTag ConfigSize="36" ExternalAccess="Read/Write">
+<Communications>
+<ConfigTag ConfigSize="48" ExternalAccess="Read/Write">
 <Data Format="L5K">
-<![CDATA[[40,103,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]>
+<![CDATA[[52,103,0,4,1,0,190,0,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]]]>
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:1734_DI8:C:0">
+<Structure DataType="AB:1734_DI8_ERACK:C:0">
 <DataValueMember Name="Pt0FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
 <DataValueMember Name="Pt0FilterOnOff" DataType="INT" Radix="Decimal" Value="1000"/>
 <DataValueMember Name="Pt1FilterOffOn" DataType="INT" Radix="Decimal" Value="1000"/>
@@ -422,21 +369,10 @@
 </Structure>
 </Data>
 </ConfigTag>
-<Connections>
-<Connection Name="InputData" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
-<InputTag ExternalAccess="Read/Write">
-<Data Format="Decorated">
-<Structure DataType="AB:1734_DI8:I:0">
-<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
-<DataValueMember Name="Data" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
-</Structure>
-</Data>
-</InputTag>
-</Connection>
-</Connections>
+<Connections/>
 </Communications>
 <ExtendedProperties>
-<public><ConfigID>300</ConfigID><CatNum>1734-IB8</CatNum></public>
+<public><ConfigID>67108866</ConfigID><CatNum>1734-IB8</CatNum><ModuleInformation><Input Values="00"/></ModuleInformation></public>
 </ExtendedProperties>
 </Module>
 </Modules>

@@ -724,7 +724,14 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             else:
                 reason = f"legacy-network bridge (Port Type={sorted(module.port_types)})"
             errors.append(SizeError(
-                path=f"modules/{label}",
+                # A coverage notice, not a sizing failure: the file
+                # contains a module shape the model does not price yet.
+                # Its own sibling case (zero_connection) has always been
+                # filed under coverage/; this one was filed under
+                # modules/, which manifest.predicted_bytes treats as a
+                # blocking generator bug -- so a sample built precisely to
+                # MEASURE this gap could not be generated at all.
+                path=f"coverage/module_unmodeled_shape/{label}",
                 message=(
                     f"Module {display}: {reason} -- module_overhead (fitted from 2 real discrete "
                     f"add-on modules) is NOT charged here, zero real data confirms it applies the "
