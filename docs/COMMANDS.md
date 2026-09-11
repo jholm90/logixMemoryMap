@@ -235,3 +235,45 @@ python3 -m pytest tests -q
 `pyproject.toml` sets `pythonpath = ["src"]` and `testpaths = ["tests"]`,
 so plain `pytest` also works from the repo root once `dev` extras are
 installed (`pip install -e ".[dev]"`).
+
+
+## `python scripts/capture_errors.py` — step 2b, the error gate
+
+Routes every capture that errored to the open question that asked for the
+test, and fails if any of them has nowhere to be recorded.
+
+Two classes: rows with `error_count > 0` (the L5X imported and built, but
+Studio reported errors, so `actual_bytes` is SUSPECT rather than wrong), and
+committed generated files that were attempted and never reached `ok` in
+`convert_log.csv`. A file with no `convert_log` row at all is NOT a failure —
+it has simply never been submitted, which is the normal state of a batch built
+today.
+
+Ownership comes from the `OQ-` identifier in the sample's own manifest
+description, so every generator must name its question there.
+`samples/oq_owners.csv` covers the two cases a description cannot: a legacy
+family whose generator no longer exists, and a closed question handing its
+errored rows to its successor (`oq:OQ-OLD` as the prefix means "any row whose
+description names OQ-OLD"). An explicit entry wins over the description.
+
+The gate requires a `**CAPTURE ERRORS: <n> row(s)**` line in each owning
+question's entry, in `OPEN_QUESTIONS.md` or `RESOLVED_QUESTIONS.md`, with `<n>`
+matching the live count. Exit 1 on a missing line, a stale count, or an
+unowned row — the count cannot drift without failing the check, which is the
+whole point.
+
+    python scripts/capture_errors.py          # the gate
+    python scripts/capture_errors.py --list   # every offending sample_id
+
+
+## `python scripts/unreconciled.py` — captured rows nobody acted on
+
+Recomputes every captured row against the CURRENT engine and groups the ones
+outside a tolerance by sweep family. The manifest's own `delta` column cannot
+answer this: it goes stale the moment any constant moves, which is exactly how
+a clean, exact, answered measurement hides in plain sight. A family with many
+rows, one sign, and a median far from zero is an unreconciled measurement, not
+noise.
+
+    python scripts/unreconciled.py
+    python scripts/unreconciled.py --threshold 64 --csv out.csv

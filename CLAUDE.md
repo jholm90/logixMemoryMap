@@ -99,6 +99,29 @@ Run this sequence in order, without being asked:
    for the raw Studio 5000 error-log line rather than asserting a fix. A
    memory-results summary that omits conversion failures on the same files is
    incomplete on its own terms.
+2b. **Flag every error to the question that asked for the test.** Run
+   `python scripts/capture_errors.py`. It routes every row that captured WITH
+   Studio build errors, and every committed file that was attempted and never
+   reached `ok`, to the open question that requested it — by the `OQ-`
+   identifier in the sample's own manifest description, with
+   `samples/oq_owners.csv` handling legacy families and closed-question
+   successors. It then REQUIRES a matching
+   `**CAPTURE ERRORS: <n> row(s)**` line in that question's entry and exits
+   non-zero if any question is missing one, has a stale count, or if any row
+   has no owner at all. Do not proceed past a non-zero exit.
+
+   A row that captured with errors is **suspect, not wrong**: `actual_bytes`
+   still got filled in, but part of the file may never have reached the
+   controller, which shows up as the model apparently over-predicting. Never
+   quietly use such a row, and never quietly drop it either — both are how a
+   real 10% error hides for eight days. Say in the report which questions are
+   carrying suspect rows and how many.
+
+   This step exists because it already failed once: the 31-row axis family
+   sat unexamined at +10.5% because every file carried `error_count = n+1`,
+   no error text was ever recorded, and nothing tied that fact to the
+   question the files were built to answer.
+
 3. **Re-derive** sizing formulas from the new data and wire in whatever is
    now confirmed exact.
 4. **Full-depth open-questions review.** Go through every item in
@@ -118,8 +141,11 @@ Run this sequence in order, without being asked:
    currently-open question. There is no minimum roster size to pad toward —
    if the genuine work is 20 files, ship 20.
 8. **Report**: what changed, what is now closed, what is genuinely still
-   open with the full-depth reasoning already applied, and the
-   conversion-failure log from step 2.
+   open with the full-depth reasoning already applied, the
+   conversion-failure log from step 2, and **step 2b's error flags — which
+   questions are carrying rows that captured with errors, and how many**. A
+   results summary that reports numbers derived from suspect rows without
+   saying they are suspect is wrong even when every number in it is right.
 
 Only then ask about pushing.
 

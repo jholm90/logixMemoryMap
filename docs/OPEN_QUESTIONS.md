@@ -328,6 +328,18 @@ the matching footnote at the bottom, not inline.
    1st), and a handful of catalogs with real connection-variant-dependent
    overhead.[^moduleio]
 
+
+    **CAPTURE ERRORS: 42 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    12 captured WITH Studio build errors, so their `actual_bytes` is
+    SUSPECT rather than wrong — part of the file may never have reached the
+    controller, which inflates apparent over-prediction. None of them carries
+    any error text: every errored row in the manifest was captured between
+    2026-08-23 and 2026-09-08, and the error-log reader only began working
+    2026-09-10, so these need RECAPTURE before their numbers are used.
+    `modulemotion_d012_dual_axis`, `modulemotion_d012_single_axis`, `modulemotion_s086_safety_axis`, `modulerack_kinetix_full_bus`, `modulesweep_193_ecm_etr_a`, `modulesweep_193_ecm_etr_b` (+6 more)
+    30 committed file(s) attempted and never reached `ok` in
+    `convert_log.csv`: `modulerack_bender_full_program`, `modulerack_bender_full_program_r2`, `modulesweep_1734_ob8s_a`, `modulesweep_1734_ob8s_a_r2`, `modulesweep_1734_ob8s_b`, `modulesweep_1734_ob8s_b_r2` (+24 more)
+
 7. **OQ-JSRPARAMCOST** — reopened 2026-08-29 for one small residual.
     Output/return-param call-site cost is now wired and confirmed
     (see RESOLVED_QUESTIONS.md). The callee's own one-time `A(n)`
@@ -462,6 +474,16 @@ the matching footnote at the bottom, not inline.
     of real JSR calls are 0-param, and all 103 of its real 0-param
     targets have zero SBR/RET, matching the corpus norm exactly).
 
+
+    **CAPTURE ERRORS: 4 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    4 captured WITH Studio build errors, so their `actual_bytes` is
+    SUSPECT rather than wrong — part of the file may never have reached the
+    controller, which inflates apparent over-prediction. None of them carries
+    any error text: every errored row in the manifest was captured between
+    2026-08-23 and 2026-09-08, and the error-log reader only began working
+    2026-09-10, so these need RECAPTURE before their numbers are used.
+    `jsr_target_content_scale_010`, `jsr_target_content_scale_050`, `jsr_target_content_scale_100`, `jsr_target_content_scale_150`
+
 8. **OQ-EVENTTRIGGER** — new, real. task_extra (+700) was derived only
     from CONTINUOUS+PERIODIC tasks; EVENT-type tasks are completely
     untested, and so is trigger-source (Axis Watch vs. EVENT-instruction)
@@ -475,6 +497,16 @@ the matching footnote at the bottom, not inline.
     trigger-SOURCE sub-question, Axis Watch vs. EVENT-instruction) has no
     real capture yet — that comparison is the only piece of this OQ still
     genuinely awaiting data.
+
+
+    **CAPTURE ERRORS: 1 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    1 captured WITH Studio build errors, so their `actual_bytes` is
+    SUSPECT rather than wrong — part of the file may never have reached the
+    controller, which inflates apparent over-prediction. None of them carries
+    any error text: every errored row in the manifest was captured between
+    2026-08-23 and 2026-09-08, and the error-log reader only began working
+    2026-09-10, so these need RECAPTURE before their numbers are used.
+    `eventtask_axiswatch`
 
 10. **OQ-BLOCKBYTE** — new, very serious if real. Raised 2026-08-30:
     Studio 5000's Capacity readout is labeled "bytes" for 1769/L7x
@@ -612,6 +644,16 @@ the matching footnote at the bottom, not inline.
       content-scaling term) before wiring anything — one point can locate
       a family-level gap but can't separate "baseline is bigger" from "per
       element is bigger" on its own.
+
+
+    **CAPTURE ERRORS: 35 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    35 captured WITH Studio build errors, so their `actual_bytes` is
+    SUSPECT rather than wrong — part of the file may never have reached the
+    controller, which inflates apparent over-prediction. None of them carries
+    any error text: every errored row in the manifest was captured between
+    2026-08-23 and 2026-09-08, and the error-log reader only began working
+    2026-09-10, so these need RECAPTURE before their numbers are used.
+    `composite_realistic_03_r2`, `composite_realistic_04_r2`, `composite_realistic_05_r2`, `composite_realistic_06_r2`, `composite_realistic_08_r2`, `composite_realistic_09_r2` (+29 more)
 
 11. **OQ-COMPOSITESCALE** — new, real, raised 2026-08-30 after a review of
     a confidential project found a >20% real gap. The requirement: at
@@ -824,6 +866,16 @@ the matching footnote at the bottom, not inline.
       files' generation-script fixes (module catalog compatibility,
       sequential slot numbering) remain separately tracked and
       deprioritized until this tuning work lands.
+
+
+    **CAPTURE ERRORS: 47 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    47 captured WITH Studio build errors, so their `actual_bytes` is
+    SUSPECT rather than wrong — part of the file may never have reached the
+    controller, which inflates apparent over-prediction. None of them carries
+    any error text: every errored row in the manifest was captured between
+    2026-08-23 and 2026-09-08, and the error-log reader only began working
+    2026-09-10, so these need RECAPTURE before their numbers are used.
+    `composite_realistic_v3_02`, `composite_realistic_v3_03`, `composite_realistic_v3_04`, `composite_realistic_v3_05`, `composite_realistic_v3_06`, `composite_realistic_v3_07` (+41 more)
 
 12. **OQ-AOIINTERNALLOGIC** — new, real, corpus-wide gap, found 2026-08-31:
     AOIs were closed out without ever putting logic inside one. Every AOI
@@ -1157,6 +1209,16 @@ the matching footnote at the bottom, not inline.
       requirement, and now sits in the same exclusion bucket as
       `193-ECM-ETR/A`/`/B`.
 
+
+    **CAPTURE ERRORS: 1 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    1 captured WITH Studio build errors, so their `actual_bytes` is
+    SUSPECT rather than wrong — part of the file may never have reached the
+    controller, which inflates apparent over-prediction. None of them carries
+    any error text: every errored row in the manifest was captured between
+    2026-08-23 and 2026-09-08, and the error-log reader only began working
+    2026-09-10, so these need RECAPTURE before their numbers are used.
+    `modulemotion_d012_dual_axis`
+
 15. **OQ-V3GENBUGS** — three real generator bugs found via the actual
     Studio 5000 ACD-conversion errors on the v3 composite batch (50 files,
     2026-09-02), all root-caused to the exact reported symptom and fixed:
@@ -1309,6 +1371,18 @@ the matching footnote at the bottom, not inline.
     That is two error messages for 9 of the 11 files.
 
 
+
+    **CAPTURE ERRORS: 15 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    6 captured WITH Studio build errors, so their `actual_bytes` is
+    SUSPECT rather than wrong — part of the file may never have reached the
+    controller, which inflates apparent over-prediction. None of them carries
+    any error text: every errored row in the manifest was captured between
+    2026-08-23 and 2026-09-08, and the error-log reader only began working
+    2026-09-10, so these need RECAPTURE before their numbers are used.
+    `almd_minimal`, `aoi_multiroutine_control`, `aoi_multiroutine_real`, `instrfirst_crout_x10`, `instrfirst_mapc_x10`, `predefprobe_axis_generic`
+    9 committed file(s) attempted and never reached `ok` in
+    `convert_log.csv`: `predefprobe_opcua_server_address`, `predefprobe_ref_to_axis_cip_drive`, `predefprobe_ref_to_axis_consumed`, `predefprobe_ref_to_axis_general_drive`, `predefprobe_ref_to_axis_servo`, `predefprobe_ref_to_axis_servo_drive` (+3 more)
+
 23. **OQ-DEFSCALE** — definition- and instance-count scaling. **CAPTURED
     AND RECONCILED 2026-09-11, all 30 files, zero import errors. Four exact
     linear laws, none of them wired, and the reason is a confound, not a
@@ -1437,6 +1511,16 @@ the matching footnote at the bottom, not inline.
     by the real toolchain.
 
 
+
+    **CAPTURE ERRORS: 3 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    3 captured WITH Studio build errors, so their `actual_bytes` is
+    SUSPECT rather than wrong — part of the file may never have reached the
+    controller, which inflates apparent over-prediction. None of them carries
+    any error text: every errored row in the manifest was captured between
+    2026-08-23 and 2026-09-08, and the error-log reader only began working
+    2026-09-10, so these need RECAPTURE before their numbers are used.
+    `unweighted_dtr_n00010`, `unweighted_dtr_n00100`, `unweighted_dtr_n01000`
+
 26. **OQ-CPTREALDEST** — REAL-destination CPT: two measured constants with
     no known mechanism. 2026-09-04. **Not blocking — the path is exact on
     all 47 captured calls — but both terms are descriptions, not theory,
@@ -1467,6 +1551,16 @@ the matching footnote at the bottom, not inline.
     5-operator +4 is really the same arrangement effect OQ-CPTARRANGE
     found on the integer path, wearing a different hat. Blocked on capture.
 
+
+
+    **CAPTURE ERRORS: 1 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    1 captured WITH Studio build errors, so their `actual_bytes` is
+    SUSPECT rather than wrong — part of the file may never have reached the
+    controller, which inflates apparent over-prediction. None of them carries
+    any error text: every errored row in the manifest was captured between
+    2026-08-23 and 2026-09-08, and the error-log reader only began working
+    2026-09-10, so these need RECAPTURE before their numbers are used.
+    `cptrd_operand_bool`
 
 27. **OQ-CPTNARROW** — how the SINT/INT → DINT widening scales. 2026-09-04.
 
@@ -1499,6 +1593,16 @@ the matching footnote at the bottom, not inline.
     `cptwide_mixed_sint_lint` covers mixed integer WIDTHS, which nothing in
     the corpus does. Blocked on capture.
 
+
+
+    **CAPTURE ERRORS: 5 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    5 captured WITH Studio build errors, so their `actual_bytes` is
+    SUSPECT rather than wrong — part of the file may never have reached the
+    controller, which inflates apparent over-prediction. None of them carries
+    any error text: every errored row in the manifest was captured between
+    2026-08-23 and 2026-09-08, and the error-log reader only began working
+    2026-09-10, so these need RECAPTURE before their numbers are used.
+    `cptwide_lint_k1`, `cptwide_lint_k2`, `cptwide_lint_k3`, `cptwide_lint_k4`, `cptwide_mixed_sint_lint`
 
 28. **OQ-CPTARRANGE** — does operator ARRANGEMENT change CPT cost?
     2026-09-04. **The last real CPT unknown, and the data proves it is real
@@ -1586,6 +1690,16 @@ the matching footnote at the bottom, not inline.
       literal-RHS rate (36). Only one WHILE file exists, so the split
       between per-WHILE and per-assignment rests on that substitution.
 
+
+
+    **CAPTURE ERRORS: 1 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    1 captured WITH Studio build errors, so their `actual_bytes` is
+    SUSPECT rather than wrong — part of the file may never have reached the
+    controller, which inflates apparent over-prediction. None of them carries
+    any error text: every errored row in the manifest was captured between
+    2026-08-23 and 2026-09-08, and the error-log reader only began working
+    2026-09-10, so these need RECAPTURE before their numbers are used.
+    `st_instr_concat_n01000`
 
 30. **OQ-REAL5069** — **SHELVED 2026-09-11 until 2026-09-18. Not closed,
     and not to be raised again before then.**
@@ -2000,6 +2114,16 @@ the matching footnote at the bottom, not inline.
       - Group C, `alarmdef_{proc}_msg_{none,s,m,l}`: whether the operator
         message CDATA counts, definition and member count held fixed.
 
+
+    **CAPTURE ERRORS: 1 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    1 captured WITH Studio build errors, so their `actual_bytes` is
+    SUSPECT rather than wrong — part of the file may never have reached the
+    controller, which inflates apparent over-prediction. None of them carries
+    any error text: every errored row in the manifest was captured between
+    2026-08-23 and 2026-09-08, and the error-log reader only began working
+    2026-09-10, so these need RECAPTURE before their numbers are used.
+    `almd_realtext`
+
 34. **OQ-L9BUDGET** — no memory budget for the 1756-L9xTS family.
     `controller_budgets.yaml` returns None for all four catalogs, so the UI
     has no denominator on an L9 file and cannot show headroom.
@@ -2172,6 +2296,16 @@ the matching footnote at the bottom, not inline.
     everywhere.
 
 
+
+    **CAPTURE ERRORS: 2 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    2 captured WITH Studio build errors, so their `actual_bytes` is
+    SUSPECT rather than wrong — part of the file may never have reached the
+    controller, which inflates apparent over-prediction. None of them carries
+    any error text: every errored row in the manifest was captured between
+    2026-08-23 and 2026-09-08, and the error-log reader only began working
+    2026-09-10, so these need RECAPTURE before their numbers are used.
+    `jsr_midchain_leaf_control`, `jsr_midchain_real_chain`
+
 39. **OQ-CAMSCALAR** — CLOSED as OQ-CAMSHAPE 2026-09-11 (see
     RESOLVED_QUESTIONS.md: container shape is a non-effect, the CAM base was
     corrected 8 -> 4 with 8-byte element-block alignment, CAM_PROFILE
@@ -2242,6 +2376,16 @@ the matching footnote at the bottom, not inline.
     "Unitemized definition cost" row rather than dropping it, so the
     treemap sums to the report total and the size of the unexplained part
     is visible instead of silent.
+
+
+    **CAPTURE ERRORS: 43 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    43 captured WITH Studio build errors, so their `actual_bytes` is
+    SUSPECT rather than wrong — part of the file may never have reached the
+    controller, which inflates apparent over-prediction. None of them carries
+    any error text: every errored row in the manifest was captured between
+    2026-08-23 and 2026-09-08, and the error-log reader only began working
+    2026-09-10, so these need RECAPTURE before their numbers are used.
+    `aoi_logic_scale_010`, `aoi_logic_scale_050`, `aoi_logic_scale_100`, `composite_realistic_03_r2`, `composite_realistic_04_r2`, `composite_realistic_05_r2` (+37 more)
 
 41. **OQ-POINTIOCONN** — a POINT I/O card's memory cost depends on its
     connection format, which the model does not represent at all, and the
@@ -2436,3 +2580,15 @@ the matching footnote at the bottom, not inline.
     split is arithmetically exact on 14 points and still rests on an
     assumption the data cannot support, which is the same mistake the axis
     promotion already made once today.
+
+    **CAPTURE ERRORS: 66 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    65 captured WITH Studio build errors, so their `actual_bytes` is
+    SUSPECT rather than wrong — part of the file may never have reached the
+    controller, which inflates apparent over-prediction. None of them carries
+    any error text: every errored row in the manifest was captured between
+    2026-08-23 and 2026-09-08, and the error-log reader only began working
+    2026-09-10, so these need RECAPTURE before their numbers are used.
+    `axis_scale_n01_single`, `axis_scale_n02_dual`, `axis_scale_n02_single`, `axis_scale_n04_dual`, `axis_scale_n04_single`, `axis_scale_n06_dual` (+59 more)
+    1 committed file(s) attempted and never reached `ok` in
+    `convert_log.csv`: `daxis_axis_cip_drive`
+
