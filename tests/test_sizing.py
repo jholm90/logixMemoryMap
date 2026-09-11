@@ -239,17 +239,22 @@ def test_custom_string_array_matches_confirmed_real_formula():
     # array_base was measured directly, so nothing in this size is
     # extrapolated -- element size and the +4/element surcharge are both
     # already KNOWN.
-    assert size("CStrArrCsTest", (1,), data_types=data_types) == (12 + 104 * 1, "KNOWN")
-    assert size("CStrArrCsTest", (100,), data_types=data_types) == (12 + 104 * 100, "KNOWN")
+    assert size("CStrArrCsTest", (1,), data_types=data_types) == (4 + 104 * 1, "KNOWN")
+    assert size("CStrArrCsTest", (100,), data_types=data_types) == (4 + 104 * 100, "KNOWN")
 
 
-def test_custom_string_array_uses_the_measured_base_for_its_own_name_length():
-    """The array_base is type-NAME-length dependent, and both measured
-    points are honoured rather than collapsed to one blanket constant.
+def test_custom_string_array_base_does_not_vary_with_type_name_length():
+    """The array-level base is a constant 4, whatever the type is called.
 
-    An 11-character name measured 4, a 13-character name measured 12.
-    `Long_String` in the real corpus is 11 characters, so the blanket 12
-    was over-charging every real custom-string array by 8 bytes."""
+    An earlier model had this varying (11 chars -> 4, 13 chars -> 12),
+    fitted from two points with no control. The closing batch differenced
+    every array against a SCALAR control of the same type at the same name
+    length and got a flat 936 at all 8 lengths from 4 to 40 characters:
+    the whole name-length effect belongs to the type's DEFINITION cost,
+    not to the array.
+
+    Pinned across a wide span of lengths precisely because the wrong
+    answer looked right on a narrow one."""
     def _named(type_name):
         d = DataTypeDef(
             name=type_name, family="StringFamily",
@@ -258,10 +263,8 @@ def test_custom_string_array_uses_the_measured_base_for_its_own_name_length():
         )
         return {type_name: d}
 
-    # 11 chars -- measured directly at 4.
-    assert size("Long_String", (10,), data_types=_named("Long_String")) == (4 + 104 * 10, "KNOWN")
-    # 20 chars -- never measured, so it falls back to the 13-char value
-    # and must NOT claim certainty it does not have.
-    unmeasured = "CustomStringName20ch"
-    assert len(unmeasured) == 20
-    assert size(unmeasured, (10,), data_types=_named(unmeasured)) == (12 + 104 * 10, "FITTED")
+    for type_name in ("C", "CsName8x", "Long_String", "CStrArrCsTest",
+                      "CustomStringName20ch", "C" + "s" * 39):
+        assert size(type_name, (10,), data_types=_named(type_name)) == (
+            4 + 104 * 10, "KNOWN"
+        ), f"array base moved for a {len(type_name)}-character type name"

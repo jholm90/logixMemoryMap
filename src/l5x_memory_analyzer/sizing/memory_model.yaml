@@ -117,13 +117,23 @@ predefined_structures:
   # Not drillable to a per-field breakdown yet (sizing/tree.py's
   # _THREE_FIELD_PREDEFINED set) -- only the TOTAL is confirmed this way,
   # not a per-field byte attribution.
-  SFC_STEP: { bytes: 28, confidence: ASSUMED }   # Status+PRE+T+TMax+Count+LimitLow+LimitHigh = 7 DINT
-  SFC_ACTION: { bytes: 16, confidence: ASSUMED } # Status+PRE+T+Count = 4 DINT
-  FBD_TIMER: { bytes: 48, confidence: ASSUMED }  # 12 DINT-equivalent (bools packed in)
-  FBD_ONESHOT: { bytes: 12, confidence: ASSUMED } # 3 DINT-equivalent
-  FBD_MATH: { bytes: 16, confidence: ASSUMED }   # EnableIn/Out packed + SourceA/B/Dest REAL = 4 DINT
-  RATE_LIMITER: { bytes: 92, confidence: ASSUMED } # 23 DINT-equivalent, n=1 real sample
-  SCALE: { bytes: 52, confidence: ASSUMED }      # 13 DINT-equivalent, n=1 real sample
+  # OQ-FBDSFC CLOSED 2026-09-11. The whole FBD/SFC family was ASSUMED --
+  # sized by reading real Decorated-XML L5K data and never probed. The
+  # predefprobe_* batch probed all of them, every file at error_count=0,
+  # and the sizes were right: 19 of 22 predicted EXACTLY, and the three
+  # below were over-charged by exactly 4 bytes each.
+  #
+  # The -4 is a real correction, not the familiar universal noise: the
+  # other 19 structures in the same batch, captured in the same run, land
+  # dead on. SFC_ACTION drops 16 -> 12, FBD_TIMER 48 -> 44, FBD_MATH
+  # 16 -> 12.
+  SFC_STEP: { bytes: 28, confidence: KNOWN }   # Status+PRE+T+TMax+Count+LimitLow+LimitHigh = 7 DINT
+  SFC_ACTION: { bytes: 12, confidence: KNOWN } # was 16; real capture is 4 lower
+  FBD_TIMER: { bytes: 44, confidence: KNOWN }  # was 48; real capture is 4 lower
+  FBD_ONESHOT: { bytes: 12, confidence: KNOWN }
+  FBD_MATH: { bytes: 12, confidence: KNOWN }   # was 16; real capture is 4 lower
+  RATE_LIMITER: { bytes: 92, confidence: KNOWN } # n=1 guess, confirmed exact
+  SCALE: { bytes: 52, confidence: KNOWN }      # n=1 guess, confirmed exact
   # SFC_STOP -- found 2026-08-28 re-checking the corpus after a regex bug
   # (didn't account for a <Description> block between Tag-open and Data)
   # hid this real evidence on the first pass ("did a super in-depth
@@ -160,9 +170,9 @@ predefined_structures:
   # confirmed). Not added to sizing/tree.py's _THREE_FIELD_PREDEFINED --
   # the 3 real fields are bit-packed words, not named Status/PRE/ACC-style
   # members, so there's no real per-field drill target to expose.
-  FBD_BOOLEAN_AND: { bytes: 12, confidence: ASSUMED }
-  FBD_BOOLEAN_OR: { bytes: 12, confidence: ASSUMED }
-  FBD_BOOLEAN_NOT: { bytes: 12, confidence: ASSUMED }
+  FBD_BOOLEAN_AND: { bytes: 12, confidence: KNOWN }
+  FBD_BOOLEAN_OR: { bytes: 12, confidence: KNOWN }
+  FBD_BOOLEAN_NOT: { bytes: 12, confidence: KNOWN }
   # Real capture batch, 2026-08-28/29 (pushed the last round of tests),
   # the conversion pipeline built + captured all 184 predefprobe_*.L5X
   # blank-tag discovery files (see gen_predefined_probe.py) -- 174 of 184 imported
@@ -967,19 +977,36 @@ string_array:
   builtin_confidence: KNOWN
   builtin_array_base: 6
   builtin_per_element: 2
-  custom_confidence: FITTED
-  custom_array_base: 12
+  # CLOSED 2026-09-11 (OQ-CSARRAYBASE). array_base is a CONSTANT 4. It is
+  # not type-name-length dependent, and the earlier two-point reading that
+  # said otherwise (11 chars -> 4, 13 chars -> 12) was an artifact of
+  # having no control.
+  #
+  # The closing batch built every array against a SCALAR control of the
+  # same type at the same name length. Differencing the pair cancels the
+  # definition cost, and the remainder is flat 936 at every one of the 8
+  # measured name lengths -- 4, 8, 11, 13, 16, 24, 32, 40:
+  #
+  #   len   array(n=10)   scalar    difference
+  #    4      19,456      18,520       936
+  #    8      19,464      18,528       936
+  #   13      19,472      18,536       936
+  #   40      19,496      18,560       936
+  #
+  # The entire name-length effect belongs to the type's DEFINITION cost,
+  # which was already modelled and KNOWN. Without the control, that step
+  # was being read as if it belonged to the array.
+  #
+  # Confirmed one-time as well as constant: csarrcount_len11 against
+  # csarrcount_len13 differ by exactly +8 at n=1, 16, 100, 255 and 512 --
+  # a fixed gap that does not grow with count, which is what "one-time"
+  # has to mean. That +8 is the definition step between the two names.
+  #
+  # KNOWN: 28 name lengths spanning 1..40, plus 23 count points and 8
+  # scalar controls, all exact once the base is 4.
+  custom_confidence: KNOWN
+  custom_array_base: 4
   custom_per_element: 4
-  # The two REAL measured points on the type-name-length axis, kept as
-  # measurements rather than collapsed into a single blanket constant.
-  # A type name whose length was actually measured gets its exact value
-  # and is reported KNOWN; anything else falls back to custom_array_base
-  # above and stays FITTED. Real files depend on this: MurrayBros and
-  # SJ_Gormley both declare `Long_String`, an 11-character name measured
-  # directly at 4, which the blanket 12 was over-charging by 8.
-  custom_array_base_by_name_length:
-    11: 4    # "CStrArrTest",   maxlen=100, n=5/50
-    13: 12   # "CStrArrCsTest", maxlen=100, n=1/10/25/100
 
 udt:
   # No alignment/padding between members -- tight packing, declared order.

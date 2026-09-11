@@ -2536,3 +2536,52 @@ Fixed by skipping any module whose own `Name` equals its `ParentModule`.
 The rule had no test coverage at all, which is how it shipped broken;
 `tests/test_lint.py` now pins both the real self-parented shape and a
 genuine undersize.
+
+**OQ-CSARRAYBASE, resolved 2026-09-11, wired.** The one-time array-level
+base for an array of a custom string type is a CONSTANT 4. It does not
+vary with the type's name length, and the earlier two-point reading that
+said it did (11 chars -> 4, 13 chars -> 12) was an artifact of having no
+control.
+
+The closing batch built every array against a SCALAR control of the same
+type at the same name length. Differencing the pair cancels the type's
+definition cost, and the remainder is a flat 936 at every one of the eight
+measured lengths -- 4, 8, 11, 13, 16, 24, 32, 40. The entire name-length
+effect belongs to the DEFINITION cost, which was already KNOWN; without a
+control it was being read as if it belonged to the array.
+
+Confirmed one-time as well as constant: the 11-char and 13-char count
+sweeps differ by exactly +8 at n=1, 16, 100, 255 and 512 -- a fixed gap
+that does not grow with n, which is what "one-time" has to mean. That +8
+is the definition step between those two names.
+
+The lesson is the method, not the number: a two-point fit with no control
+produced a confident wrong answer that looked right on the only two points
+it had. 28 name lengths, 23 counts and 8 controls now say otherwise.
+
+**OQ-STRARRAYLARGEN, resolved 2026-09-11, no code change.** The array
+formulas were right and the worry was unfounded. Both rates hold exactly
+to n=1000, far past the n=100 the constants were originally fitted on:
+
+    built-in STRING array   88.00/element at n=128..1000, zero variance
+    custom string array    104.00/element at n=1..1000, zero variance
+
+88 is exactly the wired element(86) + per_element(2); 104 is exactly
+element(100) + per_element(4). No block or page allocation appears at any
+size, and the consecutive n=1..8 run shows no odd/even pairing artifact of
+the kind the AOI-array model has.
+
+This closes the leading hypothesis for the MurrayBros/Elmsdale error --
+their STRING[200] and STRING[255] arrays are priced correctly, and were
+all along. The KNOWN tier those constants carried was unearned when it was
+applied past the evidence, but the answer it gave was right.
+
+**OQ-FBDSFC, resolved 2026-09-11, wired.** The whole FBD/SFC family was
+ASSUMED -- sized by reading real Decorated-XML L5K data and never probed
+against a controller. The predefprobe_* batch probed all 22, every file at
+error_count=0, and the sizes were right: 19 predicted EXACTLY and three
+were over-charged by exactly 4 bytes (SFC_ACTION 16 -> 12, FBD_TIMER
+48 -> 44, FBD_MATH 16 -> 12). All now KNOWN.
+
+The -4 is a real correction rather than the familiar universal noise: the
+other 19 structures, captured in the same run, land dead on.

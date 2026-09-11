@@ -293,7 +293,10 @@ Status(msg) {
         ; vary this just like Build does, same reasoning as the Build popup.
         Sleep 2000
 				
-				active_title := WinGetTitle("A")
+				if WinExist("A")
+						active_title := WinGetTitle("A")
+				else
+						active_title := ""
 				
 				Status("Active Title: " active_title)
 				

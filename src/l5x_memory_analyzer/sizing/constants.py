@@ -72,36 +72,21 @@ class StringArrayModel:
     custom_confidence: str
     custom_array_base: int
     custom_per_element: int
-    custom_array_base_by_name_length: dict[int, int] = field(default_factory=dict)
 
     def custom_base_for(self, type_name_length: int) -> tuple[int, str]:
         """One-time array-level cost for an array of a custom string type.
 
-        Every other term in a custom-string array is KNOWN -- element size
-        (nearest-8 DATA padding, 9/9 real maxlens), the +4/element array
-        surcharge (6/6 points across two type names, zero variance), and
-        the type's own definition cost. This one-time base is the only
-        term that is not, because it is type-NAME-length dependent and
-        only two names have ever been measured:
+        Takes the name length only so callers need not change; the answer
+        does not depend on it. That was measured, not assumed: the closing
+        batch differenced every array against a scalar control of the same
+        type at the same name length, and the remainder was a flat 936 at
+        all 8 measured lengths from 4 to 40 characters.
 
-            "CStrArrTest"   (11 chars) -> 4
-            "CStrArrCsTest" (13 chars) -> 12
-
-        Two points cannot distinguish a step from a slope, so no formula
-        is fitted across them. What IS certain is each measured point
-        itself: when the type name matches a length that was actually
-        measured, that value is exact and reported KNOWN rather than
-        being replaced by a single blanket constant. Any other length
-        falls back to the 13-char value (4 real points behind it vs 2)
-        and stays FITTED, with a bounded ~8-byte one-time exposure.
-
-        This matters on real files: MurrayBros and SJ_Gormley both
-        declare `Long_String`, an 11-character name whose base was
-        measured directly at 4.
+        An earlier two-point reading had this varying with name length
+        (11 -> 4, 13 -> 12). It was wrong, and wrong in an instructive
+        way: with no scalar control, the type DEFINITION's name-length
+        step was being attributed to the array base.
         """
-        measured = self.custom_array_base_by_name_length.get(type_name_length)
-        if measured is not None:
-            return measured, "KNOWN"
         return self.custom_array_base, self.custom_confidence
 
 
@@ -993,10 +978,6 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             custom_confidence=raw["string_array"]["custom_confidence"],
             custom_array_base=raw["string_array"]["custom_array_base"],
             custom_per_element=raw["string_array"]["custom_per_element"],
-            custom_array_base_by_name_length={
-                int(k): int(v) for k, v in
-                raw["string_array"].get("custom_array_base_by_name_length", {}).items()
-            },
         ),
         udt=UdtModel(alignment_confidence=raw["udt"]["alignment_confidence"]),
         array=ArrayModel(

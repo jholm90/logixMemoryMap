@@ -1935,69 +1935,37 @@ the matching footnote at the bottom, not inline.
     only -- the family postdates the v31-v37 firmwares in the matrix, and
     building an L9 at v31 would fabricate a firmware that never shipped.
 
-35. **OQ-CSARRAYBASE** — the one-time array-level base for an array of a
-    custom string type is a function of the type's NAME length, and only
-    two names have ever been measured.
 
-        "CStrArrTest"   (11 chars) -> array_base = 4
-        "CStrArrCsTest" (13 chars) -> array_base = 12
+37. **OQ-UDTBOOLMEMBER** — the alarm-definition residual is not an alarm
+    cost at all. It tracks the UDT, and specifically its BOOL members.
 
-    Two points cannot distinguish a step from a slope, and this axis does
-    not behave like the scalar definition cost's 8-char bucket: both
-    `floor(len/8)` and `ceil(len/8)` give the same bucket for 11 and 13,
-    so both predict the two names cost the same, and they do not. Whatever
-    the shape is, it is not the one already solved next door, and it
-    cannot be guessed from here.
+    New, 2026-09-11, from the now-complete alarm batch. The inst/noinst
+    shapes finally captured and they say something the earlier groups
+    could not:
 
-    Everything else in a custom-string array is already KNOWN — element
-    size (`4 + nearest8(maxlen)`, 9/9 real maxlens), the +4/element
-    surcharge (6/6 points across both type names), and the type's own
-    definition cost (22 real points). This single term is the whole reason
-    an array of a custom string cannot be reported KNOWN for an arbitrary
-    type name.
+        inst_t00   1 definition, 0 tags   +72
+        inst_t01   1 definition, 1 tag    +74
+        inst_t04   1 definition, 4 tags   +80
+        inst_t16   1 definition, 16 tags  +104
 
-    Exposure is bounded and one-time: ~8 bytes per array declaration,
-    which is 0.38% of a 10-element `STRING[200]` array and 0.0038% of a
-    1000-element one. Small, but it is the difference between a number
-    the tool can stand behind and one it cannot.
+    That is a flat +72 plus exactly **2 bytes per tag** of the alarm-source
+    type. And `noinst_t01/t04/t16` -- the same UDT and tags with NO
+    `<AlarmDefinitions>` element anywhere in the file -- measure 74/80/104,
+    **identical**. Whether an alarm definition exists changes nothing.
 
-    Wired behaviour today: a type name whose length was actually measured
-    gets its measured value and reports KNOWN; any other length falls back
-    to the 13-char value and stays FITTED. Real files depend on this —
-    `Long_String` (MurrayBros, SJ_Gormley) and `STRING_L010`/`L025`/`L050`/
-    `L512` (FlareFunction) are all 11 characters, measured at 4 and
-    previously charged 12.
+    So the alarm definitions cost nothing measurable, and the residual
+    belongs to the UDT. The +72 is very likely its BOOL members: this UDT
+    declares 16 BOOLs plus 2 hidden backing SINTs, and the `d0N` group's
+    2-member UDTs cost 8 each -- 4 bytes per member in both cases
+    (2 members -> 8, 18 members -> 72).
 
-    **Test files built 2026-09-10**, `gen_custom_string_array_closure.py`,
-    77 files. `csarrbase_len{01..24,28,32,36,40}_n010` sweeps the axis
-    densely at fixed maxlen and count; `csarrbase_ctl_len{04,08,11,13,16,
-    24,32,40}_scalar` are the subtraction controls that cancel the
-    definition cost out of the residual.
+    Not wired, because the plain `udt` family sits at a median of +2, so
+    a blanket per-member change would break 61 rows that are currently
+    right. The difference has to be the BOOL/BIT-alias shape specifically,
+    and that is exactly what `gen_alarm_separation.py` was built to
+    separate -- 33 files pairing every UDT shape with and without alarms,
+    already generated and still never converted.
 
-36. **OQ-STRARRAYLARGEN** — `string_array.builtin_confidence` is KNOWN off
-    six points that stop at n=100, and real programs run well past it.
-
-    The fit itself is clean — `array_base(6) + per_element(2) * n`, zero
-    residual at n=1/5/10/25/50/100. The problem is the domain, not the
-    formula: Elmsdale declares `STRING[200]`, MurrayBros `STRING[255]`, so
-    the engine is extrapolating up to 2.55x beyond its last measured point
-    and reporting certainty while doing it.
-
-    This is the leading suspect for the two worst real files. Predicted
-    STRING bytes are 88% of MurrayBros's total under-prediction (53,976
-    against 47,713) and 121% of Elmsdale's (47,872 against 58,161).
-    Nothing else in either file has that magnitude, and a block or page
-    allocation that engages above some element count is exactly the shape
-    that would produce it.
-
-    Same question applies to array-of-UDT, measured only to n=100 while
-    four real arrays run to 200. Atomic arrays (measured to 5,000) and
-    AOI-instance arrays (measured to 50, real max 21) are genuinely
-    covered and need nothing.
-
-    **Test files built 2026-09-10**: `strarrcount_n{0128,0161,0200,0255,
-    0400,0512,1000}`, plus `csarrcount_len13_n{0001..0008,0016,0025,0050,
-    0100,0161,0200,0255,0400,0512,1000}` for the custom-string equivalent.
-    The consecutive n=1..8 run is deliberate: the AOI-array model looked
-    exact on a sparse 1/10/25 ladder for months and actually follows
-    `8*ceil(n/2)`, an odd/even split no sparse ladder can detect.
+    **This is now the most promising open lead.** A per-BOOL-member
+    under-charge would touch every UDT in every real file, which is the
+    right shape for an error that scales with program size.
