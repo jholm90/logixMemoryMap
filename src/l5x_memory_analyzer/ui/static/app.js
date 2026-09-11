@@ -219,26 +219,62 @@ function fmtBlocks(n) {
 // So confidence is reported the way the bytes actually divide: what share
 // of this subtree's bytes rests on each basis. Leaves still show their own
 // single basis, which is exactly what a leaf's percentage degenerates to.
+// Byte-weighted confidence over a subtree.
+//
+// Two things this deliberately does NOT do, both of which it used to.
+//
+// It does not report 0% for a node that occupies no bytes. A BIT alias
+// member is zero bytes because its storage belongs to the hidden backing
+// SINT it points at -- there is nothing uncertain about it, and printing
+// "0% measured" against it read as a hole in the model when the real
+// answer is that the question does not apply. knownPct is null in that
+// case and callers render it as such.
+//
+// It does not let the answer depend on what happens to be loaded. Drill
+// children arrive lazily, so walking `n.children` gave a node one answer
+// before you expanded it and a different one after -- the reported
+// "0% fitted that becomes 100% fitted once you visit it and come back".
+// A node that still has unexpanded children now uses the subtree summary
+// the server sent with it, which is computed over the whole subtree and
+// is the same answer either way.
 function confidenceBreakdown(node) {
   const acc = { KNOWN: 0, FITTED: 0, ASSUMED: 0, UNKNOWN: 0 };
+  const add = (key, bytes) => {
+    const k = (key || "UNKNOWN").toUpperCase();
+    acc[k in acc ? k : "UNKNOWN"] += bytes;
+  };
   const visit = n => {
     const kids = n.children;
     if (kids && kids.length) {
       for (const k of kids) visit(k);
       return;
     }
-    const bytes = nodeValue(n);
-    const key = (n.basis || "UNKNOWN").toUpperCase();
-    acc[key in acc ? key : "UNKNOWN"] += bytes;
+    // Unexpanded but drillable: trust the server's subtree summary rather
+    // than the node's own single rolled-up basis, which is only the
+    // weakest tier present and says nothing about the mix.
+    if (n.confidence && n.confidence.total) {
+      for (const k of ["KNOWN", "FITTED", "ASSUMED", "UNKNOWN"]) {
+        add(k, n.confidence[k] || 0);
+      }
+      return;
+    }
+    add(n.basis, nodeValue(n));
   };
   visit(node);
   const total = acc.KNOWN + acc.FITTED + acc.ASSUMED + acc.UNKNOWN;
-  return { ...acc, total, knownPct: total ? (acc.KNOWN / total) * 100 : 0 };
+  return { ...acc, total, knownPct: total ? (acc.KNOWN / total) * 100 : null };
 }
 
 function confidenceBarHtml(node) {
   const c = confidenceBreakdown(node);
-  if (!c.total) return "";
+  // Zero bytes is not low confidence. Say why it is zero instead.
+  if (!c.total) {
+    return node.alias_of
+      ? `<div class="conf-label">no storage of its own &mdash; alias of ` +
+        `${escapeHtml(node.alias_of)}` +
+        (node.alias_bit != null ? `, bit ${node.alias_bit}` : "") + `</div>`
+      : `<div class="conf-label">no storage &mdash; nothing to measure</div>`;
+  }
   const seg = (v, cls) => v > 0
     ? `<span class="conf-seg ${cls}" style="width:${(v / c.total) * 100}%"></span>` : "";
   return `<div class="conf-bar">${seg(c.KNOWN, "conf-known")}${seg(c.FITTED, "conf-fitted")}` +
@@ -286,6 +322,15 @@ function programTagCountFor(node) {
 
 // An array tag should say so in its own label -- "Motors" and "Motors[64]"
 // are very different things to find in a memory map.
+// Tag, type and member names come out of the L5X, so they are file
+// content rather than anything this app controls, and several of these
+// labels are built with innerHTML. Escape before interpolating.
+function escapeHtml(value) {
+  return String(value == null ? "" : value)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
 function displayName(node) {
   const dims = node.dimensions || node.dims;
   if (Array.isArray(dims) && dims.length) return `${node.name}[${dims.join(",")}]`;
@@ -343,6 +388,19 @@ function routineCountFor(groupNode) {
 
 // ---- tabs ----
 
+// Depth and the Details split only mean anything to the treemap -- depth
+// controls how many levels nest inside a tile, and the split docks a pane
+// beside the SVG. On the List, Type Summary and Errors tabs they are dead
+// controls that still invite a click, so they are hidden rather than left
+// sitting there doing nothing.
+function syncTreemapOnlyControls(tab) {
+  const onTreemap = tab === "treemap";
+  for (const el of [document.querySelector(".depth-stepper"),
+                    document.getElementById("split-toggle")]) {
+    if (el) el.hidden = !onTreemap;
+  }
+}
+
 function setupTabs() {
   document.querySelectorAll(".tab-btn[data-tab]").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -350,9 +408,11 @@ function setupTabs() {
       document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
       btn.classList.add("active");
       document.getElementById(`panel-${btn.dataset.tab}`).classList.add("active");
+      syncTreemapOnlyControls(btn.dataset.tab);
       if (btn.dataset.tab === "treemap") renderTreemap();
     });
   });
+  syncTreemapOnlyControls("treemap");
 }
 
 // 2026-08-27: "Type/list should be always visible but hidden. if
@@ -1168,8 +1228,8 @@ function renderListInto(tableId) {
       (e.tier === "estimated" ? `<span class="tier-chip">ESTIMATED</span>` : "") +
       `</div>`;
     tr.innerHTML =
-      `<td>${e.name}${subNote}</td>` +
-      `<td>${e.data_type}</td>` +
+      `<td>${escapeHtml(e.name)}${subNote}</td>` +
+      `<td>${escapeHtml(e.data_type)}</td>` +
       `<td class="num">${Math.round(e.bytes).toLocaleString()}</td>` +
       `<td class="num">${e.pct_of_total.toFixed(2)}%</td>` +
       `<td class="num">${e.pct_of_controller.toFixed(2)}%</td>` +
@@ -1178,8 +1238,24 @@ function renderListInto(tableId) {
   }
 
   table.querySelectorAll("th").forEach(th => {
+    // Which column is sorted, and which way. Without this the table is
+    // sorted by something invisible and the only way to find out is to
+    // click a header and watch what moves.
+    const key = th.dataset.sort;
+    const active = key === SORT_STATE.key;
+    th.classList.toggle("sorted", active);
+    th.classList.toggle("sorted-asc", active && SORT_STATE.dir === 1);
+    th.classList.toggle("sorted-desc", active && SORT_STATE.dir === -1);
+    th.setAttribute("aria-sort", active
+      ? (SORT_STATE.dir === 1 ? "ascending" : "descending") : "none");
+    let caret = th.querySelector(".sort-caret");
+    if (!caret) {
+      caret = document.createElement("span");
+      caret.className = "sort-caret";
+      th.appendChild(caret);
+    }
+    caret.textContent = active ? (SORT_STATE.dir === 1 ? " \u25B2" : " \u25BC") : "";
     th.onclick = () => {
-      const key = th.dataset.sort;
       SORT_STATE.dir = SORT_STATE.key === key ? -SORT_STATE.dir : -1;
       SORT_STATE.key = key;
       renderList();
@@ -1210,8 +1286,18 @@ function renderTypeSummaryInto(elId) {
     totals[key] = (totals[key] || 0) + nodeValue(c);
   }
   const grandTotal = Object.values(totals).reduce((s, v) => s + v, 0);
+  // Two denominators, because they answer different questions. % of parent
+  // says how this type dominates the level you are looking at; % of
+  // controller says whether that matters at all against the whole file.
+  // Showing only the first makes a 200-byte type look like 90% of
+  // something.
+  const controllerTotal = (REPORT && REPORT.hierarchy ? nodeValue(REPORT.hierarchy) : 0) || grandTotal;
   const rows = Object.entries(totals)
-    .map(([data_type, bytes]) => ({ data_type, bytes, pct_of_total: grandTotal ? (bytes / grandTotal) * 100 : 0 }))
+    .map(([data_type, bytes]) => ({
+      data_type, bytes,
+      pct_of_total: grandTotal ? (bytes / grandTotal) * 100 : 0,
+      pct_of_controller: controllerTotal ? (bytes / controllerTotal) * 100 : 0,
+    }))
     .sort((a, b) => b.bytes - a.bytes);
 
   const maxPct = Math.max(...rows.map(t => t.pct_of_total), 1);
@@ -1224,9 +1310,10 @@ function renderTypeSummaryInto(elId) {
     // available via the title attribute on hover.
     row.innerHTML =
       `<div class="type-swatch" style="background:${colorForType(t.data_type)}"></div>` +
-      `<div class="type-name" title="${t.data_type}">${t.data_type}</div>` +
+      `<div class="type-name" title="${escapeHtml(t.data_type)}">${escapeHtml(t.data_type)}</div>` +
       `<div class="type-bar-wrap"><div class="type-bar" style="width:${(t.pct_of_total / maxPct) * 100}%"></div></div>` +
-      `<div class="type-bytes">${fmtBytes(t.bytes)} (${t.pct_of_total.toFixed(2)}%)</div>`;
+      `<div class="type-bytes">${fmtBytes(t.bytes)} (${t.pct_of_total.toFixed(2)}% here` +
+      `<span class="type-pct-controller"> &middot; ${t.pct_of_controller.toFixed(2)}% of controller</span>)</div>`;
     el.appendChild(row);
   }
 }

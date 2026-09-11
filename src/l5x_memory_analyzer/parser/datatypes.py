@@ -19,6 +19,13 @@ class Member:
     data_type: str
     dimension: int
     hidden: bool = False
+    # For a DataType="BIT" alias member only: the hidden backing member it
+    # addresses, and which bit of it. The storage belongs entirely to that
+    # backing SINT -- the alias costs nothing of its own -- so carrying the
+    # target through lets the UI say "alias of X, bit n" instead of showing
+    # a mysterious zero-byte member.
+    target: str | None = None
+    bit_number: int | None = None
 
     @property
     def is_bit_alias(self) -> bool:
@@ -61,6 +68,11 @@ def parse_data_types(root: ET.Element) -> dict[str, DataTypeDef]:
                         data_type=m_el.get("DataType"),
                         dimension=int(m_el.get("Dimension", "0")),
                         hidden=m_el.get("Hidden", "false").lower() == "true",
+                        target=m_el.get("Target"),
+                        bit_number=(
+                            int(m_el.get("BitNumber"))
+                            if m_el.get("BitNumber") is not None else None
+                        ),
                     )
                 )
         result[name] = DataTypeDef(

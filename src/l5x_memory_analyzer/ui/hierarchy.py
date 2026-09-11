@@ -9,6 +9,7 @@ from __future__ import annotations
 from l5x_memory_analyzer.parser.datatypes import DataTypeDef
 from l5x_memory_analyzer.parser.tags import CONTROLLER_SCOPE
 from l5x_memory_analyzer.sizing.constants import MemoryModel
+from l5x_memory_analyzer.sizing.tree import expand_definition_children
 from l5x_memory_analyzer.sizing.report import SizeEntry
 from l5x_memory_analyzer.sizing.tree import has_children as _has_children
 
@@ -21,6 +22,66 @@ def _scope_and_name(path: str) -> tuple[str, str]:
 UDT_GROUP_NAME = "User-Defined Data Types"
 AOI_GROUP_NAME = "Add-On Instructions"
 
+
+
+def _aoi_definition_containers(
+    definition_node: dict,
+    data_types: dict[str, DataTypeDef] | None,
+    model: MemoryModel | None,
+) -> list[dict]:
+    """Split an AOI's one-time definition cost into Overhead and Tags.
+
+    An AOI reads as three things to the person looking at it -- what the
+    definition costs to exist, what its parameters and local tags cost,
+    and what its routines cost -- and the flat member list buried the
+    first two together. The caller adds the Routines container, because
+    those costs are separate SizeEntries that already exist rather than
+    part of the definition figure.
+
+    Deliberately does NOT invent rows on an AOI INSTANCE. A definition's
+    overhead and routines are one-time costs charged once at the
+    definition; repeating them under each instance would make the tree
+    stop summing to the controller total, which is the one property the
+    whole treemap depends on.
+
+    Falls back to the single flat node whenever the split cannot be
+    computed, so a caller without data_types/model still gets a tree.
+    """
+    name = definition_node.get("name")
+    path = definition_node.get("path") or ""
+    if not (data_types and model) or name not in data_types:
+        return [{**definition_node, "name": "Definition"}]
+    if not data_types[name].is_aoi:
+        return [{**definition_node, "name": "Definition"}]
+    try:
+        children = expand_definition_children(name, data_types, model)
+    except Exception:
+        return [{**definition_node, "name": "Definition"}]
+
+    overhead = [c for c in children if c.data_type == "OVERHEAD"]
+    tags = [c for c in children if c.data_type != "OVERHEAD"]
+
+    def wrap(child) -> dict:
+        return {
+            "name": child.name, "path": f"{path}{child.segment}",
+            "value": child.bytes, "data_type": child.data_type,
+            "basis": child.basis,
+        }
+
+    containers = []
+    if overhead:
+        containers.append({
+            "name": "Overhead", "path": f"{path}/Overhead",
+            "value": sum(c.bytes for c in overhead),
+            "children": [wrap(c) for c in overhead],
+        })
+    if tags:
+        containers.append({
+            "name": "Tags", "path": f"{path}/Tags",
+            "value": sum(c.bytes for c in tags),
+            "children": [wrap(c) for c in tags],
+        })
+    return containers or [{**definition_node, "name": "Definition"}]
 
 def build_hierarchy(
     entries: list[SizeEntry],
@@ -202,14 +263,20 @@ def build_hierarchy(
             for k in kids:
                 own = by_aoi.pop(k["name"], None)
                 if own:
-                    # The definition keeps its own cost as a sibling entry so
-                    # the parent total stays the sum of its children.
                     attached.append({
                         "name": k["name"], "path": k["path"],
-                        "children": [{**k, "name": "Definition"}] + own,
+                        "children": _aoi_definition_containers(k, data_types, model)
+                        + [{
+                            "name": "Routines", "path": f"{k['path']}/Routines",
+                            "value": sum(r.get("value", 0) for r in own),
+                            "children": own,
+                        }],
                     })
                 else:
-                    attached.append(k)
+                    attached.append({
+                        "name": k["name"], "path": k["path"],
+                        "children": _aoi_definition_containers(k, data_types, model),
+                    } if _aoi_definition_containers(k, data_types, model) else k)
             # An AOI with routines but no priced definition still shows up.
             for owner, own in by_aoi.items():
                 attached.append({

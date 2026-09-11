@@ -12,7 +12,7 @@ airgapped.
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from flask import Flask, Response, jsonify, request
@@ -31,6 +31,7 @@ from l5x_memory_analyzer.sizing.tree import (
     NotDrillableError,
     expand_children,
     expand_definition_children,
+    subtree_confidence,
     resolve_type_at_path,
 )
 from l5x_memory_analyzer.sizing.udt import RecursiveUdtError, UnknownDataTypeError
@@ -52,6 +53,10 @@ class DocState:
     report_json: dict
     entries: list[SizeEntry]
     errors: list[SizeError]
+    # Memo for _child_confidence, keyed (data_type, dimensions). Per
+    # document, so it is discarded with the document rather than leaking
+    # one file's types into the next.
+    confidence_cache: dict = field(default_factory=dict)
 
 
 def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
@@ -157,6 +162,34 @@ def _program_tag_counts(entries) -> dict[str, int]:
         counts[program] = counts.get(program, 0) + 1
     return counts
 
+
+
+def _child_confidence(child, state):
+    """Subtree confidence mix for one drill child, memoised per type+dims.
+
+    Only drillable children need it -- a leaf's own basis and bytes
+    already say everything there is to say. Memoised because a wide UDT
+    repeats the same member types, and an array repeats one element type
+    many times over.
+    """
+    if not child.has_children:
+        return None
+    key = (child.data_type, child.dimensions)
+    cache = state.confidence_cache
+    if key not in cache:
+        try:
+            acc = subtree_confidence(
+                child.data_type, child.dimensions, state.data_types, state.model
+            )
+        except Exception:
+            # A type the sizer cannot expand is not a UI failure; fall
+            # back to the child's own rolled-up basis.
+            acc = None
+        cache[key] = acc
+    acc = cache[key]
+    if acc is None:
+        return None
+    return {**acc, "total": sum(acc.values())}
 
 def create_app(l5x_path: str | Path | None = None) -> Flask:
     app = Flask(__name__, static_folder=str(STATIC_DIR), static_url_path="")
@@ -303,9 +336,22 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
                         "name": c.name,
                         "segment": c.segment,
                         "data_type": c.data_type,
+                        # Dimensions travel with every drilled child so an
+                        # array member renders as "Queue[24]" the way a
+                        # top-level array tag already does. Child has
+                        # always carried this; the payload simply dropped
+                        # it, so a UDT/AOI array member was indistinguish-
+                        # able from a scalar once you drilled into it.
+                        "dimensions": list(c.dimensions),
                         "value": c.bytes,
                         "basis": c.basis,
                         "has_children": c.has_children,
+                        "alias_of": c.alias_of,
+                        "alias_bit": c.alias_bit,
+                        # Whole-subtree confidence mix, so the client's
+                        # rollup does not change depending on which
+                        # children it happens to have fetched.
+                        "confidence": _child_confidence(c, state),
                     }
                     for c in children
                 ]
@@ -336,9 +382,22 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
                         "name": c.name,
                         "segment": c.segment,
                         "data_type": c.data_type,
+                        # Dimensions travel with every drilled child so an
+                        # array member renders as "Queue[24]" the way a
+                        # top-level array tag already does. Child has
+                        # always carried this; the payload simply dropped
+                        # it, so a UDT/AOI array member was indistinguish-
+                        # able from a scalar once you drilled into it.
+                        "dimensions": list(c.dimensions),
                         "value": c.bytes,
                         "basis": c.basis,
                         "has_children": c.has_children,
+                        "alias_of": c.alias_of,
+                        "alias_bit": c.alias_bit,
+                        # Whole-subtree confidence mix, so the client's
+                        # rollup does not change depending on which
+                        # children it happens to have fetched.
+                        "confidence": _child_confidence(c, state),
                     }
                     for c in children
                 ]

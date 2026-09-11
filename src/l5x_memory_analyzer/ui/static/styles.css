@@ -458,3 +458,17 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
   white-space: pre-wrap; word-break: break-all;
   max-height: 140px; overflow: hidden;
 }
+
+/* Sorted-column indicator. The caret says which way; the weight and rule
+   say which column, so the signal survives at a glance without having to
+   find a small glyph. */
+#list-table th.sorted,
+#list-table-dock th.sorted {
+  font-weight: 700;
+  box-shadow: inset 0 -2px 0 var(--accent, #4a90d9);
+}
+.sort-caret { font-size: 0.75em; opacity: 0.85; }
+
+/* Second denominator in the type summary -- dimmer, because % of the
+   level you are looking at is the primary reading. */
+.type-pct-controller { opacity: 0.65; }

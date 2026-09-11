@@ -2107,6 +2107,47 @@ logic_instructions:
     # 2026-08-23, wired in 2026-08-25 (was sitting derived-but-unwired).
     MAH: 60
     MSO: 60
+    # Wired 2026-09-11. All eight had captured count sweeps sitting
+    # unreconciled and were being charged ZERO, which is not a small
+    # error on a real file: AccuTally alone calls MCSV 4 times, MSF
+    # twice, MAW once and the bitwise AND seven times.
+    #
+    # Every slope is exact -- differenced between consecutive count
+    # points, so the shared per-file base cancels, and the implied base
+    # then agrees across all points of the sweep:
+    #
+    #   AND   n=10/100/1000  40/rung, base 20,120 at every point
+    #   MCSV  n=10/100/1000  96/rung, base 19,040 (equals the prediction)
+    #   LOG   n=10/100/1000  60/rung, base 18,288 (equals the prediction)
+    #   SIN   n=10/100/1000  60/rung, base 18,288 (equals the prediction)
+    #   MSF   n=10/100       60/rung, base 43,176
+    #   MAW   n=10/100      128/rung, base 43,176
+    #   MAR   n=10/100      196/rung, base 43,176
+    #   MDR   n=10/100       68/rung, base 43,176
+    #
+    # The four motion instructions share the identical implied base
+    # because they share a generator and differ only in the mnemonic --
+    # which is what makes their single slope trustworthy despite having
+    # two points each rather than three.
+    #
+    # AND is the bitwise ladder instruction, not the CPT/ST operator of
+    # the same name; the expression model prices that separately.
+    AND: 40
+    MCSV: 96
+    LOG: 60
+    SIN: 60
+    MSF: 60
+    MAW: 128
+    MAR: 196
+    MDR: 68
+    # COS and OR complete the same batch. Measured, not assumed by
+    # symmetry with SIN and AND -- the sweeps exist and were checked:
+    #   COS  n=10/100/1000  60/rung, base 18,288 (matches SIN exactly)
+    #   OR   n=10/100/1000  40/rung, base 20,120 (matches AND exactly)
+    # They do land on their siblings' values, which is reassuring, but
+    # the point is that the data says so rather than the naming.
+    COS: 60
+    OR: 40
     # MAM/MAJ/MAS/MRP: RESOLVED 2026-08-26 (was BUILD FAILED, OQ-MAMFAMILY).
     # Original generator used MAH/MSO's own bare 2-operand shape for these
     # 4 -- a real generator bug, not a Rockwell syntax question. Fixed with

@@ -20,6 +20,7 @@ from l5x_memory_analyzer.sizing.confidence import weakest
 from l5x_memory_analyzer.sizing.constants import MemoryModel
 from l5x_memory_analyzer.sizing.udt import (
     RecursiveUdtError,
+    UnknownDataTypeError,
     compute_array_size,
     compute_element_size,
     custom_string_maxlen,
@@ -52,6 +53,12 @@ class Child:
     bytes: float  # float for packed-BOOL-array elements' proportional share; int otherwise
     basis: str
     has_children: bool
+    # Set only on a BIT alias member: where its storage actually lives.
+    # A zero-byte member with no explanation reads as a gap in the model;
+    # naming the backing SINT and bit says the size is zero because the
+    # bytes are charged elsewhere, which is a fact, not an absence.
+    alias_of: str | None = None
+    alias_bit: int | None = None
 
 
 def has_children(
@@ -69,6 +76,58 @@ def has_children(
     # predefined structure with a confirmed total but no confirmed per-field
     # breakdown yet (SFC_STEP/SFC_ACTION/etc, model.predefined_structures
     # but not _THREE_FIELD_PREDEFINED) -- all true leaves for drill purposes.
+
+
+def subtree_confidence(
+    data_type: str,
+    dimensions: tuple[int, ...],
+    data_types: dict[str, DataTypeDef],
+    model: MemoryModel,
+    _stack: frozenset[str] = frozenset(),
+) -> dict[str, float]:
+    """Byte-weighted {tier: bytes} over the WHOLE subtree under a node.
+
+    The UI used to derive this by walking whatever children the browser
+    had lazily fetched, which gave a node one answer before it was
+    expanded and a different one afterwards. Computing it here makes the
+    answer a property of the data instead of a property of the browsing
+    history.
+
+    Arrays are summarised by pricing ONE element and multiplying, rather
+    than walking N identical elements -- a 1,024-element array of a UDT
+    would otherwise cost 1,024 identical traversals to reach the same
+    numbers.
+    """
+    acc: dict[str, float] = {"KNOWN": 0.0, "FITTED": 0.0, "ASSUMED": 0.0, "UNKNOWN": 0.0}
+
+    def tally(child: Child, multiplier: int = 1) -> None:
+        if child.has_children:
+            try:
+                inner = subtree_confidence(
+                    child.data_type, child.dimensions, data_types, model, _stack
+                )
+            except (NotDrillableError, RecursiveUdtError, UnknownDataTypeError):
+                inner = None
+            if inner and sum(inner.values()):
+                for tier, value in inner.items():
+                    acc[tier] = acc.get(tier, 0.0) + value * multiplier
+                return
+        tier = (child.basis or "UNKNOWN").upper()
+        acc[tier if tier in acc else "UNKNOWN"] += child.bytes * multiplier
+
+    if dimensions:
+        count = math.prod(dimensions)
+        if count <= 0:
+            return acc
+        # One representative element, scaled. Element children are
+        # identical by construction, so this is exact, not an estimate.
+        element = expand_children(data_type, dimensions, data_types, model, _stack)[0]
+        tally(element, count)
+        return acc
+
+    for child in expand_children(data_type, dimensions, data_types, model, _stack):
+        tally(child)
+    return acc
 
 
 def expand_children(
@@ -137,7 +196,10 @@ def _expand_udt(
             # 0-byte, but still surfaced so a UDT's individual BOOL bits are
             # visible/clickable down to "bit level" rather than disappearing
             # into their backing SINT's byte count.
-            children.append(Child(member.name, f".{member.name}", "BIT", (), 0, "KNOWN", False))
+            children.append(Child(
+                member.name, f".{member.name}", "BIT", (), 0, "KNOWN", False,
+                alias_of=member.target, alias_bit=member.bit_number,
+            ))
             continue
         dims = (member.dimension,) if member.dimension > 0 else ()
         size, basis = compute_array_size(member.data_type, dims, data_types, model, stack)
