@@ -2136,6 +2136,39 @@ the matching footnote at the bottom, not inline.
         SINT appears, and where the alarmsep law needed floor(b/2) rather
         than a flat per-member rate.
 
+    **HOLE FOUND IN THAT BATCH, 2026-09-11, same day.** All 24 `udtmn_*`
+    files carry `tags_xml=""`. Zero tags, in every arm. So whatever they
+    measure, they measure it PER DEFINITION, and they are structurally
+    incapable of saying whether the same term is ALSO charged per tag of the
+    type. That distinction is the whole of the real-file exposure: AccuTally
+    carries 33,574 UDT tags against 174 UDT definitions -- 193 tags per
+    definition -- so a per-definition name term and a per-tag one differ by
+    more than two orders of magnitude on that file. It is the identical
+    failure mode OQ-DEFSCALE's captured sweeps hit from the other direction.
+
+    `gen_udt_membername2.py`, **23 more files**, built from the same
+    `_member_name()` / `_type_name()` so every arm differences straight
+    against the 24 pending ones. Type names stay at 8 characters throughout,
+    and the engine predicts IDENTICALLY across name length in every arm, so
+    every difference is a measurement:
+
+      - `udtmn2_bool_len{02,16,32}_b04_t{01,05,25}` (9) — the same 4-BOOL UDT
+        at three name lengths with 1/5/25 tags of it; the t=0 point already
+        exists. Per-definition means the length effect is identical at every
+        t; per-tag means it grows 25x across the arm.
+      - `udtmn2_dint_len{02,32}_n04_t{01,25}` (4) — the same on DINT. A
+        BOOL-specific explanation was already assumed once and was wrong
+        (OQ-UDTBOOLMEMBER), so no name-length result is believed on BOOL
+        evidence alone.
+      - `udtmn2_nest_len{02,32}` (2) — an outer UDT whose 4 members are each
+        an inner UDT with 4 members at the swept length. Are a nested type's
+        member names charged again inside every containing definition? If so
+        the cost compounds with nesting depth, and real programs nest heavily.
+      - `udtmn2_bool_len32_b04_arr{010,100}` (2) — one tag that is an array of
+        10/100 elements. Per-tag applies once; per-element multiplies.
+      - `udtmn2_aoi_{plen,llen}{02,16,32}` (6) — the same question for an AOI's
+        PARAMETER and LOCAL TAG names, which no generator has ever varied.
+
     **Do not oversell this as the fix for the real-file error.** Checked
     directly: the real-file deficit per declared member/parameter/local tag
     ranges from **+15 to −46 bytes** across the 16 real programs, and four
