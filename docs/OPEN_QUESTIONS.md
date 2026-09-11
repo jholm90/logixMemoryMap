@@ -1355,73 +1355,92 @@ the matching footnote at the bottom, not inline.
     That is two error messages for 9 of the 11 files.
 
 
-23. **OQ-DEFSCALE** — new, 2026-09-04. **Now the single largest identified
-    gap on real files, and the direct successor to OQ-SHELLSCALE.**
+23. **OQ-DEFSCALE** — definition- and instance-count scaling. **CAPTURED
+    AND RECONCILED 2026-09-11, all 30 files, zero import errors. Four exact
+    linear laws, none of them wired, and the reason is a confound, not a
+    doubt about the numbers.**
 
-    With shells refit from isolation and alarms exact, all nine real
-    programs still under-predict, every one of them:
+    All four sweeps came back perfectly linear with zero residual:
 
-    | file | actual | predicted | delta |
-    |---|---:|---:|---:|
-    | `murraybros_20260122r1` | 923,320 | 850,077 | **−7.93%** |
-    | `ipc_edgerline_20251217r1` | 2,255,773 | 2,142,530 | −5.02% |
-    | `accutally_20260803` | 5,999,972 | 5,747,134 | −4.21% |
-    | `emporiumedger_20250905r1` | 1,703,932 | 1,640,431 | −3.73% |
-    | `cmu_2025_10_14r00` | 5,217,440 | 5,066,834 | −2.89% |
-    | `pukall_gang_20260414_r00` | 2,502,336 | 2,437,207 | −2.60% |
-    | `emporium_2025_05_28r01` | 7,136,625 | 6,970,969 | −2.32% |
-    | `k3m16_edgers_20220808r00` | 4,044,994 | 3,966,805 | −1.93% |
-    | `mrfp_edger_2026_06_01_r00` | 2,281,316 | 2,259,476 | −0.96% |
+        defscale_aoidefs_n*    over-prediction = +3 x n          7 points
+        defscale_aoiinst_n*    over-prediction = -264 - 157 x n  7 points
+        defscale_udts_n*       over-prediction = -16 x n         8 points
+        defscale_udttag_n*     over-prediction = -19 x n         8 points
 
-    Mean absolute error **3.51%**, 1 of 9 inside the <1% North Star target.
-    Every single one under-predicts, so this is a missing cost, not noise.
+    Subtracting the paired sweeps: an AOI **definition** is over-charged by
+    **3** bytes; an **instantiated** AOI is under-charged by **160** per unit
+    plus **264** once; a **UDT definition** is under-charged by **16**; a UDT
+    that has a tag is under-charged by a further **3**.
 
-    Re-regressing the residual against structure AFTER the shell refit
-    (the refit is what makes this reading meaningful — it removed the
-    collinear program/routine signal that previously dominated):
+    Applied to the sixteen real programs those four numbers give:
 
-        aoidefs    r=+0.878          routines   r=+0.581
-        udts       r=+0.838          rungs      r=+0.545
-        tags       r=+0.709          programs   r=+0.431
-        sttext     r=+0.629          instrs     r=+0.388
+        mean |error|   2.17%  ->  1.63%
+        within 1%          4  ->  6
+        within 2%          9  ->  11
 
-    Programs and routines fell from +0.871/+0.829 to +0.431/+0.581 once
-    their own constants were correct — which is exactly what a collinear
-    artefact does when the real term underneath it gets fixed.
+    and they move every file UP — the direction the real files need, and the
+    opposite direction to OQ-MODULEMARGINAL's module over-charge. The two
+    together are the clearest evidence yet that the real-file residual is
+    composed of large offsetting terms rather than one missing cost.
 
-    **Why the existing corpus cannot answer this, checked before fitting
-    anything.** Across all 1,961 captured non-real files the maximum is
-    **7 AOI definitions** and **6 UDTs**, and 308 of the 312 files
-    containing any AOI at all have exactly ONE. The nine real programs
-    carry **11–39 AOI definitions and 53–174 UDTs**. So every real-file
-    prediction extrapolates per-definition cost 5×–30× past the largest
-    point it was ever measured at, on both axes simultaneously. The 127
-    existing `*_def_only` files vary what is *inside* one definition
-    (param count, param type, local tags, name length, packing) — never
-    how many definitions exist.
+    **Why it is not wired: every sweep varies two things at once.**
+    `defscale_aoiinst_n` holds n definitions, each with exactly ONE instance
+    tag AND exactly ONE calling rung, so n = definitions = instance tags =
+    calls, and "160 per instance tag", "160 per AOI call" and "160 extra for
+    a definition that is instantiated at all" fit all seven points
+    identically. `defscale_udttag_n` holds n UDTs with ONE tag each, so "3
+    per UDT tag" and "3 once for a UDT that has any tag" fit all eight.
 
-    That is the identical shape of the error OQ-SHELLSCALE just caught:
-    a constant fitted at n=2 and extrapolated to n=200, wrong by 8
-    bytes/unit, invisible at n=2 and worth 1.97% at n=200.
+    On a real program those readings are nowhere near each other. AccuTally
+    carries 902 AOI instances across 39 definitions and 33,574 UDT tags
+    across 174 UDT definitions:
 
-    **Deliberately NOT fitted from the real files.** On a real project
-    aoidefs, udts, tags and rungs all move together; that collinearity has
-    now produced four wrong fits in a row (three surcharge fits, then the
-    shell hypothesis). `gen_defscale.py` (30 files) isolates it instead:
+        per instance / per tag   160 x 902 + 3 x 33,574  = +245,042
+        per definition           160 x  39 + 3 x    174  =   +6,762
 
-    | sweep | varies | span | current model's slope |
-    |---|---|---|---|
-    | `defscale_aoidefs_n*` | AOI definitions, zero instances | 1→60 | 1,292/def |
-    | `defscale_aoiinst_n*` | same defs, one instance each | 1→60 | 1,412/def |
-    | `defscale_udts_n*` | UDT definitions, zero tags | 1→200 | 248/UDT |
-    | `defscale_udttag_n*` | same UDTs, one tag each | 1→200 | 349/UDT |
+    238 KB apart on one file, 4% of it — the same structural ambiguity as
+    OQ-MODULEMARGINAL's per-catalog-vs-per-file question, in a different cost
+    category, and it gets measured for the same reason: on this project the
+    tidier reading has been wrong before.
 
-    Spans deliberately bracket the real files on both sides, so a measured
-    slope is interpolation on a real program rather than extrapolation.
-    The model currently predicts a perfectly straight line in each sweep,
-    so any slope error or curvature will be unambiguous. The paired
-    with/without-instance sweeps separate definition cost from instance
-    cost at scale, which no existing file does. **Blocked on capture.**
+    **Test files built 2026-09-11, `gen_defscale2.py`, 39 files.** Every
+    definition is built from `gen_defscale`'s own `_aoi_members()` /
+    `_udt_members()`, so they are byte-identical to the captured sweep and
+    difference straight against it. The model's own prediction is a perfectly
+    straight line across every new sweep (112/instance tag, 101/UDT tag,
+    20/AOI array element, 12/UDT array element, and **0 per call**), so any
+    slope error or curvature in the capture is unambiguous.
+
+    | arm | files | what is pinned | what it decides |
+    |---|---:|---|---|
+    | `dscale2_aoi_d001_t*_call` | 8 | 1 definition | slope is per-INSTANCE, not per-definition (1→100 instances) |
+    | `dscale2_aoi_d001_t*_nocall` | 4 | 1 definition, no logic | splits the instance TAG from its CALL |
+    | `dscale2_aoi_d001_t001_c*` | 3 | 1 definition, 1 instance | the converse: call count varies alone. The model charges 0 per call, so any movement here is pure call cost |
+    | `dscale2_aoi_d*_t*_nocall` | 3 | — | `defscale_aoiinst_n{05,20,60}` minus its calling rungs, for a direct difference at real-file scale |
+    | `dscale2_aoi_arr*` | 3 | 1 definition, 1 tag | per-instance or per-tag: an ARRAY of 2/10/50 instances |
+    | `dscale2_udt_u001_t*` | 9 | 1 UDT definition | slope is per-TAG, not per-definition (1→500 tags) |
+    | `dscale2_udt_u{005,025}_t*` | 5 | — | definition count x tag count crossed: additive or interacting |
+    | `dscale2_udt_arr*` | 4 | 1 UDT, 1 tag | per-element or per-tag, 2→500 elements |
+
+    `dscale2_udt_u001_t001` is byte-identical to the already-captured
+    `defscale_udttag_n001` and is kept deliberately: it anchors the new
+    sweep's intercept in the same capture run and doubles as a
+    run-to-run reproducibility check.
+
+    **Not covered, and reported rather than guessed:** program-scoped
+    structure tags. A Program-scoped ATOMIC tag has a confirmed real shape
+    (`program_tag_xml`, dual L5K+Decorated), but no real corpus file has been
+    read for a Program-scoped UDT or AOI-instance tag — and real programs put
+    most of their instances there. Building one from a guessed shape would
+    put an unverified XML shape inside the experiment meant to settle the
+    question. It needs a real export first.
+
+    **The original framing of this item stands and is now confirmed rather
+    than suspected.** Across all captured non-real files the maximum was 7
+    AOI definitions and 6 UDTs, while the real programs carry 11–39
+    definitions and 51–174 UDTs; the first batch to bracket them found an
+    exact error at every point. What the first batch could not do was
+    attribute it, which is what the 39 new files are for.
 
 
 24. **OQ-SHELLCONST** — new, 2026-09-04, split out of OQ-SHELLSCALE. Two

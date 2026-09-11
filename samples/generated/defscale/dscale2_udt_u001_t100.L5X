@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Dscale2Udt001T100" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 11 22:31:30 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Dscale2Udt001T100" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 11 22:31:30 2026" LastModifiedDate="Fri Sep 11 22:31:30 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+    <DataType Name="Udt_D000" Family="NoFamily" Class="User">
+      <Members>
+      <Member Name="MemA" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="MemB" DataType="REAL" Dimension="0" Hidden="false"/>
+      <Member Name="ZZZZZZZZZZBoolMember00" DataType="SINT" Dimension="0" Hidden="true"/>
+      <Member Name="MemC" DataType="BIT" Dimension="0" Hidden="false" Target="ZZZZZZZZZZBoolMember00" BitNumber="0"/>
+      </Members>
+    </DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+      <Tag Name="TagU000N000" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N001" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N002" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N003" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N004" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N005" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N006" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N007" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N008" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N009" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N010" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N011" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N012" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N013" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N014" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N015" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N016" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N017" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N018" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N019" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N020" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N021" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N022" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N023" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N024" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N025" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N026" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N027" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N028" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N029" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N030" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N031" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N032" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N033" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N034" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N035" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N036" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N037" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N038" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N039" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N040" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N041" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N042" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N043" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N044" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N045" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N046" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N047" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N048" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N049" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N050" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N051" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N052" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N053" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N054" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N055" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N056" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N057" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N058" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N059" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N060" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N061" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N062" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N063" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N064" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N065" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N066" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N067" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N068" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N069" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N070" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N071" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N072" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N073" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N074" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N075" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N076" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N077" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N078" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N079" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N080" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N081" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N082" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N083" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N084" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N085" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N086" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N087" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N088" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N089" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N090" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N091" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N092" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N093" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N094" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N095" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N096" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N097" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N098" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TagU000N099" TagType="Base" DataType="Udt_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Udt_D000"><DataValueMember Name="MemA" DataType="DINT" Value="0" /><DataValueMember Name="MemB" DataType="REAL" Value="0.0" /><DataValueMember Name="MemC" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>
