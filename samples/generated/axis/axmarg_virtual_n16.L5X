@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="AxMargVirt16" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 11 23:16:10 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="AxMargVirt16" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 11 23:16:10 2026" LastModifiedDate="Fri Sep 11 23:16:10 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+      <Tag Name="Motion" TagType="Base" DataType="MOTION_GROUP" ExternalAccess="Read/Write">
+        <Data Format="MotionGroup">
+<MotionGroupParameters CoarseUpdatePeriod="2000" PhaseShift="0" GeneralFaultType="Non Major Fault" AutoTagUpdate="Enabled" Alternate1UpdateMultiplier="1" Alternate2UpdateMultiplier="1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Vax01" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="Motion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"
+ HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"
+ InterpolatedPositionConfiguration="16#0000_0002" AxisID="398634027" AxisUpdateSchedule="Alternate 1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Vax02" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="Motion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"
+ HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"
+ InterpolatedPositionConfiguration="16#0000_0002" AxisID="268378629" AxisUpdateSchedule="Alternate 1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Vax03" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="Motion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"
+ HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"
+ InterpolatedPositionConfiguration="16#0000_0002" AxisID="418818301" AxisUpdateSchedule="Alternate 1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Vax04" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="Motion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"
+ HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"
+ InterpolatedPositionConfiguration="16#0000_0002" AxisID="558234604" AxisUpdateSchedule="Alternate 1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Vax05" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="Motion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"
+ HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"
+ InterpolatedPositionConfiguration="16#0000_0002" AxisID="692309034" AxisUpdateSchedule="Alternate 1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Vax06" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="Motion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"
+ HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"
+ InterpolatedPositionConfiguration="16#0000_0002" AxisID="128351155" AxisUpdateSchedule="Alternate 1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Vax07" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="Motion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"
+ HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"
+ InterpolatedPositionConfiguration="16#0000_0002" AxisID="754293016" AxisUpdateSchedule="Alternate 1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Vax08" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="Motion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"
+ HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"
+ InterpolatedPositionConfiguration="16#0000_0002" AxisID="835935086" AxisUpdateSchedule="Alternate 1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Vax09" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="Motion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"
+ HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"
+ InterpolatedPositionConfiguration="16#0000_0002" AxisID="859254667" AxisUpdateSchedule="Alternate 1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Vax10" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="Motion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"
+ HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"
+ InterpolatedPositionConfiguration="16#0000_0002" AxisID="838592350" AxisUpdateSchedule="Alternate 1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Vax11" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="Motion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"
+ HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"
+ InterpolatedPositionConfiguration="16#0000_0002" AxisID="773978761" AxisUpdateSchedule="Alternate 1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Vax12" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="Motion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"
+ HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"
+ InterpolatedPositionConfiguration="16#0000_0002" AxisID="327133852" AxisUpdateSchedule="Alternate 1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Vax13" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="Motion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"
+ HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"
+ InterpolatedPositionConfiguration="16#0000_0002" AxisID="117788803" AxisUpdateSchedule="Alternate 1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Vax14" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="Motion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"
+ HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"
+ InterpolatedPositionConfiguration="16#0000_0002" AxisID="888608097" AxisUpdateSchedule="Alternate 1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Vax15" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="Motion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"
+ HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"
+ InterpolatedPositionConfiguration="16#0000_0002" AxisID="255377103" AxisUpdateSchedule="Alternate 1"/>
+        </Data>
+      </Tag>
+      <Tag Name="Vax16" TagType="Base" DataType="AXIS_VIRTUAL" ExternalAccess="Read/Write">
+        <Data Format="Axis">
+<AxisParameters MotionGroup="Motion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" PositionUnits="Percentage" AverageVelocityTimebase="0.25" RotaryAxis="Rotary" PositionUnwind="800000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000"
+ HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="100.0" MaximumAcceleration="300.0" MaximumDeceleration="300.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="1500.0" MaximumDecelerationJerk="1500.0" DynamicsConfigurationBits="7"
+ InterpolatedPositionConfiguration="16#0000_0002" AxisID="434107771" AxisUpdateSchedule="Alternate 1"/>
+        </Data>
+      </Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

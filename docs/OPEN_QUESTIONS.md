@@ -2354,3 +2354,85 @@ the matching footnote at the bottom, not inline.
     racks (JB101_IO, C102_IO, MCP101_IO — 19 cards), all currently priced
     at either a flat 1,672 they do not cost or, for the rack-aliased ones,
     at zero.
+
+
+42. **OQ-AXISMARGINAL** — new 2026-09-11, and the largest single-sign
+    unreconciled block in the corpus. Found by `scripts/unreconciled.py`, also
+    new that day, which recomputes every captured row against the CURRENT
+    engine: **1,601 of 2,770 captured rows sit outside +-8 bytes**, and the
+    worst family by magnitude is the 31-row axis set, captured 2026-09-03.
+
+    Every `axis_scale_*` file with n>=2 over-predicts, monotonically, to
+    **+62,528 bytes (+10.5%)** at 20 axes. Both arms are perfectly linear in
+    axis count with zero residual at every step:
+
+        single-axis drives   +3,288 per axis    n = 2,4,6,8,12,16,20
+        dual-axis drives     +2,600 per axis    n = 2,4,6,8,12,16,20
+
+    and the two shared base points (n=1 single, n=2 dual) both sit at +56 —
+    exact. So the FIRST axis in a file is priced right and every one after it
+    is not. This is a marginal error, not a base-constant error, which matters
+    because `AXIS_CIP_DRIVE` was promoted FITTED -> KNOWN earlier the same day
+    on single-axis evidence. That promotion is correct for one axis and wrong
+    for the twentieth, and the entry should be read that way until this
+    closes.
+
+    Real exposure: the sixteen real programs carry **359 AXIS_CIP_DRIVE and 65
+    AXIS_VIRTUAL** tags. At the single-arm rate that is roughly **650 KB** of
+    over-prediction sitting inside the real totals, the same order as
+    OQ-MODULEMARGINAL's 824,864 — and in the same direction, so the two
+    together are most of what the under-predicting real files are being
+    compensated by.
+
+    **Why the two arms do not decompose on their own.** The naive subtraction
+    gives a clean-looking answer:
+
+        single: 1 module per axis      A + M    = 3,288
+        dual:   1 module per 2 axes    A + M/2  = 2,600
+        -> M = 1,376, A = 1,912   (A identical from both arms)
+
+    It is not valid, for two reasons that come from reading the files rather
+    than the numbers:
+
+      - The single arm is 8 x 2198-S086-ERS3, **one catalog repeated**. The
+        dual arm is one each of D012/D020/D032/D057, **four distinct
+        catalogs**, repeating only as n grows. OQ-MODULEMARGINAL's open
+        question is exactly whether the module discount is per catalog or per
+        file, so `M` is not the same quantity in the two arms.
+      - **Every one of these 31 files carries `error_count = n+1` with an
+        EMPTY `error_log`.** All 144 errored rows in the manifest were
+        captured between 2026-08-23 and 2026-09-08; the error-log reader in
+        `logix_build_capture.ahk` only began working 2026-09-10, so not one of
+        them has any error text on record. The n=1 file has 2 errors and is
+        still byte-exact, which suggests they are benign — but that is an
+        inference, and this is the direct reason a 31-row family with a 10%
+        systematic error sat unexamined: there was no way to tell whether the
+        rows were trustworthy. **The 144 errored rows need recapture under the
+        current tooling**, and that is the single highest-value thing the
+        capture rig can do.
+
+    **Test files built 2026-09-11, `gen_axis_marginal.py`, 16 files.**
+
+      - `axmarg_virtual_n{01,02,04,08,12,16,20}` (7) — the decoupling arm.
+        AXIS_VIRTUAL needs no drive module at all, so a count sweep with ZERO
+        modules in the file measures the per-axis term with nothing to share
+        it with, which neither captured arm can do. Real programs carry 65 of
+        these, so it is their real shape.
+      - `axmarg_1cat_n{02,04,08,12,20}` (5) — the same axis and module counts
+        as the captured `axis_scale_n*_dual`, but ONE catalog repeated instead
+        of four distinct. Same axes, same modules, only catalog repetition
+        differs.
+      - `axmarg_ncat_n08_{1,2,4}cat` (3) — axis count AND module count both
+        pinned at 8 and 5; only the number of distinct catalogs moves. All
+        three predict an identical 245,080 (they draw from one catalog family
+        the engine prices identically), so any difference in the captured
+        actual is purely the catalog-diversity effect. Under a per-catalog
+        discount the three differ; under a per-file one they do not move.
+      - `axmarg_mixed_n08` (1) — 8 AXIS_VIRTUAL plus 8 AXIS_CIP_DRIVE in one
+        file, against the two single-type files at the same count: is the
+        marginal term per axis TAG regardless of type, or per type?
+
+    **Do not wire any of this before the virtual arm lands.** The 1,912/1,376
+    split is arithmetically exact on 14 points and still rests on an
+    assumption the data cannot support, which is the same mistake the axis
+    promotion already made once today.

@@ -86,6 +86,17 @@ predefined_structures:
   # logic weight. Re-measuring a fixed structure N times does not make a
   # zero-residual measurement more true.
   MOTION_GROUP: { bytes: 1076, confidence: KNOWN }
+  # KNOWN is correct for the FIRST axis in a file and NOT for later ones:
+  # OQ-AXISMARGINAL, 2026-09-11. The 31-row axis_scale_* family (captured
+  # 2026-09-03, reconciled 2026-09-11) over-predicts by exactly +3,288 per
+  # axis on single-axis drives and +2,600 per axis on dual, perfectly linear,
+  # while n=1 single and n=2 dual are byte-exact. This constant was promoted
+  # FITTED -> KNOWN earlier the same day on single-axis evidence, which is
+  # sound for one axis and wrong by ~10% at twenty. Nothing is changed here
+  # yet: the marginal term cannot be separated from the drive module's own
+  # marginal discount until the axmarg_virtual_* arm (AXIS_VIRTUAL, zero
+  # modules) lands. Real exposure is 359 AXIS_CIP_DRIVE tags across the
+  # sixteen real programs, roughly 650 KB.
   AXIS_CIP_DRIVE: { bytes: 22636, confidence: KNOWN }
   COORDINATE_SYSTEM: { bytes: 9516, confidence: KNOWN }
   AXIS_SERVO: { bytes: 16796, confidence: KNOWN }
