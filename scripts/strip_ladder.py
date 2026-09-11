@@ -31,16 +31,33 @@ the actual program that is mispredicting.
     L0  full program, untouched
     L1  minus alarm conditions
     L2  minus all rung and ST content (routines emptied to NOP)
-    L3  minus all I/O modules except the processor's own Local entry
-    L4  minus all AOI definitions and the tags that instantiate them
-    L5  minus all remaining tags
-    L6  minus all UDT definitions -- the bare shell
+    L3  minus all axis tags, coordinate systems and the MotionGroup
+    L4  minus all I/O modules except the processor's own Local entry
+    L5  minus all AOI definitions and the tags that instantiate them
+    L6  minus all remaining tags
+    L7  minus all UDT definitions -- the bare shell
 
 The order is not arbitrary: each strip only removes things nothing
-remaining can reference. Logic is emptied BEFORE modules and AOIs go, so
-no rung is left pointing at a module tag or calling a definition that no
-longer exists; tags go before the UDTs that type them. A ladder that does
-not import measures nothing.
+remaining can reference.
+
+  - Logic is emptied BEFORE motion, modules and AOIs go, so no rung is
+    left pointing at a module tag, driving an axis that is gone, or
+    calling a definition that no longer exists.
+  - Motion goes BEFORE the modules. A CIP axis names its drive in its own
+    MotionModule attribute, so dropping the drive first would leave an
+    axis pointing at a module that does not exist.
+  - Tags go before the UDTs that type them.
+
+A ladder that does not import measures nothing.
+
+FIRST CUT, AND IT MAY NOT ALL IMPORT. This is XML surgery, not Studio
+5000 doing the deleting. Each rung is ordered to be self-consistent, but
+real projects carry references this script does not know about. If a rung
+is refused on import, the reliable fix is to make that one rung by hand --
+delete that category in Logix Designer and re-export -- because Studio's
+own delete maintains every reference this script has to guess at. A
+hand-made rung and a generated one difference identically; only the making
+of it differs.
 
 OUTPUT IS GITIGNORED, DELIBERATELY. These are derived from production
 exports and are production content with pieces missing, so they are
@@ -93,6 +110,33 @@ def _empty_logic(root: ET.Element) -> int:
         for line in list(content):
             content.remove(line)
             n += 1
+    return n
+
+
+_MOTION_TYPES = {
+    "AXIS_CIP_DRIVE", "AXIS_SERVO", "AXIS_SERVO_DRIVE", "AXIS_VIRTUAL",
+    "AXIS_GENERIC", "AXIS_GENERIC_DRIVE", "AXIS_CONSUMED",
+    "COORDINATE_SYSTEM", "MOTION_GROUP",
+}
+
+
+def _drop_motion(root: ET.Element) -> int:
+    """Axis tags, coordinate systems and the MotionGroup.
+
+    Removed BEFORE the modules, not after: a CIP axis names its drive in
+    its own MotionModule attribute, so dropping the drive first would
+    leave an axis pointing at a module that no longer exists. Removed
+    AFTER the logic, so no MAM/MAJ/MSO is left referencing an axis that
+    is gone. Its own rung because the model gives motion its own root
+    group and its own constants, and because every motion structure is
+    large enough that folding it into the general tag step would hide it.
+    """
+    n = 0
+    for parent in root.iter("Tags"):
+        for tag in list(parent):
+            if (tag.get("DataType") or "") in _MOTION_TYPES:
+                parent.remove(tag)
+                n += 1
     return n
 
 
@@ -150,10 +194,11 @@ LADDER = (
     ("l0_full", None, "the program exactly as exported -- the anchor every other rung differences against"),
     ("l1_noalarms", _drop_alarms, "alarm conditions removed"),
     ("l2_nologic", _empty_logic, "every rung emptied to NOP and every ST line removed"),
-    ("l3_nomodules", _drop_modules, "all I/O modules removed except the processor's Local entry"),
-    ("l4_noaois", _drop_aois, "all AOI definitions removed, and the tags that instantiated them"),
-    ("l5_notags", _drop_tags, "all remaining tags removed"),
-    ("l6_noudts", _drop_udts, "all UDT definitions removed -- the bare shell"),
+    ("l3_nomotion", _drop_motion, "all axis tags, coordinate systems and the MotionGroup removed"),
+    ("l4_nomodules", _drop_modules, "all I/O modules removed except the processor's Local entry"),
+    ("l5_noaois", _drop_aois, "all AOI definitions removed, and the tags that instantiated them"),
+    ("l6_notags", _drop_tags, "all remaining tags removed"),
+    ("l7_noudts", _drop_udts, "all UDT definitions removed -- the bare shell"),
 )
 
 
