@@ -211,42 +211,64 @@ the matching footnote at the bottom, not inline.
 
 5. **OQ-AOIARRAYLOCALTAG** (was the open sub-thread of
    OQ-AOIARRAYDIMENSION, whose import-failure thread closed 2026-09-03 and
-   is now in RESOLVED_QUESTIONS.md) — an AOI array LocalTag's DIMENSION is
-   unpriced. **All 27 files of the isolation sweep are CAPTURED and were
-   never reconciled, found 2026-09-11. The answer is in hand; it is a
-   wiring job with two small anomalies, not an open measurement.**
+   is now in RESOLVED_QUESTIONS.md) — an AOI array LocalTag's DIMENSION was
+   unpriced. **All 27 sweep files were captured 2026-09-03 and never
+   reconciled. Reconciled and the main term WIRED 2026-09-11; four smaller
+   things stay open and are measured by a new 20-file batch.**
 
-   `aoi_definition` charges `per_declared_item` once per declared item
-   regardless of `dimension`, so the array's data space is charged nothing.
-   The sweep says it should be charged the array's real data size.
+   `aoi_definition` charged `per_declared_item` once per declared member
+   regardless of `dimension`, so an array member's data space cost nothing.
+   Against a prediction that was FLAT at every dimension:
 
-   Dimension sweep, DINT, `_def_only` (predicted is a FLAT 19,343 at every
-   dimension, so the deficit is the whole measurement):
+       DINT dim   10    50   100    250    500   1000
+       deficit   -41  -201  -401  -1001  -2001  -4001
 
-       dim      10    25     50    100    250     500     1000
-       deficit -41   -97   -201   -401  -1001   -2001    -4001
+   Exactly `element_size x dimension`, and by element type at dimension 50:
+   SINT 1.0/element, DINT and REAL 4.0/element. Definition-side only — every
+   `_1_instance` twin carries the same deficit, so an instance does not pay it
+   again. Now wired through `compute_array_size` (not element size x
+   dimension: CAM_PROFILE is a predefined ARRAY structure with no scalar
+   element size, real programs declare ten of them, and it raised
+   `UnknownDataTypeError` on the first real file the new term met). 27 rows
+   went from -41..-4001 to inside +-4 on 20 of them.
 
-   Exactly `-(4 x dim + 1)` at 10, 50, 100, 250, 500 and 1000 — a clean 4
-   bytes per DINT element, which is the element size. The `_1_instance`
-   twins are the same deficit minus 4, so this is a DEFINITION-side cost and
-   the instance does not pay it again.
+   **Exposure, measured before deciding how much to spend on it:** array
+   LocalTags are ~17 KB across the sixteen real programs — **0.036%**, worst
+   single file 0.058%. Real-file mean |error| moved 2.1733% -> 2.1504%. This
+   category will never be the reason a real file misses 1%, and the 20-file
+   batch below is sized accordingly. It exists because unexplained rows sit
+   inside a category that otherwise measures exactly, which is how a wrong
+   constant gets adopted — not because the bytes are large.
 
-   Element type at dimension 50, `_def_only`: BOOL -13, SINT -51, INT -99,
-   DINT -201, REAL -201. Net of the constant 1 that runs through every row:
-   SINT 1.0/element and DINT/REAL 4.0/element are exactly element size.
+   **Still open, and `gen_aoi_arraylocaltag2.py` (20 files) measures each:**
 
-   Multiplicity (n arrays of 50 DINT in one definition): -200, -392, -592.
-   Additive per array LocalTag, not a one-off per definition.
+     - **BOOL, deliberately left unpriced.** `BOOL[50]` measured -13, which
+       fits neither the 7-byte packed size nor an 8-byte two-word rounding.
+       `albool_n{1,8,16,32,33,50,64,65}` walks the packing boundaries. Real
+       programs do declare BOOL array LocalTags (2, 64 elements).
+     - **An 8-byte discount per array member after the first.** 1/2/3 arrays
+       of 50 DINT measured 200/392/592, not 200/400/600 — 196 per array after
+       the first. Two points cannot say whether that is linear;
+       `almult_n{04,06,08}` settles it. After wiring, n02/n03 sit at +8.
+     - **Structure element types, never tested.** The sweep covered five
+       atomics. Two thirds of the real exposure is MOTION_INSTRUCTION (16
+       arrays / 112 elements), CAM_PROFILE (10 / 100), STRING (4) and TIMER
+       (2). `altype_*_n00010` prices one array of each of six structure types.
+       The dimensioned-structure LocalTag shape (no `Radix`, no data body,
+       unlike a dimensioned atomic which keeps `Radix="Decimal"`) was taken
+       verbatim from the real exports before building any of them.
+     - **The dim=25 outlier.** Every other dimension lands at -1 after
+       wiring; 25 lands at +3 — four bytes, exactly one element, off the line
+       through 10 and 50. The file's XML does declare `Dimensions="25"`, so it
+       is not a generator bug. `aldim_n000{24,25,26}` re-measures it with its
+       neighbours: either a real granularity effect near there, or the
+       original row was a capture artefact.
 
-   **Two anomalies that must not be papered over when this is wired:**
-   `dim=25` is -97 where the law says -101, off by exactly one element; and
-   `INT` at 50 is -99 where 50 x 2 says -101, also off by one element, while
-   `BOOL` at 50 is -13 against a 7-byte packed array. A 4-byte-granularity
-   or alignment term is the obvious suspect, and the DINT/REAL rows cannot
-   see it because 4 is already their element size. Wiring element-size x
-   dimension alone would be right to within one element everywhere and
-   exactly right on most rows — which is precisely the kind of nearly-right
-   constant this project has had to unpick twice.
+   `INT[50]` at -99 against its predicted 100 is the fifth loose end and is
+   covered by the same wiring note rather than a file of its own: the
+   existing INT row already brackets it, and the multiplicity and neighbour
+   arms above test the two mechanisms (a per-array term, or 4-byte
+   granularity) that could produce it.
 
 6b. **OQ-MODULESTRUCTURAL** — NEW, 2026-09-04, and it changes the target
    for OQ-MODULEIO below. The target application is testing an unknown

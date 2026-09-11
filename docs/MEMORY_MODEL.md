@@ -452,6 +452,41 @@ sweep from 12.02% to 0.55%. A further composite-scale surcharge on top of
 this (`aoi_logic_composite_surcharge_per_instr=20`, FITTED, see the Logic
 instruction weights section below) was found and wired 2026-09-02.
 
+**Array-dimensioned declared member data space (WIRED 2026-09-11,
+OQ-AOIARRAYLOCALTAG):** an AOI's array-dimensioned declared member (LocalTag
+or Parameter) costs its own DATA SPACE on top of the flat
+`per_declared_item` rate, which counts the member once regardless of its
+dimension. Measured from the 27-file `aoi_arraylocal_*` sweep, captured
+2026-09-03 and reconciled 2026-09-11, against a prediction that was FLAT at
+every dimension:
+
+| DINT dimension | 10 | 50 | 100 | 250 | 500 | 1000 |
+|---|---:|---:|---:|---:|---:|---:|
+| deficit | −41 | −201 | −401 | −1001 | −2001 | −4001 |
+
+Exactly `element_size × dimension` at six of seven dimensions (the
+project-wide +1 residual accounts for the rest), and by element type at
+dimension 50: SINT 1.0/element, DINT and REAL 4.0/element. Definition-side
+only — every `_1_instance` twin carries the same deficit, so an instance does
+not pay it again. Computed through `compute_array_size`, not
+`element_size × dimension`, because the predefined ARRAY structures
+(CAM/CAM_PROFILE) have their own `base + per_element` shape and no scalar
+element size at all; real programs declare 10 `CAM_PROFILE` array LocalTags,
+and going through `compute_element_size` raised `UnknownDataTypeError` on the
+first real file it met. Took the 27 rows from −41..−4001 to inside ±4 on 20 of
+them; real-file mean |error| 2.1733% → 2.1504% (the whole category is ~17 KB
+across the sixteen real programs, 0.036%).
+
+**BOOL arrays are deliberately NOT priced by this term** and stay unpriced:
+`BOOL[50]` measured −13, which is neither the 7-byte packed size nor an
+8-byte two-word rounding, and `INT[50]` measured −99 against the 100 its
+element size predicts. Two further residuals are recorded rather than fitted:
+an 8-byte discount per array member *after the first* (1/2/3 arrays of 50
+DINT measured 200/392/592, not 200/400/600), and `dimension=25` landing 4
+bytes — exactly one element — off the line through 10 and 50. See
+`docs/OPEN_QUESTIONS.md` OQ-AOIARRAYLOCALTAG; `gen_aoi_arraylocaltag2.py`
+(20 files) measures all four.
+
 ## Module / I/O tag sizing
 
 **Wired 2026-08-27, per-catalog table added 2026-08-29 — see OQ-MODULEIO
