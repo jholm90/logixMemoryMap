@@ -45,6 +45,17 @@ never as the project's accuracy.
 ## Platform scope
 Active: **1756-L8x** and **5069 / CompactLogix 5380**.
 
+**Every generated test file is 1756-L81E at v35.** No exceptions, no v38,
+no 1756-L9x. The point is comparability: a file on any other processor or
+firmware cannot be differenced against the ~2,500 existing captures without
+first subtracting a baseline difference that is itself only approximately
+known, which defeats the isolation test. Enforced by the
+`non_standard_processor` / `non_standard_firmware` lint rules rather than
+left to each generator's defaults -- it has been violated twice, and both
+times the deviation looked justified at the moment it was made. The sole
+exemption is the firmware/catalog matrix generators, for which sweeping
+those two fields IS the variable under test.
+
 **1756-L7x and 1769 are dead architecture.** No further test files, no
 further development, and neither may be cited as a reason the model is out
 of spec. Existing wiring and captures stay in place — they cost nothing to

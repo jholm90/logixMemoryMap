@@ -828,6 +828,73 @@ _NAMED_ELEMENTS = (
 )
 
 
+# The generated-corpus platform standard. Every generated test file is
+# built on this exact controller and firmware so that any batch
+# differences cleanly against the ~2,500 existing captures -- a file built
+# on a different processor or firmware cannot be compared against them
+# without first subtracting a baseline difference that is itself only
+# approximately known, which defeats the point of an isolation test.
+#
+# This is enforced here, as a lint rule, rather than left to each
+# generator's own defaults. It has been violated twice: the alarm batch
+# was built at v38, and the L9 arm of that same batch swapped the
+# processor as well. Both times the deviation was justified at the time
+# and both times it cost comparability, which is exactly the failure mode
+# a default cannot prevent and a check can.
+#
+# 1756-L7x and 1769 are dead architecture and 1756-L9x is out of scope, so
+# there is no legitimate generated-test reason to emit any of them.
+STANDARD_PROCESSOR_TYPE = "1756-L81E"
+STANDARD_MAJOR_REV = "35"
+
+# The firmware-matrix generators are the one legitimate exception: sweeping
+# processor and firmware IS their variable, so a rule that forbids it would
+# forbid the test. Matched on the Controller Name, which those generators
+# derive from the sample_id.
+_PLATFORM_EXEMPT_NAME_PREFIXES = ("FwMatrix", "FwBaseline")
+
+
+def _platform_standard_findings(root: ET.Element) -> list[LintFinding]:
+    """Generated test files must be 1756-L81E at MajorRev 35.
+
+    Deviating silently produces numbers that cannot be differenced
+    against the existing corpus. The exemption is narrow and explicit:
+    only the firmware/catalog matrix generators, whose whole purpose is
+    to vary these two fields.
+    """
+    findings: list[LintFinding] = []
+    controller = root.find("Controller")
+    if controller is None:
+        return findings
+    name = controller.get("Name") or ""
+    if name.startswith(_PLATFORM_EXEMPT_NAME_PREFIXES):
+        return findings
+
+    # Absent is not the same as wrong. A fragment that declares neither
+    # field is not making a platform claim to check -- only a file that
+    # states a processor or firmware can state the wrong one.
+    processor = controller.get("ProcessorType")
+    major = controller.get("MajorRev")
+    if processor is not None and processor != STANDARD_PROCESSOR_TYPE:
+        findings.append(LintFinding(
+            kind="non_standard_processor",
+            detail=(
+                f"controller {name!r} is {processor}, but every generated test file "
+                f"must be {STANDARD_PROCESSOR_TYPE} so the batch differences cleanly "
+                f"against the existing captures"
+            ),
+        ))
+    if major is not None and major != STANDARD_MAJOR_REV:
+        findings.append(LintFinding(
+            kind="non_standard_firmware",
+            detail=(
+                f"controller {name!r} is MajorRev {major}, but every generated test "
+                f"file must be MajorRev {STANDARD_MAJOR_REV}"
+            ),
+        ))
+    return findings
+
+
 def _invalid_logix_name_findings(root: ET.Element) -> list[LintFinding]:
     """Real Logix identifier rules, each confirmed by a real Studio 5000
     import failure on this project's own generated files:
@@ -950,6 +1017,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     root = ET.fromstring(l5x_text)
     findings: list[LintFinding] = []
 
+    findings.extend(_platform_standard_findings(root))
     findings.extend(_module_slot_findings(root))
     findings.extend(_chassis_size_findings(root))
     findings.extend(_invalid_logix_name_findings(root))

@@ -454,3 +454,58 @@ def test_dynamic_rack_carrying_a_donor_bus_size_is_flagged():
 def test_fixed_1756_chassis_is_never_flagged():
     """A 13-slot ICP chassis holding two cards is a normal design."""
     assert not _chassis("ICP", 13)
+
+
+# --- non_standard_processor / non_standard_firmware ------------------------
+# Every generated test file must be a 1756-L81E at MajorRev 35, so a batch
+# differences cleanly against the ~2,500 existing captures. This has been
+# violated twice -- the alarm batch was built at v38 and its second arm
+# swapped the processor too -- and both times the deviation was justified
+# at the time, which is exactly why it is a check and not a default.
+_PLATFORM = """
+<RSLogix5000Content SchemaRevision="1.0">
+  <Controller Name="{name}" ProcessorType="{proc}" MajorRev="{major}">
+    <DataTypes/>
+    <Modules/>
+    <AddOnInstructionDefinitions/>
+    <Tags/>
+    <Programs/>
+  </Controller>
+</RSLogix5000Content>
+"""
+
+
+def _platform_kinds(name="Probe", proc="1756-L81E", major="35"):
+    return {
+        f.kind for f in lint_l5x(_PLATFORM.format(name=name, proc=proc, major=major))
+        if f.kind.startswith("non_standard")
+    }
+
+
+def test_the_standard_platform_is_accepted():
+    assert _platform_kinds() == set()
+
+
+def test_a_non_standard_processor_is_flagged():
+    assert "non_standard_processor" in _platform_kinds(proc="1756-L902TS")
+
+
+def test_a_non_standard_firmware_is_flagged():
+    assert "non_standard_firmware" in _platform_kinds(major="38")
+
+
+def test_both_are_flagged_together():
+    """The alarm batch's L9 arm broke both at once; one finding would hide
+    the other and send someone chasing half the problem."""
+    assert _platform_kinds(proc="1756-L902TS", major="38") == {
+        "non_standard_processor", "non_standard_firmware",
+    }
+
+
+def test_the_firmware_matrix_generators_stay_exempt():
+    """Sweeping processor and firmware IS the firmware matrix's variable,
+    so a rule forbidding it would forbid the test. The exemption is keyed
+    on the controller name those generators emit, and is deliberately
+    narrow -- nothing else may opt out."""
+    assert _platform_kinds(name="FwMatrix381756L902TS", proc="1756-L902TS", major="38") == set()
+    assert _platform_kinds(name="FwBaselineL75V31", proc="1756-L75", major="31") == set()
