@@ -21,7 +21,7 @@ from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
 from l5x_memory_analyzer.parser.datatypes import DataTypeDef, parse_data_types
 from l5x_memory_analyzer.parser.load import L5XDocument, L5XFormatError, load_l5x, load_l5x_bytes
 from l5x_memory_analyzer.parser.logic import count_instructions_in_text, parse_rll_routines
-from l5x_memory_analyzer.parser.modules import parse_modules
+from l5x_memory_analyzer.parser.modules import label_modules, parse_modules
 from l5x_memory_analyzer.parser.tags import parse_tags
 from l5x_memory_analyzer.parser.tasks import parse_tasks, program_to_task_map
 from l5x_memory_analyzer.sizing.constants import MemoryModel, load_memory_model
@@ -117,7 +117,7 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
             # Real chassis/network topology, off each Module's own
             # ParentModule attribute -- purely a display nesting, no
             # sizing consequence.
-            module_parents={m.name: m.parent_module for m in parse_modules(doc.root)},
+            module_parents=_module_parent_labels(doc.root),
         ),
         "type_summary": type_utilization(entries),
         "jsr_calls": jsr_calls,
@@ -157,6 +157,23 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
 
     return DocState(doc=doc, model=model, data_types=data_types, tag_index=tag_index,
                      report_json=report_json, entries=entries, errors=errors)
+
+
+def _module_parent_labels(root) -> dict[str, str]:
+    """Module label -> its parent's label, for the tree's rack nesting.
+
+    Both sides have to be LABELS, not names: a real POINT I/O card has no
+    name at all (see parser/modules.py label_modules), so keying this by
+    name silently dropped every one of them out of the nesting and left a
+    rack of sixteen cards sitting flat beside its adapter.
+    """
+    modules = parse_modules(root)
+    labels = label_modules(modules)
+    by_name = {m.name: labels[i] for i, m in enumerate(modules) if m.name}
+    return {
+        labels[i]: by_name.get(m.parent_module, m.parent_module)
+        for i, m in enumerate(modules)
+    }
 
 
 def _program_tag_counts(entries) -> dict[str, int]:

@@ -30,7 +30,7 @@ from l5x_memory_analyzer.sizing.structured_text import (
     size_st_assignments,
     size_st_control_flow,
 )
-from l5x_memory_analyzer.parser.modules import parse_modules
+from l5x_memory_analyzer.parser.modules import label_modules, parse_modules
 from l5x_memory_analyzer.parser.tags import CONTROLLER_SCOPE, parse_tags
 from l5x_memory_analyzer.parser.tasks import parse_tasks
 from l5x_memory_analyzer.sizing.confidence import weakest
@@ -630,7 +630,13 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # is included, unmodeled-overhead noted via a SizeError instead so it's
     # visible, not silently dropped.
     module_entries: list[tuple[str, str, str, int, str]] = []
-    for module in parse_modules(root):
+    # Modules can be nameless (a real POINT I/O card is identified only by
+    # catalog and slot), so labels come from one file-level pass that can
+    # guarantee uniqueness -- see parser/modules.py label_modules.
+    _modules = parse_modules(root)
+    _module_labels = label_modules(_modules)
+
+    for _module_index, module in enumerate(_modules):
         # "Local" is the processor's own self-entry (always present, always
         # zero connections of its own) -- its overhead is already covered by
         # empty_project_baseline elsewhere, never module_overhead. Excluded
@@ -638,7 +644,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # connection I/O module isn't confused with the processor itself.
         if module.name == "Local":
             continue
-        label = module.name or module.catalog_number
+        label = _module_labels[_module_index]
         if module.module_defined_bytes == 0 and module.stated_total_bytes == 0:
             # 2026-09-02, real, found reviewing the TitusvilleTrimmer
             # production file: a bridge/gateway module with NO connections

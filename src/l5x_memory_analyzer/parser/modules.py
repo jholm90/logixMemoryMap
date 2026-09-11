@@ -304,3 +304,35 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
             parent_module=parent_module,
         ))
     return result
+
+
+def label_modules(modules: list[ModuleInfo]) -> dict[int, str]:
+    """Index in `modules` -> the display/path label for that module.
+
+    A real POINT I/O child module carries NO Name attribute at all --
+    confirmed 2026-09-11 on three real 1734-AENTR/AENT rack exports, where
+    all 16 1734-IB8/C cards are identified only by catalog number and Port
+    Address (their slot). Falling back to the catalog alone gave every one
+    of them the same label AND the same path, so sixteen distinct modules
+    collapsed into one indistinguishable row in the report and the tree.
+
+    The slot is what Logix Designer itself shows for these, and it is
+    unique within a rack; the parent adapter disambiguates two racks that
+    both fill slot 1. Keyed by index rather than by name for the obvious
+    reason that the name is exactly what these modules do not have.
+    """
+    labels: dict[int, str] = {}
+    used: set[str] = set()
+    for i, module in enumerate(modules):
+        if module.name:
+            label = module.name
+        else:
+            label = (
+                f"{module.catalog_number} (slot {module.slot})"
+                if module.slot is not None else module.catalog_number
+            )
+            if label in used and module.parent_module:
+                label = f"{module.parent_module} {label}"
+        labels[i] = label
+        used.add(label)
+    return labels

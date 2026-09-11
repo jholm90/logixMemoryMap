@@ -2073,3 +2073,75 @@ the matching footnote at the bottom, not inline.
     "Unitemized definition cost" row rather than dropping it, so the
     treemap sums to the report total and the size of the unexplained part
     is visible instead of silent.
+
+40. **OQ-POINTIOCONN** — a POINT I/O card's memory cost depends on its
+    connection format, which the model does not represent at all, and the
+    flat rate it charges instead is wrong in both directions.
+
+    Three real captures, 2026-09-11. Identical content otherwise: one
+    1756-L81E v35, one adapter, sixteen 1734-IB8/C cards. The non-module
+    part of the prediction is byte-identical (18,336) across all three, so
+    the whole difference is the I/O subsystem.
+
+        format          adapter          actual   module subsystem   per module
+        Enhanced        1734-AENTR/C     32,616        14,280             840
+        Enhanced Data   1734-AENTR/C     37,320        18,984           1,117
+        Optimized       1734-AENT/A      28,688        10,352             609
+
+    Against predictions of 47,280 / 47,360 / 20,050 — over by 45% and 27%
+    on the first two, under by 30% on the third.
+
+    The three formats are structurally distinct in the L5X and the parser
+    already tells them apart:
+
+      - **Enhanced** — the card has a ConfigTag and NO `<Connections>`
+        element at all.
+      - **Enhanced Data** — the card carries its own `InputData`
+        `<Connection>`.
+      - **Optimized** — the card carries `<RackConnection><InAliasTag/>`,
+        its I/O aliased into the adapter's own Slot array.
+
+    One clean single-variable result is already in hand. Enhanced Data
+    minus Enhanced is the same adapter, the same sixteen cards and only
+    the connection format changed: **+4,704, exactly 16 × 294.** A card's
+    own connection costs 294 bytes more than no connection. That is a real
+    per-module, per-format cost and nothing in the model has a term for it.
+
+    What is NOT separable from these three points: the adapter's own cost
+    from the per-card cost, because every file has sixteen cards; and the
+    Optimized arm changes the adapter catalog (1734-AENT/A) at the same
+    time as the format, confounding the two.
+
+    Both fall out of a count sweep — the same differencing method every
+    other constant in this project came from. For each format, N =
+    1, 2, 4, 8, 16 cards: the slope is the per-card cost of that format
+    and the intercept is that adapter's own cost, each fitted
+    independently of the other.
+
+    **Built 2026-09-11**, `gen_pointio_conn_sweep.py`, 5 files
+    (`pioconn_enhdata_n01/n02/n04/n08/n16`), 1756-L81E v35, module blocks
+    verbatim from the real export. Enhanced Data ONLY, and that
+    restriction is the finding rather than an oversight: in that format
+    the adapter's own InputTag is just the two status DINTs and every card
+    carries its own self-contained Connection, so card count is the only
+    thing that changes.
+
+    The other two arms cannot be synthesised honestly and need real
+    Studio 5000 exports at **N = 1, 2, 4, 8** to match:
+
+      - **Enhanced** — the adapter's InputTag holds one StructureMember
+        per card (Slot01..Slot16) inside a module-defined type whose name
+        carries a Studio-computed hash, `AB:1734_ERACK_649387C8:I:0`. A
+        different card count is a different type with a different hash,
+        and that hash is not derivable from the L5X.
+      - **Optimized** — the adapter's type name encodes the slot count
+        literally, `AB:1734_17SLOT:I:0`, alongside a `SINT[17]` data
+        array. Systematic rather than hashed, so it is guessable — but a
+        guessed profile that does not exist fails the import, and one that
+        exists with different content would silently produce a wrong size,
+        which is the worse of the two outcomes.
+
+    Stake: this is not a corner case. Elmsdale alone has three of these
+    racks (JB101_IO, C102_IO, MCP101_IO — 19 cards), all currently priced
+    at either a flat 1,672 they do not cost or, for the rack-aliased ones,
+    at zero.
