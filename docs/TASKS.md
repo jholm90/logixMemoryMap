@@ -117,9 +117,9 @@ Ran the standing eight-step sequence on the batch as pushed.
       merge: 2,833 remote rows kept, 27 local ones added, nothing dropped.
       Every delta recomputed live against the current engine.
 2. ✅ **Conversion status** cross-referenced, last row per filename wins.
-      2,682 `ok`, **41 FAILED**, 60 with no record. 40 of the 41 share the
+      2,682 `ok`, **40 FAILED**, 60 with no record. 39 of the 40 share the
       one uninformative `XMLSrv_E_IMPORT_ABORTED_NO_CHANGES` error and were
-      already tracked; the 41st is new, diagnosed and fixed
+      already tracked; the 40th is new, diagnosed and fixed
       (`daxis_axis_cip_drive`, trailing underscore). Nine
       `composite_realistic_*_r2` have still never been submitted at all.
       See docs/OPEN_BUILD_ERRORS.md.

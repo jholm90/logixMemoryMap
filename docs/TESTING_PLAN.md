@@ -164,24 +164,23 @@ any FUTURE 1769-series test file**, `logix_build_capture.ahk` needs an extra
 click-Estimate step added for that processor family specifically, or every
 such row needs to keep going through manual reporting.
 
-## Pre-v31 firmware (SDK-unsupported) skips L5X->ACD conversion automatically (2026-08-27)
+## Firmware the SDK cannot open skips L5X->ACD conversion automatically (2026-08-27)
 
-"l81_v30.l5x failed as the SDK didnt support v30 files ... drop it from
-the list that batch_l5x_to_acd.ps1 is going to ask every time." Confirmed
-via `convert_log.csv`: l5xgit's own error is explicit and permanent --
-"Logix Designer SDK does not support Logix Designer versions 30 and
-earlier" -- not a transient/flaky failure, so retrying it every pass was
-pure waste (and would have hit every future firmware-30-or-earlier sample
-too, not just this one file). Same self-healing pattern as the window-
-title-mismatch/zero-capacity fixes above, just on the conversion side
-instead of the capture side: `batch_l5x_to_acd.ps1` now recognizes that
-specific SDK-version-unsupported message on a FAILED row and skips
-reconverting that file on future passes, as long as its content hash
-hasn't changed since the failure was recorded (if the sample gets
-regenerated at a newer, SDK-supported firmware revision, the hash differs
-and it's tried again automatically). `l81_v30` itself was manually
-reported (29272 blocks, see `manifest.csv`) since it can never go through
-the normal ACD-conversion capture pipeline at all.
+The Logix Designer SDK refuses some firmware revisions outright, with an
+explicit and permanent error rather than a transient one, so retrying such
+a file every pass is pure waste. `batch_l5x_to_acd.ps1` recognises that
+SDK-version-unsupported message on a FAILED row and skips reconverting
+that file on future passes, as long as its content hash has not changed
+since the failure was recorded. If the sample is regenerated at an
+SDK-supported firmware revision the hash differs and it is tried again
+automatically.
+
+Same self-healing pattern as the window-title-mismatch and zero-capacity
+fixes above, just on the conversion side rather than the capture side.
+
+The generated corpus is 1756-L81E at v35 throughout (enforced by
+`sample_gen.lint`'s `non_standard_firmware` rule), so in normal operation
+nothing should reach this path at all.
 
 ## Manifest columns (`samples/manifest.csv`)
 

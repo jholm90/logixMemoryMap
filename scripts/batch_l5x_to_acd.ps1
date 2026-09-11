@@ -140,9 +140,8 @@ if ($prunedCount -gt 0) {
 $recordedHash = @{}
 $prunedRows | Where-Object { $_.status -eq "ok" -and $_.l5x_hash } | ForEach-Object { $recordedHash[$_.l5x_path] = $_.l5x_hash }
 
-# 2026-08-27: "l81_v30.l5x failed as the SDK didnt support v30
-# files ... drop it from the list that batch_l5x_to_acd.ps1 is going to
-# ask every time." A FAILED row never gets a $recordedHash entry (the
+# 2026-08-27: a file the SDK refuses outright must not be re-asked every
+# pass. A FAILED row never gets a $recordedHash entry (the
 # filter above only populates it for status "ok"), so a file that ALWAYS
 # fails to convert -- not a transient/flaky failure, a permanent one, e.g.
 # "Logix Designer SDK does not support Logix Designer versions 30 and

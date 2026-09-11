@@ -29,27 +29,24 @@ file winning, so a later success supersedes an earlier failure:
 |---|---|
 | committed `samples/generated/**/*.L5X` | 2,783 |
 | last record `ok` | 2,682 |
-| last record FAILED | **41** |
+| last record FAILED | **40** |
 | no conversion record at all | **60** |
 
-**41, down from 59.** The batch converted a large part of what was
+**40, down from 59.** The batch converted a large part of what was
 outstanding. What is left splits cleanly:
 
-- **40 of the 41 share one error**, `XMLSrv_E_IMPORT_ABORTED_NO_CHANGES`,
+- **39 of the 40 share one error**, `XMLSrv_E_IMPORT_ABORTED_NO_CHANGES`,
   which names nothing on its own — it only says the import was refused and
   to read Studio's own error log. These are the `modulesweep_*` safety and
   4-connection variants, the `predefprobe_ref_to_*` reference probes, and
   `modulerack_bender_full_program`, all already tracked below.
-- **1 is new in this batch and is already fixed.**
+- **The 40th is new in this batch and is already fixed.**
   `daxis_axis_cip_drive.L5X` failed 2026-09-11 with a controller named
   `DaxAxCIP_` — a trailing underscore, from `"AXIS_CIP_DRIVE"[5:9]`, a
   fixed slice landing on the underscore. Regenerated as `DaxAxCIPD` and
   the whole class is now impossible to reintroduce: `validate_logix_name`
   refuses to build one and the lint rule checks every element carrying a
   Name plus the export header's TargetName. **Needs re-submitting.**
-- `l81_v30.L5X` is not a defect: "SDK does not support Logix Designer
-  versions 30 and earlier". Out of scope by tooling, not by the file.
-
 Of the **60 with no record at all**, 51 are new and simply awaiting their
 first run — the 27 `pioconn_*`/`pioname_*` POINT I/O files and the 24
 `udtmn_*` member-name files, both built 2026-09-11. The remaining **nine
@@ -145,10 +142,8 @@ another.
 | files | where |
 |---|---|
 | `daxis_*` (8), `mbshape_axis_k3` | OQ-AXISINOUT — axis passed as an AOI InOut |
-| `modulerack_kinetix_full_bus` | Distinct error, `E_INVALIDARG`; built against 1756-L1/v13, a processor and version that were never in scope |
 | `predefprobe_*` (18) | Caused by the scalar-`DataValue` structure-tag bug fixed in `c85fab5`; regenerated, awaiting recapture |
 | `modulesweep_2198_*_ers3_variant_4conn` (10) | OQ-MODULEIO, and see the corrected `-ERS3` diagnosis — not a safety-controller mismatch, a missing XML block |
-| `l81_v30` | Not a defect: the SDK does not support Logix v30 or earlier. Cannot be captured on this toolchain and should not be retried |
 
 ### Not previously recorded anywhere (11 files)
 
