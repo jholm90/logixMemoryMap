@@ -1969,3 +1969,54 @@ the matching footnote at the bottom, not inline.
     **This is now the most promising open lead.** A per-BOOL-member
     under-charge would touch every UDT in every real file, which is the
     right shape for an error that scales with program size.
+
+
+38. **OQ-CAMSHAPE** — CAM and CAM_PROFILE are fitted on a shape real
+    programs never use.
+
+    Both have a standalone-TAG count sweep and both fit cleanly: CAM at
+    base + 12/element, CAM_PROFILE at base(4) + 56/element, the latter
+    exact to the byte at n=1/5/20/50. That is not the issue.
+
+    The issue is that **every real use is a UDT member, and not one test
+    covers that container**. Across the corpus:
+
+        UDT members   CAM[20] x9   CAM[10] x8   CAM_PROFILE[20] x7
+                      CAM_PROFILE[10] x6   CAM_PROFILE[30] x3   CAM[30] x2
+        tags          dimensions 2, 5, 10, 11, 20, 30, 50, 100
+
+    Elmsdale's `CamArray` is the canonical shape -- CAM[10] and
+    CAM_PROFILE[10] in one UDT, wrapped by an outer UDT, reached from a
+    tag two levels down -- and nothing like it has ever been built.
+
+    Also worth pinning: there are **zero scalar uses** in the corpus. No
+    Dimension="0" member, no undimensioned tag. The engine cannot size one
+    and probably never needs to, but that should be a measured fact rather
+    than an assumption.
+
+    Practical stake: `CAM_PROFILE` currently carries a FITTED tier, and
+    because `weakest()` propagates upward that one tier marks every UDT
+    containing a cam profile. In Elmsdale it drags `CamArray`,
+    `EdgerArbor`, `EdgerMachine` and `SawCams` down with it -- 8
+    CAM_PROFILE tags totalling 24,520 bytes.
+
+    **Test files built 2026-09-11**, `gen_cam_closure.py`, 27 files, all
+    1756-L81E v35:
+
+      - `camx_tag_{cam,prof}_n{002,010,011,030,100}` extends the tag sweep
+        onto sizes real tags declare (11 and 100 were never tested).
+      - `camx_member_{cam,prof}_d{04,10,20,30}` puts each type in a UDT at
+        the four real member dimensions. Differenced against the tag files
+        at the same count, any container-specific cost falls out.
+      - `camx_mixed_d{10,20}` is CamArray's exact shape, testing whether
+        the two types compose additively.
+      - `camx_nested_i{01,05}` reproduces the real
+        EdgerArbor -> SawCams -> CamArray depth, one instance and five, so
+        per-instance separates from the one-time definition.
+      - `camx_udtarray_n05` is an array of a UDT containing arrays of a
+        predefined -- a nesting nothing in the project covers.
+      - `camx_multitag_{cam,prof}_t05` separates per-tag overhead from
+        per-element cost, which no one-tag-per-file sweep can.
+      - `camx_scalar_{cam,prof}` probes the scalar case. A conversion
+        failure there is a RESULT, closing it as not legal rather than
+        leaving an unsized hole.
