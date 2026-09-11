@@ -1614,7 +1614,41 @@ the matching footnote at the bottom, not inline.
       between per-WHILE and per-assignment rests on that substitution.
 
 
-30. **OQ-REAL5069** — **the 5069 platform has ZERO real-file validation.**
+30. **OQ-REAL5069** — **SHELVED 2026-09-11 until 2026-09-18. Not closed,
+    and not to be raised again before then.**
+
+    Two corrections belong on the record first.
+
+    **The premise below is out of date.** Four of the sixteen real captured
+    programs ARE 5069 (elmsdale and salamanca and superior on 5069-L330ERM,
+    flarefunction on 5069-L320ERMS3). The platform is no longer unvalidated.
+
+    **The platform breakdown that replaced it was worse than the stale
+    premise, and it was mine.** Grouping the sixteen real files by processor
+    family gave 5069-L330ERM a -4.00% median and called it the corpus's
+    worst platform — with **salamanca at +1.08%, one of the four most
+    accurate files in the whole set, counted inside that bucket.** Family
+    sizes are n=1, n=2 and n=3. Those medians are not measurements.
+
+    The disproof is already in the same table: **murraybros is -5.16% on a
+    1756-L81E**, worse than every 5069 file, on the family with the best
+    median. Whatever drives the large residuals is not the processor, and
+    reading one into a catalog string is exactly the failure this file
+    already documents once — the rejected per-platform baseline that fitted
+    190 near-empty files beautifully and broke 612 real ones.
+
+    `gen_platform_equivalence.py` and its 15 files are KEPT, uncaptured, for
+    when this is picked back up. They are still the right experiment if the
+    question turns out to be real; nothing about them assumes it is.
+
+    Priority: low, by the project owner's call. The residual is real and
+    lives somewhere else.
+
+    ---
+
+    *Original entry, retained for history:*
+
+    **the 5069 platform has ZERO real-file validation.**
     Found 2026-09-05, while checking which platforms the real corpus
     actually covers.
 
