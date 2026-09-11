@@ -2659,3 +2659,192 @@ wired; all four files now predict exactly.
 
 The control arm itself does NOT predict exactly, and that is a separate
 finding rather than a caveat on this one — see OQ-JSRFOLD.
+
+## Closed 2026-09-11 — stale entries moved out of OPEN_QUESTIONS.md
+
+A staleness pass found four entries in OPEN_QUESTIONS.md that were already
+answered, and one whose closed half was still filed under the open half's
+name. Each is reproduced below verbatim as it last stood, so the reasoning
+trail survives the move.
+
+**OQ-STSIZING** was the most misleading of them: it still read "Structured
+Text is completely unmodeled" while `sizing/structured_text.py` has priced
+ST since 2026-09-05, `coverage._SIZED_ROUTINE_TYPES` counts ST as sized, and
+the full answer was already recorded above under "OQ-STSIZING — Structured
+Text (SOLVED, 2026-09-05)". Confirmed against the sixteen real programs:
+their 26 ST routines raise no coverage gap at all. The surviving ST thread
+is OQ-STEXPR, which stays open on its own entry.
+
+**OQ-AOIORPHAN, OQ-ALARMCOND and OQ-SHELLSCALE** were one-line stubs saying
+the content had moved here — which it had. The stubs themselves are the only
+thing removed.
+
+**OQ-AOIARRAYDIMENSION** closed 2026-09-03; only its array-LocalTag
+dimension-scaling sub-thread is still open, and that now stands on its own
+as OQ-AOIARRAYLOCALTAG in OPEN_QUESTIONS.md.
+
+### Verbatim, as it last stood in OPEN_QUESTIONS.md
+
+5. **OQ-AOIARRAYDIMENSION** — the `aoi_array_param_def_only.L5X` import
+   thread is **CLOSED 2026-09-03**. Real root cause, from live controller
+   testing: BOOL/SINT/INT/DINT cannot be arrays for Input parameters —
+   an array parameter must be InOut. The two prior "fixes" (Required/
+   Visible forced true/true 2026-08-29, then a real `<Array>`/`<Element>`
+   DefaultData body 2026-08-30) were chasing a formatting bug that never
+   existed — an array-dimensioned atomic Input/Output Parameter is not a
+   legal Logix construct at all; only `Usage="InOut"` permits an array
+   Parameter (matches this project's own real corpus evidence,
+   `LOG_HMIDisplay`/`BitArray` — both `Dimensions` AND `InOut`, which is
+   now understood as the ONLY combination that can exist, not a coincidence
+   of the only 2 examples on file). Fixed for real:
+   `builders.py::_aoi_parameter_xml` now hard-fails (`ValueError`) if a
+   caller ever asks for a dimensioned Input/Output Parameter, so this
+   generator-level bug class cannot recur; `lint.py`'s new
+   `aoi_array_param_wrong_usage` check is a defense-in-depth net for any
+   L5X reaching lint by another path. The broken `aoi_array_param_def_
+   only.L5X` file and its never-successfully-captured manifest row are
+   removed (confirmed via `convert_log.csv`: FAILED at every one of 5
+   logged attempts, 2026-08-30 through 2026-08-31, `XMLSrv_E_IMPORT_
+   ABORTED_NO_CHANGES` every time — never had real ground truth to lose).
+   Same fix pass also found and closed a second, previously-untested gap
+   in the SAME function: the InOut branch never rendered a `Dimensions`
+   attribute at all (no generated file had ever actually exercised
+   `inout_params=[...]` with `dimension` set until a new test for this
+   fix exercised it) — now fixed to match the real `LOG_HMIDisplay`/
+   `BitArray` shape.
+
+   **Still genuinely open, separate sub-thread**: the array-LocalTag
+   dimension-scaling question (real +400/+404-byte, ~2%, gap on
+   `aoi_array_localtag_1_instance`/`_def_only`, both at dimension=100 —
+   the only 2 real data points on file, both the SAME size, so it's
+   unknown whether the gap is a flat per-array-LocalTag declaration cost
+   or scales with dimension/element type). The current `aoi_definition`
+   formula charges `per_declared_item` once per declared item regardless
+   of `dimension`, so if the real gap DOES scale with size this is a
+   genuine missing term. 27-file isolation sweep built 2026-09-03
+   (`gen_aoi_arraylocaltag_sweep.py`: dimension 10–1000, type SINT/INT/
+   DINT/REAL/BOOL, multiplicity 1–3 array LocalTags/AOI) awaiting real
+   capture.[^aoiarraydimension]
+
+6b. **OQ-MODULESTRUCTURAL** — NEW, 2026-09-04, and it changes the target
+   for OQ-MODULEIO below. The target application is testing an unknown
+   file, and every catalog module number cannot be captured
+   individually — the model has to tell that a 16pt digital
+   card has XX overhead + 16pts of data, whereas a 8pt analog card has
+   different overhead."*
+
+   The per-catalog `module_overhead_by_catalog` table is the wrong shape
+   for the real goal. It can only ever cover catalogs we have personally
+   captured; a real customer file will contain catalogs we've never seen,
+   and those silently fall back to one flat cross-catalog default (1,672)
+   that is badly wrong for whole families (the 5069 family sits +28% to
+   +35% under-predicted on that default). The table should become a
+   FALLBACK for known-exact catalogs, not the primary mechanism.
+
+   What's needed instead: predict a module's overhead from its own
+   STRUCTURE, which is already in the L5X and already parsed. First look
+   at the evidence, 2026-09-04:
+   * A naive structural regression (constant + module count + connection
+     input/output/config bytes + module_defined_bytes) over the 98
+     error-free single-module `modulesweep_*` captures lands at MAE 845
+     bytes / 3.84% mean — better than nothing but not close to the <1%
+     target, because it lumps genuinely different module CLASSES (simple
+     discrete I/O, analog, drives, safety, network bridges) into one
+     linear model.
+   * The missing variable is class, and Rockwell already states it: every
+     module carries its own PROFILE string on its Input/Output/Config tag
+     (`ModuleInfo.input_profile` etc., already parsed since 2026-08-27).
+     `AB:1756_DI:I:0` is "1756 digital input", `AB:1756_DO:C:0` is
+     "1756 digital output config", `AB:1734_8SLOT:I:0` is an 8-slot
+     PointIO adapter, `AB:MotionDevice_Diagnostics:S:0` a drive. This is
+     catalog-INDEPENDENT and exactly the "16pt digital vs 8pt analog"
+     axis needed here -- 1756-IA16 and 1756-IB16 are different
+     catalogs but both `AB:1756_DI`. Across the 98 valid files there are
+     143 distinct profile strings resolving to a much smaller set of
+     class tokens (DI, DO, IB, OE, OF, SLOT, ...).
+   * Point count is recoverable the same way (the `_16` / `_8SLOT`
+     numeric token, cross-checkable against the real connection byte
+     counts already parsed).
+
+   Proposed model shape, NOT yet fitted or wired:
+       overhead = class_base[profile_class] + per_point[class] * points
+                  + per_connection_byte * (in + out + cfg)
+   fitted per class from the single-module captures, with the existing
+   per-catalog table kept as an exact-match override where we have real
+   data. This is the single highest-value remaining architecture change
+   for the North Star, because it is what makes an UNSEEN catalog
+   predictable at all.
+
+### Verbatim, as it last stood in OPEN_QUESTIONS.md
+
+9. **OQ-AOIORPHAN** — **CLOSED. Full entry and reasoning trail moved to `docs/RESOLVED_QUESTIONS.md`** ("Closed 2026-09-05" section).
+
+### Verbatim, as it last stood in OPEN_QUESTIONS.md
+
+18. **OQ-STSIZING** — new, 2026-09-04. **Structured Text is completely
+    unmodeled.** `parse_rll_routines` handles RLL only, so every ST routine
+    in every file contributes exactly **0** to the prediction. Every file
+    in the `gen_st_sizing.py` batch predicts an identical 23,365 today —
+    that is the diagnostic property, not a bug: whatever Capacity movement
+    comes back IS the ST cost, with nothing to subtract.
+
+    **This is not a small corner.** Measured across `samples/local/`, 23
+    real files: **297 ST routines, 24,017 ST lines.**
+    | construct | count | | construct | count |
+    |---|---:|---|---|---:|
+    | `:=` assignment | 8,688 | | `FOR`/`DO`/`END_FOR` | 600/879/148 |
+    | `IF`/`THEN`/`END_IF` | 1,739/1,831/1,230 | | `WHILE`/`END_WHILE` | 38/3 |
+    | `ELSIF`/`ELSE` | 559/332 | | `REPEAT`/`UNTIL` | 1/8 |
+    | `CASE`/`OF`/`END_CASE` | 90/1,085/84 | | `EXIT`/`RETURN` | 39/5 |
+    Comments: **5,931 leading `//`, 967 trailing `//`, 27 `(* *)` = 6,925
+    lines, 29% of all real ST.** Instruction-style calls INSIDE ST: COP
+    362, CONCAT 67, SBR 44, RET 42, DTOS 26, TRUNC 25, TONR 22, JSR 18,
+    DELETE 16, OSRI 12, ABS 10, GSV 8, SIZE 7, STOD 7, BTDT 6, CPS 4,
+    SCL 4, MSG 2, SSV 1.
+
+    So real ST is ~36% control flow, ~29% comments, and it calls the SAME
+    instructions the ladder does. That last fact is the cheapest possible
+    route to closing this hole and is what group D tests: 1,000 COP /
+    CONCAT / DTOS / SIZE calls hosted in ST, each using operands
+    byte-for-byte identical to `gen_logic_sweep`'s own rung text, paired
+    against the existing valid `instr_*_n01000` captures. **If they land on
+    the same number, the entire per-instruction weight table transfers to
+    ST unchanged** and ST needs only a per-statement term and control-flow
+    terms on top.
+
+    Sub-question, **OQ-STCOMMENT** (2026-09-04): does an ST comment line or
+    block take up data memory, or is it free like tag and rung comments?
+    The RLL half of this is already ANSWERED and free:
+    `instr_cpt_n05000_comment100` and `instr_cpt_n05000_nocomment` came
+    back **byte-identical at 2,282,944**. But that result does not
+    transfer, and assuming it would be a real mistake: an RLL rung comment
+    is a separate `<Comment>` element hanging off the rung — metadata
+    beside the logic — whereas an ST comment lives INSIDE the routine's own
+    source CDATA, in the same text Studio compiles. Group B holds 100
+    executable lines identical to `realscale_st_n00100` and varies only the
+    comments: 100 short leading, 100 long leading (110 chars, the real
+    header width from Bender134053's T_ADD routine), 400 short leading, 100
+    trailing (zero added lines), and 400 genuinely blank lines with no
+    comments at all. That set separates per-comment-LINE from
+    per-comment-CHARACTER from per-`<Line>`-element, and answers whether
+    blank lines are free.
+
+    Also open and covered by the same batch: whether an ST assignment with
+    an arithmetic right-hand side is just a CPT expression (group E
+    transcribes `instr_cpt_n01000`'s expression operand for operand into ST
+    — if it lands on 474,944 the existing tier-aware CPT model is reusable
+    as-is), and whether an ST routine used as a JSR target is charged the
+    same parameter cost as an RLL one (group F; all JSR param constants
+    were fitted on RLL targets only, and 44 SBR / 42 RET in the corpus say
+    ST targets are a real shape). Blocked on capture — **not on anyone
+    writing samples: 24,017 real ST lines is more idiom than this needs,
+    and every construct and call in the batch is taken from that corpus,
+    not invented.**
+
+### Verbatim, as it last stood in OPEN_QUESTIONS.md
+
+20. **OQ-ALARMCOND** — **CLOSED. Full entry and reasoning trail moved to `docs/RESOLVED_QUESTIONS.md`** ("Closed 2026-09-05" section).
+
+### Verbatim, as it last stood in OPEN_QUESTIONS.md
+
+21. **OQ-SHELLSCALE** — **CLOSED. Full entry and reasoning trail moved to `docs/RESOLVED_QUESTIONS.md`** ("Closed 2026-09-05" section).

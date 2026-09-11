@@ -209,46 +209,44 @@ the matching footnote at the bottom, not inline.
    everything resolvable including Safety tag content and adjust the
    warning wording.[^safetyscope]
 
-5. **OQ-AOIARRAYDIMENSION** — the `aoi_array_param_def_only.L5X` import
-   thread is **CLOSED 2026-09-03**. Real root cause, from live controller
-   testing: BOOL/SINT/INT/DINT cannot be arrays for Input parameters —
-   an array parameter must be InOut. The two prior "fixes" (Required/
-   Visible forced true/true 2026-08-29, then a real `<Array>`/`<Element>`
-   DefaultData body 2026-08-30) were chasing a formatting bug that never
-   existed — an array-dimensioned atomic Input/Output Parameter is not a
-   legal Logix construct at all; only `Usage="InOut"` permits an array
-   Parameter (matches this project's own real corpus evidence,
-   `LOG_HMIDisplay`/`BitArray` — both `Dimensions` AND `InOut`, which is
-   now understood as the ONLY combination that can exist, not a coincidence
-   of the only 2 examples on file). Fixed for real:
-   `builders.py::_aoi_parameter_xml` now hard-fails (`ValueError`) if a
-   caller ever asks for a dimensioned Input/Output Parameter, so this
-   generator-level bug class cannot recur; `lint.py`'s new
-   `aoi_array_param_wrong_usage` check is a defense-in-depth net for any
-   L5X reaching lint by another path. The broken `aoi_array_param_def_
-   only.L5X` file and its never-successfully-captured manifest row are
-   removed (confirmed via `convert_log.csv`: FAILED at every one of 5
-   logged attempts, 2026-08-30 through 2026-08-31, `XMLSrv_E_IMPORT_
-   ABORTED_NO_CHANGES` every time — never had real ground truth to lose).
-   Same fix pass also found and closed a second, previously-untested gap
-   in the SAME function: the InOut branch never rendered a `Dimensions`
-   attribute at all (no generated file had ever actually exercised
-   `inout_params=[...]` with `dimension` set until a new test for this
-   fix exercised it) — now fixed to match the real `LOG_HMIDisplay`/
-   `BitArray` shape.
+5. **OQ-AOIARRAYLOCALTAG** (was the open sub-thread of
+   OQ-AOIARRAYDIMENSION, whose import-failure thread closed 2026-09-03 and
+   is now in RESOLVED_QUESTIONS.md) — an AOI array LocalTag's DIMENSION is
+   unpriced. **All 27 files of the isolation sweep are CAPTURED and were
+   never reconciled, found 2026-09-11. The answer is in hand; it is a
+   wiring job with two small anomalies, not an open measurement.**
 
-   **Still genuinely open, separate sub-thread**: the array-LocalTag
-   dimension-scaling question (real +400/+404-byte, ~2%, gap on
-   `aoi_array_localtag_1_instance`/`_def_only`, both at dimension=100 —
-   the only 2 real data points on file, both the SAME size, so it's
-   unknown whether the gap is a flat per-array-LocalTag declaration cost
-   or scales with dimension/element type). The current `aoi_definition`
-   formula charges `per_declared_item` once per declared item regardless
-   of `dimension`, so if the real gap DOES scale with size this is a
-   genuine missing term. 27-file isolation sweep built 2026-09-03
-   (`gen_aoi_arraylocaltag_sweep.py`: dimension 10–1000, type SINT/INT/
-   DINT/REAL/BOOL, multiplicity 1–3 array LocalTags/AOI) awaiting real
-   capture.[^aoiarraydimension]
+   `aoi_definition` charges `per_declared_item` once per declared item
+   regardless of `dimension`, so the array's data space is charged nothing.
+   The sweep says it should be charged the array's real data size.
+
+   Dimension sweep, DINT, `_def_only` (predicted is a FLAT 19,343 at every
+   dimension, so the deficit is the whole measurement):
+
+       dim      10    25     50    100    250     500     1000
+       deficit -41   -97   -201   -401  -1001   -2001    -4001
+
+   Exactly `-(4 x dim + 1)` at 10, 50, 100, 250, 500 and 1000 — a clean 4
+   bytes per DINT element, which is the element size. The `_1_instance`
+   twins are the same deficit minus 4, so this is a DEFINITION-side cost and
+   the instance does not pay it again.
+
+   Element type at dimension 50, `_def_only`: BOOL -13, SINT -51, INT -99,
+   DINT -201, REAL -201. Net of the constant 1 that runs through every row:
+   SINT 1.0/element and DINT/REAL 4.0/element are exactly element size.
+
+   Multiplicity (n arrays of 50 DINT in one definition): -200, -392, -592.
+   Additive per array LocalTag, not a one-off per definition.
+
+   **Two anomalies that must not be papered over when this is wired:**
+   `dim=25` is -97 where the law says -101, off by exactly one element; and
+   `INT` at 50 is -99 where 50 x 2 says -101, also off by one element, while
+   `BOOL` at 50 is -13 against a 7-byte packed array. A 4-byte-granularity
+   or alignment term is the obvious suspect, and the DINT/REAL rows cannot
+   see it because 4 is already their element size. Wiring element-size x
+   dimension alone would be right to within one element everywhere and
+   exactly right on most rows — which is precisely the kind of nearly-right
+   constant this project has had to unpick twice.
 
 6b. **OQ-MODULESTRUCTURAL** — NEW, 2026-09-04, and it changes the target
    for OQ-MODULEIO below. The target application is testing an unknown
@@ -455,8 +453,6 @@ the matching footnote at the bottom, not inline.
     trigger-SOURCE sub-question, Axis Watch vs. EVENT-instruction) has no
     real capture yet — that comparison is the only piece of this OQ still
     genuinely awaiting data.
-
-9. **OQ-AOIORPHAN** — **CLOSED. Full entry and reasoning trail moved to `docs/RESOLVED_QUESTIONS.md`** ("Closed 2026-09-05" section).
 
 10. **OQ-BLOCKBYTE** — new, very serious if real. Raised 2026-08-30:
     Studio 5000's Capacity readout is labeled "bytes" for 1769/L7x
@@ -1237,66 +1233,6 @@ the matching footnote at the bottom, not inline.
     single-sample-each). See footnote for the actual unreconciled numbers
     and what's needed to close this for real.
 
-18. **OQ-STSIZING** — new, 2026-09-04. **Structured Text is completely
-    unmodeled.** `parse_rll_routines` handles RLL only, so every ST routine
-    in every file contributes exactly **0** to the prediction. Every file
-    in the `gen_st_sizing.py` batch predicts an identical 23,365 today —
-    that is the diagnostic property, not a bug: whatever Capacity movement
-    comes back IS the ST cost, with nothing to subtract.
-
-    **This is not a small corner.** Measured across `samples/local/`, 23
-    real files: **297 ST routines, 24,017 ST lines.**
-    | construct | count | | construct | count |
-    |---|---:|---|---|---:|
-    | `:=` assignment | 8,688 | | `FOR`/`DO`/`END_FOR` | 600/879/148 |
-    | `IF`/`THEN`/`END_IF` | 1,739/1,831/1,230 | | `WHILE`/`END_WHILE` | 38/3 |
-    | `ELSIF`/`ELSE` | 559/332 | | `REPEAT`/`UNTIL` | 1/8 |
-    | `CASE`/`OF`/`END_CASE` | 90/1,085/84 | | `EXIT`/`RETURN` | 39/5 |
-    Comments: **5,931 leading `//`, 967 trailing `//`, 27 `(* *)` = 6,925
-    lines, 29% of all real ST.** Instruction-style calls INSIDE ST: COP
-    362, CONCAT 67, SBR 44, RET 42, DTOS 26, TRUNC 25, TONR 22, JSR 18,
-    DELETE 16, OSRI 12, ABS 10, GSV 8, SIZE 7, STOD 7, BTDT 6, CPS 4,
-    SCL 4, MSG 2, SSV 1.
-
-    So real ST is ~36% control flow, ~29% comments, and it calls the SAME
-    instructions the ladder does. That last fact is the cheapest possible
-    route to closing this hole and is what group D tests: 1,000 COP /
-    CONCAT / DTOS / SIZE calls hosted in ST, each using operands
-    byte-for-byte identical to `gen_logic_sweep`'s own rung text, paired
-    against the existing valid `instr_*_n01000` captures. **If they land on
-    the same number, the entire per-instruction weight table transfers to
-    ST unchanged** and ST needs only a per-statement term and control-flow
-    terms on top.
-
-    Sub-question, **OQ-STCOMMENT** (2026-09-04): does an ST comment line or
-    block take up data memory, or is it free like tag and rung comments?
-    The RLL half of this is already ANSWERED and free:
-    `instr_cpt_n05000_comment100` and `instr_cpt_n05000_nocomment` came
-    back **byte-identical at 2,282,944**. But that result does not
-    transfer, and assuming it would be a real mistake: an RLL rung comment
-    is a separate `<Comment>` element hanging off the rung — metadata
-    beside the logic — whereas an ST comment lives INSIDE the routine's own
-    source CDATA, in the same text Studio compiles. Group B holds 100
-    executable lines identical to `realscale_st_n00100` and varies only the
-    comments: 100 short leading, 100 long leading (110 chars, the real
-    header width from Bender134053's T_ADD routine), 400 short leading, 100
-    trailing (zero added lines), and 400 genuinely blank lines with no
-    comments at all. That set separates per-comment-LINE from
-    per-comment-CHARACTER from per-`<Line>`-element, and answers whether
-    blank lines are free.
-
-    Also open and covered by the same batch: whether an ST assignment with
-    an arithmetic right-hand side is just a CPT expression (group E
-    transcribes `instr_cpt_n01000`'s expression operand for operand into ST
-    — if it lands on 474,944 the existing tier-aware CPT model is reusable
-    as-is), and whether an ST routine used as a JSR target is charged the
-    same parameter cost as an RLL one (group F; all JSR param constants
-    were fitted on RLL targets only, and 44 SBR / 42 RET in the corpus say
-    ST targets are a real shape). Blocked on capture — **not on anyone
-    writing samples: 24,017 real ST lines is more idiom than this needs,
-    and every construct and call in the batch is taken from that corpus,
-    not invented.**
-
 19. **OQ-EXPORTSCOPE** — new, 2026-09-04. The estimation path has to handle
     controller, UDT, AOI, program, routine and rung-logic exports.
     Anything that is not a controller export cannot use the base load, but
@@ -1327,10 +1263,6 @@ the matching footnote at the bottom, not inline.
     into a second known project, and read Capacity before and after. That
     is a controller-in-the-loop test, not a file-generation one, so it
     needs a controller at the bench rather than a generator run.
-
-20. **OQ-ALARMCOND** — **CLOSED. Full entry and reasoning trail moved to `docs/RESOLVED_QUESTIONS.md`** ("Closed 2026-09-05" section).
-
-21. **OQ-SHELLSCALE** — **CLOSED. Full entry and reasoning trail moved to `docs/RESOLVED_QUESTIONS.md`** ("Closed 2026-09-05" section).
 
 22. **OQ-BUILDFAIL-OPEN** — the 11 sample files that genuinely still fail to
     build, 2026-09-05. Audited down from 138 `error_count > 0` rows: 72 were
