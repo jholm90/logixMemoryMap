@@ -1800,34 +1800,124 @@ the matching footnote at the bottom, not inline.
 
 
 32. **OQ-MODULEMARGINAL** — the last ASSUMED exposure that reaches a real
-    file. 4.33% of real-file bytes, of which the 2198 `-ERS3` drives are
-    4.07% and thirteen other catalogs are 0.25%.
+    file. 4.15% of real-file bytes on the current engine, of which the 2198
+    `-ERS3` drives are 4.07% and eleven other catalogs are the rest. The
+    worst-exposed real files are `k3m16` (7.06% ASSUMED), `horizon` (7.00%)
+    and `ipc` (6.44%), and every ASSUMED byte in all sixteen real files is a
+    `module_io` entry — nothing else in the model is both ASSUMED and
+    reachable from a real export.
 
-    Not an analysis question any more — the `-ERS3` root cause is found and
-    closed: a missing `<ExtendedProperties>` block plus a corrupted
-    ConfigData payload in one generator's hardcoded module XML, nothing to
-    do with safety controllers (see RESOLVED_QUESTIONS.md, "Closed
-    2026-09-06"). What remains is
-    that `module_overhead_by_catalog` cannot be turned from ASSUMED into a
-    measurement from a single capture point per catalog: one point confirms
-    a total, it cannot separate the per-module cost from the one-time cost
-    of the first module of that type.
+    **CAPTURED AND RECONCILED 2026-09-11, 54 files (`asmclose_*`, n=1/2/4
+    per catalog). The marginal law is exact, and it must not be wired on
+    its own.**
 
-    `gen_assumed_closeout.py` (64 files) sweeps every affected catalog at
-    n=1/2/4 so the marginal cost of the Nth identical module is read
-    directly off the differences. Group A builds all six `-ERS3` catalogs on
-    a plain non-safety controller from `_drive_module_xml()`, the function
-    with 31 zero-error captures behind it; group B does the same for the
-    thirteen other unpriced catalogs; group C is the ten remaining
-    predefined-structure probes.
+    Over-prediction is exactly linear in the module count, with zero
+    residual at n=1, n=2 and n=4 for every catalog:
 
-    One catalog is deliberately not covered and is reported rather than
-    faked: **150 SMC Flex-E** (0.069% exposure) has no real module XML in
-    either sweep table, so there is nothing verbatim to build from. It needs
-    a real export before it can be tested at all.
+        over-prediction(n) = discount x (n - 1)
 
-    **Blocked on capture.** When it lands, every ASSUMED entry that touches
-    a real file is either measured or explicitly out of scope.
+        1794-AENT                 432      1756-EN4TR             1520
+        1734-AENT/B               520      1756-IB16IF/A          2208
+        1734-AENT/C               520      440C-CR30-22BBB/A      3768
+        1756-IB16                 792      AL1222                    0
+        1756-IB32/B               792      842E-CM-M              1000
+        PowerFlex 755-EENET-CM-S  976
+
+    So the model charges every module full price and the controller charges
+    the first one full price and `full - discount` for the rest. AL1222 at
+    exactly 0 is the control that makes this a real per-catalog-shape
+    property rather than a flat per-module fudge.
+
+    The 2198 `-ERS3` family does not fit that form — it carries an extra
+    flat error at n=1 as well:
+
+        D012 / D020 / D032 / D057   +6,384 at n=1, then +7,368 per extra
+        S086-ERS3                   +3,264 at n=1, then +4,248 per extra
+        S130-ERS3                   +3,228 at n=1, then +4,212 per extra
+
+    i.e. a drive after the first costs 984 less than the first, AND the
+    first is itself over-charged. This is the single largest ASSUMED block
+    in the project.
+
+    **WHY IT IS NOT WIRED YET — this is the important part.** Applying the
+    law as measured removes 824,864 bytes of module cost from the sixteen
+    real files and makes EVERY ONE OF THEM WORSE: the median real-file error
+    moves from -1.69% to roughly -3.5%. The law is not wrong; it is exact on
+    54 points. What it shows is that the module over-charge has been masking
+    an equal under-charge somewhere else, which is the compensating-error
+    problem stated in OQ-REALGAP with a hard number attached for the first
+    time. It gets wired together with whatever the strip ladder resolves,
+    not before.
+
+    **The one thing 54 single-catalog captures cannot decide.** Every one of
+    those files holds ONE catalog, and two readings fit all 54 identically:
+
+      - PER-CATALOG — the first module *of each catalog* pays full price:
+        error = sum over catalogs of `d_i x (n_i - 1)`
+      - PER-FILE — the first module *in the file* pays full price and
+        everything after it is discounted whatever its catalog:
+        error = `sum(d_i x n_i) - d_first`
+
+    On a single-catalog file these are the same number. On a real program
+    carrying 20-60 modules across 10-20 catalogs they differ by most of the
+    module total, so picking wrong is a multi-hundred-kilobyte error on
+    every real file.
+
+    **Test files built 2026-09-11, `gen_module_marginal.py`, 36 files.**
+
+      - **Arm A, 17 files** (`asmclose_*_n08`) — n=8 for every catalog that
+        already has n=1/2/4, from the same builders so it differences
+        straight against n=4. This is the first point that can FALSIFY the
+        law: three points fit it exactly but two of them define it, so a
+        per-rack or per-connection-block step above four modules would be
+        invisible in the existing data.
+      - **Arm B, 9 files** (`modmarg_mix{q1,q2,q3}_{x1,x2,x2rev}`) — the
+        decisive experiment. Three quadruples of catalogs with widely
+        separated discounts, each at 1 and 2 copies per catalog. The two
+        readings are separated by 2,744 / 6,952 / 6,288 bytes on the `x1`
+        and `x2` files, on files that are otherwise exact to the byte, so
+        one capture each settles it. The `x2rev` files reverse module order
+        within the file: PER-FILE requires the total error to move by
+        `d_first - d_last` (1,224 / 3,704 / 3,312 here), PER-CATALOG
+        requires it not to move at all — so the mixture is self-checking
+        rather than one arithmetic coincidence.
+      - **Arm C, 6 files** (`modmarg_drvaxis_*`) — the -ERS3 drives WITH
+        their axis (one `AXIS_CIP_DRIVE` per drive plus the one shared
+        `MOTION_GROUP`), at n=1/2/4/8 for D012 and n=1/2 for S086. All 54
+        `asmclose_*` files hold bare drive modules with no axis tag; a real
+        program never does. Differencing against the bare-drive capture at
+        the same count separates the drive's own marginal cost from the
+        axis's, which is the form the cost actually takes on a real file.
+      - **Arm D, 4 files** (`modmarg_ob32chain_n{01,02,04,08}`) — see the
+        contamination note below.
+
+    **Contaminated data found and cleared, 2026-09-11.**
+    `asmclose_1756_ob32_rackaliased_n02` and `_n04` are not usable and their
+    capture columns have been cleared. The 1756-OB32 block is the only
+    2-deep chain in the set (a 1756-EN2T adapter plus the output card behind
+    it), and the copier that multiplies a module block renames only the
+    FIRST `<Module>` in it. Every copy after the first therefore shipped an
+    identically-named OB32 still pointing at `ParentModule="<the first
+    adapter>"` and still sitting in the same slot 3. Studio merged the
+    identical duplicates instead of rejecting them, so both files captured
+    at ZERO import errors while measuring N adapters sharing ONE output
+    card. The "1756-OB32 discount = 1760" read off them is therefore not a
+    discount at all — it is the cost of the cards that never got imported.
+    `lint.duplicate_module_name` now catches this class outright; a
+    corpus-wide sweep found these two files and no others. Arm D rebuilds
+    the full n=1/2/4/8 sweep under a new sample_id, with every module in
+    every copy renamed and its `ParentModule` repointed at its own adapter,
+    rather than regenerating in place — regenerating in place would leave
+    the old captured `actual_bytes` attached to different file content.
+
+    One catalog is still deliberately not covered and is reported rather
+    than faked: **150 SMC Flex-E** (0.069% exposure) has no real module XML
+    in either sweep table, so there is nothing verbatim to build from. It
+    needs a real export before it can be tested at all.
+
+    **Blocked on capture of the 36.** Arm B alone decides whether the
+    already-measured law is worth hundreds of kilobytes per real file or a
+    few tens.
 
 
 33. **OQ-ALARMDEF** — datatype-level alarm definitions are priced at zero.

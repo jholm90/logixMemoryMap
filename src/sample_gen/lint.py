@@ -595,10 +595,41 @@ def _module_slot_findings(root: ET.Element) -> list[LintFinding]:
     """
     findings: list[LintFinding] = []
     modules_by_name: dict[str, ET.Element] = {}
+    name_counts: dict[str, int] = {}
     for mod_el in root.iter("Module"):
         name = mod_el.get("Name")
         if name:
             modules_by_name[name] = mod_el
+            name_counts[name] = name_counts.get(name, 0) + 1
+
+    # 3. duplicate_module_name -- two Module elements sharing one Name.
+    #
+    # Real gap, found 2026-09-11: asmclose_1756_ob32_rackaliased_n02 and
+    # _n04 each ship the SAME child module name twice, because the copier
+    # that multiplies a module block renames only the FIRST <Module> in it,
+    # and the 1756-OB32 block is a 2-deep chain (1756-EN2T adapter + the
+    # OB32 behind it). Every copy after the first therefore carries an
+    # identically-named OB32 still pointing at ParentModule="<the first
+    # adapter>" and still sitting in the same slot 3.
+    #
+    # duplicate_module_slot below cannot catch it: it de-duplicates its
+    # claimant list by name, so two modules sharing ONE name and claiming
+    # one slot collapse to a single claimant and read as clean. Both files
+    # then captured at zero import errors -- Studio merged the identical
+    # duplicates rather than rejecting them -- so the capture silently
+    # measures n adapters and ONE output card instead of n chains, and any
+    # marginal cost derived from it is measuring the wrong thing. A
+    # duplicate Name is never intentional in a generated file, so it is
+    # flagged on the name alone, independently of slot.
+    for dup_name, seen in sorted(name_counts.items()):
+        if seen > 1:
+            findings.append(LintFinding(
+                "duplicate_module_name",
+                f"Module Name='{dup_name}' appears {seen} times. Studio silently merges identical "
+                f"duplicates instead of rejecting them, so the file measures fewer modules than it "
+                f"appears to contain -- every copy of a multi-module chain needs every one of its "
+                f"members renamed and its internal ParentModule references repointed",
+            ))
 
     # slot_key -> list of (module_name) claiming it
     slot_claims: dict[tuple[str, str, str], list[str]] = {}

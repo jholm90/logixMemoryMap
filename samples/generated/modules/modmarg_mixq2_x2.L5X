@@ -1,0 +1,1905 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="ModMargMixQ2X2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 11 22:20:44 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="ModMargMixQ2X2" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 11 22:20:44 2026" LastModifiedDate="Fri Sep 11 22:20:44 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="TestMod1_1734AENTBm1c1" CatalogNumber="1734-AENT/B" Vendor="1" ProductType="12" ProductCode="108" Major="4" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="0" Type="PointIO" Upstream="false">
+<Bus Size="8" />
+</Port>
+<Port Id="2" Address="192.168.1.20" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications CommMethod="805306369">
+<Connections>
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1734_8SLOT:I:0">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_0000_0001" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000" />
+<Element Index="[1]" Value="2#1110_0001" />
+<Element Index="[2]" Value="2#1111_1111" />
+<Element Index="[3]" Value="2#1011_1111" />
+<Element Index="[4]" Value="2#1111_1101" />
+<Element Index="[5]" Value="2#0011_1111" />
+<Element Index="[6]" Value="2#0000_0000" />
+<Element Index="[7]" Value="2#0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[-255,-1,[0,0,0,0,0,0,0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_8SLOT:O:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000" />
+<Element Index="[1]" Value="2#0000_0000" />
+<Element Index="[2]" Value="2#0000_0000" />
+<Element Index="[3]" Value="2#0000_0000" />
+<Element Index="[4]" Value="2#0000_0000" />
+<Element Index="[5]" Value="2#0000_0000" />
+<Element Index="[6]" Value="2#0000_0000" />
+<Element Index="[7]" Value="2#0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod1_1734AENTBm1c2" CatalogNumber="1734-AENT/B" Vendor="1" ProductType="12" ProductCode="108" Major="4" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="0" Type="PointIO" Upstream="false">
+<Bus Size="8" />
+</Port>
+<Port Id="2" Address="192.168.1.21" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications CommMethod="805306369">
+<Connections>
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1734_8SLOT:I:0">
+<DataValueMember Name="SlotStatusBits0_31" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_0000_0001" />
+<DataValueMember Name="SlotStatusBits32_63" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111" />
+<ArrayMember Name="Data" DataType="SINT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000" />
+<Element Index="[1]" Value="2#1110_0001" />
+<Element Index="[2]" Value="2#1111_1111" />
+<Element Index="[3]" Value="2#1011_1111" />
+<Element Index="[4]" Value="2#1111_1101" />
+<Element Index="[5]" Value="2#0011_1111" />
+<Element Index="[6]" Value="2#0000_0000" />
+<Element Index="[7]" Value="2#0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[-255,-1,[0,0,0,0,0,0,0,0]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1734_8SLOT:O:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="8" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000" />
+<Element Index="[1]" Value="2#0000_0000" />
+<Element Index="[2]" Value="2#0000_0000" />
+<Element Index="[3]" Value="2#0000_0000" />
+<Element Index="[4]" Value="2#0000_0000" />
+<Element Index="[5]" Value="2#0000_0000" />
+<Element Index="[6]" Value="2#0000_0000" />
+<Element Index="[7]" Value="2#0000_0000" />
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod1_PowerFlex755EENETCMSm2c1" CatalogNumber="PowerFlex 755-EENET-CM-S" Vendor="1" ProductType="37" ProductCode="22" Major="20" Minor="3" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="2" Address="192.168.1.22" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications>
+<ConfigData ConfigSize="448">
+<Data Format="L5K">
+[452,4,257,49,31506279,4,10000,131588,1,0,0,0,0,0,0,0,0,-1010302976,0,0,0,0,0,0,0,524296000,524296000,524296000
+		,524296000,0,0,129,0,65536,0,256,1085213245,1146060800,0,1107820544,0,1120403456,1120403456,0,1120403456
+		,1124859904,1115815936,0,1120403456,1,3,0,0,0,0,0,0,0,8608,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,67108864,16778240
+		,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+</Data>
+</ConfigData>
+<Connections>
+<Connection Name="MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:Motion_Diagnostics:S:1">
+<DataValueMember Name="LostControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="24" />
+<DataValueMember Name="LateControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="20535" />
+<DataValueMember Name="LostDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="11786" />
+<DataValueMember Name="LastControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ControllerToDriveConnectionSize" DataType="INT" Radix="Decimal" Value="48" />
+<DataValueMember Name="DriveToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="76" />
+<DataValueMember Name="NominalControllerToDriveTime" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="NominalDriveToControllerTime" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="2000" />
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+<Connection Name="MotionSync" RPI="2000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod1_PowerFlex755EENETCMSm2c2" CatalogNumber="PowerFlex 755-EENET-CM-S" Vendor="1" ProductType="37" ProductCode="22" Major="20" Minor="3" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="2" Address="192.168.1.23" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications>
+<ConfigData ConfigSize="448">
+<Data Format="L5K">
+[452,4,257,49,31506279,4,10000,131588,1,0,0,0,0,0,0,0,0,-1010302976,0,0,0,0,0,0,0,524296000,524296000,524296000
+		,524296000,0,0,129,0,65536,0,256,1085213245,1146060800,0,1107820544,0,1120403456,1120403456,0,1120403456
+		,1124859904,1115815936,0,1120403456,1,3,0,0,0,0,0,0,0,8608,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,67108864,16778240
+		,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+</Data>
+</ConfigData>
+<Connections>
+<Connection Name="MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:Motion_Diagnostics:S:1">
+<DataValueMember Name="LostControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="24" />
+<DataValueMember Name="LateControllerToDriveTransmissions" DataType="INT" Radix="Decimal" Value="20535" />
+<DataValueMember Name="LostDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LateDriveToControllerTransmissions" DataType="INT" Radix="Decimal" Value="11786" />
+<DataValueMember Name="LastControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumControllerToDriveTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumDriveToControllerTime" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="LastSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="AverageSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MaximumSystemClockJitter" DataType="DINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="TimingStatisticsEnabled" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="ControllerToDriveConnectionSize" DataType="INT" Radix="Decimal" Value="48" />
+<DataValueMember Name="DriveToControllerConnectionSize" DataType="INT" Radix="Decimal" Value="76" />
+<DataValueMember Name="NominalControllerToDriveTime" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="NominalDriveToControllerTime" DataType="INT" Radix="Decimal" Value="1000" />
+<DataValueMember Name="CoarseUpdatePeriod" DataType="INT" Radix="Decimal" Value="2000" />
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+<Connection Name="MotionSync" RPI="2000" Type="MotionSync" EventID="0" ProgrammaticallySendEventTrigger="false" />
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod1_1756IB16IFAm3c1" CatalogNumber="1756-IB16IF/A" Vendor="1" ProductType="7" ProductCode="386" Major="1" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" AutoDiagsEnabled="true">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="1" Type="ICP" Upstream="true" />
+</Ports>
+<Communications>
+<ConfigTag ConfigSize="72" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[76,100,1,0,0,0,0,[[6],[6],[6],[6],[6],[6],[6],[6],[6],[6],[6],[6],[6],[6],[6],[6]]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1756_IB16IF:C:0">
+<DataValueMember Name="LatchTimestamps" DataType="BOOL" Value="0" />
+<DataValueMember Name="FilterOffOn" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="FilterOnOff" DataType="INT" Radix="Decimal" Value="0" />
+<ArrayMember Name="Pt" DataType="AB:1756_IB16IF_PtStruct:C:0" Dimensions="16">
+<Element Index="[0]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[10]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[11]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[12]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[13]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[14]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[15]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+</ArrayMember>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="InputData" RPI="2000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="false">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1756_IB16IF:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<ArrayMember Name="LocalClockOffset" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="99117716" />
+<Element Index="[1]" Value="409482" />
+</ArrayMember>
+<ArrayMember Name="OffsetTimestamp" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="198434448" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="GrandMasterClockID" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="-6546176" />
+<Element Index="[1]" Value="320265470" />
+</ArrayMember>
+<ArrayMember Name="Pt" DataType="AB:1756_IB16IF_Struct:I:0" Dimensions="16">
+<Element Index="[0]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196448114" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196718385" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196447703" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196717233" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196443754" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196713497" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196446103" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196714400" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196445818" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196715903" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196442215" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196712486" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196441634" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196712348" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196441801" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196711342" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196438224" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196709665" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196437838" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196707573" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[10]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196434447" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196706169" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[11]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196433429" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196703771" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[12]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196430617" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196701649" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[13]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196429582" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196699090" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[14]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196427091" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196696671" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[15]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196424803" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196695006" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[0,[[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0]]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1756_IB16IF:O:0">
+<DataValueMember Name="ResetTimestamps" DataType="BOOL" Value="0" />
+<ArrayMember Name="Pt" DataType="AB:1756_IB16IF_OPtStruct:O:0" Dimensions="16">
+<Element Index="[0]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[10]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[11]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[12]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[13]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[14]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[15]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod1_1756IB16IFAm3c2" CatalogNumber="1756-IB16IF/A" Vendor="1" ProductType="7" ProductCode="386" Major="1" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" AutoDiagsEnabled="true">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="1" Address="2" Type="ICP" Upstream="true" />
+</Ports>
+<Communications>
+<ConfigTag ConfigSize="72" ExternalAccess="Read/Write">
+<Data Format="L5K">
+[76,100,1,0,0,0,0,[[6],[6],[6],[6],[6],[6],[6],[6],[6],[6],[6],[6],[6],[6],[6],[6]]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1756_IB16IF:C:0">
+<DataValueMember Name="LatchTimestamps" DataType="BOOL" Value="0" />
+<DataValueMember Name="FilterOffOn" DataType="INT" Radix="Decimal" Value="0" />
+<DataValueMember Name="FilterOnOff" DataType="INT" Radix="Decimal" Value="0" />
+<ArrayMember Name="Pt" DataType="AB:1756_IB16IF_PtStruct:C:0" Dimensions="16">
+<Element Index="[0]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[10]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[11]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[12]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[13]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[14]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+<Element Index="[15]">
+<Structure DataType="AB:1756_IB16IF_PtStruct:C:0">
+<DataValueMember Name="FilterEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="COSOffOnEn" DataType="BOOL" Value="1" />
+<DataValueMember Name="COSOnOffEn" DataType="BOOL" Value="1" />
+</Structure>
+</Element>
+</ArrayMember>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="InputData" RPI="2000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="false">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:1756_IB16IF:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000" />
+<ArrayMember Name="LocalClockOffset" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="99117716" />
+<Element Index="[1]" Value="409482" />
+</ArrayMember>
+<ArrayMember Name="OffsetTimestamp" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="198434448" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="GrandMasterClockID" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="-6546176" />
+<Element Index="[1]" Value="320265470" />
+</ArrayMember>
+<ArrayMember Name="Pt" DataType="AB:1756_IB16IF_Struct:I:0" Dimensions="16">
+<Element Index="[0]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196448114" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196718385" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196447703" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196717233" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196443754" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196713497" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196446103" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196714400" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196445818" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196715903" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196442215" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196712486" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196441634" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196712348" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196441801" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196711342" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196438224" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196709665" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196437838" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196707573" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[10]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196434447" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196706169" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[11]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196433429" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196703771" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[12]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196430617" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196701649" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[13]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196429582" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196699090" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[14]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196427091" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196696671" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[15]">
+<Structure DataType="AB:1756_IB16IF_Struct:I:0">
+<DataValueMember Name="Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Fault" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOffOn" DataType="BOOL" Value="1" />
+<DataValueMember Name="NewDataOnOff" DataType="BOOL" Value="1" />
+<DataValueMember Name="TimestampDropped" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncValid" DataType="BOOL" Value="1" />
+<DataValueMember Name="CIPSyncTimeout" DataType="BOOL" Value="0" />
+<DataValueMember Name="InputOverrideStatus" DataType="BOOL" Value="0" />
+<StructureMember Name="Timestamp" DataType="AB:1756_IB16IF_TimeStruct:I:0">
+<ArrayMember Name="OffOn" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196424803" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+<ArrayMember Name="OnOff" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="196695006" />
+<Element Index="[1]" Value="409893" />
+</ArrayMember>
+</StructureMember>
+</Structure>
+</Element>
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[0,[[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0]]]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1756_IB16IF:O:0">
+<DataValueMember Name="ResetTimestamps" DataType="BOOL" Value="0" />
+<ArrayMember Name="Pt" DataType="AB:1756_IB16IF_OPtStruct:O:0" Dimensions="16">
+<Element Index="[0]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[10]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[11]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[12]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[13]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[14]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+<Element Index="[15]">
+<Structure DataType="AB:1756_IB16IF_OPtStruct:O:0">
+<DataValueMember Name="NewDataOffOnAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="NewDataOnOffAck" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideEn" DataType="BOOL" Value="0" />
+<DataValueMember Name="DataOverrideValue" DataType="BOOL" Value="0" />
+</Structure>
+</Element>
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod1_440CCR3022BBBAm4c1" CatalogNumber="440C-CR30-22BBB/A" Vendor="1" ProductType="154" ProductCode="1" Major="10" Minor="11" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="2" Address="192.168.1.24" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications>
+<ConfigData ConfigSize="20">
+<Data Format="L5K">
+[24,101,2053501260,1234361284,1289223558,1775907960,103]
+</Data>
+</ConfigData>
+<Connections>
+<Connection Name="Data" RPI="2000000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:440C_CR30:I:0">
+<DataValueMember Name="RunMode" DataType="BOOL" Value="1" />
+<DataValueMember Name="ConnectionFaulted" DataType="BOOL" Value="0" />
+<DataValueMember Name="MajorFault" DataType="BOOL" Value="0" />
+<DataValueMember Name="MinorFault" DataType="BOOL" Value="0" />
+<DataValueMember Name="VerificationID" DataType="INT" Radix="Decimal" Value="6508" />
+<DataValueMember Name="MajorFaultCode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MajorFaultType" DataType="SINT" Radix="Hex" Value="16#00" />
+<DataValueMember Name="MinorFaultInstance" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MinorFaultType" DataType="SINT" Radix="Hex" Value="16#00" />
+<DataValueMember Name="MinorFaultCode" DataType="INT" Radix="Hex" Value="16#0000" />
+<DataValueMember Name="Pt00Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt01Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt02Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt03Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt04Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt05Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt06Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt07Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt08Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt09Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt10Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt11Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt12Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt13Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt14Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt15Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt16Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt17Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt18Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt19Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt20Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt21Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="SMF01" DataType="BOOL" Value="1" />
+<DataValueMember Name="SMF02" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF03" DataType="BOOL" Value="1" />
+<DataValueMember Name="SMF04" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF05" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF06" DataType="BOOL" Value="1" />
+<DataValueMember Name="SMF07" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF08" DataType="BOOL" Value="1" />
+<DataValueMember Name="SMF09" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF10" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF11" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF12" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF13" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF14" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF15" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF16" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF17" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF18" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF19" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF20" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF21" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF22" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF23" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF24" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA01" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLA02" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA03" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA04" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA05" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA06" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA07" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLA08" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA09" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA10" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA11" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA12" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA13" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA14" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA15" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA16" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB01" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLB02" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLB03" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB04" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLB05" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLB06" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLB07" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB08" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB09" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB10" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB11" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB12" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB13" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB14" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB15" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB16" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF01" DataType="BOOL" Value="1" />
+<DataValueMember Name="SOF02" DataType="BOOL" Value="1" />
+<DataValueMember Name="SOF03" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF04" DataType="BOOL" Value="1" />
+<DataValueMember Name="SOF05" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF06" DataType="BOOL" Value="1" />
+<DataValueMember Name="SOF07" DataType="BOOL" Value="1" />
+<DataValueMember Name="SOF08" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF09" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF10" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF11" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF12" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF13" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF14" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF15" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF16" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF01ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF02ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF03ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF04ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF05ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF06ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF07ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF08ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF09ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF10ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF11ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF12ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF13ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF14ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF15ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF16ResetRequired" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[0,0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:440C_CR30:O:0">
+<DataValueMember Name="LogicDefinedData00" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData01" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData02" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData03" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData04" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData05" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData06" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData07" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData08" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData09" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData10" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData11" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData12" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData13" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData14" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData15" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+<Module Name="TestMod1_440CCR3022BBBAm4c2" CatalogNumber="440C-CR30-22BBB/A" Vendor="1" ProductType="154" ProductCode="1" Major="10" Minor="11" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="CompatibleModule" />
+<Ports>
+<Port Id="2" Address="192.168.1.25" Type="Ethernet" Upstream="true" />
+</Ports>
+<Communications>
+<ConfigData ConfigSize="20">
+<Data Format="L5K">
+[24,101,2053501260,1234361284,1289223558,1775907960,103]
+</Data>
+</ConfigData>
+<Connections>
+<Connection Name="Data" RPI="2000000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<InputTag ExternalAccess="Read/Write">
+<Data Format="Decorated">
+<Structure DataType="AB:440C_CR30:I:0">
+<DataValueMember Name="RunMode" DataType="BOOL" Value="1" />
+<DataValueMember Name="ConnectionFaulted" DataType="BOOL" Value="0" />
+<DataValueMember Name="MajorFault" DataType="BOOL" Value="0" />
+<DataValueMember Name="MinorFault" DataType="BOOL" Value="0" />
+<DataValueMember Name="VerificationID" DataType="INT" Radix="Decimal" Value="6508" />
+<DataValueMember Name="MajorFaultCode" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MajorFaultType" DataType="SINT" Radix="Hex" Value="16#00" />
+<DataValueMember Name="MinorFaultInstance" DataType="SINT" Radix="Decimal" Value="0" />
+<DataValueMember Name="MinorFaultType" DataType="SINT" Radix="Hex" Value="16#00" />
+<DataValueMember Name="MinorFaultCode" DataType="INT" Radix="Hex" Value="16#0000" />
+<DataValueMember Name="Pt00Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt01Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt02Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt03Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt04Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt05Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt06Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt07Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt08Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt09Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt10Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt11Data" DataType="BOOL" Value="0" />
+<DataValueMember Name="Pt12Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt13Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt14Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt15Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt16Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt17Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt18Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt19Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt20Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="Pt21Data" DataType="BOOL" Value="1" />
+<DataValueMember Name="SMF01" DataType="BOOL" Value="1" />
+<DataValueMember Name="SMF02" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF03" DataType="BOOL" Value="1" />
+<DataValueMember Name="SMF04" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF05" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF06" DataType="BOOL" Value="1" />
+<DataValueMember Name="SMF07" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF08" DataType="BOOL" Value="1" />
+<DataValueMember Name="SMF09" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF10" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF11" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF12" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF13" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF14" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF15" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF16" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF17" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF18" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF19" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF20" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF21" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF22" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF23" DataType="BOOL" Value="0" />
+<DataValueMember Name="SMF24" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA01" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLA02" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA03" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA04" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA05" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA06" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA07" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLA08" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA09" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA10" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA11" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA12" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA13" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA14" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA15" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLA16" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB01" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLB02" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLB03" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB04" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLB05" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLB06" DataType="BOOL" Value="1" />
+<DataValueMember Name="LLB07" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB08" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB09" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB10" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB11" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB12" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB13" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB14" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB15" DataType="BOOL" Value="0" />
+<DataValueMember Name="LLB16" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF01" DataType="BOOL" Value="1" />
+<DataValueMember Name="SOF02" DataType="BOOL" Value="1" />
+<DataValueMember Name="SOF03" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF04" DataType="BOOL" Value="1" />
+<DataValueMember Name="SOF05" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF06" DataType="BOOL" Value="1" />
+<DataValueMember Name="SOF07" DataType="BOOL" Value="1" />
+<DataValueMember Name="SOF08" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF09" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF10" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF11" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF12" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF13" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF14" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF15" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF16" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF01ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF02ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF03ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF04ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF05ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF06ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF07ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF08ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF09ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF10ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF11ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF12ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF13ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF14ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF15ResetRequired" DataType="BOOL" Value="0" />
+<DataValueMember Name="SOF16ResetRequired" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Data Format="L5K">
+[0,0]
+</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:440C_CR30:O:0">
+<DataValueMember Name="LogicDefinedData00" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData01" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData02" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData03" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData04" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData05" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData06" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData07" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData08" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData09" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData10" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData11" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData12" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData13" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData14" DataType="BOOL" Value="0" />
+<DataValueMember Name="LogicDefinedData15" DataType="BOOL" Value="0" />
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>
