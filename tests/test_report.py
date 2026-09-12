@@ -339,7 +339,10 @@ def test_module_overhead_uses_real_per_catalog_value_when_known():
     entries, errors = build_report(root, MODEL)
     assert errors == []
     module_entry = next(e for e in entries if e.category == "module_io")
-    assert module_entry.basis == "ASSUMED"
+    # KNOWN since 2026-09-12: the asmclose_1756_ib16_1conn_n01/02/04 sweep
+    # measured this catalog directly at three module counts, which promoted it
+    # off the ASSUMED guess it used to carry.
+    assert module_entry.basis == "KNOWN"
     assert module_entry.bytes == 4 + 1684  # module_defined_bytes(4) + real 1756-IB16 overhead
 
 

@@ -1577,6 +1577,18 @@ the matching footnote at the bottom, not inline.
     the same way, so one diagnosis fixes six) and one for `almd_minimal`.
     That is two error messages for 9 of the 11 files.
 
+    **2026-09-12: the 2198 half is CLOSED and needed no error log.** The six
+    `modulesweep_2198_*_variant_2conn` / `s130_ers3` files **no longer exist**,
+    and the `asmclose_2198_*` sweep superseded them with **18 clean captures**
+    (`error_count = 0`) covering all six of the same catalogs at three module
+    counts each. The entry's "one diagnosis fixes six" ask is obsolete — the
+    measurement was already on disk. What it showed is below. Remaining in this
+    entry: `almd_minimal` / `almd_realtext` (ALMD cost, still the ask),
+    `modulerack_kinetix_full_bus` (never captured at all — the "4 errors" in
+    the table above has no row behind it), `predefprobe_axis_generic` (file
+    gone), `eventtask_axiswatch`. The two `aoi_multiroutine_*` rows moved to
+    OQ-AOIINTERNALLOGIC, which is the question they actually invalidate.
+
 
 
     **CAPTURE ERRORS: 12 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
@@ -1589,6 +1601,69 @@ the matching footnote at the bottom, not inline.
     `almd_minimal`, `aoi_multiroutine_control`, `aoi_multiroutine_real`, `instrfirst_crout_x10`, `instrfirst_mapc_x10`, `predefprobe_axis_generic`
     9 committed file(s) attempted and never reached `ok` in
     `convert_log.csv`: `predefprobe_opcua_server_address`, `predefprobe_ref_to_axis_cip_drive`, `predefprobe_ref_to_axis_consumed`, `predefprobe_ref_to_axis_general_drive`, `predefprobe_ref_to_axis_servo`, `predefprobe_ref_to_axis_servo_drive` (+3 more)
+
+43. **OQ-REALUNDER** — new 2026-09-12, and it is now the single biggest thing
+    between this project and its North Star. **Every one of the 16 real
+    programs under-predicts, mean |error| 3.65%, worst 6.06%** — outside the
+    2% CLAUDE.md calls a broken estimator, and the first time the real set has
+    read this way.
+
+    | real program | delta | % |
+    |---|---:|---:|
+    | `ipc_edgerline_20251217r1` | −136,783 | **−6.06%** |
+    | `superior_2025_02_21` | −182,948 | −5.85% |
+    | `murraybros_20260122r1` | −47,002 | −5.09% |
+    | `elmsdale_20251017r01` | −55,734 | −4.86% |
+    | `eastperry_2025_02_21` | −206,650 | −4.46% |
+    | `cmu_2025_10_14r00` | −224,522 | −4.30% |
+    | `k3m16_edgers_20220808r00` | −170,926 | −4.23% |
+    | `pukall_gang_20260414_r00` | −102,226 | −4.09% |
+    | `emporium_2025_05_28r01` | −258,789 | −3.63% |
+    | `emporiumedger_20250905r1` | −61,775 | −3.63% |
+    | `mrfp_edger_2026_06_01_r00` | −64,130 | −2.81% |
+    | `horizon_edger_march18` | −45,310 | −2.57% |
+    | `accutally_20260803` | −152,116 | −2.54% |
+    | `griffin_stackerline_1mar25` | −39,542 | −1.67% |
+    | `flarefunction_311d_1074245` | −17,779 | −1.66% |
+    | `salamanca_20250425r00` | −13,327 | −0.98% |
+
+    **This is not a regression. It is an unmasking, and the arithmetic is
+    exact.** The six `2198-*-ERS3` drive overheads were ASSUMED guesses of
+    10,497 / 7,377 / 7,341 against a measured 4,624 — over-predicting a single
+    drive by up to 2.4×. Correcting them removed 6,384 bytes of over-charge per
+    drive, and `realprog_ipc_edgerline` contains exactly **12** ERS3 drives:
+    12 × 6,384 = **76,608**, which is precisely how far that file's residual
+    moved (−60,175 → −136,783). The same cancellation was running in every real
+    program with drives.
+
+    So the real-file accuracy this project has been quoting was **propped up by
+    a wrong constant** — a large over-charge on drives cancelling a large
+    under-charge elsewhere, two errors in opposite directions hiding each other,
+    the same failure mode the JSR target/call refit already hit once.
+
+    What the under-charge actually is, is now the question. It is large, it
+    scales with program size, and it is NOT the drives. Candidates in rough
+    order of size, all with data already pending capture:
+
+    - **AOI internal logic** (OQ-AOIINTERNALLOGIC) — its weighting is fitted to
+      five rows that captured with build errors, and errored rows under-state
+      cost, so the fitted weight is likely too low. Real AOIs are logic-dense:
+      39 definitions carrying 573 rungs in one of these very programs.
+    - **Repeated module catalogs** — measured discount of 432..3,768 bytes per
+      repeat, deliberately NOT applied because applying it project-wide made
+      every one of these 16 files worse (it only ever reduces a prediction).
+      That it moves them the wrong way is itself evidence the real gap is an
+      under-charge somewhere else.
+    - **Axis content** (OQ-AXISMARGINAL) — +3,288/axis single-drive,
+      +2,600/axis dual, perfectly linear, ~650 KB of real exposure, not wired.
+    - **`ETHERNET-MODULE`** (OQ-MODULESTRUCTURAL) — 109 of 438 real non-CPU
+      modules, no table entry, flat 1,672 default; 161 of 438 on that default.
+
+    The right next move is NOT another fitted constant. It is to difference one
+    real program's own report against its real Capacity by CATEGORY, so the
+    under-charge is attributed to tags / logic / modules / AOI definitions
+    before anything is tuned. Every fix above is a guess until that split
+    exists.
 
 23. **OQ-DEFSCALE** — definition- and instance-count scaling. **CAPTURED
     AND RECONCILED 2026-09-11, all 30 files, zero import errors. Four exact

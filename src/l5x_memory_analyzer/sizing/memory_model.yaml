@@ -596,28 +596,96 @@ zero_connection_module:
   bytes: 2344
   confidence: FITTED
 
+# repeat_bytes (2026-09-12, OQ-BUILDFAIL-OPEN / OQ-MODULEIO): the SECOND and
+# later modules of the SAME catalog in one project cost LESS than the first.
+# Measured on the asmclose_* count sweeps -- 16 catalogs, each at n = 1 / 2 / 4
+# modules, so two independent marginal measurements per catalog, all of which
+# agree exactly with no variance:
+#
+#   catalog                   1st    each extra   discount
+#   1734-AENT/B              1,632     1,112         520
+#   1734-AENT/C              1,616     1,096         520
+#   1756-EN4TR               3,624     2,104       1,520
+#   1756-IB16                1,712       920         792
+#   1756-IB16IF/A            4,992     2,784       2,208
+#   1756-IB32/B              1,712       920         792
+#   1794-AENT                1,648     1,216         432
+#   2198-*-ERS3 (all six)    4,624     3,640         984
+#   440C-CR30-22BBB/A        4,936     1,168       3,768
+#   842E-CM-M                3,896     2,896       1,000
+#   PowerFlex 755-EENET-CM-S 4,112     3,136         976
+#
+# (those are TOTAL module_io bytes; the values below are the overhead part,
+# total minus the module's own declared module_defined_bytes.)
+#
+# The discount is real and general -- every one of the 16 shows it -- but it is
+# NOT a constant or a fixed ratio: it ranges 432 to 3,768 bytes, and the
+# extra/first ratio ranges 0.24 to 0.79. So it has to be a second per-catalog
+# number, not a formula. A catalog with no repeat_bytes keeps paying the full
+# first-instance rate for every instance, which is the old behaviour and is the
+# safe default: it over-predicts rather than under-predicts.
+#
+# This matters at real scale far more than the 16 test files suggest. Real racks
+# are full of repeated catalogs -- ten 1756-IB16 cards in one chassis were being
+# over-charged 792 bytes each, 7,128 bytes for the rack.
+#
+# The first-instance values did NOT move for any of the ten non-2198 catalogs
+# here, which is the cross-check: the existing table was already right for the
+# first instance and only ever wrong for repeats.
+#
+# The six 2198-*-ERS3 drives are the exception and were badly wrong: they were
+# ASSUMED guesses of 10,497 / 7,377 / 7,341 against a real 4,624 -- over-
+# predicting a single drive by up to 2.4x. All six cost IDENTICALLY (4,624
+# first, 3,640 each extra), so the per-catalog distinction between them was
+# itself an artifact of guessing. See OQ-BUILDFAIL-OPEN: the six files this was
+# blocked on no longer exist, and the asmclose_* sweep superseded them with 18
+# clean captures.
+# NOT APPLIED. Set apply_repeat_discount true only with real-file evidence.
+#
+# The repeat rates below are measured exactly, and applying them project-wide
+# still made the HELD-OUT REAL FILES WORSE -- which is the only accuracy number
+# that counts. realprog_ipc_edgerline went from -2.67% to -6.41% and
+# realprog_accutally from -2.32% to -2.55%; all 16 real programs moved further
+# under-predicted, because the discount only ever reduces a prediction and the
+# real set was already under.
+#
+# The likely reason, and the next test: in the asmclose_* files every repeated
+# module sits in ONE chassis under ONE parent. Real programs spread the same
+# catalog across several racks and adapters, so whatever definition is being
+# shared is plausibly shared PER RACK, not per project -- in which case the
+# occurrence count has to reset at each parent module rather than being global.
+# The modmarg_* batch (built, awaiting capture) varies catalog count against
+# parent, which is exactly the discriminator.
+#
+# Kept here rather than deleted because the measurement is good: 16 catalogs,
+# two independent marginal points each, zero variance. What is wrong is the
+# scope it was applied at, not the numbers.
+module_overhead_repeat_discount:
+  apply_repeat_discount: false
+  confidence: FITTED
+
 module_overhead_by_catalog:
   '150 SMC Flex-E': { bytes: 6614, confidence: ASSUMED }
   '1732E-IB16M12DR/A': { bytes: 2126, confidence: ASSUMED }
   '1732E-IB16M12R/A': { bytes: 1422, confidence: ASSUMED }
   '1732E-OB16M12R/A': { bytes: 1802, confidence: ASSUMED }
-  '1734-AENT/B': { bytes: 1608, confidence: ASSUMED }
-  '1734-AENT/C': { bytes: 1604, confidence: ASSUMED }
+  '1734-AENT/B': { bytes: 1608, repeat_bytes: 1088, confidence: KNOWN }
+  '1734-AENT/C': { bytes: 1604, repeat_bytes: 1084, confidence: KNOWN }
   '1734-AENTR/B': { bytes: 1606, confidence: ASSUMED }
   '1734-OA4/C': { bytes: 1196, confidence: ASSUMED }
   '1756-CNB/D': { bytes: 448, confidence: ASSUMED }
   '1756-DHRIO/E': { bytes: 1392, confidence: ASSUMED }
   '1756-DNB': { bytes: 7536, confidence: ASSUMED }
-  '1756-EN4TR': { bytes: 3608, confidence: ASSUMED }
+  '1756-EN4TR': { bytes: 3608, repeat_bytes: 2088, confidence: KNOWN }
   '1756-ENBT/A': { bytes: 2580, confidence: ASSUMED }
   '1756-HSC/A': { bytes: 2759, confidence: ASSUMED }
   '1756-HSC/B': { bytes: 2759, confidence: ASSUMED }
   '1756-HYD02': { bytes: 2280, confidence: ASSUMED }
   '1756-IA16': { bytes: 1684, confidence: ASSUMED }
   '1756-IA32/A': { bytes: 1688, confidence: ASSUMED }
-  '1756-IB16': { bytes: 1684, confidence: ASSUMED }
-  '1756-IB16IF/A': { bytes: 4952, confidence: ASSUMED }
-  '1756-IB32/B': { bytes: 1688, confidence: ASSUMED }
+  '1756-IB16': { bytes: 1684, repeat_bytes: 892, confidence: KNOWN }
+  '1756-IB16IF/A': { bytes: 4952, repeat_bytes: 2744, confidence: KNOWN }
+  '1756-IB32/B': { bytes: 1688, repeat_bytes: 896, confidence: KNOWN }
   '1756-IF8/A': { bytes: 3415, confidence: ASSUMED }
   '1756-OA16': { bytes: 2108, confidence: ASSUMED }
   '1756-OA16I': { bytes: 1848, confidence: ASSUMED }
@@ -626,7 +694,7 @@ module_overhead_by_catalog:
   '1756-OF4/A': { bytes: 3870, confidence: ASSUMED }
   '1756-OF8/B': { bytes: 5066, confidence: ASSUMED }
   '1794-ACN15/C': { bytes: 1640, confidence: ASSUMED }
-  '1794-AENT': { bytes: 1612, confidence: ASSUMED }
+  '1794-AENT': { bytes: 1612, repeat_bytes: 1180, confidence: KNOWN }
   '1794-IB16/A': { bytes: 1536, confidence: ASSUMED }
   '2097-V34PR5-LM': { bytes: 3633, confidence: ASSUMED }
   # 5069 Compact I/O, wired 2026-09-04. Before this, NO 5069 catalog had
@@ -650,28 +718,28 @@ module_overhead_by_catalog:
   '5069-IY4/A': { bytes: 4040, confidence: FITTED }
   '5069-OBV8S/A': { bytes: 1915, confidence: FITTED }
   '2198-C4004-ERS': { bytes: 4065, confidence: ASSUMED }
-  '2198-D012-ERS3': { bytes: 10497, confidence: ASSUMED }
-  '2198-D020-ERS3': { bytes: 10497, confidence: ASSUMED }
-  '2198-D032-ERS3': { bytes: 10497, confidence: ASSUMED }
-  '2198-D057-ERS3': { bytes: 10497, confidence: ASSUMED }
+  '2198-D012-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
+  '2198-D020-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
+  '2198-D032-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
+  '2198-D057-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
   '2198-H008-ERS': { bytes: 3629, confidence: ASSUMED }
   '2198-P031': { bytes: 3613, confidence: ASSUMED }
   '2198-P070': { bytes: 3613, confidence: ASSUMED }
   '2198-P141': { bytes: 3613, confidence: ASSUMED }
   '2198-P208': { bytes: 3589, confidence: ASSUMED }
   '2198-RP200': { bytes: 3617, confidence: ASSUMED }
-  '2198-S086-ERS3': { bytes: 7377, confidence: ASSUMED }
-  '2198-S130-ERS3': { bytes: 7341, confidence: ASSUMED }
+  '2198-S086-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
+  '2198-S130-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
   '2702782': { bytes: -16, confidence: ASSUMED }
-  '440C-CR30-22BBB/A': { bytes: 4388, confidence: ASSUMED }
-  '842E-CM-M': { bytes: 3633, confidence: ASSUMED }
+  '440C-CR30-22BBB/A': { bytes: 4388, repeat_bytes: 620, confidence: KNOWN }
+  '842E-CM-M': { bytes: 3633, repeat_bytes: 2633, confidence: KNOWN }
   '843E-MIPxxBAx/A': { bytes: 2966, confidence: ASSUMED }
   'AL1122': { bytes: -793, confidence: ASSUMED }
   'AL1222': { bytes: -793, confidence: ASSUMED }
   'EX260-SEN1/A': { bytes: 1430, confidence: ASSUMED }
   'EX260-SEN3/A': { bytes: 1432, confidence: ASSUMED }
   'PowerFlex 755-EENET-CM': { bytes: 3613, confidence: ASSUMED }
-  'PowerFlex 755-EENET-CM-S': { bytes: 3621, confidence: ASSUMED }
+  'PowerFlex 755-EENET-CM-S': { bytes: 3621, repeat_bytes: 2645, confidence: KNOWN }
 
 # Real per-firmware-major-version delta over the confirmed v34/v35 baseline
 # (OQ-BASELINE-PROCFW, wired 2026-08-29). 40 real fw_catalog_matrix

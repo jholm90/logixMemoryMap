@@ -216,6 +216,32 @@ projects specifically** -- the two deltas above are corrections layered on
 top of it for the firmware/catalog combinations they cover, not a
 replacement lookup table.
 
+## 2198 drive overheads corrected (2026-09-12, OQ-BUILDFAIL-OPEN)
+
+The six `2198-*-ERS3` servo-drive catalogs carried ASSUMED guesses of 10,497
+(D012/D020/D032/D057), 7,377 (S086) and 7,341 (S130). Measured from the
+`asmclose_2198_*` sweep — 18 clean captures, all six catalogs at 1 / 2 / 4
+modules — the real cost is **4,624 bytes for the first drive and 3,640 for each
+additional one, IDENTICAL for all six catalogs**. The per-catalog distinction
+between them was itself an artifact of guessing. Overhead set to 4,113 for all
+six (4,624 minus their common 511-byte declared structure), promoted ASSUMED →
+KNOWN.
+
+Consequence, stated plainly: this removes 6,384 bytes of over-charge per drive,
+and it **unmasked a systematic under-prediction on every real program** that the
+old guess had been cancelling. `realprog_ipc_edgerline` has 12 ERS3 drives and
+its residual moved by exactly 12 × 6,384 = 76,608. See OQ-REALUNDER.
+
+A **repeat-instance discount** is measured for 16 catalogs (432–3,768 bytes,
+two independent marginal points each, zero variance) and is present in
+`module_overhead_by_catalog` as `repeat_bytes`, but is **NOT APPLIED** —
+`module_overhead_repeat_discount.apply_repeat_discount` is false. Applying it
+project-wide made all 16 held-out real programs worse, because it only ever
+reduces a prediction and the real set is already under. The likely scope error:
+in the test files every repeat sits in one chassis under one parent, while real
+programs spread a catalog across racks, so what is shared is plausibly shared
+per rack rather than per project. The `modmarg_*` batch discriminates.
+
 ## Unsigned atomics in module structures (fixed 2026-09-12, OQ-V3GENBUGS)
 
 `USINT` (1), `UINT` (2), `UDINT` (4) and `ULINT` (8) are standard Logix atomics

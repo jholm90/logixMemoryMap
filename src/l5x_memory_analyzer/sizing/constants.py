@@ -652,11 +652,25 @@ class ModuleOverheadModel:
     by_catalog: dict[str, tuple[int, str]]
     default_bytes: int
     default_confidence: str
+    # Overhead for the SECOND and later modules of the same catalog in one
+    # project, where it has been measured. See memory_model.yaml
+    # module_overhead_by_catalog for the 16-catalog table and why this has to be
+    # a second per-catalog number rather than a constant or a ratio.
+    repeat_by_catalog: dict[str, int] = field(default_factory=dict)
 
-    def overhead_for(self, catalog_number: str | None) -> tuple[int, str]:
+    def overhead_for(self, catalog_number: str | None,
+                     occurrence: int = 1) -> tuple[int, str]:
+        """`occurrence` is 1 for the first module of this catalog in the file,
+        2 for the second, and so on. A catalog with no measured repeat rate
+        keeps paying the first-instance rate every time -- the old behaviour,
+        and the safe direction, since it over-predicts rather than under."""
         if not catalog_number:
             return self.default_bytes, self.default_confidence
-        return self.by_catalog.get(catalog_number, (self.default_bytes, self.default_confidence))
+        first, confidence = self.by_catalog.get(
+            catalog_number, (self.default_bytes, self.default_confidence))
+        if occurrence > 1 and catalog_number in self.repeat_by_catalog:
+            return self.repeat_by_catalog[catalog_number], confidence
+        return first, confidence
 
     def has_real_data_for(self, catalog_number: str | None) -> bool:
         """True if this SPECIFIC catalog has its own real capture point here,
@@ -990,6 +1004,18 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             },
             default_bytes=module_overhead["bytes"],
             default_confidence=module_overhead["confidence"],
+            # Gated off: measured exactly per catalog, but applying it
+            # project-wide regressed every held-out real program. See
+            # memory_model.yaml module_overhead_repeat_discount.
+            repeat_by_catalog=(
+                {
+                    catalog: v["repeat_bytes"]
+                    for catalog, v in module_overhead_by_catalog.items()
+                    if "repeat_bytes" in v
+                }
+                if raw.get("module_overhead_repeat_discount", {}).get("apply_repeat_discount")
+                else {}
+            ),
         ),
         standalone_atomic_tag_slot_bytes=raw["standalone_atomic_tag_slot"]["bytes"],
         standalone_atomic_tag_slot_confidence=raw["standalone_atomic_tag_slot"]["confidence"],
