@@ -418,3 +418,46 @@ project's corpus grows.
    plus a long tail of <10-occurrence math/shift/search instructions) —
    diminishing returns, not worth a dedicated sweep until a specific real
    program shows heavy usage of one of them.
+
+## Zero-operand (non-tag) instructions, 2026-09-12
+
+Split into two very different states.
+
+**Solved.** `NOP` (16) and `AFI` (4) are confirmed at five count points each —
+n = 10 / 50 / 100 / 1,000 / 5,000 — and every one reconciles at a flat −8, the
+universal per-file residual, across that whole 500× range.
+
+**Weights right, evidence thin.** `TND` (24), `UID` (40), `UIE` (40) and `MCR`
+(16) rest on exactly TWO real points apiece, `instrfirst_<x>` at n=1 and
+`instrfirst_<x>_x10` at n=10. Their slopes are exact at those points — TND 216
+bytes over 9 extra instructions, UID and UIE 360 over 9, MCR 144 over 9, each
+matching its wired weight and the real bytes with no remainder — and all four
+sit at a flat −12 rather than a growing residual, so nothing looks wrong. But
+two points cannot separate a true per-instruction constant from a first-pass
+offset plus a different slope, and none has ever been measured above 10 while
+NOP and AFI were checked to 5,000. `ntag_{tnd,uid,uie,mcr}_n{00010..05000}`
+closes that asymmetry by using NOP and AFI's own count points.
+
+Separately, every existing UID and UIE point measures a **bare, unmatched**
+instruction, which is not how either is used — they bracket an uninterruptible
+region. `ntag_uidpair_n*` measures matched pairs, and
+`ntag_uidpair_withbody_n00100` checks whether instructions inside a protected
+region cost what they cost outside one.
+
+**Not priced at all, and not testable without a verified rung: `EOT`, `IOT`,
+`SFR`, `SFP`.** All four are real Logix instructions with no weights-table
+entry, so every use costs zero today. Files for them were written and
+withdrawn rather than shipped:
+
+- `lint.py` rejects all four as unrecognized, which is accurate — no real rung
+  containing one has ever been verified into this project.
+- `SFR(routine, step)` and `SFP(routine, step)` address an SFC routine by name.
+  This project's builders produce no SFC routines, so such a file would name a
+  routine that does not exist, Studio would reject the rung, and the rest of
+  the project would still import and still fill in `actual_bytes` — the exact
+  mechanism that produced OQ-AOIINTERNALLOGIC's suspect calibration.
+- `IOT`'s operand is a real output module reference, not a plain DINT, and
+  `EOT`'s is an SFC storage bit. Both invented shapes are guesses.
+
+Per CLAUDE.md's transplant-never-compose rule, these four need **one verified
+rung apiece from a real export**, not a synthesized one.

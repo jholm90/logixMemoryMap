@@ -1843,6 +1843,51 @@ the matching footnote at the bottom, not inline.
     2026-09-10, so these need RECAPTURE before their numbers are used.
     `unweighted_dtr_n00010`, `unweighted_dtr_n00100`, `unweighted_dtr_n01000`
 
+    **Zero-operand (non-tag) instructions, reviewed 2026-09-12 on a direct
+    question — were NOP, AFI, TND, UID and UIE tested?** Two halves, very
+    different states.
+
+    **Solved:** `NOP` (16) and `AFI` (4) have five count points each
+    (n = 10 / 50 / 100 / 1,000 / 5,000) and every one reconciles at a flat
+    −8 — the universal per-file residual, not an instruction error — across
+    that whole 500× range.
+
+    **Weights right, evidence thin:** `TND` (24), `UID` (40), `UIE` (40) and
+    `MCR` (16) rest on exactly TWO points apiece, `instrfirst_<x>` (n=1) and
+    `instrfirst_<x>_x10` (n=10). Their slopes are exact there — TND 216 bytes
+    over 9 extra instructions, UID and UIE 360 over 9, MCR 144 over 9, each
+    matching its wired weight and the real bytes with no remainder — and all
+    four sit at a flat −12 rather than a growing residual, so nothing looks
+    wrong. But two points cannot separate a true per-instruction constant from
+    a first-pass offset plus a different slope, and none has been measured
+    above 10 while NOP and AFI were checked to 5,000.
+
+    **25 files built** (`src/sample_gen/gen_nontag_instruction_sweep.py`):
+
+    - `ntag_{tnd,uid,uie,mcr}_n{00010,00050,00100,01000,05000}` (20 files) —
+      the same count points NOP and AFI were confirmed at, so each instruction
+      goes from 2 points to 7 over the same range and the two halves become
+      directly comparable.
+    - `ntag_uidpair_n{00001,00010,00100,01000}` + `ntag_uidpair_withbody_n00100`
+      (5 files) — every existing UID/UIE point measures a **bare, unmatched**
+      instruction, which is not how either is used: they bracket an
+      uninterruptible region. If the matched-pair cost is not simply 40 + 40
+      then the separate sweeps have been measuring a shape real Logix never
+      contains. The body arm checks whether instructions inside a protected
+      region cost what they cost outside one.
+
+    **`EOT`, `IOT`, `SFR`, `SFP` — real instructions, no weights entry, priced
+    at zero, and deliberately NOT built.** Files were written and withdrawn:
+    `lint.py` rejects all four as unrecognized (accurate — no real rung
+    containing one has been verified into this project); `SFR`/`SFP` address an
+    SFC routine by name and this project's builders produce none, so the file
+    would name a routine that does not exist, Studio would reject the rung, and
+    the rest would still import and still fill in `actual_bytes` — the exact
+    mechanism behind OQ-AOIINTERNALLOGIC's suspect calibration; and `IOT`'s
+    operand is a real output module reference while `EOT`'s is an SFC storage
+    bit, so both invented shapes are guesses. Per CLAUDE.md's
+    transplant-never-compose rule these four need **one verified rung apiece
+    from a real export**. Recorded in `docs/INSTRUCTION_COVERAGE.md`.
 
 
 26. **OQ-CPTREALDEST** — REAL-destination CPT: two measured constants with
