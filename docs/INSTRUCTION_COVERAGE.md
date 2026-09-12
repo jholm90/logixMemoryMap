@@ -90,6 +90,65 @@ no exceptions.
   fundamentally wrong controller class. Retesting CROUT on a standard
   controller will never succeed and isn't worth attempting again.
 
+## Wired and reclassified 2026-09-12
+
+Found by `scripts/unreconciled.py`: ten instruction count sweeps had been
+captured, were clean, and had never been differenced. Every one was being
+charged ZERO. Each slope is exact at n=10/100/1000, differenced between
+consecutive points so the shared per-file base cancels, and the same slope
+comes out of both intervals:
+
+| instruction | bytes/rung | real uses (16 held-out programs) |
+|---|---:|---:|
+| MCD | 184 | 6 |
+| PID | 156 | 0 |
+| MAG | 124 | 40 |
+| MCS | 120 | 0 |
+| UPPER | 84 | 0 |
+| STOR | 80 | 10 |
+| FBC | 76 | 0 |
+| LFU | 72 | 0 |
+| RTOS | 72 | 4 |
+| BRK | 56 | 0 |
+
+`PID` here is the per-RUNG weight of the PID instruction, a different quantity
+from the 180-byte PID predefined STRUCTURE: a PID rung costs 156 for the
+instruction plus whatever its PID-typed control tag costs as data.
+
+`DTR` is deliberately NOT wired. Its sweep says the real cost is 0 while the
+model charges 16, which would be a clean correction except that all three
+`unweighted_dtr_*` files captured WITH Studio build errors and carry no error
+text. A row that errored is suspect, not wrong: if part of the file never
+reached the controller then "real cost 0" is an artefact of the rungs being
+absent. Recapture first. See OQ-VERIFINSTR's CAPTURE ERRORS flag.
+
+**Reclassified, not wired:**
+
+- **ESTOP, ROUT, LC, RIN — OUT OF SCOPE (Safety), 11 real uses.** All four
+  appear only inside a GuardLogix SafetyProgram, which this project does not
+  size at all; CROUT was reclassified the same way 2026-08-24. Identified from
+  their real call shapes, every one of which takes the `_S`-suffixed safety
+  reset tags that exist only in a safety task. Reporting them as unpriced
+  overstated the hole and buried the gaps that are real.
+- **SCP — a USER AOI, not a built-in, 4 real uses.** Four real exports declare
+  an `AddOnInstructionDefinition` named SCP; a fifth calls it without
+  declaring it. Its arity varies across the corpus (3 operands in one program,
+  7 in another), which is itself the signature of a user AOI. The gap there is
+  a partial export, not a missing weight.
+
+**Net effect on the held-out programs: unpriced native instruction uses fell
+from 133 to 57, and every one of the 57 is EVENT.** Its per-rung cost has
+never been measured — `eventtask_instronly` is a single point, which can
+confirm a total but cannot separate the instruction from the file — so
+`gen_unweighted_closeout.py` sweeps it at 10/100/1000 with the call shape
+transplanted verbatim from the real corpus. Awaiting capture.
+
+The summary table below is NOT recomputed for these changes: its occurrence
+counts are corpus-wide rather than held-out-only, and re-deriving them is a
+separate job from this one. The per-instruction rows are correct; treat the
+rollup percentages as dated.
+
+
 ## Coverage summary (by real occurrence, not by distinct instruction count)
 
 | Status | Occurrences | % of all native instruction usage |

@@ -2238,6 +2238,45 @@ logic_instructions:
     # the point is that the data says so rather than the naming.
     COS: 60
     OR: 40
+    # Ten more, wired 2026-09-11 from the SAME batch, found by
+    # scripts/unreconciled.py: all ten were being charged ZERO and every one
+    # of their count sweeps had been captured, clean, and never differenced.
+    # Each slope is exact at n=10/100/1000, differenced between consecutive
+    # points so the shared per-file base cancels, and the same slope comes out
+    # of both intervals:
+    #
+    #   MCD    184/rung        MCS    120/rung
+    #   PID    156/rung        STOR    80/rung
+    #   MAG    124/rung        FBC     76/rung
+    #   UPPER   84/rung        LFU     72/rung
+    #   RTOS    72/rung        BRK     56/rung
+    #
+    # These are the ones that reach a real file: across the sixteen real
+    # programs the coverage audit counts MAG 40 uses, STOR 10, MCD 6 and
+    # RTOS 4. The remaining six are corpus-only today but cost nothing to
+    # price correctly now that the measurement exists.
+    #
+    # PID here is the per-RUNG weight of the PID instruction, which is a
+    # different quantity from the 180-byte PID predefined STRUCTURE above --
+    # a PID rung costs 156 for the instruction plus whatever its PID-typed
+    # control tag costs as data.
+    MCD: 184
+    PID: 156
+    MAG: 124
+    UPPER: 84
+    RTOS: 72
+    MCS: 120
+    STOR: 80
+    FBC: 76
+    LFU: 72
+    BRK: 56
+    # DTR is NOT wired, deliberately. Its sweep says the real cost is 0 while
+    # the model charges 16, which would be a clean correction except that all
+    # three unweighted_dtr_* files captured WITH Studio build errors and carry
+    # no error text (see OQ-VERIFINSTR's CAPTURE ERRORS flag). A row that
+    # errored is suspect, not wrong: if part of the file never reached the
+    # controller then "real cost 0" is an artefact of the rungs being absent.
+    # Recapture first.
     # MAM/MAJ/MAS/MRP: RESOLVED 2026-08-26 (was BUILD FAILED, OQ-MAMFAMILY).
     # Original generator used MAH/MSO's own bare 2-operand shape for these
     # 4 -- a real generator bug, not a Rockwell syntax question. Fixed with

@@ -1492,25 +1492,56 @@ the matching footnote at the bottom, not inline.
     reading above.
 
 
-25. **OQ-VERIFINSTR** — new, 2026-09-04. Eleven instructions now have
-    call shapes verified by the build-clean Studio 5000 export
-    (`instruction_shapes_20260904.L5X`), and none of them has a measured
-    cost: **BRK, COS, LOG, SIN, PID, FBC, STOR, MCD, MCS, MCSV, MAG**.
-    `gen_verified_instructions.py` builds each at n=10/100/1000 on an
-    AXIS_VIRTUAL basis (no drive/module binding, so nothing has to be
-    netted back out). The model currently prices all eleven at zero, so
-    each sweep's predicted total is flat across n — any real slope is the
-    instruction's cost, read directly. **Blocked on capture.**
+25. **OQ-VERIFINSTR** — instruction weights measured but never wired, and
+    the classification of what is left. **Ten wired 2026-09-12; four
+    reclassified out of scope; one left alone on purpose; one still open.**
 
-    Provenance note worth keeping: NXT is excluded because it is not a
-    valid RLL mnemonic, and MCLM was deliberately skipped.
-    Neither was inferred from documentation — which matters, because every
-    previous attempt in this project to compose predefined-structure or
-    instruction XML from a manual (alarm `ConditionType`s, the bare
-    2-operand MAM/MAJ rungs, the Kinetix `:SI` safety tags) was rejected
-    by the real toolchain.
+    Found by `scripts/unreconciled.py`: ten count sweeps had been captured,
+    were clean, and had never been differenced. All ten were charged ZERO.
+    Every slope is exact at n=10/100/1000, differenced between consecutive
+    points so the shared per-file base cancels, and both intervals agree:
 
+        MCD 184   PID 156   MAG 124   MCS 120   UPPER 84
+        STOR 80   FBC  76   LFU  72   RTOS  72   BRK   56
 
+    `PID` is the per-RUNG instruction weight, not the 180-byte PID predefined
+    structure -- a PID rung costs 156 plus whatever its control tag costs as
+    data.
+
+    **DTR is deliberately not wired.** Its sweep says the real cost is 0 while
+    the model charges 16. That would be a clean correction except that all
+    three `unweighted_dtr_*` files captured WITH build errors and carry no
+    error text: if part of the file never reached the controller then "real
+    cost 0" is an artefact of the rungs being absent, not a measurement.
+    Recapture first.
+
+    **ESTOP / ROUT / LC / RIN: OUT OF SCOPE (Safety), not unpriced.** All four
+    appear only inside a GuardLogix SafetyProgram, which this project does not
+    size; CROUT was reclassified the same way 2026-08-24. Identified from their
+    real call shapes, every one of which takes the `_S`-suffixed safety reset
+    tags that exist only in a safety task. Now in `coverage._SAFETY_FAMILY`.
+    Reporting them as holes overstated the gap and buried the real ones.
+
+    **SCP: a USER AOI, not a built-in.** Four real exports declare an
+    `AddOnInstructionDefinition` named SCP; a fifth calls it without declaring
+    it, and its arity varies across the corpus (3 operands in one program, 7 in
+    another). The gap is a partial export, not a missing weight. Now in
+    `coverage._KNOWN_USER_AOI`, and the coverage note for such a mnemonic says
+    CONFIRMED rather than "the name shape suggests".
+
+    **Net on the held-out programs: unpriced native instruction uses fell from
+    133 to 57 — and all 57 are EVENT.**
+
+    **STILL OPEN: EVENT.** 57 real uses, charged zero, and its per-rung cost
+    has never been measured: `eventtask_instronly` is a single point, which can
+    confirm a total but cannot separate the instruction from the file.
+    `gen_unweighted_closeout.py` (3 files, `uwclose_event_n{00010,00100,01000}`)
+    sweeps it, with the call shape transplanted VERBATIM from the real corpus
+    (`EVENT(TrackingInfeed)`, the most common of 44 real uses; all 16 distinct
+    real shapes are the same single-operand form naming an EVENT task) and a
+    real EVENT task declared for the rungs to resolve against. All three files
+    predict an identical 18,900, so the whole captured delta is the EVENT cost.
+    Awaiting capture.
 
     **CAPTURE ERRORS: 3 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
     3 captured WITH Studio build errors, so their `actual_bytes` is
@@ -1520,6 +1551,8 @@ the matching footnote at the bottom, not inline.
     2026-08-23 and 2026-09-08, and the error-log reader only began working
     2026-09-10, so these need RECAPTURE before their numbers are used.
     `unweighted_dtr_n00010`, `unweighted_dtr_n00100`, `unweighted_dtr_n01000`
+
+
 
 26. **OQ-CPTREALDEST** — REAL-destination CPT: two measured constants with
     no known mechanism. 2026-09-04. **Not blocking — the path is exact on

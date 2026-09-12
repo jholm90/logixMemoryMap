@@ -48,6 +48,40 @@ from l5x_memory_analyzer.parser.logic import count_instructions_in_text, routine
 # Priced outside logic_instructions.weights -- see the module docstring.
 _PRICED_ELSEWHERE = frozenset({"CPT", "BST", "NXB", "BND"})
 
+# Safety-task instructions: OUT OF SCOPE, not unpriced.
+#
+# Reported as coverage gaps until 2026-09-12, which was wrong in the same way
+# reporting ST as unpriced was wrong after it got wired -- it overstates the
+# hole and it buries the gaps that are real. These five only appear inside a
+# GuardLogix SafetyProgram, which this project does not size at all
+# (SafetyLevel/safety-task content is explicitly out of scope; CROUT was
+# reclassified the same way 2026-08-24, see OQ-CROUT-MAPC-BUILDFAIL).
+#
+# Identified from their real call shapes in the corpus, which all take the
+# `_S`-suffixed safety reset tags that only exist in a safety task:
+#   ESTOP(Chain,MANUAL,Ch01,Ch02,E_Stop_Reset_S,Fault_Reset_S)
+#   ROUT(Exp,NEGATIVE,Exp.Enable,FBK,FBK,Fault_Reset_S)
+#   LC(LC01,MANUAL,Ch_01,Ch_02,0,0,LC01_Reset,Fault_Reset_S)
+#   RIN(Chain,AUTOMATIC,Ch01_Ch02,Ch01_Ch02,Gate_Reset_S,Fault_Reset_S)
+#
+# A safety instruction inside a NON-safety routine would be a different
+# matter, but none exists in the corpus and Studio would reject it.
+_SAFETY_FAMILY = frozenset({"ESTOP", "ROUT", "CROUT", "LC", "RIN"})
+
+# Mnemonics confirmed in this corpus to be USER AOIs, not built-in
+# instructions. A call to one of these in a file that does NOT declare it is a
+# partial/filtered export, which is a different finding from a missing weight
+# and must not be reported as one.
+#
+# SCP, 2026-09-12: declared as an AddOnInstructionDefinition in four real
+# exports (Fisher_Synergy_Bead, BT1XX_FFC, Fisher_P800Sub, PWO_134190) and
+# CALLED BUT NOT DECLARED in MRFP_Edger_2026_06_01_r00. Its call shapes vary in
+# arity across the corpus (3 operands in one program, 7 in another), which is
+# itself the signature of a user AOI rather than a built-in. The generic
+# name-shape heuristic below cannot catch it: "SCP" is short and has no
+# underscore, so it reads as a built-in mnemonic.
+_KNOWN_USER_AOI = frozenset({"SCP"})
+
 # Routine Type values this engine can size. Everything else is a real
 # coverage hole, not a parse error.
 # ST joined this set 2026-09-04 when sizing/structured_text.py was wired --
@@ -174,7 +208,8 @@ def audit_coverage(root: ET.Element, weighted_mnemonics) -> list[CoverageGap]:
         ))
 
     # --- instructions with no weight ----------------------------------
-    skip = _PRICED_ELSEWHERE | set(weighted_mnemonics) | _declared_aoi_names(root)
+    skip = (_PRICED_ELSEWHERE | _SAFETY_FAMILY | set(weighted_mnemonics)
+            | _declared_aoi_names(root))
     unweighted: dict[str, int] = {}
     for _owner, routine_el in _iter_routines(root):
         if routine_language(routine_el) not in _SIZED_ROUTINE_TYPES:
@@ -183,15 +218,24 @@ def audit_coverage(root: ET.Element, weighted_mnemonics) -> list[CoverageGap]:
             if mnemonic not in skip:
                 unweighted[mnemonic] = unweighted.get(mnemonic, 0) + n
     for mnemonic, n in sorted(unweighted.items(), key=lambda kv: -kv[1]):
-        note = (
-            " The name shape (longer than any built-in mnemonic, or containing an underscore) "
-            "suggests a user-defined AOI whose AddOnInstructionDefinition is NOT present in "
-            "this file -- a partial/filtered export -- rather than a built-in instruction. "
-            "Confirm which before adding a weight for it; a real case of this is on file "
-            "(AOI_BNI004A_40_27_041, called 4x in a real corpus export that carries no "
-            "definition for it)."
-            if _looks_user_defined(mnemonic) else ""
-        )
+        if mnemonic in _KNOWN_USER_AOI:
+            note = (
+                " CONFIRMED a user AOI, not a built-in: other exports in this corpus declare an "
+                "AddOnInstructionDefinition by this name. Its absence here means a "
+                "partial/filtered export, so do NOT add a weight for it -- the definition and "
+                "its own cost are simply missing from this file."
+            )
+        elif _looks_user_defined(mnemonic):
+            note = (
+                " The name shape (longer than any built-in mnemonic, or containing an underscore) "
+                "suggests a user-defined AOI whose AddOnInstructionDefinition is NOT present in "
+                "this file -- a partial/filtered export -- rather than a built-in instruction. "
+                "Confirm which before adding a weight for it; a real case of this is on file "
+                "(AOI_BNI004A_40_27_041, called 4x in a real corpus export that carries no "
+                "definition for it)."
+            )
+        else:
+            note = ""
         gaps.append(CoverageGap(
             kind="instruction", detail=mnemonic, count=n,
             path=f"coverage/instruction/{mnemonic}",
