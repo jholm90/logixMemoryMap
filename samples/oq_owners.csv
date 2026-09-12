@@ -26,3 +26,4 @@
 "oq:OQ-MIXEDUDT","OQ-UDTMEMBERNAME","Closed question; the live UDT question is member naming."
 "oq:OQ-CAPTURERACE","OQ-BUILDFAIL-OPEN","Closed question; a raced capture that errored is a build failure until recaptured."
 "oq:OQ-STSIZING","OQ-STEXPR","Closed question; the live ST question is expression cost."
+"oq:OQ-BLOCKBYTE","OQ-COMPOSITESCALE","Closed 2026-09-12 (a block is a byte on the active platform). The 50 composite_realistic_*_r2 rows that named it are composite-scale rows -- 2-5% under-predicted, error counts scaling with file size -- and belong to OQ-COMPOSITESCALE. A sample_id prefix cannot express this set without also capturing composite rows that route correctly elsewhere, so it is an alias on the closed question instead."

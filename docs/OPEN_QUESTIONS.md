@@ -592,152 +592,6 @@ the matching footnote at the bottom, not inline.
     2026-09-10, so these need RECAPTURE before their numbers are used.
     `eventtask_axiswatch`
 
-10. **OQ-BLOCKBYTE** — new, very serious if real. Raised 2026-08-30:
-    Studio 5000's Capacity readout is labeled "bytes" for 1769/L7x
-    processors but "blocks" for 5069/L8x processors — and this project has
-    treated `actual_bytes` as one uniform unit across the whole
-    `manifest.csv` corpus regardless of which family captured it, with
-    1756-L81E (L8x, "blocks"-labeled) as the dominant baseline processor
-    for nearly the entire history of this project. If "block" isn't
-    numerically identical to "byte", essentially every formula in
-    `memory_model.yaml` fit against L81E/5069 data needs rescaling by
-    whatever the real conversion factor turns out to be. Two-file test
-    built to check it directly: `blockbytetest_dint120000` (1756-L81E) and
-    `blockbytetest_l71_dint120000` (1756-L71, same firmware 35.05/35.11),
-    byte-identical content — a single 120,000-element DINT array tag,
-    nothing else, both predicting 498,236 (480,000 of that is exactly
-    120,000×4, zero packing ambiguity). Any real conversion factor will
-    show up as an obvious clean ratio between the two files' real Capacity
-    readings. Awaiting capture on both (not yet in the tooling as of
-    2026-08-30 — only just pushed at the time).
-
-    Circumstantial evidence surfaced 2026-08-30 in OQ-BASELINE-PROCFW
-    above: two different 1769/L7x-family capture batches (the restored
-    L33ERM rows and the kept PointIO catalog rows) both landed on a
-    single tiny constant value regardless of which distinct file was
-    captured, with clean window titles and 0 errors. Doesn't confirm or
-    rule out a units mismatch on its own (the two groups' implied ratios
-    don't match each other), but it's a second, independent hint that
-    something about how 1769/L7x-family Capacity gets read may not be
-    behaving the same as the L81E/5069 baseline this project is built
-    on.[^blockbyte]
-
-    **Import failure, 2026-08-30 — root-caused and fixed 2026-08-31.**
-    `blockbytetest_l71_dint120000` failed to import. The real
-    Studio 5000 error-log detail this time read ("Name collision: imported
-    Module 'Local' renamed to 'Local1'" / "Required property 'Port' was
-    missing" / Controller/EthernetPorts "Requested item could not be
-    found"). Root cause: `wrapper.py`'s default branch assumed every
-    non-1769/non-5069 processor is Ethernet-embedded like the L8xE family
-    this project is built around — wrong for the older pre-5580
-    ControlLogix line (1756-L6x/L7x), confirmed against a real reference
-    export already in this repo (`samples/local/L7_v21_Sample.L5X`,
-    ProcessorType="1756-L71"): its Local module has exactly one ICP Port,
-    no embedded Ethernet Port, and the file has no Controller-level
-    `<EthernetPorts>` element at all. Fixed with a dedicated
-    `is_pre5580_1756` branch (ICP-only Local, no `<EthernetPorts>`) plus
-    the real ProductCode (92) for 1756-L71. Regenerated, removed from
-    `known_conversion_failures.csv`. Still needs a real reconversion pass
-    to confirm the fix actually imports clean — not independently
-    verifiable from here.
-
-    **Circumstantial evidence now essentially CONFIRMED, 2026-08-31**
-    (a real capture batch, merged into `manifest.csv` this pass).
-    The full 1756-L7x/1769 firmware x catalog matrix came back with real
-    Capacity numbers — and every one of them is flat, content- and
-    firmware-independent:
-      - All 25 `fwmatrix_v{31,32,34,35,38}_1756_l{71,72,73,74,75}` rows
-        (5 distinct catalogs × 5 firmware versions, genuinely different
-        ProductCode/Major-rev content each) read the exact same
-        `actual_bytes = 30152`. Zero variance. **Extended 2026-08-31 with
-        a 2nd push:** `fwmatrix_v31_1756_l{71,72,73,74}` (4 rows, `l75`
-        missing from this group) all read `actual_bytes = 78312`, and
-        `fwmatrix_v33_1756_l{71,72,73,74,75}` (full 5-catalog group) all
-        read `actual_bytes = 87888` — two MORE flat values, same defect
-        signature. Every one of these 30 L7x rows (old batch and new)
-        ALSO has `controller_model` permanently stuck at `"5069-L306ER"`
-        instead of the real L7x catalog it claims to test — direct
-        evidence the capture window/project was never actually reloaded
-        between these specific conversions, not merely a units question.
-        Five distinct flat values across five capture groups now (30152,
-        2976, 6640, 78312, 87888), none relating to each other or to this
-        engine's predictions by a clean ratio.
-      - All 20 `fwmatrix_v{31,32,34,35,38}_1769_l{16er,18er,18erm,19er}`
-        rows (4 distinct catalogs with real, different embedded
-        Discrete_IO module content, 5 firmware versions) read the exact
-        same `actual_bytes = 2976`. Zero variance.
-      - All 5 `fwmatrix_v{31,32,34,35,38}_1769_l33erm` rows read the
-        exact same `actual_bytes = 6640`. Zero variance.
-      Three different real numbers, but each one is IDENTICAL across
-      every firmware version and (for the two multi-catalog groups)
-      every distinct catalog within its family — genuinely different
-      project content (different ProductCode, different real embedded
-      module XML for the 1769 tier) cannot legitimately compile to a
-      byte-identical Capacity reading. This isn't proof of the original
-      "blocks vs bytes" unit-scale theory specifically (the three flat
-      values don't relate to each other or to this engine's own
-      predictions by any obvious clean ratio — 30152/2976 ≈ 10.13,
-      30152/6640 ≈ 4.54, neither a round conversion factor), but it is
-      now very strong, repeated (three independent capture groups
-      across two sessions) evidence that the 1756-L7x/1769 real-capture
-      *pipeline itself* is not reading genuine per-project memory usage
-      for these two families — it's returning some fixed/default/stub
-      reading regardless of content. Matches the tooling's own known
-      quirk (`docs/TESTING_PLAN.md`: "the AHK capture pipeline couldn't
-      read a 1769's Capacity value without a manual 'Estimate' button
-      click first... now resolved on the end" — this data suggests
-      that fix may not actually be reading the real value, just no
-      longer erroring). **None of this 45-row batch should be treated as
-      real ground truth or used to tune any formula** until it is
-      confirmed what the AHK script is actually reading for these two
-      families (a live screenshot/manual cross-check against Controller
-      Properties → Capacity in Studio 5000 for one single 1769/L7x file
-      would settle it immediately).
-
-      **`blockbytetest_l71_dint120000` real capture landed 2026-08-31 —
-      and it changes the conclusion.** This is the dedicated, clean,
-      isolated two-file test (byte-identical content: one DINT[120000]
-      tag, nothing else) that this whole OQ was built to settle, and it
-      is NOT contaminated by the fw_catalog_matrix pipeline defect above
-      (distinct real Capacity value, `controller_model` correctly reads
-      the right family for its own row, 0 errors, clean window title).
-      Both halves of the pair:
-        - `blockbytetest_dint120000` (1756-L81E): predicted 498,236,
-          real 498,240 — 4-byte residual, essentially exact.
-        - `blockbytetest_l71_dint120000` (1756-L71, byte-identical
-          content): predicted 498,236 (same), real 569,336 — **+71,100
-          bytes (14.27%) more than the identical L81E file.**
-      The ratio (569336/498236 ≈ 1.143) is not a clean unit-conversion
-      factor (not 2x, 10x, or anything round) — ruling out the original
-      "blocks vs bytes" unit-SCALING theory this OQ was named for. What
-      it looks like instead is a real, ADDITIVE per-family baseline
-      difference: 1756-L71 (pre-5580 ControlLogix, same architecture
-      generation as 1769/CompactLogix 5370) genuinely consumes more real
-      memory than 1756-L81E (5580) for identical content — consistent
-      with, and now corroborating, the already-documented `[^baseline]`
-      finding that "1769-series runs 69,600-98,944, far above the flat
-      prediction." **Revised conclusion: this is very likely a real
-      pre-5580-family baseline/overhead gap, not a unit-labeling bug** —
-      the "bytes" vs "blocks" label difference may be a real Studio
-      5000 UI distinction, but it doesn't appear to be *why* the L7x/1769
-      numbers run high; a real per-family baseline term (analogous to the
-      already-wired firmware-version baseline deltas) is the more likely
-      fix once more clean (non-contaminated) L7x data points exist to fit
-      it. Still needs at least one more clean L7x data point (ideally a
-      near-empty-baseline file, to isolate the constant term from the
-      content-scaling term) before wiring anything — one point can locate
-      a family-level gap but can't separate "baseline is bigger" from "per
-      element is bigger" on its own.
-
-
-    **CAPTURE ERRORS: 35 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
-    35 captured WITH Studio build errors, so their `actual_bytes` is
-    SUSPECT rather than wrong — part of the file may never have reached the
-    controller, which inflates apparent over-prediction. None of them carries
-    any error text: every errored row in the manifest was captured between
-    2026-08-23 and 2026-09-08, and the error-log reader only began working
-    2026-09-10, so these need RECAPTURE before their numbers are used.
-    `composite_realistic_03_r2`, `composite_realistic_04_r2`, `composite_realistic_05_r2`, `composite_realistic_06_r2`, `composite_realistic_08_r2`, `composite_realistic_09_r2` (+29 more)
 
 11. **OQ-COMPOSITESCALE** — new, real, raised 2026-08-30 after a review of
     a confidential project found a >20% real gap. The requirement: at
@@ -952,7 +806,11 @@ the matching footnote at the bottom, not inline.
       deprioritized until this tuning work lands.
 
 
-    **CAPTURE ERRORS: 47 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    **CAPTURE ERRORS: 82 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11;
+    count revised 2026-09-12 when 35 `composite_realistic_*_r2` rows were
+    re-routed here from the now-closed OQ-BLOCKBYTE. They are composite-scale
+    rows -- 2 to 5% under-predicted with error counts that scale with file
+    size -- so this question is where they belong.
     47 captured WITH Studio build errors, so their `actual_bytes` is
     SUSPECT rather than wrong — part of the file may never have reached the
     controller, which inflates apparent over-prediction. None of them carries

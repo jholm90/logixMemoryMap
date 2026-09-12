@@ -2848,3 +2848,43 @@ as OQ-AOIARRAYLOCALTAG in OPEN_QUESTIONS.md.
 ### Verbatim, as it last stood in OPEN_QUESTIONS.md
 
 21. **OQ-SHELLSCALE** — **CLOSED. Full entry and reasoning trail moved to `docs/RESOLVED_QUESTIONS.md`** ("Closed 2026-09-05" section).
+
+
+## OQ-BLOCKBYTE — CLOSED 2026-09-12. A block is a byte on the active platform.
+
+The question, raised 2026-08-30, was foundational and correctly flagged as
+"very serious if real": Studio 5000 labels its Capacity readout "bytes" for
+1769/L7x processors and "blocks" for 5069/L8x, and this project treats
+`actual_bytes` as one uniform unit across the whole corpus with 1756-L81E as
+the dominant baseline. If a block were not numerically a byte, every constant
+in `memory_model.yaml` fitted against L81E/5069 data would need rescaling.
+
+**The two-file test was captured and never read.** Both files are a single
+120,000-element DINT array tag and nothing else, so 480,000 bytes of the total
+is exactly 120,000 x 4 with zero packing ambiguity:
+
+    blockbytetest_dint120000   (1756-L81E)  predicted 498,236   actual 498,240
+
+**Four bytes on a 498 KB file: 0.0008%.** On the "blocks"-labelled L8x
+processor a block IS a byte, at the scale where any conversion factor would be
+unmissable -- a factor as small as 1.001 would show as ~500 bytes and a factor
+of 2 as a quarter of a megabyte. The -4 is the same small per-file residual seen
+throughout the corpus and is not a unit effect. Every constant fitted against
+L81E/5069 data stands as fitted; no rescaling is needed.
+
+**The 1756-L71 twin is excluded, and deliberately.** It lands at -59,076
+(-10.4%), which looks like a discrepancy until you note that L7x is dead
+architecture in this project: its own per-processor baseline is separately
+known to be wrong (`fwmatrix_v33_1756_l7x` sits at -65.7% while every L8x row
+in the same matrix is byte-exact), so it cannot isolate a units factor from a
+baseline error. Per the platform-scope rule it may not be cited as a reason the
+model is out of spec either. The circumstantial 1769/L7x evidence recorded in
+the original entry -- two batches landing on a single tiny constant -- is a real
+oddity about how those families' Capacity gets read, and it belongs to the dead
+architecture rather than to this question.
+
+**Routing correction made the same day.** 50 `composite_realistic_*_r2` rows
+named OQ-BLOCKBYTE in their descriptions and were being counted against it by
+`scripts/capture_errors.py`. They are composite-scale rows -- 2 to 5% under-
+predicted with error counts that scale with file size -- and now route to
+OQ-COMPOSITESCALE, which is the question they actually bear on.
