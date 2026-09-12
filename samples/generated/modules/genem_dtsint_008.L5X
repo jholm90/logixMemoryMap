@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="genemout002" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sat Sep 12 10:53:55 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="genemout002" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sat Sep 12 10:53:55 2026" LastModifiedDate="Sat Sep 12 10:53:55 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="genemdtsint008" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sat Sep 12 10:53:56 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="genemdtsint008" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Sat Sep 12 10:53:56 2026" LastModifiedDate="Sat Sep 12 10:53:56 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -24,7 +24,7 @@
 <Ports>
 <Port Id="2" Address="192.168.1.20" Type="Ethernet" Upstream="true"/>
 </Ports>
-<Communications CommMethod="536870915" PrimCxnInputSize="4" PrimCxnOutputSize="2">
+<Communications CommMethod="536870915" PrimCxnInputSize="8" PrimCxnOutputSize="4">
 <ConfigTag ConfigSize="0" ExternalAccess="Read/Write">
 <Data Format="L5K">
 <![CDATA[[4,1,[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]]]>
@@ -437,25 +437,34 @@
 </Data>
 </ConfigTag>
 <Connections>
-<Connection Name="Standard" RPI="10000" Type="Output" InputCxnPoint="101" OutputCxnPoint="100" OutputSize="2" InputSize="4" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
+<Connection Name="Standard" RPI="10000" Type="Output" InputCxnPoint="101" OutputCxnPoint="100" OutputSize="4" InputSize="8" EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">
 <InputTag ExternalAccess="Read/Write">
 <Data Format="Decorated">
-<Structure DataType="AB:ETHERNET_MODULE_INT_4Bytes:I:0">
-<ArrayMember Name="Data" DataType="INT" Dimensions="2" Radix="Decimal">
+<Structure DataType="AB:ETHERNET_MODULE_SINT_8Bytes:I:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="8" Radix="Decimal">
 <Element Index="[0]" Value="0"/>
 <Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
 </ArrayMember>
 </Structure>
 </Data>
 </InputTag>
 <OutputTag ExternalAccess="Read/Write">
 <Data Format="L5K">
-<![CDATA[[[0]]]]>
+<![CDATA[[[0,0,0,0]]]]>
 </Data>
 <Data Format="Decorated">
-<Structure DataType="AB:ETHERNET_MODULE_INT_2Bytes:O:0">
-<ArrayMember Name="Data" DataType="INT" Dimensions="1" Radix="Decimal">
+<Structure DataType="AB:ETHERNET_MODULE_SINT_4Bytes:O:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="4" Radix="Decimal">
 <Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
 </ArrayMember>
 </Structure>
 </Data>

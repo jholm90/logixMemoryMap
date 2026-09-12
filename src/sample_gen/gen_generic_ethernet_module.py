@@ -65,6 +65,26 @@ from sample_gen.wrapper import build_l5x
 OUT = Path(__file__).parent.parent.parent / "samples" / "generated" / "modules"
 
 INPUT_SIZES = (2, 4, 10, 32, 64, 128, 256, 450)
+
+# Element data type x byte size. The connection's element TYPE is part of the
+# comm-format choice on a generic module, and the real corpus uses three of
+# them: INT 130 connections, SINT 80, DINT 2. The same byte size appears under
+# different types -- 450 bytes as SINT (14 real instances) and 64 bytes as INT
+# (14) -- so if cost follows ELEMENT COUNT rather than byte count, SINT and INT
+# at one byte size differ by 2x and DINT/REAL by 4x. Nothing in the corpus can
+# separate those two readings, because no real pair holds bytes fixed while the
+# type changes.
+#
+# REAL is the one type with NO corpus instance. It is a legitimate comm-format
+# choice on a generic module and the AB:ETHERNET_MODULE_<TYPE>_<n>Bytes naming
+# is mechanical, so it is built -- but it is the one arm where a conversion
+# failure would be a finding about the shape rather than about the cost.
+ELEMENT_BYTES = {"SINT": 1, "INT": 2, "DINT": 4, "REAL": 4}
+TYPE_SIZE_PAIRS = (
+    (8, "SINT"), (8, "INT"),                                  # commonest small real pair
+    (64, "SINT"), (64, "INT"), (64, "DINT"), (64, "REAL"),     # one size, every type
+    (450, "SINT"), (450, "INT"),                               # the largest real shape
+)
 OUTPUT_SIZES = (2, 4, 8, 16, 32, 64)
 COUNTS = (1, 2, 4, 8)
 
@@ -100,7 +120,7 @@ def _config_tag() -> str:
 
 
 def _module_xml(name: str, address: str, input_bytes: int, output_bytes: int,
-                with_connection: bool = True) -> str:
+                with_connection: bool = True, element_type: str = "INT") -> str:
     """One ETHERNET-MODULE, transplanted from the real instance.
 
     Only identity and the two connection sizes change. Sizes are in BYTES and
@@ -126,7 +146,8 @@ def _module_xml(name: str, address: str, input_bytes: int, output_bytes: int,
             + '<Connections/>\n</Communications>\n</Module>'
         )
 
-    in_words, out_words = input_bytes // 2, output_bytes // 2
+    elem = ELEMENT_BYTES[element_type]
+    in_words, out_words = input_bytes // elem, output_bytes // elem
     out_l5k = ",".join("0" for _ in range(out_words))
     return (
         head
@@ -139,8 +160,9 @@ def _module_xml(name: str, address: str, input_bytes: int, output_bytes: int,
           f'EventID="0" ProgrammaticallySendEventTrigger="false" Unicast="true">\n'
           '<InputTag ExternalAccess="Read/Write">\n'
           '<Data Format="Decorated">\n'
-          f'<Structure DataType="AB:ETHERNET_MODULE_INT_{input_bytes}Bytes:I:0">\n'
-          f'<ArrayMember Name="Data" DataType="INT" Dimensions="{in_words}" Radix="Decimal">\n'
+          f'<Structure DataType="AB:ETHERNET_MODULE_{element_type}_{input_bytes}Bytes:I:0">\n'
+          f'<ArrayMember Name="Data" DataType="{element_type}" Dimensions="{in_words}" '
+          f'Radix="{"Float" if element_type == "REAL" else "Decimal"}">\n'
           f'{_elements(in_words)}\n'
           '</ArrayMember>\n</Structure>\n</Data>\n</InputTag>\n'
           '<OutputTag ExternalAccess="Read/Write">\n'
@@ -148,8 +170,9 @@ def _module_xml(name: str, address: str, input_bytes: int, output_bytes: int,
           f'<![CDATA[[[{out_l5k}]]]]>\n'
           '</Data>\n'
           '<Data Format="Decorated">\n'
-          f'<Structure DataType="AB:ETHERNET_MODULE_INT_{output_bytes}Bytes:O:0">\n'
-          f'<ArrayMember Name="Data" DataType="INT" Dimensions="{out_words}" Radix="Decimal">\n'
+          f'<Structure DataType="AB:ETHERNET_MODULE_{element_type}_{output_bytes}Bytes:O:0">\n'
+          f'<ArrayMember Name="Data" DataType="{element_type}" Dimensions="{out_words}" '
+          f'Radix="{"Float" if element_type == "REAL" else "Decimal"}">\n'
           f'{_elements(out_words)}\n'
           '</ArrayMember>\n</Structure>\n</Data>\n</OutputTag>\n'
           '</Connection>\n</Connections>\n</Communications>\n</Module>'
@@ -203,6 +226,23 @@ def main() -> None:
                f"over-prediction = discount x (n-1), and this catalog has no discount on record "
                f"because it has no entry at all. {_WHY}")
         n += 1
+    for size, etype in TYPE_SIZE_PAIRS:
+        _write(f"genem_dt{etype.lower()}_{size:03d}",
+               _module_xml("GenEm1", "192.168.1.20", size, _BASE_OUTPUT, element_type=etype),
+               f"ONE ETHERNET-MODULE whose input connection is {size} bytes of {etype} elements "
+               f"({size // ELEMENT_BYTES[etype]} elements), output held at {_BASE_OUTPUT} bytes of "
+               f"INT. Arm E crosses element DATA TYPE with byte size, which nothing in the corpus "
+               f"can do: real generic modules use INT (130 connections), SINT (80) and DINT (2), "
+               f"and the same byte size appears under different types -- 450 bytes as SINT (14 real "
+               f"instances) and 64 bytes as INT (14) -- but no real pair holds bytes fixed while "
+               f"the type changes. If cost follows ELEMENT COUNT rather than byte count, SINT and "
+               f"INT at one size differ by 2x and DINT/REAL by 4x. "
+               + ("REAL is the one type with no corpus instance: it is a legitimate comm-format "
+                  "choice and the AB:ETHERNET_MODULE_<TYPE>_<n>Bytes naming is mechanical, so a "
+                  "conversion failure here would be a finding about the shape rather than the cost."
+                  if etype == "REAL" else "") + f" {_WHY}")
+        n += 1
+
     _write("genem_noconn", _module_xml("GenEm1", "192.168.1.20", 0, 0, with_connection=False),
            f"ONE ETHERNET-MODULE with NO connections -- the shape four real instances actually "
            f"have. zero_connection_module_bytes (2,344, FITTED) claims to cover this case and has "

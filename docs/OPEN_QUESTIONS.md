@@ -379,6 +379,21 @@ the matching footnote at the bottom, not inline.
         real devices vary both at once.
       - `genem_n{01,02,04,08}` (4) -- OQ-MODULEMARGINAL's per-module question
         for the one catalog where it matters most on a real file.
+      - `genem_dt{sint,int}_008` / `genem_dt{sint,int,dint,real}_064` /
+        `genem_dt{sint,int}_450` (8) -- element DATA TYPE crossed with byte
+        size, which nothing in the corpus can separate. Real generic modules
+        use three element types (INT on 130 connections, SINT on 80, DINT on
+        2) and the same byte size appears under different ones -- 450 bytes as
+        SINT in 14 real instances, 64 bytes as INT in 14 -- but no real pair
+        holds bytes fixed while the type changes. If cost follows ELEMENT
+        COUNT rather than byte count, SINT and INT at one size differ by 2x
+        and DINT/REAL by 4x: `genem_dtsint_450` declares 450 elements against
+        `genem_dtint_450`'s 225 for the identical 450 bytes. The engine
+        predicts an identical total for every file in this arm, so the whole
+        captured difference is the type effect. REAL is the one type with no
+        corpus instance -- a legitimate comm-format choice with mechanical
+        `AB:ETHERNET_MODULE_<TYPE>_<n>Bytes` naming, so a conversion failure
+        there would be a finding about the shape rather than the cost.
       - `genem_noconn` (1) -- the no-connection shape four real instances have.
         `zero_connection_module_bytes` (2,344, FITTED) claims to cover it and
         has never been tested for this profile.
