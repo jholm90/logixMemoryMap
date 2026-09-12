@@ -216,7 +216,7 @@ def test_jsr_target_routine_not_double_counted():
     # content (one NOP rung, weight 16, plus the 2026-08-31 composite-scale
     # surcharge of 47/instr = 47) -- no fixed_base_per_routine (that stays
     # folded into MainRoutine's jsr_fixed_base_per_routine above).
-    assert sub.bytes == 104 + 16 + _JSR_SURCHARGE + MODEL.jsr_target_declaration.cost_for('SubTest')
+    assert sub.bytes == 104 + 16 + _JSR_SURCHARGE + MODEL.jsr_target_declaration.cost_for('SubTest', MODEL.identifier_name_length)
 
 
 def test_jsr_param_cost_a_charged_once_even_with_two_call_sites():
@@ -261,7 +261,7 @@ def test_jsr_param_cost_a_charged_once_even_with_two_call_sites():
     # composite-scale surcharge 47) -- also charged exactly once regardless
     # of call-site count, since it's the target routine's own content, not
     # a per-call cost.
-    assert sub.bytes == 144 + 16 + _JSR_SURCHARGE + MODEL.jsr_target_declaration.cost_for('SubTest')
+    assert sub.bytes == 144 + 16 + _JSR_SURCHARGE + MODEL.jsr_target_declaration.cost_for('SubTest', MODEL.identifier_name_length)
     main = by_path["program:MainProgram/MainRoutine"]
     # jsr_fixed_base(5096) + JSR weight(72)*2 calls + B(2)=4+20*2=44 *2 calls
     assert main.bytes == 5096 + MODEL.logic_instructions.weights['JSR'] * 2 + 44 * 2
@@ -311,7 +311,7 @@ def test_jsr_output_param_cost_charged_per_call_site():
     # A(1) unaffected by output param count (not yet adjusted -- see
     # OPEN_QUESTIONS.md OQ-JSRPARAMCOST), plus SubTest's own content (one
     # NOP rung, weight 16 + composite-scale surcharge 47).
-    assert sub.bytes == 104 + 20 + 16 + _JSR_SURCHARGE + MODEL.jsr_target_declaration.cost_for('SubTest')
+    assert sub.bytes == 104 + 20 + 16 + _JSR_SURCHARGE + MODEL.jsr_target_declaration.cost_for('SubTest', MODEL.identifier_name_length)
 
 
 def test_jsr_target_content_scales_with_instruction_count():
@@ -362,8 +362,8 @@ def test_jsr_target_content_scales_with_instruction_count():
     # NOP's weight (16) plus its composite-scale surcharge (47), and
     # neither pays fixed_base_per_routine (4816) -- that would swamp this
     # small a difference if it leaked in.
-    assert build(one_nop) == 104 + 16 + _JSR_SURCHARGE + MODEL.jsr_target_declaration.cost_for('SubTest')
-    assert build(two_nop) == 104 + (16 + _JSR_SURCHARGE) * 2 + MODEL.jsr_target_declaration.cost_for('SubTest')
+    assert build(one_nop) == 104 + 16 + _JSR_SURCHARGE + MODEL.jsr_target_declaration.cost_for('SubTest', MODEL.identifier_name_length)
+    assert build(two_nop) == 104 + (16 + _JSR_SURCHARGE) * 2 + MODEL.jsr_target_declaration.cost_for('SubTest', MODEL.identifier_name_length)
 
 
 # ---------------------------------------------------------------------------

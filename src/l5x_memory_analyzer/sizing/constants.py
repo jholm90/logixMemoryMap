@@ -775,6 +775,32 @@ class StructuredTextModel:
 
 
 @dataclass(frozen=True)
+class IdentifierNameLengthModel:
+    """Cost of an identifier's own NAME (OQ-IDENTNAMELEN, wired 2026-09-12).
+
+    Shared by every identifier class measured for it -- JSR target routine
+    names and Program names, two independent 5-point sweeps that returned the
+    identical per-identifier cost. See memory_model.yaml
+    identifier_name_length for the data and for why the sub-8-character
+    interval is an interpolation between two anchors rather than measured.
+    """
+
+    free_chars: int
+    doubled_rate_limit: int
+    sub_limit_rate: int
+    per_char_above_limit: int
+    confidence: str
+
+    def bytes_for(self, name: str) -> int:
+        length = len(name or "")
+        if length <= self.free_chars:
+            return 0
+        if length <= self.doubled_rate_limit:
+            return self.sub_limit_rate * (length - self.free_chars)
+        return self.per_char_above_limit * length
+
+
+@dataclass(frozen=True)
 class JsrTargetDeclarationModel:
     """Cost of DECLARING a distinct JSR target, over and above its params.
 
@@ -787,8 +813,11 @@ class JsrTargetDeclarationModel:
     per_name_char: int
     confidence: str
 
-    def cost_for(self, routine_name: str) -> int:
-        return self.per_target + self.per_name_char * len(routine_name or "")
+    def cost_for(self, routine_name: str, name_length: "IdentifierNameLengthModel") -> int:
+        """per_name_char is not applied directly any more -- the shared
+        identifier-name law replaces it, which adds the sub-8-character floor
+        the original straight-line fit had no data to see."""
+        return self.per_target + name_length.bytes_for(routine_name)
 
 
 @dataclass(frozen=True)
@@ -851,6 +880,7 @@ class MemoryModel:
     udt_definition: UdtDefinitionModel
     logic_instructions: LogicInstructionModel
     jsr_target_declaration: JsrTargetDeclarationModel
+    identifier_name_length: IdentifierNameLengthModel
     alarm_conditions: AlarmConditionModel
     structured_text: StructuredTextModel
     empty_project_baseline_bytes: int
@@ -937,6 +967,13 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 for cat in cls["catalogs"]
             },
             confidence=raw.get("platform_firmware_correction", {}).get("confidence", "UNKNOWN"),
+        ),
+        identifier_name_length=IdentifierNameLengthModel(
+            free_chars=raw["identifier_name_length"]["free_chars"],
+            doubled_rate_limit=raw["identifier_name_length"]["doubled_rate_limit"],
+            sub_limit_rate=raw["identifier_name_length"]["sub_limit_rate"],
+            per_char_above_limit=raw["identifier_name_length"]["per_char_above_limit"],
+            confidence=raw["identifier_name_length"]["confidence"],
         ),
         jsr_target_declaration=JsrTargetDeclarationModel(
             per_target=raw.get("jsr_target_declaration", {}).get("per_target", 0),

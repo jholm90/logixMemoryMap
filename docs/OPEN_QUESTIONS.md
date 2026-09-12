@@ -990,6 +990,72 @@ the matching footnote at the bottom, not inline.
     Routine names too (untested) or is specific to JSR-target/Program
     identifiers.
 
+    **WIRED 2026-09-12. The len=40 capture this was held open waiting for
+    had already landed** — `jsr_multi_distinct_targets_namelen40` and
+    `program_multi_distinct_namelen40` are both in the manifest with
+    `error_count = 0`, and the fit holds at Rockwell's real identifier
+    maximum. Per-identifier cost relative to a 4-character name, 10
+    identifiers per file:
+
+    | name length | 4 | 8 | 16 | 32 | 40 |
+    |---|---:|---:|---:|---:|---:|
+    | JSR targets | 0 | +8 | +16 | +32 | +40 |
+    | Programs | 0 | +8 | +16 | +32 | +40 |
+
+    Above 8 characters the cost is exactly the character count — 1 byte per
+    character, no bucketing, unlike the AOI type-name and alias-tag formulas
+    which both bucket. At 4 characters it is zero, not 4. Wired as ONE shared
+    `identifier_name_length` in `memory_model.yaml`, used by both the
+    JSR-target declaration and the Program shell, because the whole finding
+    is that two independent identifier classes agree:
+
+        name_bytes(len) = 0               for len <= 4
+                        = 2 * (len - 4)   for 4 < len <= 8
+                        = len             for len > 8
+
+    Results: all five `program_multi_distinct_namelen*` rows went from
+    `0 / −80 / −160 / −320 / −400` to **exactly 0** — Programs had no
+    name-length term at all, so len=40 was under-predicting by 400 bytes on
+    10 programs. All five `jsr_multi_distinct_targets_namelen*` rows collapsed
+    onto a **uniform +200** (was +240 at len=4, +200 elsewhere): the JSR path
+    already had a straight `1 × len` term with the right slope but no floor,
+    and with the floor applied there is no name-length signal left in that
+    residual at all — the remaining flat +200 is the separate per-target
+    under-charge (OQ-JSRPARAMCOST). `jsr_crossed_n20/n40_namelen16/32` are
+    unchanged, correctly: they were already flat in name length. Corpus exact
+    predictions 1,031 → 1,040.
+
+    **Two things the wired law does not rest on measurements for. 24 files
+    built** (`src/sample_gen/gen_identname_closeout.py`):
+
+    - **A, `identnamelen_prog_c01..c12`** (12 files). The law is two pieces
+      meeting at 8 characters and the sub-8 piece is a straight line drawn
+      between two anchors (0 at 4 chars, 8 at 8 chars) with **no data of its
+      own**. Real Logix names that short are common, so this sweeps every
+      length 1..12 directly, 10 Programs per file. Programs rather than JSR
+      targets deliberately: the Program sweep reconciles at exactly 0 across
+      its whole range, so any deviation is pure name-length signal, whereas
+      the JSR sweep's flat +200 would have to be subtracted first.
+    - **B, `identnamelen_rtn_c{01,04,08,12,16,32,40}`** (7 files). Whether
+      the law generalizes to plain ROUTINE names, which this entry flags as
+      untested. `routine_extra` has no name-length term, exactly as
+      `program_extra` had none. If plain routines follow the same law they
+      need the same wiring; if they do not, the law belongs to **scheduling
+      and call targets** (Programs, JSR targets) rather than to every named
+      object — a materially different rule that changes where else it should
+      be applied. The routines are uncalled on purpose so the JSR-target
+      declaration path cannot contribute.
+    - **C, `identnamelen_task_c{04,08,16,32,40}`** (5 files). Tasks are the
+      third identifier in the same shell formula (`task_extra`) and the only
+      one whose name no sweep has ever varied. Each extra Periodic task
+      schedules one Program held at a fixed 16-character name so only the
+      task name moves.
+
+    The engine currently predicts a **flat** total across every file in B and
+    C, which is the hypothesis under test: flat captures confirm the law is
+    specific to scheduling/call targets, varying ones say it is general and
+    two more terms need wiring.
+
 14. **OQ-193ECMETR** — new, real, genuinely undiagnosed (now covering TWO
     catalogs — see the correction below). 2026-09-02, real Studio
     5000 error on `composite_realistic_v2_18`/`_50` ("Error:

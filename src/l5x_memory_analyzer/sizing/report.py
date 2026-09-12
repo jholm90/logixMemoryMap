@@ -377,7 +377,8 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             # call by 4, two errors in opposite directions that hid each
             # other. Name-dependent: matched namelen16/namelen32 pairs
             # differ by exactly +1 per character per target.
-            a_cost += model.jsr_target_declaration.cost_for(routine.routine_name)
+            a_cost += model.jsr_target_declaration.cost_for(
+                routine.routine_name, model.identifier_name_length)
             a_basis = weakest(a_basis, model.jsr_target_declaration.confidence)
             content_bytes, content_basis = compute_routine_logic_bytes(
                 routine, model.logic_instructions, tag_types, charge_shell=False
@@ -542,6 +543,21 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             + overhead.program_extra * (n_programs - 1)
             + overhead.routine_extra * (n_plain_routines - 1)
         )
+        # A Program's own NAME costs bytes (OQ-IDENTNAMELEN, wired 2026-09-12)
+        # and had no term at all here, so program_multi_distinct_namelen40 was
+        # under-predicting by 400 bytes on 10 programs -- a flat prediction
+        # against a real +40/program. Same law as a JSR target's name, from
+        # two independent sweeps that agree at every measured length; see
+        # memory_model.yaml identifier_name_length.
+        #
+        # Charged for the extra programs only, matching program_extra's own
+        # n-1 convention: the first program's name is inside the baseline the
+        # 4,816-byte fixed_base_per_routine was fitted against.
+        if programs_el is not None:
+            named = [p for p in all_program_els if p.get("Class") != "Safety"]
+            for program_el in named[1:]:
+                shell_bytes += model.identifier_name_length.bytes_for(
+                    program_el.get("Name") or "")
         shell_basis = weakest(model.logic_instructions.confidence, overhead.confidence)
         # Own category, NOT "routine_logic" -- this entry's path is
         # "task_program_shell", not a "program:X/Y" routine path, so it

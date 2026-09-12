@@ -216,6 +216,31 @@ projects specifically** -- the two deltas above are corrections layered on
 top of it for the firmware/catalog combinations they cover, not a
 replacement lookup table.
 
+## Identifier names (FITTED, wired 2026-09-12, OQ-IDENTNAMELEN)
+
+A named object's own NAME costs bytes. One shared law, `identifier_name_length`:
+
+    name_bytes(len) = 0               for len <= 4
+                    = 2 * (len - 4)   for 4 < len <= 8
+                    = len             for len > 8
+
+Two independent sweeps of 10 identifiers each, at name lengths 4/8/16/32/40
+(40 is Rockwell's real Logix identifier cap), return the identical
+per-identifier cost relative to a 4-character name — JSR target routine names
+and Program names both give 0/+8/+16/+32/+40. Above 8 characters it is exactly
+1 byte per character with **no bucketing**, which distinguishes it from the AOI
+type-name and alias-tag name costs below, both of which bucket.
+
+Applied to the JSR-target declaration (`jsr_target_declaration`, whose earlier
+straight `1 x len` fit had the right slope but no floor) and to each extra
+Program in the shell aggregate (which had no name term at all). Programs' five
+namelen rows went from 0/−80/−160/−320/−400 to exactly 0; the JSR rows
+collapsed onto a uniform +200, which is the separate per-target under-charge.
+
+Stays FITTED. The 4 < len < 8 interval is an interpolation between two anchors
+with no data of its own, and whether plain Routine and Task names follow the
+same law is untested — `identnamelen_*` measures both.
+
 ## Alias tags (KNOWN, corrected 2026-08-25)
 
 A Tag with `TagType="Alias"` carries no `DataType` of its own in the L5X

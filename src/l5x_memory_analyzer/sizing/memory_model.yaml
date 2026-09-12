@@ -1900,8 +1900,54 @@ task_program_overhead:
 # This is charged ONCE PER DISTINCT TARGET, alongside jsr_param_cost's
 # A(n), because it is a property of the callee's declaration rather than of
 # any one call site -- same rule the surrounding code already follows.
+# Cost of an IDENTIFIER's own NAME, shared by every identifier class that
+# has been measured for it -- OQ-IDENTNAMELEN, wired 2026-09-12.
+#
+# Two independent sweeps, 10 identifiers per file, name length 4/8/16/32/40
+# (40 is Rockwell's real Logix identifier limit), give the IDENTICAL
+# per-identifier cost relative to a 4-character name:
+#
+#   name length        4    8   16   32   40
+#   JSR targets        0   +8  +16  +32  +40   (jsr_multi_distinct_targets_namelen*)
+#   Programs           0   +8  +16  +32  +40   (program_multi_distinct_namelen*)
+#
+# So above 8 characters the cost is exactly the character count -- 1
+# byte/char with no bucketing -- and at 4 characters it is zero, not 4. The
+# floor is what makes this two pieces rather than one line: a name of 8
+# characters or fewer appears to fit a minimum allocation the base cost
+# already covers, and the two measured anchors (0 at 4, 8 at 8) put the
+# crossover at 8 with the same slope either side only if the sub-8 rate is
+# doubled. Hence:
+#
+#   name_bytes(len) = 0                 for len <= 4
+#                   = 2 * (len - 4)     for 4 < len <= 8
+#                   = len               for len > 8
+#
+# Continuous at 8 (2*(8-4) = 8). The 4 < len < 8 interval is INTERPOLATED
+# between the two measured anchors and has no data of its own -- real Logix
+# names that short are common, so identnamelen_* was generated to measure
+# every length 1..12 directly rather than leave a fitted line there.
+#
+# Confirmed on the whole measured range including len=40, which is why this
+# is wired now: the question was held open waiting for that capture, and it
+# had already landed.
+identifier_name_length:
+  free_chars: 4
+  doubled_rate_limit: 8
+  sub_limit_rate: 2
+  per_char_above_limit: 1
+  confidence: FITTED
+
 jsr_target_declaration:
   per_target: 152
+  # per_name_char is superseded by identifier_name_length above (2026-09-12).
+  # Kept at 1 to document the rate the earlier fit found -- the same 1
+  # byte/char -- but the cost is now computed by the shared law so the
+  # sub-8-character floor applies. That floor is the whole change here: every
+  # namelen row at 8 characters and above is byte-identical to before, and
+  # jsr_multi_distinct_targets_namelen04's residual drops from +240 to +200,
+  # onto the flat +200 the rest of the sweep sits at (that remaining +200 is
+  # the separate per-target under-charge, OQ-JSRPARAMCOST, not a name term).
   per_name_char: 1
   confidence: FITTED
 
