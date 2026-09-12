@@ -946,6 +946,89 @@ the matching footnote at the bottom, not inline.
     batch's residual, since composite files don't currently exercise
     either gap — that residual's real source is still unidentified.
 
+    **REOPENED 2026-09-12. The wiring above is validated against SUSPECT
+    rows, and the files were gone.** All six calibration files had been
+    deleted from the repo entirely, so nothing could be re-examined, and
+    **five of the six captured WITH Studio build errors**:
+
+    | file | recorded `error_count` |
+    |---|---:|
+    | `aoi_logic_scale_000` (empty shell) | 0 |
+    | `aoi_logic_scale_010` | 1 |
+    | `aoi_logic_scale_050` | 8 |
+    | `aoi_logic_scale_100` | 16 |
+    | `aoi_multiroutine_control` | 8 |
+    | `aoi_multiroutine_real` | 8 |
+
+    No error text was ever recorded. The count rises with rung count, so a
+    repeating rung shape in the generator's 5-shape mix is being rejected
+    while Studio imports the rest of the project — which is the worst case,
+    because `actual_bytes` still gets filled in from a project missing part of
+    the logic it was built to measure. Per CLAUDE.md that makes every one of
+    those rows **suspect, not wrong**, and it points one way: the measured
+    bytes UNDER-state the real cost, so the per-instruction weighting fitted
+    to them is likely **under-charging AOI internal logic**. The headline
+    "essentially exact at every point tested, max error cut from 12.02% to
+    0.55%" is an exactness against those numbers. Only `aoi_logic_scale_000`,
+    the zero-logic baseline, is clean — and that file contains no AOI internal
+    logic at all, so it validates nothing about the weighting.
+
+    This matters at real scale: the same real program reviewed above has 39
+    AOI definitions carrying 573 rungs of internal logic between them.
+
+    The six files are **rebuilt** and now exist again. The gate reports all
+    five errored rows as STALE — the rebuild does not reproduce the captured
+    content byte-for-byte, because the shared builder has moved since — so
+    their `actual_bytes` describes content the repo no longer holds and cannot
+    be used even with a caveat. They need recapture.
+
+    **One diagnosis was tried and is recorded here because it is WRONG.** The
+    suspect shape looked like `MOV(In0,In1)`, on the theory that an AOI's
+    Input parameters are read-only inside its own logic. They are not. Real
+    shipping AOIs write to their Input parameters routinely —
+    `MOV(RawInput,RawMax)`, `OTU(HMI_ResetStats)` in the real corpus — because
+    an Input is a local copy made at invocation, not a reference; only InOut is
+    by-reference and only Output flows back. A lint rule built on that premise
+    fires on 133 committed files including all four real production programs,
+    which demonstrably compile. It was written, tested, and reverted.
+
+    Counting shape occurrences does not settle it either. The mix cycles 5
+    shapes, so at 13/42/78 rungs each shape appears a known number of times,
+    and **no single shape appears 1, 8 and 16 times**: `CLR(Loc0)` appears
+    8 and 16 at n=50/100 but 3 at n=10; `MOV(In0,In1)` appears 2, 8 and 15.
+    Either the error is not one-per-rung, or more than one shape is involved.
+
+    **17 files built to measure it instead of inferring it**
+    (`src/sample_gen/gen_aoi_internal_shape_isolation.py`):
+
+    - **`aoishape_{mov,xicote,clr,add,equote}_n{01,05,10}`** (15 files). Each
+      of the five mix shapes alone in an AOI's Logic routine, at 1/5/10 rungs,
+      same 3 In / 1 Out / 2 Local parameter shape as the captured sweep. The
+      recorded error count then names the offender directly: a shape rejected
+      once per rung shows its count tracking the rung count in its own three
+      files and zero in the other twelve. Shapes are verbatim from the captured
+      mix, `MOV(In0,In1)` included — changing them would measure a different
+      question.
+    - **`aoishape_control_empty`** — zero internal logic, current builder
+      output. Separates a rung-shape cause from the surrounding project
+      structure: if this errors too, no rung is at fault.
+    - **`aoishape_control_mix13`** — the same 13 mixed rungs
+      `aoi_logic_scale_010` carries. Its error count is directly comparable to
+      that row's recorded 1 (its bytes are not — a different AOI type-name
+      length carries its own cost).
+
+    If every one of the 17 comes back at zero errors, the cause was in project
+    structure the sweep has since changed, and the next step is **the raw
+    Studio 5000 error-log line** for one of the original six files rather than
+    another round of inference.
+
+    **CAPTURE ERRORS: 5 row(s)** — `aoi_logic_scale_010/050/100`,
+    `aoi_multiroutine_control/real`. These were routed to OQ-AOIDEFITEMIZE and
+    OQ-BUILDFAIL-OPEN by sample-prefix rules, so the rows that invalidate this
+    question's headline were being flagged against two unrelated questions.
+    `samples/oq_owners.csv` now routes both families here, which is where the
+    consequence actually lands.
+
 13. **OQ-IDENTNAMELEN** — new, real, found 2026-08-31 in the same push as
     the "5/10/15/20/50 subroutines... different routine name lengths"
     directive. `gen_jsr_multi_distinct_targets_scale.py`'s
@@ -1421,7 +1504,7 @@ the matching footnote at the bottom, not inline.
 
 
 
-    **CAPTURE ERRORS: 14 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    **CAPTURE ERRORS: 12 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
     6 captured WITH Studio build errors, so their `actual_bytes` is
     SUSPECT rather than wrong — part of the file may never have reached the
     controller, which inflates apparent over-prediction. None of them carries
@@ -2517,7 +2600,7 @@ the matching footnote at the bottom, not inline.
     is visible instead of silent.
 
 
-    **CAPTURE ERRORS: 43 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    **CAPTURE ERRORS: 40 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
     43 captured WITH Studio build errors, so their `actual_bytes` is
     SUSPECT rather than wrong — part of the file may never have reached the
     controller, which inflates apparent over-prediction. None of them carries
