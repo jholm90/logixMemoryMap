@@ -489,6 +489,45 @@ bytes — exactly one element — off the line through 10 and 50. See
 
 ## Module / I/O tag sizing
 
+**THE FILE IS THE FINAL DECISION ON MODULE SIZING (rule, 2026-09-12).** A
+module costs its per-catalog OVERHEAD plus the SIZE THE L5X STATES, and every
+module gets sized -- there is no module shape whose declared data is free. The
+catalog number selects the overhead only; it does not and cannot determine the
+size, because several catalogs are configurable: `ETHERNET-MODULE`,
+`ETHERNET-PANELVIEW` and the generic device profiles have their input and
+output sizes typed in by hand, so two instances of the same catalog are
+different devices. The 109 real `ETHERNET-MODULE` instances carry 40 distinct
+connection shapes with input spanning 2 to 450 bytes; no per-catalog constant
+can express that and the file already says it outright.
+
+Two consequences wired the same day:
+
+1. **Rack-aliased, processor-embedded and legacy-network modules are charged
+   their own declared `module_defined_bytes`.** They used to be charged exactly
+   ZERO. That was right about the OVERHEAD -- it was fitted from two modules
+   with their own Connection and there is no data for whether it transfers to
+   those shapes, so it is still not charged and the SizeError is still the
+   record of that -- and wrong about the data, which the L5X states as plainly
+   for them as for anything else. Across the sixteen real programs this is 28
+   modules and 1,956 declared bytes that were previously free.
+2. **An unresolvable connection or config structure falls back to the file's
+   own stated `InputSize`/`OutputSize`/`ConfigSize`** instead of contributing
+   nothing. The member walk stays the primary source -- it is finer-grained and
+   agrees with the stated attribute wherever both exist -- but a member type
+   the walk cannot size no longer silently turns the total into a floor. The
+   unresolved type is still reported, now annotated with the stated size that
+   replaced it.
+
+**What this does NOT fix, stated so it is not mistaken for closed.** The
+`rack_pointio_*` family is still 9-28% under-predicted and `rack_pointio_n02`
+is 2,434 bytes short with ZERO rack-aliased modules in it -- so most of that
+gap is the priced cards' own ASSUMED per-catalog overheads being too low, which
+needs the per-catalog refit under this formula, not these two changes. Real-file
+mean absolute error moved 2.1395% -> 2.1294%. See `docs/OPEN_QUESTIONS.md`
+OQ-MODULESTRUCTURAL.
+
+
+
 **Wired 2026-08-27, per-catalog table added 2026-08-29 — see OQ-MODULEIO
 for the full derivation.** `module_defined_bytes` (real, computed from the
 module's own auto-generated "Module-Defined" data type — InputTag/

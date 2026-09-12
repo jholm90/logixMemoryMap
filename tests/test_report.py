@@ -401,15 +401,22 @@ def test_legacy_network_module_excluded_from_sizing():
     # below, 2026-08-31). Uses a catalog with no real entry to keep
     # testing the general "no real data -> unmodeled" rule in isolation.
     #
-    # "Excluded from sizing" means charged ZERO bytes, not absent from the
-    # report. The entry is still emitted so the module remains visible in
-    # the UI tree -- dropping it entirely made whole racks of modules
-    # disappear from the I/O view rather than merely go unpriced.
+    # "Excluded from sizing" means its OVERHEAD is not charged -- not that the
+    # module is free. Changed 2026-09-12: the module's own declared data
+    # (module_defined_bytes, which the L5X states as plainly for this shape as
+    # for any other) IS charged, because the file is the final decision on
+    # sizing and a stated size is not something to guess about. Only the
+    # overhead stays unmodelled, and the SizeError remains the record of that.
+    #
+    # The entry was always emitted regardless, so the module stays visible in
+    # the UI tree -- dropping it entirely made whole racks disappear from the
+    # I/O view rather than merely go unpriced.
     for port_type in ("ControlNet", "DeviceNet", "DH+", "DH-485", "RIO"):
         root = _root_with_legacy_network_module(port_type)
         entries, errors = build_report(root, MODEL)
         module_entries = [e for e in entries if e.category == "module_io"]
-        assert all(e.bytes == 0 for e in module_entries), port_type
+        # 4 = this fixture's own module_defined_bytes, with no overhead on top.
+        assert all(e.bytes == 4 for e in module_entries), port_type
         assert all(e.basis == "UNKNOWN" for e in module_entries), port_type
         assert any("legacy-network" in e.message for e in errors), port_type
 

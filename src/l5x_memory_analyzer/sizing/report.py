@@ -739,16 +739,31 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                     f"not summed into the total either, controller-memory cost unmodeled for now"
                 ),
             ))
-            # Charged nothing, but still EMITTED. Skipping the entry
-            # outright removed the module from the tree as well as from
-            # the total, so a POINT I/O rack behind a 1734-AENT (every
-            # module of which is rack-aliased) simply had no children at
-            # all in the UI -- reported as "the 1734-AENT does not have
-            # the modules as children and lots of the modules are
-            # missing". A zero-byte entry says the true thing: the module
-            # is there and this model charges it nothing yet. The
-            # SizeError above remains the record of why.
-            module_entries.append((f"modules/{label}", "module_io", module.catalog_number, 0, "UNKNOWN"))
+            # Charged its OWN DECLARED DATA, 2026-09-12, and still emitted.
+            #
+            # This used to be charged exactly ZERO, on the reasoning that
+            # module_overhead was fitted from two modules with their own
+            # Connection and there is no data for whether it applies to a
+            # rack-aliased shape. That reasoning holds for the OVERHEAD and
+            # does not hold for the module's own data: the L5X states
+            # module_defined_bytes for these modules just as plainly as for
+            # any other, and a stated size the file gives us is not a thing to
+            # guess about. The file is the final decision on sizing.
+            #
+            # So the overhead stays unmodelled and uncharged -- the SizeError
+            # above is still the record of that -- while the declared data is
+            # charged like anywhere else. Across the sixteen real programs this
+            # is 28 modules and 1,956 declared bytes that were previously free.
+            #
+            # It does NOT close the rack gap on its own and is not claimed to:
+            # rack_pointio_n02 is 2,434 bytes short with ZERO rack-aliased
+            # modules in it, so most of that family's -9% to -28% is its priced
+            # cards' own ASSUMED overheads being too low, which needs the
+            # per-catalog refit (OQ-MODULESTRUCTURAL), not this.
+            module_entries.append((
+                f"modules/{label}", "module_io", module.catalog_number,
+                module.module_defined_bytes, "UNKNOWN",
+            ))
             continue
         # 2026-08-29, OQ-MODULEIO: real per-catalog overhead (memory_model.yaml
         # module_overhead_by_catalog) replaces the flat cross-catalog FITTED

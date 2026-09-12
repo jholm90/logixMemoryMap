@@ -246,11 +246,31 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
                     # InputTag/OutputTag live INSIDE their owning Connection
                     # in every real shape found in that pass, not as a
                     # Communications sibling -- see module docstring.
+                    # THE FILE IS THE FINAL DECISION, 2026-09-12. When the
+                    # member walk cannot resolve a connection's own type, the
+                    # L5X's stated InputSize/OutputSize attribute for that
+                    # connection is used instead of dropping the connection to
+                    # zero. Dropping it made the total a silent FLOOR, and it
+                    # bit hardest on exactly the modules whose size is not a
+                    # property of the catalog at all: a generic
+                    # ETHERNET-MODULE or ETHERNET-PANELVIEW has its sizes
+                    # typed in by hand, so two instances of the same catalog
+                    # are different devices and the stated number is the only
+                    # thing that knows which. 109 real ETHERNET-MODULE
+                    # instances carry 40 distinct shapes, input spanning 2 to
+                    # 450 bytes.
+                    #
+                    # Member walk first, stated size only as the fallback: the
+                    # walk is finer-grained (it sees real member padding) and
+                    # agrees with the stated attribute wherever both exist.
                     input_tag_el = conn_el.find("InputTag")
                     if input_tag_el is not None:
                         if input_profile is None:
                             input_profile = _structure_datatype(input_tag_el)
                         size, unk = _structure_size(_structure_el(input_tag_el))
+                        if unk and not size:
+                            size = _int_attr(conn_el, "InputSize")
+                            unk = [f"{u} (stated InputSize={size} used instead)" for u in unk]
                         module_defined_bytes += size
                         unknown_types.extend(unk)
                     output_tag_el = conn_el.find("OutputTag")
@@ -258,6 +278,9 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
                         if output_profile is None:
                             output_profile = _structure_datatype(output_tag_el)
                         size, unk = _structure_size(_structure_el(output_tag_el))
+                        if unk and not size:
+                            size = _int_attr(conn_el, "OutputSize")
+                            unk = [f"{u} (stated OutputSize={size} used instead)" for u in unk]
                         module_defined_bytes += size
                         unknown_types.extend(unk)
 
@@ -275,6 +298,12 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
                 config_bytes = _int_attr(config_tag_el, "ConfigSize")
                 config_profile = _structure_datatype(config_tag_el)
                 size, unk = _structure_size(_structure_el(config_tag_el))
+                # Same fallback as the connection tags above: an unresolvable
+                # ConfigTag structure falls back to the file's own stated
+                # ConfigSize rather than contributing nothing.
+                if unk and not size:
+                    size = config_bytes
+                    unk = [f"{u} (stated ConfigSize={config_bytes} used instead)" for u in unk]
                 module_defined_bytes += size
                 unknown_types.extend(unk)
             else:
