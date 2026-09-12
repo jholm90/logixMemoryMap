@@ -2038,113 +2038,69 @@ the matching footnote at the bottom, not inline.
     few tens.
 
 
-33. **OQ-ALARMDEF** — datatype-level alarm definitions are priced at zero.
-    New, 2026-09-08, found in the real 1756-L9xTS v38 exports.
+33. **OQ-ALARMDEF** — datatype-level alarm definitions. **RESOLVED except one
+    term, 2026-09-12, by reading the 68 `alarmdef_*` and 33 `alarmsep_*` rows
+    TOGETHER for the first time. They collapse to a single law, and that law
+    disproves what this entry previously recorded.**
 
-    **CAPTURED 2026-09-11, 28 files across two processors. Three of the
-    four questions are answered; one result does not fit and is not being
-    wired until it does.**
+        deficit = SUM over UDTs of (8 + 8 x floor(BIT_members / 2))
 
-    Answered, and replicated independently on 1756-L81E and 1756-L902TS
-    with identical numbers:
+    Zero residual on 64 of the 68 `alarmdef_*` rows and on all 33
+    `alarmsep_*`. `alarmdef_l81_d1_*` sits at -72 because its UDT has 16 BIT
+    members and 8 + 8x8 = 72 exactly; d02/d04/d08 sit at -16/-32/-64 because
+    each of their 2/4/8 UDTs has one BIT member at 8 apiece. Four processor and
+    firmware variants (l81, l81 v35, l81 v38, l902ts) give identical numbers, so
+    it is platform-invariant across the active set.
 
-      - **Operator message text is FREE.** `msg_none/s/m/l` all measure
-        byte-identical (18,696 on L81, 20,972 on L902TS). Message length
-        contributes nothing, the same result RLL rung comments and ST
-        comments already gave.
-      - **Member alarm count is FREE.** `d1_m00` through `d1_m16` — zero
-        to sixteen `MemberAlarmDefinition` elements under one
-        `DatatypeAlarmDefinition` — are all byte-identical. A definition
-        costs what it costs regardless of how many members hang off it.
-      - **Definition count is linear at exactly 8 bytes per
-        `DatatypeAlarmDefinition`**, zero residual:
+    **DISPROVED: "8 bytes per DatatypeAlarmDefinition".** That came off the d0N
+    ladder, in which definition count and UDT count are both N -- perfectly
+    collinear. `alarmsep_u04_b04_def{1,2,3}` breaks it: four UDTs held fixed
+    while definitions run 1, 2, 3, 4, and all four files are BYTE-IDENTICAL. The
+    8 belongs to the UDT, not the alarm definition. **Alarm definitions cost
+    exactly ZERO**, now confirmed 19 ways -- 15 matched `_alarm`/`_noalarm`
+    pairs plus the def1/2/3/4 quadruple. Had the 8/definition been wired it
+    would have been a wrong constant on every real file, which all carry
+    hundreds of conditions.
 
-            d02 -> +16    d04 -> +32    d08 -> +64
+    **Also re-confirmed, and both already recorded:** operator message text is
+    free (`msg_none/s/m/l` byte-identical), and member-alarm count is free
+    (`d1_m00` through `d1_m16` byte-identical).
 
-        Both processors give the identical increments (L81 18,592 /
-        19,056 / 19,984; L902TS 20,868 / 21,332 / 22,260 — differences of
-        464 and 928 in both).
+    **The +72 "does not fit, and is the reason nothing is wired" note in the
+    previous version of this entry is closed.** The extra 64 bytes were never an
+    alarm term: the `d1_*` UDT carries 16 BIT members against 2 in the d0N
+    files, and the law above accounts for the difference to the byte.
 
-    **Does not fit, and is the reason nothing is wired yet:** every file
-    in the `d1_*` family sits at +72, not the +8 that one definition
-    should cost by the slope above. The extra 64 bytes are constant
-    across all eleven `d1_*` files and appear on both processors. The
-    `d1_*` UDT carries 18 members against 2 in the `d0N_*` files, so the
-    suspect is a UDT-shape term leaking into this residual rather than an
-    alarm term — but that is a hypothesis, and wiring 8/definition while
-    a 64-byte hole sits next to it would bake the hole into the model.
+    **WHAT IS STILL OPEN: 2 bytes per tag.** Exactly four of the 68 rows carry a
+    residual beyond the law, and they are the tag ladders:
 
-    **The "one file settles it" note above was wrong, and is corrected
-    here.** The problem is not one bad data point, it is that the first
-    batch has no control. In `d0N` the UDT count, BIT-member count,
-    backing-SINT count and definition count are ALL N, so "8 per UDT",
-    "8 per definition", "8 per BIT member" and "8 per backing SINT" fit
-    it identically, and `d1` fits none of them (8 / 8 / 128 / 16 against
-    an actual 72). That is a two-variable surface, and no single extra
-    file resolves one.
+        inst_t01   -2      noinst_t01   -2
+        inst_t04   -8      noinst_t04   -8
+        inst_t16  -32      noinst_t16  -32
 
-    **Test files built 2026-09-11**, `gen_alarm_separation.py`, 33 files.
-    `alarmsep_u{01,02,04}_b{01,02,04,08,16}_{alarm,noalarm}` builds every
-    point TWICE -- once with a DatatypeAlarmDefinition on each UDT, once
-    with identical DataTypes and no `<AlarmDefinitions>` element at all.
-    Differencing a pair cancels the UDT cost, the backing-SINT packing,
-    the baseline and the shell exactly, so the remainder is the alarm
-    cost with nothing else in it. The engine prices alarm definitions at
-    0 today, so each pair differences to 0 in prediction and the measured
-    difference IS the answer.
+    2 bytes per tag, identical WITH and WITHOUT an alarm definition -- so a tag
+    term, not an alarm term. Those files' UDT has 16 BIT members, and 16 bits is
+    exactly 2 bytes, so the hypothesis with a mechanism behind it is that a
+    BIT-member UDT tag's own backing storage goes uncharged at
+    `ceil(BIT_members / 8)` bytes per tag.
 
-    Read along the `_noalarm` arm alone, the same files measure how a
-    UDT's BOOL members and hidden backing SINTs are priced with no alarm
-    content present; B=8 fills one backing SINT exactly and B=16 two, so
-    a packing term cannot hide. `alarmsep_u04_b04_def{1,2,3}` decouples
-    definition count from UDT count, giving five points on the definition
-    axis with everything else frozen.
+    **Test files built 2026-09-12, `gen_alarm_bitbacking.py`, 12 files.**
+    `alarmbits_b{08,16,32,64}_t{01,04,16}` crosses BIT-member count with tag
+    count. Under `ceil(bits/8)` per tag the deficit beyond the law runs 1/4/16,
+    2/8/32, 4/16/64, 8/32/128 across the grid; under a flat 2 per tag every row
+    reads 2/8/32 regardless of member count -- 128 against 32 at b64/t16, on
+    files whose other terms cancel exactly. Every existing file in the tag
+    ladder has the same 16-member UDT, so the two readings fit it identically:
+    the same one-variable trap the 8-per-definition claim fell into. No alarm
+    definitions anywhere in the batch, since they are now known to cost zero.
 
-    Not captured: `inst_t{01,04,16}` and `noinst_t{01,04,16}` failed
-    conversion in both arms (12 files), so whether an uninstantiated
-    template costs anything is still completely open.
-
-    `<AlarmDefinitions><DatatypeAlarmDefinition><MemberAlarmDefinition>` is
-    a v38 shape: an alarm TEMPLATE attached to a data type, distinct from
-    the tag-level `<AlarmConditions>` this engine already sizes exactly
-    (OQ-ALARMCOND, closed). A stock Rockwell P_PID definition carrying six
-    member alarms was priced at zero and reported nothing at all.
-
-    That silence was the real problem, and it is fixed: `audit_coverage()`
-    now emits a `coverage/alarm_definitions` notice, so the content is
-    visible as unpriced rather than vanishing into the total. The byte cost
-    itself is still unknown.
-
-    **Test files built 2026-09-08**, `samples/generated/alarmdefs/`, 40
-    files, awaiting capture. Rebuilt 2026-09-10 onto the v35 standard.
-
-    The batch was first built entirely at v38, reasoning that the element
-    is absent from all 26 real corpus exports at MajorRev 20-35 and present
-    in all four at 38. That reasoning does not hold: those 26 files are
-    projects that did not USE the feature, so their silence says nothing
-    about whether v35 accepts one. Building off-standard on that basis cost
-    the comparability against the ~2,400 existing v35 captures that the
-    standard exists to provide.
-
-    Now 20 files at v35 (primary, matching every other batch) and 20 at v38
-    on the same 1756-L81E, so firmware is the only variable between the two
-    arms and the v35-vs-v38 difference is readable directly. If v35 does
-    reject the element, the v35 arm's conversion failures establish the
-    version boundary while the v38 arm still closes the question.
-
-      - Group A, `alarmdef_{proc}_d1_m{00,01,02,04,08,16}` and
-        `alarmdef_{proc}_d{02,04,08}_m1`: member-count slope and
-        per-definition intercept, swept independently so they are not
-        collinear the way the single real example leaves them.
-      - Group B, `alarmdef_{proc}_inst_t{00,01,04,16}` against
-        `alarmdef_{proc}_noinst_t{01,04,16}`: whether an uninstantiated
-        template costs anything. Worth asking because the real exports
-        carry a P_PID definition while `<DataTypes/>` is empty and no
-        P_PID tag exists anywhere -- a template can outlive any instance
-        of its type.
-      - Group C, `alarmdef_{proc}_msg_{none,s,m,l}`: whether the operator
-        message CDATA counts, definition and member count held fixed.
-
+    **Nothing is wired yet, and the reason is OQ-UDTMEMBERNAME.** The law above
+    is the same `8 + 8 x floor(bool/2)` per UDT that OQ-UDTMEMBERNAME records,
+    and it is contradicted there by `udttype_bool_n4` -- a structural twin with
+    2-character member names that predicts EXACTLY while `alarmsep_u01_b04`
+    with 7-character names is 24 short. Wiring the law would fix 97 rows and
+    break that one, and the 47 pending `udtmn*`/`udtmn2*` files decide which of
+    member-name length or BIT count is the real driver.
 
     **CAPTURE ERRORS: 1 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
     1 captured WITH Studio build errors, so their `actual_bytes` is
@@ -2154,6 +2110,8 @@ the matching footnote at the bottom, not inline.
     2026-08-23 and 2026-09-08, and the error-log reader only began working
     2026-09-10, so these need RECAPTURE before their numbers are used.
     `almd_realtext`
+
+
 
 34. **OQ-L9BUDGET** — no memory budget for the 1756-L9xTS family.
     `controller_budgets.yaml` returns None for all four catalogs, so the UI
