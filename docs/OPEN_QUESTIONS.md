@@ -319,6 +319,75 @@ the matching footnote at the bottom, not inline.
    for the North Star, because it is what makes an UNSEEN catalog
    predictable at all.
 
+
+    **THE CONCRETE CASE, found 2026-09-12.** Counting every non-CPU module
+    across the sixteen real programs gives 438, and the largest single catalog
+    by a wide margin is the GENERIC `ETHERNET-MODULE` profile at **109
+    instances -- 25% of them**. It has NO entry in
+    `module_overhead_by_catalog`, so all 109 fall back to the flat 1,672-byte
+    cross-catalog default.
+
+    A per-catalog constant is not merely imprecise for it, it is the wrong
+    SHAPE. ETHERNET-MODULE is the profile used for any EtherNet/IP device with
+    no AOP: the connection sizes are typed in by hand, so two instances of the
+    same "catalog" are different devices. The 109 real instances carry **40
+    distinct connection shapes**, primary input spanning **2 to 450 bytes** (a
+    225x range) and output 2 to 64:
+
+        x11  In  10  Out  4        x6   In  6  Out 2
+        x10  In 450  Out  8        x5   In 12  Out 2
+        x9   In   4  Out  2        x5   In  4  Out 6
+        x7   In  64  Out 64        x4   In 14  Out 2
+                                   x4   no connections at all
+
+    Five more generic or third-party profiles are missing from the table on the
+    same terms: `193-ECM-ETR/B` (20 uses), `PowerFlex 525-EENET` (12),
+    `ETHERNET-BRIDGE` (8), `DPI-DRIVE-PERIPHERAL-MODULE` (6),
+    `ETHERNET-PANELVIEW` (2). **161 of the 438 real modules -- 37% -- are
+    priced by the flat default.**
+
+    **The rack sweeps say the same thing from the other direction.** All 57
+    `rack_*` rows captured clean, and none was ever reconciled. Recomputed
+    2026-09-12, the per-module error FLIPS SIGN by family:
+
+        1756 chassis cards   +523 per module (over-charged), max resid 1,436
+        5069                 -992 per module (under-charged), max resid 5,831
+        POINT I/O / Flex     -932 per card   (under-charged), max resid 3,008
+        5069 singles          ~0 slope, but per-CATALOG residuals to 4,005
+
+    Worst rows are `rack_pointio_n15_full` at **-27.8%** and
+    `rack_5069_rand03` at **-25.4%**, while `rack_1756_n16_full` is
+    **+11.8%** -- and `rack_5069_rand_combined10` (74 modules) flips to
+    **+7.0%**, so it is not even monotone in count. A flat per-family constant
+    does not absorb those residuals either. Those three families are only 14%
+    of the real module population, so they are a large CORPUS error and a small
+    real-file one; ETHERNET-MODULE is the reverse.
+
+    **Test files built 2026-09-12, `gen_generic_ethernet_module.py`, 19
+    files.** The module block is transplanted from a real instance; only
+    identity and the swept size differ. Sizes are in BYTES and the connection
+    data is INT-typed, so the array dimension is bytes/2 and the
+    `AB:ETHERNET_MODULE_INT_<n>Bytes` type name carries the byte count -- all
+    three move together in a real export, so they are derived from one number
+    rather than settable apart and drifting out of agreement.
+
+      - `genem_in{002..450}` (8) -- primary INPUT size swept
+        2/4/10/32/64/128/256/450 bytes at output 4, bracketing the whole real
+        range including both extremes.
+      - `genem_out{002..064}` (6) -- primary OUTPUT size swept at input 4.
+        Separates the two directions, which no real instance can do because
+        real devices vary both at once.
+      - `genem_n{01,02,04,08}` (4) -- OQ-MODULEMARGINAL's per-module question
+        for the one catalog where it matters most on a real file.
+      - `genem_noconn` (1) -- the no-connection shape four real instances have.
+        `zero_connection_module_bytes` (2,344, FITTED) claims to cover it and
+        has never been tested for this profile.
+
+    The engine currently charges **exactly 1 byte per connection byte** on top
+    of the flat overhead (20,206 at input 2 rising to 20,654 at input 450), so
+    the input sweep tests that claim directly and the 450-byte case -- ten real
+    instances -- is where a wrong rate would show most.
+
 6. **OQ-MODULEIO** — mostly closed 2026-08-29. 126 real module captures
    were sitting unreconciled in manifest.csv; 51 catalogs now have a real
    per-catalog overhead value (exact-match rate on real data went from
