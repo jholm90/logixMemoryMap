@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 
-from l5x_memory_analyzer.parser.logic import parse_rll_routines
+from l5x_memory_analyzer.parser.logic import CmpCall, parse_rll_routines
 from l5x_memory_analyzer.sizing.constants import load_memory_model
 from l5x_memory_analyzer.sizing.logic import compute_routine_logic_bytes
 from l5x_memory_analyzer.sizing.report import ESTIMATED, EXACT, build_report
@@ -698,7 +698,7 @@ def test_unresolvable_index_shape_costs_nothing_not_guessed():
 
 def test_cmp_single_condition_costs_base_weight_only():
     routine = _one_rung_routine("CMP(L0>L1)OTE(TB0);")
-    assert routine.cmp_calls == [(False, False)]
+    assert routine.cmp_calls == [CmpCall(is_compound=False, has_float_literal=False, operators=[])]
     bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions)
     ote_weight = MODEL.logic_instructions.weights["OTE"]
     cmp_weight = MODEL.logic_instructions.weights["CMP"]
@@ -709,7 +709,7 @@ def test_cmp_single_condition_costs_base_weight_only():
 def test_cmp_compound_condition_adds_surcharge():
     for expr in ["L0>L1&&(L2<L3)", "L0>L1||(L2<L3)", "L0>L1&&(L0>L1)"]:
         routine = _one_rung_routine(f"CMP({expr})OTE(TB0);")
-        assert routine.cmp_calls == [(True, False)]
+        assert routine.cmp_calls == [CmpCall(is_compound=True, has_float_literal=False, operators=[])]
         bytes_, _ = compute_routine_logic_bytes(routine, MODEL.logic_instructions)
         base = (
             MODEL.logic_instructions.fixed_base_per_routine
@@ -722,8 +722,8 @@ def test_cmp_compound_condition_adds_surcharge():
 def test_cmp_float_literal_adds_surcharge_int_literal_does_not():
     float_routine = _one_rung_routine("CMP(L0>5.5)OTE(TB0);")
     int_routine = _one_rung_routine("CMP(L0>5)OTE(TB0);")
-    assert float_routine.cmp_calls == [(False, True)]
-    assert int_routine.cmp_calls == [(False, False)]
+    assert float_routine.cmp_calls == [CmpCall(is_compound=False, has_float_literal=True, operators=[])]
+    assert int_routine.cmp_calls == [CmpCall(is_compound=False, has_float_literal=False, operators=[])]
     base = (
         MODEL.logic_instructions.fixed_base_per_routine
         + MODEL.logic_instructions.weights["CMP"]
@@ -825,3 +825,31 @@ def test_coverage_audit_does_not_flag_instructions_priced_outside_the_weights_ta
 
     flagged = {e.path for e in errors if e.path.startswith("coverage/instruction/")}
     assert flagged == set(), flagged
+
+
+def test_cmp_arithmetic_operands_cost_the_cpt_expression_rate():
+    """CMP and CPT share one expression law (OQ-CMPCPTLAYOUT, 2026-09-12).
+
+    A CMP whose operands are themselves arithmetic expressions was priced as
+    though they were bare tags. The fix reuses CPT's operator-tier table with
+    no separate CMP fit, so the assertion is written that way on purpose: if
+    the two ever diverge, this test is what says so.
+    """
+    li = MODEL.logic_instructions
+    bare, _ = compute_routine_logic_bytes(_one_rung_routine("CMP(L0>L1)OTE(TB0);"), li)
+    for expr, operators in (
+        ("L0+L1>L2", ["+"]),
+        ("L0+L1>L2+L3", ["+", "+"]),
+        ("(L0+L1)*L2>L3-L4", ["+", "*", "-"]),
+    ):
+        got, _ = compute_routine_logic_bytes(
+            _one_rung_routine(f"CMP({expr})OTE(TB0);"), li)
+        expected = li.cpt_expression.cost_for(operators) - li.cpt_expression.base_read
+        assert got - bare == expected, expr
+
+
+def test_cmp_comparison_and_boolean_operators_are_not_arithmetic():
+    """`>` and `&&` must not be tokenized as arithmetic operators -- the
+    connective is already priced by compound_cost, and double-charging it
+    would break every bare compound CMP, all of which measure exact."""
+    assert _one_rung_routine("CMP(L0>L1&&L2<L3)OTE(TB0);").cmp_calls[0].operators == []

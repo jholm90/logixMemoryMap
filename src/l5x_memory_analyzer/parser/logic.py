@@ -305,6 +305,15 @@ def _indirect_index_kinds(rung_texts: list[str]) -> list[str]:
 # INDEPENDENTLY (never a compound expression that ALSO has a float
 # literal) -- applied additively if both are present, an assumption, not
 # a confirmed combination.
+@dataclass(frozen=True)
+class CmpCall:
+    """One real CMP(...) call site. `operators` holds the arithmetic operator
+    tokens found inside the comparison -- see _cmp_calls."""
+    is_compound: bool
+    has_float_literal: bool
+    operators: list[str] = field(default_factory=list)
+
+
 _CMP_CALL_START = re.compile(r"\bCMP\(")
 _CMP_COMPOUND_OPERATOR = re.compile(r"&&|\|\|")
 _CMP_FLOAT_LITERAL = re.compile(r"\d+\.\d+")
@@ -329,17 +338,32 @@ def _extract_single_arg(text: str, start: int) -> str | None:
     return None
 
 
-def _cmp_calls(rung_texts: list[str]) -> list[tuple[bool, bool]]:
-    """One entry per real CMP(...) call, (is_compound, has_float_literal)."""
-    calls: list[tuple[bool, bool]] = []
+def _cmp_calls(rung_texts: list[str]) -> list[CmpCall]:
+    """One entry per real CMP(...) call.
+
+    `operators` is the ARITHMETIC operator tokens inside the comparison,
+    tokenized with exactly the same regex CPT uses. A CMP's comparison
+    operator itself (>, <, >=, ...) and its boolean connectives (&&, ||) are
+    not arithmetic and are not collected here -- the connectives are already
+    priced by `compound_cost`.
+
+    Collecting them at all is 2026-09-12, OQ-CMPCPTLAYOUT: a CMP whose
+    operands are themselves expressions was priced as though they were bare
+    tags, so `CMP(L0+L1>L2)` was under-charged by the whole cost of the `+`.
+    CPT had an expression model from the start and CMP never did, which is
+    why every arithmetic CMP shape in the corpus sat at a real negative
+    residual while every bare-tag and bare-literal shape was exact.
+    """
+    calls: list[CmpCall] = []
     for text in rung_texts:
         for m in _CMP_CALL_START.finditer(text):
             expr = _extract_single_arg(text, m.end())
             if expr is None:
                 continue
-            calls.append((
-                bool(_CMP_COMPOUND_OPERATOR.search(expr)),
-                bool(_CMP_FLOAT_LITERAL.search(expr)),
+            calls.append(CmpCall(
+                is_compound=bool(_CMP_COMPOUND_OPERATOR.search(expr)),
+                has_float_literal=bool(_CMP_FLOAT_LITERAL.search(expr)),
+                operators=_CPT_OPERATOR_TOKEN.findall(expr),
             ))
     return calls
 
@@ -398,7 +422,7 @@ class RoutineLogic:
     indirect_index_kinds: list[str] = field(default_factory=list)
     # One entry per real CMP(...) call, (is_compound, has_float_literal) --
     # see _cmp_calls above (OQ-CMPCPTLAYOUT's CMP piece, wired 2026-08-26).
-    cmp_calls: list[tuple[bool, bool]] = field(default_factory=list)
+    cmp_calls: list[CmpCall] = field(default_factory=list)
     # Every routine name THIS routine JSRs to (2026-08-27, Phase 5 call-
     # tree UI) -- distinct from is_jsr_target above, which only says
     # whether some OTHER routine calls this one, not who calls whom. Byte

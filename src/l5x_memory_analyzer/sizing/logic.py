@@ -133,11 +133,21 @@ def compute_routine_logic_bytes(
     # CMP compound-condition/float-literal surcharge -- additive on top of
     # the base CMP:76 weight already summed via instruction_counts above.
     # See memory_model.yaml cmp_surcharge for the derivation.
-    for is_compound, has_float_literal in routine.cmp_calls:
-        if is_compound:
+    #
+    # 2026-09-12: a CMP whose operands are themselves ARITHMETIC expressions
+    # is charged the same operator-tier cost CPT uses, minus CPT's own
+    # base_read (CMP already carries its own 76-byte base weight). CMP and
+    # CPT share one expression law -- the tier table that was fitted on CPT
+    # lands on CMP's measured residuals without refitting anything. See
+    # docs/OPEN_QUESTIONS.md OQ-CMPCPTLAYOUT for the per-shape table.
+    for call in routine.cmp_calls:
+        if call.is_compound:
             total += model.cmp_surcharge.compound_cost
-        if has_float_literal:
+        if call.has_float_literal:
             total += model.cmp_surcharge.float_literal_cost
+        if call.operators:
+            total += (model.cpt_expression.cost_for(call.operators)
+                      - model.cpt_expression.base_read)
 
     # JSR per-param B(n_in) surcharge (OQ-JSRPARAMCOST) -- additive per real
     # call site, on top of the flat JSR:72/rung weight already summed via

@@ -750,6 +750,34 @@ be worse than a wrong-but-nonzero number, but treat any CPT-heavy
 estimated-tier logic number as unreliable until this is properly modeled.
 See `docs/OPEN_QUESTIONS.md` OQ-CMPCPTLAYOUT for full detail.
 
+**The paragraph above describes the state on 2026-08-23 and is kept for the
+reasoning trail; the architecture change it calls for landed 2026-08-26.**
+CPT is priced per call from its own expression's operator tokens
+(`cpt_expression`), and 63 of the 65 captured `cptmix_*` rows now reconcile
+at exactly 0 (the other two at −4 and −16).
+
+**CMP arithmetic operands share CPT's expression law (WIRED 2026-09-12,
+OQ-CMPCPTLAYOUT):** CMP was priced as a flat 76-byte weight plus two boolean
+surcharges (compound condition, float literal) and had no expression model at
+all, so a CMP whose operands are themselves arithmetic — `CMP(L0+L1>L2)` —
+paid nothing for the arithmetic. It now charges
+
+    cpt_expression.cost_for(arithmetic_operators) - cpt_expression.base_read
+
+on top of its own base weight. No separate CMP fit: the tier table fitted on
+CPT lands on CMP's measured residuals unchanged, which is the evidence the two
+share one law. `L0+L1>L2` went −36 → 0, `L0+L1>5` −36 → 0,
+`(L0+L1)*L2>L3-L4` −100 → 0. Comparison operators and the `&&`/`||`
+connectives are deliberately not tokenized as arithmetic — the connective is
+already priced by `cmp_surcharge.compound_cost`, and double-charging it would
+break every bare compound CMP, all of which measure exact.
+
+Two CMP residuals survive: −4 on two 2-operator shapes (shared with
+OQ-CPTARRANGE's four −4 rows, and confirmed per-rung by a −400 at n=100), and
+−52 on `L0*1.5>L1+2.5`, where `float_literal_cost` is charged once per call as
+a boolean but the shape has two float literals inside arithmetic. Closeout
+files are generated, not yet captured.
+
 All originally-excluded instructions are now resolved. SIZE, BTD, COP,
 CPS, and FLL all had the same real array-subscript bug (see below);
 all five are now fixed, re-captured, and in the table with exact fits.

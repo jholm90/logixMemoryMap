@@ -19,6 +19,84 @@ the matching footnote at the bottom, not inline.
    term from; still needs the dedicated architecture work, not more raw
    points.[^cmpcpt]
 
+   **2026-09-12: the thread above is CLOSED, and the entry's numbers were
+   stale.** All 65 captured `cptmix_*` rows were live-recomputed against the
+   current engine: **63 land at exactly 0**, and the other two at −4
+   (`scaling_grouped_n05`) and −16 (`scaling_t1t3/t2t3_alternating_n08`),
+   both inside the project's universal small-residual band. The "0.7–1.3%,
+   188–272 bytes" figure predates later wiring and no longer describes any
+   file. Every REAL-operand and float-literal probe the batch was built for
+   — `real1_float1`, `real2/real3_adjacent_float1`, `float1_pos_*`,
+   `disentangle_*`, `stacked_dint_floatliteral`, `realcheck_real` — is
+   exact. The non-monotonicity that made it look hard was the pre-refit
+   two-tier rate, and the 2026-09-04 split-by-tier refit removed it.
+
+   **WIRED 2026-09-12, a different and structural gap found by the same
+   reconciliation: CMP had no expression model at all.** CPT has been priced
+   from its own expression's operators since 2026-08-23; CMP was priced as a
+   flat weight plus two boolean surcharges (compound, float-literal). So a
+   CMP whose operands are themselves arithmetic expressions was charged as
+   though they were bare tags — `CMP(L0+L1>L2)` paid nothing for the `+`.
+   Every bare-tag and bare-literal CMP shape in the corpus measured exact;
+   every arithmetic one carried a real negative residual, and nothing
+   connected the two facts.
+
+   The fix routes CMP's arithmetic operators through **CPT's own
+   operator-tier table with no separate CMP fit** (`cost_for(operators) −
+   base_read`, since CMP keeps its own 76-byte base weight). The tiers
+   fitted on CPT land on CMP's measured residuals as they are — which is the
+   evidence that CMP and CPT share one expression law rather than that a
+   constant was tuned:
+
+   | CMP shape | was | now |
+   |---|---:|---:|
+   | `L0+L1>L2` | −36 | **+0** |
+   | `L0+L1>5` | −36 | **+0** |
+   | `(L0+L1)*L2>L3-L4` | −100 | **+0** |
+   | `L0+L1>L2+L3` | −64 | −4 |
+   | `(L0+L1)>L2&&(L3-L4)<L5` | −64 | −4 |
+   | `L0*1.5>L1+2.5` | −128 | −52 |
+
+   Comparison operators and the `&&`/`||` connectives are deliberately not
+   tokenized as arithmetic — the connective is already priced by
+   `compound_cost`, and double-charging it would break every bare compound
+   CMP, all of which measure exact. Corpus exact predictions 1,028 → 1,031.
+
+   **Two residuals survive, and 47 files were built for exactly those two**
+   (`src/sample_gen/gen_cmpcpt_expr_closeout.py`):
+
+   - **A, `cmpfl_*`** (13 files). The −52 on `L0*1.5>L1+2.5`.
+     `cmp_surcharge.float_literal_cost` (72) is charged once per call as a
+     BOOLEAN, fitted on one shape (`CMP(L0>5.5)`, no arithmetic, exact). The
+     surviving −52 says the boolean breaks once there is more than one float
+     literal or once a float sits inside an arithmetic sub-expression, and
+     one file cannot say which — nor whether the rate is per-literal (72 is
+     then wrong, since 128−76 = 52) or a float-context promotion of the
+     operator tiers. Float-literal count is swept 0..3 at fixed arithmetic
+     operator count, plus a **REAL-TAG arm** (`CMP(R0+R1>R2)`, no literal
+     anywhere) that separates "a float literal costs something" from
+     "evaluating in floating point costs something". The corpus has no data
+     on the REAL-tag case at all.
+   - **B, `cpttier_*`** (22 files). The −4 on `L0+L1-L2*L3` and
+     `(L0+L1)*(L2-L3)`, and the matching −4 on two 2-operator CMP shapes.
+     4 bytes would be noise except it scales exactly:
+     `cptcx_spotcheck_mixedops4op_n100` is 100 rungs of the first shape and
+     lands at −400. It is also not simply "mixed tiers" — every
+     `cptmix_pair_t1t2_*` file mixes tier 1 with tier 2 and measures exact.
+     Tier composition is swept at **fixed operator count** (3 and 4
+     operators, every tier split), each shape at n=1 and n=100 so a per-rung
+     term shows as −400 and a per-file offset stays at −4. The existing files
+     vary count and composition together, which is why this was never
+     separable. Shares its answer with **OQ-CPTARRANGE**, where the same
+     four −4 rows are already recorded.
+   - **C, `cptpow_*`** (12 files). `CPT(Dest,L0**L1+L2**L3)` is the only
+     shape in the corpus that OVER-predicts (+16), and `**` is the only
+     tier-3 operator (116 against tier 2's 52), so an error there costs 2–3×
+     what one costs anywhere else in the table. Two `**` in one expression is
+     untested, and `cptrdpow_k2/k3` (−848/−1648) say repeated `**` is badly
+     wrong on the REAL-destination path too. Swept 1..4 `**` operators, alone
+     and mixed with tier 1, at n=1 and n=100.
+
 3. **OQ-AOIBOOLPACK-PAIRING** — split off the now-closed OQ-AOIDEF's old
     "BOOL-array-packing-boundary" thread once its 27 already-captured
     points got reconciled. The `aoi_array` per-instance formula was tagged
