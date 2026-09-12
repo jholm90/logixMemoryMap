@@ -1621,44 +1621,59 @@ the matching footnote at the bottom, not inline.
     `cptwide_lint_k1`, `cptwide_lint_k2`, `cptwide_lint_k3`, `cptwide_lint_k4`, `cptwide_mixed_sint_lint`
 
 28. **OQ-CPTARRANGE** — does operator ARRANGEMENT change CPT cost?
-    2026-09-04. **The last real CPT unknown, and the data proves it is real
-    rather than a bad fit.**
+    **ANSWERED 2026-09-12 from the 28 captured `cptarrange_*` rows, which had
+    never been reconciled. No, with one clean exception — and reading them
+    turned up a +348 nobody had seen.**
 
-    The integer-destination two-tier mix is now priced per tier
-    (`100 + 24*t1 + 40*t2`, 19/23 exact, cross-validated against the
-    single-operator captures which put MUL/DIV exactly 16 above ADD/SUB).
-    Four points sit exactly −4 and **no linear model in (t1, t2) can reach
-    them** — the system is over-determined and inconsistent. The smoking
-    gun:
+    **Arrangement is a non-effect.** Four arms (alternating, frontloaded,
+    grouped, split) sweep operand counts 3 to 9 with the multiplications in
+    completely different places, and 26 of the 28 rows land on the IDENTICAL
+    residual. The slopes agree exactly as well: alternating n03 -> n04 steps
+    +4,000 in both prediction and actual, n04 -> n05 steps +2,400 in both. The
+    arrangement-blind expression model is right.
 
-    | file | expression | t1 | t2 | measured |
-    |---|---|---:|---:|---:|
-    | `cptmix_scaling_alternating_n05` | `L0+L1*L2+L3*L4` | 2 | 2 | **228** |
-    | `cptmix_scaling_grouped_n05` | `L0+L1+L2*L3*L4` | 2 | 2 | **232** |
+    **The one exception is a rule, not noise.** Five rows sit 400 bytes higher
+    in actual than the other 23, and they are exactly the five whose expression
+    begins with TWO additions before the first multiplication:
 
-    Identical tier counts, 4 bytes apart. Yet at 11 operators the same
-    alternating/grouped pair measures IDENTICALLY. So arrangement matters
-    at some sizes and not others, and two files cannot say which.
+        cptarrange_grouped_n03   L0+L1+L2*L3
+        cptarrange_grouped_n04   L0+L1+L2*L3*L4
+        cptarrange_split_n07     L0+L1+L2*L3*L4*L5+L6+L7
+        cptarrange_split_n08     L0+L1+L2*L3*L4*L5*L6+L7+L8
+        cptarrange_split_n09     L0+L1+L2*L3*L4*L5*L6+L7+L8+L9
 
-    Several hypotheses were tested against the data and all died: adjacent
-    same-tier operators (`grouped_n08` has three adjacent T1 and is exact),
-    maximal same-tier runs (`operatormix_nested` has a different run count
-    from `operatormix_mixedops` and the same cost), and tier-transition
-    count. Not patched with an invented rule — the miss is pinned in
-    `test_cpt_t1_t2_mix_has_four_known_unexplained_misses` so any future
-    refit claiming to explain it has to move those numbers deliberately.
+    `grouped_n05` at `L0+L1+L2+L3*L4*L5` (THREE leading additions) and
+    `split_n03` at `L0+L1*L2+L3` (ONE) are both in the majority, so the trigger
+    is the POSITION of the first multiplication -- the third operand
+    specifically -- and not "grouped" or "split" as a style. Two of the four
+    arms happen to produce that prefix at some counts and not others, which is
+    why it reads as arm-specific noise until the rung text is lined up.
 
-    `cptarrange_{alternating,grouped,frontloaded,split}_n03..09` holds the
-    tier counts fixed and varies only the order, at every operator count
-    from 3 to 9. If arrangement is real the four curves separate and the
-    pattern is readable; if the n=5 pair was a one-off they collapse and
-    the −4 belongs to something else. Blocked on capture.
+    **The +348, which is the more interesting find.** The majority residual is
+    not zero; it is **+348, identical on all 26 rows regardless of operand
+    count** -- a flat per-file over-charge, not a slope error. The neighbouring
+    `cptrd_*` families, same generator and same tag pool, sit at **+4**. Two
+    things differ and either could be the cause:
 
-    Also in the same batch and genuinely never tested: **a float literal
-    with an INTEGER destination** (`cptidflit_k1..3`). All ~97 integer-dest
-    captures have zero float literals, so the integer path has no
-    float-literal term at all and silently charges nothing — while real
-    logic writes `CPT(Dest,A*1.5+B)` against a DINT routinely.
+        cptarrange   destination Dest (DINT)   operands L0..L9 (DINT)
+        cptrd        destination R2   (REAL)   operands R*/N* (REAL/LINT)
+
+    **Test files built 2026-09-12, `gen_cpt_arrangement_closeout.py`, 21
+    files.** The engine predicts an identical total for all nine arm-A files,
+    so every captured difference there is a pure measurement.
+
+      - `cptpos_m{1..8}_n09` + `cptpos_add_n09` (9) -- nine DINT operands, every
+        operator an addition except ONE multiplication, swept across all eight
+        positions, plus an all-addition control. Operand count, tag pool,
+        destination and rung count held identical. If the rule is "first
+        multiplication at operand 3", `cptpos_m3_n09` stands alone and the other
+        seven agree. No existing file varies position with the count fixed.
+      - `cptdest_d{dint,real}o{dint,real}_n{010,100,1000}` (12) -- destination
+        type crossed with operand type crossed with RUNG count, expression held
+        at `A+B*C+D`. Read three ways: destination type, operand type, and --
+        the part neither existing family can give -- whether 348 is per FILE or
+        per RUNG, since every captured file in both families has exactly 100
+        rungs and cannot distinguish 348 once from 3.48 each.
 
 
 29. **OQ-STEXPR** — ST assignment expression cost, five shapes measured.
