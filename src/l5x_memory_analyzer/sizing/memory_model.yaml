@@ -702,6 +702,34 @@ module_overhead_by_catalog:
 # and never will be), delta +11,160, close to but not exactly matching
 # v31/v32's +11,240 -- ASSUMED confidence (single point, no independent
 # cross-check possible).
+# Standalone atomic tag data slot (KNOWN, wired 2026-09-12, OQ-SHELLCONST).
+#
+# A standalone (non-array, non-structure) atomic tag's DATA occupies a fixed
+# 4-byte slot regardless of its declared type. Six bare tag-count files, 50
+# tags each, one type per file, no logic and nothing else in them -- so the
+# residual is the tag data error and nothing else:
+#
+#   type_bool_50tag   +0      type_dint_50tag  +0     type_real_50tag  +0
+#   type_sint_50tag  -150  = -3.00/tag   (1 byte charged, 4 real)
+#   type_int_50tag   -100  = -2.00/tag   (2 charged, 4 real)
+#   type_lint_50tag  +200  = +4.00/tag   (8 charged, 4 real)
+#
+# All six fit one rule with zero residual: the slot is 4 bytes. SINT and INT are
+# padded up to it, LINT is reported in it rather than the 8 its value needs, and
+# DINT/REAL/BOOL already match.
+#
+# This is what the 69 `typesweep_*` files at exactly -5 were: their pool is 5
+# tags each of SINT/INT/DINT/LINT/REAL, so -15 -10 +0 +20 +0 = -5 exactly, on
+# every one of the 69 regardless of instruction or operand type.
+#
+# Applies ONLY to a standalone atomic tag. Arrays keep element_size x count
+# (confirmed by every array sweep in the corpus) and a structure member keeps
+# its packed size (confirmed by the UDT packing rules), so this is a per-TAG
+# slot, not a change to atomic sizes anywhere else.
+standalone_atomic_tag_slot:
+  bytes: 4
+  confidence: KNOWN
+
 # Per-PROCESSOR-FAMILY firmware correction (OQ-BASELINE-PROCFW, wired
 # 2026-09-12). firmware_baseline_delta below applies ONE ladder to every
 # processor, and the 72 active-platform fwmatrix_* captures say that cannot

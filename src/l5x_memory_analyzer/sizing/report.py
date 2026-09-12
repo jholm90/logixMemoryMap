@@ -168,6 +168,25 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         except (UnknownDataTypeError, RecursiveUdtError) as exc:
             errors.append(SizeError(path=tag.path, message=str(exc)))
             continue
+        # A STANDALONE atomic tag's data occupies a fixed 4-byte slot whatever
+        # its declared type (OQ-SHELLCONST, wired 2026-09-12). Six bare
+        # tag-count files with 50 tags each and nothing else in them give
+        # -3.00/tag on SINT, -2.00 on INT, +4.00 on LINT and exactly 0 on
+        # BOOL/DINT/REAL -- all six fitting "the slot is 4" with zero residual:
+        # SINT and INT pad up to it, LINT is reported in it rather than the 8
+        # its value needs.
+        #
+        # This is what the 69 typesweep_* files at exactly -5 were. Their pool
+        # is 5 tags each of SINT/INT/DINT/LINT/REAL: -15 -10 +0 +20 +0 = -5, on
+        # every one of them regardless of instruction or operand type.
+        #
+        # Arrays and structure members are deliberately untouched -- an array
+        # keeps element_size x count and a member keeps its packed size, both
+        # confirmed across every array and UDT sweep in the corpus -- so this is
+        # a per-TAG slot, not a change to atomic sizes anywhere else.
+        if not tag.dimensions and tag.data_type in model.atomic_types:
+            size = model.standalone_atomic_tag_slot_bytes
+            basis = weakest(basis, model.standalone_atomic_tag_slot_confidence)
         # tag_overhead is a per-Tag-entry cost additive with the tag's own
         # raw data size (RESOLVED_QUESTIONS.md OQ-TAGOVERHEAD) -- applies
         # regardless of data type, confirmed across atomic/UDT tags alike.

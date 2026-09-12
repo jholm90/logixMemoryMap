@@ -863,6 +863,8 @@ class MemoryModel:
     zero_connection_module_bytes: int
     zero_connection_module_confidence: str
     module_overhead_by_catalog: ModuleOverheadModel
+    standalone_atomic_tag_slot_bytes: int
+    standalone_atomic_tag_slot_confidence: str
     firmware_baseline_delta: FirmwareBaselineDeltaModel
     processor_firmware_correction: ProcessorFirmwareCorrectionModel
     safety_capable_baseline_delta: SafetyCapableBaselineDeltaModel
@@ -951,6 +953,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             default_bytes=module_overhead["bytes"],
             default_confidence=module_overhead["confidence"],
         ),
+        standalone_atomic_tag_slot_bytes=raw["standalone_atomic_tag_slot"]["bytes"],
+        standalone_atomic_tag_slot_confidence=raw["standalone_atomic_tag_slot"]["confidence"],
         processor_firmware_correction=ProcessorFirmwareCorrectionModel(
             by_processor_pattern=tuple(
                 (entry["pattern"], {str(k): int(v) for k, v in entry["by_major_version"].items()})

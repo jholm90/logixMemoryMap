@@ -487,6 +487,44 @@ bytes — exactly one element — off the line through 10 and 50. See
 `docs/OPEN_QUESTIONS.md` OQ-AOIARRAYLOCALTAG; `gen_aoi_arraylocaltag2.py`
 (20 files) measures all four.
 
+## Standalone atomic tag data slot (KNOWN, WIRED 2026-09-12, OQ-SHELLCONST)
+
+**A standalone (non-array, non-structure) atomic tag's DATA occupies a fixed
+4-byte slot regardless of its declared type.** Six bare tag-count files, 50 tags
+each, one type per file, no logic and nothing else in them -- so the residual is
+the tag-data error and nothing else:
+
+| file | residual | per tag | reading |
+|---|---:|---:|---|
+| `type_bool_50tag` | +0 | +0.00 | already 4 |
+| `type_dint_50tag` | +0 | +0.00 | already 4 |
+| `type_real_50tag` | +0 | +0.00 | already 4 |
+| `type_sint_50tag` | −150 | **−3.00** | 1 charged, 4 real |
+| `type_int_50tag` | −100 | **−2.00** | 2 charged, 4 real |
+| `type_lint_50tag` | +200 | **+4.00** | 8 charged, 4 real |
+
+All six fit that one rule with **zero residual**: SINT and INT are padded up to
+the slot, LINT is reported in it rather than the 8 its value needs, and
+DINT/REAL/BOOL already match.
+
+**This is what the 69 `typesweep_*` files at exactly −5 were.** Their tag pool is
+5 tags each of SINT/INT/DINT/LINT/REAL, so −15 −10 +0 +20 +0 = **−5 exactly**, on
+every one of the 69 regardless of instruction or operand type. It was also 15 of
+the 23 bytes behind the corpus's largest residual bucket: the 263 files at −23
+moved to −8, and what remains there is the non-atomic part of that family's pool
+(a DINT[20], a CONTROL, a STRING array and two STRING(82)), which
+`gen_pool_residual.py` is built to name.
+
+**Arrays and structure members are deliberately untouched.** An array keeps
+`element_size × count` and a structure member keeps its packed size -- both
+confirmed across every array and UDT sweep in the corpus -- so this is a per-TAG
+slot, not a change to atomic sizes anywhere else. A test asserts `SINT[100]`
+stays exactly 300 bytes smaller than `DINT[100]`.
+
+Corpus exact-prediction rate **36.1% → 40.0%** (1,026 of 2,563 clean generated
+captures). Real-file mean absolute error 2.1294% → 2.1290%: real programs are
+overwhelmingly DINT/REAL/BOOL and UDT tags, so almost none of this lands on them.
+
 ## Per-family firmware correction (WIRED 2026-09-12, OQ-BASELINE-PROCFW)
 
 `firmware_baseline_delta` applies ONE ladder to every processor, and the 140

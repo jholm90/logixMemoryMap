@@ -2888,3 +2888,30 @@ named OQ-BLOCKBYTE in their descriptions and were being counted against it by
 `scripts/capture_errors.py`. They are composite-scale rows -- 2 to 5% under-
 predicted with error counts that scale with file size -- and now route to
 OQ-COMPOSITESCALE, which is the question they actually bear on.
+
+
+## OQ-BASELINE-PROCFW — CLOSED for the active scope, 2026-09-12
+
+**1756-L8x at v35 is EXACT, and that is what this project runs on.** Every
+`fwmatrix_1756_L8xE` row at v31, v32, v33 and v38 predicts to the byte, and the
+v34/v35 rows carry a +16 that is NOT a baseline error -- it is a
+firmware-dependent CONTENT gap (the real MainRoutine content drops to 0 bytes on
+v34+ hardware while this engine still predicts 16), already recorded against
+whatever eventually prices that content. The baseline itself has no error on the
+platform that matters.
+
+The 5069 per-family corrections were wired the same day and took
+active-platform baseline rows from 68/140 to 118/140 exact; the 22 that remain
+are exactly the L8x content gap above.
+
+**The remaining thread is deliberately NOT being pursued, on instruction:**
+whether the per-family firmware correction stays additive once a file carries
+real content. Every captured non-L81E-v35 file is bare -- 0 of them carry
+content, against 1,255 content files on 1756-L81E v35 -- so that composition is
+verified at zero content only. Closing it would need identical content
+replicated across the cells where the correction differs, at two sizes, roughly
+22 files.
+
+Marked **very low priority, do not build those files**: production work here is
+1756-L8x on v35, where the baseline is already exact. Reopen only if a real
+program on another processor or firmware ever needs predicting.
