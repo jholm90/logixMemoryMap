@@ -42,7 +42,9 @@ from __future__ import annotations
 import argparse
 import collections
 import csv
+import hashlib
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -165,6 +167,68 @@ def _all_entry_spans() -> tuple[dict[str, str], dict[str, str]]:
     return open_spans, closed_spans
 
 
+_TIMESTAMP_ATTRS = re.compile(
+    r'(ExportDate|ProjectCreationDate|LastModifiedDate)="[^"]*"')
+
+
+def _content_hash(text: str) -> str:
+    """Hash of an L5X ignoring its export timestamps.
+
+    Regenerating a sample rewrites ExportDate/ProjectCreationDate/
+    LastModifiedDate even when nothing else moved, so a plain
+    "file changed since capture" check reports every regenerated file as
+    stale. That false positive is not harmless: it was used once to argue a
+    DTR capture was stale when the rung text had in fact changed, and the
+    same check the other way round would hide a real change behind a
+    timestamp. Compare content, never mtime.
+    """
+    return hashlib.sha256(
+        _TIMESTAMP_ATTRS.sub(r'\1=""', text).encode("utf-8", errors="replace")).hexdigest()
+
+
+def _staleness(rows: list[dict]) -> tuple[list[str], list[str]]:
+    """(captures whose file has since changed, captures whose file is gone).
+
+    A capture describes the file as it was on the day it ran. If the
+    generator has been fixed since, that row is measuring a file that no
+    longer exists and its numbers are not evidence about anything -- and the
+    error it recorded may already be fixed. Found 2026-09-12: of 144 errored
+    rows, 14 were in exactly that state, including every cptwide LINT row
+    (undeclared operand tags, fixed 2026-09-10) and every unweighted_dtr row
+    (missing terminating NOP, added 2026-09-10).
+    """
+    stale: list[str] = []
+    missing: list[str] = []
+    for r in rows:
+        captured = (r.get("date_tested") or "")[:10]
+        path = r.get("l5x_path") or ""
+        if not captured or not path:
+            continue
+        full = REPO_ROOT / path
+        if not full.exists():
+            missing.append(r["sample_id"])
+            continue
+        log = subprocess.run(["git", "log", "--format=%H %cs", "--", path],
+                             capture_output=True, text=True, cwd=REPO_ROOT).stdout
+        at_capture = None
+        for line in log.splitlines():
+            if not line.strip():
+                continue
+            commit, committed = line.split()
+            if committed <= captured:
+                at_capture = commit
+                break
+        if at_capture is None:
+            continue
+        then = subprocess.run(["git", "show", f"{at_capture}:{path}"],
+                              capture_output=True, text=True, cwd=REPO_ROOT).stdout
+        if not then:
+            continue
+        if _content_hash(then) != _content_hash(full.read_text(encoding="utf-8", errors="replace")):
+            stale.append(r["sample_id"])
+    return stale, missing
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--list", action="store_true",
@@ -189,11 +253,19 @@ def main(argv: list[str] | None = None) -> int:
                 unrouted.append((r["sample_id"], kind))
 
     no_text = [r["sample_id"] for r in errored if not (r.get("error_log") or "").strip()]
+    stale, missing = _staleness(errored)
 
     print(f"{len(errored)} row(s) captured WITH build errors")
     print(f"{len(unconverted)} committed generated file(s) with no 'ok' in convert_log.csv")
     print(f"{len(no_text)} errored row(s) carry NO error text and cannot be diagnosed "
-          f"without recapture\n")
+          f"without recapture")
+    print(f"{len(stale)} errored row(s) are STALE -- the file's content changed after the "
+          f"capture, so the fix has already landed and they only need RECAPTURE")
+    print(f"{len(missing)} errored row(s) point at a file that no longer exists\n")
+    if stale:
+        print("  stale (recapture): " + ", ".join(sorted(stale)) + "\n")
+    if missing:
+        print("  file gone: " + ", ".join(sorted(missing)) + "\n")
 
     open_spans, closed_spans = _all_entry_spans()
     failures: list[str] = []

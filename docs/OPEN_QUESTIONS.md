@@ -413,7 +413,7 @@ the matching footnote at the bottom, not inline.
    overhead.[^moduleio]
 
 
-    **CAPTURE ERRORS: 42 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    **CAPTURE ERRORS: 38 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
     12 captured WITH Studio build errors, so their `actual_bytes` is
     SUSPECT rather than wrong — part of the file may never have reached the
     controller, which inflates apparent over-prediction. None of them carries
@@ -1456,7 +1456,7 @@ the matching footnote at the bottom, not inline.
 
 
 
-    **CAPTURE ERRORS: 15 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    **CAPTURE ERRORS: 14 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
     6 captured WITH Studio build errors, so their `actual_bytes` is
     SUSPECT rather than wrong — part of the file may never have reached the
     controller, which inflates apparent over-prediction. None of them carries
@@ -1592,11 +1592,26 @@ the matching footnote at the bottom, not inline.
     structure -- a PID rung costs 156 plus whatever its control tag costs as
     data.
 
-    **DTR is deliberately not wired.** Its sweep says the real cost is 0 while
-    the model charges 16. That would be a clean correction except that all
-    three `unweighted_dtr_*` files captured WITH build errors and carry no
-    error text: if part of the file never reached the controller then "real
-    cost 0" is an artefact of the rungs being absent, not a measurement.
+    **DTR: the cause is found and the fix already landed. RECAPTURE.**
+    Corrected 2026-09-12 -- an earlier note here claimed the terminating NOP
+    "is already present and always has been", which was wrong. Reading the
+    file as it stood on its capture date:
+
+        rung THEN (captured 2026-09-08)   DTR(D0,-1,D1);
+        rung NOW  (fixed    2026-09-10)   DTR(D0,-1,D1)NOP();
+
+    DTR is a comparison: it conditions the rung instead of writing to it, so a
+    rung containing only DTR has no output and every one of them fails --
+    which is exactly the observed error_count of one per rung. The NOP was
+    added two days after the capture, so the three `unweighted_dtr_*` rows
+    measured a file that no longer exists. Their capture columns are cleared
+    and the files need nothing but recapture; the "real cost 0" reading off
+    them was an artefact of the rungs being rejected, and 16 stays wired until
+    a clean capture says otherwise.
+
+    A 7-file variant batch built to hunt this cause was deleted the same day
+    rather than shipped: it was designed against the false premise and would
+    have spent seven conversion slots re-confirming a fix already in the tree.
 
     `error_count` is EXACTLY the rung count -- 10 at n=10, 100 at n=100, 1000
     at n=1000 -- so it is one error per rung, a per-rung shape problem rather
