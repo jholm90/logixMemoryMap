@@ -216,6 +216,20 @@ projects specifically** -- the two deltas above are corrections layered on
 top of it for the firmware/catalog combinations they cover, not a
 replacement lookup table.
 
+## Unsigned atomics in module structures (fixed 2026-09-12, OQ-V3GENBUGS)
+
+`USINT` (1), `UINT` (2), `UDINT` (4) and `ULINT` (8) are standard Logix atomics
+and have always been in `atomic_types`, but `parser/modules.py` carried its own
+hardcoded table listing only the signed ones. Any module member declared with an
+unsigned type therefore fell through to `unknown_member_types`, and the module's
+`module_defined_bytes` came back as an explicit floor rather than a real total.
+Not rare: 109 committed sample files declare them, and all four appear in the
+real production corpus (25 `UINT`, 20 `USINT`, 16 `UDINT`, 9 `ULINT` member
+declarations). The parser now derives its table from this model, so a type the
+model knows is understood there automatically. `BOOL` is not in `atomic_types`
+(its cost is context-dependent) and takes the standalone 4-byte size in a module
+structure, per the convention documented at that table.
+
 ## Identifier names (FITTED, wired 2026-09-12, OQ-IDENTNAMELEN)
 
 A named object's own NAME costs bytes. One shared law, `identifier_name_length`:

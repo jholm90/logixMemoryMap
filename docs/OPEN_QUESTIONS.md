@@ -1378,6 +1378,81 @@ the matching footnote at the bottom, not inline.
     (ACD conversion still being validated as of 2026-09-02) — no sizing
     formula changes from this item, generator-correctness only.
 
+    **2026-09-12: that status was stale and the answer is bad.** Every one of
+    the 133 rows across the seven families named above is captured, and **65 of
+    them captured WITH Studio build errors**:
+
+    | family | rows | convert ok | captured | captured WITH errors |
+    |---|---:|---:|---:|---:|
+    | `composite_realistic_v3` | 50 | 50 | 50 | **49** (exactly 2 each) |
+    | `axis_scale` | 18 | 18 | 18 | **18** (n+1 single, n/2+1 dual) |
+    | `rack_5069` | 34 | 34 | 34 | 0 |
+    | `rack_pointio` | 12 | 12 | 12 | 0 |
+    | `rack_1756` | 12 | 12 | 12 | 0 |
+    | `cipmodule_scale` | 7 | 5 | 5 | 0 — **2 never attempted, files gone** |
+    | `bridge_placeholder` | 2 | 2 | 2 | 0 |
+
+    The three racks and the bridge are clean and can be used. The other two
+    cannot be used as they stand.
+
+    `axis_scale`'s signature is **one error per axis plus one** — exactly the
+    pattern CLAUDE.md cites as the reason the step-2b gate exists. It routes to
+    OQ-AXISMARGINAL, which already carries it.
+
+    **`composite_realistic_v3` is the new one, and it taints another
+    question.** 49 of 50 files carry **exactly 2** errors, constant across a
+    batch whose size spans 1.3–1.9 MB and whose programs (5–12), AOIs (5–24),
+    modules (17–34) and routines all vary widely. A count that scales with no
+    content dimension is two discrete template defects, not a per-item problem.
+    And v3 was built specifically to re-derive the composite-scale JSR/AOI
+    surcharge, so **OQ-COMPOSITESCALE's re-derivation is standing on 49 suspect
+    rows.**
+
+    Structural inference was tried and did not find it. Recorded so it is not
+    repeated:
+
+    - v3 declares four catalogs v4 does not (`1756-OA16I`, `1756-OF4/A`,
+      `1756-OF8/B`, `1794-IB16/A`). **All four, plus `1794-ACN15/C` and
+      `1756-CNB/D`, have their own standalone `modulesweep_*` capture at zero
+      errors.** No single catalog is the offender.
+    - Nameless `<Module>` elements are not it: v3_12 has 3 and errors,
+      v4_013 has 8 and is clean. They are legitimate drive-peripheral and
+      POINT I/O sub-modules, so the earlier decision to teach lint to tolerate
+      them was right.
+    - The one clean file, `composite_realistic_v3_13`, is not structurally
+      special — 11 programs, 18 AOIs, 48 modules, 4 axes, mid-range for the
+      batch. Its immediate neighbours v3_12 and v3_14 both error.
+    - **v4 is clean**: 31 captured rows, 0 errors, from a successor generator
+      whose files are bigger (97 modules, 14 axes against v3's 48 and 4). So
+      the defect is specific to the v3 template, not to composite files.
+
+    **8 files built to name the subsystem by measurement**
+    (`src/sample_gen/gen_v3_error_ablation.py`): profile 12 — a known 2-error
+    profile — with one subsystem removed per file (`v3abl_control`, `noaoi`,
+    `minudt`, `nomodules`, `noprograms`, `norungs`, `nostrings`, `minarrays`).
+    The arm that drops to zero errors names it. Every arm lands within 2 bytes
+    of the same 1.75 MB total because the generator pads to a target size, so
+    project size cannot be the confound — only the removed subsystem varies.
+    The control must reproduce the 2 errors or the v3 template has moved since
+    those captures and the whole batch needs recapturing before anything else
+    is concluded from it. If every arm still shows 2, the defect is in the
+    fixed scaffolding no ablation touches — the motion block, MainProgram, or
+    controller header — and the next step is **the raw Studio 5000 error-log
+    line** for one v3 file rather than more inference.
+
+    **A real sizing bug found while building that batch and FIXED.**
+    `parser/modules.py`'s `_ATOMIC_BYTES` was a hardcoded literal listing only
+    the SIGNED atomics, so every module member declared `USINT` / `UINT` /
+    `UDINT` / `ULINT` fell through to `unknown_member_types` and the module's
+    size came back as an explicit floor instead of a real total — two modules
+    in the v3 template (`AL1122`, `AL1222`) have 25 such members each. All four
+    types are standard Logix atomics already present in `memory_model.yaml`'s
+    `atomic_types`, and they are not rare: **109 committed sample files declare
+    them, and all four appear in the real production corpus** (25 `UINT`, 20
+    `USINT`, 16 `UDINT`, 9 `ULINT` member declarations). The table now derives
+    from the model, so this cannot recur for a type the model already knows —
+    which is what CLAUDE.md's no-hardcoded-sizes rule exists to prevent.
+
 16. **OQ-JSRSCALE / OQ-COMPOSITESCALE** — the composite AOI/JSR surcharge.
     **REFITTED ON REAL PROGRAMS 2026-09-04. Was the project's #1 error
     source; is now its largest remaining one, but 5x smaller.**

@@ -41,6 +41,9 @@ connection count/module family.
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
+from functools import lru_cache
+
+from l5x_memory_analyzer.sizing.constants import load_memory_model
 from dataclasses import dataclass, field
 
 # Same atomic-size convention as sizing/udt.py's compute_udt_size -- a
@@ -49,7 +52,25 @@ from dataclasses import dataclass, field
 # 2026-08-27: a module's BOOL members show up as plain DataType="BOOL",
 # same as an AOI's Parameters/LocalTags, not a UDT's hidden-SINT/BIT-alias
 # shape) -- so BOOL sizes as the standalone/unpacked 4 bytes, not packed.
-_ATOMIC_BYTES = {"SINT": 1, "INT": 2, "DINT": 4, "LINT": 8, "REAL": 4, "BOOL": 4}
+#
+# 2026-09-12: the sizes are no longer written out here. This table was a
+# hardcoded literal, which CLAUDE.md forbids for exactly the reason that bit
+# this: it listed only the SIGNED atomics, so every module member declared
+# USINT / UINT / UDINT / ULINT fell through to unknown_member_types and the
+# module's size came back as an explicit floor rather than a real total. Those
+# four are standard Logix atomics, they are already in memory_model.yaml's
+# atomic_types, and they are not rare -- 109 committed sample files declare
+# them, and all four appear in the real production corpus (25 UINT, 20 USINT,
+# 16 UDINT, 9 ULINT member declarations). The table now derives from the model,
+# so a type added to memory_model.yaml is understood here automatically.
+@lru_cache(maxsize=1)
+def _atomic_bytes() -> dict[str, int]:
+    model = load_memory_model()
+    sizes = {name: atomic.bytes for name, atomic in model.atomic_types.items()}
+    # BOOL is not in atomic_types (its cost depends on context) and takes the
+    # standalone/unpacked size here, per the convention described above.
+    sizes["BOOL"] = model.bool.standalone_tag_bytes
+    return sizes
 
 # 2026-08-30: I thought we were excluding controlnet / "And all
 # legacy networks" -- a bridge module onto a pre-EtherNet/IP network
@@ -179,13 +200,13 @@ def _structure_size(structure_el: ET.Element | None) -> tuple[int, list[str]]:
     for child in structure_el:
         dtype = child.get("DataType")
         if child.tag == "DataValueMember":
-            size = _ATOMIC_BYTES.get(dtype)
+            size = _atomic_bytes().get(dtype)
             if size is None:
                 unknown.append(dtype or "?")
                 continue
             total += size
         elif child.tag == "ArrayMember":
-            size = _ATOMIC_BYTES.get(dtype)
+            size = _atomic_bytes().get(dtype)
             dims = int(child.get("Dimensions", "0"))
             if size is None:
                 unknown.append(f"{dtype}[{dims}]")
