@@ -569,6 +569,35 @@ class LogicInstructionModel:
 
 
 @dataclass(frozen=True)
+class ProcessorFirmwareCorrectionModel:
+    """Per-processor-family firmware correction on top of the single global
+    firmware ladder (OQ-BASELINE-PROCFW, 2026-09-12).
+
+    The 72 active-platform `fwmatrix_*` captures each hold one processor at one
+    firmware with NO content, so their residual is the baseline error by
+    definition. Read that way, each processor's residual is constant within a
+    firmware band and the bands differ by family -- which one global ladder
+    cannot express, and which is why 72 files sat at -48/-32/-8/+8/+16.
+
+    Patterns are tried IN ORDER and the first match wins. That ordering is
+    load-bearing rather than cosmetic: "5069-L3100ERM" also starts with
+    "5069-L310", so the L3100 pattern has to precede the L306/L310/L320 one or
+    it is silently swallowed."""
+    by_processor_pattern: tuple[tuple[str, dict[str, int]], ...]
+    confidence: str
+
+    def correction_for(self, processor_type: str | None,
+                       software_revision: str | None) -> tuple[int, str]:
+        if not processor_type or not software_revision:
+            return 0, self.confidence
+        major = software_revision.split(".")[0]
+        for pattern, by_major in self.by_processor_pattern:
+            if re.search(pattern, processor_type):
+                return by_major.get(major, 0), self.confidence
+        return 0, self.confidence
+
+
+@dataclass(frozen=True)
 class FirmwareBaselineDeltaModel:
     """Real per-firmware-major-version delta over the confirmed v34/v35
     baseline (OQ-BASELINE-PROCFW, wired 2026-08-29) -- see memory_model.yaml
@@ -835,6 +864,7 @@ class MemoryModel:
     zero_connection_module_confidence: str
     module_overhead_by_catalog: ModuleOverheadModel
     firmware_baseline_delta: FirmwareBaselineDeltaModel
+    processor_firmware_correction: ProcessorFirmwareCorrectionModel
     safety_capable_baseline_delta: SafetyCapableBaselineDeltaModel
     catalog_baseline_delta: CatalogBaselineDeltaModel
     platform_firmware_correction: PlatformFirmwareCorrectionModel
@@ -920,6 +950,13 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             },
             default_bytes=module_overhead["bytes"],
             default_confidence=module_overhead["confidence"],
+        ),
+        processor_firmware_correction=ProcessorFirmwareCorrectionModel(
+            by_processor_pattern=tuple(
+                (entry["pattern"], {str(k): int(v) for k, v in entry["by_major_version"].items()})
+                for entry in raw["processor_firmware_correction"]["by_processor_pattern"]
+            ),
+            confidence=raw["processor_firmware_correction"]["confidence"],
         ),
         firmware_baseline_delta=FirmwareBaselineDeltaModel(
             by_major_version={

@@ -487,6 +487,44 @@ bytes — exactly one element — off the line through 10 and 50. See
 `docs/OPEN_QUESTIONS.md` OQ-AOIARRAYLOCALTAG; `gen_aoi_arraylocaltag2.py`
 (20 files) measures all four.
 
+## Per-family firmware correction (WIRED 2026-09-12, OQ-BASELINE-PROCFW)
+
+`firmware_baseline_delta` applies ONE ladder to every processor, and the 140
+active-platform `fwmatrix_*` captures say that cannot work: each processor's
+residual is constant within a firmware band and the bands differ by family. On a
+bare-baseline file -- one processor, one firmware, no content at all -- the
+residual IS the baseline error by definition, so this is reading a lookup table
+off its own measurement rather than fitting free parameters. Every value is a
+multiple of 8, with 4 to 9 identical captures behind each cell.
+
+| family | v31/32/33 | v34/35 | v38 |
+|---|---:|---:|---:|
+| 5069 L306 / L310 / L320 | +48 | +32 | +32 |
+| 5069 L330 / L340 | +8 | −8 | +8 |
+| 5069 L3100 | +8 | −8 | +32 |
+
+Pattern order is load-bearing: `5069-L3100ERM` also starts with `5069-L310`, so
+the L3100 row must precede the L306/L310/L320 row or it is silently swallowed.
+A test asserts that specific ordering.
+
+**No 1756-L8x rows, deliberately, and this is the important part.** The L8x
+fwmatrix rows do sit at +16 on v34/v35 (and the ES rows at v38 too), and
+correcting them here as a baseline error is WRONG. Every generated test file in
+this project is a 1756-L81E at v35, so a −16 baseline correction moved **787
+previously-exact captures to −16 and dropped the corpus exact-prediction rate
+from 32.9% to 6.6%**. That was caught by re-running the residual census
+immediately after wiring, which is the only reason it did not ship. The L8x +16
+is already diagnosed and is not a baseline term: it is a firmware-dependent
+CONTENT gap -- the real MainRoutine content drops to 0 bytes on v34+ hardware
+while this engine still predicts 16 -- and it belongs to whatever eventually
+prices that content.
+
+Result: active-platform `fwmatrix_*` rows exact **68/140 → 118/140**, with the
+22 that remain being exactly the L8x +16 content gap. Corpus exact-prediction
+rate **32.9% → 36.1%**. Real-file mean absolute error is unchanged at 2.1294%:
+the corrections are 8 to 32 bytes on files of 1 to 7 MB, so roughly 0.0005% --
+correct, and not a headline.
+
 ## Module / I/O tag sizing
 
 **THE FILE IS THE FINAL DECISION ON MODULE SIZING (rule, 2026-09-12).** A

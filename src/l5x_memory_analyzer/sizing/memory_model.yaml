@@ -702,6 +702,54 @@ module_overhead_by_catalog:
 # and never will be), delta +11,160, close to but not exactly matching
 # v31/v32's +11,240 -- ASSUMED confidence (single point, no independent
 # cross-check possible).
+# Per-PROCESSOR-FAMILY firmware correction (OQ-BASELINE-PROCFW, wired
+# 2026-09-12). firmware_baseline_delta below applies ONE ladder to every
+# processor, and the 72 active-platform fwmatrix_* captures say that cannot
+# work: each processor's residual is CONSTANT within a firmware band and the
+# bands differ by family. Every value is a multiple of 8, and every one is read
+# off a bare-baseline file -- one per (processor, firmware) with no content at
+# all -- so the residual IS the baseline error by definition rather than a fit
+# with free parameters.
+#
+# Residuals measured (prediction minus actual; the correction below is the
+# negation), dead architecture excluded per the platform-scope rule:
+#
+#   1756-L8xE     v31/32/33  0    v34/35 +16   v38   0
+#   1756-L8xES    v31/32/33  0    v34/35 +16   v38 +16
+#   1756-L9xTS    v38 0 (the only rev that exists for it)
+#   5069 L306/L310/L320   v31/32/33 -48   v34/35/38 -32
+#   5069 L330/L340        v31/32/33  -8   v34/35 +8   v38  -8
+#   5069 L3100            v31/32/33  -8   v34/35 +8   v38 -32
+#
+# 4 to 9 identical captures behind each cell. Patterns are tried IN ORDER and
+# the first match wins, which is load-bearing: "5069-L3100ERM" also starts with
+# "5069-L310", so the L3100 row must precede the L306/L310/L320 row or it is
+# silently swallowed by it.
+processor_firmware_correction:
+  by_processor_pattern:
+    - pattern: '^5069-L3100'
+      by_major_version: { "31": 8, "32": 8, "33": 8, "34": -8, "35": -8, "38": 32 }
+    - pattern: '^5069-L3(30|40)'
+      by_major_version: { "31": 8, "32": 8, "33": 8, "34": -8, "35": -8, "38": 8 }
+    - pattern: '^5069-L3(06|10|20)'
+      by_major_version: { "31": 48, "32": 48, "33": 48, "34": 32, "35": 32, "38": 32 }
+  # NO 1756-L8x ROWS, deliberately, and this is the important part of the
+  # entry. The L8x fwmatrix rows do sit at +16 on v34/v35 (and the ES rows at
+  # v38 too), and correcting them here as a baseline error is WRONG: every
+  # generated test file in this project is a 1756-L81E at v35, so a -16 baseline
+  # correction moved 787 previously-EXACT captures to -16 and dropped the
+  # corpus's exact-prediction rate from 32.9% to 6.6%. Caught by re-running the
+  # residual census immediately after wiring, which is the only reason it did
+  # not ship.
+  #
+  # The L8x +16 is already diagnosed and it is not a baseline term: it is a
+  # firmware-dependent CONTENT gap, recorded in constants.py's
+  # safety_task_program_shell comment -- the real MainRoutine content drops to 0
+  # bytes on v34+ hardware while this engine still predicts 16. It belongs to
+  # whatever eventually prices that content, not here. The 5069 rows below are
+  # genuine per-family baseline offsets and do not touch the L81E corpus.
+  confidence: FITTED
+
 firmware_baseline_delta:
   by_major_version:
     "30": { bytes: 11160, confidence: ASSUMED }

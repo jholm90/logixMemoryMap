@@ -839,6 +839,22 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             "firmware_baseline_delta", "project_baseline", f"FW_V{fw_major}_BASELINE",
             fw_bytes, fw_basis,
         ))
+    # Per-family firmware correction on top of the global ladder above
+    # (OQ-BASELINE-PROCFW, 2026-09-12). One ladder cannot fit every family:
+    # each processor's fwmatrix residual is constant within a firmware band and
+    # the bands differ by family, which left 72 bare-baseline captures sitting
+    # at -48/-32/-8/+8/+16 -- and on a content-free file the residual IS the
+    # baseline error.
+    pfc_bytes, pfc_basis = (
+        model.processor_firmware_correction.correction_for(processor_type, software_revision)
+        if scope.is_whole_controller else (0, "")
+    )
+    if pfc_bytes:
+        baseline_delta_entries.append((
+            "processor_firmware_correction", "project_baseline",
+            f"{processor_type}_V{software_revision.split('.')[0]}_CORRECTION",
+            pfc_bytes, pfc_basis,
+        ))
     if scope.is_whole_controller and model.safety_capable_baseline_delta.applies_to(processor_type):
         baseline_delta_entries.append((
             "safety_capable_baseline_delta", "project_baseline", "SAFETY_CAPABLE_BASELINE",
