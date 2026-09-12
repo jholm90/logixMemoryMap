@@ -33,9 +33,12 @@ def test_errored_rows_are_only_those_with_a_nonzero_count() -> None:
 
 
 def test_description_names_the_owning_question() -> None:
+    """Uses a question with no alias entry: OQ-BLOCKBYTE was the original
+    example here and stopped working the day it closed and gained one, which is
+    the alias mechanism doing its job rather than a regression."""
     ce = _module()
-    row = {"sample_id": "zzz_not_in_owner_map", "description": "see OQ-BLOCKBYTE", "notes": ""}
-    assert ce._owning_questions(row) == ["OQ-BLOCKBYTE"]
+    row = {"sample_id": "zzz_not_in_owner_map", "description": "see OQ-JSRFOLD", "notes": ""}
+    assert ce._owning_questions(row) == ["OQ-JSRFOLD"]
 
 
 def test_owner_map_prefix_beats_the_description() -> None:
