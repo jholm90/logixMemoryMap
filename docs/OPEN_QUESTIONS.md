@@ -1513,7 +1513,33 @@ the matching footnote at the bottom, not inline.
     three `unweighted_dtr_*` files captured WITH build errors and carry no
     error text: if part of the file never reached the controller then "real
     cost 0" is an artefact of the rungs being absent, not a measurement.
-    Recapture first.
+
+    `error_count` is EXACTLY the rung count -- 10 at n=10, 100 at n=100, 1000
+    at n=1000 -- so it is one error per rung, a per-rung shape problem rather
+    than anything file-level. DTR is a comparison and conditions the rung
+    instead of writing to it, so it needs a terminating output; that is
+    already present and always has been (`DTR(D0,-1,D1)NOP();`), so a missing
+    terminator is NOT the cause and adding one changes nothing. Three
+    differences from the ONE real DTR call site in the corpus
+    (`Sorter1_20260722r00.L5X`,
+    `DTR(...)OTE(THGHeartbeatPulse)TON(THGHeartbeatTmr,?,?)`) are each
+    candidates, and `gen_dtr_variants.py` (7 files) separates them:
+
+      - `dtrnop_n{010,100}` — the committed shape unchanged, the control that
+        reproduces the error rather than assuming it.
+      - `dtrote_n{010,100}` — OTE terminator instead of NOP, Reference still
+        shared. Isolates whether NOP is simply not acceptable after DTR.
+      - `dtruniq_n{010,100}` — OTE plus its OWN Reference element per rung.
+        DTR's third operand is its stored previous-scan value, not a plain
+        destination, so n rungs sharing one may be the same class of error as
+        two OTEs driving one bit. Leading suspect, because the error count
+        tracks the rung count exactly.
+      - `dtrreal_n010` — the real rung transplanted whole, TON and all. If even
+        this errors, the rung is not the problem and the tag pool or file shell
+        is implicated.
+
+    Two counts on the three main arms, so whichever builds clean also yields
+    DTR's per-rung weight in the same round instead of needing a second.
 
     **ESTOP / ROUT / LC / RIN: OUT OF SCOPE (Safety), not unpriced.** All four
     appear only inside a GuardLogix SafetyProgram, which this project does not
