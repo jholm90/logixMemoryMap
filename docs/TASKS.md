@@ -379,3 +379,38 @@ currently-loaded file's report.
     expression. Shapes outside the table fall back to the CPT model AND
     are reported as a coverage gap rather than passing silently. See
     OQ-STEXPR.
+
+## Capture roster, current as of 2026-09-12
+
+Counted from `samples/manifest.csv` rather than carried forward, because the
+previous entry said "149 pending files" and named six families when the real
+number was already several times that.
+
+- **678 committed files have no capture at all**, across 149 distinct sweep
+  families. Biggest: `dscale_*` 39, `aoialgn_bc*` 36, `aoimix_*` 34, `udtmn_*`
+  23, `modulesweep_*` 22, `cpttier_*` 22, `aoialgn_un_*` 21, `stx_ops_*` 20,
+  `asmclose_*` 17, `platform_plateql_*` 15.
+- **226 of those were built on 2026-09-12** and every one answers a question
+  that is open right now: `aoialgn_*` 71 (AOI instance-array alignment
+  closeout), `aoimix_*` 34, `ntag_*` 25 (zero-operand instruction density),
+  `identnamelen_*` 24, `cpttier_*` 22, `aoishape_*` 17 (which AOI rung shape
+  Studio rejects), `cmpfl_*` 13, `cptpow_*` 12, `v3abl_*` 8 (which v3 subsystem
+  errors).
+- **79 manifest rows point at a file that no longer exists.** Their
+  `actual_bytes` cannot be checked against anything and must not be used; 25 of
+  those rows also carry build errors. `scripts/capture_errors.py` lists them.
+
+**Priority order for the next capture run**, given OQ-REALUNDER now dominates:
+
+1. `aoishape_*` (17) — identifies the rung shape that corrupted
+   OQ-AOIINTERNALLOGIC's calibration. That calibration is a leading candidate
+   for the real-file under-prediction, so this gates a real fix.
+2. `v3abl_*` (8) — identifies the v3 template defect, which taints
+   OQ-COMPOSITESCALE's surcharge re-derivation.
+3. `modmarg_*` (9+) — discriminates per-rack from per-project for the module
+   repeat discount, the one measured-but-unapplied constant.
+4. `aoialgn_*` (71) and the rest.
+
+Recapture, separately from the above: the 5 stale `aoi_logic_scale_*` /
+`aoi_multiroutine_*` rows, and the ~130 errored rows that carry no error text
+(every one captured before the error-log reader started working 2026-09-10).
