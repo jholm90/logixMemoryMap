@@ -1206,6 +1206,26 @@ aoi_array:
   flat_discount: 4
   bool_word_size: 32
   bool_word_extra: 4
+  # The WHOLE instance-array block is padded up to an 8-byte boundary --
+  # derived 2026-09-12, OQ-AOIBOOLPACK-PAIRING. This single constant is what
+  # the "odd-length arrays cost 4 bytes more" family of residuals actually
+  # was. It is NOT per-instance alignment: per-instance padding would make
+  # the residual grow linearly with instance count, and it does not -- every
+  # affected family is flat in n and splits purely on parity.
+  #
+  # 48 of 48 captured aoibp_*/aoipack_* sweep families agree, with zero
+  # exceptions: a family shows the +4 odd-length term exactly when its
+  # per-instance size is congruent to 4 mod 8, and shows nothing when the
+  # per-instance size is already 8-aligned. Per-instance sizes covered run
+  # 4, 8, 12, 20, 24, 32, 40, 44, 48, 64, 76, 84, 104, 120, 124, 220, 244.
+  # That is what killed the earlier "pure BOOL pairs, mixed BOOL+atomic does
+  # not" reading of the same rows: composition was never the variable, the
+  # per-instance size mod 8 was, and BOOL/atomic mix only moved it.
+  #
+  # Same mechanism and same constant as predefined_array_structures' element
+  # block padding (CAM's 12-byte element), which is the cross-check: two
+  # independent array families, one 8-byte block alignment.
+  block_alignment_bytes: 8
   confidence: FITTED
 
 # AOI *definition* cost (the AOI's own Parameters/LocalTags declaration,

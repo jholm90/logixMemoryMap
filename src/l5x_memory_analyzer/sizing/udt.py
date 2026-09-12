@@ -134,7 +134,13 @@ def compute_array_size(
             words = -(-bool_count // word_size)  # ceil
             per_instance -= bool_count * 4
             per_instance += model.aoi_array.bool_word_extra * max(0, words - 1)
-        return per_instance * element_count, weakest(element_confidence, model.aoi_array.confidence)
+        # The whole block is padded up to an 8-byte boundary, not each
+        # instance -- see memory_model.yaml aoi_array.block_alignment_bytes
+        # (OQ-AOIBOOLPACK-PAIRING, 48/48 captured sweep families).
+        align = model.aoi_array.block_alignment_bytes
+        block = per_instance * element_count
+        block = -(-block // align) * align
+        return block, weakest(element_confidence, model.aoi_array.confidence)
     if data_type in data_types:
         # Array-of-UDT: each element rounds up to a 4-byte boundary --
         # confirmed 2026-08-24 (OQ-ARRAYPACK/OQ-UDTARRAYALIGN resolved,

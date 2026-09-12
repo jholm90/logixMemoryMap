@@ -440,6 +440,33 @@ across bool_count. See `docs/OPEN_QUESTIONS.md` OQ-AOIBOOLPACK-PAIRING for
 the full data table; new test files generated (`gen_aoi_boolpack_pairing.py`)
 but not yet captured.
 
+**Array-of-AOI-instances block alignment (WIRED 2026-09-12,
+OQ-AOIBOOLPACK-PAIRING):** the "odd-length array costs 4 bytes more" term
+above is one constant — the WHOLE instance-array block is padded up to an
+8-byte boundary (`aoi_array.block_alignment_bytes`):
+
+    array_bytes = 8 * ceil(n * per_instance / 8)
+
+so the extra 4 bytes appear exactly when `per_instance ≡ 4 (mod 8)` and
+never otherwise. 48 of 48 captured sweep families agree with zero
+exceptions, over per-instance sizes of 4, 8, 12, 20, 24, 32, 40, 44, 48,
+64, 76, 84, 104, 120, 124, 220 and 244 bytes. It is NOT per-instance
+padding: that would make the residual grow with instance count, and the
+real data is flat in n. Same mechanism and same 8-byte constant as
+`predefined_array_structures`' element-block padding (CAM's 12-byte
+element), which is the independent cross-check.
+
+The earlier reading — that BOOL/atomic composition switched the term on and
+off — was wrong. Composition only moved the per-instance size; the residue
+mod 8 was doing all the work. 49 of the 52 captured families are now flat
+in instance count (was 37), and what remains is a per-family CONSTANT
+(−38..+180) that five `def_only`-controlled pairs place on the AOI
+DEFINITION, not the array — see the `aoi_definition` mixed-type rate above.
+Confidence stays FITTED: the rule is exact on every family that can test
+it, but three families still vary with instance count (`bc31`, `bc32`, and
+`nonatomic_sint_20b10a`) and the closeout files for those are generated,
+not yet captured.
+
 **AOI internal Logic-routine content (WIRED 2026-08-31, OQ-AOIINTERNALLOGIC):**
 an AOI's own internal RLL routine(s) — separate from its Parameters/
 LocalTags declaration cost above — were priced at $0 until 2026-08-31.
