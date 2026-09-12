@@ -1434,6 +1434,49 @@ the matching footnote at the bottom, not inline.
     reading above.
 
 
+    **THE -23, LOCALISED 2026-09-12 -- and it is a TAG constant, not a shell or
+    logic one.** A residual census over every clean generated capture: of 2,563
+    files, 844 (32.9%) predict EXACTLY right and **263 (10.3%) sit at exactly
+    -23**, by far the largest non-zero bucket. 23 is an odd number, which a
+    memory allocation essentially never is.
+
+    Narrowed in three steps:
+
+      - 258 of the 263 contain real ladder rungs, so it looked like a logic
+        term. It is not: the -23 is identical at 1 rung and at 27,267
+        (`instr_*_n00010` and `randommix_00_n00609rungs` alike), so nothing
+        about it scales with logic.
+      - "Any file with logic" does not fit either -- among real-rung files 25.6%
+        are at -23 and 20.2% are at exactly 0.
+      - What separates the two groups is the **tag pool**. Every -23 family
+        (`instr_*` 234 files, `shellscale_*`, `randommix_*`, `lbljmp_*`) shares
+        one pool: 4 DINT, 6 REAL, 3 BOOL, a DINT[20], a CONTROL, a 2-element
+        STRING array and two STRING(82). Every real-rung family at exactly 0
+        (`cmpcpt_*`, `cptmix_*`) uses only DINTs, REALs and BOOLs.
+
+    So this is a tag-sizing error. Two consequences: the instruction weights
+    fitted from those 263 files are UNAFFECTED, because a constant pool cancels
+    in every difference between counts -- but every absolute prediction carrying
+    that pool is 23 bytes low.
+
+    Already ruled out: the string shapes are exact. All 8 `customstring_*` files
+    and every `stringarray_*` file (built-in and custom, n=1 to 100) predict to
+    the byte. That leaves the **CONTROL** tag -- the only pool member with no
+    isolation probe anywhere in the corpus -- and the DINT[20] array.
+
+    **Test files built 2026-09-12, `gen_pool_residual.py`, 9 files.** Each pool
+    member alone with no logic (`pool23_{dint04,real06,bool03,arr20,control,`
+    `strarr02,str82x2}`), the whole pool with no logic (`pool23_full`), and the
+    whole pool plus 10 XIC/OTE rungs (`pool23_full_rungs`). Differencing the
+    seven single-shape files against `pool23_full` says which member carries the
+    23; `pool23_full` against `pool23_full_rungs` pins it as pool-borne rather
+    than logic-borne, since the two must read the same residual.
+
+    Checked before shipping: the engine is internally additive here -- the seven
+    parts sum to `pool23_full` net of the empty-project baseline with a
+    difference of exactly 0 -- so the 23 is one of the seven constants being
+    wrong, not an additivity failure, and each file measures one constant.
+
 25. **OQ-VERIFINSTR** — instruction weights measured but never wired, and
     the classification of what is left. **Ten wired 2026-09-12; four
     reclassified out of scope; one left alone on purpose; one still open.**
