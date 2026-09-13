@@ -13,7 +13,7 @@ project's ±8 universal-residual band.
 | 1 | `aoialgn_*` | 71 | 71 | 0 | OQ-AOIBOOLPACK-PAIRING | **CLOSED — 2 laws wired** |
 | 2 | `aoilt_*` | 54 | 54 | 0 | OQ-AOIDEFITEMIZE | **CLOSED — 54/54 clean** |
 | 3 | `dscale2_*` | 39 | 39 | 0 | OQ-DEFSCALE | **CLOSED — 5 laws wired, biggest find of the project** |
-| 4 | `aoimix_*` | 34 | 34 | 0 | OQ-AOIBOOLPACK-PAIRING | pending |
+| 4 | `aoimix_*` | 34 | 34 | 0 | OQ-AOIBOOLPACK-PAIRING | **CLOSED — AOI definition cost re-derived from scratch** |
 | 5 | `addit_*` | 33 | 33 | 0 | OQ-COMPOSITESCALE | pending |
 | 6 | `stx_*` | 30 | 30 | 0 | OQ-STEXPR | pending |
 | 7 | `genem_*` | 27 | 24 | 0 | OQ-MODULESTRUCTURAL | pending |
@@ -259,3 +259,77 @@ no file that varies the containing routine while holding calls fixed.
 Corpus exact fell 1,150 -> 1,123. Expected: five corrections landed at once and
 rows that were previously exact by cancellation lose it. The held-out real set
 is the metric that counts, and it improved by a third.
+
+
+## Segment 4 — `aoimix_*`, OQ-AOIBOOLPACK-PAIRING: CLOSED
+
+34 files, all captured, zero build errors. The grid's own question closed on the
+array side, and the residual it was kept for turned into the largest single
+model correction of the batch.
+
+**The array side: 17 of 17 mixes, zero exceptions.** Every grid point was built
+at an even AND an odd array length, and the even and odd deltas are IDENTICAL at
+all 17 points. That reads the per-instance law directly at each mix instead of
+inheriting it from a neighbour:
+
+    per_instance = align8(4 * atomic_count + 4 * ceil((bool_count + 2) / 32))
+
+confirmed at per-instance sizes from 8 to 136 bytes, including two points past
+the second packed-word boundary (`t32_b32`, `t64_b32`) and one past the third
+(`t64_b64`). The premise this grid was built for -- "a two-variable surface in
+(bool_count, atomic_count), sampled far too sparsely" -- is dead for the reason
+segment 1 found: BOOL/atomic mix only ever moved the per-instance size.
+OQ-AOIBOOLPACK-PAIRING is closed and moved to `docs/RESOLVED_QUESTIONS.md`.
+
+**The definition side: four fitted terms replaced by one itemised form.** The
+grid held the member total constant while sweeping the BOOL fraction, which is
+the axis the definition-cost model handled worst. Its residual ran -105 to +69
+across the 34 rows. Differencing the t32 series against the engine's own
+definition component gave
+
+    true_definition = 1163
+                    + 12 per declared member
+                    + that member's OWN data bytes
+                    + 24 per 32-bit word the declared BOOLs occupy, counting
+                      EnableIn/EnableOut as two further bits
+                    + the members' names, pooled with one byte per name and
+                      rounded up to 8
+                    + name_length_bytes(the AOI's own type name)
+
+then checked against a purpose-built instrument: **124 captured def-only files**
+-- an AOI definition with no instance tag anywhere and no internal rungs, so the
+definition is the only AOI cost in the file -- spanning 1 to 128 declared
+members, six atomic types, BOOL fractions 0 to 100%, and Input, Output and
+LocalTag usages. **70 land exactly, 122 of 124 within ±8, worst 11.**
+
+This supersedes `per_declared_item`, `per_type_rate`, the linear member-name
+rate and the whole `aoi_member_type_extra` table. Each of those fitted its own
+sweep exactly and was still the wrong shape, and the itemised form says what
+each was really measuring -- see OQ-AOIDEFSHAPE and `memory_model.yaml
+aoi_definition`. The mixed-versus-single-type split went with them: per-type
+rates "did not compose additively once BOOL sat alongside another type" because
+the name-pool error was showing up as a composition effect.
+
+Measured effect, live-recomputed over every valid capture:
+
+| | before | after |
+|---|---:|---:|
+| corpus rows landing exactly | 1,120 | **1,198** |
+| corpus rows inside ±8 | 1,690 | **1,907** |
+| `aoi_array_packing` within 1% | 35 of 283 inside ±8 | **283/283** |
+| `aoi` within 1% | 115 of 160 inside ±8 | **160/160** |
+| `axis` / `driveaxis` / `aoi_reqvis` within 1% | 23/61, 1/15, 3/9 | **61/61, 15/15, 9/9** |
+| real programs, mean abs error | 2.16% | **2.13%** |
+| `griffin_stackerline` | 394 bytes out | **94 bytes out** |
+
+The real-file residual also went one-sided: 14 of 16 now under-predict, where it
+used to be split between over and under. That is the shape OQ-REALUNDER's
+category differencing can attack; a two-sided residual could not be.
+
+**What is left is one 8-byte term**, exactly 0 on 70 instrument files and
+exactly +8 on 35, confounded three ways between the type-name bucket boundary,
+a fixed offset inside the name pool, and member order. Filed as
+**OQ-AOIDEFSHAPE** with 54 files built to break the confound
+(`gen_aoidefshape_closeout.py`) -- not fitted, because fitting a three-variable
+confound is how this cost acquired four separate terms in the first place.
+

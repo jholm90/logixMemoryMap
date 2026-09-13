@@ -1336,143 +1336,137 @@ aoi_array:
   array_tag_flat_bytes: 4
   confidence: FITTED
 
-# AOI *definition* cost (the AOI's own Parameters/LocalTags declaration,
-# separate from any tag that instantiates it) -- OQ-AOIDEF, wired 2026-08-26
-# after the "fix this" push on Phase 2/2b's UI drill-down items. Real
-# data: the local-tag-count sweep (localcount_n01/02/04/08/16/32_def_only)
-# and the param-count sweep (paramcount_n01/02/04/08/16/32_def_only) each
-# landed on the IDENTICAL formula independently -- base+20*n, exact at
-# n=4/8/16/32 (n=1/2 sit a few blocks under, same small-N noise pattern
-# documented elsewhere in this project) -- strong agreement across two
-# independent axes for a single flat per-declared-item rate. base=1184
-# is relative to this engine's existing empty_project_baseline+fixed_base_
-# per_routine floor (18128 in both sweeps' own real Capacity readings).
-# declared_item_count = every Input/Output Parameter (InOut excluded, same
-# reference-not-storage convention as udt.py's own AOI-array member count)
-# plus every LocalTag, EXCLUDING the always-present EnableIn/EnableOut.
+# AOI *definition* cost -- the AOI's own Parameters/LocalTags declaration,
+# separate from any tag that instantiates it. OQ-AOIDEFSHAPE.
 #
-# CONFIDENCE IS FITTED, NOT KNOWN, DELIBERATELY.
+# ONE ITEMISED FORM, derived 2026-09-13 (capture-batch segment 4) and
+# replacing four separate fitted terms that each absorbed part of the same
+# error. What it says:
 #
-# 2026-08-27: per-type rate table wired (was flat 20/item for every type).
-# The full localtype_*/paramtype_*/aoidefcost_type* def_only batch landed
-# captured (85/85 AOI rows in manifest.csv) -- this had been sitting
-# captured but unprocessed. Live-recomputed against the current engine (see
-# docs/OPEN_QUESTIONS.md OQ-AOIDEF for the derivation): holding
-# declared_item_count fixed and varying only the item TYPE, per-item rate is
-# clean and near-exact (base=1184 held constant, only the per-item rate
-# moves) for AOIs where every declared item is the SAME type:
-#   BOOL=16, SINT=18, INT=18, DINT=20 (unchanged), REAL=20, LINT=24
-# per_type_rate below overrides per_declared_item for exactly that case
-# (single-type-only AOI defs) -- see AoiDefinitionModel.bytes_for.
+#   base
+#   + per_member_descriptor_bytes  per declared member
+#   + that member's OWN DATA BYTES (0 for a scalar BOOL; element x dimension
+#     for an array member; the structure's own size for a TIMER/STRING/UDT)
+#   + bool_word_bytes  per 32-bit word the declared BOOLs occupy, counting
+#     EnableIn/EnableOut as two further bits
+#   + the members' NAMES, pooled and rounded up to name_pool_alignment_bytes
+#   + name_length_bytes(the AOI's own type name)
 #
-# MIXED-type AOI defs (the realistic case: some DINT + some BOOL + some
-# REAL, etc) deliberately still use the flat per_declared_item=20 rate, NOT
-# a per-type sum. Real data proves the per-type rates do NOT compose
-# additively once BOOL sits alongside another type: aoi_boolpack_
-# interspersed20_def_only (20 BOOL + 20 DINT) matches the flat-20 formula
-# EXACTLY (0 residual) but a per-type sum (16*20+20*20) UNDER-predicts by
-# 80. aoi_boolpack_clean_alternating/grouped_def_only (10 BOOL + 10 DINT,
-# same total count, different BOOL/DINT arrangement) land on a DIFFERENT
-# actual value from each other despite identical composition -- position/
-# packing-order-sensitive, not a simple type-count effect. This is a real,
-# confirmed, currently-unmodeled interaction (not a data gap -- more
-# samples of the same shape won't resolve it, it needs a genuinely
-# different formula), so mixed-type AOI defs deliberately keep the old
-# uniform rate rather than risk a worse prediction from a naive per-type
-# sum. BasicAOI/RealisticAOI50 (realistic mixed shapes) already sit within
-# 1-2% under the flat rate -- leaving mixed-type alone is not a regression.
+# HOW IT WAS MEASURED. 124 captured def-only files -- an AOI definition with
+# no instance tag anywhere and no internal rungs, so the definition is the
+# only AOI cost in the file and its true value reads straight off the
+# capture. They span 1 to 128 declared members, six atomic types, BOOL
+# fractions from 0 to 100%, and Input, Output and LocalTag usages. 70 of the
+# 124 land EXACTLY, 122 of 124 within the project's +-8 universal residual,
+# worst 11.
 #
-# Still NOT folded in (real, open, both small: <2% of total file bytes at
-# the extremes tested):
-# - AOI name length: aoiname_len08/13/20/30_def_only (identical DINT:4
-#   composition, only the AOI's own type name varies) shows a real but
-#   non-uniform stepping (+0/+8/+16/+32 blocks, not the clean 8*ceil(len/8)
-#   the UDT/tag_overhead formulas use) -- not force-fit, flagged as residual.
-# - Required/Visible/Hidden flag combination's small +-16 definition-cost
-#   swing (see OQ-AOIDEF) -- recapture batch (reqvis_*_def_only against a
-#   BOOL+InOut AXIS shape) still awaiting capture, not yet re-confirmed.
-# Per-member cost of a NON-ATOMIC declared member, over and above the flat
-# per_declared_item rate -- OQ-AOIDEFITEMIZE, wired 2026-09-13.
+# WHAT THIS SUPERSEDES, AND WHY EACH OLD TERM WAS WRONG:
 #
-# Derived from aoilt_swap_{timer,counter,motion,real,string}_n01..n08: 40 files,
-# each swapping k of 8 DINT LocalTags for another type with the MEMBER COUNT
-# HELD AT 8, so the per-type rate separates from the per-item rate. Eight counts
-# per type instead of the two that existed before, which is what made the shape
-# visible rather than just the slope.
+#   per_declared_item: 20        was 12 + 4, i.e. the descriptor plus the
+#                                data bytes of the DINT that every count
+#                                sweep happened to use. It read as one rate
+#                                because no sweep varied the type and the
+#                                count together.
+#   per_type_rate                BOOL 16 / SINT 18 / INT 18 / LINT 24 were
+#                                the same 12 + own-size relation seen
+#                                through the old linear name term, which
+#                                absorbed the difference. 12 + size gives
+#                                12 / 13 / 14 / 20.
+#   member_name_char_bytes 1,    the members' names are a POOL rounded up to
+#   member_name_free_chars 3     8 bytes, not 1 byte per character with 3
+#                                free. The old form fitted its own
+#                                name-length sweep exactly and then leaked
+#                                into every other family, because at a fixed
+#                                name length a per-name error is
+#                                indistinguishable from a per-member one.
+#   aoi_member_type_extra        REAL 0, TIMER 8 and COUNTER 8 are exactly
+#                                (own size - 4): the difference between that
+#                                type's real data bytes and the 4 bytes of
+#                                DINT baked into per_declared_item. The
+#                                sum-then-floor-to-8 shape those 40 files
+#                                fitted was an artifact of that
+#                                mis-attribution; the itemised form needs no
+#                                floor. STRING's 84 is 2 more than its 86
+#                                bytes predict, and its capture
+#                                (altype_string_n00010_def_only) reads -2
+#                                under the itemised form -- inside the band.
+#                                MOTION_INSTRUCTION's 12 is 4 more than its
+#                                12-byte size predicts and its capture
+#                                (altype_motion_instruction_n00010_def_only)
+#                                reads +44, the largest residual left in the
+#                                array-localtag families. Recorded in
+#                                OQ-AOIDEFSHAPE rather than papered over.
 #
-# One form fits all 40 points with zero residual:
+# The mixed-versus-single-type split is gone with them. It existed because
+# the per-type rates did not compose additively -- which was the name-pool
+# error showing up as a composition effect, not a real interaction.
 #
-#     extra_bytes = alignment * floor(sum(count_T * rate_T) / alignment)
+# WHAT IS STILL UNEXPLAINED, and is NOT hidden inside these constants: a
+# residual of exactly 0 on 70 files and exactly +8 on 35 more. It is not
+# usage, not member count, not name length and not composition. Three pairs
+# isolate it, identical in every term this formula uses:
+#   localcount_n01_def_only (0) vs localcount_n02_def_only (+8)
+#   aoi_boolpack_clean_alternating_def_only (0) vs ..._clean_grouped (+8)
+#     -- same 10 BOOL + 10 DINT, same names, different member ORDER
+#   paramcount_n04_def_only (0) vs paramcount_n04_def_only_v2 (+8)
+#     -- byte-identical but for a 2-character-longer AOI and project name
+# See OQ-AOIDEFSHAPE. base is set to the value that centres the residual on
+# zero for the 124-file instrument (total absolute residual 316 bytes); a
+# base 8 higher scores about 40 more exact rows corpus-wide but makes the
+# instrument strictly worse, which is the wrong trade.
 #
-# with alignment 8 and rate_T below. The FLOOR is the part two points could
-# never have shown: TIMER and COUNTER are 8/member and land on the boundary so
-# they look linear, while MOTION_INSTRUCTION (12) and STRING (84) alternate
-# -16/-8 and -88/-80 as odd counts lose the remainder. Reading either of those
-# from two points would have given 12 and 84 as clean slopes and been wrong at
-# every odd count.
-#
-#   REAL                 0   measured, and it agrees with per_type_rate's
-#                            REAL == DINT == 20, so the two derivations of the
-#                            same fact are consistent
-#   TIMER                8
-#   COUNTER              8
-#   MOTION_INSTRUCTION  12
-#   STRING              84
-#
-# Only types ABSENT from per_type_rate may be listed here or the cost is
-# charged twice. REAL is listed at 0 to record that it was measured, which
-# cannot double-count.
-#
-# ASSUMED, not measured: that the rates ADD when a definition mixes two
-# non-atomic types (say a TIMER and a STRING in one AOI). Every file here mixes
-# exactly one non-atomic type with DINT. The sum-then-floor form is the natural
-# reading and is what is wired, but a mixed-non-atomic file would test it.
-aoi_member_type_extra:
-  alignment_bytes: 8
-  rate_by_type:
-    REAL: 0
-    TIMER: 8
-    COUNTER: 8
-    MOTION_INSTRUCTION: 12
-    STRING: 84
-  confidence: KNOWN
-
+# CONFIDENCE IS FITTED, NOT KNOWN. The form is exact on a large generated
+# instrument, but no real controller reading isolates a single AOI
+# definition, and the +8 above is unexplained.
 aoi_definition:
-  base: 1184
-  per_declared_item: 20
-  # Declared members' own NAME cost, measured 2026-09-10 from
-  # aoistr_namelen_c04..c40 (20 DINT Input params, identical except for name
-  # length): exactly 1 byte per character with the first 3 free, fitting all
-  # 7 points with ZERO residual as 20*(len-3)+4. Cross-checked against the
-  # two count sweeps, which hold length at the real median of 12 chars and
-  # vary count instead -- they predict 9 bytes/member and land within 4 bytes
-  # over 8 further points (scale_param 12/24/48/102, scale_local
-  # 11/32/64/128). FITTED, not KNOWN: the fit is exact but rests on one
-  # generated sweep, not on a real controller reading of a named member.
-  member_name_char_bytes: 1
-  member_name_free_chars: 3
-  member_name_confidence: FITTED
-  per_type_rate:
-    BOOL: 16
-    SINT: 18
-    INT: 18
-    LINT: 24
+  base: 1163
+  # Per declared member, over and above the member's own data bytes. Every
+  # Input/Output Parameter (InOut excluded -- reference, not storage) and
+  # every LocalTag, EXCLUDING the always-present EnableIn/EnableOut.
+  per_member_descriptor_bytes: 12
+  # Declared BOOLs are packed, and EnableIn/EnableOut occupy two further bits
+  # in the same words -- the same enable-bit correction segment 1 found on the
+  # instance-array side (aoi_array.enable_bits_packed_with_bools). Measured
+  # at 24 from the two def-only files that cross into a second word
+  # (aoialgn_def_mc60_b54 and _b60) and cross-checked on aoimix_t32_b32 and
+  # aoimix_t64_b32, which cross it with an instance array present.
+  bool_word_bytes: 24
+  bool_word_bits: 32
+  enable_bits: 2
+  # The declared members' names, concatenated with one byte per name and the
+  # total rounded up. 8-byte alignment beats 4 and 16 on the instrument
+  # (70 exact against 58 and 65).
+  name_pool_alignment_bytes: 8
+  name_pool_per_name_bytes: 1
   confidence: FITTED
-  # AOI type-NAME length cost, OQ-AOIDEF closeout, wired 2026-08-29 (found
-  # during a full manifest.csv audit; AOIs should already have been
-  # closed by then -- `aoiname_len08/09/13/16/20/25/30` had real
-  # capture data since 2026-08-22/27 sitting unreconciled). Unlike
-  # UDT-definition's own 8*ceil(len/8) step, an AOI type name does NOT
-  # follow that convention: real actual bytes at len=8/9/13/16/20/25/30
-  # are 19384/19384/19392/19400/19408/19416/19424 -- confirmed 7/7 exact
-  # against `name_length_bytes = name_length_bucket_bytes *
-  # max(0,(len(name)-7)//4) + name_length_floor_bytes` (constants.py
-  # AoiDefinitionModel). name_length_floor_bytes(-8) matches the same
-  # -8-byte universal per-file residual seen throughout this project --
-  # any name length 8-9 hits this floor with zero incremental bucket
-  # cost, then +8/4-chars beyond that. Not confirmed below len=8 (no real
-  # data there), but the bucket floors at 0 so the formula never
-  # extrapolates further negative for a very short name.
+  # AOI type-NAME length cost. Real captures of
+  # aoiname_len08/09/13/16/20/25/30_def_only (identical 4-DINT composition,
+  # only the AOI's own type name varying) read 19384/19384/19392/19400/19408/
+  # 19416/19424 and fit 7/7 exactly as
+  #
+  #     name_length_bucket_bytes * max(0, (len - 8) // 4) + name_length_floor_bytes
+  #
+  # Unlike UDT-definition's own 8*ceil(len/8) step, this is not purely
+  # length-driven: there is a flat -8 floor (the same -8 universal per-file
+  # residual seen throughout this project) that any length 8-9 hits, then +8
+  # every 4 characters beyond. Not confirmed below len=8; the bucket floors at
+  # the same -8 rather than extrapolating further negative.
+  #
+  # The divisor was corrected 2026-08-30 -- the original (len-7)//4 was chosen
+  # to fit only the 7 tested lengths, which happen to skip every len == 3
+  # (mod 4), and put len=19 one bucket too high. Two same-shape array-packing
+  # files differing only in AOI type name length (AoiPureBoolDense, 16 chars,
+  # and AoiPureBoolBoundary, 19) land on the same total at all 16 count points
+  # under (len-8)//4 and disagreed by 8 under the old divisor.
+  #
+  # STILL SUSPECT, and part of OQ-AOIDEFSHAPE: the 7 tested lengths leave the
+  # boundary between 13 and 16 unsampled, and two pairs that differ only in
+  # name length across it (paramcount_n04_def_only at 13 chars against
+  # paramcount_n04_def_only_v2 at 15; aoidefcost_typeint_n08_def_only at 16
+  # against paramtype_dint_n8_def_only at 14) disagree by exactly the 8 bytes
+  # one bucket is worth. Either this boundary is wrong or the name pool above
+  # carries a 4-byte offset -- the two are confounded in every captured file
+  # and neither may be fitted until a file separates them.
   name_length_bucket_bytes: 8
   name_length_floor_bytes: -8
   name_length_bucket_confidence: FITTED

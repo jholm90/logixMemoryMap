@@ -414,3 +414,18 @@ number was already several times that.
 Recapture, separately from the above: the 5 stale `aoi_logic_scale_*` /
 `aoi_multiroutine_*` rows, and the ~130 errored rows that carry no error text
 (every one captured before the error-log reader started working 2026-09-10).
+
+### Added 2026-09-13 (capture-batch segment 4)
+
+- **`aoidshape_*` (54 files), OQ-AOIDEFSHAPE — highest priority of the
+  uncaptured batches.** The itemised AOI-definition re-derivation is worth 217
+  more corpus rows inside ±8 and made five AOI categories exact, and it leaves
+  exactly one 8-byte term confounded three ways. These 54 files break that
+  confound and nothing else can: group A (25) reads the type-name bucket at
+  every length 8-32 with the controller name pinned, group B (16) reads the
+  name-pool residue twice around, group C (8) separates a per-member step from
+  the pool offset, group D (5) isolates member order. All def-only, all
+  1756-L81E at v35.
+- Segments 1-4 of `docs/SEGMENT_TRACKER.md` are closed; segment 5 (`addit_*`,
+  33 files, OQ-COMPOSITESCALE) is next.
+

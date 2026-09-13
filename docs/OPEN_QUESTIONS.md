@@ -97,129 +97,112 @@ the matching footnote at the bottom, not inline.
      wrong on the REAL-destination path too. Swept 1..4 `**` operators, alone
      and mixed with tier 1, at n=1 and n=100.
 
-3. **OQ-AOIBOOLPACK-PAIRING** — split off the now-closed OQ-AOIDEF's old
-    "BOOL-array-packing-boundary" thread once its 27 already-captured
-    points got reconciled. The `aoi_array` per-instance formula was tagged
-    KNOWN ("confirmed exact... 15 real points") but that claim was only
-    ever checked at 3 widely-spaced instance counts per shape (n=1/10/25)
-    — real dense data disproves it. Confidence downgraded to FITTED.
-    2026-08-30: the dense/isolating files got real captures in the
-    latest push. Pattern is now clearer, not yet closed: each `bc<N>`
-    family (bit-count-per-element family, presumably) carries its OWN
-    fixed offset that's constant across instance count within that family
-    but differs BETWEEN families — `aoibp_dense_bc10_*` off by a flat
-    ~20-24 bytes regardless of n (2 through 12), `bc20_*` flat ~36-40,
-    `bc60_*` flat 140, while `aoibp_puremix_8b2a_*` is flat ~-8 to -12 and
-    `aoibp_split_allinput30_*` flat ~60-64. A per-family fixed offset that
-    doesn't scale with instance count points at a missing per-
-    boundary-crossing term (something tied to WHICH bit/byte boundary the
-    packed BOOLs cross, not how many instances exist) rather than a
-    missing per-instance term — real, promising lead, not yet
-    derived/wired.[^aoiboolpackpairing]
+3. **OQ-AOIDEFSHAPE** — one unexplained 8 bytes in the AOI-definition cost.
+    Opened 2026-09-13 (capture-batch segment 4), replacing the four separate
+    fitted terms that used to absorb it. **54 files built, awaiting capture.**
 
-    **Real capture landed 2026-08-31 for the dedicated boundary-crossing
-    isolation sweep** (`aoibp_boundary_bc{16,24,31,32,33,40,48}_n{02,04,
-    08}_iso2`, bit-count families straddling several byte/dword
-    boundaries, each at 3 instance counts) — and it sharpens the lead into
-    a precise one. Five of the seven bit-count families (16, 24, 33, 40,
-    48) show a flat delta across all 3 instance counts (+36, +52, +92,
-    +108, +124 respectively) — confirming the fixed-per-family-offset
-    pattern already found. But the two families AT the 32-bit/DWORD
-    boundary — bc31 and bc32 — do NOT stay flat: bc31 goes 92→100→116
-    (n=2/4/8) and bc32 goes 100→108→124, both a clean +4 bytes/instance
-    on top of their own fixed offset. **Every other tested boundary is a
-    pure fixed one-time cost; only the 32-bit/DWORD boundary specifically
-    also carries a real per-instance term.** This pinpoints exactly which
-    boundary crossing needs the extra term (the DWORD one) rather than
-    leaving it as "some boundary, not derived" — genuine progress toward
-    a wireable formula, though still needs the "why 32-bit specifically"
-    mechanism nailed down (likely a real DINT-alignment packing rule) and
-    a check of whether bc63/64 (the next DWORD-adjacent pair up) shows the
-    same +4/instance signature before generalizing.
+    The definition cost is now one itemised form (`memory_model.yaml
+    aoi_definition`):
 
-    **PER-INSTANCE LAW DERIVED AND WIRED 2026-09-12. The remaining residual
-    is no longer an array question.** All 178 captured `aoibp_*`/`aoipack_*`
-    rows were live-recomputed and grouped into 52 sweep families. The
-    "odd-length arrays cost 4 bytes more, except when they don't" surface is
-    one constant: **the whole instance-array block is padded up to an 8-byte
-    boundary**, so the extra 4 bytes appear exactly when the per-instance size
-    is congruent to 4 mod 8 and never otherwise. 48 of 48 families that can
-    distinguish the two cases agree, **zero exceptions**, across per-instance
-    sizes of 4, 8, 12, 20, 24, 32, 40, 44, 48, 64, 76, 84, 104, 120, 124, 220
-    and 244 bytes. Wired as `aoi_array.block_alignment_bytes`; same mechanism
-    and same constant as `predefined_array_structures`' element-block padding
-    (CAM's 12-byte element), which is the independent cross-check.
+        base 1163
+        + 12 per declared member
+        + that member's OWN data bytes (0 for a scalar BOOL, element x
+          dimension for an array, the structure's size for a TIMER/STRING/UDT)
+        + 24 per 32-bit word the declared BOOLs occupy, counting
+          EnableIn/EnableOut as two further bits
+        + the members' names, pooled with one byte per name and rounded up to 8
+        + name_length_bytes(the AOI's own type name)
 
-    The earlier reading in this entry -- a per-family fixed offset plus a
-    composition-dependent parity term, "a two-variable surface in
-    (bool_count, atomic_count)" -- was wrong in a specific way worth keeping:
-    composition was never the variable. It only moved the per-instance size,
-    and the per-instance size mod 8 was doing all the work. `mc10` looked like
-    "pure BOOL pairs, mixed does not" (b00 -4, b01/b05/b09 0, b10 -4) purely
-    because those mixes happen to land on per-instance 44/40/24/8/4.
+    Measured on 124 captured def-only files -- an AOI definition with no
+    instance tag anywhere and no internal rungs, so the definition is the only
+    AOI cost in the file and its true value reads straight off the capture.
+    They span 1 to 128 declared members, six atomic types, BOOL fractions 0 to
+    100%, and Input, Output and LocalTag usages. **70 of the 124 land exactly,
+    122 of 124 within the project's ±8 band, worst 11.**
 
-    Effect: **49 of 52 families are now FLAT in instance count** (were 37 of
-    52), captured AOI rows inside +-8 bytes went 37 -> 49, and corpus-wide
-    exact predictions went 1,026 -> 1,028 with no family regressing.
+    Effect of wiring it, live-recomputed: corpus rows landing EXACTLY went
+    **1,120 → 1,198** and rows inside ±8 went **1,690 → 1,907**. Per category,
+    within 1%: `aoi_array_packing` **283/283** (was 35 of 283 inside ±8),
+    `aoi` **160/160**, `axis` **61/61**, `driveaxis` **15/15**, `aoi_reqvis`
+    **9/9**, `aoistructure` 105/110, `defscale` 60/69. On the sixteen real
+    programs mean |error| 2.16% → **2.13%**, and `griffin_stackerline` went
+    from 394 bytes out to **94** on 2.36 MB. The real-file residual also went
+    one-sided: 14 of 16 now under-predict, where it used to be split.
 
-    **A flat +4 array-tag term was fitted and deliberately NOT wired.** The
-    five families that have a `def_only` control (same AOI definition, no
-    instance tag) each sit exactly 4 bytes further under than their own
-    definition-only twin: atomic -4/-8, bool -4/-8, mixed +59/+55, mix25_75
-    +19/+15, mix75_25 +42/+38 (def residual / array residual). Five for five
-    is real evidence, but applying it reduced total absolute residual over the
-    178 rows by only 40 bytes (5,818 -> 5,778) while costing three exact
-    predictions (`aoipack_mc20_b02_array_n01/n10/n25`, all three at exactly
-    0). Moving rows from -10 to -6 inside a noise band the project already
-    treats as noise is not progress worth a constant. Recorded here, settled
-    by group C below.
+    **What each superseded term was really measuring**, kept because every one
+    of them fitted its own sweep exactly and was still the wrong shape:
+    `per_declared_item: 20` was 12 + the 4 data bytes of the DINT every count
+    sweep happened to use; `per_type_rate` (BOOL 16, SINT 18, INT 18, LINT 24)
+    was the same 12 + own-size relation seen through the old linear name term;
+    `member_name_char_bytes: 1` with 3 free chars was a pool rounded to 8
+    misread as a per-character rate; and `aoi_member_type_extra`'s REAL 0,
+    TIMER 8 and COUNTER 8 are exactly (own size − 4), with its
+    sum-then-floor-to-8 shape an artifact of that mis-attribution. The
+    mixed-versus-single-type split went with them: per-type rates "did not
+    compose additively once BOOL sat alongside another type" because the
+    name-pool error showed up as a composition effect.
 
-    **What is genuinely left, and it is a definition question, not an array
-    one.** After the alignment wiring every remaining residual is a per-family
-    CONSTANT ranging -38 to +180, and the five controlled pairs above put that
-    constant on the AOI DEFINITION. That is the same place the model is
-    already known to be weakest: mixed-type AOI definitions fall back to a
-    flat 20/item rate because per-type rates do not compose once BOOL sits
-    alongside another type (see `memory_model.yaml aoi_definition`). This
-    thread therefore hands off to **OQ-AOIDEF**, and what is left under this
-    entry is the three families that still vary with instance count.
+    **WHAT IS LEFT.** A residual of exactly 0 on 70 of the 124 instrument
+    files and exactly +8 on 35 more. It is not usage, not member count, not
+    composition and not type. Three candidates remain and every captured file
+    confounds at least two of them:
 
-    **Files built 2026-09-12, awaiting capture** --
-    `src/sample_gen/gen_aoi_array_align_closeout.py`, 71 files, plus
-    `src/sample_gen/gen_aoi_boolmix_grid.py`, 34 files:
+      1. **The AOI type-name bucket boundary.** The wired law
+         `8*max(0,(len-8)//4) - 8` was fitted 7/7 on lengths 8, 9, 13, 16, 20,
+         25 and 30, leaving 10-12, 14-15 and 17-19 unsampled. Two pairs
+         differing only across those gaps disagree by exactly 8:
+         `paramcount_n04_def_only` (13 chars) vs `_v2` (15) — the name is the
+         ONLY difference in the whole file — and
+         `aoidefcost_typeint_n08_def_only` (16) vs
+         `paramtype_dint_n8_def_only` (14), same 8 DINT params, same member
+         names, 8 bytes apart.
+      2. **A fixed offset inside the name pool before it rounds.** On the
+         `localcount_*` family the +8 appears exactly when the character total
+         is congruent to 0, 6 or 7 mod 8 and not when it is 3 or 4, which is
+         what an `8*ceil((chars + 4)/8)` pool would do. That fits all six
+         localcount points and then contradicts `aoidefcost_typeint_n08`.
+      3. **Member ORDER.** `aoi_boolpack_clean_alternating_def_only` (0) and
+         `aoi_boolpack_clean_grouped_def_only` (+8) are the same 10 BOOL + 10
+         DINT with the same member names in a different order.
 
-    - **A, `aoialgn_bc{30,31,32,33,62,63,64,65,94,95,96,97}_n{02,04,08}`**
-      (36 files). `bc31` and `bc32` are 2 of the 3 families still varying
-      with instance count -- `-40/-48/-64` and `-46/-54/-70` at n=2/4/8, a
-      clean 4 bytes/instance under-charge -- while bc16, bc24, bc33, bc40 and
-      bc48 are dead flat. Either a real DINT-alignment rule that must recur at
-      63/64 and 95/96, or the FIRST packed word is special and there is
-      nothing to generalize. The corpus has no data above bool_count=60 at
-      more than one instance count, so it cannot tell them apart. Same
-      all-Input single-section shape as the captured `bc*_iso2` sweep so these
-      difference straight against it; n=2/4/8 makes a per-instance term show
-      as +8 then +16 while a flat offset stays put.
-    - **B, `aoialgn_un_{s01,s02,s03,s05,s01i01,s03i01,s01i03,i01,i03}`**
-      (27 files: each shape at `_def_only`, `_n02`, `_n03`). Every captured
-      family has a per-instance size congruent to 0 or 4 mod 8 except
-      `aoipack_nonatomic_sint_20b10a` (14 bytes, 6 mod 8) -- which is the
-      third and last family still varying with instance count (+108 at n=1,
-      +60 at n=25). One family at one residue cannot say whether the 8-byte
-      block padding is general or whether a non-4-aligned instance size
-      triggers something else. SINT/INT parameter counts put the per-instance
-      size at the other residues; a real AOI with SINT or INT parameters lands
-      there routinely, so this is not a corner case.
-    - **C, `aoialgn_def_{mc10_b00,mc10_b05,mc10_b10,mc20_b02,mc20_b18,
-      mc60_b30,mc60_b54,mc60_b60}`** (8 files). The `def_only` control the
-      `mc*` families never got. Without it their offsets cannot be split
-      between definition cost and array cost at all, and it is the direct test
-      of the +4 array-tag term above -- including on `mc20_b02`, the one
-      family whose exact-zero contradicts it.
-    - **D, `aoimix_t{08,32,64}_b*_n{02,03}`** (34 files). Member total held
-      constant while the BOOL fraction is swept, every point at an even AND an
-      odd array length: the densest available confirmation of the alignment
-      rule on an axis designed to vary only what it depends on, and the right
-      instrument for the definition-side offset that is left.
+    `base` is set to the value that centres the residual on zero for the
+    124-file instrument (total absolute residual 316 bytes). A base 8 higher
+    scores about 86 more exact rows corpus-wide and 53 more inside ±8, which is
+    recorded here rather than taken: it makes the isolating instrument strictly
+    worse, and it would bury the term this question exists to find.
+
+    Two smaller things measured and deliberately not fitted, for the same
+    reason: **STRING**'s old rate of 84 is 2 more than its 86 bytes minus 4
+    (its capture, `altype_string_n00010_def_only`, reads −2 — inside the
+    band), and **MOTION_INSTRUCTION**'s old 12 is 4 more than its 12-byte size
+    predicts (`altype_motion_instruction_n00010_def_only` reads **+44**, the
+    largest residual left in the array-localtag families).
+
+    **Files built 2026-09-13, awaiting capture** —
+    `src/sample_gen/gen_aoidefshape_closeout.py`, 54 files, every one def-only:
+
+    - **A, `aoidshape_tname_len{08..32}`** (25 files). The AOI type name at
+      every single length 8 to 32, with 4 DINT Input parameters named P0..P3
+      held byte-for-byte identical, and **the controller name pinned to one
+      fixed string across all 25** — which the existing `aoiname_len*` sweep
+      did not do: there the project name tracked the AOI name, so a
+      project-name cost was invisible. Reads candidate 1 directly at every
+      length instead of at 7 of them.
+    - **B, `aoidshape_pool_c{06..21}`** (16 files). Member-name character
+      total growing one character at a time across two complete 8-byte residue
+      cycles, with member count, types, data bytes and the type name all
+      pinned. Only the pool's input moves, and every residue is read twice.
+      Settles candidate 2.
+    - **C, `aoidshape_count_n{01..08}`** (8 files). Member count 1 to 8 with
+      single-character names, so the character total stays inside one 8-byte
+      chunk for n=1..4 and the next for n=5..8. Separates the
+      `localcount_n01` (0) vs `localcount_n02` (+8) step from the pool offset.
+    - **D, `aoidshape_order_{boolsfirst,dintsfirst,alternating,pairs,
+      blocks5}`** (5 files). 10 BOOL + 10 DINT in five arrangements with
+      identical names and one pinned type name, so composition, count, pool
+      and word count are identical by construction and any spread is
+      candidate 3 and nothing else. The current engine predicts the same
+      19,664 bytes for all five, which is what makes it a clean instrument.
 
 4. **OQ-SAFETYSCOPE-SIZING** — Task/Program/Routine SHELL sub-thread
    **decided and wired 2026-09-03**: safety tasks and safety programs are

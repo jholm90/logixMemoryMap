@@ -1832,7 +1832,7 @@ len%4==3, the only residue class where the two divisors disagree) and
 resolves the cross-check to 0 bytes apart. AOI-instance-array element cost
 split off as its own item, OQ-AOIBOOLPACK-PAIRING, below.
 
-[^aoiboolpackpairing]: The `aoi_array` model's "confirmed exact, 15 real
+: The `aoi_array` model's "confirmed exact, 15 real
 points" claim (mc=10/20/30/60, but only ever checked at n=1/10/25 per
 shape) doesn't survive dense n. Reconciling 27 already-captured points that
 were sitting unreconciled proved it: for a single-packed-word AOI
@@ -2915,3 +2915,181 @@ replicated across the cells where the correction differs, at two sizes, roughly
 Marked **very low priority, do not build those files**: production work here is
 1756-L8x on v35, where the baseline is already exact. Reopen only if a real
 program on another processor or firmware ever needs predicting.
+
+
+## OQ-AOIBOOLPACK-PAIRING, CLOSED 2026-09-13
+
+Groups A, B and C closed on 2026-09-13 as capture-batch segment 1
+(`aoialgn_*`, 71 files) and group D as segment 4 (`aoimix_*`, 34 files). The
+entry as it stood at the moment it closed is kept verbatim below, because the
+two readings it went through -- "a per-family fixed offset tied to which
+boundary the packed BOOLs cross", then "a two-variable surface in
+(bool_count, atomic_count)" -- were both wrong in instructive ways.
+
+**Group A: the DWORD per-instance term has a mechanism.** The engine counted
+packed words as `ceil(bool_count / 32)`. The real count is
+`ceil((bool_count + 2) / 32)`: EnableIn and EnableOut occupy two bits in the
+same words, and `bool_count` deliberately excludes them because they are not
+declared members -- an exclusion that was correct for the member sum and got
+carried into the word arithmetic by accident. Confirmed flat-versus-sloped at
+12 of 12 points across three consecutive 32-bit boundaries (30/31/32/33,
+62/63/64/65, 94/95/96/97), with the slope measured twice per family. Wired as
+`aoi_array.enable_bits_packed_with_bools`. This supersedes the "only the
+32-bit/DWORD boundary specifically also carries a real per-instance term"
+reading, which was the right observation with no mechanism and could not have
+predicted 63/64 or 95/96 -- it treated 32 as special rather than as the first
+place two extra bits spill a word.
+
+**Group C: the +4 array-tag term is real and is wired.** It had been fitted
+and rejected on 2026-09-12 because applying it cost five exact predictions.
+Those five rows are now explained: every one is a `b02` file -- bool_count 2,
+exactly the number of enable bits -- so the engine's BOOL term cancelled its
+own error at that single degenerate count and the row was exact by
+coincidence.
+
+**Group D (`aoimix_*`, 34 files): the alignment rule is confirmed at 17 of 17
+mixes with zero exceptions, and composition was never the variable.** Member
+total held constant while the BOOL fraction was swept, every point built at an
+even AND an odd array length. The even and odd deltas are IDENTICAL at all 17
+grid points, which is the array side reading exactly: the per-instance size is
+`4*atomic_count + 4*ceil((bool_count + 2)/32)` rounded up to 8, confirmed
+directly at each mix rather than inherited from a neighbour. The dead premise
+this grid was built for -- "a two-variable surface in (bool_count,
+atomic_count), sampled far too sparsely" -- is dead for the reason group A
+found: BOOL/atomic mix only ever moved the per-instance size.
+
+What group D also did was the thing it was kept for after its premise died:
+it put the remaining residual on the AOI DEFINITION, on the one axis
+(BOOL fraction at fixed member total) the definition-cost model handled worst.
+That residual ran -105 to +69 across the 34 rows when the segment opened. It
+is now +8 or +16 on every row, one-sided, 26 of 34 inside the band -- and the
+itemised definition formula that did it is the segment's real result. The 8
+that is left is the subject of OQ-AOIDEFSHAPE.
+
+
+### The entry as it stood, verbatim
+
+3. **OQ-AOIBOOLPACK-PAIRING** — split off the now-closed OQ-AOIDEF's old
+    "BOOL-array-packing-boundary" thread once its 27 already-captured
+    points got reconciled. The `aoi_array` per-instance formula was tagged
+    KNOWN ("confirmed exact... 15 real points") but that claim was only
+    ever checked at 3 widely-spaced instance counts per shape (n=1/10/25)
+    — real dense data disproves it. Confidence downgraded to FITTED.
+    2026-08-30: the dense/isolating files got real captures in the
+    latest push. Pattern is now clearer, not yet closed: each `bc<N>`
+    family (bit-count-per-element family, presumably) carries its OWN
+    fixed offset that's constant across instance count within that family
+    but differs BETWEEN families — `aoibp_dense_bc10_*` off by a flat
+    ~20-24 bytes regardless of n (2 through 12), `bc20_*` flat ~36-40,
+    `bc60_*` flat 140, while `aoibp_puremix_8b2a_*` is flat ~-8 to -12 and
+    `aoibp_split_allinput30_*` flat ~60-64. A per-family fixed offset that
+    doesn't scale with instance count points at a missing per-
+    boundary-crossing term (something tied to WHICH bit/byte boundary the
+    packed BOOLs cross, not how many instances exist) rather than a
+    missing per-instance term — real, promising lead, not yet
+    derived/wired.
+
+    **Real capture landed 2026-08-31 for the dedicated boundary-crossing
+    isolation sweep** (`aoibp_boundary_bc{16,24,31,32,33,40,48}_n{02,04,
+    08}_iso2`, bit-count families straddling several byte/dword
+    boundaries, each at 3 instance counts) — and it sharpens the lead into
+    a precise one. Five of the seven bit-count families (16, 24, 33, 40,
+    48) show a flat delta across all 3 instance counts (+36, +52, +92,
+    +108, +124 respectively) — confirming the fixed-per-family-offset
+    pattern already found. But the two families AT the 32-bit/DWORD
+    boundary — bc31 and bc32 — do NOT stay flat: bc31 goes 92→100→116
+    (n=2/4/8) and bc32 goes 100→108→124, both a clean +4 bytes/instance
+    on top of their own fixed offset. **Every other tested boundary is a
+    pure fixed one-time cost; only the 32-bit/DWORD boundary specifically
+    also carries a real per-instance term.** This pinpoints exactly which
+    boundary crossing needs the extra term (the DWORD one) rather than
+    leaving it as "some boundary, not derived" — genuine progress toward
+    a wireable formula, though still needs the "why 32-bit specifically"
+    mechanism nailed down (likely a real DINT-alignment packing rule) and
+    a check of whether bc63/64 (the next DWORD-adjacent pair up) shows the
+    same +4/instance signature before generalizing.
+
+    **PER-INSTANCE LAW DERIVED AND WIRED 2026-09-12. The remaining residual
+    is no longer an array question.** All 178 captured `aoibp_*`/`aoipack_*`
+    rows were live-recomputed and grouped into 52 sweep families. The
+    "odd-length arrays cost 4 bytes more, except when they don't" surface is
+    one constant: **the whole instance-array block is padded up to an 8-byte
+    boundary**, so the extra 4 bytes appear exactly when the per-instance size
+    is congruent to 4 mod 8 and never otherwise. 48 of 48 families that can
+    distinguish the two cases agree, **zero exceptions**, across per-instance
+    sizes of 4, 8, 12, 20, 24, 32, 40, 44, 48, 64, 76, 84, 104, 120, 124, 220
+    and 244 bytes. Wired as `aoi_array.block_alignment_bytes`; same mechanism
+    and same constant as `predefined_array_structures`' element-block padding
+    (CAM's 12-byte element), which is the independent cross-check.
+
+    The earlier reading in this entry -- a per-family fixed offset plus a
+    composition-dependent parity term, "a two-variable surface in
+    (bool_count, atomic_count)" -- was wrong in a specific way worth keeping:
+    composition was never the variable. It only moved the per-instance size,
+    and the per-instance size mod 8 was doing all the work. `mc10` looked like
+    "pure BOOL pairs, mixed does not" (b00 -4, b01/b05/b09 0, b10 -4) purely
+    because those mixes happen to land on per-instance 44/40/24/8/4.
+
+    Effect: **49 of 52 families are now FLAT in instance count** (were 37 of
+    52), captured AOI rows inside +-8 bytes went 37 -> 49, and corpus-wide
+    exact predictions went 1,026 -> 1,028 with no family regressing.
+
+    **A flat +4 array-tag term was fitted and deliberately NOT wired.** The
+    five families that have a `def_only` control (same AOI definition, no
+    instance tag) each sit exactly 4 bytes further under than their own
+    definition-only twin: atomic -4/-8, bool -4/-8, mixed +59/+55, mix25_75
+    +19/+15, mix75_25 +42/+38 (def residual / array residual). Five for five
+    is real evidence, but applying it reduced total absolute residual over the
+    178 rows by only 40 bytes (5,818 -> 5,778) while costing three exact
+    predictions (`aoipack_mc20_b02_array_n01/n10/n25`, all three at exactly
+    0). Moving rows from -10 to -6 inside a noise band the project already
+    treats as noise is not progress worth a constant. Recorded here, settled
+    by group C below.
+
+    **What is genuinely left, and it is a definition question, not an array
+    one.** After the alignment wiring every remaining residual is a per-family
+    CONSTANT ranging -38 to +180, and the five controlled pairs above put that
+    constant on the AOI DEFINITION. That is the same place the model is
+    already known to be weakest: mixed-type AOI definitions fall back to a
+    flat 20/item rate because per-type rates do not compose once BOOL sits
+    alongside another type (see `memory_model.yaml aoi_definition`). This
+    thread therefore hands off to **OQ-AOIDEF**, and what is left under this
+    entry is the three families that still vary with instance count.
+
+    **Files built 2026-09-12, awaiting capture** --
+    `src/sample_gen/gen_aoi_array_align_closeout.py`, 71 files, plus
+    `src/sample_gen/gen_aoi_boolmix_grid.py`, 34 files:
+
+    - **A, `aoialgn_bc{30,31,32,33,62,63,64,65,94,95,96,97}_n{02,04,08}`**
+      (36 files). `bc31` and `bc32` are 2 of the 3 families still varying
+      with instance count -- `-40/-48/-64` and `-46/-54/-70` at n=2/4/8, a
+      clean 4 bytes/instance under-charge -- while bc16, bc24, bc33, bc40 and
+      bc48 are dead flat. Either a real DINT-alignment rule that must recur at
+      63/64 and 95/96, or the FIRST packed word is special and there is
+      nothing to generalize. The corpus has no data above bool_count=60 at
+      more than one instance count, so it cannot tell them apart. Same
+      all-Input single-section shape as the captured `bc*_iso2` sweep so these
+      difference straight against it; n=2/4/8 makes a per-instance term show
+      as +8 then +16 while a flat offset stays put.
+    - **B, `aoialgn_un_{s01,s02,s03,s05,s01i01,s03i01,s01i03,i01,i03}`**
+      (27 files: each shape at `_def_only`, `_n02`, `_n03`). Every captured
+      family has a per-instance size congruent to 0 or 4 mod 8 except
+      `aoipack_nonatomic_sint_20b10a` (14 bytes, 6 mod 8) -- which is the
+      third and last family still varying with instance count (+108 at n=1,
+      +60 at n=25). One family at one residue cannot say whether the 8-byte
+      block padding is general or whether a non-4-aligned instance size
+      triggers something else. SINT/INT parameter counts put the per-instance
+      size at the other residues; a real AOI with SINT or INT parameters lands
+      there routinely, so this is not a corner case.
+    - **C, `aoialgn_def_{mc10_b00,mc10_b05,mc10_b10,mc20_b02,mc20_b18,
+      mc60_b30,mc60_b54,mc60_b60}`** (8 files). The `def_only` control the
+      `mc*` families never got. Without it their offsets cannot be split
+      between definition cost and array cost at all, and it is the direct test
+      of the +4 array-tag term above -- including on `mc20_b02`, the one
+      family whose exact-zero contradicts it.
+    - **D, `aoimix_t{08,32,64}_b*_n{02,03}`** (34 files). Member total held
+      constant while the BOOL fraction is swept, every point at an even AND an
+      odd array length: the densest available confirmation of the alignment
+      rule on an axis designed to vary only what it depends on, and the right
+      instrument for the definition-side offset that is left.
+

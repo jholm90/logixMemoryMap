@@ -261,76 +261,92 @@ def compute_aoi_definition_cost(
 ) -> tuple[int, str]:
     """One-time cost of an AOI *definition* itself (its own Parameters/
     LocalTags declaration) -- separate from and additive with any tag
-    instance's own tag_overhead + member size, same relationship
-    compute_udt_definition_cost has to a plain UDT. See memory_model.yaml
-    aoi_definition for the formula's derivation (per-type rate for a
-    single-type AOI def, flat rate for a mixed-type one) and its FITTED
-    (not KNOWN) confidence.
+    instance's own tag_overhead + member size, the same relationship
+    compute_udt_definition_cost has to a plain UDT.
 
-    type_counts excludes EnableIn/EnableOut (always present, not something
-    a user declares) -- parse_aoi_definitions already excludes InOut params
-    from `members` entirely (reference, not storage), so every remaining
-    member here is a real declared Input/Output Parameter or LocalTag,
-    grouped by its own data_type so bytes_for can apply a per-type rate.
+    One itemised form, derived 2026-09-13 from 124 captured def-only files:
+
+        base
+        + per_member_descriptor_bytes per declared member
+        + that member's OWN DATA BYTES
+        + bool_word_bytes per 32-bit word the declared scalar BOOLs occupy
+        + the members' names, pooled and 8-aligned
+        + name_length_bytes(the AOI's own type name)
+
+    See memory_model.yaml aoi_definition for the derivation, for what each of
+    the four terms it replaces was really measuring, and for the unexplained
+    8-byte residual recorded in OQ-AOIDEFSHAPE. Members exclude EnableIn/
+    EnableOut (always present, not declared) and InOut parameters, which
+    parse_aoi_definitions already drops as reference rather than storage.
     """
     aoi = data_types[name]
-    type_counts: dict[str, int] = {}
+    aoi_def = model.aoi_definition
     member_names: list[str] = []
-    array_bytes = 0
-    array_confidences: list[str] = []
+    data_bytes = 0
+    bool_count = 0
+    member_confidences: list[str] = []
     for m in aoi.members:
         if m.name in ("EnableIn", "EnableOut"):
             continue
-        type_counts[m.data_type] = type_counts.get(m.data_type, 0) + 1
         member_names.append(m.name)
-        # An array-dimensioned declared member (LocalTag or Parameter) costs
-        # its own DATA SPACE on top of the flat per-declared-item rate, which
-        # counts it once regardless of dimension. Measured 2026-09-11 from the
-        # 27-file aoi_arraylocal_* sweep, captured 2026-09-03 and reconciled
-        # only now: the deficit against a prediction that is FLAT at every
-        # dimension is exactly element_size x dimension, reading
-        #
-        #   DINT dim 10/50/100/250/500/1000 -> 41/201/401/1001/2001/4001
-        #
-        # i.e. 4 bytes per DINT element with the project-wide +1 residual on
-        # top, and SINT 1.0/element, DINT and REAL 4.0/element at dimension
-        # 50. Additive across multiple array members (1/2/3 arrays of 50 DINT
-        # measured 200/392/592), and definition-side only -- the _1_instance
-        # twin of every file carries the same deficit, so an instance does not
-        # pay it a second time.
-        #
-        # BOOL is deliberately excluded and stays UNKNOWN rather than being
-        # approximated, see OQ-AOIARRAYLOCALTAG: a BOOL[50] measured -13 where
-        # neither the 7-byte packed size nor an 8-byte two-word rounding fits,
-        # and INT[50] measured -99 against the 100 its element size predicts.
-        # Pricing BOOL with the wrong rate would bury a known discrepancy
-        # inside a category that otherwise measures exactly.
+        if m.data_type == "BOOL" and not m.dimension:
+            # A scalar BOOL has no data bytes of its own: it is a bit in the
+            # packed words charged below.
+            bool_count += 1
+            continue
+        # Every other declared member costs its own data space on top of the
+        # descriptor. Measured for arrays 2026-09-11 from the 27-file
+        # aoi_arraylocal_* sweep (DINT dim 10/50/100/250/500/1000 reading
+        # 41/201/401/1001/2001/4001, i.e. 4 bytes per element with the
+        # project-wide +1 residual; SINT 1.0, REAL 4.0 per element at dim 50;
+        # additive across 1/2/3 array members at 200/392/592) and
+        # definition-side only -- the _1_instance twin of every file carries
+        # the same deficit, so an instance does not pay it twice. The scalar
+        # case is what supersedes aoi_member_type_extra: REAL 0, TIMER 8 and
+        # COUNTER 8 are exactly that type's size minus the 4 bytes of DINT
+        # that the old flat 20/item rate had baked in (STRING lands 2 short of
+        # its old 84, MOTION_INSTRUCTION 4 short of its 12 -- see
+        # OQ-AOIDEFSHAPE).
         #
         # compute_array_size, not element_size x dimension: CAM/CAM_PROFILE
         # are predefined ARRAY structures with their own base + per_element
         # shape and no scalar element size at all, and real programs declare
-        # CAM_PROFILE array LocalTags (10 of them across the 16 real
-        # exports). Going through element_size raised UnknownDataTypeError on
-        # the first real file it met.
-        if m.dimension and m.data_type != "BOOL":
-            try:
-                arr_bytes, arr_conf = compute_array_size(
+        # CAM_PROFILE array LocalTags (10 of them across the 16 real exports).
+        #
+        # A BOOL ARRAY is deliberately left unpriced rather than approximated,
+        # see OQ-AOIARRAYLOCALTAG: a BOOL[50] measured -13 where neither the
+        # 7-byte packed size nor an 8-byte two-word rounding fits.
+        if m.data_type == "BOOL":
+            continue
+        try:
+            if m.dimension:
+                member_bytes, member_conf = compute_array_size(
                     m.data_type, (m.dimension,), data_types, model)
-            except UnknownDataTypeError:
-                # A declared member whose type this model cannot size at all
-                # leaves its array data space unpriced rather than aborting
-                # the whole report -- the coverage audit is what surfaces it.
-                continue
-            array_bytes += arr_bytes
-            array_confidences.append(arr_conf)
-    confidence = weakest(
-        model.aoi_definition.confidence,
-        model.aoi_definition.name_length_bucket_confidence,
-        model.aoi_definition.member_name_confidence,
-        *array_confidences,
+            else:
+                member_bytes, member_conf = compute_element_size(
+                    m.data_type, data_types, model)
+        except UnknownDataTypeError:
+            # A declared member whose type this model cannot size at all
+            # leaves its data space unpriced rather than aborting the whole
+            # report -- the coverage audit is what surfaces it.
+            continue
+        data_bytes += member_bytes
+        member_confidences.append(member_conf)
+
+    total = (
+        aoi_def.base
+        + aoi_def.per_member_descriptor_bytes * len(member_names)
+        + data_bytes
+        + aoi_def.bool_word_cost(bool_count)
+        + aoi_def.member_name_pool_bytes(member_names)
+        + aoi_def.name_length_bytes(name)
     )
-    base = model.aoi_definition.bytes_for(type_counts, name, member_names)
-    return base + array_bytes, confidence
+    confidence = weakest(
+        aoi_def.confidence,
+        aoi_def.name_length_bucket_confidence,
+        *member_confidences,
+    )
+    return total, confidence
 
 
 def referenced_data_type_names(

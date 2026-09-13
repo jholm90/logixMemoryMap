@@ -66,23 +66,23 @@ def test_alias_tags_size_not_error():
     # both closed by real capture, the BOOL tier corrected 2026-09-06.
     assert aoi_instance.basis == "KNOWN"
 
-    # AOI *definition* cost (2026-08-26, OQ-AOIDEF wiring; name-length term
-    # added 2026-08-29) -- separate line item from the instance above, one
-    # per declared AOI regardless of instance count. fbDebounce's only
-    # counted declared item is DebTmr (EnableIn excluded by name, RawTag
-    # excluded already at parse time since it's InOut): base(1184) + 20*1
-    # + name_length_bytes("fbDebounce"). "fbDebounce" is 10 chars ->
-    # bucket=max(0,(10-7)//4)=0 -> 8*0 + (-8) = -8.
+    # AOI *definition* cost -- a separate line item from the instance above,
+    # one per declared AOI regardless of instance count. Itemised form since
+    # 2026-09-13 (memory_model.yaml aoi_definition, 124 def-only files):
+    # fbDebounce's only counted declared member is DebTmr (EnableIn excluded
+    # by name, RawTag excluded already at parse time since it is InOut), so
     #
-    # Member-name term added 2026-09-10: each declared member also costs its
-    # own name at 1 byte/char with the first 3 free. The one counted member
-    # here is "DebTmr" (6 chars) -> max(0, 6-3) * 1 = 3.
+    #   base 1163
+    #   + per_member_descriptor_bytes 12
+    #   + DebTmr's own data bytes, TIMER = 12
+    #   + bool_word_cost(0 declared BOOLs) = 24, the word EnableIn/EnableOut
+    #     alone still occupy
+    #   + member name pool: "DebTmr" is 6 chars + 1 = 7, rounded up to 8
+    #   + name_length_bytes("fbDebounce"): 10 chars -> bucket max(0,(10-8)//4)
+    #     = 0 -> 8*0 + (-8) = -8
+    #   - 3, the per-definition scale correction (definition_scale_correction)
     aoi_def = by_path["udt_definitions/fbDebounce"]
-    # +8 since 2026-09-13: the TIMER member's measured non-atomic extra
-    # (memory_model.yaml aoi_member_type_extra, 40 files zero residual).
-    # -3 since 2026-09-13: an AOI DEFINITION is over-charged by 3
-    # (memory_model.yaml definition_scale_correction).
-    assert aoi_def.bytes == 1184 + 20 - 8 + 3 + 8 - 3
+    assert aoi_def.bytes == 1163 + 12 + 12 + 24 + 8 - 8 - 3
     assert aoi_def.basis == "FITTED"
 
     # total now also includes the project_baseline entry (2026-08-23,

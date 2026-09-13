@@ -49,9 +49,13 @@ def test_dint_array_localtag_charges_element_size_times_dimension() -> None:
                    ' ExternalAccess="None"/>')
     arr = _cost('<LocalTag Name="Buffer" DataType="DINT" Dimensions="50" Radix="Decimal"'
                 ' ExternalAccess="None"/>')
-    # 50 DINT elements at 4 bytes each, on top of the identical per-declared-item
-    # and member-name cost the scalar member already pays.
-    assert arr - scalar == 200
+    # 50 DINT elements at 4 bytes each. 196, not 200: under the itemised
+    # definition formula a declared member costs the descriptor plus its OWN
+    # data bytes, so the array's 200 REPLACES the scalar's 4 rather than
+    # stacking on top of it. The aoi_arraylocal_dim_* sweep confirms the
+    # replacement reading -- all six def_only points land +4 under the current
+    # engine at dimensions 10 through 1000, flat in dimension.
+    assert arr - scalar == 196
 
 
 def test_array_data_space_is_additive_across_members() -> None:

@@ -121,81 +121,44 @@ class AoiArrayModel:
 
 @dataclass(frozen=True)
 class AoiDefinitionModel:
+    """One itemised AOI-definition cost -- see memory_model.yaml aoi_definition
+    for the 124-file derivation and for what each of the four superseded terms
+    (per_declared_item, per_type_rate, the linear member-name rate and
+    aoi_member_type_extra) was really measuring."""
+
     base: int
-    per_declared_item: int
-    per_type_rate: dict[str, int]
     confidence: str
     name_length_bucket_bytes: int
     name_length_floor_bytes: int
     name_length_bucket_confidence: str
-    member_name_char_bytes: int = 0
-    member_name_free_chars: int = 0
-    member_name_confidence: str = "FITTED"
-    # Per-member extra for a NON-ATOMIC declared member, keyed by type, with the
-    # total floored to `member_type_extra_alignment`. See memory_model.yaml
-    # aoi_member_type_extra -- 40 files, one form, zero residual.
-    member_type_extra: dict[str, int] = field(default_factory=dict)
-    member_type_extra_alignment: int = 8
+    per_member_descriptor_bytes: int = 0
+    bool_word_bytes: int = 0
+    bool_word_bits: int = 32
+    enable_bits: int = 2
+    name_pool_alignment_bytes: int = 8
+    name_pool_per_name_bytes: int = 1
 
-    def member_name_bytes(self, member_names) -> int:
-        """Cost of the declared members' own NAMES.
+    def member_name_pool_bytes(self, member_names) -> int:
+        """The declared members' names, pooled and rounded up.
 
-        Measured 2026-09-10 from aoistr_namelen_c04..c40 -- 20 DINT Input
-        params identical in every way except how many characters their names
-        use. The slope is exactly 1 byte per character with the first 3
-        characters free, fitting all 7 points with ZERO residual:
-
-            c04 c08 c12 c16 c20 c28 c40
-            +24 +104 +184 +264 +344 +504 +744   = 20 * (len - 3) + 4
-
-        Cross-checks against the two independent count sweeps, which hold
-        name length at the real-corpus median of 12 chars and vary the COUNT
-        instead -- so they predict 9 bytes per member and land within 4 bytes
-        across 8 more points (scale_param n=12/24/48/102, scale_local
-        n=11/32/64/128).
-
-        This is why AOI-dense real files under-predicted: real AOI member
-        names average 12.1 characters, so every declared member was being
-        under-charged about 9 bytes and nothing in the model saw it.
+        One byte per name on top of its characters, then the whole total
+        rounded up to name_pool_alignment_bytes -- not a per-name rounding and
+        not the old 1-byte-per-character-with-3-free rate, both of which fit
+        the single name-length sweep they were derived from and then leaked
+        into every other family.
         """
-        return sum(
-            max(0, len(n) - self.member_name_free_chars) * self.member_name_char_bytes
-            for n in member_names
-        )
+        align = self.name_pool_alignment_bytes
+        chars = sum(len(n) + self.name_pool_per_name_bytes for n in member_names)
+        if align <= 1:
+            return chars
+        return align * -(-chars // align)
 
-    def bytes_for(self, type_counts: dict[str, int], name: str = "",
-                  member_names=()) -> int:
-        # per_type_rate only applies when every declared item shares the
-        # SAME type -- confirmed real that per-type rates do NOT compose
-        # additively once BOOL sits alongside another type (see
-        # memory_model.yaml aoi_definition for the mixed-type evidence), so
-        # a mixed-type AOI definition falls back to the flat per_declared_item
-        # rate for every item rather than risk a worse per-type sum.
-        total_items = sum(type_counts.values())
-        if len(type_counts) == 1:
-            (only_type,) = type_counts
-            rate = self.per_type_rate.get(only_type, self.per_declared_item)
-            total = self.base + rate * total_items
-        else:
-            total = self.base + self.per_declared_item * total_items
-        return (total + self.name_length_bytes(name) + self.member_name_bytes(member_names)
-                + self.member_type_extra_bytes(type_counts))
-
-    def member_type_extra_bytes(self, type_counts: dict[str, int]) -> int:
-        """Extra for non-atomic declared members, summed then floored to an
-        8-byte boundary.
-
-        The floor is what makes TIMER and COUNTER look linear (8/member lands on
-        the boundary) while MOTION_INSTRUCTION (12) and STRING (84) alternate as
-        odd counts lose the remainder. Summing before flooring is the ASSUMED
-        part -- every measured file mixes exactly one non-atomic type with DINT.
-        """
-        if not self.member_type_extra:
-            return 0
-        raw = sum(self.member_type_extra.get(type_name, 0) * count
-                  for type_name, count in type_counts.items())
-        align = self.member_type_extra_alignment
-        return align * (raw // align)
+    def bool_word_cost(self, bool_count: int) -> int:
+        """The words the declared scalar BOOLs occupy, with EnableIn/EnableOut
+        counted as two further bits in the same words -- the same enable-bit
+        correction the instance-array side carries."""
+        bits = bool_count + self.enable_bits
+        return self.bool_word_bytes * -(-bits // self.bool_word_bits)
 
     def name_length_bytes(self, name: str) -> int:
         # OQ-AOIDEF closeout, wired 2026-08-29 -- real data
@@ -1135,15 +1098,12 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
         ),
         aoi_definition=AoiDefinitionModel(
             base=raw["aoi_definition"]["base"],
-            per_declared_item=raw["aoi_definition"]["per_declared_item"],
-            member_name_char_bytes=raw["aoi_definition"].get("member_name_char_bytes", 0),
-            member_name_free_chars=raw["aoi_definition"].get("member_name_free_chars", 0),
-            member_name_confidence=raw["aoi_definition"].get("member_name_confidence", "FITTED"),
-            per_type_rate=raw["aoi_definition"].get("per_type_rate", {}),
-            member_type_extra=dict(
-                raw.get("aoi_member_type_extra", {}).get("rate_by_type", {})),
-            member_type_extra_alignment=raw.get(
-                "aoi_member_type_extra", {}).get("alignment_bytes", 8),
+            per_member_descriptor_bytes=raw["aoi_definition"]["per_member_descriptor_bytes"],
+            bool_word_bytes=raw["aoi_definition"]["bool_word_bytes"],
+            bool_word_bits=raw["aoi_definition"]["bool_word_bits"],
+            enable_bits=raw["aoi_definition"]["enable_bits"],
+            name_pool_alignment_bytes=raw["aoi_definition"]["name_pool_alignment_bytes"],
+            name_pool_per_name_bytes=raw["aoi_definition"]["name_pool_per_name_bytes"],
             confidence=raw["aoi_definition"]["confidence"],
             name_length_bucket_bytes=raw["aoi_definition"]["name_length_bucket_bytes"],
             name_length_floor_bytes=raw["aoi_definition"]["name_length_floor_bytes"],

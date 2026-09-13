@@ -461,22 +461,64 @@ Logix always require one, or can it be anonymous/inline?) allocates memory
 per call site the same way. Needs call-site counting from logic parsing,
 which is a genuine Phase 1/4 dependency and stays deferred.
 
-**AOI definition cost (FITTED, wired 2026-08-27, OQ-AOIDEF):** an AOI's own
-Parameters/LocalTags declaration (independent of any instance tag) has a
-real, separate one-time cost — `base + rate * declared_item_count`, same
-relationship a UDT definition has to a UDT-typed tag. `base = 1184`.
-`declared_item_count` excludes `EnableIn`/`EnableOut`; `InOut` params are
-already excluded upstream (reference, not storage). Rate is per-type when
-every declared item shares the SAME type — `BOOL=16, SINT=18, INT=18,
-DINT=20, REAL=20, LINT=24` bytes/item — falling back to the flat `20`
-rate for a mixed-type AOI definition. That fallback is deliberate, not a
-placeholder: real data (`aoi_boolpack_interspersed20_def_only`, 20 BOOL +
-20 DINT) shows the per-type rates do NOT compose additively once BOOL sits
-alongside another type — a naive per-type sum under-predicts that file by
-80 bytes, while the flat rate matches it exactly. Live-recomputed against
-all 85 captured AOI manifest rows: 32 exact, 52 within 1%, 1 at 2.10%
-(a separate array-vs-definition-cost interaction, not a def-cost miss —
-see AOI_KNOWLEDGE_MAP.md item 3).
+**AOI definition cost (FITTED, re-derived 2026-09-13, OQ-AOIDEFSHAPE):** an
+AOI's own Parameters/LocalTags declaration has a real, separate one-time cost,
+independent of any instance tag — the same relationship a UDT definition has to
+a UDT-typed tag. ONE itemised form:
+
+| term | value |
+|---|---|
+| base | 1163 |
+| per declared member | 12 |
+| per declared member | that member's OWN data bytes |
+| per 32-bit word the declared BOOLs occupy | 24 |
+| the members' names | pooled, one byte per name, rounded up to 8 |
+| the AOI's own type name | `name_length_bytes`, below |
+
+A scalar BOOL has no data bytes of its own — it is a bit in the packed words,
+and `EnableIn`/`EnableOut` count as two further bits in the same words, so an
+AOI with no declared BOOL at all still pays for one word. An array member's
+data bytes are element × dimension; a TIMER/STRING/UDT member's are that
+structure's own size. `InOut` parameters cost nothing (reference, not storage,
+excluded upstream in `parser/aoi.py`), and `EnableIn`/`EnableOut` are not
+declared members.
+
+Measured on **124 captured def-only files** — an AOI definition with no
+instance tag anywhere and no internal rungs, so the definition is the only AOI
+cost in the file and its true value reads straight off the capture. They span 1
+to 128 declared members, six atomic types, BOOL fractions from 0 to 100%, and
+Input, Output and LocalTag usages. **70 of the 124 land exactly, 122 of 124
+within the project's ±8 universal residual, worst 11.**
+
+This replaced four separate fitted terms that had each absorbed part of the
+same error. Every one of them fitted its own sweep exactly and was still the
+wrong shape, which is the reason to record what each was measuring:
+
+| superseded | was really |
+|---|---|
+| `per_declared_item: 20` | 12 + the 4 data bytes of the DINT every count sweep used |
+| `per_type_rate` BOOL 16 / SINT 18 / INT 18 / LINT 24 | the same 12 + own-size relation, seen through the old linear name term |
+| `member_name_char_bytes: 1`, 3 free chars | a pool rounded up to 8, misread as a per-character rate |
+| `aoi_member_type_extra` REAL 0 / TIMER 8 / COUNTER 8 | exactly (own size − 4); its floor-to-8 was an artifact of the mis-attribution |
+
+The mixed-versus-single-type split went with them. Per-type rates "did not
+compose additively once BOOL sat alongside another type" because the name-pool
+error was showing up as a composition effect, not because of any real
+interaction.
+
+Effect of wiring it, live-recomputed over every valid capture: corpus rows
+landing exactly **1,120 → 1,198**, rows inside ±8 **1,690 → 1,907**, and
+within 1% per category `aoi_array_packing` **283/283**, `aoi` **160/160**,
+`axis` **61/61**, `driveaxis` **15/15**, `aoi_reqvis` **9/9**. On the sixteen
+real programs mean absolute error 2.16% → **2.13%**, with
+`griffin_stackerline` at **94 bytes** on 2.36 MB.
+
+`base` is set to the value that centres the residual on zero for the 124-file
+instrument. A base 8 higher scores more exact rows corpus-wide and is
+deliberately not taken — see OQ-AOIDEFSHAPE, which owns the one 8-byte term
+still unexplained (exactly 0 on 70 instrument files, exactly +8 on 35,
+confounded between the type-name bucket boundary, a fixed offset inside the
+name pool, and member order; 54 files built to break it).
 
 **AOI type-name-length step, CLOSED 2026-08-30 (OQ-AOIDEF):** the AOI type
 name itself adds `8*max(0,(len(name)-8)//4) - 8` bytes to the definition
@@ -526,7 +568,9 @@ off — was wrong. Composition only moved the per-instance size; the residue
 mod 8 was doing all the work. 49 of the 52 captured families are now flat
 in instance count (was 37), and what remains is a per-family CONSTANT
 (−38..+180) that five `def_only`-controlled pairs place on the AOI
-DEFINITION, not the array — see the `aoi_definition` mixed-type rate above.
+DEFINITION, not the array. That residual is what the 2026-09-13 itemised
+definition re-derivation above resolved; see OQ-AOIDEFSHAPE for the 8 bytes
+of it that are left.
 Confidence stays FITTED: the rule is exact on every family that can test
 it, but three families still vary with instance count (`bc31`, `bc32`, and
 `nonatomic_sint_20b10a`) and the closeout files for those are generated,
@@ -539,7 +583,7 @@ LocalTags declaration cost above — were priced at $0 until 2026-08-31.
 (real data confirms per-routine count doesn't matter, only total content)
 into one pseudo-routine, weighed with the same per-instruction-type table
 as ordinary routine logic (`charge_shell=False` — the AOI definition's own
-`base=1184` already covers its shell). Cut max residual on the isolation
+`base` already covers its shell). Cut max residual on the isolation
 sweep from 12.02% to 0.55%. A further composite-scale surcharge on top of
 this (`aoi_logic_composite_surcharge_per_instr=20`, FITTED, see the Logic
 instruction weights section below) was found and wired 2026-09-02.
@@ -547,8 +591,12 @@ instruction weights section below) was found and wired 2026-09-02.
 **Array-dimensioned declared member data space (WIRED 2026-09-11,
 OQ-AOIARRAYLOCALTAG):** an AOI's array-dimensioned declared member (LocalTag
 or Parameter) costs its own DATA SPACE on top of the flat
-`per_declared_item` rate, which counts the member once regardless of its
-dimension. Measured from the 27-file `aoi_arraylocal_*` sweep, captured
+per-member descriptor rate, which counts the member once regardless of its
+dimension. (Since the 2026-09-13 itemised re-derivation the array's data
+bytes REPLACE the scalar element size a non-array member of the same type
+would pay, rather than stacking on top of a flat rate — all six
+`aoi_arraylocal_dim_*` def_only points read +4 under the current engine,
+flat in dimension from 10 to 1000.) Measured from the 27-file `aoi_arraylocal_*` sweep, captured
 2026-09-03 and reconciled 2026-09-11, against a prediction that was FLAT at
 every dimension:
 

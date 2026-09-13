@@ -289,7 +289,7 @@ def expand_definition_children(
     if dtdef.is_string_family:
         return _expand_string_definition(dtdef, model)
     if dtdef.is_aoi:
-        return _expand_aoi_definition(dtdef, model)
+        return _expand_aoi_definition(dtdef, data_types, model)
     return _expand_plain_udt_definition(name, dtdef, model)
 
 
@@ -311,43 +311,57 @@ def _expand_plain_udt_definition(name: str, udt: DataTypeDef, model: MemoryModel
     return children
 
 
-def _expand_aoi_definition(aoi: DataTypeDef, model: MemoryModel) -> list[Child]:
-    conf = model.aoi_definition.confidence
+def _expand_aoi_definition(
+    aoi: DataTypeDef, data_types: dict[str, DataTypeDef], model: MemoryModel
+) -> list[Child]:
+    aoi_def = model.aoi_definition
+    conf = aoi_def.confidence
     declared_items = [m for m in aoi.members if m.name not in ("EnableIn", "EnableOut")]
-    children = [Child("Base", ".base", "OVERHEAD", (), model.aoi_definition.base, conf, False)]
-    # Each member carries its flat declared-item rate PLUS the cost of its own
-    # name, so the breakdown still sums to compute_aoi_definition_cost and a
-    # long-named member visibly costs more than a short-named one -- which is
-    # the whole point of showing this per member rather than as one lump.
-    member_conf = weakest(conf, model.aoi_definition.member_name_confidence)
+    children = [Child("Base", ".base", "OVERHEAD", (), aoi_def.base, conf, False)]
+    # Each member row is its flat descriptor rate PLUS its own data bytes, so
+    # a STRING member visibly costs more than a DINT one -- which is the whole
+    # point of showing this per member rather than as one lump.
+    bool_count = 0
     for m in declared_items:
+        member_bytes = aoi_def.per_member_descriptor_bytes
+        member_conf = conf
+        if m.data_type == "BOOL" and not m.dimension:
+            bool_count += 1
+        elif m.data_type != "BOOL":
+            try:
+                if m.dimension:
+                    data_bytes, member_conf = compute_array_size(
+                        m.data_type, (m.dimension,), data_types, model)
+                else:
+                    data_bytes, member_conf = compute_element_size(
+                        m.data_type, data_types, model)
+            except UnknownDataTypeError:
+                data_bytes, member_conf = 0, conf
+            member_bytes += data_bytes
+            member_conf = weakest(conf, member_conf)
         children.append(Child(
-            m.name, f".{m.name}", m.data_type, (),
-            model.aoi_definition.per_declared_item
-            + model.aoi_definition.member_name_bytes([m.name]),
-            member_conf, False,
+            m.name, f".{m.name}", m.data_type, (), member_bytes, member_conf, False,
         ))
-    name_conf = weakest(conf, model.aoi_definition.name_length_bucket_confidence)
+    # The packed BOOL words and the members' NAME POOL are both totals over the
+    # whole member set -- the words because EnableIn/EnableOut share them, the
+    # pool because it is rounded up once -- so neither can be split across the
+    # member rows above without the parts failing to sum to the whole.
+    words = aoi_def.bool_word_cost(bool_count)
+    if words:
+        children.append(
+            Child(f"Packed BOOL words ({bool_count} BOOL + enable bits)", ".boolwords",
+                  "OVERHEAD", (), words, conf, False)
+        )
+    pool = aoi_def.member_name_pool_bytes([m.name for m in declared_items])
+    if pool:
+        children.append(
+            Child("Member name pool", ".namepool", "OVERHEAD", (), pool, conf, False)
+        )
+    name_conf = weakest(conf, aoi_def.name_length_bucket_confidence)
     children.append(
         Child("Type name length", ".namelen", "OVERHEAD", (),
-              model.aoi_definition.name_length_bytes(aoi.name), name_conf, False)
+              aoi_def.name_length_bytes(aoi.name), name_conf, False)
     )
-    # Non-atomic members cost more than the flat declared-item rate (TIMER and
-    # COUNTER 8 each, MOTION_INSTRUCTION 12, STRING 84), and the total is
-    # floored to an 8-byte boundary -- so it CANNOT be split across the member
-    # rows above without the parts failing to sum to the whole. Shown as one
-    # line for that reason. See memory_model.yaml aoi_member_type_extra.
-    type_counts: dict[str, int] = collections.Counter(m.data_type for m in declared_items)
-    extra = model.aoi_definition.member_type_extra_bytes(type_counts)
-    if extra:
-        present = sorted(
-            name for name in type_counts
-            if model.aoi_definition.member_type_extra.get(name)
-        )
-        children.append(
-            Child(f"Non-atomic member types ({', '.join(present)})", ".typeextra",
-                  "OVERHEAD", (), extra, conf, False)
-        )
     return children
 
 
