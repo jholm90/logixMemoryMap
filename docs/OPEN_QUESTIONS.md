@@ -755,6 +755,49 @@ the matching footnote at the bottom, not inline.
     - **D, `srout_mixed_k04_n01000`** vs **`srout_same_k04_n01000`** (2 files).
       Four outputs of four different types against four OTEs — candidate 4.
 
+    **TWO MORE POINTS AND ONE CANDIDATE ELIMINATED, 2026-09-13 (capture-batch
+    segment 8, `ntag_*`).** The law is now measured on THREE independently
+    generated shapes at three different output counts, all exact:
+
+    | shape | outputs | per rung |
+    |---|---:|---:|
+    | `UID()UIE();` | 2 | **−12** at n = 1, 10, 100 and 1,000 |
+    | `XIC(Bit0)MOV(1,Dst0)ADD(Dst0,1,Dst0)OTE(Bit1);` | 3 | **−24** at n = 400 and 4,000 |
+    | `UID()XIC(B0)OTE(B1)MOV(D0,D1)UIE();` | 4 | **−36** at n = 100 |
+
+    −12 × (outputs − 1) at 2, 3 and 4 outputs, nothing fitted to get there.
+
+    **Candidate 2 — identical-rung repetition, or deduplication — is DEAD.**
+    `ntag_uidpair_n00001` is a ONE-RUNG file and pays the full −12. There is no
+    repetition in a one-rung file, so the discount cannot be amortisation of a
+    repeated structure. That was the candidate I thought most likely, and group B
+    of the built batch (`srout_oteuniq_*`) existed to test it; it is answered
+    without capture.
+
+    **Candidate 4 — repeated versus distinct instruction types — is badly
+    weakened.** The `withbody` rung's four outputs are four DIFFERENT
+    instructions (UID, OTE, MOV, UIE) and it pays exactly 12 per extra, the same
+    rate as `UID()UIE();`'s two distinct ones. The law does not care about type
+    distinctness.
+
+    So: the discount needs no repetition, ignores instruction type, exempts
+    parallel branches, and is exact at three output counts on three shapes — and
+    the sixteen real programs still reject it outright (2.07% → 2.90% even
+    counting series-only outputs at bracket depth 0).
+
+    **JOINT HYPOTHESIS WITH OQ-REALUNDER, and it makes both coherent.** That
+    entry's differencing puts the real-file residual on compiled logic, with
+    `residual / routine_logic_bytes` bimodal — eleven programs 9% to 22% SHORT.
+    If the −12 discount is in fact real and universal, then real ladder's true
+    under-charge is LARGER than 9–22%, and applying only the discount makes real
+    files worse precisely because the bigger positive term is still missing. One
+    unpriced positive term in real ladder explains both observations; two
+    independent errors of opposite sign in the same category does not.
+
+    That makes `strip_ladder.py`'s **L2 rung — minus all rung and ST content —
+    the decisive measurement for this entry too**, not just for OQ-REALUNDER.
+    Nothing further should be fitted here until it is captured.
+
 11b. **OQ-UDTTAGSLOT** — is a standalone UDT tag's data slot padded to 8 bytes?
     Opened 2026-09-13 (capture-batch segment 5). **WIRED, and thin. 52 files
     built, awaiting capture.**
@@ -1873,7 +1916,19 @@ the matching footnote at the bottom, not inline.
     difference of exactly 0 -- so the 23 is one of the seven constants being
     wrong, not an additivity failure, and each file measures one constant.
 
-25. **OQ-VERIFINSTR** — instruction weights measured but never wired, and
+25. **OQ-VERIFINSTR** —
+    **the ZERO-OPERAND half is CLOSED 2026-09-13 (capture-batch segment 8,
+    `ntag_*`).** MCR, TND, UID and UIE each land EXACTLY at all five counts from
+    10 to 5,000 rungs — 20 of 20 rows, zero residual anywhere, so those four
+    weights are confirmed at three orders of magnitude and no longer need a
+    zero-operand caveat. The 5 non-exact rows in that family are all the PAIRED
+    shape and belong to OQ-SERIESOUTPUT, which they sharpen considerably: see
+    that entry for the −12 × (outputs − 1) law now measured at 2, 3 and 4
+    outputs, and for the elimination of the repetition candidate by a one-rung
+    file that pays the full discount.
+
+    The rest of the entry, unchanged: instruction weights measured but never
+    wired, and
     the classification of what is left. **Ten wired 2026-09-12; four
     reclassified out of scope; one left alone on purpose; one still open.**
 

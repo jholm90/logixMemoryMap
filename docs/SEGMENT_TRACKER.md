@@ -17,7 +17,7 @@ project's ±8 universal-residual band.
 | 5 | `addit_*` | 33 | 33 | 0 | OQ-COMPOSITESCALE | **CLOSED — the categories are additive, 24/24 exactly** |
 | 6 | `stx_*` | 30 | 30 | 0 | OQ-STEXPR | **CLOSED — one law replaces a five-entry table** |
 | 7 | `genem_*` | 27 | 24 | 0 | OQ-MODULESTRUCTURAL | **CLOSED for ETHERNET-MODULE — 2 arms invalid, rebuilt** |
-| 8 | `ntag_*` | 25 | 25 | 0 | OQ-VERIFINSTR | pending |
+| 8 | `ntag_*` | 25 | 25 | 0 | OQ-VERIFINSTR | **CLOSED — 20/20 exact; the other 5 kill a OQ-SERIESOUTPUT candidate** |
 | 9 | `identnamelen_*` | 24 | 19 | 5 | OQ-IDENTNAMELEN | pending |
 | 10 | `udtmn2_*` | 23 | 23 | 0 | OQ-UDTMEMBERNAME | pending |
 | 11 | `udtmn_*` | 24 | 24 | 0 | OQ-UDTMEMBERNAME | pending |
@@ -484,4 +484,45 @@ changed had their capture columns voided rather than carried against a file they
 no longer describe. The lesson is the one already in the project's rules and it
 cost a whole arm anyway: **transplant, never compose** — and a file that converts
 cleanly is not evidence that the shape is right.
+
+
+## Segment 8 — `ntag_*`, OQ-VERIFINSTR: CLOSED
+
+25 files, all captured, zero build errors, **no engine change needed** — which is
+the result, not an absence of one.
+
+**The four zero-operand instructions are exact at every count.** MCR, TND, UID
+and UIE each land at zero residual at 10, 50, 100, 1,000 and 5,000 rungs — 20 of
+20 rows. Those weights are confirmed across three orders of magnitude and the
+zero-operand half of OQ-VERIFINSTR is closed.
+
+**The other five rows are the PAIRED shape, and they sharpen OQ-SERIESOUTPUT more
+than a new batch would have.** The law is now measured on three independently
+generated shapes at three output counts, all exact:
+
+| shape | outputs | per rung |
+|---|---:|---:|
+| `UID()UIE();` | 2 | **−12** at n = 1, 10, 100, 1,000 |
+| `XIC(Bit0)MOV(1,Dst0)ADD(Dst0,1,Dst0)OTE(Bit1);` | 3 | **−24** at n = 400, 4,000 |
+| `UID()XIC(B0)OTE(B1)MOV(D0,D1)UIE();` | 4 | **−36** at n = 100 |
+
+−12 × (outputs − 1), nothing fitted.
+
+**And `ntag_uidpair_n00001` kills the candidate I thought most likely.** It is a
+ONE-RUNG file and it pays the full −12. There is no repetition in a one-rung
+file, so the discount cannot be deduplication or amortisation of an identical
+repeated rung. The `withbody` rung also weakens the type-distinctness candidate:
+its four outputs are four different instructions and it pays the same 12 each as
+`UID()UIE();`'s two.
+
+So the discount needs no repetition, ignores instruction type, exempts parallel
+branches, is exact at three output counts — and the sixteen real programs still
+reject it (2.07% → 2.90%). Taken with OQ-REALUNDER's finding that real logic is
+9–22% SHORT, the coherent reading is that **the discount is real and universal
+and a larger unpriced positive term in real ladder swamps it** — one missing term
+explaining both, rather than two opposite-signed errors in one category. That
+makes `strip_ladder.py`'s L2 rung the decisive measurement for this entry too.
+
+Nothing wired, nothing generated. Four constants confirmed, one candidate
+eliminated, and the two open logic questions joined into one.
 

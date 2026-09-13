@@ -495,3 +495,14 @@ Recapture, separately from the above: the 5 stale `aoi_logic_scale_*` /
   +0.086..+0.224. A global logic scale-up is ruled out by the 578 `logic_instr`
   rows. Full reasoning in OQ-REALUNDER.
 
+### Added 2026-09-13 (capture-batch segment 8)
+
+- Nothing to build. Segment 8 needed no engine change and no new files: the four
+  zero-operand weights are confirmed exact at five counts each, and the paired
+  shape's five rows did more for OQ-SERIESOUTPUT than a new batch would have.
+- **`srout_oteuniq_k{02,04,08}_n00200` (group B of the already-built
+  `srout_*` batch) is now redundant.** Its purpose was to test whether the
+  −12-per-extra-output discount needs identical repeated rungs;
+  `ntag_uidpair_n00001` is a one-rung file that pays the full −12, which answers
+  it without capture. Deprioritise those 3 in the capture roster.
+
