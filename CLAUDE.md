@@ -137,9 +137,23 @@ Run this sequence in order, without being asked:
    accurate, closed items actually moved out rather than just marked, stale
    claims corrected.
 6. **Update** `docs/INSTRUCTION_COVERAGE.md`.
-7. **Decide the next batch.** Every file in a batch must answer a real,
-   currently-open question. There is no minimum roster size to pad toward —
-   if the genuine work is 20 files, ship 20.
+7. **Decide the next batch — SPECIFY IT, DO NOT GENERATE IT.** Test L5X files
+   are supplied by James, not written by Claude. Agreed and then violated on
+   2026-09-13, when 143 files were generated across four segments after the
+   agreement was already in place: generated shapes have repeatedly turned out
+   not to be the shape they claimed (the 2198 L5K payload, the `genem_*`
+   CommMethod that silently made three files the same connection, the
+   MOV-writes-to-Input lint rule), and a file that converts cleanly is not
+   evidence the shape is right. So the deliverable at this step is a written
+   SPEC — what varies, what is held fixed, what each file discriminates, and
+   against which existing captures it differences — not files on disk. Ask
+   before generating anything, every time; no prior batch is authorization for
+   the next. Every file in a batch must still answer a real, currently-open
+   question, and there is no minimum roster size to pad toward — if the genuine
+   work is 20 files, spec 20.
+
+   The one exception is `scripts/strip_ladder.py`, which derives variants of a
+   real export James already supplied rather than inventing a shape.
 8. **Report**: what changed, what is now closed, what is genuinely still
    open with the full-depth reasoning already applied, the
    conversion-failure log from step 2, and **step 2b's error flags — which
