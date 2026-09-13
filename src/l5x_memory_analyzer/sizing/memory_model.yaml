@@ -1391,6 +1391,52 @@ aoi_array:
 # - Required/Visible/Hidden flag combination's small +-16 definition-cost
 #   swing (see OQ-AOIDEF) -- recapture batch (reqvis_*_def_only against a
 #   BOOL+InOut AXIS shape) still awaiting capture, not yet re-confirmed.
+# Per-member cost of a NON-ATOMIC declared member, over and above the flat
+# per_declared_item rate -- OQ-AOIDEFITEMIZE, wired 2026-09-13.
+#
+# Derived from aoilt_swap_{timer,counter,motion,real,string}_n01..n08: 40 files,
+# each swapping k of 8 DINT LocalTags for another type with the MEMBER COUNT
+# HELD AT 8, so the per-type rate separates from the per-item rate. Eight counts
+# per type instead of the two that existed before, which is what made the shape
+# visible rather than just the slope.
+#
+# One form fits all 40 points with zero residual:
+#
+#     extra_bytes = alignment * floor(sum(count_T * rate_T) / alignment)
+#
+# with alignment 8 and rate_T below. The FLOOR is the part two points could
+# never have shown: TIMER and COUNTER are 8/member and land on the boundary so
+# they look linear, while MOTION_INSTRUCTION (12) and STRING (84) alternate
+# -16/-8 and -88/-80 as odd counts lose the remainder. Reading either of those
+# from two points would have given 12 and 84 as clean slopes and been wrong at
+# every odd count.
+#
+#   REAL                 0   measured, and it agrees with per_type_rate's
+#                            REAL == DINT == 20, so the two derivations of the
+#                            same fact are consistent
+#   TIMER                8
+#   COUNTER              8
+#   MOTION_INSTRUCTION  12
+#   STRING              84
+#
+# Only types ABSENT from per_type_rate may be listed here or the cost is
+# charged twice. REAL is listed at 0 to record that it was measured, which
+# cannot double-count.
+#
+# ASSUMED, not measured: that the rates ADD when a definition mixes two
+# non-atomic types (say a TIMER and a STRING in one AOI). Every file here mixes
+# exactly one non-atomic type with DINT. The sum-then-floor form is the natural
+# reading and is what is wired, but a mixed-non-atomic file would test it.
+aoi_member_type_extra:
+  alignment_bytes: 8
+  rate_by_type:
+    REAL: 0
+    TIMER: 8
+    COUNTER: 8
+    MOTION_INSTRUCTION: 12
+    STRING: 84
+  confidence: KNOWN
+
 aoi_definition:
   base: 1184
   per_declared_item: 20

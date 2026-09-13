@@ -11,7 +11,7 @@ project's ±8 universal-residual band.
 | # | segment | files | capt | err | owning question | status |
 |---|---|---:|---:|---:|---|---|
 | 1 | `aoialgn_*` | 71 | 71 | 0 | OQ-AOIBOOLPACK-PAIRING | **CLOSED — 2 laws wired** |
-| 2 | `aoilt_*` | 54 | 54 | 0 | OQ-AOIDEFITEMIZE | pending |
+| 2 | `aoilt_*` | 54 | 54 | 0 | OQ-AOIDEFITEMIZE | **CLOSED — 54/54 clean** |
 | 3 | `dscale2_*` | 39 | 39 | 0 | OQ-DEFSCALE | pending |
 | 4 | `aoimix_*` | 34 | 34 | 0 | OQ-AOIBOOLPACK-PAIRING | pending |
 | 5 | `addit_*` | 33 | 33 | 0 | OQ-COMPOSITESCALE | pending |
@@ -118,3 +118,63 @@ Effect: `aoialgn` rows within ±8 went 22 → 29 of 71, and the remaining residu
 is a per-family CONSTANT in every one of the 12 bool-count families — the
 definition-cost question, not the array question. Real programs unchanged at
 3.65% mean (real files use scalar AOI instances, not arrays).
+
+
+## Segment 2 — `aoilt_*`, OQ-AOIDEFITEMIZE: CLOSED
+
+54 files, all captured, zero build errors. Two arms.
+
+**`aoilt_dim_{dint,timer}` (14 files) — CONFIRMED EXACT, no change needed.**
+Dimensions 2 / 4 / 16 / 32 / 128 / 256 / 1024 on an array-dimensioned declared
+member, for a plain atomic (DINT) and a predefined structure (TIMER). All 14
+reconcile at exactly 0 across a 512x range. The array-member data-space law
+wired 2026-09-11 is correct as it stands, including for a predefined element
+type at 1024 elements.
+
+**`aoilt_swap_*` (40 files) — ONE LAW WIRED, zero residual.** Each file swaps k
+of 8 DINT LocalTags for another type with the member count held at 8, so the
+per-TYPE rate separates from the per-ITEM rate. Eight counts per type, where
+only two existed before.
+
+    extra_bytes = 8 * floor(sum(count_T * rate_T) / 8)
+
+| type | rate | shape of the residual before wiring |
+|---|---:|---|
+| REAL | 0 | flat -8 at every k -- REAL costs what DINT costs |
+| TIMER | 8 | -16, -24, -32 ... -72, a clean -8/swap |
+| COUNTER | 8 | identical to TIMER |
+| MOTION_INSTRUCTION | 12 | -16, -32, -40, -56 ... alternating -16/-8 |
+| STRING | 84 | -88, -176, -256, -344 ... alternating -88/-80 |
+
+The FLOOR is the half that two data points could not have shown. TIMER and
+COUNTER are 8/member and land on the 8-byte boundary, so they look perfectly
+linear; MOTION_INSTRUCTION (12) and STRING (84) alternate because odd counts
+lose the remainder. A slope fitted to either from two points gives 12 and 84
+and is wrong at every odd count. All 40 rows now sit at exactly -8, the
+universal per-file residual.
+
+Only types absent from `per_type_rate` may appear in this table or the cost
+lands twice; a test pins that. REAL is listed at 0 to record that it was
+measured -- and it independently agrees with `per_type_rate`'s REAL == DINT.
+
+ASSUMED, not measured: that the rates ADD when one definition mixes two
+non-atomic types. Every file here mixes exactly one non-atomic type with DINT.
+Sum-then-floor is the natural reading and is what is wired.
+
+The UI drill-down gained a `Non-atomic member types (...)` line. The extra is
+floored over the whole member set, so it cannot be divided among the per-member
+rows without the parts failing to sum to the whole -- it is one line for that
+reason, and a test pins that the breakdown still totals the charge.
+
+**Segment 1's group-B law did NOT land here.** That one is about AOI *instance*
+element size for narrow members (`8 x ceil(member_bytes / 4)`, 9/9). This
+segment's law is about the *definition*. They are separate costs and the
+definition fix does not touch the instance sizing, so group B stays open and
+carries forward.
+
+Effect: `aoilt` within +-8 went 22 -> **54 of 54**. Real programs improved from
+3.65% to **3.61%** mean absolute error, worst -6.06% -> **-5.97%** -- small, but
+it is movement in the right direction on the held-out set, which most wiring
+this session has not produced. Corpus exact 1,150 -> 1,143: seven rows that were
+exact lost it, which is the expected sign of other AOI families having carried a
+compensating error.

@@ -75,7 +75,9 @@ def test_alias_tags_size_not_error():
     # own name at 1 byte/char with the first 3 free. The one counted member
     # here is "DebTmr" (6 chars) -> max(0, 6-3) * 1 = 3.
     aoi_def = by_path["udt_definitions/fbDebounce"]
-    assert aoi_def.bytes == 1184 + 20 - 8 + 3
+    # +8 since 2026-09-13: the TIMER member's measured non-atomic extra
+    # (memory_model.yaml aoi_member_type_extra, 40 files zero residual).
+    assert aoi_def.bytes == 1184 + 20 - 8 + 3 + 8
     assert aoi_def.basis == "FITTED"
 
     # total now also includes the project_baseline entry (2026-08-23,

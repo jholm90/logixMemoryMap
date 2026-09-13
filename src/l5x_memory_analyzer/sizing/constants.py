@@ -131,6 +131,11 @@ class AoiDefinitionModel:
     member_name_char_bytes: int = 0
     member_name_free_chars: int = 0
     member_name_confidence: str = "FITTED"
+    # Per-member extra for a NON-ATOMIC declared member, keyed by type, with the
+    # total floored to `member_type_extra_alignment`. See memory_model.yaml
+    # aoi_member_type_extra -- 40 files, one form, zero residual.
+    member_type_extra: dict[str, int] = field(default_factory=dict)
+    member_type_extra_alignment: int = 8
 
     def member_name_bytes(self, member_names) -> int:
         """Cost of the declared members' own NAMES.
@@ -173,7 +178,24 @@ class AoiDefinitionModel:
             total = self.base + rate * total_items
         else:
             total = self.base + self.per_declared_item * total_items
-        return total + self.name_length_bytes(name) + self.member_name_bytes(member_names)
+        return (total + self.name_length_bytes(name) + self.member_name_bytes(member_names)
+                + self.member_type_extra_bytes(type_counts))
+
+    def member_type_extra_bytes(self, type_counts: dict[str, int]) -> int:
+        """Extra for non-atomic declared members, summed then floored to an
+        8-byte boundary.
+
+        The floor is what makes TIMER and COUNTER look linear (8/member lands on
+        the boundary) while MOTION_INSTRUCTION (12) and STRING (84) alternate as
+        odd counts lose the remainder. Summing before flooring is the ASSUMED
+        part -- every measured file mixes exactly one non-atomic type with DINT.
+        """
+        if not self.member_type_extra:
+            return 0
+        raw = sum(self.member_type_extra.get(type_name, 0) * count
+                  for type_name, count in type_counts.items())
+        align = self.member_type_extra_alignment
+        return align * (raw // align)
 
     def name_length_bytes(self, name: str) -> int:
         # OQ-AOIDEF closeout, wired 2026-08-29 -- real data
@@ -1107,6 +1129,10 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             member_name_free_chars=raw["aoi_definition"].get("member_name_free_chars", 0),
             member_name_confidence=raw["aoi_definition"].get("member_name_confidence", "FITTED"),
             per_type_rate=raw["aoi_definition"].get("per_type_rate", {}),
+            member_type_extra=dict(
+                raw.get("aoi_member_type_extra", {}).get("rate_by_type", {})),
+            member_type_extra_alignment=raw.get(
+                "aoi_member_type_extra", {}).get("alignment_bytes", 8),
             confidence=raw["aoi_definition"]["confidence"],
             name_length_bucket_bytes=raw["aoi_definition"]["name_length_bucket_bytes"],
             name_length_floor_bytes=raw["aoi_definition"]["name_length_floor_bytes"],

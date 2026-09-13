@@ -12,6 +12,8 @@ calculation back to udt.py rather than recomputing independently.
 
 from __future__ import annotations
 
+import collections
+
 import math
 from dataclasses import dataclass
 
@@ -330,6 +332,22 @@ def _expand_aoi_definition(aoi: DataTypeDef, model: MemoryModel) -> list[Child]:
         Child("Type name length", ".namelen", "OVERHEAD", (),
               model.aoi_definition.name_length_bytes(aoi.name), name_conf, False)
     )
+    # Non-atomic members cost more than the flat declared-item rate (TIMER and
+    # COUNTER 8 each, MOTION_INSTRUCTION 12, STRING 84), and the total is
+    # floored to an 8-byte boundary -- so it CANNOT be split across the member
+    # rows above without the parts failing to sum to the whole. Shown as one
+    # line for that reason. See memory_model.yaml aoi_member_type_extra.
+    type_counts: dict[str, int] = collections.Counter(m.data_type for m in declared_items)
+    extra = model.aoi_definition.member_type_extra_bytes(type_counts)
+    if extra:
+        present = sorted(
+            name for name in type_counts
+            if model.aoi_definition.member_type_extra.get(name)
+        )
+        children.append(
+            Child(f"Non-atomic member types ({', '.join(present)})", ".typeextra",
+                  "OVERHEAD", (), extra, conf, False)
+        )
     return children
 
 
