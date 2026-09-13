@@ -1274,6 +1274,27 @@ aoi_array:
   flat_discount: 4
   bool_word_size: 32
   bool_word_extra: 4
+  # EnableIn and EnableOut are packed into the SAME words as the declared BOOL
+  # parameters, so the real packed-word count is ceil((bool_count + 2) / 32),
+  # not ceil(bool_count / 32). bool_count deliberately excludes those two
+  # (they are not declared members), and that exclusion was silently carried
+  # into the word arithmetic as well, which is the bug.
+  #
+  # Derived 2026-09-13 from aoialgn_bc{30,31,32,33,62,63,64,65,94,95,96,97}
+  # at n=2/4/8 -- 36 files, 12 bool counts bracketing THREE consecutive 32-bit
+  # boundaries. Every count where ceil((bc+2)/32) exceeds ceil(bc/32) shows a
+  # real -4 bytes per INSTANCE (31, 32, 63, 64, 95, 96) and every count where
+  # the two agree is dead flat in instance count (30, 33, 62, 65, 94, 97).
+  # 12 of 12, no exceptions, at a slope of exactly -4.0/instance measured
+  # twice per family (n=2->4 and n=4->8).
+  #
+  # This is a mechanism, not a fitted constant: two always-present BOOL
+  # parameters occupy two bits. The earlier reading of the same effect --
+  # "only the 32-bit/DWORD boundary specifically also carries a real
+  # per-instance term" -- was the right observation with no explanation, and
+  # it could not predict 63/64 or 95/96 because it treated 32 as special
+  # rather than as the first place two extra bits spill a word.
+  enable_bits_packed_with_bools: 2
   # The WHOLE instance-array block is padded up to an 8-byte boundary --
   # derived 2026-09-12, OQ-AOIBOOLPACK-PAIRING. This single constant is what
   # the "odd-length arrays cost 4 bytes more" family of residuals actually
@@ -1294,6 +1315,25 @@ aoi_array:
   # block padding (CAM's 12-byte element), which is the cross-check: two
   # independent array families, one 8-byte block alignment.
   block_alignment_bytes: 8
+  # A flat cost for the array TAG itself, charged once on top of the aligned
+  # instance block. WIRED 2026-09-13 on 24 controlled measurements: eight
+  # aoipack_mc* families each have a def_only twin carrying the same AOI
+  # DEFINITION and no instance tag (aoialgn_def_*), and the array file sits
+  # exactly 4 bytes further under its twin in 18 of the 24, at bool counts
+  # 0, 5, 10, 18 and 30.
+  #
+  # The 6 measurements that read -12 instead are both mc60 families (bool
+  # counts 54 and 60) and are a separate 8-byte effect, not a contradiction of
+  # the 4.
+  #
+  # This was FITTED AND REJECTED on 2026-09-12 on five pairs, because applying
+  # it cost five exact predictions. Those five rows are now explained: every
+  # one of them is a b02 file -- bool_count = 2, which is exactly the number of
+  # enable bits -- so the engine's BOOL term happens to cancel its own error at
+  # that single degenerate count and the row is exact by coincidence. Applying
+  # the 4 moves 26 rows into the +-8 band and cuts total absolute residual over
+  # the 283 AOI-array rows by 204 bytes.
+  array_tag_flat_bytes: 4
   confidence: FITTED
 
 # AOI *definition* cost (the AOI's own Parameters/LocalTags declaration,

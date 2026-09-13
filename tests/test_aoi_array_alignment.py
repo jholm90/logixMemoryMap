@@ -35,8 +35,11 @@ def test_block_alignment_constant_is_eight(model):
 
 
 def _size(aoi: DataTypeDef, n: int, model) -> int:
+    """Aligned block only -- the array tag's own flat cost is subtracted so
+    these tests keep measuring the ALIGNMENT, which is what they exist for.
+    See memory_model.yaml aoi_array.array_tag_flat_bytes."""
     size, _conf = compute_array_size(aoi.name, (n,), {aoi.name: aoi}, model)
-    return size
+    return size - model.aoi_array.array_tag_flat_bytes
 
 
 def test_every_array_length_lands_on_an_eight_byte_boundary(model):

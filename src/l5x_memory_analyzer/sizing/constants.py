@@ -113,7 +113,9 @@ class AoiArrayModel:
     flat_discount: int
     bool_word_size: int
     bool_word_extra: int
+    enable_bits_packed_with_bools: int
     block_alignment_bytes: int
+    array_tag_flat_bytes: int
     confidence: str
 
 
@@ -1093,7 +1095,9 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             flat_discount=raw["aoi_array"]["flat_discount"],
             bool_word_size=raw["aoi_array"]["bool_word_size"],
             bool_word_extra=raw["aoi_array"]["bool_word_extra"],
+            enable_bits_packed_with_bools=raw["aoi_array"]["enable_bits_packed_with_bools"],
             block_alignment_bytes=raw["aoi_array"]["block_alignment_bytes"],
+            array_tag_flat_bytes=raw["aoi_array"]["array_tag_flat_bytes"],
             confidence=raw["aoi_array"]["confidence"],
         ),
         aoi_definition=AoiDefinitionModel(

@@ -444,6 +444,11 @@ the matching footnote at the bottom, not inline.
     the input sweep tests that claim directly and the 450-byte case -- ten real
     instances -- is where a wrong rate would show most.
 
+    **CAPTURE ERRORS: 3 row(s)** flagged here by `scripts/capture_errors.py`
+    (step 2b) after the 616-capture merge of 2026-09-13. Suspect, not wrong:
+    `actual_bytes` is filled in but part of the file may never have reached the
+    controller, which reads as the model over-predicting.
+
 6. **OQ-MODULEIO** — mostly closed 2026-08-29. 126 real module captures
    were sitting unreconciled in manifest.csv; 51 catalogs now have a real
    per-catalog overhead value (exact-match rate on real data went from
@@ -454,7 +459,7 @@ the matching footnote at the bottom, not inline.
    overhead.[^moduleio]
 
 
-    **CAPTURE ERRORS: 38 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    **CAPTURE ERRORS: 39 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
     12 captured WITH Studio build errors, so their `actual_bytes` is
     SUSPECT rather than wrong — part of the file may never have reached the
     controller, which inflates apparent over-prediction. None of them carries
@@ -1139,6 +1144,11 @@ the matching footnote at the bottom, not inline.
     specific to scheduling/call targets, varying ones say it is general and
     two more terms need wiring.
 
+    **CAPTURE ERRORS: 5 row(s)** flagged here by `scripts/capture_errors.py`
+    (step 2b) after the 616-capture merge of 2026-09-13. Suspect, not wrong:
+    `actual_bytes` is filled in but part of the file may never have reached the
+    controller, which reads as the model over-predicting.
+
 14. **OQ-193ECMETR** — new, real, genuinely undiagnosed (now covering TWO
     catalogs — see the correction below). 2026-09-02, real Studio
     5000 error on `composite_realistic_v2_18`/`_50` ("Error:
@@ -1591,7 +1601,7 @@ the matching footnote at the bottom, not inline.
 
 
 
-    **CAPTURE ERRORS: 12 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    **CAPTURE ERRORS: 13 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
     6 captured WITH Studio build errors, so their `actual_bytes` is
     SUSPECT rather than wrong — part of the file may never have reached the
     controller, which inflates apparent over-prediction. None of them carries
@@ -2242,6 +2252,10 @@ the matching footnote at the bottom, not inline.
     about its own uncertainty than the data supports would be its own kind
     of dishonesty.
 
+    **CAPTURE ERRORS: 5 row(s)** flagged here by `scripts/capture_errors.py`
+    (step 2b) after the 616-capture merge of 2026-09-13. Suspect, not wrong:
+    `actual_bytes` is filled in but part of the file may never have reached the
+    controller, which reads as the model over-predicting.
 
 31. **OQ-AOISTRUCT** — **what an AOI costs to DECLARE, as a function of its
     structure rather than its name.** New, 2026-09-06, under two
@@ -2465,6 +2479,10 @@ the matching footnote at the bottom, not inline.
     already-measured law is worth hundreds of kilobytes per real file or a
     few tens.
 
+    **CAPTURE ERRORS: 6 row(s)** flagged here by `scripts/capture_errors.py`
+    (step 2b) after the 616-capture merge of 2026-09-13. Suspect, not wrong:
+    `actual_bytes` is filled in but part of the file may never have reached the
+    controller, which reads as the model over-predicting.
 
 33. **OQ-ALARMDEF** — datatype-level alarm definitions. **RESOLVED except one
     term, 2026-09-12, by reading the 68 `alarmdef_*` and 33 `alarmsep_*` rows
@@ -2998,7 +3016,7 @@ the matching footnote at the bottom, not inline.
     assumption the data cannot support, which is the same mistake the axis
     promotion already made once today.
 
-    **CAPTURE ERRORS: 66 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    **CAPTURE ERRORS: 74 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
     65 captured WITH Studio build errors, so their `actual_bytes` is
     SUSPECT rather than wrong — part of the file may never have reached the
     controller, which inflates apparent over-prediction. None of them carries

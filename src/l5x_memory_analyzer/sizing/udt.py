@@ -131,7 +131,12 @@ def compute_array_size(
         per_instance = element_bytes - model.aoi_array.flat_discount
         if bool_count > 0:
             word_size = model.aoi_array.bool_word_size
-            words = -(-bool_count // word_size)  # ceil
+            # EnableIn/EnableOut share these words even though bool_count
+            # excludes them -- see memory_model.yaml
+            # aoi_array.enable_bits_packed_with_bools (36 files, 12 bool counts
+            # across three 32-bit boundaries, 12/12).
+            packed_bits = bool_count + model.aoi_array.enable_bits_packed_with_bools
+            words = -(-packed_bits // word_size)  # ceil
             per_instance -= bool_count * 4
             per_instance += model.aoi_array.bool_word_extra * max(0, words - 1)
         # The whole block is padded up to an 8-byte boundary, not each
@@ -140,6 +145,10 @@ def compute_array_size(
         align = model.aoi_array.block_alignment_bytes
         block = per_instance * element_count
         block = -(-block // align) * align
+        # The array TAG's own flat cost, on top of the aligned block -- see
+        # memory_model.yaml aoi_array.array_tag_flat_bytes (24 controlled
+        # def_only-versus-array measurements).
+        block += model.aoi_array.array_tag_flat_bytes
         return block, weakest(element_confidence, model.aoi_array.confidence)
     if data_type in data_types:
         # Array-of-UDT: each element rounds up to a 4-byte boundary --
