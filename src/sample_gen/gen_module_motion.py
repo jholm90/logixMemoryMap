@@ -48,6 +48,7 @@ import hashlib
 from pathlib import Path
 
 from sample_gen.gen_axis_composite import _AXIS_TAG_XML
+from sample_gen.data.kinetix import MODULE_IDENTITY, payload_for
 from sample_gen.manifest import append_manifest_row, write_sample_unmodeled
 from sample_gen.wrapper import build_l5x
 
@@ -113,9 +114,37 @@ _P208_MODULE_XML = """\
 
 
 def _drive_module_xml(name: str, catalog: str, safety_enabled: str, address: str = "192.168.1.2") -> str:
-    """D012 (single/dual-axis, non-safety) and S086 (safety-rated) share
-    this exact shape -- only Name/CatalogNumber/SafetyEnabled differ,
-    confirmed by direct comparison of both real files.
+    """One 2198 drive module, with its OWN catalog's real identity and
+    ConfigData payload.
+
+    2026-09-13, CORRECTING A FALSE CLAIM THAT STOOD HERE. This docstring used
+    to say D012 and S086 "share this exact shape -- only Name/CatalogNumber/
+    SafetyEnabled differ, confirmed by direct comparison of both real files".
+    They do not, and three things were wrong together in every 2198 drive this
+    project has ever generated:
+
+      1. ProductCode was hardcoded to 11, which is 2198-D012-ERS3's. Real codes
+         are D012=11, D020=12, D032=13, D057=14, S086=7, S130=8. Five of the six
+         ERS3 drives carried D012's identity.
+      2. The ConfigData payload was D012's for every catalog. Index 3 of the
+         L5K blob is the same discriminator as ProductCode, so it was wrong in
+         the same five cases.
+      3. The payload held 118 values under ConfigSize="468". 118 is not a real
+         value count for ANY 2198 module -- the real pairs are 376/96, 448/114,
+         452/115, 468/119, and size 468 is only ever 119. It has been 118 since
+         the blob was first transcribed, so it was mis-transcribed at birth; an
+         earlier commit recorded the inverse ("119 against the real 118, with a
+         spurious 0 at index 114") and that diagnosis was backwards.
+
+    Identity and payload now come from sample_gen/data/kinetix.py, read out of
+    real exports. An unknown catalog RAISES rather than falling back to some
+    other catalog's data, which is how the D012 identity spread silently.
+    lint.py checks both mechanically (module_identity_mismatch,
+    module_configdata_size_mismatch) so this cannot ship again.
+
+    A drive also needs a 2198-P/RP bus supply in the same project or Studio
+    converts the file and then fails Build with no bus power in the group --
+    enforced by lint.py's kinetix_drive_without_bus_supply.
 
     ExtendedProperties/ConfigID=33554537 confirmed real 2026-09-03 across
     THREE independent real captures: this project's own original
@@ -138,15 +167,26 @@ def _drive_module_xml(name: str, catalog: str, safety_enabled: str, address: str
     the file can resolve a MotionModule reference against it, so the
     'axis tags never got made' symptom reported was a downstream
     consequence of this one root cause, not a second bug)."""
+    try:
+        vendor, product_type, product_code, major, minor = MODULE_IDENTITY[catalog]
+    except KeyError:
+        raise ValueError(
+            f"No verified real data for {catalog!r}. Add it to "
+            f"sample_gen/data/kinetix.py from a real export -- do NOT fall back to "
+            f"another catalog's identity or ConfigData, which is the bug this "
+            f"lookup exists to prevent."
+        ) from None
+    config_size, config_values = payload_for(catalog)
+
     return f"""\
-<Module Name="{name}" CatalogNumber="{catalog}" Vendor="1" ProductType="45" ProductCode="11" Major="14" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="{safety_enabled}">
+<Module Name="{name}" CatalogNumber="{catalog}" Vendor="{vendor}" ProductType="{product_type}" ProductCode="{product_code}" Major="{major}" Minor="{minor}" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="{safety_enabled}">
 <EKey State="CompatibleModule"/>
 <Ports>
 <Port Id="2" Address="{address}" Type="Ethernet" Upstream="true"/>
 </Ports>
 <Communications>
-<ConfigData ConfigSize="468">
-<Data Format="L5K"><![CDATA[[472,7,1793,11,434110479,18,10000,33686020,5,0,0,0,0,0,0,0,0,-1027080192,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,33686018,33686018,67108864,460,1,1045220557,0,0,0,0,1120403456,1120403456,0,1120403456,1124859904,0,0,1120403456,1,0,3,0,0,0,0,0,1,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,262148,0,50528513,0,0,0,8192000,8192125,67305985,0,0,0,67305985,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,50987786,0,655370,0]]]></Data>
+<ConfigData ConfigSize="{config_size}">
+<Data Format="L5K"><![CDATA[[{config_values}]]]></Data>
 </ConfigData>
 <Connections>
 <Connection Name="A_MotionDiagnostics" RPI="1000" Type="DiagnosticInput" EventID="0" ProgrammaticallySendEventTrigger="false">

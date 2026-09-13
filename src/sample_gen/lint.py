@@ -102,6 +102,8 @@ from __future__ import annotations
 
 import re
 import xml.etree.ElementTree as ET
+
+from sample_gen.data.kinetix import CONFIG_DATA, MODULE_IDENTITY, REAL_CONFIG_PAIRS
 from dataclasses import dataclass
 
 # Every native instruction mnemonic this project has confirmed real via
@@ -1093,6 +1095,97 @@ def _aoi_array_param_usage_findings(root: ET.Element) -> list[LintFinding]:
     return findings
 
 
+# ---------------------------------------------------------------------------
+# 2198 Kinetix rules, 2026-09-13. Both exist because the same class of fault
+# shipped in 550+ files and was diagnosed wrong twice from inference.
+# ---------------------------------------------------------------------------
+_KINETIX_SUPPLY = re.compile(r"^2198-(P\d+|RP\d+)")
+_KINETIX_DRIVE = re.compile(r"^2198-(?:[DSH]\d+|C\d+)")
+
+
+def _kinetix_bus_supply_findings(root: ET.Element) -> list[LintFinding]:
+    """A 2198 drive needs a 2198 bus power supply in the project.
+
+    Stated as a hard requirement: a drive added to the I/O tree with no bus
+    supply fails Build with the drive not having bus power in its group. The
+    file still CONVERTS, which is what made this invisible -- 52 committed
+    files carry a drive with no supply anywhere, including the whole
+    asmclose_2198_* sweep that was used to derive the drive overhead.
+
+    Presence only. The power GROUP number is not an attribute of <Module> --
+    it appears nowhere in the real corpus either, including a real file with
+    two supplies and sixteen drives -- so same-group checking needs the group's
+    real representation first and is deliberately not guessed at here.
+    """
+    catalogs = [m.get("CatalogNumber") or "" for m in root.iter("Module")]
+    drives = [c for c in catalogs if _KINETIX_DRIVE.match(c) and not _KINETIX_SUPPLY.match(c)]
+    if not drives:
+        return []
+    if any(_KINETIX_SUPPLY.match(c) for c in catalogs):
+        return []
+    return [LintFinding(
+        "kinetix_drive_without_bus_supply",
+        f"{len(drives)} Kinetix drive(s) ({', '.join(sorted(set(drives)))}) and NO 2198 bus "
+        f"power supply in the project. Studio converts this file and then fails Build with "
+        f"the drives having no bus power in their group. Add a 2198-P or 2198-RP supply.",
+    )]
+
+
+def _module_configdata_findings(root: ET.Element) -> list[LintFinding]:
+    """A module's ConfigSize must match its own payload, and its ProductCode
+    must match its catalog.
+
+    Checked against values read out of real exports (sample_gen/data/kinetix.py)
+    rather than against anything this project composed. The real
+    (ConfigSize, value_count) pairs for 2198 modules are 376/96, 448/114,
+    452/115 and 468/119; a payload of 118 values under ConfigSize=468 -- which
+    is what every generated drive carried -- exists in no real export.
+    """
+    findings: list[LintFinding] = []
+    for module in root.iter("Module"):
+        catalog = module.get("CatalogNumber") or ""
+        name = module.get("Name") or "(unnamed)"
+        identity = MODULE_IDENTITY.get(catalog)
+        if identity is not None:
+            _vendor, product_type, product_code, _major, _minor = identity
+            for attr, expected in (("ProductType", product_type), ("ProductCode", product_code)):
+                actual = module.get(attr)
+                if actual is not None and actual != expected:
+                    findings.append(LintFinding(
+                        "module_identity_mismatch",
+                        f"Module {name} ({catalog}): {attr}=\"{actual}\" but every real "
+                        f"{catalog} in the corpus uses \"{expected}\". A wrong ProductCode "
+                        f"gives the module another catalog's identity.",
+                    ))
+        for config in module.iter("ConfigData"):
+            size_attr = config.get("ConfigSize")
+            if size_attr is None:
+                continue
+            for data in config.iter("Data"):
+                if data.get("Format") != "L5K" or not data.text:
+                    continue
+                count = len([v for v in re.split(r"[,\s\[\]]+", data.text) if v != ""])
+                pair = (int(size_attr), count)
+                known = CONFIG_DATA.get(catalog)
+                if known is not None and pair not in known:
+                    findings.append(LintFinding(
+                        "module_configdata_size_mismatch",
+                        f"Module {name} ({catalog}): ConfigSize={pair[0]} with {pair[1]} L5K "
+                        f"value(s). No real {catalog} export has that combination -- the real "
+                        f"pairs for this catalog are {sorted(known)}. "
+                        f"Take the payload from sample_gen/data/kinetix.py rather than editing "
+                        f"a value count to make a size fit.",
+                    ))
+                elif known is None and catalog.startswith("2198") and pair not in REAL_CONFIG_PAIRS:
+                    findings.append(LintFinding(
+                        "module_configdata_size_mismatch",
+                        f"Module {name} ({catalog}): ConfigSize={pair[0]} with {pair[1]} L5K "
+                        f"value(s), which matches no real 2198 pair "
+                        f"{sorted(REAL_CONFIG_PAIRS)}.",
+                    ))
+    return findings
+
+
 def lint_l5x(l5x_text: str) -> list[LintFinding]:
     root = ET.fromstring(l5x_text)
     findings: list[LintFinding] = []
@@ -1100,6 +1193,8 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     findings.extend(_platform_standard_findings(root))
     findings.extend(_module_slot_findings(root))
     findings.extend(_chassis_size_findings(root))
+    findings.extend(_kinetix_bus_supply_findings(root))
+    findings.extend(_module_configdata_findings(root))
     findings.extend(_invalid_logix_name_findings(root))
     findings.extend(_safety_module_findings(root))
     findings.extend(_aoi_array_param_usage_findings(root))
