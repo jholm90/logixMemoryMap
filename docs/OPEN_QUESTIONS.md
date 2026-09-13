@@ -1974,61 +1974,76 @@ the matching footnote at the bottom, not inline.
         rungs and cannot distinguish 348 once from 3.48 each.
 
 
-29. **OQ-STEXPR** — ST assignment expression cost, five shapes measured.
-    2026-09-04.
+29. **OQ-STEXPR** — the ST assignment law's four remaining assumptions.
+    The expression-cost thread CLOSED 2026-09-13 (capture-batch segment 6) and
+    is in `docs/RESOLVED_QUESTIONS.md`: one law replaced the five-entry
+    count-keyed table, 42 of 48 ST corpus rows now land exactly, corpus mean
+    absolute error 1.833% → 1.545%, and an AOI called from ST — which cost
+    nothing — is `120 + 16 per parameter`, the same two constants as a call
+    from a rung. **21 files built, awaiting capture.**
 
-    An ST assignment is **not** priced like the equivalent CPT. That was
-    the working hypothesis — the `st_expr_cpt_mirror`/`instr_cpt` pair
-    differ by exactly the +432 routine shell, which looked conclusive — and
-    routing every assignment through the tier-aware CPT model on that basis
-    over-predicted `realscale_st_n01000` by **+132%**.
+    What the law still assumes, each because every file that pins the constant
+    holds another variable fixed:
 
-    | shape | operators | dest | measured |
-    |---|---:|---|---:|
-    | `D := 0;` | 0 (bare literal) | DINT | 36 |
-    | `D := D + 1;` | 1 | DINT | 40 |
-    | `D := D + D * 2;` | 2 | DINT | 164 |
-    | `R := D + D;` | 1 | REAL | 152 |
-    | `R := (D+D)*R - R/2 + 1.5;` | 5 | REAL | 452 |
+      1. **The operator premium at exactly ONE operator.** Every file that
+         measures a premium has two operators or more, and the one-operator row
+         is a lookup (40 DINT, 56 REAL) rather than base-plus-rate.
+      2. **The premium on the REAL row.** All six `stx_opkind_*` files write to
+         a DINT destination, where the per-operator rate is 24; the REAL row's
+         is 40, so the premium could scale with it rather than staying at 16.
+      3. **`**` and `OR`.** The tier table prices `**` at a premium of 80,
+         untested in ST; `OR` is absent from that table and so falls to tier 1
+         beside AND and XOR, which *are* measured there.
+      4. **The conversion rate for integer types other than DINT.** The 48 comes
+         from DINT sources only. SINT and INT are narrower conversions, LINT a
+         wider one.
 
-    The tell is the 1-operator case at 40: that is an ADD's own weight, not
-    a CPT's. Logix appears to compile a simple assignment to the single
-    equivalent instruction and only reach for CPT-like evaluation on a
-    compound expression — which is why the 2-operator DINT case lands on
-    the CPT number and the 1-operator cases land nowhere near it.
+    And one thing measured but unseparated: with the call law applied, all four
+    `stx_call_aoi_p*` files land at **+256, +260, +268, +268** — the same
+    one-time ~264 a routine containing AOI calls carries in RLL (see
+    `memory_model.yaml aoi_call_site`). No file in **either** language separates
+    that one-time from a per-call term, because every existing file scales the
+    two together.
 
-    Five points are clearly not one curve, so they are stored as an
-    explicit sparse table rather than interpolated. A shape outside it
-    falls back to the CPT model AND is reported as a
-    `coverage/st_expression/...` gap, so a real file says so rather than
-    quietly carrying a wrong number.
-
-    **What would close it:** the direct ST analogue of what `cmpcpt_*` did
-    for RLL — operator count 0..6 × DINT/REAL destination × with and
-    without a float literal. Not yet generated; it is the obvious next ST
-    batch and is not blocked on anything external.
-
-    Also still open on ST, one thread each:
-    - `st_jsr_param_target_n00100` is the only ST file not exact (−243,
-      −0.52%). Every JSR parameter constant was fitted on RLL targets, and
-      the corpus has 44 SBR / 42 RET inside ST, so an ST JSR target is a
-      real shape that may be charged differently.
-    - `st_ctl_case` carries a +21 residual; the CASE decomposition into
+    Also still open on ST, one thread each, unchanged:
+    - `st_jsr_param_target_n00100` is the only non-exact ST file (+628). Every
+      JSR parameter constant was fitted on RLL targets and the corpus holds 63
+      SBR / 42 RET inside ST, so an ST JSR target is a real shape that may be
+      charged differently.
+    - `st_ctl_case` carries a −32 residual; the CASE decomposition into
       per-construct and per-selector is one data point short.
-    - `while_block` was corrected 72 → 76 on the strength of the
-      literal-RHS rate (36). Only one WHILE file exists, so the split
-      between per-WHILE and per-assignment rests on that substitution.
+    - `while_block` was corrected 72 → 76 on the strength of the literal-RHS
+      rate. Only one WHILE file exists, so that split rests on a substitution.
 
+    **Files built 2026-09-13** — `src/sample_gen/gen_st_closeout.py`, 21 files,
+    1,000 statements each except group E, all on the same tag pool and routine
+    shape as the existing `stx_*`/`st_*` captures:
 
+    - **A, `stc_prem1_{add,sub,mul,div,mod,pow,and,or,xor}`** (9 files). One
+      operator, DINT destination — reads each operator's premium at the count
+      where the law currently applies none. Against `stx_ops01_dint`'s 40.
+    - **B, `stc_premreal_{add,mul,pow}`** (3 files). Four operators, REAL
+      destination and REAL sources so no conversion term intrudes. Against
+      `stx_ops04_real`'s 284.
+    - **C, `stc_opkind_{pow,or}`** (2 files). The two entries `stx_opkind_*` left
+      out, in its identical shape, against its 196 and 260.
+    - **D, `stc_conv_{sint,int,lint,mixed}`** (4 files). One operator, REAL
+      destination, both sources of one integer type; `mixed` reads one DINT and
+      one SINT in the same statement, which says whether the rate is per source
+      or per statement.
+    - **E, `stc_callone_n{00010,00100,01000}`** (3 files). Exactly ONE AOI call
+      statement in a routine of 10, 100 and 1,000 statements, so the call count
+      is pinned at 1 while the routine grows 100x — the first separation of the
+      +264 one-time from anything per-call, in either language.
 
-    **CAPTURE ERRORS: 1 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
-    1 captured WITH Studio build errors, so their `actual_bytes` is
-    SUSPECT rather than wrong — part of the file may never have reached the
-    controller, which inflates apparent over-prediction. None of them carries
-    any error text: every errored row in the manifest was captured between
-    2026-08-23 and 2026-09-08, and the error-log reader only began working
-    2026-09-10, so these need RECAPTURE before their numbers are used.
-    `st_instr_concat_n01000`
+    **CAPTURE ERRORS: 1 row(s)** flagged here by `scripts/capture_errors.py`
+    (step 2b). `st_instr_concat_n01000` captured WITH Studio build errors, so its
+    `actual_bytes` is SUSPECT rather than wrong -- part of the file may never
+    have reached the controller, which inflates apparent over-prediction (it
+    reads −52,000). No error text was recorded: every errored row in the manifest
+    was captured between 2026-08-23 and 2026-09-08 and the error-log reader only
+    began working 2026-09-10, so it needs RECAPTURE before its number is used.
+    It is excluded from every figure quoted above.
 
 30. **OQ-REAL5069** — **SHELVED 2026-09-11 until 2026-09-18. Not closed,
     and not to be raised again before then.**

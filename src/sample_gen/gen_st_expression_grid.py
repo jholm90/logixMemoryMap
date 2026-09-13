@@ -10,22 +10,29 @@ Its confidence is literally MEASURED_SPARSE, and everything outside those
 five falls back to the CPT model, which was fitted for ladder CPT and
 over-predicts a 1-operator ST assignment by roughly 3x.
 
-Scanned across the 10 real exports in samples/local: 128 ST routines,
-6,586 ST lines, of which
+CORRECTED 2026-09-13 (capture-batch segment 6). This docstring asserted
+"Scanned across the 10 real exports in samples/local: 128 ST routines, 6,586 ST
+lines" with "call statements 2,094 -- the single largest shape, and the table says
+nothing about it at all". Re-counted against the current parser, that is wrong,
+and it is the number that sized arm C:
 
-    assign 0 ops   1,735      covered
-    assign 1 op      502      covered
-    assign 2 ops     392      covered
-    assign 3 ops     120      NOT COVERED
-    assign 4 ops      42      NOT COVERED
-    assign 6 ops      26      NOT COVERED
-    assign 8 ops       9      NOT COVERED
-    call statements 2,094      the single largest shape, and the table
-                               says nothing about it at all
+                              ST routines   lines   assignments   AOI calls
+    the 16 held-out programs        26      3,994      2,499          0
+    all 91 files in samples/local  307     24,745      8,099         82
 
-So ~7% of real ST assignments are priced by a fallback that is known to be
-wrong for ST, and the biggest single line shape in real ST -- a bare
-function/AOI call statement -- has no entry of its own.
+Of 758 bare call statements across all of samples/local, 690 are BUILT-IN
+instructions -- COP 325, CONCAT 61, SBR 63, JSR 46, RET 42, TONR 22, DTOS 17,
+DELETE 15 -- every one of which the RLL weight table already prices through the
+routine's own code_text. Only 68 are AOI calls. The parser finds all 26 ST
+routines the raw XML holds in the held-out set, so this is not a detection gap:
+real ST is simply a much smaller share of these programs than was claimed, and
+the claim was never verified before it was used.
+
+Arm C still found a real bug -- an AOI called from ST cost NOTHING, and costs
+120 + 16 per parameter -- and the arms below all landed exactly. But the batch
+moved the sixteen real programs by nothing (2.073% -> 2.074%) while moving the
+corpus from 1.833% to 1.545%, and that gap was predictable from a five-minute
+count.
 
 Three arms, all differencing against the existing `st_expr_*` captures
 which used the identical 1000-statement shape and tag pool:

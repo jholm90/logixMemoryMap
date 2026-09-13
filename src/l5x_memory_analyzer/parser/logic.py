@@ -532,7 +532,7 @@ def _branch_bracket_instruction_count(rung_texts: list[str]) -> int:
     return total
 
 
-def _aoi_call_sites(
+def aoi_call_sites(
     rung_texts: list[str], aoi_names: frozenset[str]
 ) -> tuple[int, int]:
     """(call sites, total parameters passed across them).
@@ -697,7 +697,7 @@ def parse_rll_routines(
             program_jsr_targets |= _jsr_targets(rung_texts)
 
         for routine_name, rung_texts in per_routine_rung_texts.items():
-            aoi_calls, aoi_call_params = _aoi_call_sites(rung_texts, aoi_names)
+            aoi_calls, aoi_call_params = aoi_call_sites(rung_texts, aoi_names)
             routines.append(RoutineLogic(
                 program_name=program_name,
                 routine_name=routine_name,
@@ -769,7 +769,7 @@ def parse_aoi_internal_logic(
                     rung_texts.append(text_el.text)
         if not rung_texts:
             continue
-        aoi_calls, aoi_call_params = _aoi_call_sites(rung_texts, declared_aoi_names)
+        aoi_calls, aoi_call_params = aoi_call_sites(rung_texts, declared_aoi_names)
         result[name] = RoutineLogic(
             program_name="",
             routine_name=name,

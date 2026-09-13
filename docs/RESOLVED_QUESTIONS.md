@@ -3389,3 +3389,155 @@ interaction between the categories this grid covers.
     2026-09-10, so these need RECAPTURE before their numbers are used.
     `composite_realistic_v3_02`, `composite_realistic_v3_03`, `composite_realistic_v3_04`, `composite_realistic_v3_05`, `composite_realistic_v3_06`, `composite_realistic_v3_07` (+41 more)
 
+
+## OQ-STEXPR, CLOSED 2026-09-13 -- one law replaces a five-entry table
+
+Closed as capture-batch segment 6 (`stx_*`, 30 files). The entry it replaces held
+five measured shapes with confidence MEASURED_SPARSE and everything else falling
+back to the ladder CPT model, which over-predicted a one-operator ST assignment
+roughly threefold.
+
+**THE LAW.** One form, wired as `structured_text.assignment_low_operator_bytes` /
+`assignment_two_operator_bytes` / `assignment_per_operator_bytes` /
+`real_dest_integer_source_bytes`:
+
+    per_statement = base(n_operators, destination type)
+                  + each operator's own CPT tier premium above tier 1
+                  + 48 per INTEGER-typed NAMED source read into a REAL destination
+
+The measured grid, 1,000 statements per file differenced against the routine
+shell, so each number is one statement:
+
+| operators | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| DINT dest | 36 | 40 | 148 | 172 | 196 | 220 | 244 | 292 | 340 | 388 |
+| REAL dest | 60 | 56 | 204 | 244 | 284 | 324 | 364 | 444 | 524 | 604 |
+
+Both rows are 148/204 at two operators and then dead linear at 24/40 per operator
+after, exact at every one of the eight higher counts. The step between one and two
+operators (108 DINT, 148 REAL) is real and large, which is the mechanism the old
+entry had already guessed at: a single-operator assignment compiles to one
+instruction, a compound one reaches for expression evaluation. REAL at one
+operator costing 4 LESS than REAL at zero is measured, not a transcription error.
+
+**WHY THE OLD TABLE WAS WRONG RATHER THAN INCOMPLETE.** Its five entries were each
+measured on a DIFFERENT expression and then keyed on operator count alone, so the
+shape's own cost was baked into the count. All three of the non-trivial ones come
+back EXACTLY from the law:
+
+| old entry | the file it came from | law |
+|---|---|---|
+| `1\|true` 152 | `R0 := D0 + D1;` | 56 + 2 DINT sources x 48 |
+| `2\|false` 164 | `D0 := D1 + D2 * 2;` | 148 + 1 multiplicative x 16 |
+| `5\|true` 452 | `R0 := (D0+D1)*R1 - R2/2 + 1.5;` | 324 + 2 multiplicative x 16 + 2 DINT sources x 48 |
+
+**THE OPERATOR PREMIUM IS THE CPT TIER TABLE, UNCHANGED.** `stx_opkind_*` holds
+the count at four and varies only which operator: `+`, `AND` and `XOR` all read
+196/statement, `*`, `/` and `MOD` all read 260. 64 over four operators is 16 each,
+and 16 is exactly `cpt_expression.operator_tier_costs`' own tier-1-to-tier-2 step
+(36 -> 52). So ST needs no parallel classification -- it asks that table for
+`tier_cost(op) - tier_cost('+')`. AND and XOR are now measured at tier 1, which
+that table did not cover at all.
+
+**AN AOI CALLED FROM ST COST NOTHING, AND COSTS `120 + 16 PER PARAMETER`** -- the
+same two constants as a call from a rung. Same invisibility as segment 3's RLL
+call sites and the same cause: an ST call statement is matched by an all-caps
+instruction pattern and real AOI names are mixed-case. Measured on
+`stx_call_aoi_p{01,02,04,08}`, whose labels count declared INPUT parameters while
+each call also passes the output, so the parameters actually passed are 2, 3, 5
+and 9: 152, 168, 200, 264 per call, exact at all four.
+
+    A first pass fitted 136 + 16p by taking the label as the parameter count. It
+    fits all four points just as exactly and is wrong -- two constants against
+    four collinear points absorbed the off-by-one silently. Recorded in
+    memory_model.yaml as a warning.
+
+**EFFECT.** 42 of the 48 ST rows in the corpus now land exactly (26 of 26
+assignment and opkind rows, plus the three old shapes). Corpus mean absolute error
+**1.833% -> 1.545%**.
+
+**AND THE HONEST HEADLINE: this moved the sixteen real programs by nothing**
+(2.073% -> 2.074%). The claim that justified the call-statement arm was wrong.
+`gen_st_expression_grid.py` states the real corpus holds "128 ST routines, 6,586
+ST lines" of which "call statements 2,094 -- the single largest shape". Re-counted
+against the current parser:
+
+| | ST routines | ST lines | assignments | AOI call statements |
+|---|---:|---:|---:|---:|
+| the 16 held-out programs | 26 | 3,994 | 2,499 | **0** |
+| all 91 files in `samples/local` | 307 | 24,745 | 8,099 | **82** |
+
+Of 758 bare call statements across all of `samples/local`, **690 are built-in
+instructions** -- COP 325, CONCAT 61, SBR 63, JSR 46, RET 42, TONR 22, DTOS 17,
+DELETE 15 -- every one already priced through the routine's own `code_text` by the
+RLL weight table. Only 68 are AOI calls. The parser finds all 26 ST routines the
+raw XML holds in the held-out set, so this is not a detection gap: real ST is
+simply a much smaller share of these programs than the docstring asserted. The
+figure was never verified before it was used to size a batch.
+
+**Carried forward, with files built** (`gen_st_closeout.py`, 21 files, OQ-STEXPR
+remains the owner in `docs/OPEN_QUESTIONS.md` for these): the operator premium at
+exactly one operator and on the REAL row, `**` and `OR` in ST, the conversion rate
+for SINT/INT/LINT sources, and the +256..+268 one-time that every
+`stx_call_aoi_p*` file carries -- the same ~264 a routine containing AOI calls
+carries in RLL, which no file in either language separates from a per-call term.
+
+
+### The entry as it stood, verbatim
+
+29. **OQ-STEXPR** — ST assignment expression cost, five shapes measured.
+    2026-09-04.
+
+    An ST assignment is **not** priced like the equivalent CPT. That was
+    the working hypothesis — the `st_expr_cpt_mirror`/`instr_cpt` pair
+    differ by exactly the +432 routine shell, which looked conclusive — and
+    routing every assignment through the tier-aware CPT model on that basis
+    over-predicted `realscale_st_n01000` by **+132%**.
+
+    | shape | operators | dest | measured |
+    |---|---:|---|---:|
+    | `D := 0;` | 0 (bare literal) | DINT | 36 |
+    | `D := D + 1;` | 1 | DINT | 40 |
+    | `D := D + D * 2;` | 2 | DINT | 164 |
+    | `R := D + D;` | 1 | REAL | 152 |
+    | `R := (D+D)*R - R/2 + 1.5;` | 5 | REAL | 452 |
+
+    The tell is the 1-operator case at 40: that is an ADD's own weight, not
+    a CPT's. Logix appears to compile a simple assignment to the single
+    equivalent instruction and only reach for CPT-like evaluation on a
+    compound expression — which is why the 2-operator DINT case lands on
+    the CPT number and the 1-operator cases land nowhere near it.
+
+    Five points are clearly not one curve, so they are stored as an
+    explicit sparse table rather than interpolated. A shape outside it
+    falls back to the CPT model AND is reported as a
+    `coverage/st_expression/...` gap, so a real file says so rather than
+    quietly carrying a wrong number.
+
+    **What would close it:** the direct ST analogue of what `cmpcpt_*` did
+    for RLL — operator count 0..6 × DINT/REAL destination × with and
+    without a float literal. Not yet generated; it is the obvious next ST
+    batch and is not blocked on anything external.
+
+    Also still open on ST, one thread each:
+    - `st_jsr_param_target_n00100` is the only ST file not exact (−243,
+      −0.52%). Every JSR parameter constant was fitted on RLL targets, and
+      the corpus has 44 SBR / 42 RET inside ST, so an ST JSR target is a
+      real shape that may be charged differently.
+    - `st_ctl_case` carries a +21 residual; the CASE decomposition into
+      per-construct and per-selector is one data point short.
+    - `while_block` was corrected 72 → 76 on the strength of the
+      literal-RHS rate (36). Only one WHILE file exists, so the split
+      between per-WHILE and per-assignment rests on that substitution.
+
+
+
+    **CAPTURE ERRORS: 1 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    1 captured WITH Studio build errors, so their `actual_bytes` is
+    SUSPECT rather than wrong — part of the file may never have reached the
+    controller, which inflates apparent over-prediction. None of them carries
+    any error text: every errored row in the manifest was captured between
+    2026-08-23 and 2026-09-08, and the error-log reader only began working
+    2026-09-10, so these need RECAPTURE before their numbers are used.
+    `st_instr_concat_n01000`
+

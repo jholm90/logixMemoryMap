@@ -2890,11 +2890,99 @@ structured_text:
   # points that clearly are not one curve. See OQ-STEXPR for the ladder that
   # would close it (operator count 0..6 x DINT/REAL dest x with/without
   # float literal -- the direct ST analogue of what cmpcpt_* did for RLL).
-  assignment_expression_cost:
-    "0|false": 36
-    "1|false": 40
-    "2|false": 164
-    "1|true": 152
-    "5|true": 452
-  assignment_expression_confidence: MEASURED_SPARSE
+  # ST ASSIGNMENT COST -- one law, derived 2026-09-13 (capture-batch segment 6)
+  # from the 30-file stx_* grid, replacing a five-entry table keyed on operator
+  # COUNT whose confidence was literally MEASURED_SPARSE.
+  #
+  #     per_statement = base(n_operators, destination type)
+  #                   + the operator's own CPT tier premium, per operator
+  #                   + real_dest_integer_source_bytes per INTEGER-typed named
+  #                     source read into a REAL destination
+  #
+  # WHY THE OLD TABLE WAS WRONG RATHER THAN INCOMPLETE. Its five entries were
+  # each measured on a DIFFERENT expression shape and then keyed by operator
+  # count alone, so the shape's own cost was baked into the count:
+  #
+  #   st_expr_ops1_n01000        R0 := D0 + D1;                    -> "1|true"  152
+  #   st_expr_ops2_dint_n01000   D0 := D1 + D2 * 2;                -> "2|false" 164
+  #   st_expr_cpt_mirror_n01000  R0 := (D0+D1)*R1 - R2/2 + 1.5;    -> "5|true"  452
+  #
+  # The grid measures the same counts on pure same-type additive expressions and
+  # gets 56, 148 and 324. All three old entries come back EXACTLY from the law:
+  #
+  #   152 = 56  + 0 premium + 2 DINT sources x 48
+  #   164 = 148 + 1 multiplicative x 16
+  #   452 = 324 + 2 multiplicative x 16 + 2 DINT sources x 48
+  #
+  # THE MEASURED GRID. 1,000 statements per file, differenced against the
+  # routine shell, so each number is one statement:
+  #
+  #   operators      0    1     2     3     4     5     6     8    10    12
+  #   DINT dest     36   40   148   172   196   220   244   292   340   388
+  #   REAL dest     60   56   204   244   284   324   364   444   524   604
+  #
+  # Both rows are 148/204 at two operators and then dead linear at 24/40 per
+  # operator after -- exact at every one of the eight higher counts. The step
+  # between 1 and 2 operators (108 for DINT, 148 for REAL) is real and large: a
+  # single-operator assignment is compiled to one instruction and a compound one
+  # reaches for expression evaluation. Below 2 operators the cost is a lookup,
+  # and REAL at one operator costing 4 LESS than REAL at zero is measured, not a
+  # transcription error.
+  #
+  # THE OPERATOR PREMIUM IS THE CPT TIER TABLE, unchanged. stx_opkind_* holds the
+  # count at four and varies only WHICH operator, 1,000 statements each:
+  #
+  #   +  AND  XOR   196/statement      *  /  MOD   260/statement
+  #
+  # 64 bytes over four operators is 16 each, and 16 is exactly
+  # cpt_expression.operator_tier_costs' own tier-1-to-tier-2 step (36 -> 52). So
+  # ST does not need its own classification: the premium is
+  # `tier_cost(op) - tier_cost('+')` against the table that already prices
+  # ladder CPT. AND and XOR are now measured at tier 1, which that table did not
+  # cover at all. ** is tier 3 there (116, a premium of 80) and is NOT tested
+  # here; OR is not tested either and falls to tier 1 with AND/XOR.
+  #
+  # ASSUMED, not measured: that the premium also applies at exactly one operator
+  # (every file that pins it has two or more) and that it applies on the REAL row
+  # (every opkind file has a DINT destination).
+  assignment_low_operator_bytes:
+    dint: { 0: 36, 1: 40 }
+    real: { 0: 60, 1: 56 }
+  assignment_two_operator_bytes: { dint: 148, real: 204 }
+  assignment_per_operator_bytes: { dint: 24, real: 40 }
+  # Per INTEGER-typed NAMED source read into a REAL destination -- the implicit
+  # conversion. Integer LITERALS do not pay it: the cpt_mirror's `2` and `1.5`
+  # are not counted and the file lands exactly, which is what fixes the 48.
+  real_dest_integer_source_bytes: 48
+  assignment_expression_confidence: FITTED
+  # An AOI called as a bare STATEMENT from Structured Text. Charged NOTHING
+  # until 2026-09-13 -- the same invisibility that hid RLL AOI call sites until
+  # segment 3, and for the same reason: an ST call statement is matched by the
+  # all-caps instruction pattern, and real AOI names are mixed-case. 2,094 of
+  # the 6,586 ST lines in the real corpus are call statements, the single
+  # largest ST line shape there is.
+  #
+  # Measured from stx_call_aoi_p{01,02,04,08}, 1,000 call statements each,
+  # against files that are otherwise identical. The pNN label counts declared
+  # INPUT parameters; each call also passes the output, so the parameters
+  # actually passed are 2, 3, 5 and 9:
+  #
+  #   parameters passed    2        3        5        9
+  #   under-charge      152,256  168,260  200,268  264,268
+  #   per call          152      168      200      264
+  #
+  # Exactly `120 + 16 per parameter` at all four -- the SAME two constants as an
+  # RLL call site (aoi_call_site), so an AOI costs the same called from
+  # Structured Text as from a rung. What is left over is a one-time 256-268, the
+  # same ~264 a routine containing AOI calls carries in RLL.
+  #
+  # A first pass fitted 136 + 16p here by taking the pNN label as the parameter
+  # count. It fits all four points just as exactly and is wrong: the base came
+  # out 16 high because every count was one short. Kept as a warning -- two
+  # constants fitted to four collinear points will absorb a miscount silently.
+  #
+  # The first argument is the instance tag and is not a parameter.
+  st_aoi_call_bytes: 120
+  st_aoi_call_per_param_bytes: 16
+  st_aoi_call_confidence: FITTED
   confidence: KNOWN

@@ -52,7 +52,7 @@ import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 
-from l5x_memory_analyzer.parser.logic import CptCall, routine_language
+from l5x_memory_analyzer.parser.logic import CptCall, aoi_call_sites, routine_language
 
 # A line is comment-only/blank if, once a trailing "// ..." or a whole
 # "(* ... *)" is stripped, nothing executable remains.
@@ -82,6 +82,11 @@ _BARE_LITERAL_RHS = re.compile(r"^\s*(?:-?\d+(?:\.\d+)?|TRUE|FALSE)\s*$", re.I)
 _OPERATOR_TOKEN = re.compile(r"\*\*|[+\-*/]|\bMOD\b|\bAND\b|\bOR\b|\bXOR\b", re.I)
 _IDENT = re.compile(r"[A-Za-z_][\w.]*")
 _NUMBER = re.compile(r"\d+\.\d+|\d+")
+# Named sources of these types pay an implicit conversion when read into a REAL
+# destination. Integer LITERALS do not -- the cpt_mirror's `2` is not counted
+# and that file lands exactly, which is what fixes the rate at 48.
+_INTEGER_TYPES = frozenset({"SINT", "INT", "DINT", "LINT",
+                            "USINT", "UINT", "UDINT", "ULINT"})
 
 
 @dataclass
@@ -104,6 +109,12 @@ class StructuredTextRoutine:
     # Executable text with comments stripped, for the caller to hand to the
     # shared instruction/CPT sizer -- ST does not re-price instructions.
     code_text: str = ""
+    # AOI call STATEMENTS in this routine, and the parameters they pass (the
+    # instance tag is not a parameter). Charged nothing until 2026-09-13, and
+    # 2,094 of the real corpus's 6,586 ST lines are these -- the same
+    # mixed-case invisibility that hid RLL call sites until segment 3.
+    aoi_call_count: int = 0
+    aoi_call_param_count: int = 0
 
 
 def strip_comments(text: str) -> str:
@@ -127,6 +138,13 @@ def parse_st_routines(root: ET.Element) -> list[StructuredTextRoutine]:
     """
     routines: list[StructuredTextRoutine] = []
     owners: list[tuple[str, ET.Element]] = []
+    # The file's own declared AOI names, matched literally rather than by a
+    # casing pattern -- 288 of the 331 AOI definitions in the real corpus are
+    # mixed-case, so an all-caps instruction pattern sees none of their calls.
+    declared_aoi_names = frozenset(
+        aoi_el.get("Name") for aoi_el in root.iter("AddOnInstructionDefinition")
+        if aoi_el.get("Name")
+    )
 
     programs_el = root.find("Controller/Programs")
     if programs_el is not None:
@@ -151,6 +169,7 @@ def parse_st_routines(root: ET.Element) -> list[StructuredTextRoutine]:
                 (line.text or "") for line in (st.iter("Line") if st is not None else [])
             )
             code = strip_comments(raw)
+            aoi_calls, aoi_call_params = aoi_call_sites([code], declared_aoi_names)
             assignments = list(_ASSIGNMENT.finditer(code))
             literal = [a for a in assignments if _BARE_LITERAL_RHS.match(a.group("rhs"))]
             routines.append(StructuredTextRoutine(
@@ -171,6 +190,8 @@ def parse_st_routines(root: ET.Element) -> list[StructuredTextRoutine]:
                 for_blocks=len(_FOR.findall(code)),
                 while_blocks=len(_WHILE.findall(code)),
                 code_text=code,
+                aoi_call_count=aoi_calls,
+                aoi_call_param_count=aoi_call_params,
             ))
     return routines
 
@@ -185,29 +206,31 @@ def size_st_assignments(routine: StructuredTextRoutine, model, tag_types=None):
     them as a coverage gap rather than letting a bad number pass silently.
     """
     st = model.structured_text
+    cpt = model.logic_instructions.cpt_expression
     total = 0
     unmeasured: list[str] = []
     unpriced_ops: set[str] = set()
     for call in routine.cpt_calls:
         dest_is_real = bool(tag_types) and tag_types.get(call.dest) == "REAL"
-        measured = st.assignment_cost(len(call.operators), dest_is_real)
-        if measured is not None:
-            total += measured
-        else:
-            # Fall back to the RLL CPT model. It is known to be wrong for
-            # the simple shapes (it over-predicts a 1-operator assignment
-            # roughly 3x), so this is a placeholder that keeps the number in
-            # the right order of magnitude rather than silently contributing
-            # ZERO -- which is what an early version did, and it turned a
-            # 452-byte-per-statement file into a -95% under-prediction.
-            # The shape is reported as a coverage gap either way.
-            total += model.logic_instructions.cpt_expression.cost_for(call.operators)
-            unmeasured.append(f"{len(call.operators)}|{str(dest_is_real).lower()}")
-        # Reported regardless of whether the measured table covered the shape:
-        # an operator with no measured tier is unpriced either way, and it is
-        # exactly what used to abort the whole report with a KeyError.
-        for op in model.logic_instructions.cpt_expression.unpriced_operators(call.operators):
+        # The operator premium is the CPT tier table's own step above tier 1 --
+        # ST carries no separate classification, because the 16 bytes a
+        # multiplicative operator costs over an additive one IS that step. An
+        # operator the tier table does not know (AND, OR, XOR) pays no premium,
+        # which stx_opkind_and/xor measured directly at tier 1.
+        premium = sum(cpt.operator_premium_above_tier1(op) for op in call.operators)
+        integer_sources = 0
+        if dest_is_real and tag_types:
+            integer_sources = sum(
+                1 for name in call.operand_names
+                if tag_types.get(name) in _INTEGER_TYPES
+            )
+        total += st.assignment_cost(
+            len(call.operators), dest_is_real, premium, integer_sources)
+        # Still reported: an operator with no measured tier is unpriced either
+        # way, and it is exactly what used to abort the whole report.
+        for op in cpt.unpriced_operators(call.operators):
             unpriced_ops.add(op)
+    total += st.st_aoi_call_cost(routine.aoi_call_count, routine.aoi_call_param_count)
     return total, unmeasured, sorted(unpriced_ops)
 
 

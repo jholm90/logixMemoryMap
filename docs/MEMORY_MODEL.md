@@ -627,6 +627,63 @@ bytes — exactly one element — off the line through 10 and 50. See
 `docs/OPEN_QUESTIONS.md` OQ-AOIARRAYLOCALTAG; `gen_aoi_arraylocaltag2.py`
 (20 files) measures all four.
 
+## Structured Text assignment cost (FITTED, WIRED 2026-09-13, OQ-STEXPR)
+
+**One law**, replacing a five-entry table keyed on operator count whose confidence
+was `MEASURED_SPARSE` and whose fallback over-predicted a one-operator ST
+assignment roughly threefold:
+
+    per_statement = base(n_operators, destination type)
+                  + each operator's own CPT tier premium above tier 1
+                  + 48 per INTEGER-typed NAMED source read into a REAL destination
+
+| operators | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| DINT dest | 36 | 40 | 148 | 172 | 196 | 220 | 244 | 292 | 340 | 388 |
+| REAL dest | 60 | 56 | 204 | 244 | 284 | 324 | 364 | 444 | 524 | 604 |
+
+1,000 statements per file, differenced against the routine shell. Both rows step
+once at two operators (108 for DINT, 148 for REAL) and are dead linear at 24/40
+per operator after -- exact at all eight higher counts. The step is the mechanism:
+a single-operator assignment compiles to one instruction and a compound one
+reaches for expression evaluation. REAL at one operator costing 4 LESS than REAL
+at zero is measured, not a transcription slip.
+
+**All three of the old table's non-trivial entries come back from the law**, which
+is what says it was mis-parameterised rather than incomplete -- each had been
+measured on a different expression and then keyed on operator count alone:
+
+| old entry | the file it came from | reproduced as |
+|---|---|---|
+| `1\|true` 152 | `R0 := D0 + D1;` | 56 + 2 DINT sources x 48 |
+| `2\|false` 164 | `D0 := D1 + D2 * 2;` | 148 + 1 multiplicative x 16 |
+| `5\|true` 452 | `R0 := (D0+D1)*R1 - R2/2 + 1.5;` | 324 + 2 mult x 16 + 2 DINT x 48 |
+
+**The operator premium is the CPT tier table, unchanged.** `stx_opkind_*` holds
+the count at four and varies only which operator: `+`, `AND` and `XOR` all read
+196/statement and `*`, `/`, `MOD` all read 260. 64 over four operators is 16 each,
+and 16 is exactly `cpt_expression.operator_tier_costs`' tier-1-to-tier-2 step
+(36 -> 52), so ST asks that table for `tier_cost(op) - tier_cost('+')` rather than
+carrying a classification of its own. AND and XOR are now measured at tier 1,
+which that table did not cover at all. Integer LITERALS do not pay the conversion
+term -- the cpt_mirror's `2` is not counted and the file lands exactly, which is
+what fixes the rate at 48.
+
+**An AOI called as a bare statement from ST costs `120 + 16 per parameter`** and
+was charged **nothing** until 2026-09-13 -- the same mixed-case invisibility that
+hid RLL call sites, and the same two constants as a call from a rung. Measured on
+`stx_call_aoi_p{01,02,04,08}`, whose labels count declared *input* parameters
+while each call also passes the output, so the parameters passed are 2, 3, 5 and
+9: 152, 168, 200, 264 per call, exact at all four. A first pass fitted `136 + 16p`
+by trusting the label; it fit all four points just as exactly and was wrong,
+because two constants against four collinear points absorb an off-by-one silently.
+
+42 of the 48 ST rows in the corpus now land exactly; corpus mean absolute error
+1.833% -> **1.545%**. It moved the sixteen real programs by nothing (2.073% ->
+2.074%): the held-out set holds 26 ST routines, 3,994 lines, 2,499 assignments and
+**zero** AOI call statements. See OQ-STEXPR for that correction and for the four
+assumptions the law still carries.
+
 ## Standalone UDT tag data slot (FITTED, WIRED 2026-09-13, OQ-UDTTAGSLOT)
 
 **A standalone (non-array) UDT-typed tag's DATA slot is padded up to 8 bytes** --

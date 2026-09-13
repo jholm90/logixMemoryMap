@@ -444,3 +444,18 @@ Recapture, separately from the above: the 5 stale `aoi_logic_scale_*` /
 - Segment 5 of `docs/SEGMENT_TRACKER.md` is closed; segment 6 (`stx_*`, 30 files,
   OQ-STEXPR) is next.
 
+### Added 2026-09-13 (capture-batch segment 6)
+
+- **`stc_*` (21 files), OQ-STEXPR.** The ST assignment law's four remaining
+  assumptions: the operator premium at one operator and on the REAL row, `**` and
+  `OR` in ST, the conversion rate for SINT/INT/LINT sources, and group E's
+  separation of the +264 one-time from anything per-call — which no file in
+  EITHER language currently does.
+- **Verify a claimed corpus figure before sizing a batch from it.** Segment 6's
+  call-statement arm was sized on "2,094 real ST call statements"; the real number
+  is 68 AOI calls, and 690 of the 758 bare call statements were already priced. A
+  five-minute count would have caught it. Applies to every generator docstring
+  that quotes a real-corpus figure without naming the script that produced it.
+- Segment 6 of `docs/SEGMENT_TRACKER.md` is closed; segment 7 (`genem_*`, 27
+  files, OQ-MODULESTRUCTURAL) is next.
+

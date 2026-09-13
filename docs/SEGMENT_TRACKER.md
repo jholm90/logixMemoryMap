@@ -15,7 +15,7 @@ project's ±8 universal-residual band.
 | 3 | `dscale2_*` | 39 | 39 | 0 | OQ-DEFSCALE | **CLOSED — 5 laws wired, biggest find of the project** |
 | 4 | `aoimix_*` | 34 | 34 | 0 | OQ-AOIBOOLPACK-PAIRING | **CLOSED — AOI definition cost re-derived from scratch** |
 | 5 | `addit_*` | 33 | 33 | 0 | OQ-COMPOSITESCALE | **CLOSED — the categories are additive, 24/24 exactly** |
-| 6 | `stx_*` | 30 | 30 | 0 | OQ-STEXPR | pending |
+| 6 | `stx_*` | 30 | 30 | 0 | OQ-STEXPR | **CLOSED — one law replaces a five-entry table** |
 | 7 | `genem_*` | 27 | 24 | 0 | OQ-MODULESTRUCTURAL | pending |
 | 8 | `ntag_*` | 25 | 25 | 0 | OQ-VERIFINSTR | pending |
 | 9 | `identnamelen_*` | 24 | 19 | 5 | OQ-IDENTNAMELEN | pending |
@@ -386,4 +386,54 @@ one error with two signs. Something present in real programs and absent from
 every isolated file is unpriced, and it is larger than all four of these
 corrections put together — and the additivity result narrows OQ-REALUNDER
 usefully: whatever it is, it is not an interaction between these categories.
+
+
+## Segment 6 — `stx_*`, OQ-STEXPR: CLOSED
+
+30 files, all captured, zero build errors. The expression-cost thread is closed
+and in `docs/RESOLVED_QUESTIONS.md`; four narrower assumptions carry forward under
+the same identifier with 21 files built.
+
+**One law replaces a five-entry table** whose confidence was literally
+MEASURED_SPARSE and whose fallback over-predicted a one-operator assignment
+threefold:
+
+    per_statement = base(n_operators, destination type)
+                  + each operator's own CPT tier premium above tier 1
+                  + 48 per INTEGER-typed NAMED source read into a REAL destination
+
+| operators | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| DINT dest | 36 | 40 | 148 | 172 | 196 | 220 | 244 | 292 | 340 | 388 |
+| REAL dest | 60 | 56 | 204 | 244 | 284 | 324 | 364 | 444 | 524 | 604 |
+
+Both rows step once at two operators and are dead linear after, exact at all eight
+higher counts. **All three of the old table's non-trivial entries come back from
+the law** — 152, 164 and 452 — which is what says it was mis-parameterised rather
+than incomplete: each had been measured on a different expression and then keyed on
+operator count alone.
+
+**The operator premium is the CPT tier table, unchanged.** `stx_opkind_*` holds the
+count at four: `+`/`AND`/`XOR` all read 196, `*`/`/`/`MOD` all read 260. 16 each,
+which is exactly that table's tier-1-to-tier-2 step. AND and XOR are now measured
+at tier 1, which it did not cover at all.
+
+**An AOI called from ST cost nothing, and costs `120 + 16 per parameter`** — the
+same two constants as a call from a rung, same mixed-case invisibility as segment
+3. A first pass fitted `136 + 16p` by trusting the filename's parameter count; it
+fit all four points just as exactly and was wrong, which is on the record in
+`memory_model.yaml` as a warning about two constants against four collinear points.
+
+42 of the 48 ST corpus rows now land exactly. Corpus mean absolute error
+**1.833% → 1.545%**.
+
+**The honest headline: this moved the sixteen real programs by nothing**
+(2.073% → 2.074%). The figure that sized the call-statement arm — "2,094 real ST
+call statements, the single largest shape" — was wrong. The held-out set has 26 ST
+routines, 3,994 lines, 2,499 assignments and **zero** AOI call statements; all 91
+files in `samples/local` have 307 / 24,745 / 8,099 / 82, and 690 of the 758 bare
+call statements there are built-in instructions the RLL table already priced. The
+parser finds every ST routine the raw XML holds, so this is not a detection gap —
+the claim was simply never checked before it was used to size a batch. Corrected in
+the generator docstring.
 

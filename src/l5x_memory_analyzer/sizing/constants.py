@@ -343,6 +343,22 @@ class CptExpressionModel:
             if self._normalize(op) in self.operator_tier_costs
         ]
 
+    def operator_premium_above_tier1(self, operator: str) -> int:
+        """This operator's tier cost above the cheapest (tier-1) one.
+
+        The single number ST needs from this table: a multiplicative operator
+        costs 16 bytes more than an additive one in an ST assignment, and 16 is
+        exactly this table's tier-1-to-tier-2 step (36 -> 52), measured
+        independently on ladder CPT and on the 6-file stx_opkind_* sweep. An
+        operator the table does not price (AND, OR, XOR) pays no premium, which
+        stx_opkind_and and stx_opkind_xor measured directly at the tier-1 rate.
+        """
+        costs = self.operator_tier_costs
+        if not costs:
+            return 0
+        tier1 = min(costs.values())
+        return max(0, costs.get(operator.upper(), tier1) - tier1)
+
     def unpriced_operators(self, operators) -> list[str]:
         """Operators the ST/RLL tokenizer recognises but this model has never
         measured a cost for -- AND/OR/XOR today.
@@ -768,15 +784,46 @@ class StructuredTextModel:
     while_block: int
     comments_and_blanks: int
     confidence: str
-    # "<n_operators>|<dest_is_real>" -> measured bytes. Sparse on purpose --
-    # see the memory_model.yaml comment. A shape not in here is NOT
-    # interpolated; sizing/structured_text.py reports it as a coverage gap.
-    assignment_expression_cost: dict[str, int]
+    # ST assignment cost, one law -- see memory_model.yaml structured_text for
+    # the 30-file derivation and for why the five-entry count-keyed table it
+    # replaces was wrong rather than merely sparse.
+    assignment_low_operator_bytes: dict[str, dict[int, int]]
+    assignment_two_operator_bytes: dict[str, int]
+    assignment_per_operator_bytes: dict[str, int]
+    real_dest_integer_source_bytes: int
     assignment_expression_confidence: str
+    # An AOI called as a bare statement from ST -- charged nothing until
+    # 2026-09-13, and 2,094 of the real corpus's 6,586 ST lines are these.
+    st_aoi_call_bytes: int = 0
+    st_aoi_call_per_param_bytes: int = 0
+    st_aoi_call_confidence: str = "FITTED"
 
-    def assignment_cost(self, n_operators: int, dest_is_real: bool) -> int | None:
-        """Measured cost for this assignment shape, or None if unmeasured."""
-        return self.assignment_expression_cost.get(f"{n_operators}|{str(dest_is_real).lower()}")
+    def assignment_cost(self, n_operators: int, dest_is_real: bool,
+                        operator_premium: int = 0,
+                        integer_sources: int = 0) -> int:
+        """Bytes for one ST assignment.
+
+        `operator_premium` is the sum over the statement's operators of that
+        operator's own CPT tier premium above tier 1 -- ST does not carry its
+        own operator classification, because the 16 bytes a multiplicative
+        operator costs over an additive one is exactly the tier-1-to-tier-2 step
+        in cpt_expression.operator_tier_costs. `integer_sources` counts named
+        INTEGER-typed sources read into a REAL destination; integer literals do
+        not pay the conversion.
+        """
+        kind = "real" if dest_is_real else "dint"
+        low = self.assignment_low_operator_bytes[kind]
+        if n_operators in low:
+            base = low[n_operators]
+        else:
+            base = (self.assignment_two_operator_bytes[kind]
+                    + self.assignment_per_operator_bytes[kind] * (n_operators - 2))
+        conversions = integer_sources if dest_is_real else 0
+        return base + operator_premium + self.real_dest_integer_source_bytes * conversions
+
+    def st_aoi_call_cost(self, calls: int, params: int) -> int:
+        return (self.st_aoi_call_bytes * calls
+                + self.st_aoi_call_per_param_bytes * params)
 
 
 @dataclass(frozen=True)
@@ -954,12 +1001,23 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             for_block=raw["structured_text"]["for_block"],
             while_block=raw["structured_text"]["while_block"],
             comments_and_blanks=raw["structured_text"]["comments_and_blanks"],
-            assignment_expression_cost={
-                str(k): v for k, v in
-                raw["structured_text"].get("assignment_expression_cost", {}).items()
+            assignment_low_operator_bytes={
+                kind: {int(k): v for k, v in table.items()}
+                for kind, table in
+                raw["structured_text"]["assignment_low_operator_bytes"].items()
             },
-            assignment_expression_confidence=raw["structured_text"].get(
-                "assignment_expression_confidence", "UNKNOWN"),
+            assignment_two_operator_bytes=dict(
+                raw["structured_text"]["assignment_two_operator_bytes"]),
+            assignment_per_operator_bytes=dict(
+                raw["structured_text"]["assignment_per_operator_bytes"]),
+            real_dest_integer_source_bytes=raw["structured_text"][
+                "real_dest_integer_source_bytes"],
+            assignment_expression_confidence=raw["structured_text"][
+                "assignment_expression_confidence"],
+            st_aoi_call_bytes=raw["structured_text"]["st_aoi_call_bytes"],
+            st_aoi_call_per_param_bytes=raw["structured_text"][
+                "st_aoi_call_per_param_bytes"],
+            st_aoi_call_confidence=raw["structured_text"]["st_aoi_call_confidence"],
             confidence=raw["structured_text"]["confidence"],
         ),
         alarm_conditions=AlarmConditionModel(
