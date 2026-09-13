@@ -407,8 +407,15 @@ number was already several times that.
    for the real-file under-prediction, so this gates a real fix.
 2. `v3abl_*` (8) — identifies the v3 template defect, which taints
    OQ-COMPOSITESCALE's surcharge re-derivation.
-3. `modmarg_*` (9+) — discriminates per-rack from per-project for the module
-   repeat discount, the one measured-but-unapplied constant.
+3. ~~`modmarg_*` (9+) — discriminates per-rack from per-project for the module
+   repeat discount, the one measured-but-unapplied constant.~~ **Done
+   2026-09-13 (segment 14).** The mixtures settled per-catalog-vs-per-file, the
+   discount is wired for ten catalogs, and per-rack-vs-per-project was measured
+   to be byte-identical on all sixteen real programs. Still needed from this
+   family: an **EN2T-only count sweep** (n=1/2/4/8, every copy under `Local`, no
+   downstream child) to split 1756-EN2T from rack-aliased 1756-OB32, and a
+   recapture of the six `modmarg_drvaxis_*` rows, all of which carry build
+   errors.
 4. `aoialgn_*` (71) and the rest.
 
 Recapture, separately from the above: the 5 stale `aoi_logic_scale_*` /

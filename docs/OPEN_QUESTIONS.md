@@ -564,6 +564,33 @@ the matching footnote at the bottom, not inline.
    1st), and a handful of catalogs with real connection-variant-dependent
    overhead.[^moduleio]
 
+   **The marginal-cost sub-thread is closed 2026-09-13 (capture-batch segment
+   14, 71 `asmclose_*` rows).** The law is `d x (n - 1)` per catalog, flat at
+   n=1/2/4/8, and it is wired for the ten catalogs whose rate was measured on a
+   shape real programs contain. 64 of the 71 rows land byte-exact with it
+   applied against 16 without. Full derivation, the two deliberate exclusions,
+   and the per-rack-vs-per-project measurement are in OQ-MODULEMARGINAL.
+
+   Two of the 71 rows are not usable and their capture columns are now actually
+   empty: `asmclose_1756_ob32_rackaliased_n02` and `_n04` shipped duplicate
+   module names (the copier renamed only the first element of a 2-deep chain),
+   so Studio merged the copies and the files measured N adapters sharing ONE
+   output card at zero import errors. The 2026-09-11 note saying they had been
+   cleared was written but **the values were never removed**, so both rows kept
+   feeding every reconciliation for two days. `lint.duplicate_module_name` has
+   caught this class since 2026-09-11, one day after these files were generated;
+   `gen_assumed_closeout._place_copies` now renames every `<Module>` in a block
+   and repoints each internal `ParentModule`, leaving references outside the
+   block alone. `modmarg_ob32chain_*` is the correctly-built replacement and is
+   captured.
+
+   Four more are a different kind of bad read: `asmclose_al1222_1conn_n*` reads
+   **18,128 at all four module counts**, distinct names, zero errors — the
+   AL1222 modules never reached the controller. Left in place rather than
+   cleared because the observation is consistent and reproduced at four counts,
+   but nothing may be derived from them; see the corrected AL1222 note in
+   OQ-MODULEMARGINAL.
+
 
     **CAPTURE ERRORS: 39 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
     12 captured WITH Studio build errors, so their `actual_bytes` is
@@ -2545,9 +2572,20 @@ the matching footnote at the bottom, not inline.
         PowerFlex 755-EENET-CM-S  976
 
     So the model charges every module full price and the controller charges
-    the first one full price and `full - discount` for the rest. AL1222 at
-    exactly 0 is the control that makes this a real per-catalog-shape
-    property rather than a flat per-module fudge.
+    the first one full price and `full - discount` for the rest.
+
+    **The AL1222 "control" is void — corrected 2026-09-13.** This entry
+    previously read AL1222's discount of exactly 0 as the control proving a
+    real per-catalog-shape property rather than a flat per-module fudge.
+    `asmclose_al1222_1conn_n{01,02,04,08}` all read **18,128 — the bare
+    baseline — at every one of the four counts**, with distinct module names
+    and zero import errors. A module cannot cost the same at n=8 as at n=1,
+    so the AL1222 modules never reached the controller at all. A catalog that
+    contributes nothing has a zero discount trivially and is a control for
+    nothing. (The table's `'AL1222': bytes: -793` is an artifact of the same
+    non-arrival: it happens to cancel the 850 declared bytes, which is why
+    the n=1 row still lands within 57.) The per-catalog reading is now
+    settled on real evidence instead — see the mixture arm below.
 
     The 2198 `-ERS3` family does not fit that form — it carries an extra
     flat error at n=1 as well:
@@ -2560,18 +2598,46 @@ the matching footnote at the bottom, not inline.
     first is itself over-charged. This is the single largest ASSUMED block
     in the project.
 
-    **WHY IT IS NOT WIRED YET — this is the important part.** Applying the
-    law as measured removes 824,864 bytes of module cost from the sixteen
-    real files and makes EVERY ONE OF THEM WORSE: the median real-file error
-    moves from -1.69% to roughly -3.5%. The law is not wrong; it is exact on
-    54 points. What it shows is that the module over-charge has been masking
-    an equal under-charge somewhere else, which is the compensating-error
-    problem stated in OQ-REALGAP with a hard number attached for the first
-    time. It gets wired together with whatever the strip ladder resolves,
-    not before.
+    **WIRED 2026-09-13 for ten of the seventeen catalogs. The blanket "makes
+    every real file worse" reading was true and the conclusion drawn from it
+    was wrong.** Applying all seventeen rates removes 189,570 bytes across
+    216 repeated modules in the sixteen real programs and does make all of
+    them worse. Attributing that catalog by catalog, which had not been done,
+    puts **95% of it in two families**: ETHERNET-MODULE (67,450 bytes) and the
+    six 2198-*-ERS3 drives (112,176). With those two held out, the other ten
+    catalogs move the real programs by 10,464 bytes across 47.4 MB:
 
-    **The one thing 54 single-catalog captures cannot decide.** Every one of
-    those files holds ONE catalog, and two readings fit all 54 identically:
+        variant                                   mean |%|   sum-weighted
+        discount off                                1.6009       +1.2370%
+        all 17 catalogs                             1.7492       +1.6298%
+        without ETHERNET-MODULE and 2198-*-ERS3     1.6289       +1.2579%
+
+    So the ten ordinary I/O and adapter catalogs are neutral on real files to
+    within noise, while taking the `asmclose_*` rows from 16 byte-exact to 47.
+    Both exclusions are on shape grounds and were decided from the shapes, not
+    from which way they moved the number:
+
+      - **ETHERNET-MODULE is not a catalog.** It is a generic placeholder
+        whose cost is driven by connection sizes typed in by hand — 109
+        instances across the sixteen real programs carry 40 distinct
+        connection shapes, which is why `module_connection_data` exists. The
+        `genem_n{01,02,04,08}` sweep cloned ONE shape, so its 710-byte repeat
+        rate is the cost of a second identical clone and says nothing about a
+        second differently-configured device.
+      - **2198-*-ERS3 was measured on bare drives with no axis tag,** which no
+        real program contains. Arm C exists to fix exactly that and every one
+        of its six rows captured WITH Studio build errors, so the with-axis
+        rate is still unmeasured.
+
+    The compensating-error problem stated in OQ-REALGAP survives this and is
+    now better quantified: with the ten clean catalogs wired, the real-file
+    under-prediction is +1.2579% sum-weighted, and the honest figure once the
+    two suspect families are also resolved is nearer +1.63%. That is the size
+    of the gap OQ-REALUNDER has to close, and it is larger than the headline
+    suggested.
+
+    **PER-CATALOG, NOT PER-FILE — SETTLED 2026-09-13 by Arm B.** Every one of
+    the 54 single-catalog captures fits both readings identically:
 
       - PER-CATALOG — the first module *of each catalog* pays full price:
         error = sum over catalogs of `d_i x (n_i - 1)`
@@ -2579,10 +2645,26 @@ the matching footnote at the bottom, not inline.
         everything after it is discounted whatever its catalog:
         error = `sum(d_i x n_i) - d_first`
 
-    On a single-catalog file these are the same number. On a real program
+    On a single-catalog file these are the same number; on a real program
     carrying 20-60 modules across 10-20 catalogs they differ by most of the
-    module total, so picking wrong is a multi-hundred-kilobyte error on
-    every real file.
+    module total. The mixtures separate them three independent ways and all
+    three say PER-CATALOG:
+
+        quadruple   sum(d)   over-prediction at x2   x2rev     at x1
+        mixq1        2,744            2,834          2,834        33
+        mixq2        7,472            7,424          7,424       -32
+        mixq3        7,080            7,048          7,048        24
+
+      1. `x2rev` is **byte-identical** to `x2` in all three quadruples. Under
+         PER-FILE the total has to move by `d_first - d_last` (1,224 / 3,704 /
+         3,312 here). It does not move at all.
+      2. The `x1` residual is ~0 against a PER-FILE prediction of
+         `sum(d) - d_first`, i.e. 1,224 to 6,944 bytes.
+      3. The `x2` over-prediction equals `sum(d)` to within 90 bytes on a
+         five-module file whose own baseline residual is already ~30.
+
+    This is what the engine already implemented, so no code changed — but it
+    was an assumption until now and is now measured.
 
     **Test files built 2026-09-11, `gen_module_marginal.py`, 36 files.**
 
@@ -2636,9 +2718,47 @@ the matching footnote at the bottom, not inline.
     in either sweep table, so there is nothing verbatim to build from. It
     needs a real export before it can be tested at all.
 
-    **Blocked on capture of the 36.** Arm B alone decides whether the
-    already-measured law is worth hundreds of kilobytes per real file or a
-    few tens.
+    **Arms A, B and D captured and reconciled 2026-09-13. Arm C is the only
+    one still outstanding, and it is outstanding because all six of its rows
+    captured with build errors.**
+
+      - **Arm A (n=8) does not falsify `d x (n - 1)`.** 64 of the 71
+        `asmclose_*` rows land byte-exact with the discount applied against 16
+        without it, and the marginal is flat at every one of n=1/2/4/8 on 13
+        catalog families. A per-rack or per-connection-block step above four
+        modules would have shown here and does not.
+      - **Arm B settled per-catalog vs per-file** — see above.
+      - **Arm D (`modmarg_ob32chain_n{01,02,04,08}`) reads 21,760 / 24,080 /
+        28,720 / 38,000**, a flat marginal of **2,320 per additional
+        EN2T-plus-OB32 chain** against a modelled 3,544 — so a 1,224 discount
+        per chain, exact at three counts. It does **not** split between the two
+        catalogs: one equation, two unknowns. The n=1 point gives the pair at
+        88 bytes over what the table charges, which is the second equation, but
+        both equations are the pair rather than either catalog. **The missing
+        file is an EN2T-only count sweep** (n=1/2/4/8, every copy under
+        `Local`, no downstream child): differenced against Arm D it gives
+        1756-EN2T's own rate and leaves rack-aliased 1756-OB32 by subtraction.
+
+    **PER-RACK VS PER-PROJECT: implemented, measured, and irrelevant on real
+    files.** This was recorded as the open scope question and as the reason the
+    discount could not be wired. `ModuleOverheadModel.repeat_scope`
+    (`project | parent`) now implements both, and they produce **byte-identical
+    totals on all sixteen real programs**. The reason is structural rather than
+    lucky: in every one of the sixteen, no catalog carrying a measured repeat
+    rate ever appears under more than one parent module. Exactly one real export
+    in `samples/local/` splits one at all (`BAI10048_TrimmerTally`, a 1756-IB32/B
+    across two parents), and it is not in the held-out sixteen. So the question
+    stays genuinely open — nothing in the corpus discriminates, because every
+    copy in every captured sweep sits under `Local` — but it cannot be what made
+    the real files worse, and it cannot change a real-file number until a real
+    file contains a split catalog. Default is `project`.
+
+    **A 16-byte disagreement on 1756-IB16, unresolved and small.** The
+    additivity M axis (a file holding nothing but 1756-IB16 modules) gives
+    1,704 first / 904 after; `asmclose_1756_ib16_1conn_n*` gives 1,684 / 892,
+    which is what is wired. Both are byte-exact on their own zero points, so
+    the two file shapes differ by 8 somewhere outside the module term. Flagged
+    rather than chased: it is 16 bytes on a 1,712-byte constant.
 
     **CAPTURE ERRORS: 6 row(s)** flagged here by `scripts/capture_errors.py`
     (step 2b) after the 616-capture merge of 2026-09-13. Suspect, not wrong:
@@ -2661,15 +2781,13 @@ the matching footnote at the bottom, not inline.
     792 discount, 16 short of this — derived from the module sweeps rather than
     from a file with nothing else in it.
 
-    `apply_repeat_discount` stays **false** for exactly the reason it was set
-    false before: the sixteen real programs under-predict by 2.07%, and a
-    discount predicts less. This measurement does not change that arithmetic; it
-    removes the excuse that the constant was uncertain. What is still unresolved
-    is per-rack versus per-project — this file has one chassis, and a real
-    program with the same 1756-IB16 in four different racks would say whether
-    the second one in a NEW rack pays full price. No file in the corpus tests
-    that, and it is the difference between a small correction and a large one on
-    every real program.
+    `apply_repeat_discount` is **true** since 2026-09-13, for the ten catalogs
+    whose rate was measured on a shape real programs contain. The reason it was
+    false — that the sixteen real programs under-predict and a discount predicts
+    less — held for the table as a whole and not for those ten: they are worth
+    10,464 bytes across 47.4 MB. The per-rack-versus-per-project question this
+    paragraph raised is implemented and measured above; it changes nothing on
+    any of the sixteen.
 
 33. **OQ-ALARMDEF** — datatype-level alarm definitions. **RESOLVED except one
     term, 2026-09-12, by reading the 68 `alarmdef_*` and 33 `alarmsep_*` rows

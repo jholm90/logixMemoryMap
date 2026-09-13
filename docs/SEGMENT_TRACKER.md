@@ -23,7 +23,7 @@ project's ±8 universal-residual band.
 | 11 | `udtmn_*` | 24 | 24 | 0 | OQ-UDTMEMBERNAME | **CLOSED — its length arm is what discriminated the form** |
 | 12 | `cpttier_*` | 22 | 22 | 0 | OQ-CMPCPTLAYOUT | **CLOSED — tier-2 extra-operand rate was a tier-1 rate** |
 | 13 | `modmarg_*` | 19 | 19 | 6 | OQ-MODULEMARGINAL | DEFERRED -- has errored rows, worked at the end |
-| 14 | `asmclose_*` | 71 | 71 | 0 | OQ-MODULEIO | pending |
+| 14 | `asmclose_*` | 71 | 69 | 0 | OQ-MODULEIO | **WIRED — repeat discount on for 10 catalogs, 2 rows cleared, 4 flagged bad** |
 | 15 | `aoishape_*` | 17 | 17 | 0 | OQ-AOIINTERNALLOGIC | pending |
 | 16 | `axmarg_*` | 16 | 16 | 9 | OQ-AXISMARGINAL | DEFERRED -- has errored rows, worked at the end |
 | 17 | `platform_*` | 15 | 10 | 0 | OQ-REAL5069 | pending |
@@ -619,3 +619,152 @@ single-rung files, so each is one point with no slope: 0, 0, +8, +16, +16, +32,
 operand type from operator tier from literal count, which is exactly what this
 entry already says needs dedicated architecture rather than more raw points.
 
+
+## Segment 14 — `asmclose_*`, OQ-MODULEIO: WIRED
+
+The repeat-instance module discount was measured exactly on 2026-09-12 and then
+gated off, because applying it made all sixteen held-out real programs worse.
+The recorded reason was a hypothesis — that whatever gets shared is shared per
+rack rather than per project — and the recorded discriminator was the
+`modmarg_*` batch. Both have now been measured, and neither the hypothesis nor
+the blanket conclusion survives.
+
+### The discount is per catalog, not per file
+
+`modmarg_mixq{1,2,3}_{x1,x2,x2rev}` were built for exactly this and are
+captured. Three disjoint quadruples of catalogs with well-separated discounts,
+each at one and two copies per catalog, plus a reversed-order build:
+
+| quadruple | sum(d) | over-prediction at x2 | x2rev | at x1 |
+|---|---:|---:|---:|---:|
+| mixq1 | 2,744 | 2,834 | 2,834 | 33 |
+| mixq2 | 7,472 | 7,424 | 7,424 | −32 |
+| mixq3 | 7,080 | 7,048 | 7,048 | 24 |
+
+Three independent arms, same answer:
+
+1. `x2rev` is byte-identical to `x2` in all three. Per-file requires the total
+   to move by `d_first − d_last`, which is 1,224 / 3,704 / 3,312 here.
+2. `x1` sits at ~0 against a per-file prediction of `sum(d) − d_first`, i.e.
+   1,224 to 6,944 bytes.
+3. `x2` equals `sum(d)` to within 90 bytes, on five-module files whose own
+   baseline residual is already ~30.
+
+Per-catalog is what the engine already did, so no code changed — but it was an
+assumption until now.
+
+### Flat through n=8
+
+`asmclose_*_n08` was the first point that could falsify `d × (n − 1)`, since
+n=1 and n=2 define it. It does not: the marginal is flat at every one of
+n=1/2/4/8 on 13 catalog families, and with the discount applied **64 of the 71
+`asmclose_*` rows land byte-exact, against 16 without it.**
+
+### Per-rack versus per-project: implemented, measured, irrelevant
+
+`ModuleOverheadModel.repeat_scope` (`project | parent`) now implements both.
+They produce **byte-identical totals on all sixteen real programs.** Not luck:
+in every one of the sixteen, no catalog carrying a measured repeat rate ever
+appears under more than one parent module. Exactly one export in
+`samples/local/` splits one at all (`BAI10048_TrimmerTally`, a 1756-IB32/B
+across two parents) and it is not in the held-out sixteen.
+
+So the scope question is genuinely undecided — nothing in the corpus
+discriminates, because every copy in every captured sweep sits under `Local` —
+and it cannot be what made the real files worse. Kept as a model field, default
+`project`, because it is a real unresolved behaviour rather than a formatting
+detail.
+
+### What the regression actually was
+
+Attributing the project-wide reduction on the sixteen real programs catalog by
+catalog — which had never been done — puts 95% of it in two families:
+
+| catalog | repeats | bytes removed |
+|---|---:|---:|
+| ETHERNET-MODULE | 95 | 67,450 |
+| 2198-*-ERS3 (six) | 114 | 112,176 |
+| the other ten | 7 | 9,944 |
+| **total** | **216** | **189,570** |
+
+| variant | mean \|%\| | sum-weighted |
+|---|---:|---:|
+| discount off | 1.6009 | +1.2370% |
+| all 17 catalogs | 1.7492 | +1.6298% |
+| without ETHERNET-MODULE and 2198-*-ERS3 | 1.6289 | +1.2579% |
+
+The ten ordinary I/O and adapter catalogs are neutral on real files to within
+noise — 10,464 bytes across 47.4 MB — while fixing 47 corpus rows. Both
+exclusions are on shape grounds, decided from the shapes rather than from which
+way they moved the number:
+
+- **ETHERNET-MODULE is not a catalog.** It is a placeholder whose cost is driven
+  by connection sizes typed in by hand; 109 instances across the sixteen real
+  programs carry 40 distinct connection shapes, which is why
+  `module_connection_data` exists. The `genem_n{01,02,04,08}` sweep cloned ONE
+  shape, so its 710-byte rate is the cost of a second identical clone.
+- **2198-*-ERS3 was measured on bare drives with no axis tag,** which no real
+  program contains — a drive with nothing pointed at it does nothing. Arm C
+  exists to fix that and all six of its rows captured with Studio build errors,
+  so the with-axis rate is still unmeasured.
+
+### Seven rows in this segment are bad reads
+
+- `asmclose_1756_ob32_rackaliased_n02` / `_n04` — duplicate module names. The
+  copier renamed only the first element of a 2-deep chain, so Studio merged the
+  copies and the files measured N adapters sharing ONE output card at zero
+  import errors. **The 2026-09-11 note saying these were cleared was written but
+  the values were never removed**, so both rows kept feeding every
+  reconciliation for two days. Emptied now.
+  `lint.duplicate_module_name` has caught this class since 2026-09-11, one day
+  after these files were generated, and
+  `gen_assumed_closeout._place_copies` now renames every `<Module>` in a block
+  and repoints each internal `ParentModule` while leaving references outside the
+  block alone. `modmarg_ob32chain_*` is the correctly-built replacement.
+- `asmclose_al1222_1conn_n{01,02,04,08}` — **18,128 at all four counts**,
+  distinct names, zero errors. A module cannot cost the same at n=8 as at n=1,
+  so the AL1222 modules never reached the controller. Left in place because the
+  observation is consistent and reproduced four times, but nothing may be
+  derived from them. This also **voids the "AL1222 discount = 0 is the control"
+  claim** that OQ-MODULEMARGINAL rested the per-catalog reading on: a catalog
+  contributing nothing has a zero discount trivially.
+- `asmclose_1756_ob32_rackaliased_n01` is fine and is the pair's only clean
+  point, at 88 bytes over.
+
+### Still open out of this segment
+
+- **1756-EN2T and rack-aliased 1756-OB32 do not separate.** Arm D
+  (`modmarg_ob32chain_*`) gives 21,760 / 24,080 / 28,720 / 38,000 — a flat
+  2,320 per additional chain against a modelled 3,544, so a 1,224 discount per
+  chain, exact at three counts. One equation, two unknowns. The missing file is
+  an **EN2T-only count sweep** (n=1/2/4/8, every copy under `Local`, no
+  downstream child); differenced against Arm D it gives EN2T's own rate and
+  leaves OB32 by subtraction.
+- **1756-EN2T's first-instance rate is also wrong, in both directions.**
+  `modulesweep_1756_en2t_variant_1conn` is 1,248 over and `..._noconn` 1,872
+  over, while `..._1conn2` is 908 under. A single per-catalog constant is the
+  wrong shape for it, for the same reason it was the wrong shape for
+  ETHERNET-MODULE: the cost tracks the connection configuration. Same EN2T-only
+  sweep answers this.
+- **A 16-byte disagreement on 1756-IB16.** The additivity M axis gives 1,704
+  first / 904 after; `asmclose_1756_ib16_1conn_n*` gives 1,684 / 892, which is
+  what is wired. Both are byte-exact on their own zero points, so the two file
+  shapes differ by 8 outside the module term. Flagged, not chased.
+
+### Effect
+
+| | before | after |
+|---|---:|---:|
+| real programs, mean \|%\| | 1.6009 | 1.6289 |
+| real programs, sum-weighted | +1.2370% | +1.2579% |
+| corpus rows byte-exact | 1,190 | 1,220 |
+| corpus rows within ±8 | 1,870 | 1,900 |
+| corpus mean \|%\| | 1.5383 | 1.2757 |
+| `modules` category, mean \|%\| | 7.591 | 5.642 |
+
+The real-file headline moves the wrong way by 0.028pp and that is the honest
+cost of the change: five of the sixteen move at all, and the shift is 1/57th of
+a systematic error the model already carries. What it buys is that the module
+term is no longer knowingly wrong where it was measured, and that the real
+under-prediction OQ-REALUNDER has to close is now sized at +1.2579% with the
+clean catalogs in, nearer +1.63% once the two suspect families are resolved.

@@ -702,7 +702,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     module_entries: list[tuple[str, str, str, int, str]] = []
     # How many modules of each catalog have been charged so far -- drives the
     # first-instance vs repeat-instance overhead split below.
-    catalog_occurrence: dict[str, int] = {}
+    catalog_occurrence: dict[tuple[str, str], int] = {}
     # Modules can be nameless (a real POINT I/O card is identified only by
     # catalog and slot), so labels come from one file-level pass that can
     # guarantee uniqueness -- see parser/modules.py label_modules.
@@ -848,10 +848,15 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # constant or ratio behind it). Counted per catalog in document order;
         # which physical module is called "first" does not matter because only
         # the count of each catalog affects the total.
-        catalog_occurrence[module.catalog_number] = (
-            catalog_occurrence.get(module.catalog_number, 0) + 1)
+        # 2026-09-13: what "same project" scopes to is itself unsettled --
+        # repeat_scope picks whether the count runs project-wide or restarts
+        # under each parent module. occurrence_key carries that choice so
+        # this loop does not have to know about it.
+        occ_key = model.module_overhead_by_catalog.occurrence_key(
+            module.catalog_number, module.parent_module)
+        catalog_occurrence[occ_key] = catalog_occurrence.get(occ_key, 0) + 1
         overhead_bytes, overhead_basis = model.module_overhead_by_catalog.overhead_for(
-            module.catalog_number, catalog_occurrence[module.catalog_number])
+            module.catalog_number, catalog_occurrence[occ_key])
         module_bytes = module.module_defined_bytes + overhead_bytes
         # A generic ETHERNET-MODULE's connection data costs 4x its declared
         # bytes, not 1x (memory_model.yaml module_connection_data, wired

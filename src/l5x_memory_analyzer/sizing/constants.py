@@ -730,6 +730,21 @@ class ModuleOverheadModel:
     # module_overhead_by_catalog for the 16-catalog table and why this has to be
     # a second per-catalog number rather than a constant or a ratio.
     repeat_by_catalog: dict[str, int] = field(default_factory=dict)
+    # What the "same project" in the line above actually means. "project"
+    # counts every module of a catalog in the file against one running total;
+    # "parent" restarts the count under each parent module, i.e. the shared
+    # thing is shared per rack rather than per controller. The captured
+    # single-catalog and mixture sweeps cannot tell these apart -- every copy
+    # in them sits under Local -- so the choice is a real open question, not a
+    # formatting detail. See memory_model.yaml
+    # module_overhead_repeat_discount.
+    repeat_scope: str = "project"
+
+    def occurrence_key(self, catalog_number: str | None,
+                       parent_module: str = "") -> tuple[str, str]:
+        """What report.py counts occurrences against, per `repeat_scope`."""
+        catalog = catalog_number or ""
+        return (catalog, parent_module if self.repeat_scope == "parent" else "")
 
     def overhead_for(self, catalog_number: str | None,
                      occurrence: int = 1) -> tuple[int, str]:
@@ -1146,6 +1161,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 if raw.get("module_overhead_repeat_discount", {}).get("apply_repeat_discount")
                 else {}
             ),
+            repeat_scope=raw.get("module_overhead_repeat_discount", {}).get(
+                "repeat_scope", "project"),
         ),
         udt_definition_extra=raw.get("definition_scale_correction", {}).get("udt_definition_extra", 0),
         udt_tag_extra=raw.get("definition_scale_correction", {}).get("udt_tag_extra", 0),

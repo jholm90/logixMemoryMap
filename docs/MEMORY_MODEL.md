@@ -232,15 +232,44 @@ and it **unmasked a systematic under-prediction on every real program** that the
 old guess had been cancelling. `realprog_ipc_edgerline` has 12 ERS3 drives and
 its residual moved by exactly 12 × 6,384 = 76,608. See OQ-REALUNDER.
 
-A **repeat-instance discount** is measured for 16 catalogs (432–3,768 bytes,
-two independent marginal points each, zero variance) and is present in
-`module_overhead_by_catalog` as `repeat_bytes`, but is **NOT APPLIED** —
-`module_overhead_repeat_discount.apply_repeat_discount` is false. Applying it
-project-wide made all 16 held-out real programs worse, because it only ever
-reduces a prediction and the real set is already under. The likely scope error:
-in the test files every repeat sits in one chassis under one parent, while real
-programs spread a catalog across racks, so what is shared is plausibly shared
-per rack rather than per project. The `modmarg_*` batch discriminates.
+A **repeat-instance discount** applies from the second module of a catalog on:
+
+    overhead(occurrence n) = repeat_bytes   for n > 1
+
+`repeat_bytes` is a second per-catalog number in `module_overhead_by_catalog`,
+not a constant and not a ratio (432–3,768 bytes, extra/first 0.24–0.79).
+Measured at n = 1 / 2 / 4 / 8 on the `asmclose_*` sweeps with zero variance, and
+per **catalog** rather than per file — settled by the `modmarg_mixq*` mixtures,
+in which reversing module order leaves the total byte-identical while a per-file
+reading requires it to shift by `d_first − d_last`. KNOWN.
+
+`module_overhead_repeat_discount.apply_repeat_discount` is **true** since
+2026-09-13 for the **ten** catalogs whose rate was measured on a shape real
+programs contain. Seven measured rates are deliberately left out of the table,
+each with the reason at its own entry:
+
+- **ETHERNET-MODULE** is a placeholder, not a catalog. Its cost is driven by
+  connection sizes typed in by hand — 109 instances in the sixteen real programs
+  carry 40 distinct connection shapes, which is why `module_connection_data`
+  exists — and the `genem_n*` sweep cloned one shape, so its 710-byte rate is
+  the cost of a second identical clone.
+- the six **2198-*-ERS3** drives were measured on bare drive modules with no
+  axis tag, which no real program contains. The with-axis rate is still
+  unmeasured: every `modmarg_drvaxis_*` row captured with Studio build errors.
+
+Those two families were 95% of the 189,570 bytes the full table removed from the
+sixteen real programs. The ten that remain are worth 10,464 bytes across 47.4 MB
+— neutral on real files to within noise — and take the `asmclose_*` rows from 16
+byte-exact to 47.
+
+`module_overhead_repeat_discount.repeat_scope` (`project | parent`) decides
+whether the occurrence count runs project-wide or restarts under each parent
+module. Both are implemented and produce byte-identical totals on all sixteen
+real programs, because in every one of them no catalog carrying a measured
+repeat rate appears under more than one parent. The scope is therefore still
+undetermined by data — every copy in every captured sweep sits under `Local` —
+and cannot change a real-file number until a real file splits a catalog across
+racks. Default `project`. See OQ-MODULEMARGINAL.
 
 ## Unsigned atomics in module structures (fixed 2026-09-12, OQ-V3GENBUGS)
 

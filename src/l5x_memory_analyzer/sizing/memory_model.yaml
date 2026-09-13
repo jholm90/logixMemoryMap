@@ -640,28 +640,85 @@ zero_connection_module:
 # itself an artifact of guessing. See OQ-BUILDFAIL-OPEN: the six files this was
 # blocked on no longer exist, and the asmclose_* sweep superseded them with 18
 # clean captures.
-# NOT APPLIED. Set apply_repeat_discount true only with real-file evidence.
+# APPLIED 2026-09-13, with two catalog families deliberately left out of the
+# table. The earlier decision to gate this off entirely was right about the
+# symptom and wrong about the cause.
 #
-# The repeat rates below are measured exactly, and applying them project-wide
-# still made the HELD-OUT REAL FILES WORSE -- which is the only accuracy number
-# that counts. realprog_ipc_edgerline went from -2.67% to -6.41% and
-# realprog_accutally from -2.32% to -2.55%; all 16 real programs moved further
-# under-predicted, because the discount only ever reduces a prediction and the
-# real set was already under.
+# What was known when it was gated off: the rates are exact per catalog, and
+# applying them project-wide moved all sixteen held-out real programs further
+# under-predicted. The hypothesis recorded at the time was that whatever gets
+# shared is shared PER RACK rather than per project, so the occurrence count
+# would have to restart at each parent module, and that the modmarg_* batch was
+# the discriminator. Both halves of that have now been measured.
 #
-# The likely reason, and the next test: in the asmclose_* files every repeated
-# module sits in ONE chassis under ONE parent. Real programs spread the same
-# catalog across several racks and adapters, so whatever definition is being
-# shared is plausibly shared PER RACK, not per project -- in which case the
-# occurrence count has to reset at each parent module rather than being global.
-# The modmarg_* batch (built, awaiting capture) varies catalog count against
-# parent, which is exactly the discriminator.
+# SCOPE IS NOT THE CAUSE. repeat_scope is implemented (project | parent) and
+# both settings produce byte-identical totals on all sixteen real programs.
+# The reason is structural, not coincidental: in every one of the sixteen, no
+# catalog carrying a measured repeat rate ever appears under more than one
+# parent module. So the per-rack reading cannot account for the regression, and
+# the question of which scope is right remains genuinely open but cannot matter
+# until a real file contains a split catalog. Kept as a model field rather than
+# a code comment because it is a real unresolved behaviour -- see OQ-MODULEIO.
 #
-# Kept here rather than deleted because the measurement is good: 16 catalogs,
-# two independent marginal points each, zero variance. What is wrong is the
-# scope it was applied at, not the numbers.
+# PER-CATALOG, NOT PER-FILE -- settled by the modmarg_mix* mixtures, which is
+# what that arm was built for. Three disjoint quadruples of well-separated
+# discounts, each at one and two copies per catalog, plus a reversed-order
+# build of each:
+#
+#   quadruple   sum(d)   over-prediction at x2   x2rev     at x1
+#   mixq1        2,744            2,834          2,834        33
+#   mixq2        7,472            7,424          7,424       -32
+#   mixq3        7,080            7,048          7,048        24
+#
+# x2rev is byte-identical to x2 in all three, so the total does not depend on
+# which catalog comes first, which is exactly what per-file predicts it would.
+# The x1 residual is ~0 against a per-file prediction of sum(d) - d_first, i.e.
+# 1,224 to 6,944 bytes. And the x2 over-prediction equals sum(d) to within 90
+# bytes on a five-module file whose own baseline residual is already ~30. Three
+# independent arms, same answer.
+#
+# FLAT THROUGH n=8. asmclose_*_n08 was the first point that could falsify
+# d x (n - 1) and does not: 64 of the 71 asmclose rows land byte-exact with the
+# discount applied, against 16 without it.
+#
+# WHAT THE REGRESSION ACTUALLY WAS. Attributing the project-wide reduction on
+# the sixteen real programs catalog by catalog: 189,570 bytes across 216
+# repeated modules, of which ETHERNET-MODULE is 67,450 and the six
+# 2198-*-ERS3 drives are 112,176 -- 95% of the total between them. With just
+# those two families left out of the table, the real-file effect of the other
+# ten catalogs is 10,464 bytes across 47.4 MB:
+#
+#   variant                                   mean |%|   sum-weighted
+#   discount off                                1.6009       +1.2370%
+#   all 17 catalogs                             1.7492       +1.6298%
+#   without ETHERNET-MODULE and 2198-*-ERS3     1.6289       +1.2579%
+#
+# So the ten ordinary I/O and adapter catalogs are neutral on real files to
+# within noise, and the whole regression came from two families whose repeat
+# rate was measured on a shape real programs do not contain:
+#
+#   ETHERNET-MODULE is not a catalog. It is a generic placeholder whose cost is
+#   driven by hand-typed connection sizes -- 109 instances across the sixteen
+#   real programs carry 40 distinct connection shapes, which is why
+#   module_connection_data exists. The genem_n{01,02,04,08} sweep cloned ONE of
+#   those shapes, so its repeat rate describes a second identical clone and
+#   says nothing about a second differently-configured device.
+#
+#   2198-*-ERS3 was measured on bare drive modules with NO axis tag. A real
+#   program never contains one -- a drive with no AXIS_CIP_DRIVE pointed at it
+#   does nothing. The modmarg_drvaxis_* arm exists to rebuild them with their
+#   axis and every one of its six rows captured WITH Studio build errors, so
+#   those rows are suspect and the with-axis repeat rate is still unmeasured.
+#
+# Both exclusions are on shape grounds, decided before looking at which way
+# they moved the number, and both are recorded at their table entries. A
+# catalog with no repeat_bytes keeps paying the first-instance rate for every
+# instance, which is the safe direction: it over-predicts rather than under.
 module_overhead_repeat_discount:
-  apply_repeat_discount: false
+  apply_repeat_discount: true
+  # project | parent -- see ModuleOverheadModel.repeat_scope. Only read when
+  # apply_repeat_discount is true.
+  repeat_scope: project
   confidence: FITTED
 
 # A generic ETHERNET-MODULE's CONNECTION DATA costs 4x its declared bytes, not
@@ -709,11 +766,18 @@ module_overhead_by_catalog:
   '150 SMC Flex-E': { bytes: 6614, confidence: ASSUMED }
   # 1,592 with the connection law above and the 400-byte config array charged as
   # declared: genem_in002/in010/in450 land exactly at 2,024 / 2,056 / 3,816 real
-  # module bytes. repeat_bytes from genem_n{01,02,04,08} -- 2,056 for the first
-  # instance and 1,376 for every one after, a 710 discount, exact at all four
-  # counts -- and inert while module_overhead_repeat_discount.apply_repeat_discount
-  # is false.
-  'ETHERNET-MODULE': { bytes: 1592, repeat_bytes: 882, confidence: KNOWN }
+  # module bytes.
+  # NO repeat_bytes, deliberately. genem_n{01,02,04,08} does measure one: 2,056
+  # for the first instance and 1,376 for every one after, a 710 discount, exact
+  # at all four counts. It is not applicable. ETHERNET-MODULE is a placeholder
+  # rather than a catalog -- its cost is driven by connection sizes typed in by
+  # hand, and the 109 instances across the sixteen real programs carry 40
+  # distinct connection shapes, which is the whole reason module_connection_data
+  # above exists. The n-sweep cloned ONE shape, so 710 is the cost of a second
+  # IDENTICAL clone and says nothing about a second differently-configured
+  # device. Applying it anyway was 67,450 of the 189,570 bytes the discount
+  # removed from the real programs. See module_overhead_repeat_discount.
+  'ETHERNET-MODULE': { bytes: 1592, confidence: KNOWN }
   '1732E-IB16M12DR/A': { bytes: 2126, confidence: ASSUMED }
   '1732E-IB16M12R/A': { bytes: 1422, confidence: ASSUMED }
   '1732E-OB16M12R/A': { bytes: 1802, confidence: ASSUMED }
@@ -766,18 +830,27 @@ module_overhead_by_catalog:
   '5069-IY4/A': { bytes: 4040, confidence: FITTED }
   '5069-OBV8S/A': { bytes: 1915, confidence: FITTED }
   '2198-C4004-ERS': { bytes: 4065, confidence: ASSUMED }
-  '2198-D012-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
-  '2198-D020-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
-  '2198-D032-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
-  '2198-D057-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
+  # The six -ERS3 drives below have NO repeat_bytes, deliberately. asmclose_*
+  # measures one -- 4,113 first, 3,129 after, a 984 discount, exact at n=1/2/4/8
+  # on all six -- but every asmclose file holds a BARE drive module with no axis
+  # tag, and a real program never contains one: a drive with no AXIS_CIP_DRIVE
+  # pointed at it does nothing. The with-axis rate is still unmeasured because
+  # every modmarg_drvaxis_* row captured WITH Studio build errors. Applying the
+  # bare-drive rate anyway was 112,176 of the 189,570 bytes the discount removed
+  # from the real programs, on a family that is 4.07% of their total. See
+  # module_overhead_repeat_discount and OQ-MODULEMARGINAL.
+  '2198-D012-ERS3': { bytes: 4113, confidence: KNOWN }
+  '2198-D020-ERS3': { bytes: 4113, confidence: KNOWN }
+  '2198-D032-ERS3': { bytes: 4113, confidence: KNOWN }
+  '2198-D057-ERS3': { bytes: 4113, confidence: KNOWN }
   '2198-H008-ERS': { bytes: 3629, confidence: ASSUMED }
   '2198-P031': { bytes: 3613, confidence: ASSUMED }
   '2198-P070': { bytes: 3613, confidence: ASSUMED }
   '2198-P141': { bytes: 3613, confidence: ASSUMED }
   '2198-P208': { bytes: 3589, confidence: ASSUMED }
   '2198-RP200': { bytes: 3617, confidence: ASSUMED }
-  '2198-S086-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
-  '2198-S130-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
+  '2198-S086-ERS3': { bytes: 4113, confidence: KNOWN }
+  '2198-S130-ERS3': { bytes: 4113, confidence: KNOWN }
   '2702782': { bytes: -16, confidence: ASSUMED }
   '440C-CR30-22BBB/A': { bytes: 4388, repeat_bytes: 620, confidence: KNOWN }
   '842E-CM-M': { bytes: 3633, repeat_bytes: 2633, confidence: KNOWN }

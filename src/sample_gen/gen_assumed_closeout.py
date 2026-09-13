@@ -132,9 +132,22 @@ def _place_copies(xml: str, count: int) -> str:
 
     out = []
     for i in range(count):
+        # EVERY Module element in the block gets renamed, and every internal
+        # ParentModule reference is repointed to the renamed parent. A
+        # rack-aliased shape is a CHAIN -- a bridge plus the card behind it --
+        # so renaming only the first element leaves the second sharing one name
+        # across all `count` copies. Studio merges identical duplicates instead
+        # of rejecting them, so the file then measures ONE of that card however
+        # many it appears to contain, which is how asmclose_1756_ob32_
+        # rackaliased_n02/n04 came out 1,848 bytes per copy short of the shape
+        # they claim. The duplicate_module_name lint rule catches it now.
+        # Only names DEFINED in this block are renamed; a ParentModule
+        # pointing outside it (the CPU, "Local") has to keep pointing there.
+        own = set(re.findall(r'<Module Name="([^"]+)"', xml))
         blk = xml if i == 0 else re.sub(
-            r'(<Module Name=")([^"]+)(")',
-            lambda m: f"{m.group(1)}{m.group(2)}_c{i}{m.group(3)}", xml, count=1)
+            r'((?:<Module Name|ParentModule)=")([^"]+)(")',
+            lambda m: (f"{m.group(1)}{m.group(2)}_c{i}{m.group(3)}"
+                       if m.group(2) in own else m.group(0)), xml)
         if up_addr is not None:
             if numeric_slot:
                 # Consecutive slots from 1 (slot 0 is the CPU). Renumbered
