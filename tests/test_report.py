@@ -58,7 +58,10 @@ def test_alias_tags_size_not_error():
 
     aoi_instance = by_path["controller/DebSensor1"]
     # EnableIn(BOOL,4) + DebTmr(TIMER,12), InOut excluded, + tag_overhead("DebSensor1", 10 chars)
-    assert aoi_instance.bytes == 16 + 92
+    # -8 since 2026-09-13: an AOI INSTANCE is over-charged by the flat
+    # tag_overhead (memory_model.yaml definition_scale_correction, exact over a
+    # sweep of 1..60 instances).
+    assert aoi_instance.bytes == 16 + 92 - 8
     # Every component is KNOWN: UDT alignment and standalone BOOL sizing were
     # both closed by real capture, the BOOL tier corrected 2026-09-06.
     assert aoi_instance.basis == "KNOWN"
@@ -77,7 +80,9 @@ def test_alias_tags_size_not_error():
     aoi_def = by_path["udt_definitions/fbDebounce"]
     # +8 since 2026-09-13: the TIMER member's measured non-atomic extra
     # (memory_model.yaml aoi_member_type_extra, 40 files zero residual).
-    assert aoi_def.bytes == 1184 + 20 - 8 + 3 + 8
+    # -3 since 2026-09-13: an AOI DEFINITION is over-charged by 3
+    # (memory_model.yaml definition_scale_correction).
+    assert aoi_def.bytes == 1184 + 20 - 8 + 3 + 8 - 3
     assert aoi_def.basis == "FITTED"
 
     # total now also includes the project_baseline entry (2026-08-23,
@@ -122,12 +127,17 @@ def test_udt_definition_cost_appears_once_per_type_used_by_multiple_instances():
     definition = definition_entries[0]
     assert definition.data_type == "Point3D"
     # base(160) + per_member(16)*3 + name_per_8_chars(8)*ceil(7/8)=1 = 216
-    assert definition.bytes == 160 + 16 * 3 + 8 * 1
+    # +16 since 2026-09-13: a UDT DEFINITION costs 16 more than the
+    # member-count-and-name formula gives (memory_model.yaml
+    # definition_scale_correction, exact over 14 rows, 1..25 definitions).
+    assert definition.bytes == 160 + 16 * 3 + 8 * 1 + 16
 
     by_path = {e.path: e for e in entries}
     point_a = by_path["controller/PointA"]
-    # 3*DINT(4) = 12 tight-packed + tag_overhead("PointA", 6 chars) = 84
-    assert point_a.bytes == 12 + 84
+    # 3*DINT(4) = 12 tight-packed + tag_overhead("PointA", 6 chars) = 84,
+    # +3 since 2026-09-13 for the per-UDT-tag-instance extra (memory_model.yaml
+    # definition_scale_correction, exact over 14 rows spanning 1..500 tags).
+    assert point_a.bytes == 12 + 84 + 3
 
 
 def test_udt_definition_counted_even_when_only_used_as_a_nested_member():

@@ -13,10 +13,21 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 
 # An instruction call is an all-caps mnemonic immediately followed by "(" --
-# e.g. "XIC(A)OTE(B);" or "CPT(Dest,(A+B)*C);". Also matches AOI/UDT
-# instance calls (same call syntax as a built-in instruction in real Logix
-# rung text) -- those aren't in WEIGHTS so they're silently skipped by the
-# caller, not double-counted or crashed on.
+# e.g. "XIC(A)OTE(B);" or "CPT(Dest,(A+B)*C);".
+#
+# 2026-09-13: this comment used to claim it "also matches AOI/UDT instance
+# calls". It does not, and that sentence hid a large real gap. An AOI is called
+# with exactly the same syntax as a built-in, but real AOI names are mixed-case
+# (`fbDebounce`, `AnalogSensor`, `HomeToTorque`) and [A-Z][A-Z0-9_]* cannot match
+# them. 288 of the 331 AOI definitions in the real corpus are mixed-case, so 87%
+# of real AOI definitions -- and 3,918 real call sites -- were invisible to the
+# instruction counter and cost nothing.
+#
+# AOI call sites are now counted separately by _aoi_call_count() against the
+# file's own declared AOI names, which is case-correct by construction. An
+# ALL-CAPS AOI name still matches this regex too, but that is harmless: `weights`
+# has no entry for an AOI name, so it contributes zero here and is not
+# double-charged.
 _INSTRUCTION_CALL = re.compile(r"\b([A-Z][A-Z0-9_]*)\(")
 
 # JSR's own target-routine name (first argument) -- see JSR_TARGET_ROUTINES
@@ -376,6 +387,9 @@ class RoutineLogic:
     # mnemonic -> number of times it appears across every rung in this
     # routine (a rung with "XIC(A)XIC(B)OTE(C);" counts XIC twice, OTE once).
     instruction_counts: dict[str, int] = field(default_factory=dict)
+    # Call sites for the file's own AOIs -- invisible to instruction_counts
+    # because real AOI names are mixed-case. See _aoi_call_count.
+    aoi_call_count: int = 0
     # True if some OTHER routine in the same program JSRs to this one.
     # 2026-08-22: confirmed the target's own fixed shell cost (fixed_base_
     # per_routine) is already absorbed into the caller's jsr_fixed_base_
@@ -515,6 +529,20 @@ def _branch_bracket_instruction_count(rung_texts: list[str]) -> int:
     return total
 
 
+def _aoi_call_count(rung_texts: list[str], aoi_names: frozenset[str]) -> int:
+    """How many times this routine calls one of the file's own AOIs.
+
+    Counted against the DECLARED names rather than by a casing pattern -- see
+    _INSTRUCTION_CALL. Word-bounded so an AOI named `Scale` does not also match
+    `ScaleFactor(`.
+    """
+    if not aoi_names:
+        return 0
+    pattern = re.compile(
+        r"\b(" + "|".join(re.escape(n) for n in sorted(aoi_names, key=len, reverse=True)) + r")\(")
+    return sum(len(pattern.findall(text)) for text in rung_texts)
+
+
 def _count_instructions(rung_texts: list[str]) -> dict[str, int]:
     counts: dict[str, int] = {}
     for text in rung_texts:
@@ -562,7 +590,16 @@ def _jsr_targets(rung_texts: list[str]) -> set[str]:
     return targets
 
 
-def parse_rll_routines(root: ET.Element) -> list[RoutineLogic]:
+def parse_rll_routines(
+    root: ET.Element, aoi_names: frozenset[str] | None = None
+) -> list[RoutineLogic]:
+    """`aoi_names` defaults to the file's own declared AOI names, so every
+    existing caller gets AOI call counting without changing its call."""
+    if aoi_names is None:
+        aoi_names = frozenset(
+            name for el in root.iter("AddOnInstructionDefinition")
+            if (name := el.get("Name"))
+        )
     routines: list[RoutineLogic] = []
     programs_el = root.find("Controller/Programs")
     if programs_el is None:
@@ -617,6 +654,7 @@ def parse_rll_routines(root: ET.Element) -> list[RoutineLogic]:
                 routine_name=routine_name,
                 rung_count=len(rung_texts),
                 instruction_counts=_count_instructions(rung_texts),
+                aoi_call_count=_aoi_call_count(rung_texts, aoi_names),
                 is_jsr_target=routine_name in program_jsr_targets,
                 is_safety_program=is_safety_program,
                 cpt_calls=_cpt_calls(rung_texts),
@@ -631,7 +669,9 @@ def parse_rll_routines(root: ET.Element) -> list[RoutineLogic]:
     return routines
 
 
-def parse_aoi_internal_logic(root: ET.Element) -> dict[str, RoutineLogic]:
+def parse_aoi_internal_logic(
+    root: ET.Element, aoi_names: frozenset[str] | None = None
+) -> dict[str, RoutineLogic]:
     """AOI definition name -> ONE aggregate RoutineLogic combining the rung
     text of every internal RLL routine that AOI declares (its Logic routine
     plus any additional ones, e.g. a real AOI like HomeToTorque has both
@@ -653,6 +693,9 @@ def parse_aoi_internal_logic(root: ET.Element) -> dict[str, RoutineLogic]:
     defaults) -- an AOI calling JSR internally, or being itself invoked
     in a way that interacts with the JSR-target machinery, is untested
     territory, not something this function guesses at."""
+    declared_aoi_names = aoi_names if aoi_names is not None else frozenset(
+        name for el in root.iter("AddOnInstructionDefinition") if (name := el.get("Name"))
+    )
     result: dict[str, RoutineLogic] = {}
     aois_el = root.find("Controller/AddOnInstructionDefinitions")
     if aois_el is None:
@@ -681,6 +724,9 @@ def parse_aoi_internal_logic(root: ET.Element) -> dict[str, RoutineLogic]:
             routine_name=name,
             rung_count=len(rung_texts),
             instruction_counts=_count_instructions(rung_texts),
+            # An AOI can call another AOI from inside its own logic, and that
+            # call costs the same as one in a Program rung.
+            aoi_call_count=_aoi_call_count(rung_texts, declared_aoi_names),
             cpt_calls=_cpt_calls(rung_texts),
             typed_calls=_typed_instruction_calls(rung_texts),
             indirect_index_kinds=_indirect_index_kinds(rung_texts),

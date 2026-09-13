@@ -591,6 +591,8 @@ class LogicInstructionModel:
     safety_task_program_shell_confidence: str
     aoi_internal_per_rung: int = 0
     aoi_internal_per_rung_confidence: str = "FITTED"
+    # Cost of one AOI call site -- see memory_model.yaml aoi_call_site.
+    aoi_call_site_bytes: int = 0
 
 
 @dataclass(frozen=True)
@@ -932,6 +934,11 @@ class MemoryModel:
     zero_connection_module_bytes: int
     zero_connection_module_confidence: str
     module_overhead_by_catalog: ModuleOverheadModel
+    # OQ-DEFSCALE 2026-09-13, see memory_model.yaml definition_scale_correction.
+    udt_definition_extra: int
+    udt_tag_extra: int
+    aoi_instance_extra: int
+    aoi_definition_extra: int
     standalone_atomic_tag_slot_bytes: int
     standalone_atomic_tag_slot_confidence: str
     firmware_baseline_delta: FirmwareBaselineDeltaModel
@@ -1041,6 +1048,10 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 else {}
             ),
         ),
+        udt_definition_extra=raw.get("definition_scale_correction", {}).get("udt_definition_extra", 0),
+        udt_tag_extra=raw.get("definition_scale_correction", {}).get("udt_tag_extra", 0),
+        aoi_instance_extra=raw.get("definition_scale_correction", {}).get("aoi_instance_extra", 0),
+        aoi_definition_extra=raw.get("definition_scale_correction", {}).get("aoi_definition_extra", 0),
         standalone_atomic_tag_slot_bytes=raw["standalone_atomic_tag_slot"]["bytes"],
         standalone_atomic_tag_slot_confidence=raw["standalone_atomic_tag_slot"]["confidence"],
         processor_firmware_correction=ProcessorFirmwareCorrectionModel(
@@ -1221,6 +1232,7 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 output_param_cost=raw["jsr_param_cost"]["output_param_cost"],
             ),
             branch_bracket_cost_per_instruction=raw["logic_instructions"]["branch_bracket_cost_per_instruction"],
+            aoi_call_site_bytes=raw.get("aoi_call_site", {}).get("bytes", 0),
             branch_bracket_confidence=raw["logic_instructions"]["branch_bracket_confidence"],
             aoi_logic_composite_surcharge_per_instr=raw["logic_instructions"]["aoi_logic_composite_surcharge_per_instr"],
             aoi_internal_per_rung=raw["logic_instructions"].get("aoi_internal_per_rung", 0),

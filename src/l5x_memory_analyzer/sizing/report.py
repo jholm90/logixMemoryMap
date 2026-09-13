@@ -193,6 +193,15 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         overhead = model.tag_overhead.bytes_for(tag.name)
         size += overhead
         basis = weakest(basis, model.tag_overhead.confidence)
+        # OQ-DEFSCALE 2026-09-13: a UDT tag instance costs 3 more than the flat
+        # tag_overhead, and an AOI instance 8 LESS. Both exact over sweeps that
+        # vary definition count and instance count independently -- see
+        # memory_model.yaml definition_scale_correction.
+        # data_types, not udt_types -- AOI definitions live in aoi_types and a
+        # lookup against udt_types alone silently skipped every AOI instance.
+        tag_def = data_types.get(tag.data_type)
+        if tag_def is not None and not tag_def.is_string_family:
+            size += model.aoi_instance_extra if tag_def.is_aoi else model.udt_tag_extra
         # Built-in STRING tags cost 2 bytes less than the flat tag_overhead
         # formula above predicts (RESOLVED_QUESTIONS.md OQ-STRINGTAGOVERHEAD)
         # -- confirmed KNOWN, not yet extended to custom StringFamily types.
@@ -225,6 +234,10 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             # under-predicted). Checked before the udt_types string-family
             # branch below since an AOI name is never also a udt_types key.
             def_bytes, def_basis = compute_aoi_definition_cost(name, data_types, model)
+            # OQ-DEFSCALE 2026-09-13: an AOI DEFINITION is over-charged 3 --
+            # the remaining 3*n_def term of the fitted law once the per-instance
+            # -8 is applied. See memory_model.yaml definition_scale_correction.
+            def_bytes += model.aoi_definition_extra
             internal_routine = aoi_internal_logic.get(name)
             if internal_routine is not None:
                 # Real, confirmed 2026-08-31 (OQ-AOIINTERNALLOGIC): an AOI's
@@ -294,6 +307,10 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             ))
             continue
         def_bytes, def_basis = compute_udt_definition_cost(name, udt_types, model)
+        # OQ-DEFSCALE 2026-09-13: a UDT DEFINITION costs 16 more than the
+        # member-count-and-name formula gives. Exact over 14 rows spanning 1..25
+        # definitions -- see memory_model.yaml definition_scale_correction.
+        def_bytes += model.udt_definition_extra
         definition_entries.append((f"udt_definitions/{name}", "udt_definition", name, def_bytes, def_basis))
 
     # Compiled logic size -- ESTIMATED tier, never blurred with the EXACT

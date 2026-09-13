@@ -1528,6 +1528,38 @@ alias_overhead:
 # member_count, add bool_run_bonus flat if any declared member is BOOL,
 # and treat that specific case as carrying a small known residual rather
 # than pretending perfect precision.
+# Three more corrections from the same OQ-DEFSCALE batch (2026-09-13), each
+# exact over its whole sweep. Separate from aoi_call_site above because they
+# apply to DECLARATIONS, not call sites.
+#
+# Derived from dscale2_udt_u{001,005,025}_t* (14 rows) and
+# dscale2_aoi_d*_t*_nocall (7 rows). Both sweeps vary definition count and
+# instance count independently, which is what lets the per-definition and
+# per-instance terms separate at all:
+#
+#   UDT rows fit  delta = -16*n_udt - 3*n_tags   exactly, 14 of 14, over
+#   1..25 definitions and 1..500 tags.
+#   AOI rows fit  delta = +3*n_def + 8*n_inst    exactly, 7 of 7, over
+#   1..60 definitions and 1..60 instances.
+#
+# So: a UDT definition is under-charged 16, a UDT tag instance under-charged 3,
+# and an AOI instance OVER-charged 8. The AOI one is a correction in the
+# opposite direction to everything else found today, which is why it is worth
+# stating separately rather than folding into a single "instances cost more".
+#
+# 3 is not 4-aligned, which is unusual for this project. It is what 14 rows
+# spanning a 500x tag count say, measured at -3.000 per tag at every one of the
+# nine count points in the u001 sweep alone, so it is not a rounding artifact.
+definition_scale_correction:
+  udt_definition_extra: 16
+  udt_tag_extra: 3
+  aoi_instance_extra: -8
+  # And an AOI DEFINITION is over-charged 3. This is the remaining 3*n_def term
+  # of the fitted law once the per-instance -8 lands: dscale2_aoi_d060_t060
+  # sat at exactly +180 = 3 x 60 with the instance term applied.
+  aoi_definition_extra: -3
+  confidence: KNOWN
+
 udt_definition:
   # CORRECTED 2026-08-22, same day as first landed: originally implemented
   # as base(168) + per_member*count PLUS SEPARATELY name_base(224) +
@@ -2130,6 +2162,37 @@ jsr_param_cost:
   # effect is real too but too small relative to a 1-distinct-target
   # sample to isolate from noise.
   output_param_cost: 20
+
+# Cost of ONE AOI CALL SITE -- OQ-DEFSCALE, wired 2026-09-13, and the largest
+# single unmodelled item found in this project so far.
+#
+# Until today an AOI call cost NOTHING. parser/logic.py matched instruction
+# calls with [A-Z][A-Z0-9_]*\( and a comment claiming it "also matches AOI/UDT
+# instance calls". It does not: real AOI names are mixed-case (fbDebounce,
+# AnalogSensor, HomeToTorque), and 288 of the 331 AOI definitions in the real
+# corpus are mixed-case. 87% of real AOI definitions, and 3,918 real call sites
+# across the sixteen held-out programs, were invisible to the counter.
+#
+# Derived from dscale2_aoi_d001_t001_c{005,020,060} and _call -- the same AOI
+# instance called 1, 5, 20 and 60 times. The residual is -168 per call at every
+# step, and all four files agree on the SAME intercept (-253), which is what
+# says 168 is the per-call rate and not a per-file artifact:
+#
+#   calls   1      5       20       60
+#   delta  -421  -1093   -3613   -10333      (-168/call, intercept -253 in all four)
+#
+# Cross-checked against a second, independent axis: dscale2_aoi_d001_t*_call
+# runs t instances each called once, t = 1..100, and its slope is -160/instance
+# -- exactly the -168 call plus the +8 per-instance over-charge below. Two
+# sweeps varying different things return the same number.
+#
+# Real-corpus effect: 3,918 call sites x 168 = 658,224 bytes, which is 37% of
+# the total 1,779,559-byte under-prediction across the sixteen real programs,
+# and 97% of it on griffin_stackerline, 126% on salamanca, 83% on horizon_edger.
+# See OQ-REALUNDER.
+aoi_call_site:
+  bytes: 168
+  confidence: KNOWN
 
 logic_instructions:
   fixed_base_per_routine: 4816

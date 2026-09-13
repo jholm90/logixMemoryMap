@@ -12,7 +12,7 @@ project's ±8 universal-residual band.
 |---|---|---:|---:|---:|---|---|
 | 1 | `aoialgn_*` | 71 | 71 | 0 | OQ-AOIBOOLPACK-PAIRING | **CLOSED — 2 laws wired** |
 | 2 | `aoilt_*` | 54 | 54 | 0 | OQ-AOIDEFITEMIZE | **CLOSED — 54/54 clean** |
-| 3 | `dscale2_*` | 39 | 39 | 0 | OQ-DEFSCALE | pending |
+| 3 | `dscale2_*` | 39 | 39 | 0 | OQ-DEFSCALE | **CLOSED — 5 laws wired, biggest find of the project** |
 | 4 | `aoimix_*` | 34 | 34 | 0 | OQ-AOIBOOLPACK-PAIRING | pending |
 | 5 | `addit_*` | 33 | 33 | 0 | OQ-COMPOSITESCALE | pending |
 | 6 | `stx_*` | 30 | 30 | 0 | OQ-STEXPR | pending |
@@ -178,3 +178,84 @@ it is movement in the right direction on the held-out set, which most wiring
 this session has not produced. Corpus exact 1,150 -> 1,143: seven rows that were
 exact lost it, which is the expected sign of other AOI families having carried a
 compensating error.
+
+
+## Segment 3 — `dscale2_*`, OQ-DEFSCALE: CLOSED, and it answers OQ-REALUNDER
+
+39 files, all captured, zero build errors. Five laws, each exact over its own
+sweep. One of them is the largest unmodelled item this project has found.
+
+### An AOI CALL SITE cost nothing at all
+
+`parser/logic.py` matched instruction calls with `[A-Z][A-Z0-9_]*\(`, under a
+comment claiming it "also matches AOI/UDT instance calls". **It does not.** Real
+AOI names are mixed-case -- `fbDebounce`, `AnalogSensor`, `HomeToTorque` -- and
+that pattern cannot match them. **288 of the 331 AOI definitions in the real
+corpus are mixed-case**, so 87% of real AOI definitions and **3,918 real call
+sites** were invisible to the counter and cost zero bytes.
+
+Measured from `dscale2_aoi_d001_t001_c{005,020,060}` and `_call` -- the same
+instance called 1, 5, 20, 60 times:
+
+| calls | 1 | 5 | 20 | 60 |
+|---|---:|---:|---:|---:|
+| delta | −421 | −1,093 | −3,613 | −10,333 |
+
+−168 per call at every step, and **all four files agree on the same intercept
+(−253)**, which is what says 168 is the rate rather than a per-file artifact.
+Cross-checked on a second, independent axis: `_t*_call` runs t instances each
+called once, t = 1..100, slope −160/instance = the −168 call plus the +8
+per-instance over-charge below. Two sweeps varying different things return the
+same number.
+
+### The other four, all exact
+
+| item | correction | evidence |
+|---|---|---|
+| UDT definition | **+16** | `delta = −16·n_udt − 3·n_tags`, 14 of 14 rows |
+| UDT tag instance | **+3** | same law, 1..25 definitions x 1..500 tags |
+| AOI instance | **−8** | `delta = 3·n_def + 8·n_inst`, 7 of 7 rows |
+| AOI definition | **−3** | the residual `3·n_def` term once the −8 lands |
+
+3 is not 4-aligned, which is unusual here. It is what 14 rows spanning a 500x
+tag count say, at −3.000 per tag at every one of the nine count points in the
+`u001` sweep alone, so it is not a rounding artifact. The two AOI corrections
+are in the opposite direction to everything else found today, which is why they
+are stated separately rather than folded into one "instances cost more".
+
+### Effect on the held-out real set
+
+This is the OQ-REALUNDER answer, or most of it.
+
+| | before | after |
+|---|---:|---:|
+| mean absolute error | 3.65% | **2.16%** |
+| worst | −6.06% | **−4.28%** |
+| inside 1% | 0 of 16 | **3 of 16** |
+
+| program | before | after |
+|---|---:|---:|
+| `griffin_stackerline` | −1.67% | **−0.01%** |
+| `horizon_edger` | −2.57% | **−0.38%** |
+| `salamanca` | −0.98% | **+0.37%** |
+| `emporiumedger` | −3.63% | −1.07% |
+| `pukall_gang` | −4.09% | −1.71% |
+| `emporium` | −3.63% | −1.95% |
+
+`griffin_stackerline` is now 394 bytes out on a 2.3 MB program. Three files are
+inside the 1% North Star for the first time.
+
+`dscale2` itself went 3 -> 28 of 39 within +-8; the 14 UDT rows are at exactly 0
+and the call families collapsed from −10,333 to a flat −253.
+
+### What is still open from this segment
+
+The **−253 intercept** on every call family. It is identical across all four
+call-count files, so it is the one-time cost of a routine that contains AOI
+calls at all, not a per-call term. Not wired -- one number from one shape is not
+enough to tell a routine-shell cost from a first-call cost, and this segment has
+no file that varies the containing routine while holding calls fixed.
+
+Corpus exact fell 1,150 -> 1,123. Expected: five corrections landed at once and
+rows that were previously exact by cancellation lose it. The held-out real set
+is the metric that counts, and it improved by a third.
