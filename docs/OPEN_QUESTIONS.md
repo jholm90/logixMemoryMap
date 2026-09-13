@@ -1613,6 +1613,114 @@ the matching footnote at the bottom, not inline.
     before anything is tuned. Every fix above is a guess until that split
     exists.
 
+
+    **CATEGORY DIFFERENCING DONE 2026-09-13 (task #128). The result is a
+    narrowing, not a fix, and it rules out a whole class of explanation.**
+
+    Every feature countable from the L5X was tested against the residual on all
+    sixteen programs, as a per-unit cost (`residual / feature`) and scored by how
+    CONSISTENT that ratio is across files rather than by correlation:
+
+    | feature | mean ratio | coefficient of variation |
+    |---|---:|---:|
+    | routines (all) | 337/routine | 0.66 |
+    | RLL routines | 412 | 0.69 |
+    | rungs | 26.8 | 0.74 |
+    | AOI call parameters | 80.5 | 0.75 |
+    | UDT definitions | 661 | 0.75 |
+    | programs | 3,630 | 0.78 |
+    | instructions | 4.6 | 0.79 |
+    | AOI definitions | 2,759 | 0.79 |
+    | operand references in rungs | 3.1 | 0.73 |
+    | distinct tags referenced | 13.0 | 0.73 |
+
+    Nothing is below 0.66. **There is no single missing per-unit cost**, which is
+    what every segment so far has implicitly been hoping for. Tags, modules,
+    tasks, ST statements, alarms, aliases, arrays, UDT and AOI member counts all
+    score worse than the above.
+
+    **Scaling one whole CATEGORY cannot fix it either, and the best candidate is
+    compiled logic.** Fitting `residual = k x category_bytes` one category at a
+    time:
+
+    | category | k | mean abs residual | max |
+    |---|---:|---:|---:|
+    | (no model) | — | 64,236 | 149,961 |
+    | routine_logic | +0.128 | **24,869** | **42,837** |
+    | task_program_shell | +4.218 | 28,723 | 113,550 |
+    | controller_tag | +0.033 | 31,101 | 90,751 |
+    | udt_definition | +0.422 | 35,341 | 58,852 |
+    | module_io | +0.603 | 37,496 | 107,456 |
+    | alarm_condition | +0.206 | 39,258 | 108,967 |
+    | program_tag | +0.398 | 42,722 | 113,434 |
+
+    `routine_logic` is the only one whose MAXIMUM comes down materially -- every
+    other candidate leaves a 90,000-byte outlier standing. The best pair adds
+    almost nothing (controller_tag + task_program_shell, 23,712).
+
+    **AND THE KEY FINDING: `residual / routine_logic_bytes` IS BIMODAL.** Five
+    programs sit between −0.023 and +0.029; eleven sit between +0.086 and +0.224.
+    There is no file in between:
+
+        salamanca      -0.023      murraybros     +0.151
+        griffin        +0.006      elmsdale       +0.212
+        horizon        +0.021      mrfp           +0.096
+        flarefunction  +0.027      pukall         +0.086
+        emporiumedger  +0.029      ipc            +0.224
+                                   k3m16          +0.150
+                                   eastperry      +0.144
+                                   emporium       +0.116
+                                   accutally      +0.191
+                                   superior       +0.174
+                                   cmu            +0.128
+
+    That is a PROPERTY eleven programs have and five do not -- worth 9% to 22% of
+    their compiled ladder -- not a rate that everything pays. Tested and does NOT
+    split the two groups: processor family (both groups mix 1756-L8x and 5069),
+    firmware (both have v32 and v35), task count, program count, EVENT-task
+    count, Safety class, coverage-gap count, file size.
+
+    **A global logic scale-up is ruled out independently.** The 578 captured
+    `logic_instr` rows are 545 of 578 within 1%, and the single-shape sweeps are
+    exact at 10 through 5,000 rungs. Adding 12.8% to compiled logic would destroy
+    all of them. So the per-instruction weights are right for the shapes measured
+    and something about REAL ladder composition is unpriced -- which is the same
+    conclusion from the other direction as OQ-SERIESOUTPUT, where a law that is
+    exact on two synthetic shapes makes every real program worse. Real and
+    synthetic rungs differ in something that costs real bytes in one direction
+    and saves them in the other.
+
+    **The engine CAN hit a real program**, so this is not a systemic floor:
+    `griffin_stackerline` is +1,908 on 2,362,176 bytes (0.08%) and
+    `salamanca` −3,978 on 1,362,000 (−0.29%), and those two are also the only
+    two files with ZERO coverage gaps.
+
+    **WHAT TO DO NEXT, and the instrument already existed and had never been
+    run.** `scripts/strip_ladder.py` emits a descending ladder of one real
+    program -- L0 full, then minus alarms, minus all rung and ST content, minus
+    motion, minus modules, minus AOIs, minus tags, minus UDTs -- so consecutive
+    captures difference each category's cost INSIDE REAL CONTENT. Zero manifest
+    rows have ever come from it. Its own docstring records the same dead ends
+    re-derived above, from an older engine state, and its headline numbers are
+    now stale in a way that matters: it says "−5.16% and −5.03% on the two
+    worst", i.e. OVER-prediction, and after seven segments of wiring fourteen of
+    sixteen programs now UNDER-predict by up to +4.22%. Corrected in the script.
+
+    **24 ladder files generated 2026-09-13** into the gitignored
+    `samples/local/stripped/`, for three programs chosen to bracket the split:
+    `superior` (+0.174, the worst of the eleven), `ipc_edgerline` (+0.224, the
+    highest ratio) and `griffin_stackerline` (+0.006, a control from the five).
+    **L2 (minus all rung and ST content) is the decisive rung** -- if the missing
+    bytes are in compiled ladder, L0−L2 differs between superior/ipc and griffin
+    by the predicted amount, and if it does not the bimodality is somewhere else
+    entirely. These are production content with pieces missing and must never be
+    committed; the script is the committed artifact.
+
+    Also fixed en route: the ST sizer was reporting AND/OR/XOR as unpriced
+    operators, which fired four times on `accutally` and is stale since segment 6
+    measured AND and XOR at exactly the tier-1 rate. That file now reports zero
+    coverage gaps.
+
 23. **OQ-DEFSCALE** — definition- and instance-count scaling. **CAPTURED
     AND RECONCILED 2026-09-11, all 30 files, zero import errors. Four exact
     linear laws, none of them wired, and the reason is a confound, not a

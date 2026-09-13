@@ -6,20 +6,52 @@ per file, the system is hopelessly under-determined at file level -- which
 is why isolation files exist, and why a +X in one category and a -X in
 another cancel invisibly inside a real program.
 
-That is not a theory. Across the sixteen real captured programs, every
-candidate driver computable from the L5X has now been tested against the
-percentage error and none of them explains it:
+That is not a theory. Every candidate driver computable from the L5X has
+been tested against the error and none of them explains it. The figures
+below are from 2026-09-12 and the SIGN has since flipped -- see the
+correction underneath, which does not change the conclusion:
 
     AOI definitions   r = -0.414      rungs             r = -0.071
     compiled logic    r = -0.185      tag count         r = -0.034
     alarms            r = +0.137      tags per MB       r = +0.028
     modules           r = +0.001      file size         r = -0.015
-    processor family  -- disproved directly: murraybros is -5.16% on a
+    processor family  -- disproved directly: murraybros was -5.16% on a
                          1756-L81E, worse than every 5069 file, on the
                          family with the best median
 
-Nine drivers, no attribution. The residual is real, large (-5.16% and
--5.03% on the two worst) and belongs to nothing visible.
+CORRECTED 2026-09-13, after seven capture-batch segments of wiring. The
+two worst files are no longer over-predicting at -5.16% and -5.03%:
+FOURTEEN OF SIXTEEN now UNDER-predict, worst +4.22% (superior), and the
+residual is one-sided. Re-differenced against the current engine, the
+picture is sharper than "belongs to nothing visible":
+
+  - No single per-unit cost fits. Every countable feature -- rungs,
+    instructions, operand references, distinct tags, routines, programs,
+    tasks, UDT/AOI definitions, AOI call parameters -- gives a
+    residual-per-unit ratio whose coefficient of variation across the
+    sixteen files is 0.66 or worse.
+  - Scaling one CATEGORY is closer, and the category is compiled logic:
+    routine_logic x 1.128 takes mean absolute residual from 64,236 to
+    24,869 and is the only candidate whose MAXIMUM drops materially
+    (149,961 -> 42,837). Every other category leaves a 90,000-byte
+    outlier.
+  - residual / routine_logic_bytes is BIMODAL: five files between -0.023
+    and +0.029, eleven between +0.086 and +0.224, nothing between. A
+    property eleven programs have and five do not, worth 9-22% of their
+    compiled ladder. Processor, firmware, task count, program count,
+    EVENT-task count, Safety class and coverage-gap count do not split
+    them.
+  - A global logic scale-up is ruled out anyway: 545 of the 578 captured
+    logic_instr rows are within 1% and the single-shape sweeps are exact
+    from 10 to 5,000 rungs.
+
+So the target for this ladder is now specific rather than exploratory.
+L2 -- minus all rung and ST content -- is the decisive rung: if the
+missing bytes are in compiled ladder, L0 minus L2 differs between a
+high-ratio program and a low-ratio one by the predicted amount, and if it
+does not then the bimodality lives somewhere else entirely. Generate the
+ladder for one of each: superior (+0.174) or ipc_edgerline (+0.224)
+against griffin_stackerline (+0.006).
 
 So stop correlating and start subtracting. This takes a real program and
 emits a descending LADDER of variants, each removing exactly one more

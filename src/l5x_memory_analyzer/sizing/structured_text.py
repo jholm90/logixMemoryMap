@@ -87,6 +87,10 @@ _NUMBER = re.compile(r"\d+\.\d+|\d+")
 # and that file lands exactly, which is what fixes the rate at 48.
 _INTEGER_TYPES = frozenset({"SINT", "INT", "DINT", "LINT",
                             "USINT", "UINT", "UDINT", "ULINT"})
+# Measured at the tier-1 rate in ST by stx_opkind_and / stx_opkind_xor, so no
+# longer a coverage gap there. OR is grouped with them as the same tier-1
+# fallback and is NOT independently measured -- see OQ-STEXPR.
+_ST_MEASURED_BITWISE = frozenset({"AND", "XOR", "OR"})
 
 
 @dataclass
@@ -227,8 +231,16 @@ def size_st_assignments(routine: StructuredTextRoutine, model, tag_types=None):
         total += st.assignment_cost(
             len(call.operators), dest_is_real, premium, integer_sources)
         # Still reported: an operator with no measured tier is unpriced either
-        # way, and it is exactly what used to abort the whole report.
+        # way, and it is exactly what used to abort the whole report. AND, OR and
+        # XOR are the exception AS OF 2026-09-13 and only in ST: stx_opkind_and
+        # and stx_opkind_xor measure them at exactly the tier-1 rate (196 per
+        # statement at four operators, identical to `+`), so they are priced here
+        # and reporting them as a gap is a stale warning -- it was firing four
+        # times on the largest real program. They stay reported on the ladder CPT
+        # path, where nothing has measured them.
         for op in cpt.unpriced_operators(call.operators):
+            if op.upper() in _ST_MEASURED_BITWISE:
+                continue
             unpriced_ops.add(op)
     total += st.st_aoi_call_cost(routine.aoi_call_count, routine.aoi_call_param_count)
     return total, unmeasured, sorted(unpriced_ops)

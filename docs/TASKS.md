@@ -477,3 +477,21 @@ Recapture, separately from the above: the 5 stale `aoi_logic_scale_*` /
 - Segment 7 of `docs/SEGMENT_TRACKER.md` is closed for ETHERNET-MODULE; segment 8
   (`ntag_*`, 25 files, OQ-VERIFINSTR) is next.
 
+### Added 2026-09-13 (OQ-REALUNDER category differencing, task #128)
+
+- **CAPTURE THE 24 STRIP-LADDER FILES.** `samples/local/stripped/` now holds an
+  8-rung ladder for each of `superior` (+0.174 residual/logic), `ipc_edgerline`
+  (+0.224) and `griffin_stackerline` (+0.006, the control). Gitignored by design.
+  **L2 (minus all rung and ST content) is the decisive rung** -- L0 minus L2 says
+  whether the missing bytes are in compiled ladder. This is the highest-value
+  capture outstanding: it is the only instrument that measures a category's cost
+  inside real content, and nothing in `samples/generated/` can substitute for it.
+  Expect some rungs to be refused on import; the fix for a refused rung is to
+  make that one by hand in Logix Designer (delete the category, re-export), which
+  differences identically.
+- Task #128 is DONE as an analysis: no single per-unit cost fits (every feature's
+  ratio has cv >= 0.66), the residual is concentrated in `routine_logic`, and
+  `residual / routine_logic_bytes` is bimodal with five files at ~0 and eleven at
+  +0.086..+0.224. A global logic scale-up is ruled out by the 578 `logic_instr`
+  rows. Full reasoning in OQ-REALUNDER.
+
