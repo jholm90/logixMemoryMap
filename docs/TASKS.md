@@ -429,3 +429,18 @@ Recapture, separately from the above: the 5 stale `aoi_logic_scale_*` /
 - Segments 1-4 of `docs/SEGMENT_TRACKER.md` are closed; segment 5 (`addit_*`,
   33 files, OQ-COMPOSITESCALE) is next.
 
+### Added 2026-09-13 (capture-batch segment 5)
+
+- **`srout_*` (16 files), OQ-SERIESOUTPUT.** Two captured shapes agree exactly
+  that a series output cascade over-charges 12 per output beyond the first, and
+  applying it takes the sixteen real programs from 2.07% to 2.90% with every one
+  worse. These 16 files say which of four candidates explains the split — count
+  shape, identical-rung repetition, series vs parallel, or repeated vs distinct
+  instruction types. Until they land, nothing here gets fitted.
+- **`udtslot_*` (52 files), OQ-UDTTAGSLOT.** The wired 8-byte UDT tag slot rests
+  on two UDT sizes, 9 and 40, fitting two constants. Group A covers every residue
+  mod 8 at two tag counts, group B says whether the step is at 8 and not 4, group
+  C is the first array arm that can see an element rule at two residues.
+- Segment 5 of `docs/SEGMENT_TRACKER.md` is closed; segment 6 (`stx_*`, 30 files,
+  OQ-STEXPR) is next.
+

@@ -798,6 +798,30 @@ standalone_atomic_tag_slot:
   bytes: 4
   confidence: KNOWN
 
+# The same per-TAG slot rule one level up: a standalone (non-array) UDT-typed
+# tag's DATA slot is padded up to this boundary. Derived 2026-09-13
+# (capture-batch segment 5) from the one place two families disagreed. On the
+# additivity grid's D axis a 40-byte 10-DINT UDT tag measures -7.000/tag over
+# 360 tags (addit_dm_ln 40 tags -272, addit_dh_ln 400 tags -2792, the slope
+# exact); a 9-byte 3-member UDT tag over 500 tags measures EXACTLY right
+# (dscale2_udt_u001_t001..t500, 14 of 18 rows exact, none outside +-1). One
+# hypothesis fits both with zero residual: pad the slot to 8 -- 40 stays 40,
+# 9 becomes 16 -- and set definition_scale_correction.udt_tag_extra to -4
+# rather than +3. The two constants are not separable from either family alone,
+# which is why the +3 held for as long as only the 9-byte family existed.
+#
+# ARRAYS ARE DELIBERATELY UNTOUCHED. dscale2_udt_arr002/arr010/arr100/arr500
+# read +1 at every length against a 12-byte, 4-aligned ELEMENT, so the padding
+# is on the tag's slot and not on each element. Padding elements instead costs
+# the `tags` category its accuracy (mean absolute error 0.27% -> 2.03%), which
+# is how this was caught.
+#
+# FITTED, and thin: two UDT sizes, 9 and 40, one on each side of the boundary.
+# 16 and 24 would confirm it; see OQ-UDTTAGSLOT.
+standalone_udt_tag_slot:
+  alignment_bytes: 8
+  confidence: FITTED
+
 # Per-PROCESSOR-FAMILY firmware correction (OQ-BASELINE-PROCFW, wired
 # 2026-09-12). firmware_baseline_delta below applies ONE ladder to every
 # processor, and the 72 active-platform fwmatrix_* captures say that cannot
@@ -1546,7 +1570,7 @@ alias_overhead:
 # nine count points in the u001 sweep alone, so it is not a rounding artifact.
 definition_scale_correction:
   udt_definition_extra: 16
-  udt_tag_extra: 3
+  udt_tag_extra: -4
   aoi_instance_extra: -8
   # And an AOI DEFINITION is over-charged 3. This is the remaining 3*n_def term
   # of the fitted law once the per-instance -8 lands: dscale2_aoi_d060_t060
@@ -2184,9 +2208,30 @@ jsr_param_cost:
 # the total 1,779,559-byte under-prediction across the sixteen real programs,
 # and 97% of it on griffin_stackerline, 126% on salamanca, 83% on horizon_edger.
 # See OQ-REALUNDER.
+#
+# SPLIT INTO A BASE PLUS A PER-PARAMETER RATE 2026-09-13 (capture-batch segment
+# 5). The flat 168 was one point on a line. The additivity grid's A axis
+# (addit_dn_am 20 instances, addit_dn_ah 200, each instance called once)
+# measures -16.000 per unit against the engine's instance-plus-call charge,
+# exactly, over 180 units -- and dscale2's own _nocall arm already proved the
+# instance TAG is exact at 1, 5, 20 and 60 tags, so the whole 16 sits on the
+# call. The two families differ in exactly one thing:
+#
+#   dscale2   Aoi_D000(Inst000,0,0,OutBitTag);        3 params   168/call
+#   addit     AddAoiProbe(AoiInst0000,0,Bit1);        2 params   152/call
+#
+# One parameter, 16 bytes. base 120 + 16/param fits both exactly, from two
+# independently written generators with different AOI shapes. The first
+# argument is the instance tag and is not a parameter.
+#
+# Real-corpus effect: the sixteen held-out programs carry 3,918 call sites
+# passing 15,691 parameters -- a mean of 4.0, so the flat 168 was under-charging
+# the parameter-heavy AOIs and over-charging the small ones. Mean absolute error
+# 2.15% -> 2.06%, files within 1% 3 -> 4.
 aoi_call_site:
-  bytes: 168
-  confidence: KNOWN
+  bytes: 120
+  per_param_bytes: 16
+  confidence: FITTED
 
 logic_instructions:
   fixed_base_per_routine: 4816

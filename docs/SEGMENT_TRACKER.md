@@ -14,7 +14,7 @@ project's ±8 universal-residual band.
 | 2 | `aoilt_*` | 54 | 54 | 0 | OQ-AOIDEFITEMIZE | **CLOSED — 54/54 clean** |
 | 3 | `dscale2_*` | 39 | 39 | 0 | OQ-DEFSCALE | **CLOSED — 5 laws wired, biggest find of the project** |
 | 4 | `aoimix_*` | 34 | 34 | 0 | OQ-AOIBOOLPACK-PAIRING | **CLOSED — AOI definition cost re-derived from scratch** |
-| 5 | `addit_*` | 33 | 33 | 0 | OQ-COMPOSITESCALE | pending |
+| 5 | `addit_*` | 33 | 33 | 0 | OQ-COMPOSITESCALE | **CLOSED — the categories are additive, 24/24 exactly** |
 | 6 | `stx_*` | 30 | 30 | 0 | OQ-STEXPR | pending |
 | 7 | `genem_*` | 27 | 24 | 0 | OQ-MODULESTRUCTURAL | pending |
 | 8 | `ntag_*` | 25 | 25 | 0 | OQ-VERIFINSTR | pending |
@@ -332,4 +332,58 @@ a fixed offset inside the name pool, and member order. Filed as
 **OQ-AOIDEFSHAPE** with 54 files built to break the confound
 (`gen_aoidefshape_closeout.py`) -- not fitted, because fitting a three-variable
 confound is how this cost acquired four separate terms in the first place.
+
+
+## Segment 5 — `addit_*`, OQ-COMPOSITESCALE: CLOSED
+
+33 files, all captured, zero build errors. The question was whether formulas each
+fitted by scaling ONE thing at a time stay correct when a real project mixes
+categories, and whether an INTERACTION explains the composite sign-flip.
+
+**There is no interaction. 24 of 24 residuals are exactly zero.** The grid builds
+a 3x3 (none / mid / high) for each of the six pairs from D = UDT-typed tags,
+L = rungs, A = AOI instances, M = 1756-IB16 modules, with everything unnamed held
+at zero, so additivity is a subtraction rather than a fit:
+
+    residual(a,b) = cost(a,b) - cost(a,0) - cost(0,b) + cost(0,0)
+
+Six pairs at four level combinations each, measured interaction EXACTLY equal to
+predicted in every cell. The composite sign-flip is therefore not an interaction,
+and every remaining error is in the four marginal costs — which this grid then
+measures exactly, because the all-zero corner is exact at 18,392 both ways.
+
+| axis | engine | real | error |
+|---|---:|---:|---|
+| D, one UDT tag (40-byte UDT) | 135 | 128 | −7.000/tag over 360 tags |
+| L, one `XIC MOV ADD OTE` rung | 96 | 72 | −24.000/rung over 3,600 rungs |
+| A, one AOI instance + one 2-param call | 272 | 256 | −16.000/unit over 180 units |
+| M, one 1756-IB16 | 1,712 | 1,704 / 904 | −808 after the first |
+
+**Two wired.** The A axis resolves against `dscale2`, which measured the same
+thing with 3 parameters instead of 2: the call site is `120 + 16 per parameter`,
+two independent generators, both exact — superseding segment 3's flat 168, which
+was one point on a line. The D axis resolves against `dscale2_udt`, exact on a
+9-byte UDT over 500 tags where this is 7 high on a 40-byte one: pad the
+standalone tag's data slot to 8, `udt_tag_extra` −4.
+
+| | before | after |
+|---|---:|---:|
+| corpus mean abs error | 1.853% | **1.833%** |
+| corpus rows within 1% | 2,661 | **2,667** |
+| real programs, mean abs error | 2.133% | **2.073%** |
+| real programs within 1% | 3 of 16 | **4 of 16** |
+
+**Two measured, exact, and rejected by the real programs** — recorded with files
+built rather than fitted. The L axis's 12-per-extra-series-output is confirmed
+independently by `UID()UIE();` at a different count and takes the real files from
+2.07% to 2.90%, every one worse (OQ-SERIESOUTPUT, 16 files). The M axis's 808
+repeat discount stays gated off (OQ-MODULEMARGINAL), now with the constant
+measured on a file containing nothing but modules.
+
+**The pattern is itself the result.** On isolated synthetic files the engine
+consistently OVER-charges; on real programs it UNDER-charges by 2%. Those are not
+one error with two signs. Something present in real programs and absent from
+every isolated file is unpriced, and it is larger than all four of these
+corrections put together — and the additivity result narrows OQ-REALUNDER
+usefully: whatever it is, it is not an interaction between these categories.
 

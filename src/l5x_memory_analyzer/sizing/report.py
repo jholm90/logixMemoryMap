@@ -187,6 +187,24 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         if not tag.dimensions and tag.data_type in model.atomic_types:
             size = model.standalone_atomic_tag_slot_bytes
             basis = weakest(basis, model.standalone_atomic_tag_slot_confidence)
+        # A standalone (non-array) UDT-typed tag's data slot is padded up to 8
+        # bytes -- the same kind of per-TAG slot rule as the atomic 4 above, one
+        # level up. Derived 2026-09-13 (capture-batch segment 5) from the one
+        # place two families disagreed: a 40-byte 10-DINT UDT tag measured
+        # -7.000/tag over 360 tags on the additivity D axis (addit_dm_ln vs
+        # addit_dh_ln) while a 9-byte 3-member UDT tag measured EXACTLY right
+        # over 500 tags (dscale2_udt_u001_t001..t500, 14 of 18 rows exact).
+        # One hypothesis fits both with zero residual: pad the slot to 8 (40
+        # stays 40, 9 becomes 16) and set udt_tag_extra to -4 instead of +3.
+        # Arrays are deliberately untouched -- dscale2_udt_arr002..arr500 read
+        # +1 at every length against a 12-byte 4-aligned ELEMENT, so the
+        # padding is on the tag's slot, not on each element.
+        elif not tag.dimensions:
+            slot_def = data_types.get(tag.data_type)
+            if (slot_def is not None and not slot_def.is_string_family
+                    and not slot_def.is_aoi):
+                align = model.standalone_udt_tag_slot_alignment
+                size = align * -(-size // align)
         # tag_overhead is a per-Tag-entry cost additive with the tag's own
         # raw data size (RESOLVED_QUESTIONS.md OQ-TAGOVERHEAD) -- applies
         # regardless of data type, confirmed across atomic/UDT tags alike.

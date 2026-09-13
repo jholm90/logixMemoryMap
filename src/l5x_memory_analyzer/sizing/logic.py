@@ -178,6 +178,7 @@ def compute_routine_logic_bytes(
     # aoi_call_site -- 168 bytes, from a 1/5/20/60-call sweep whose four files
     # agree on one intercept, cross-checked against a second sweep over instance
     # count that returns the same number.
-    total += routine.aoi_call_count * model.aoi_call_site_bytes
+    total += (routine.aoi_call_count * model.aoi_call_site_bytes
+              + routine.aoi_call_param_count * model.aoi_call_site_per_param_bytes)
 
     return total, model.confidence

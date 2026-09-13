@@ -388,8 +388,11 @@ class RoutineLogic:
     # routine (a rung with "XIC(A)XIC(B)OTE(C);" counts XIC twice, OTE once).
     instruction_counts: dict[str, int] = field(default_factory=dict)
     # Call sites for the file's own AOIs -- invisible to instruction_counts
-    # because real AOI names are mixed-case. See _aoi_call_count.
+    # because real AOI names are mixed-case. See _aoi_call_sites.
     aoi_call_count: int = 0
+    # Parameters passed across those call sites, instance tag excluded. The
+    # call-site cost is a base plus a per-parameter rate, so the count matters.
+    aoi_call_param_count: int = 0
     # True if some OTHER routine in the same program JSRs to this one.
     # 2026-08-22: confirmed the target's own fixed shell cost (fixed_base_
     # per_routine) is already absorbed into the caller's jsr_fixed_base_
@@ -529,18 +532,63 @@ def _branch_bracket_instruction_count(rung_texts: list[str]) -> int:
     return total
 
 
-def _aoi_call_count(rung_texts: list[str], aoi_names: frozenset[str]) -> int:
-    """How many times this routine calls one of the file's own AOIs.
+def _aoi_call_sites(
+    rung_texts: list[str], aoi_names: frozenset[str]
+) -> tuple[int, int]:
+    """(call sites, total parameters passed across them).
 
-    Counted against the DECLARED names rather than by a casing pattern -- see
-    _INSTRUCTION_CALL. Word-bounded so an AOI named `Scale` does not also match
-    `ScaleFactor(`.
+    The first argument of an AOI call is its instance tag, not a parameter, so
+    the parameter count for one call is `len(args) - 1`. That distinction is
+    worth the arg-splitting: the call site costs a base plus a per-parameter
+    rate, measured 2026-09-13 across two independently generated families --
+    see memory_model.yaml aoi_call_site.
+
+    Counted against the DECLARED names rather than by a casing pattern (see
+    _INSTRUCTION_CALL) and word-bounded, so an AOI named `Scale` does not also
+    match `ScaleFactor(`.
     """
     if not aoi_names:
-        return 0
+        return 0, 0
     pattern = re.compile(
         r"\b(" + "|".join(re.escape(n) for n in sorted(aoi_names, key=len, reverse=True)) + r")\(")
-    return sum(len(pattern.findall(text)) for text in rung_texts)
+    calls = params = 0
+    for text in rung_texts:
+        for match in pattern.finditer(text):
+            calls += 1
+            args = _split_call_args(text, match.end() - 1)
+            params += max(0, len(args) - 1)
+    return calls, params
+
+
+def _split_call_args(text: str, open_paren: int) -> list[str]:
+    """The comma-separated arguments of the call whose `(` is at open_paren.
+
+    Bracket-depth aware, so a nested expression or an array subscript in one
+    argument does not split it -- `Aoi(Inst,Src[i],Dst)` is three arguments.
+    An unbalanced rung (truncated export) yields what was parsed rather than
+    raising: an under-count of parameters is a small sizing error, an exception
+    loses the whole file.
+    """
+    depth = 0
+    args: list[str] = []
+    current = ""
+    for ch in text[open_paren:]:
+        if ch in "([{":
+            depth += 1
+            if depth == 1:
+                continue
+        elif ch in ")]}":
+            depth -= 1
+            if depth == 0:
+                break
+        if ch == "," and depth == 1:
+            args.append(current)
+            current = ""
+        else:
+            current += ch
+    if current.strip():
+        args.append(current)
+    return args
 
 
 def _count_instructions(rung_texts: list[str]) -> dict[str, int]:
@@ -649,12 +697,14 @@ def parse_rll_routines(
             program_jsr_targets |= _jsr_targets(rung_texts)
 
         for routine_name, rung_texts in per_routine_rung_texts.items():
+            aoi_calls, aoi_call_params = _aoi_call_sites(rung_texts, aoi_names)
             routines.append(RoutineLogic(
                 program_name=program_name,
                 routine_name=routine_name,
                 rung_count=len(rung_texts),
                 instruction_counts=_count_instructions(rung_texts),
-                aoi_call_count=_aoi_call_count(rung_texts, aoi_names),
+                aoi_call_count=aoi_calls,
+                aoi_call_param_count=aoi_call_params,
                 is_jsr_target=routine_name in program_jsr_targets,
                 is_safety_program=is_safety_program,
                 cpt_calls=_cpt_calls(rung_texts),
@@ -719,6 +769,7 @@ def parse_aoi_internal_logic(
                     rung_texts.append(text_el.text)
         if not rung_texts:
             continue
+        aoi_calls, aoi_call_params = _aoi_call_sites(rung_texts, declared_aoi_names)
         result[name] = RoutineLogic(
             program_name="",
             routine_name=name,
@@ -726,7 +777,8 @@ def parse_aoi_internal_logic(
             instruction_counts=_count_instructions(rung_texts),
             # An AOI can call another AOI from inside its own logic, and that
             # call costs the same as one in a Program rung.
-            aoi_call_count=_aoi_call_count(rung_texts, declared_aoi_names),
+            aoi_call_count=aoi_calls,
+            aoi_call_param_count=aoi_call_params,
             cpt_calls=_cpt_calls(rung_texts),
             typed_calls=_typed_instruction_calls(rung_texts),
             indirect_index_kinds=_indirect_index_kinds(rung_texts),

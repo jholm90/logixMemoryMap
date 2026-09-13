@@ -554,8 +554,10 @@ class LogicInstructionModel:
     safety_task_program_shell_confidence: str
     aoi_internal_per_rung: int = 0
     aoi_internal_per_rung_confidence: str = "FITTED"
-    # Cost of one AOI call site -- see memory_model.yaml aoi_call_site.
+    # Cost of one AOI call site: a base plus a rate per parameter passed (the
+    # instance tag is not a parameter) -- see memory_model.yaml aoi_call_site.
     aoi_call_site_bytes: int = 0
+    aoi_call_site_per_param_bytes: int = 0
 
 
 @dataclass(frozen=True)
@@ -904,6 +906,8 @@ class MemoryModel:
     aoi_definition_extra: int
     standalone_atomic_tag_slot_bytes: int
     standalone_atomic_tag_slot_confidence: str
+    standalone_udt_tag_slot_alignment: int
+    standalone_udt_tag_slot_confidence: str
     firmware_baseline_delta: FirmwareBaselineDeltaModel
     processor_firmware_correction: ProcessorFirmwareCorrectionModel
     safety_capable_baseline_delta: SafetyCapableBaselineDeltaModel
@@ -1017,6 +1021,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
         aoi_definition_extra=raw.get("definition_scale_correction", {}).get("aoi_definition_extra", 0),
         standalone_atomic_tag_slot_bytes=raw["standalone_atomic_tag_slot"]["bytes"],
         standalone_atomic_tag_slot_confidence=raw["standalone_atomic_tag_slot"]["confidence"],
+        standalone_udt_tag_slot_alignment=raw["standalone_udt_tag_slot"]["alignment_bytes"],
+        standalone_udt_tag_slot_confidence=raw["standalone_udt_tag_slot"]["confidence"],
         processor_firmware_correction=ProcessorFirmwareCorrectionModel(
             by_processor_pattern=tuple(
                 (entry["pattern"], {str(k): int(v) for k, v in entry["by_major_version"].items()})
@@ -1193,6 +1199,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             ),
             branch_bracket_cost_per_instruction=raw["logic_instructions"]["branch_bracket_cost_per_instruction"],
             aoi_call_site_bytes=raw.get("aoi_call_site", {}).get("bytes", 0),
+            aoi_call_site_per_param_bytes=raw.get(
+                "aoi_call_site", {}).get("per_param_bytes", 0),
             branch_bracket_confidence=raw["logic_instructions"]["branch_bracket_confidence"],
             aoi_logic_composite_surcharge_per_instr=raw["logic_instructions"]["aoi_logic_composite_surcharge_per_instr"],
             aoi_internal_per_rung=raw["logic_instructions"].get("aoi_internal_per_rung", 0),

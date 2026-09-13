@@ -3093,3 +3093,299 @@ that is left is the subject of OQ-AOIDEFSHAPE.
       rule on an axis designed to vary only what it depends on, and the right
       instrument for the definition-side offset that is left.
 
+
+## OQ-COMPOSITESCALE, CLOSED 2026-09-13 -- the categories ARE additive
+
+Closed as capture-batch segment 5 (`addit_*`, 33 files). The question was
+whether this project's formulas, each fitted by scaling ONE thing at a time,
+stay correct when a real project mixes UDTs, AOIs, arrays, modules and rungs at
+once -- and whether an INTERACTION between categories explains why synthetic
+composites over-predict below 200 KB and under-predict above 1 MB while real
+programs sit at a flat offset.
+
+**There is no interaction.** The grid builds a 3x3 (none / mid / high) for each
+of the six pairs drawn from D = UDT-typed tags, L = rungs, A = AOI instances,
+M = 1756-IB16 modules, with everything not named by the two axes held at zero.
+Additivity is then a subtraction, not a fit:
+
+    residual(a,b) = cost(a,b) - cost(a,0) - cost(0,b) + cost(0,0)
+
+All **24 of 24** residuals -- six pairs at four level combinations each -- come
+out with the measured interaction EXACTLY equal to the predicted one. Zero
+difference, every cell. The `LxA` cells all carry 16 and the engine predicts 16
+in all four. So the composite sign-flip cannot be an interaction between
+categories, and every remaining error lives in the four marginal costs
+themselves.
+
+**Which the grid then measures exactly, because the all-zero corner is exact
+(18,392 predicted, 18,392 actual) and each axis is clean.** All four slopes are
+exact between their two points:
+
+| axis | engine charges | real | error |
+|---|---:|---:|---|
+| D, one UDT-typed tag (40-byte UDT, 11-char name) | 135 | 128 | −7.000/tag over 360 tags |
+| L, one `XIC(Bit0)MOV(1,Dst0)ADD(Dst0,1,Dst0)OTE(Bit1);` rung | 96 | 72 | −24.000/rung over 3,600 rungs |
+| A, one AOI instance tag + one call passing 2 params | 272 | 256 | −16.000/unit over 180 units |
+| M, one 1756-IB16 | 1,712 | 1,704 first, 904 after | −808/module after the first |
+
+**Two of the four were wired.** The A axis resolves against `dscale2`'s own
+measurement of the same thing: dscale2's calls pass 3 parameters and cost 168,
+these pass 2 and cost 152, so the call site is `120 + 16 per parameter` -- two
+independently written generators, different AOI shapes, both exact. The D axis
+resolves against `dscale2_udt`, which measures a 9-byte UDT tag as exactly right
+over 500 tags where this measures a 40-byte one 7 too high: pad the standalone
+tag's data slot to 8 and set `udt_tag_extra` to −4. Together: corpus mean
+absolute error 1.853% -> **1.833%**, rows within 1% 2,661 -> **2,667**; the
+sixteen real programs 2.133% -> **2.073%** with files inside 1% **3 -> 4**.
+
+**Two were measured, are exact, and are REJECTED by the real programs.** Both
+are recorded rather than fitted, with files built:
+
+- The L axis says a rung over-charges 12 bytes per output instruction beyond the
+  first, and `UID()UIE();` says the same thing independently at a different
+  count (−12.000/rung for 2 outputs). Applying it takes the real programs from
+  2.07% to **2.90%** and makes every one of the sixteen worse. Counting outputs
+  only outside branch brackets does not save it. -> **OQ-SERIESOUTPUT**, 16 files.
+- The M axis measures the module repeat discount cleanly, on a file containing
+  nothing but modules: 808 bytes for every 1756-IB16 after the first, against
+  the 792 the existing `module_overhead_repeat_discount` table holds. It stays
+  gated off for the same reason it was gated off before -- real programs
+  under-predict and a discount predicts less. -> **OQ-MODULEMARGINAL**.
+
+The pattern across all four is itself the finding worth keeping: on isolated
+synthetic files the engine consistently OVER-charges, while on real programs it
+UNDER-charges by 2%. Those are not the same error with different signs. Something
+present in real programs and absent from every isolated file is unpriced, and it
+is larger than all four of these corrections combined. That is OQ-REALUNDER, and
+the additivity result narrows it usefully: whatever it is, it is not an
+interaction between the categories this grid covers.
+
+
+### The entry as it stood, verbatim
+
+11. **OQ-COMPOSITESCALE** — new, real, raised 2026-08-30 after a review of
+    a confidential project found a >20% real gap. The requirement: at
+    least 50 large programs with I/O and logic, exercising AOIs and UDTs
+    at production scale. Every calibration file in this
+    project before now isolated ONE feature at a time — never tested
+    whether the individually-confirmed formulas are actually additive at
+    real project scale/density, or whether interaction effects between
+    many UDTs/AOIs/arrays/modules/rungs at once produce a real
+    discrepancy that isolated tests can't catch. 50 composite files built
+    (`gen_composite_realistic.py`, `samples/generated/composite/`), each a
+    genuinely different combination (not the same shape resized): 2-6
+    UDTs (1 always nested), 2-5 referenced AOIs + 1-3 orphaned AOIs (also
+    feeds OQ-AOIORPHAN), 3-6 large atomic arrays + 1 UDT array,
+    TIMER/COUNTER, 2-4 real I/O modules (cycled from `gen_module_sweep.
+    py`'s 86 real catalog blocks), 150-900 rungs mixing XIC/OTE/MOV/ADD/
+    CPT/TON/CTU/AOI-calls. All on the wrapper's default 1756-L81E/fw35.05
+    (corrected 2026-08-31; the processor-family question is isolated
+    separately, OQ-BLOCKBYTE, to keep this batch's findings unambiguous).
+    26 of the 50 have a fully-predicted total; 24 hit an already-known
+    unmodeled real I/O module shape
+    (rack-aliased connections, legacy-network bridges, a handful of
+    modules with unrecognized nested member types) and fall back to
+    predicted_bytes=0/unmodeled, same convention as elsewhere in this
+    project — genuinely unmodeled, not a bug in this batch. Real Capacity
+    on the 26 fully-predicted files is the actual test: if predicted and
+    real land within ~1% at this scale, the individually-confirmed
+    formulas really are additive; any real divergence pinpoints an
+    interaction effect (or a formula that only breaks at
+    scale/density) invisible to every prior isolated test.[^compositescale]
+
+    **Import failures, 2026-08-30 (the l5x2acd run) — 14 of the 50
+    fail, not just "awaiting capture."** All 14 hit the same generic
+    `XMLSrv_E_IMPORT_ABORTED_NO_CHANGES` wrapper text, no per-file detail.
+    Cross-referenced every file's module catalog mix (deterministic,
+    computed via `_profile_for_index`) against
+    `samples/known_conversion_failures.csv`'s already-known-bad catalog
+    list:
+      - **8 fully explained** — each includes at least one already-known-
+        bad catalog baked into its module mix, no separate cause:
+        `composite_realistic_10` (5069-OB16/B, 5069-OBV8S/A),
+        `_11` (FANUC Robot R30iB Plus/A), `_22` (5069-IY4/A, 5069-OB16/A,
+        5069-OB16/B), `_34` (5069-IB16/A, 5069-IB8S/A, 5069-IY4/A),
+        `_36` (PowerFlex 527-STO CIP Safety), `_46` (442G-MABLB-UR-
+        E0JP4679/A, 5069-IB16/A), `_47` (5069-OBV8S/A), `_48` (FANUC
+        Robot R30iB Plus/A).
+      - **6 genuinely new and unexplained (at the time)** — module mix
+        contains NO already-known-bad catalog: `composite_realistic_07`
+        (1794-OE4/B, 1794-OW8/A, 1794-VHSC/A), `_19` (1794-IR8/A,
+        1794-OA8/A, 1794-OE4/B), `_31` (1794-IB16XOB16P/A, 1794-IB32/A,
+        1794-IR8/A), `_32` (193-ECM-ETR/A, 193-ECM-ETR/B, 2097-V34PR5-LM,
+        2198-C4004-ERS), `_43` (1794-IA16/A, 1794-IB16/A,
+        1794-IB16XOB16P/A), `_44` (1794-OW8/A, 1794-VHSC/A,
+        193-ECM-ETR/A, 193-ECM-ETR/B).
+
+        **Root-caused and fixed, 2026-08-31**, from the real
+        Studio 5000 error-log detail for `_07`: "Slot number in use by
+        another module" + "Failed to set the 'ParentModule' property
+        (Requested item could not be found.)". All three of `_07`'s
+        catalogs were extracted from the SAME real reference export
+        (`RobbinsGrn_2026_05_13r00.L5X`) and each independently claims the
+        identical real backplane slot that one customer's rack actually
+        used — fine standalone, a genuine collision once 2+ such catalogs
+        land in the same composite file (same class of bug as the IP
+        collision `_modules_xml_unique_ips` already fixed 2026-08-30, just
+        a different attribute). Fixed by also remapping each catalog's own
+        Local-parented ICP slot to a unique value per file
+        (`_remap_local_icp_slot`, `gen_composite_realistic.py`). `_19`,
+        `_31`, `_43`, `_44` share the same "2+ catalogs from the same real
+        1794-family source rack" pattern and are very likely fixed by the
+        same change (not independently confirmed each, but the mechanism
+        is generic, not `_07`-specific) — removed from
+        `known_conversion_failures.csv` alongside `_07`. `_32` has NO
+        1794-family catalog in its mix at all, so this fix doesn't apply
+        to it — stays in `known_conversion_failures.csv`, genuinely still
+        unexplained, still needs its own real error-log line.
+
+      All 8 catalog-explained failures (`_10`, `_11`, `_22`, `_34`, `_36`,
+      `_46`, `_47`, `_48`) remain in `known_conversion_failures.csv` —
+      unrelated bug class (the still-undiagnosed CIP-Safety-connection
+      failure shared with the standalone modulesweep files), not touched
+      by this fix. Cross-checked against which of the 50 have a
+      fully-predicted total (predicted_bytes != 0 in manifest.csv, 26
+      files) vs which fell back to unmodeled (predicted_bytes=0, 24
+      files): 8 of the 14 original failures (`_10`, `_11`, `_22`, `_32`,
+      `_34`, `_36`, `_46`, `_48`) are among the 26 fully-predicted files.
+      Of those 8, only `_32` is still blocked — the other 7 remain fully
+      catalog-explained and still blocked by the separate CIP-Safety bug,
+      so real capture on this OQ is still gated on that unrelated fix
+      too. `_07`, `_19`, `_31`, `_43`, `_44` were already unmodeled/$0,
+      so fixing their import doesn't add real-capture value to this OQ
+      directly, but does let them serve as clean structural validation
+      (does the file import and match the real module count/shape) even
+      without a byte comparison. Needs a real reconversion pass to
+      confirm any of this — not independently verifiable from here.
+
+      **Renamed with a "_r2" suffix, 2026-08-31.** The 50 tests needed
+      new filenames and the old ones abandoned: real Studio 5000 verify
+      errors found separately (see
+      OQ item covering aoi_call_arg_count_mismatch/XIC-OTE-data-type,
+      meant every one of the 50 composite files changed real content
+      again after an l5x2acd batch had already run against the
+      names above). All references to `composite_realistic_NN` in this
+      section are the OLD, now-deleted filenames, describing what was
+      diagnosed against them at the time — the CURRENT files are
+      `composite_realistic_NN_r2.L5X` (same index numbers, same
+      per-file composition/catalog mix, just fixed content). The 9 still
+      catalog-explained-broken filenames in `known_conversion_failures.csv`
+      were updated to their new `_r2` names alongside this rename so
+      they stay correctly flagged.
+
+      **Real capture landed, 2026-08-31 — the core question is
+      essentially answered, and it's good news.** the batch
+      captured real Capacity for 36 of the old-named files; 18 of those
+      are among the 26 fully-predicted (not catalog-explained-broken,
+      not unmodeled) composites — mapped onto the current `_r2` rows
+      (confirmed safe: predicted_bytes is identical before/after the
+      AOI-arg/XIC-OTE fixes for every index checked). Real vs predicted
+      across those 18: **mean +3.15% underprediction, range -0.46% to
+      +5.25%**, only one file (`_03`, -0.46%) overpredicted. This is a
+      dramatically better result than the >20% real gap on the
+      confidential project that started this whole OQ — at realistic
+      project scale/density (multiple UDTs/AOIs/arrays/modules/rungs
+      combined), the individually-confirmed formulas ARE essentially
+      additive; no interaction effect blew up the total the way the
+      confidential-project review worried it might. The remaining ~3%
+      is small but real and consistently one-directional (17/18 files
+      underpredict, not scattered noise) — worth a future investigation
+      into which specific residual bucket accounts for it (candidates:
+      the still-ESTIMATED-tier logic-content weighting, or a small
+      per-file baseline this project hasn't isolated yet), but not
+      urgent at this magnitude. The other 8 fully-predicted composites
+      (`_10/_11/_22/_34/_36/_46/_47/_48`) remain blocked on the separate
+      CIP-Safety-catalog import bug, still no real data for them.
+
+      **Candidate hypothesis proposed 2026-08-31, RULED OUT same day once
+      wired.** The OQ-JSRPARAMCOST target-content fix and OQ-AOIINTERNAL-
+      LOGIC fix above were both wired and re-checked directly against
+      these 18 composite files: **the residual is completely unchanged,
+      byte-for-byte, before and after both fixes** (mean still +3.28%,
+      same range -0.45% to +5.55%). Root cause: despite the composite
+      generator's own docstring claiming "AOI calls... mixing... AOI-
+      calls," `gen_composite_realistic.py`'s AOI definitions still use the
+      OLD hardcoded self-closing `<Routine Name="Logic" Type="RLL"/>`
+      shape (never updated to pass `aoi_xml()`'s `logic_rungs_xml` param,
+      the same gap OQ-AOIINTERNALLOGIC found everywhere else) — so there's
+      no internal AOI content to weigh in these files either way. Same for
+      JSR: the composite generator doesn't appear to declare any JSR-
+      target routines with real content. **The composite batch's ~3%
+      residual remains genuinely unexplained** — this was a real, testable
+      hypothesis, tested directly against real data, and it didn't hold;
+      not left as an untested guess.
+
+      **6 more real captures landed 2026-08-31** for composites that fall
+      back to unmodeled (`predicted_bytes=0`): `composite_realistic_
+      {02,07,19,31,43,44}_r2` now have real Capacity on file (69,048 /
+      108,712 / 175,528 / 235,272 / 300,976 / 274,882) but aren't usable
+      for tuning anything — no predicted total to compare against. Kept on
+      record for whenever the unmodeled real-I/O-module shapes these files
+      hit get real formulas of their own.
+
+      **New v2 batch, 2026-09-02 — the residual reappears at a MUCH larger
+      magnitude once composites actually exercise AOI-internal-logic and
+      JSR-target content, and this time it's explained and wired.**
+      Against the 2026-08-30 requirement for 50 large programs with I/O and
+      logic, `gen_composite_realistic_v2.py`
+      built 50 new files, same UDT/array/module/AOI-declaration shape as v1
+      but with every referenced AOI now carrying real internal Logic-
+      routine content (5-45 real instructions) and one real 0-param JSR-
+      target subroutine per file (20-220 real instructions) — the two gaps
+      OQ-JSRPARAMCOST/OQ-AOIINTERNALLOGIC found and wired in isolation,
+      now exercised together at composite scale for the first time. Real
+      capture landed against all 50 (5 files — `_07`/`_18`/`_19`/`_30`/
+      `_50` — carry real Studio 5000 import errors unrelated to sizing: a
+      193-ECM-ETR module-compatibility issue and a safety-drive-on-
+      non-safety-PLC issue in the module mix, both deprioritized as
+      generator-script fixes, not sizing bugs; excluded from all figures
+      below). Before any composite-scale fix, the 45 error-free files
+      under-predicted by a mean **+5.16%** even with both isolated-test
+      fixes already wired — the composite hypothesis this OQ's 2026-08-31
+      entry ruled out for v1 (v1 never exercised either gap) turned out to
+      be real once a generator actually did exercise them.
+
+      Linear regression (`np.linalg.lstsq`, no intercept) of real residual
+      bytes against candidate explanatory variables across the 22 files
+      with BOTH zero reported import errors AND a fully-modeled I/O mix
+      (indices 1,2,3,4,8,9,10,21,23,26,27,29,31,32,33,34,37,40,42,43,45,46):
+      `residual ≈ 20.155 × (AOI-internal-logic instruction count) +
+      47.331 × (JSR-target instruction count)`, R²=0.6619511766511494, mean
+      abs error 1,507.79 bytes. Beat a flat-%-of-predicted model (R²=0.6015)
+      and a combined model (R²=0.6631 — barely better, with the flat-%
+      term going slightly negative, meaning the content-count model does
+      the real work, not a size proxy). Rounded and wired 2026-09-02 as
+      `aoi_logic_composite_surcharge_per_instr: 20` and
+      `jsr_target_composite_surcharge_per_instr: 47`
+      (`memory_model.yaml`/`constants.py`), applied additively on top of
+      the already-wired per-instruction content weight at both the
+      AOI-internal-logic and JSR-target-content sites in `report.py`.
+
+      **Re-validated post-wiring: mean abs error on the 22 clean files
+      drops from 5.16% to 1.06% (max 5.66%, file #10); all 45 error-free
+      v2 files average 1.17% mean abs error.** Confidence is FITTED, not
+      KNOWN — R²=0.66 leaves real unexplained variance (max residual still
+      5.66% on one file), and the JSR rate being ~2.3x the AOI rate despite
+      a similar real instruction mix is not yet mechanistically understood,
+      just what the real data shows. More isolated real data — ideally
+      varying AOI-count/JSR-content independently of overall file scale,
+      rather than all three scaling together as they do in this batch —
+      would sharpen or could disprove either constant. The 5 error-flagged
+      files' generation-script fixes (module catalog compatibility,
+      sequential slot numbering) remain separately tracked and
+      deprioritized until this tuning work lands.
+
+
+    **CAPTURE ERRORS: 82 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11;
+    count revised 2026-09-12 when 35 `composite_realistic_*_r2` rows were
+    re-routed here from the now-closed OQ-BLOCKBYTE. They are composite-scale
+    rows -- 2 to 5% under-predicted with error counts that scale with file
+    size -- so this question is where they belong.
+    47 captured WITH Studio build errors, so their `actual_bytes` is
+    SUSPECT rather than wrong — part of the file may never have reached the
+    controller, which inflates apparent over-prediction. None of them carries
+    any error text: every errored row in the manifest was captured between
+    2026-08-23 and 2026-09-08, and the error-log reader only began working
+    2026-09-10, so these need RECAPTURE before their numbers are used.
+    `composite_realistic_v3_02`, `composite_realistic_v3_03`, `composite_realistic_v3_04`, `composite_realistic_v3_05`, `composite_realistic_v3_06`, `composite_realistic_v3_07` (+41 more)
+

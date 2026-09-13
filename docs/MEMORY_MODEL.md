@@ -627,6 +627,60 @@ bytes — exactly one element — off the line through 10 and 50. See
 `docs/OPEN_QUESTIONS.md` OQ-AOIARRAYLOCALTAG; `gen_aoi_arraylocaltag2.py`
 (20 files) measures all four.
 
+## Standalone UDT tag data slot (FITTED, WIRED 2026-09-13, OQ-UDTTAGSLOT)
+
+**A standalone (non-array) UDT-typed tag's DATA slot is padded up to 8 bytes** --
+the same kind of per-TAG slot rule as the atomic 4 below, one level up, and wired
+as `standalone_udt_tag_slot.alignment_bytes` alongside
+`definition_scale_correction.udt_tag_extra` of **−4** (was +3).
+
+Derived from the one place two captured families disagreed about what a single
+UDT tag costs, and they disagreed only because they sit on opposite sides of the
+boundary:
+
+| family | UDT size | tags | per-tag error |
+|---|---:|---:|---|
+| `dscale2_udt_u001_t001..t500` | 9 bytes | 1 to 500 | **exact** (14 of 18 rows at 0, none outside ±1) |
+| `addit_dm_ln` / `addit_dh_ln` | 40 bytes | 40 and 400 | **−7.000/tag**, slope exact over 360 tags |
+
+Padding the slot to 8 makes 40 stay 40 and 9 become 16; with the extra at −4 both
+families come out with zero residual, and neither constant is separable from
+either family alone. Corpus mean absolute error 1.853% -> 1.841%, and the `udt`
+category picked up 7 more rows inside ±8.
+
+**Arrays are deliberately untouched.** `dscale2_udt_arr002/arr010/arr100/arr500`
+read +1 at every length against a 12-byte, 4-aligned ELEMENT, so the padding is
+on the tag's slot and not on each element. Padding elements instead improves the
+sixteen real programs more (2.13% -> 1.88%) and destroys the `tags` category
+(0.27% -> 2.03% mean absolute error), so that gain is absorbing some other
+missing term -- see OQ-REALUNDER, not this rule.
+
+FITTED and thin: two UDT sizes, one on each side of one boundary, fitting two
+constants. 52 files (`gen_udttagslot_closeout.py`) cover every residue mod 8 at
+two tag counts.
+
+## AOI call site (FITTED, WIRED 2026-09-13, split from the flat 168)
+
+**One AOI call site costs `120 + 16 per parameter passed`**, the instance tag not
+counting as a parameter. The flat 168 wired on 2026-09-13 was one point on that
+line; two independently written generators with different AOI shapes fix both
+terms:
+
+| family | call | params | per call |
+|---|---|---:|---:|
+| `dscale2_aoi_d001_t001_c{005,020,060}` | `Aoi_D000(Inst000,0,0,OutBitTag);` | 3 | 168 |
+| `addit_dn_a{m,h}` | `AddAoiProbe(AoiInst0000,0,Bit1);` | 2 | 152 |
+
+One parameter, 16 bytes, both exact. The `addit` measurement is a −16.000/unit
+slope over 180 units, and `dscale2`'s own `_nocall` arm already proved the
+instance TAG is exact at 1, 5, 20 and 60 tags, so the whole 16 sits on the call
+rather than on the instance.
+
+The sixteen real programs carry 3,918 call sites passing 15,691 parameters, a
+mean of 4.0 -- so the flat rate was under-charging parameter-heavy AOIs and
+over-charging small ones. Mean absolute error 2.15% -> **2.06%**, files within 1%
+**3 -> 4**.
+
 ## Standalone atomic tag data slot (KNOWN, WIRED 2026-09-12, OQ-SHELLCONST)
 
 **A standalone (non-array, non-structure) atomic tag's DATA occupies a fixed

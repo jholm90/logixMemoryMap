@@ -134,10 +134,12 @@ def test_udt_definition_cost_appears_once_per_type_used_by_multiple_instances():
 
     by_path = {e.path: e for e in entries}
     point_a = by_path["controller/PointA"]
-    # 3*DINT(4) = 12 tight-packed + tag_overhead("PointA", 6 chars) = 84,
-    # +3 since 2026-09-13 for the per-UDT-tag-instance extra (memory_model.yaml
-    # definition_scale_correction, exact over 14 rows spanning 1..500 tags).
-    assert point_a.bytes == 12 + 84 + 3
+    # 3*DINT(4) = 12 tight-packed, then padded to the standalone UDT tag slot's
+    # 8-byte boundary -> 16 (memory_model.yaml standalone_udt_tag_slot,
+    # 2026-09-13), + tag_overhead("PointA", 6 chars) = 84, -4 for the
+    # per-UDT-tag-instance extra. The padding and the extra were derived
+    # together -- neither family that measured them can separate the two.
+    assert point_a.bytes == 16 + 84 - 4
 
 
 def test_udt_definition_counted_even_when_only_used_as_a_nested_member():
