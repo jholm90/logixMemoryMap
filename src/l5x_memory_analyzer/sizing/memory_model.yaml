@@ -1645,6 +1645,41 @@ udt_definition:
   per_member: 16
   name_per_8_chars: 8  # bucket = ceil(name_length / 8), NOT floor -- different from tag_overhead
   bool_run_bonus: 32
+  # The declared MEMBERS' own names, charged NOTHING until 2026-09-13
+  # (capture-batch segments 10 and 11). Same pool law as an AOI definition's
+  # member names, and deliberately the same: it is the same thing in the same
+  # file format.
+  #
+  # Measured on udtmn_bool_len{02,04,07,08,12,16,24,32}_b04 -- four BOOL members
+  # with the name LENGTH as the only variable, so nothing else can move:
+  #
+  #   name length    02   04   07   08   12   16   24   32
+  #   residual       -8    0   +8  +16  +32  +48  +80 +112
+  #   increment          +8   +8   +8  +16  +16  +32  +32
+  #
+  # `8 * ceil(sum(len(name) + 1) / 8)` gives those same seven increments exactly.
+  # A raw 1-byte-per-character rate fits five of the seven and misses 04->07
+  # (it wants +12) and 07->08 (it wants +4) -- that pair is what discriminates
+  # the two forms, and nothing in the udtmn2_* batch could discriminate them,
+  # because every one of its name lengths lands on the same residue mod 8.
+  #
+  # Cross-checked on the second batch: udtmn2_bool_len{02,16,32}_b04_t{01,05,25}
+  # is FLAT in tag count at each length (-8/-8/-8, +48/+48/+48, +112/+112/+112),
+  # so the cost is per DEFINITION and not per instance -- and its two increments,
+  # +56 and +64, are the pool's own. udtmn2_dint_len{02,32}_n04 and
+  # udtmn2_nest_len{02,32} agree at 4 and 8 members.
+  #
+  # The six udtmn2_aoi_* rows are the control: FLAT at -4 across all three name
+  # lengths, because an AOI definition's member names were already priced by
+  # segment 4's pool. This is the plain-UDT side catching up.
+  #
+  # Hidden backing SINTs are EXCLUDED, the same convention declared_member_count
+  # already uses. Their generated names are long (ZZZZZZZZZZBoolMember00, 22
+  # chars) so including them would be a large change; the member-COUNT arm
+  # (udtmn_bool_l07_b{01,02,04,08,16}) is where that shows and it does not come
+  # out flat either way -- see OQ-UDTMEMBERNAME.
+  member_name_pool_alignment_bytes: 8
+  member_name_pool_per_name_bytes: 1
   confidence: KNOWN
 
 # Logic instruction weights -- FITTED, 2026-08-22. delta_blocks = fixed_base

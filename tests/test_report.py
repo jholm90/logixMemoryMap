@@ -126,11 +126,13 @@ def test_udt_definition_cost_appears_once_per_type_used_by_multiple_instances():
     assert len(definition_entries) == 1  # once per distinct type, not once per instance
     definition = definition_entries[0]
     assert definition.data_type == "Point3D"
-    # base(160) + per_member(16)*3 + name_per_8_chars(8)*ceil(7/8)=1 = 216
+    # base(160) + per_member(16)*3 + name_per_8_chars(8)*ceil(7/8)=1
     # +16 since 2026-09-13: a UDT DEFINITION costs 16 more than the
     # member-count-and-name formula gives (memory_model.yaml
     # definition_scale_correction, exact over 14 rows, 1..25 definitions).
-    assert definition.bytes == 160 + 16 * 3 + 8 * 1 + 16
+    # +8 since 2026-09-13: the declared members' NAME POOL -- X, Y, Z are
+    # 3*(1+1) = 6 characters rounded up to the 8-byte boundary.
+    assert definition.bytes == 160 + 16 * 3 + 8 * 1 + 16 + 8
 
     by_path = {e.path: e for e in entries}
     point_a = by_path["controller/PointA"]
@@ -206,11 +208,15 @@ def test_udt_definition_cost_counts_bool_members_correctly():
     from l5x_memory_analyzer.parser.datatypes import parse_data_types
     data_types = parse_data_types(root)
     bytes_, confidence = compute_udt_definition_cost("SweepTypeBOOL", data_types, MODEL)
-    # Real Capacity delta for this exact real corpus shape (4 BOOL members,
-    # 13-char name "SweepTypeBOOL") is 272: base(160) + per_member(16)*4 +
-    # name_per_8_chars(8)*ceil(13/8)=2 + bool_run_bonus(32) = 272.
-    assert bytes_ == 160 + 16 * 4 + 8 * 2 + 32
-    assert bytes_ == 272
+    # base(160) + per_member(16)*4 + name_per_8_chars(8)*ceil(13/8)=2
+    # + bool_run_bonus(32), and since 2026-09-13 the declared members' own NAME
+    # POOL: the four declared members are M0..M3, so 4*(2+1) = 12 characters
+    # rounded up to the 8-byte pool boundary = 16 (memory_model.yaml
+    # udt_definition, measured on udtmn_bool_len* at eight name lengths). The
+    # hidden backing SINT's own long name is deliberately excluded, the same
+    # convention declared_member_count uses.
+    assert bytes_ == 160 + 16 * 4 + 8 * 2 + 32 + 16
+    assert bytes_ == 288
 
 
 def _blank_root(software_revision: str, processor_type: str) -> ET.Element:

@@ -2836,6 +2836,75 @@ the matching footnote at the bottom, not inline.
     `_noalarm` twin, and `def1/def2/def3` identical again.
 
 
+
+    **THE NAME-LENGTH LAW IS SOLVED AND WIRED 2026-09-13 (capture-batch
+    segments 10 and 11, `udtmn2_*` 23 files and `udtmn_*` 24 files).** A UDT
+    definition charged NOTHING for its members' own names. They cost the SAME
+    8-aligned pool as an AOI definition's member names — which is the right
+    answer for the right reason: it is the same thing, a definition's member
+    names, in the same file format.
+
+        member_name_pool = 8 * ceil(sum(len(name) + 1) / 8)
+
+    `udtmn_bool_len{02,04,07,08,12,16,24,32}_b04` holds four BOOL members and
+    varies ONLY the name length, so nothing else can move:
+
+    | name length | 02 | 04 | 07 | 08 | 12 | 16 | 24 | 32 |
+    |---|---:|---:|---:|---:|---:|---:|---:|---:|
+    | residual before | −8 | 0 | +8 | +16 | +32 | +48 | +80 | +112 |
+    | increment | | +8 | +8 | +8 | +16 | +16 | +32 | +32 |
+
+    The pool's own increments are those same seven numbers. **A raw
+    1-byte-per-character rate fits five of the seven and misses 04→07 (it wants
+    +12) and 07→08 (it wants +4)** — that pair is the whole discrimination, and
+    nothing in the `udtmn2_*` batch could have made it, because every one of its
+    name lengths lands on the same residue mod 8. The two batches together are
+    what settled the form; either alone would have fitted the wrong one.
+
+    Cross-checks, all clean: `udtmn2_bool_len{02,16,32}_b04_t{01,05,25}` is FLAT
+    in tag count at each length (−8/−8/−8, +48/+48/+48, +112/+112/+112), so the
+    cost is per DEFINITION and not per instance. `udtmn2_dint_len{02,32}_n04`
+    and `udtmn2_nest_len{02,32}` agree at 4 and 8 members. And the six
+    `udtmn2_aoi_*` rows are the control — flat at −4 across all three lengths,
+    because segment 4 had already priced the AOI side.
+
+    **Effect.** Every family is now flat in name length, where it used to span
+    120 bytes. The `udt` category is **108 of 108 within 1%** (mean absolute
+    error 0.148%). On the sixteen real programs, mean absolute error
+    **2.025% → 1.605%** and sum-weighted **+2.145% → +1.245%** — the largest
+    single real-file gain of the day, because real UDT member names average
+    around 12 characters and a real program carries 174 UDT definitions. The
+    residual also went two-sided again: five programs now over-predict, worst
+    +3.28% (was +4.22%), and `pukall_gang` is −0.06%.
+
+    **WHAT IS LEFT, and it is deliberately NOT fitted.** With the length law in,
+    every family collapses to a per-shape CONSTANT over-charge:
+
+    | shape | declared members | hidden BOOL runs | residual |
+    |---|---:|---:|---:|
+    | `udtmn_bool_l07_b01` | 1 | 1 | −8 |
+    | `udtmn_bool_l07_b02` | 2 | 1 | −16 |
+    | `udtmn_bool_*_b04` | 4 | 1 | −24 |
+    | `udtmn_bool_l07_b08` | 8 | 1 | −40 |
+    | `udtmn_bool_*_b16` | 16 | 2 | −64 |
+    | `udtmn_dint_len*_n04` | 4 | 0 | −32 |
+    | `udtmn2_nest_len*` | 8 | ? | −64 |
+
+    `−(4m − 8r + 16)` fits five of those seven exactly and misses `b01` by 4 and
+    `nest` by 16. That is **three constants** — a `per_member` of 12 rather than
+    16, a `bool_run_bonus` of 40 rather than 32, and a −16 per definition — fitted
+    to five points, in the one family where member count and hidden backing SINTs
+    are inseparable. Fitting it is precisely the move that gave the AOI
+    definition four overlapping terms and had to be undone. It needs a UDT
+    member-count sweep with NO BOOL members, so runs cannot confound the count;
+    the existing `dint_n04` is the only such point.
+
+    Also recorded: hidden backing SINTs are excluded from the pool, the same
+    convention `declared_member_count` already uses. Their generated names are
+    long (`ZZZZZZZZZZBoolMember00`, 22 characters), so including them would be a
+    large change, and the member-COUNT arm is exactly where that would show —
+    and it does not come out flat either way.
+
 38. **OQ-JSRFOLD** — new, 2026-09-11. A JSR and its target routine are
     over-charged at low counts and under-charged per unit, and the shape
     points at how the target's cost is folded in.

@@ -174,8 +174,11 @@ def test_expand_udt_definition_sums_to_compute_udt_definition_cost():
     assert sum(c.bytes for c in children) == expected_total
     # One row per declared member (Speed, Readings, ZZZZZZZZZZBoolMember01,
     # Running, Nested -- all 5 are not `hidden`, Motor has no bool run of
-    # its own) plus one "Base + type name" row.
-    assert len(children) == 6
+    # its own), plus a "Base + type name" row and, since 2026-09-13, a
+    # "Member name pool" row: the pool is rounded up once over the whole member
+    # set, so it cannot be attributed to individual members.
+    assert len(children) == 7
+    assert children[-1].name == "Member name pool"
     names = {c.name for c in children}
     assert {"Speed", "Readings", "ZZZZZZZZZZBoolMember01", "Running", "Nested"} <= names
 

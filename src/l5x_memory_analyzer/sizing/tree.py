@@ -308,6 +308,16 @@ def _expand_plain_udt_definition(name: str, udt: DataTypeDef, model: MemoryModel
             Child(f"BOOL packing (run {i})", f".boolrun{i}", "OVERHEAD", (),
                   model.udt_definition.bool_run_bonus, conf, False)
         )
+    # The declared members' NAME POOL is rounded up once over the whole member
+    # set, so it cannot be split across the member rows above without the parts
+    # failing to sum to the whole -- same reason the AOI breakdown shows it as
+    # one line. See memory_model.yaml udt_definition.
+    pool = model.udt_definition.member_name_pool_bytes(
+        [m.name for m in declared_members])
+    if pool:
+        children.append(
+            Child("Member name pool", ".namepool", "OVERHEAD", (), pool, conf, False)
+        )
     return children
 
 

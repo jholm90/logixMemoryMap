@@ -627,6 +627,47 @@ bytes — exactly one element — off the line through 10 and 50. See
 `docs/OPEN_QUESTIONS.md` OQ-AOIARRAYLOCALTAG; `gen_aoi_arraylocaltag2.py`
 (20 files) measures all four.
 
+## UDT definition member names (KNOWN, WIRED 2026-09-13, OQ-UDTMEMBERNAME)
+
+**A UDT definition's declared MEMBERS' own names cost the same 8-aligned pool an
+AOI definition's do** -- the same thing in the same file format, so one law
+serves both:
+
+    member_name_pool = 8 * ceil(sum(len(name) + 1) / 8)
+
+They were charged **nothing** until 2026-09-13. Measured on
+`udtmn_bool_len{02,04,07,08,12,16,24,32}_b04` -- four BOOL members with the name
+length as the only variable:
+
+| name length | 02 | 04 | 07 | 08 | 12 | 16 | 24 | 32 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| residual before | −8 | 0 | +8 | +16 | +32 | +48 | +80 | +112 |
+| increment | | +8 | +8 | +8 | +16 | +16 | +32 | +32 |
+
+The pool's own increments are those same seven numbers. **A raw
+1-byte-per-character rate fits five of the seven and misses 04->07 (wants +12)
+and 07->08 (wants +4)** -- that pair is the entire discrimination between the two
+forms, and the second batch (`udtmn2_*`) could not have made it: every one of its
+name lengths lands on the same residue mod 8.
+
+Cross-checks: `udtmn2_bool_len{02,16,32}_b04_t{01,05,25}` is flat in TAG count at
+each length, so the cost is per DEFINITION and not per instance;
+`udtmn2_dint_len{02,32}_n04` and `udtmn2_nest_len{02,32}` agree at 4 and 8
+members; and the six `udtmn2_aoi_*` rows are flat as the control, because the AOI
+side was already priced.
+
+Hidden backing SINTs are EXCLUDED, the same convention `declared_member_count`
+uses -- their generated names are long (`ZZZZZZZZZZBoolMember00`, 22 characters)
+and the member-COUNT arm, which is where that would show, does not come out flat
+either way. See OQ-UDTMEMBERNAME for the per-shape constant that remains and for
+why it is deliberately not fitted.
+
+Effect: the `udt` category is **108 of 108 within 1%** (mean absolute error
+0.148%), and on the sixteen real programs mean absolute error **2.025% ->
+1.605%** with sum-weighted **+2.145% -> +1.245%** -- the largest single real-file
+gain of 2026-09-13, because real UDT member names average about 12 characters and
+a real program carries 174 UDT definitions.
+
 ## Generic ETHERNET-MODULE connection data (KNOWN, WIRED 2026-09-13, OQ-MODULESTRUCTURAL)
 
 **A generic `ETHERNET-MODULE` connection's data costs 4x its declared bytes.**

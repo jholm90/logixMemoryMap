@@ -207,8 +207,34 @@ class UdtDefinitionModel:
     name_per_8_chars: int
     bool_run_bonus: int
     confidence: str
+    # The declared MEMBERS' own names, pooled the same way an AOI definition's
+    # are -- see memory_model.yaml udt_definition. Charged zero until
+    # 2026-09-13, when the udtmn_* length sweep measured it at eight lengths.
+    member_name_pool_alignment_bytes: int = 0
+    member_name_pool_per_name_bytes: int = 1
 
-    def bytes_for(self, name: str, declared_member_count: int, bool_run_count: int) -> int:
+    def member_name_pool_bytes(self, member_names) -> int:
+        """One byte per name on top of its characters, total rounded up.
+
+        The SAME pool law as AoiDefinitionModel.member_name_pool_bytes, and
+        deliberately so -- it is the same thing, a definition's member names,
+        in the same file format. Measured independently here on
+        udtmn_bool_len{02,04,07,08,12,16,24,32}_b04, four BOOL members with the
+        name length as the only variable: the observed increments are
+        +8 +8 +8 +16 +16 +32 +32 and the pool's own are the same seven numbers.
+        A raw 1-byte-per-character rate fits five of the seven and misses the
+        04->07 and 07->08 steps, which is what discriminates the two forms.
+        """
+        align = self.member_name_pool_alignment_bytes
+        if align <= 0:
+            return 0
+        chars = sum(len(n) + self.member_name_pool_per_name_bytes for n in member_names)
+        if align <= 1:
+            return chars
+        return align * -(-chars // align)
+
+    def bytes_for(self, name: str, declared_member_count: int, bool_run_count: int,
+                  member_names=()) -> int:
         # ONE shared base -- see memory_model.yaml udt_definition for why
         # this isn't two separately-additive base constants (168 for
         # member-count, 224 for name-length): those were two different 1-D
@@ -221,6 +247,7 @@ class UdtDefinitionModel:
         # breaking a run means a second hidden SINT and a second bonus.
         total = self.base + self.per_member * declared_member_count + self.name_per_8_chars * math.ceil(len(name) / 8)
         total += self.bool_run_bonus * bool_run_count
+        total += self.member_name_pool_bytes(member_names)
         return total
 
 
@@ -1231,6 +1258,10 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             name_per_8_chars=raw["udt_definition"]["name_per_8_chars"],
             bool_run_bonus=raw["udt_definition"]["bool_run_bonus"],
             confidence=raw["udt_definition"]["confidence"],
+            member_name_pool_alignment_bytes=raw["udt_definition"][
+                "member_name_pool_alignment_bytes"],
+            member_name_pool_per_name_bytes=raw["udt_definition"][
+                "member_name_pool_per_name_bytes"],
         ),
         logic_instructions=LogicInstructionModel(
             fixed_base_per_routine=raw["logic_instructions"]["fixed_base_per_routine"],

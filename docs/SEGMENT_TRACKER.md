@@ -18,14 +18,14 @@ project's ±8 universal-residual band.
 | 6 | `stx_*` | 30 | 30 | 0 | OQ-STEXPR | **CLOSED — one law replaces a five-entry table** |
 | 7 | `genem_*` | 27 | 24 | 0 | OQ-MODULESTRUCTURAL | **CLOSED for ETHERNET-MODULE — 2 arms invalid, rebuilt** |
 | 8 | `ntag_*` | 25 | 25 | 0 | OQ-VERIFINSTR | **CLOSED — 20/20 exact; the other 5 kill a OQ-SERIESOUTPUT candidate** |
-| 9 | `identnamelen_*` | 24 | 19 | 5 | OQ-IDENTNAMELEN | pending |
-| 10 | `udtmn2_*` | 23 | 23 | 0 | OQ-UDTMEMBERNAME | pending |
-| 11 | `udtmn_*` | 24 | 24 | 0 | OQ-UDTMEMBERNAME | pending |
+| 9 | `identnamelen_*` | 24 | 19 | 5 | OQ-IDENTNAMELEN | DEFERRED — has errored rows, worked at the end |
+| 10 | `udtmn2_*` | 23 | 23 | 0 | OQ-UDTMEMBERNAME | **CLOSED — with 11; biggest real-file gain of the day** |
+| 11 | `udtmn_*` | 24 | 24 | 0 | OQ-UDTMEMBERNAME | **CLOSED — its length arm is what discriminated the form** |
 | 12 | `cpttier_*` | 22 | 22 | 0 | OQ-CMPCPTLAYOUT | pending |
-| 13 | `modmarg_*` | 19 | 19 | 6 | OQ-MODULEMARGINAL | pending |
+| 13 | `modmarg_*` | 19 | 19 | 6 | OQ-MODULEMARGINAL | DEFERRED -- has errored rows, worked at the end |
 | 14 | `asmclose_*` | 71 | 71 | 0 | OQ-MODULEIO | pending |
 | 15 | `aoishape_*` | 17 | 17 | 0 | OQ-AOIINTERNALLOGIC | pending |
-| 16 | `axmarg_*` | 16 | 16 | 9 | OQ-AXISMARGINAL | pending |
+| 16 | `axmarg_*` | 16 | 16 | 9 | OQ-AXISMARGINAL | DEFERRED -- has errored rows, worked at the end |
 | 17 | `platform_*` | 15 | 10 | 0 | OQ-REAL5069 | pending |
 | 18 | `cmpfl_*` | 13 | 13 | 0 | OQ-CMPCPTLAYOUT | pending |
 | 19 | `cptpow_*` | 12 | 12 | 0 | OQ-CMPCPTLAYOUT | pending |
@@ -39,8 +39,8 @@ project's ±8 universal-residual band.
 | 27 | `almult_*` | 3 | 3 | 0 | OQ-AOIARRAYLOCALTAG | pending |
 | 28 | `aldim_*` | 3 | 3 | 0 | OQ-AOIARRAYLOCALTAG | pending |
 | 29 | `uwclose_*` | 3 | 0 | 0 | OQ-VERIFINSTR | not captured |
-| 30 | `aoi_logic_scale_*` | 4 | 4 | 3 | OQ-AOIINTERNALLOGIC | pending |
-| 31 | `aoi_multiroutine_*` | 2 | 2 | 2 | OQ-AOIINTERNALLOGIC | pending |
+| 30 | `aoi_logic_scale_*` | 4 | 4 | 3 | OQ-AOIINTERNALLOGIC | DEFERRED -- has errored rows, worked at the end |
+| 31 | `aoi_multiroutine_*` | 2 | 2 | 2 | OQ-AOIINTERNALLOGIC | DEFERRED -- has errored rows, worked at the end |
 
 ## Segment 1 — `aoialgn_*`, OQ-AOIBOOLPACK-PAIRING: CLOSED
 
@@ -525,4 +525,48 @@ makes `strip_ladder.py`'s L2 rung the decisive measurement for this entry too.
 
 Nothing wired, nothing generated. Four constants confirmed, one candidate
 eliminated, and the two open logic questions joined into one.
+
+
+## Segments 10 and 11 — `udtmn2_*` and `udtmn_*`, OQ-UDTMEMBERNAME: CLOSED
+
+47 files between them, all captured, zero build errors. Worked together because
+they own the same question and **neither one alone could settle it**.
+
+A UDT definition charged NOTHING for its members' own names. They cost the same
+8-aligned pool as an AOI definition's member names — the same thing in the same
+file format, so one law now serves both:
+
+    member_name_pool = 8 * ceil(sum(len(name) + 1) / 8)
+
+**Segment 11's length arm is what discriminated the form.**
+`udtmn_bool_len{02,04,07,08,12,16,24,32}_b04` varies only the name length across
+eight values, and its increments are +8 +8 +8 +16 +16 +32 +32 — exactly the
+pool's. A raw 1-byte-per-character rate fits five of the seven and misses 04→07
+and 07→08. **Nothing in segment 10 could have made that call**: every name length
+in `udtmn2_*` lands on the same residue mod 8, so both forms fit it identically.
+Segment 10 supplied what segment 11 could not — the tag-count control
+(`_t{01,05,25}` flat at every length, so the cost is per definition, not per
+instance), a second and third member count, and the AOI control that was already
+correct.
+
+| | before | after |
+|---|---:|---:|
+| `udt` category within 1% | — | **108 of 108** (mean 0.148%) |
+| real programs, mean abs error | 2.025% | **1.605%** |
+| real programs, sum-weighted | +2.145% | **+1.245%** |
+| worst real file | +4.22% | **+3.28%** |
+| corpus mean abs error | 1.536% | 1.544% |
+
+Largest single real-file gain of the day: real UDT member names average about 12
+characters and a real program carries 174 UDT definitions. The real residual also
+went two-sided again — five programs now over-predict, and `pukall_gang` is
+−0.06%.
+
+**What is left is deliberately not fitted.** Every family now collapses to a
+per-shape constant, and `−(4m − 8r + 16)` fits five of seven — which would mean
+changing `per_member` 16→12, `bool_run_bonus` 32→40 and adding a −16, three
+constants on five points, in the one family where member count and hidden backing
+SINTs cannot be separated. That is the move that gave the AOI definition four
+overlapping terms. It needs a member-count sweep with no BOOL members; the corpus
+has exactly one such point.
 

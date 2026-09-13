@@ -506,3 +506,16 @@ Recapture, separately from the above: the 5 stale `aoi_logic_scale_*` /
   `ntag_uidpair_n00001` is a one-rung file that pays the full −12, which answers
   it without capture. Deprioritise those 3 in the capture roster.
 
+### Added 2026-09-13 (capture-batch segments 10 and 11)
+
+- **A UDT member-count sweep with NO BOOL members** is the one thing
+  OQ-UDTMEMBERNAME still needs, and the corpus has exactly one such point
+  (`udtmn_dint_len*_n04`). With the name-length law wired, every family collapses
+  to a per-shape constant that `−(4m − 8r + 16)` fits five of seven times --
+  three constants on five points, in the one family where declared member count
+  and hidden backing SINTs cannot be separated. Not fitted; spec only, per the
+  step-7 rule.
+- Segments 9, 13, 16, 30 and 31 are DEFERRED to the end of the tracker: each has
+  errored capture rows, and an errored row is suspect rather than wrong, so they
+  are worked once the clean ones are done.
+

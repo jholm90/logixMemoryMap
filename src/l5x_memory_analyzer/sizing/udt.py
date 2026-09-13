@@ -251,7 +251,9 @@ def compute_udt_definition_cost(
     declared_member_count = sum(1 for m in udt.members if not m.hidden)
     bool_run_count = sum(1 for m in udt.members if m.hidden)
     return (
-        model.udt_definition.bytes_for(name, declared_member_count, bool_run_count),
+        model.udt_definition.bytes_for(
+            name, declared_member_count, bool_run_count,
+            [m.name for m in udt.members if not m.hidden]),
         model.udt_definition.confidence,
     )
 
