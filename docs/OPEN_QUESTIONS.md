@@ -432,6 +432,84 @@ the matching footnote at the bottom, not inline.
     `actual_bytes` is filled in but part of the file may never have reached the
     controller, which reads as the model over-predicting.
 
+
+    **ETHERNET-MODULE SOLVED 2026-09-13 (capture-batch segment 7), which is the
+    single largest slice of this question.** That profile is 109 of the 438
+    non-CPU modules in the sixteen real programs — 25% of them — and had no
+    entry in `module_overhead_by_catalog` at all, so every one fell back to the
+    flat cross-catalog 1,672. A per-catalog constant was never the right SHAPE
+    for it: the connection sizes are typed in by hand, and the 109 real
+    instances carry 40 distinct connection shapes with input spanning 2 to 450
+    bytes.
+
+    **A connection's data costs 4x its declared bytes, not 1x.** Each direction
+    is rounded up to a 4-byte word, the two word counts are summed, and the
+    block costs 16 per word less 8 when that total is odd:
+
+        W = ceil(input_bytes / 4) + ceil(output_bytes / 4)
+        connection_bytes = 16 * W - 8 * (W % 2)
+
+    | W | 2 | 3 | 4 | 5 | 9 | 17 | 33 | 65 | 114 |
+    |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+    | bytes | 32 | 40 | 64 | 72 | 136 | 264 | 520 | 1032 | 1824 |
+
+    EXACT on all 14 points, with the catalog's own overhead at **1,592** and its
+    400-byte config array charged as declared. **The two directions are
+    interchangeable**, which no real instance could show because real devices
+    vary both at once: `genem_in032`/`genem_out032` are byte-identical captures
+    (20,256) and so are `genem_in064`/`genem_out064` (20,384). Only the sum of
+    the word counts matters.
+
+    20 of the 24 captured `genem_*` rows now land exactly, from none. Corpus mean
+    absolute error 1.545% → 1.536%; the sixteen real programs 2.074% → **2.025%**.
+
+    Scoped to this profile deliberately. The rack sweeps point the same way (5069
+    −992/module, POINT I/O −932/card, both under-charged), so a 4x connection
+    cost may well be general — but applying it to all 325 captured module rows on
+    one profile's evidence is the move this project has had to undo before.
+
+    **AND TWO OF THAT BATCH'S FOUR ARMS MEASURED NOTHING, both from the same
+    root cause: a composed rather than transplanted module shape.** The
+    generator hardcoded `CommMethod="536870915"` for every variant, and
+    CommMethod ENCODES the comm format. Across 183 real ETHERNET-MODULE
+    instances in `samples/local` the correspondence is unambiguous, with no
+    counter-example:
+
+    | CommMethod | connection element type | real instances |
+    |---|---|---:|
+    | 536870915 | INT | 109 |
+    | 536870916 | SINT | 57 |
+    | 536870932 | no connection at all | 11 |
+    | 536870913 | DINT | 4 |
+    | 536870914 | REAL | 2 |
+
+    - **Arm E (`genem_dt*`, element type at fixed byte size).** The three SINT
+      files FAILED conversion outright — `XMLSrv_E_IMPORT_ABORTED_NO_CHANGES`,
+      `samples/convert_log.csv` 2026-09-12 — because the method said INT and the
+      declared type said SINT. Worse, the DINT and REAL files imported and
+      captured, and read byte-identical to `genem_dtint_064`: Studio resolved
+      the contradiction from CommMethod and built all three as INT connections.
+      That was briefly taken as evidence that cost follows byte count rather
+      than element count. **It is not evidence of anything — all three files
+      were the same connection.** Byte-count versus element-count remains OPEN.
+    - **Arm D (`genem_noconn`).** Built as the connected method with the two
+      PrimCxn size attributes simply removed. All 11 real no-connection
+      instances use 536870932. The file captured "clean" and reads +3,976, which
+      measures whatever Studio does with an inconsistent CommMethod.
+      `zero_connection_module_bytes` (2,344) stays untested for this profile.
+
+    Generator corrected and all six affected files rebuilt with the real
+    per-type CommMethod. The three captures whose file content changed
+    (`genem_dtdint_064`, `genem_dtreal_064`, `genem_noconn`) had their capture
+    columns VOIDED in `samples/manifest.csv` rather than carried against a file
+    they no longer describe; `genem_dtint_*` were already consistent and keep
+    theirs. 6 files await recapture.
+
+    **CONVERSION STATUS (step 2), logged explicitly:** 3 committed files with no
+    `ok` on record — `genem_dtsint_008`, `genem_dtsint_064`, `genem_dtsint_450`,
+    all `FAILED` with `XMLSrv_E_IMPORT_ABORTED_NO_CHANGES` on 2026-09-12. Cause
+    diagnosed above, not guessed; fix applied.
+
 6. **OQ-MODULEIO** — mostly closed 2026-08-29. 126 real module captures
    were sitting unreconciled in manifest.csv; 51 catalogs now have a real
    per-catalog overhead value (exact-match rate on real data went from

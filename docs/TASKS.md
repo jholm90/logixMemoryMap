@@ -459,3 +459,21 @@ Recapture, separately from the above: the 5 stale `aoi_logic_scale_*` /
 - Segment 6 of `docs/SEGMENT_TRACKER.md` is closed; segment 7 (`genem_*`, 27
   files, OQ-MODULESTRUCTURAL) is next.
 
+### Added 2026-09-13 (capture-batch segment 7)
+
+- **Recapture 6 rebuilt `genem_*` files.** `genem_dtsint_{008,064,450}` (never
+  converted -- CommMethod said INT, declared type said SINT),
+  `genem_dtdint_064` / `genem_dtreal_064` (imported but Studio built them as INT
+  connections, so their captures were voided), and `genem_noconn` (built with the
+  connected CommMethod instead of 536870932, capture voided). All six now carry
+  the real per-type CommMethod.
+- **A file that converts cleanly is not evidence that its shape is right.**
+  `genem_dtdint_064` and `genem_dtreal_064` converted, captured, and agreed with
+  each other -- because Studio silently resolved a contradiction between
+  CommMethod and the declared element type and built all three as the same
+  connection. Two arms of a four-arm batch measured nothing. Check that a
+  transplanted block's discriminant fields actually vary with the variable under
+  test, not just that the file imports.
+- Segment 7 of `docs/SEGMENT_TRACKER.md` is closed for ETHERNET-MODULE; segment 8
+  (`ntag_*`, 25 files, OQ-VERIFINSTR) is next.
+

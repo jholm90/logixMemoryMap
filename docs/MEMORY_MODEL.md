@@ -627,6 +627,48 @@ bytes — exactly one element — off the line through 10 and 50. See
 `docs/OPEN_QUESTIONS.md` OQ-AOIARRAYLOCALTAG; `gen_aoi_arraylocaltag2.py`
 (20 files) measures all four.
 
+## Generic ETHERNET-MODULE connection data (KNOWN, WIRED 2026-09-13, OQ-MODULESTRUCTURAL)
+
+**A generic `ETHERNET-MODULE` connection's data costs 4x its declared bytes.**
+Each direction is rounded up to a 4-byte word, the two word counts are summed,
+and the block costs 16 per word less 8 when that total is odd:
+
+    W = ceil(input_bytes / 4) + ceil(output_bytes / 4)
+    connection_bytes = 16 * W - 8 * (W % 2)
+
+| W | 2 | 3 | 4 | 5 | 9 | 17 | 33 | 65 | 114 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| bytes | 32 | 40 | 64 | 72 | 136 | 264 | 520 | 1032 | 1824 |
+
+Exact on all 14 captured points, with the catalog's own overhead at **1,592** and
+its 400-byte config array charged as declared. The −8 on an odd word count is the
+same 8-byte granularity seen throughout this project, stated as measured rather
+than explained.
+
+**The two directions are interchangeable.** `genem_in032` and `genem_out032` are
+byte-identical captures (20,256) and so are `genem_in064` and `genem_out064`
+(20,384) -- only the SUM of the two word counts matters. No real instance could
+show this, because real devices vary both directions at once.
+
+This matters because the profile is **109 of the 438 non-CPU modules in the
+sixteen real programs, 25% of them**, and it had no per-catalog entry at all --
+every one fell back to the flat 1,672. A per-catalog constant was never the right
+shape for it either: the connection sizes are typed in by hand, so two instances
+of the same "catalog" are different devices, and the 109 real instances carry 40
+distinct connection shapes with input spanning 2 to 450 bytes.
+
+**Scoped to this profile on purpose.** The rack sweeps point the same way (5069
+−992/module, POINT I/O −932/card, both under-charged), so a 4x connection cost
+may well be general -- but applying it to all 325 captured module rows on one
+profile's evidence is the move this project has had to undo before.
+
+**`CommMethod` encodes the comm format and must agree with the connection's
+element type.** Across 183 real ETHERNET-MODULE instances, with no
+counter-example: 536870915 is INT (109 instances), 536870916 SINT (57), 536870932
+no connection at all (11), 536870913 DINT (4), 536870914 REAL (2). Two arms of
+the batch that derived the law above were invalidated by getting this wrong --
+see OQ-MODULESTRUCTURAL.
+
 ## Structured Text assignment cost (FITTED, WIRED 2026-09-13, OQ-STEXPR)
 
 **One law**, replacing a five-entry table keyed on operator count whose confidence

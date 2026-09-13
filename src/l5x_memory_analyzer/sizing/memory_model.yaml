@@ -664,8 +664,56 @@ module_overhead_repeat_discount:
   apply_repeat_discount: false
   confidence: FITTED
 
+# A generic ETHERNET-MODULE's CONNECTION DATA costs 4x its declared bytes, not
+# 1x -- derived 2026-09-13 (capture-batch segment 7) from the 24 captured
+# `genem_*` rows. This profile is 109 of the 438 non-CPU modules in the sixteen
+# real programs, 25% of them, and its declared input sizes run 2 to 450 bytes, so
+# a per-catalog constant was never the right SHAPE for it: the connection sizes
+# are typed in by hand, and two instances of the same "catalog" are different
+# devices carrying 40 distinct connection shapes.
+#
+# Each DIRECTION is rounded up to a 4-byte word, the two word counts are summed,
+# and the block costs 16 bytes per word less 8 when that total is odd:
+#
+#     W = ceil(input_bytes / 4) + ceil(output_bytes / 4)
+#     connection_bytes = 16 * W - 8 * (W % 2)
+#
+# EXACT on all 14 points, W = 2 through 114 (input 2/4/10/32/64/128/256/450 at a
+# fixed output, output 2/4/8/16/32/64 at a fixed input):
+#
+#   W        2    3    4    5    9   17   33   65  114
+#   bytes   32   40   64   72  136  264  520 1032 1824
+#
+# THE TWO DIRECTIONS ARE INTERCHANGEABLE, which no real instance could show
+# because real devices vary both at once: genem_in032 and genem_out032 are
+# byte-identical captures (20,256) and so are genem_in064 and genem_out064
+# (20,384). Only the SUM of the two word counts matters.
+#
+# The -8 on an odd word count is the same 8-byte granularity seen throughout this
+# project rather than a separate mechanism, and it is stated as measured rather
+# than explained.
+#
+# SCOPED TO THIS PROFILE ON PURPOSE. Every measurement is ETHERNET-MODULE. The
+# rack sweeps point the same way -- 5069 -992/module and POINT I/O -932/card, both
+# under-charged -- so a 4x connection cost may well be general, but applying it to
+# all 325 captured module rows on one profile's evidence is exactly the move this
+# project has had to undo before. See OQ-MODULESTRUCTURAL.
+module_connection_data:
+  word_bytes: 4
+  bytes_per_word: 16
+  odd_word_discount: 8
+  catalogs: ['ETHERNET-MODULE']
+  confidence: KNOWN
+
 module_overhead_by_catalog:
   '150 SMC Flex-E': { bytes: 6614, confidence: ASSUMED }
+  # 1,592 with the connection law above and the 400-byte config array charged as
+  # declared: genem_in002/in010/in450 land exactly at 2,024 / 2,056 / 3,816 real
+  # module bytes. repeat_bytes from genem_n{01,02,04,08} -- 2,056 for the first
+  # instance and 1,376 for every one after, a 710 discount, exact at all four
+  # counts -- and inert while module_overhead_repeat_discount.apply_repeat_discount
+  # is false.
+  'ETHERNET-MODULE': { bytes: 1592, repeat_bytes: 882, confidence: KNOWN }
   '1732E-IB16M12DR/A': { bytes: 2126, confidence: ASSUMED }
   '1732E-IB16M12R/A': { bytes: 1422, confidence: ASSUMED }
   '1732E-OB16M12R/A': { bytes: 1802, confidence: ASSUMED }

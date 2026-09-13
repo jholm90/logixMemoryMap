@@ -96,7 +96,10 @@ def test_the_measured_repeat_data_is_still_on_record(model):
         catalog: v for catalog, v in raw["module_overhead_by_catalog"].items()
         if "repeat_bytes" in v
     }
-    assert len(with_repeat) == 16
+    # 17 since 2026-09-13: ETHERNET-MODULE joined them from genem_n{01,02,04,08}
+    # (2,056 for the first instance, 1,376 for every one after -- a 710 discount,
+    # exact at all four counts). Also gated off, for the same reason.
+    assert len(with_repeat) == 17
     for catalog, v in with_repeat.items():
         assert v["repeat_bytes"] < v["bytes"], catalog
 

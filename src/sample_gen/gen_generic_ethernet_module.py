@@ -80,6 +80,36 @@ INPUT_SIZES = (2, 4, 10, 32, 64, 128, 256, 450)
 # is mechanical, so it is built -- but it is the one arm where a conversion
 # failure would be a finding about the shape rather than about the cost.
 ELEMENT_BYTES = {"SINT": 1, "INT": 2, "DINT": 4, "REAL": 4}
+
+# CommMethod ENCODES THE COMM FORMAT, so it must agree with the connection's
+# element type. Corrected 2026-09-13 (capture-batch segment 7): every file in
+# this batch previously hardcoded 536870915, which is the INT format, whatever
+# the declared element type said. The three SINT files FAILED conversion outright
+# (XMLSrv_E_IMPORT_ABORTED_NO_CHANGES, samples/convert_log.csv 2026-09-12), and
+# the DINT and REAL files imported and captured -- which is worse, because Studio
+# resolved the contradiction from CommMethod and built them as INT connections.
+# They read byte-identical to genem_dtint_064, which was briefly taken as
+# evidence that cost follows byte count rather than element count. It is not
+# evidence of anything: all three files were the same connection.
+#
+# The correspondence is unambiguous across 183 real ETHERNET-MODULE instances in
+# samples/local, with no counter-example:
+#
+#     536870915  INT               109 instances
+#     536870916  SINT               57
+#     536870932  no connection      11
+#     536870913  DINT                4
+#     536870914  REAL                2
+COMM_METHOD_BY_TYPE = {
+    "INT": "536870915",
+    "SINT": "536870916",
+    "DINT": "536870913",
+    "REAL": "536870914",
+}
+# All 11 real no-connection instances use this, NOT the connected method with the
+# PrimCxnInputSize/PrimCxnOutputSize attributes removed -- which is what
+# genem_noconn did, and why its +3,976 reading measures nothing.
+COMM_METHOD_NO_CONNECTION = "536870932"
 TYPE_SIZE_PAIRS = (
     (8, "SINT"), (8, "INT"),                                  # commonest small real pair
     (64, "SINT"), (64, "INT"), (64, "DINT"), (64, "REAL"),     # one size, every type
@@ -141,7 +171,7 @@ def _module_xml(name: str, address: str, input_bytes: int, output_bytes: int,
     if not with_connection:
         return (
             head
-            + '<Communications CommMethod="536870915">\n'
+            + f'<Communications CommMethod="{COMM_METHOD_NO_CONNECTION}">\n'
             + _config_tag() + "\n"
             + '<Connections/>\n</Communications>\n</Module>'
         )
@@ -151,8 +181,8 @@ def _module_xml(name: str, address: str, input_bytes: int, output_bytes: int,
     out_l5k = ",".join("0" for _ in range(out_words))
     return (
         head
-        + f'<Communications CommMethod="536870915" PrimCxnInputSize="{input_bytes}" '
-          f'PrimCxnOutputSize="{output_bytes}">\n'
+        + f'<Communications CommMethod="{COMM_METHOD_BY_TYPE[element_type]}" '
+          f'PrimCxnInputSize="{input_bytes}" PrimCxnOutputSize="{output_bytes}">\n'
         + _config_tag() + "\n"
         + '<Connections>\n'
           f'<Connection Name="Standard" RPI="10000" Type="Output" InputCxnPoint="101" '

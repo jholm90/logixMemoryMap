@@ -646,6 +646,40 @@ class SafetyCapableBaselineDeltaModel:
 
 
 @dataclass(frozen=True)
+class ModuleConnectionDataModel:
+    """A module connection's data costs a multiple of its declared bytes.
+
+    Derived for the generic ETHERNET-MODULE profile, which is 25% of every
+    non-CPU module in the sixteen real programs -- see memory_model.yaml
+    module_connection_data for the 14-point derivation and for why it is scoped
+    to that profile rather than applied to every module.
+    """
+
+    word_bytes: int
+    bytes_per_word: int
+    odd_word_discount: int
+    catalogs: frozenset[str]
+    confidence: str
+
+    def applies_to(self, catalog: str) -> bool:
+        return catalog in self.catalogs
+
+    def bytes_for(self, input_bytes: int, output_bytes: int) -> int:
+        """16 per 4-byte word summed over both directions, less 8 if odd.
+
+        Each direction is rounded up to its own word before summing -- an
+        8-byte input and an 8-byte output are 4 words, not one 16-byte block --
+        and only the SUM matters: genem_in032 and genem_out032 are byte-identical
+        captures, as are genem_in064 and genem_out064.
+        """
+        if self.word_bytes <= 0:
+            return input_bytes + output_bytes
+        words = (-(-input_bytes // self.word_bytes)
+                 + -(-output_bytes // self.word_bytes))
+        return self.bytes_per_word * words - self.odd_word_discount * (words % 2)
+
+
+@dataclass(frozen=True)
 class ModuleOverheadModel:
     """Real per-catalog module overhead (OQ-MODULEIO, wired 2026-08-29) --
     see memory_model.yaml module_overhead_by_catalog for the full
@@ -944,6 +978,7 @@ class MemoryModel:
     # zero_connection_module -- a per-catalog table was tried and rejected
     # by cross-validation.
     zero_connection_module_bytes: int
+    module_connection_data: ModuleConnectionDataModel
     zero_connection_module_confidence: str
     module_overhead_by_catalog: ModuleOverheadModel
     # OQ-DEFSCALE 2026-09-13, see memory_model.yaml definition_scale_correction.
@@ -1053,6 +1088,13 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
         zero_connection_module_bytes=raw.get("zero_connection_module", {}).get("bytes", 0),
         zero_connection_module_confidence=raw.get("zero_connection_module", {}).get("confidence", "UNKNOWN"),
         module_overhead_confidence=module_overhead["confidence"],
+        module_connection_data=ModuleConnectionDataModel(
+            word_bytes=raw["module_connection_data"]["word_bytes"],
+            bytes_per_word=raw["module_connection_data"]["bytes_per_word"],
+            odd_word_discount=raw["module_connection_data"]["odd_word_discount"],
+            catalogs=frozenset(raw["module_connection_data"]["catalogs"]),
+            confidence=raw["module_connection_data"]["confidence"],
+        ),
         module_overhead_by_catalog=ModuleOverheadModel(
             by_catalog={
                 catalog: (v["bytes"], v["confidence"])

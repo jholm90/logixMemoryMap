@@ -16,7 +16,7 @@ project's ±8 universal-residual band.
 | 4 | `aoimix_*` | 34 | 34 | 0 | OQ-AOIBOOLPACK-PAIRING | **CLOSED — AOI definition cost re-derived from scratch** |
 | 5 | `addit_*` | 33 | 33 | 0 | OQ-COMPOSITESCALE | **CLOSED — the categories are additive, 24/24 exactly** |
 | 6 | `stx_*` | 30 | 30 | 0 | OQ-STEXPR | **CLOSED — one law replaces a five-entry table** |
-| 7 | `genem_*` | 27 | 24 | 0 | OQ-MODULESTRUCTURAL | pending |
+| 7 | `genem_*` | 27 | 24 | 0 | OQ-MODULESTRUCTURAL | **CLOSED for ETHERNET-MODULE — 2 arms invalid, rebuilt** |
 | 8 | `ntag_*` | 25 | 25 | 0 | OQ-VERIFINSTR | pending |
 | 9 | `identnamelen_*` | 24 | 19 | 5 | OQ-IDENTNAMELEN | pending |
 | 10 | `udtmn2_*` | 23 | 23 | 0 | OQ-UDTMEMBERNAME | pending |
@@ -436,4 +436,52 @@ call statements there are built-in instructions the RLL table already priced. Th
 parser finds every ST routine the raw XML holds, so this is not a detection gap —
 the claim was simply never checked before it was used to size a batch. Corrected in
 the generator docstring.
+
+
+## Segment 7 — `genem_*`, OQ-MODULESTRUCTURAL: ETHERNET-MODULE CLOSED
+
+27 files, 24 captured, 3 failed conversion. Two of the four arms are solved
+exactly; the other two measured nothing and have been rebuilt.
+
+**The connection law.** ETHERNET-MODULE is 109 of the 438 non-CPU modules in the
+sixteen real programs, 25% of them, and had no per-catalog entry at all. A
+connection's data costs **4x its declared bytes**:
+
+    W = ceil(input_bytes / 4) + ceil(output_bytes / 4)
+    connection_bytes = 16 * W - 8 * (W % 2)
+
+Exact on all 14 points from W=2 to W=114, with the catalog overhead at 1,592.
+**The two directions are interchangeable** — `genem_in032`/`genem_out032` are
+byte-identical captures and so are `genem_in064`/`genem_out064` — which no real
+instance could show, because real devices vary both at once. The repeat discount
+is 710 (first instance 2,056, every one after 1,376, exact at all four counts),
+recorded as the 17th catalog and inert while the gate is off.
+
+| | before | after |
+|---|---:|---:|
+| `genem_*` rows landing exactly | 0 of 24 | **20 of 24** |
+| corpus mean abs error | 1.545% | **1.536%** |
+| real programs, mean abs error | 2.074% | **2.025%** |
+
+**Two arms measured nothing, same root cause: a composed rather than
+transplanted shape.** The generator hardcoded `CommMethod="536870915"` for every
+variant, and CommMethod encodes the comm format. Across 183 real instances:
+536870915↔INT (109), 536870916↔SINT (57), 536870932↔no connection (11),
+536870913↔DINT (4), 536870914↔REAL (2).
+
+- Arm E's three SINT files **failed import**. The DINT and REAL files imported
+  and captured *byte-identical to the INT file* — Studio resolved the
+  contradiction from CommMethod and built all three as INT connections. I read
+  that as "cost follows byte count, not element count" before checking. It is
+  not evidence of anything: all three files were the same connection. That
+  question stays open.
+- Arm D's `genem_noconn` used the connected method with the size attributes
+  removed; all 11 real no-connection instances use 536870932. Its +3,976 reading
+  measures an inconsistent CommMethod, not a no-connection module.
+
+Generator corrected, six files rebuilt, and the three captures whose content
+changed had their capture columns voided rather than carried against a file they
+no longer describe. The lesson is the one already in the project's rules and it
+cost a whole arm anyway: **transplant, never compose** — and a file that converts
+cleanly is not evidence that the shape is right.
 

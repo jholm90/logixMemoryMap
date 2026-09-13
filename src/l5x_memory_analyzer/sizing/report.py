@@ -853,6 +853,18 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         overhead_bytes, overhead_basis = model.module_overhead_by_catalog.overhead_for(
             module.catalog_number, catalog_occurrence[module.catalog_number])
         module_bytes = module.module_defined_bytes + overhead_bytes
+        # A generic ETHERNET-MODULE's connection data costs 4x its declared
+        # bytes, not 1x (memory_model.yaml module_connection_data, wired
+        # 2026-09-13, exact on 14 captured points from W=2 to W=114). The
+        # declared bytes are already inside module_defined_bytes, so they come
+        # back out and the word law goes in. Scoped to the profiles the law was
+        # measured on -- every other catalog keeps declared bytes at 1x.
+        connection_data = model.module_connection_data
+        if connection_data.applies_to(module.catalog_number):
+            declared = module.connection_input_bytes + module.connection_output_bytes
+            module_bytes += connection_data.bytes_for(
+                module.connection_input_bytes, module.connection_output_bytes) - declared
+            overhead_basis = weakest(overhead_basis, connection_data.confidence)
         module_entries.append((f"modules/{label}", "module_io", module.catalog_number,
                                 module_bytes, overhead_basis))
         if module.unknown_member_types:
