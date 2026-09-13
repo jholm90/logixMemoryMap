@@ -1807,6 +1807,32 @@ cpt_expression:
     MOD: 52
     "**": 116
   per_extra_same_tier_operand: 24
+  # PER-TIER, since 2026-09-13 (capture-batch segment 12). The 24 above was
+  # measured on cptcx_operandcount_n01..n10, which uses the same ADD operator
+  # throughout -- so it was only ever a TIER-1 rate, and it was being applied to
+  # every uniform-tier expression.
+  #
+  # cpttier_k3_t2x3 and cpttier_k4_t2x4 are uniform tier-2 expressions (3 and 4
+  # MUL/DIV/MOD operators) at one rung and at 100:
+  #
+  #   operators   engine (24)   real   under-charge
+  #   3               188        220       +32
+  #   4               212        260       +48
+  #
+  # 16 per operator beyond the first, and a single tier-2 operator is already
+  # exact (cmpcpt_cpt_op_{mul,div,mod}), which pins the intercept. So the tier-2
+  # rate is 24 + 16 = 40, exact at both counts and at both rung counts -- four
+  # rows, zero residual.
+  #
+  # Tier 1 stays 24: cpttier_k3_t1x3 and cpttier_k4_t1x4 are exact as they are.
+  # Tier 3 (POW, 116) is NOT set here and deliberately keeps the 24 fallback --
+  # cptpow_p2 and cptpow_p3 read -16 and -12 per rung while cptpow_p2_adjacent
+  # reads +24, so two shapes at the SAME operator count differ by 40 and
+  # adjacency of ** is an unmodelled term of its own. Setting a uniform tier-3
+  # rate would fit one of those shapes and break the other. See
+  # OQ-CMPCPTLAYOUT.
+  per_extra_same_tier_by_tier_cost:
+    52: 40
   # T1(ADD/SUB)+T2(MUL/DIV/MOD) mixed expression, wired 2026-08-26 from
   # gen_cpt_mixed_operators.py's real operand-count-scaling sweep (3/5/8/
   # 11/15 operands, alternating tiers): 4/5 points exact with zero

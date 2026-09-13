@@ -519,3 +519,17 @@ Recapture, separately from the above: the 5 stale `aoi_logic_scale_*` /
   errored capture rows, and an errored row is suspect rather than wrong, so they
   are worked once the clean ones are done.
 
+### Added 2026-09-13 (capture-batch segment 12, reviewed with 18 and 19)
+
+- **`**` ADJACENCY is an unmodelled term worth 40 bytes/rung**, and it blocks any
+  uniform tier-3 rate: `cptpow_p2` −16, `cptpow_p3` −12, `cptpow_p2_adjacent`
+  **+24**, same operator count. Needs a sweep varying adjacency at fixed `**`
+  count, with the rest of the expression held identical -- spec only, per the
+  step-7 rule.
+- **`cmpfl_*` cannot close on what exists.** All 13 rows are single-rung files, so
+  every one is a point with no slope, and 13 isolated points cannot separate
+  operand type from operator tier from literal count. Any future float-literal
+  batch must sweep RUNG COUNT at each shape so a slope exists.
+- Segments 18 and 19 are marked reviewed-with-12 in the tracker rather than
+  pending: their data was read in full, it just does not close.
+

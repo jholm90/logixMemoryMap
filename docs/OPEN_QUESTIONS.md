@@ -5,7 +5,52 @@ Every unresolved question gets an ID (OQ-xxx). Resolved items move to
 the matching footnote at the bottom, not inline.
 
 
-2. **OQ-CMPCPTLAYOUT** — down to one thread. Uniform, T1+T2, T1T3/T2T3,
+2. **OQ-CMPCPTLAYOUT** —
+    **A SECOND THREAD FOUND AND WIRED 2026-09-13 (capture-batch segment 12,
+    `cpttier_*`): `per_extra_same_tier_operand` was only ever a TIER-1 rate.**
+    Its 24 came from `cptcx_operandcount_n01..n10`, which uses the same ADD
+    operator throughout, and it was being applied to every uniform-tier
+    expression. Uniform tier-2 expressions read:
+
+    | MUL/DIV/MOD operators | engine (24) | real | under-charge |
+    |---:|---:|---:|---:|
+    | 1 | 140 | 140 | 0 (`cmpcpt_cpt_op_{mul,div,mod}`) |
+    | 3 | 188 | 220 | **+32** |
+    | 4 | 212 | 260 | **+48** |
+
+    16 per operator beyond the first, with a single tier-2 operator already
+    exact to pin the intercept, so the tier-2 rate is 24 + 16 = **40** — exact at
+    both counts and both rung counts, four rows, zero residual. Tier 1 stays 24
+    (`cpttier_k3_t1x3` and `k4_t1x4` were already exact). `cpttier_*` rows landing
+    exactly went **10 of 22 → 14 of 22**, within ±8 **14 → 18**.
+
+    **TIER 3 IS DELIBERATELY LEFT ON THE TIER-1 FALLBACK, because two shapes at
+    the same operator count disagree by 40.** `cptpow_p2` reads −16/rung and
+    `cptpow_p3` −12/rung, while `cptpow_p2_adjacent` reads **+24/rung** — same
+    two `**` operators, different adjacency. So adjacency of `**` is an unmodelled
+    term of its own worth 40 bytes, and setting any uniform tier-3 rate would fit
+    one of those shapes and break the other. `cptpow_p1`, `p1_t1x1` and `p1_t2x1`
+    are all exact, so a single `**`, alone or mixed with one other tier, is right.
+
+    **What is left in the two-tier mix path is ±4 and below the band.** After the
+    tier-2 wiring the only non-exact `cpttier_*` rows sit at exactly +4/rung:
+    `t1x2_t2x1` and `t1x2_t2x2` (the two non-nested mixes with tier-1 count
+    exactly 2), plus `nested_t1x1_t2x2` (whose non-nested twin is 0) and
+    `nested_t1x2_t2x1` (whose twin is also +4). Read as a tier-1-count effect it
+    is 2 shapes of 5; read as a nesting effect it is 1 of 2. Four bytes, two
+    shapes each way, inside the project's ±8 residual band — recorded, not
+    fitted.
+
+    **The `cmpfl_*` float-literal arm stays open and is not derivable from what
+    exists.** All 13 rows are single-rung files, so each is one point with no
+    slope: 0, 0, +8, +16, +16, +32, +32, +48, +52, +52, +92, +108, +116. That is
+    the non-monotonic REAL/float-literal interaction this entry already describes
+    as needing dedicated architecture rather than more raw points, and 13 isolated
+    points cannot separate operand type from operator tier from literal count.
+
+    The original thread, for the record, unchanged below.
+
+2b. **OQ-CMPCPTLAYOUT, the original entry** — down to one thread. Uniform, T1+T2, T1T3/T2T3,
    and (as of 2026-08-29) the all-3-tier mix are ALL solved and wired,
    confirmed exact on every real data point on file. Only the REAL-
    operand/float-literal interaction remains open, and it's now a harder

@@ -21,14 +21,14 @@ project's ±8 universal-residual band.
 | 9 | `identnamelen_*` | 24 | 19 | 5 | OQ-IDENTNAMELEN | DEFERRED — has errored rows, worked at the end |
 | 10 | `udtmn2_*` | 23 | 23 | 0 | OQ-UDTMEMBERNAME | **CLOSED — with 11; biggest real-file gain of the day** |
 | 11 | `udtmn_*` | 24 | 24 | 0 | OQ-UDTMEMBERNAME | **CLOSED — its length arm is what discriminated the form** |
-| 12 | `cpttier_*` | 22 | 22 | 0 | OQ-CMPCPTLAYOUT | pending |
+| 12 | `cpttier_*` | 22 | 22 | 0 | OQ-CMPCPTLAYOUT | **CLOSED — tier-2 extra-operand rate was a tier-1 rate** |
 | 13 | `modmarg_*` | 19 | 19 | 6 | OQ-MODULEMARGINAL | DEFERRED -- has errored rows, worked at the end |
 | 14 | `asmclose_*` | 71 | 71 | 0 | OQ-MODULEIO | pending |
 | 15 | `aoishape_*` | 17 | 17 | 0 | OQ-AOIINTERNALLOGIC | pending |
 | 16 | `axmarg_*` | 16 | 16 | 9 | OQ-AXISMARGINAL | DEFERRED -- has errored rows, worked at the end |
 | 17 | `platform_*` | 15 | 10 | 0 | OQ-REAL5069 | pending |
-| 18 | `cmpfl_*` | 13 | 13 | 0 | OQ-CMPCPTLAYOUT | pending |
-| 19 | `cptpow_*` | 12 | 12 | 0 | OQ-CMPCPTLAYOUT | pending |
+| 18 | `cmpfl_*` | 13 | 13 | 0 | OQ-CMPCPTLAYOUT | reviewed with 12 — 13 single-rung points, not derivable |
+| 19 | `cptpow_*` | 12 | 12 | 0 | OQ-CMPCPTLAYOUT | reviewed with 12 — ** adjacency worth 40, tier 3 left alone |
 | 20 | `cptdest_*` | 12 | 12 | 0 | OQ-CPTARRANGE | pending |
 | 21 | `alarmbits_*` | 12 | 12 | 0 | OQ-ALARMDEF | pending |
 | 22 | `cptpos_*` | 9 | 9 | 0 | OQ-CPTARRANGE | pending |
@@ -569,4 +569,53 @@ constants on five points, in the one family where member count and hidden backin
 SINTs cannot be separated. That is the move that gave the AOI definition four
 overlapping terms. It needs a member-count sweep with no BOOL members; the corpus
 has exactly one such point.
+
+
+## Segment 12 — `cpttier_*`, OQ-CMPCPTLAYOUT: CLOSED
+
+22 files, all captured. Reviewed alongside segments 18 (`cmpfl_*`) and 19
+(`cptpow_*`), which own the same question, because the three only make sense read
+together.
+
+**`per_extra_same_tier_operand` was only ever a TIER-1 rate.** Its 24 came from
+`cptcx_operandcount_n01..n10`, which uses the same ADD operator throughout, and it
+was applied to every uniform-tier expression. The same pattern as five other
+constants this batch has corrected: measured on one arm, applied to all.
+
+| MUL/DIV/MOD operators | engine (24) | real | under-charge |
+|---:|---:|---:|---:|
+| 1 | 140 | 140 | 0 |
+| 3 | 188 | 220 | **+32** |
+| 4 | 212 | 260 | **+48** |
+
+16 per operator beyond the first, and a single tier-2 operator is already exact,
+which pins the intercept: the tier-2 rate is 24 + 16 = **40**. Exact at both
+counts and both rung counts.
+
+| | before | after |
+|---|---:|---:|
+| `cpttier_*` exact | 10 of 22 | **14 of 22** |
+| `cpttier_*` within ±8 | 14 | **18** |
+| corpus mean abs error | 1.544% | 1.538% |
+| real programs, mean abs error | 1.605% | 1.601% |
+
+**Tier 3 is deliberately left on the tier-1 fallback**, and segment 19 is why:
+`cptpow_p2` reads −16/rung and `cptpow_p3` −12/rung while `cptpow_p2_adjacent`
+reads **+24/rung** — the same two `**` operators, differing only in adjacency. Two
+shapes at one operator count 40 bytes apart means adjacency of `**` is its own
+unmodelled term, and any uniform tier-3 rate would fit one and break the other.
+`cptpow_p1`, `p1_t1x1` and `p1_t2x1` are exact, so one `**` alone or mixed with one
+other tier is already right.
+
+**What is left in the two-tier mix is ±4 and below the band.** The only non-exact
+rows sit at exactly +4/rung: the two non-nested mixes with tier-1 count exactly 2,
+plus one nested shape whose twin is 0 and one whose twin is also +4. As a
+tier-1-count effect that is 2 of 5 shapes; as a nesting effect 1 of 2. Four bytes,
+two shapes each way — recorded, not fitted.
+
+**Segment 18 is not derivable from what exists.** All 13 `cmpfl_*` rows are
+single-rung files, so each is one point with no slope: 0, 0, +8, +16, +16, +32,
++32, +48, +52, +52, +92, +108, +116. Thirteen isolated points cannot separate
+operand type from operator tier from literal count, which is exactly what this
+entry already says needs dedicated architecture rather than more raw points.
 

@@ -627,6 +627,36 @@ bytes — exactly one element — off the line through 10 and 50. See
 `docs/OPEN_QUESTIONS.md` OQ-AOIARRAYLOCALTAG; `gen_aoi_arraylocaltag2.py`
 (20 files) measures all four.
 
+## CPT extra-operand rate is PER TIER (FITTED, WIRED 2026-09-13, OQ-CMPCPTLAYOUT)
+
+`cpt_expression.per_extra_same_tier_operand` of 24 was measured on
+`cptcx_operandcount_n01..n10`, which uses the same **ADD** operator throughout --
+so it was only ever a TIER-1 rate, and it was being applied to every uniform-tier
+expression. Uniform tier-2 (MUL/DIV/MOD):
+
+| operators | engine (24) | real | under-charge |
+|---:|---:|---:|---:|
+| 1 | 140 | 140 | 0 |
+| 3 | 188 | 220 | **+32** |
+| 4 | 212 | 260 | **+48** |
+
+16 per operator beyond the first, with a single tier-2 operator already exact to
+pin the intercept, so the tier-2 rate is 24 + 16 = **40** -- wired as
+`per_extra_same_tier_by_tier_cost`, exact at both counts and both rung counts.
+Tier 1 stays 24 (`cpttier_k3_t1x3` and `k4_t1x4` were already exact).
+
+**Tier 3 (POW, 116) deliberately keeps the tier-1 fallback.** `cptpow_p2` reads
+-16/rung and `cptpow_p3` -12/rung while `cptpow_p2_adjacent` reads **+24/rung** --
+the same two `**` operators, differing only in adjacency. Two shapes at one
+operator count 40 bytes apart means adjacency of `**` is its own unmodelled term,
+and any uniform tier-3 rate would fit one shape and break the other. One `**`
+alone, or mixed with one other tier, is already exact.
+
+Remaining in the two-tier mix path: +4/rung on the two non-nested mixes with
+tier-1 count exactly 2, and on one nested shape whose twin reads 0. Four bytes,
+two shapes each way, inside the +-8 band -- recorded, not fitted. See
+OQ-CMPCPTLAYOUT.
+
 ## UDT definition member names (KNOWN, WIRED 2026-09-13, OQ-UDTMEMBERNAME)
 
 **A UDT definition's declared MEMBERS' own names cost the same 8-aligned pool an

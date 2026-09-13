@@ -355,6 +355,9 @@ class CptExpressionModel:
     three_tier_mix_base_by_remainder: dict[int, int]
     three_tier_mix_per_pow_operand: int
     real_dest: "CptRealDestModel"
+    # Per-tier override for the rate above, keyed by the operator's own tier
+    # cost. The scalar was measured on ADD alone; tier 2 is 40, not 24.
+    per_extra_same_tier_by_tier_cost: dict = field(default_factory=dict)
 
     @staticmethod
     def _normalize(op: str) -> str:
@@ -463,7 +466,9 @@ class CptExpressionModel:
             return self.base_read
         tiers = [self.operator_tier_costs[op] for op in operators]
         if len(set(tiers)) == 1:
-            return self.base_read + tiers[0] + self.per_extra_same_tier_operand * (len(operators) - 1)
+            extra = self.per_extra_same_tier_by_tier_cost.get(
+                tiers[0], self.per_extra_same_tier_operand)
+            return self.base_read + tiers[0] + extra * (len(operators) - 1)
         add_tier = self.operator_tier_costs["+"]
         mul_tier = self.operator_tier_costs["*"]
         pow_tier = self.operator_tier_costs["**"]
@@ -1272,6 +1277,10 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 base_read=raw["cpt_expression"]["base_read"],
                 operator_tier_costs=dict(raw["cpt_expression"]["operator_tier_costs"]),
                 per_extra_same_tier_operand=raw["cpt_expression"]["per_extra_same_tier_operand"],
+                per_extra_same_tier_by_tier_cost={
+                    int(k): v for k, v in raw["cpt_expression"].get(
+                        "per_extra_same_tier_by_tier_cost", {}).items()
+                },
                 two_tier_mix_base=raw["cpt_expression"]["two_tier_mix_base"],
                 two_tier_mix_per_tier1=raw["cpt_expression"]["two_tier_mix_per_tier1"],
                 two_tier_mix_per_tier2=raw["cpt_expression"]["two_tier_mix_per_tier2"],
