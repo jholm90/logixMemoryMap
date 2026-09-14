@@ -38,7 +38,7 @@ project's ±8 universal-residual band.
 | 26 | `altype_*` | 6 | 6 | 0 | OQ-AOIARRAYLOCALTAG | **CLOSED with 25 — MOTION_INSTRUCTION is the one gap** |
 | 27 | `almult_*` | 3 | 3 | 0 | OQ-AOIARRAYLOCALTAG | **CLOSED with 25 — +8 flat, in band** |
 | 28 | `aldim_*` | 3 | 3 | 0 | OQ-AOIARRAYLOCALTAG | **CLOSED with 25 — dimension is free** |
-| 29 | `uwclose_*` | 3 | 0 | 0 | OQ-VERIFINSTR | not captured |
+| 29 | `uwclose_*` | 3 | 0 | 0 | OQ-VERIFINSTR | not captured — re-stamped 2026-09-14 for resubmission (EVENT is in 4 of 16 real files) |
 | 30 | `aoi_logic_scale_*` | 4 | 4 | 3 | OQ-AOIINTERNALLOGIC | DEFERRED -- has errored rows, worked at the end |
 | 31 | `aoi_multiroutine_*` | 2 | 2 | 2 | OQ-AOIINTERNALLOGIC | DEFERRED -- has errored rows, worked at the end |
 

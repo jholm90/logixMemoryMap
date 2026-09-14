@@ -610,7 +610,10 @@ the matching footnote at the bottom, not inline.
    OQ-MODULEMARGINAL.
 
 
-    **CAPTURE ERRORS: 39 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    **CAPTURE ERRORS: 9 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    Was 39. The other 30 went on 2026-09-14 when the 28 never-converted
+    `modulesweep_*` files and both `modulerack_bender_full_program*` were
+    DISCARDED -- see the conversion-status audit in `docs/TASKS.md`.
     12 captured WITH Studio build errors, so their `actual_bytes` is
     SUSPECT rather than wrong — part of the file may never have reached the
     controller, which inflates apparent over-prediction. None of them carries
@@ -1808,7 +1811,9 @@ the matching footnote at the bottom, not inline.
 
 
 
-    **CAPTURE ERRORS: 13 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    **CAPTURE ERRORS: 7 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    Was 13; 6 went with the discarded zero-real-usage `predefprobe_*` probes on
+    2026-09-14 -- see the conversion-status audit in `docs/TASKS.md`.
     6 captured WITH Studio build errors, so their `actual_bytes` is
     SUSPECT rather than wrong — part of the file may never have reached the
     controller, which inflates apparent over-prediction. None of them carries

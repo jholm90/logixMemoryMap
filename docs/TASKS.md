@@ -590,6 +590,32 @@ direction. Both cleared for recapture.
 so never submitted rather than defective. The 9 `composite` are the existing
 "9 never-converted composite_realistic_r2" item.
 
+### Resolved 2026-09-14: 44 discarded, 11 kept and re-stamped
+
+The 55 never-converted files were triaged against the rule that a feature absent
+from `samples/local/` waits. **44 discarded and scrapped from the record** (files
+deleted, manifest rows dropped, 3,593 rows -> 3,549):
+
+| n | family | why |
+|---:|---|---|
+| 28 | `modulesweep_*` | Known-bad generator superseded by `asmclose_*`, and they are 1756-L81ES / 5069 safety variants -- outside what this project needs to predict. |
+| 6 | `predefprobe_*` | **Zero occurrences in all sixteen real programs**: OPCUA, AXIS_CONSUMED, AXIS_GENERIC_DRIVE, AXIS_SERVO, AXIS_SERVO_DRIVE, COORDINATE_SYSTEM. |
+| 5 | `platform_plateql330_*` | Segment 17 already reached its conclusion on two processors with byte-identical residuals at all five densities. A third adds nothing. |
+| 3 | `genem_dtsint_*` | Segment 7's connection law is wired and exact on 24 rows; these were the arms that turned out invalid. |
+| 2 | `modulerack_bender_full_program*` | 1756-L81ES safety, same reason as the sweeps. |
+
+**11 kept, with `ExportDate` / `ProjectCreationDate` / `LastModifiedDate` bumped
+so the conversion tooling re-picks them up.** Each earns its place on real usage:
+
+| n | files | real-file basis |
+|---:|---|---|
+| 5 | `identnamelen_task_c{04,08,16,32,40}` | The third arm of the name law. Programs and routines closed 2026-09-14; whether a Task's name follows the same step is the only part left. |
+| 3 | `uwclose_event_n{00010,00100,01000}` | `EVENT` appears in **4 of 16** real programs. |
+| 3 | `predefprobe_{ref_to_axis_cip_drive,ref_to_axis_virtual,timer_t}` | AXIS_CIP_DRIVE in 5 of 16, AXIS_VIRTUAL in 3 of 16, TIMER instructions in 6 of 16. |
+
+All 11 are lint-clean, so they need the raw Studio error-log line — which is what
+the re-stamp is for.
+
 ### Tooling gap worth closing
 
 The conversion harness should capture the real Studio error-log line per file,
