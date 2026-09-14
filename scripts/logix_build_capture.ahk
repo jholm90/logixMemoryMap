@@ -302,7 +302,7 @@ Status(msg) {
         ; --- Wait for PowerShell's next-file handoff (file existence = "go") ---
         Status("Waiting for next file from PowerShell...")
         while !FileExist(OPEN_REQUEST_PATH)
-            Sleep 500
+            Sleep 50
         FileDelete OPEN_REQUEST_PATH   ; consumed -- PowerShell won't write a new one until this is gone
 
         ; Explicitly grab focus onto Logix Designer -- whatever last had
@@ -440,7 +440,7 @@ Status(msg) {
             Sleep 50
             Status("b")
             Send "b"
-            Sleep 300
+            Sleep 10
 
             buildPopupTitle := "Building"
             maxAppearSeconds := 120   ; a big file can take minutes just to START
