@@ -2985,7 +2985,15 @@ the matching footnote at the bottom, not inline.
     paragraph raised is implemented and measured above; it changes nothing on
     any of the sixteen.
 
-33. **OQ-ALARMDEF** — datatype-level alarm definitions. **RESOLVED except one
+33. **OQ-ALARMDEF** — **PARKED 2026-09-14, not closed. Zero ALMD / ALMA /
+    ALARM_DIGITAL / ALARM_ANALOG occurrences across all sixteen real programs**,
+    verified by direct grep. Nothing in this entry can move real prediction
+    error, so it waits behind everything that can, and no further alarm test
+    files are to be generated. The `almd_*`, `alarmbits_*`, `alarmdef_*` and
+    `alarmsep_*` families are parked with it. Revisit when real-file error is
+    under 1% or a real program starts using the instruction.
+
+    Datatype-level alarm definitions. **RESOLVED except one
     term, 2026-09-12, by reading the 68 `alarmdef_*` and 33 `alarmsep_*` rows
     TOGETHER for the first time. They collapse to a single law, and that law
     disproves what this entry previously recorded.**

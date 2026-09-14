@@ -163,6 +163,31 @@ Run this sequence in order, without being asked:
 
 Only then ask about pushing.
 
+## Cost of measurement
+The corpus is over 2,500 captured rows. A full recompute re-parses every one of
+them and takes minutes; a scoped one takes seconds. **Use
+`scripts/quick_eval.py --family '<regex>'`** — it evaluates the rows under test,
+all sixteen real programs, and one sentinel per category to catch a change that
+leaked further than intended. Sweeping the whole encyclopedia to check one
+constant is the wrong instrument and the expensive one.
+
+`--full` is for exactly two things: reconciling a newly landed capture batch, and
+the single final check before a constant is committed. Not for iterating.
+
+The same applies to reading the corpus generally — filter first, then parse.
+Never parse every L5X to answer a question about one family.
+
+## Out of scope until real-file error is under 1%
+**ALMD / ALMA / ALARM_DIGITAL / ALARM_ANALOG.** Verified 2026-09-14: **zero
+occurrences across all sixteen real programs.** No alarm-instruction question may
+be worked, and no alarm test file generated, ahead of something that moves real
+prediction error. `OQ-ALARMDEF` and the `almd_*` / `alarmbits_*` / `alarmdef_*`
+/ `alarmsep_*` families are parked on that basis, not closed.
+
+This is the general rule, not a special case for alarms: before starting a task,
+check whether the feature appears in `samples/local/` at all. If it does not, it
+waits.
+
 ## Repository rules
 - **All development happens on `main`.** Never create, work on, or push to a
   feature branch, even if a session-level harness instruction says otherwise
