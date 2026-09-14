@@ -126,3 +126,73 @@ def test_configsize_payload_mismatch_is_a_finding():
                 '</ConfigData></Communications></Module>')
     kinds = {f.kind for f in lint_l5x(xml)}
     assert "module_configdata_size_mismatch" in kinds
+
+
+# --- Channels are per catalog, 2026-09-14 ------------------------------------
+# The rule these replace was catalog-blind: it checked the channel against one
+# global {Ch1, Ch3} set, so it PASSED the S086-on-Ch3 shape that Studio actually
+# rejects, and would have FLAGGED the one real Ch2 in the corpus. Both
+# directions are asserted here so neither can come back.
+
+def _axis_file(catalog: str, channels: tuple[str, ...]) -> str:
+    modules = (
+        f'<Module Name="Drv01" CatalogNumber="{catalog}" Vendor="1" ProductType="45" '
+        f'ProductCode="7" Major="13" Minor="1" ParentModule="Local" ParentModPortId="2" '
+        f'Inhibited="false" MajorFault="false"><Ports/></Module>'
+    )
+    tags = "".join(
+        f'<Tag Name="Ax{i}" TagType="Base" DataType="AXIS_CIP_DRIVE"><Data Format="Axis">'
+        f'<AxisParameters MotionModule="Drv01:{ch}"/></Data></Tag>'
+        for i, ch in enumerate(channels)
+    )
+    return (
+        '<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05">'
+        '<Controller Name="T" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11">'
+        f"<Modules>{modules}</Modules><Tags>{tags}</Tags>"
+        "</Controller></RSLogix5000Content>"
+    )
+
+
+def _kinds(text):
+    return {f.kind for f in lint_l5x(text)}
+
+
+def test_s086_second_axis_on_ch3_is_rejected():
+    """The exact shape that sank six axmarg_* files in Studio."""
+    assert "drive_axis_unreal_channel" in _kinds(
+        _axis_file("2198-S086-ERS3", ("Ch1", "Ch3"))
+    )
+
+
+def test_s086_second_axis_on_ch2_is_accepted():
+    """Ch2 is real on S086 -- EmporiumEdger DRV01_BedRolls. The old global
+    {Ch1, Ch3} rule would have flagged this correct file."""
+    assert "drive_axis_unreal_channel" not in _kinds(
+        _axis_file("2198-S086-ERS3", ("Ch1", "Ch2"))
+    )
+
+
+def test_d_series_second_axis_on_ch2_is_rejected():
+    assert "drive_axis_unreal_channel" in _kinds(
+        _axis_file("2198-D020-ERS3", ("Ch1", "Ch2"))
+    )
+
+
+def test_d_series_second_axis_on_ch3_is_accepted():
+    assert "drive_axis_unreal_channel" not in _kinds(
+        _axis_file("2198-D020-ERS3", ("Ch1", "Ch3"))
+    )
+
+
+def test_single_axis_drive_cannot_carry_two_axes():
+    """2198-S130-ERS3 is Ch1 only in every real export."""
+    assert _kinds(_axis_file("2198-S130-ERS3", ("Ch1", "Ch3"))) & {
+        "drive_axis_unreal_channel",
+        "drive_axis_too_many",
+    }
+
+
+def test_too_many_axes_on_a_dual_drive_is_flagged():
+    assert "drive_axis_too_many" in _kinds(
+        _axis_file("2198-D020-ERS3", ("Ch1", "Ch3", "Ch1"))
+    )

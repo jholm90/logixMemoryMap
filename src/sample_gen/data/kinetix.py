@@ -50,6 +50,49 @@ from __future__ import annotations
 # - the object's value does not match its data type" while D012 (Major 14, and
 # correctly paired) imported clean. Each Major below is now the revision its own
 # stored payload was read from; lint.py enforces the pairing.
+# catalog -> (channels its axes may use, max axes on one module).
+#
+# READ OUT OF EVERY 2198 MODULE IN THE REAL CORPUS 2026-09-14, with the
+# reference count behind each channel. This is per CATALOG: there is no global
+# "a 2198 drive uses Ch1 and Ch3" rule, and believing there was is what shipped
+# six broken axmarg_* files. Studio rejects a wrong channel with "Invalid
+# channel/node for motion module".
+#
+#   2198-D012-ERS3   Ch1 x64  Ch3 x54                 2 axes
+#   2198-D020-ERS3   Ch1 x112 Ch3 x114                2 axes
+#   2198-D032-ERS3   Ch1 x69  Ch3 x61                 2 axes
+#   2198-D057-ERS3   Ch1 x46  Ch3 x44  Ch4 x4         3 axes
+#   2198-S086-ERS3   Ch1 x35  Ch2 x1                  2 axes
+#   2198-S130-ERS3   Ch1 x8                           1 axis
+#   2198-C4004-ERS / -H008-ERS / -P031 / -P070 / -P141 / -P208 / -RP200
+#                    Ch1 only                         1 axis
+#
+# Two things this kills. The D-series second axis is Ch3, NOT Ch2. But
+# 2198-S086-ERS3 -- the only S-series drive that ever carries two axes -- uses
+# Ch1/Ch2 and never Ch3. So a channel is only legal relative to its catalog, and
+# a rule written from the D-series alone passes S086-on-Ch3, which is exactly
+# the shape Studio refuses.
+#
+# The single Ch2 reference is EmporiumEdger DRV01_BedRolls at Major 13, and the
+# four Ch4 references are one 2198-D057-ERS3 carrying three axes. Both are real
+# and both are rare; neither is a licence to invent a channel for a catalog that
+# has never been seen using it.
+DRIVE_CHANNELS: dict[str, tuple[frozenset[str], int]] = {
+    '2198-C4004-ERS': (frozenset({'Ch1'}), 1),
+    '2198-D012-ERS3': (frozenset({'Ch1', 'Ch3'}), 2),
+    '2198-D020-ERS3': (frozenset({'Ch1', 'Ch3'}), 2),
+    '2198-D032-ERS3': (frozenset({'Ch1', 'Ch3'}), 2),
+    '2198-D057-ERS3': (frozenset({'Ch1', 'Ch3', 'Ch4'}), 3),
+    '2198-H008-ERS': (frozenset({'Ch1'}), 1),
+    '2198-P031': (frozenset({'Ch1'}), 1),
+    '2198-P070': (frozenset({'Ch1'}), 1),
+    '2198-P141': (frozenset({'Ch1'}), 1),
+    '2198-P208': (frozenset({'Ch1'}), 1),
+    '2198-RP200': (frozenset({'Ch1'}), 1),
+    '2198-S086-ERS3': (frozenset({'Ch1', 'Ch2'}), 2),
+    '2198-S130-ERS3': (frozenset({'Ch1'}), 1),
+}
+
 MODULE_IDENTITY: dict[str, tuple[str, str, str, str, str]] = {
     '2198-C4004-ERS': ('1', '37', '78', '13', '1'),   # attested 1x
     '2198-D012-ERS3': ('1', '45', '11', '14', '1'),   # attested 18x

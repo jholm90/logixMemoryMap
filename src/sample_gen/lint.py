@@ -103,7 +103,12 @@ from __future__ import annotations
 import re
 import xml.etree.ElementTree as ET
 
-from sample_gen.data.kinetix import CONFIG_DATA, MODULE_IDENTITY, REAL_CONFIG_PAIRS
+from sample_gen.data.kinetix import (
+    CONFIG_DATA,
+    DRIVE_CHANNELS,
+    MODULE_IDENTITY,
+    REAL_CONFIG_PAIRS,
+)
 from dataclasses import dataclass
 
 # Every native instruction mnemonic this project has confirmed real via
@@ -1235,26 +1240,65 @@ def _kinetix_converter_axis_findings(root: ET.Element) -> list[LintFinding]:
 
 
 def _drive_axis_channel_findings(root: ET.Element) -> list[LintFinding]:
-    """A 2198 drive's axes sit on Ch1 and Ch3, never Ch2.
+    """Which channel an axis may sit on is a property of ITS CATALOG.
 
-    Across the three real Kinetix exports: 33 Ch1 references, 25 Ch3, and ZERO
-    Ch2. A dual-axis drive's second axis is Ch3.
+    2026-09-14, REPLACING A CATALOG-BLIND RULE THAT DID NOT CATCH THE BUG IT
+    EXISTED FOR. This used to check the channel string against one global set
+    {Ch1, Ch3} taken from three D-series exports, with the docstring asserting
+    "never Ch2". Both halves were wrong:
+
+      * It PASSED 2198-S086-ERS3 axes on Ch3 -- Ch3 is in the global set, just
+        not for that catalog -- which is the exact shape Studio rejected in six
+        axmarg_* files with "Invalid channel/node for motion module".
+      * It would have FLAGGED a correct S086 on Ch2, the one real Ch2 in the
+        whole corpus.
+
+    Now keyed on catalog from DRIVE_CHANNELS (sample_gen/data/kinetix.py), which
+    also carries the maximum axis count per module, so riding three axes on a
+    two-axis drive is caught as well. An unknown 2198 catalog is reported rather
+    than passed, because passing is how the last gap stayed open.
     """
-    bad = sorted({
-        module_channel for el in root.iter("AxisParameters")
-        if (ref := el.get("MotionModule") or "") and ":" in ref
-        and (module_channel := ref) and ref.rsplit(":", 1)[1] not in _REAL_DRIVE_CHANNELS
-        and ref.rsplit(":", 1)[1].startswith("Ch")
-    })
-    if not bad:
-        return []
-    return [LintFinding(
-        "drive_axis_unreal_channel",
-        "axis tag(s) pointed at %s. A real 2198 D-series drive's axes are on Ch1 and Ch3. "
-        "Ch2 is real but ONLY on 2198-S086-ERS3 (one instance in the corpus, "
-        "EmporiumEdger DRV01_BedRolls at Major 13); no D-series drive anywhere uses it, "
-        "and no catalog mixes the two schemes." % ", ".join(bad),
-    )]
+    findings: list[LintFinding] = []
+    catalog_of = {
+        m.get("Name"): (m.get("CatalogNumber") or "") for m in root.iter("Module")
+    }
+    per_module: dict[str, list[str]] = {}
+    for el in root.iter("AxisParameters"):
+        ref = el.get("MotionModule") or ""
+        if ":" not in ref:
+            continue
+        module, _, channel = ref.rpartition(":")
+        per_module.setdefault(module, []).append(channel)
+
+    for module, channels in sorted(per_module.items()):
+        catalog = catalog_of.get(module, "")
+        if not catalog.startswith("2198"):
+            continue
+        known = DRIVE_CHANNELS.get(catalog)
+        if known is None:
+            findings.append(LintFinding(
+                "drive_axis_unknown_catalog",
+                f"Module {module} ({catalog}) carries axes but has no entry in "
+                f"DRIVE_CHANNELS. Add it from a real export -- do not assume it "
+                f"shares another catalog's channel scheme.",
+            ))
+            continue
+        allowed, max_axes = known
+        for channel in sorted(set(channels) - allowed):
+            findings.append(LintFinding(
+                "drive_axis_unreal_channel",
+                f"Module {module} ({catalog}) has an axis on {channel}. Every real "
+                f"{catalog} in the corpus uses {sorted(allowed)} and nothing else. "
+                f"Channels are per-catalog: the D-series second axis is Ch3, but "
+                f"2198-S086-ERS3's is Ch2.",
+            ))
+        if len(channels) > max_axes:
+            findings.append(LintFinding(
+                "drive_axis_too_many",
+                f"Module {module} ({catalog}) carries {len(channels)} axes. The most "
+                f"any real {catalog} carries is {max_axes}.",
+            ))
+    return findings
 
 
 # Major revision -> ConfigSize, for 2198 DRIVES only (supplies are 376 at every

@@ -565,6 +565,31 @@ Retired by the ladder, do not spend on these:
 - **The empty-project baseline constant.** It is byte-exact on every generated
   empty file; the real-shell gap is unpriced content, not a wrong constant.
 
+### Added 2026-09-14 (Kinetix guards made catalog-aware; 163 stale files found)
+
+The channel guard that was supposed to prevent the axmarg failure **existed and
+did not fire**, because it was written from three D-series exports and
+generalised into one global {Ch1, Ch3} set. It passed S086-on-Ch3 (the shape
+Studio rejects) and would have flagged the one real Ch2 in the corpus. Replaced
+with a per-catalog table (`DRIVE_CHANNELS` in `sample_gen/data/kinetix.py`) plus
+six regression tests asserting both directions.
+
+**Found while re-linting: 163 of the 310 generated files containing a 2198
+module still fail lint, and none of it is new.** Breakdown by family:
+`composite_realistic_v4` 74, `composite_realistic_v3` 50, `v3abl_*` 8, plus
+scattered others. The findings are `chassis_size_mismatch` (136),
+`module_configdata_size_mismatch` (135) and `module_identity_mismatch` (76) --
+e.g. `composite_realistic_v4_005` carries ProductCode 11 (D012's) on a
+2198-D020-ERS3. These families were generated before the 2026-09-13 identity fix
+and were never regenerated, so they still carry the original defect.
+
+Zero `drive_axis_unreal_channel` and zero `drive_axis_too_many` findings anywhere,
+so the new rule does not false-positive and the 32-file batch is clean.
+
+Not regenerated here: `v3abl_*` is the BLOCKED segment-24 family and
+`composite_realistic_v3/v4` carry captured rows whose predictions would move.
+Both need a decision before they are rebuilt.
+
 ### Added 2026-09-14 (per-program strip: the two batches disagree)
 
 **STOP WIRING ANYTHING FROM ELMSDALE.** The nine per-program variants and the
