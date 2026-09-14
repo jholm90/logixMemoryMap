@@ -532,14 +532,24 @@ says to do next:
    with `Trends`/`DataLogs`/`QuickWatchLists` populated. Worth 0.2–0.6% of real
    error across all sixteen files and it is the cheapest item on the board.
    SPEC ONLY until asked — CLAUDE.md step 7.
-3. **Capture `Elmsdale_NoProgramLogic.L5X`. The file already exists; it has
-   never been given a number.** It keeps all 9 programs and all 63 program tags
-   while cutting routines 59 → 3, so `NoAlarms → NoProgramLogic` isolates 56
-   routines and 962 rungs of pure ladder, and `NoProgramLogic → NoLogic`
-   isolates the 9 program shells. That splits Elmsdale's bundled logic step
-   with no new file. Griffin needs no equivalent for program tags — its source
-   export has **zero** program tags in all 11 programs — but a Griffin twin
-   would still split its 11 program shells from its 1,519 rungs.
+3. ~~Capture `Elmsdale_NoProgramLogic.L5X`.~~ **DONE 2026-09-14: 760,800
+   against 722,288 predicted.** The split says program shells and program tags
+   are not the problem — the sub-step carrying all 9 shells and all 63 program
+   tags lands **−156 on 26,812**. All −29,520 of the over-charge is in the 56
+   machine-logic routines, at +20.5% per rung, while the 3 alarm/message
+   routines in the same program price at +0.8%. Content-dependent, so no global
+   multiplier can fix it.
+
+   **The instrument that follows from this is a PER-PROGRAM strip of Elmsdale,
+   not another category ladder.** Nine programs, nine equations, nine different
+   real logic mixes, and the engine's per-routine predicted bytes are already
+   known for all 59 routines. Same export, cut a different way, nothing
+   generated. Roster (strip one program's routines at a time, keep everything
+   else): `TiltHoist` (21 routines), `TiltHoist_Infeed` (10), `Housekeeping`
+   (5), `TiltHoist_Outfeed` (5), `Inputs` (4), `Outputs` (4), `InfeedData` (4),
+   `PlanerInterface` (3). `AlarmsAndMessages` is already measured by sub-step B.
+   Eight files, and the four smallest alone would test whether the over-charge
+   tracks JSR/SBR content.
 4. **A third ladder, on a program that OVER-predicts.** Both captured ladders
    disagree in sign on three of seven categories. `emporiumedger_20250905r1`
    (−2.077%) or `salamanca_20250425r00` (−1.475%) would say which of the two

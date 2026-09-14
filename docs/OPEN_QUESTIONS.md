@@ -2056,18 +2056,60 @@ the matching footnote at the bottom, not inline.
     programs with more ladder also have more of whatever the real term is — not
     a cause. **Do not fit a logic scale-up. The hypothesis is dead.**
 
-    Caveat that bounds how much this step can be pushed on: both `NoLogic`
-    files contain **zero `<Program>` elements**, so the step bundles program
-    shells, routines and rungs into one number and cannot separate them.
-
     Program tags are NOT a confound on Griffin, and the source file says so:
     `Griffin_StackerLine_1Mar25_r00.L5X` has **zero program tags in all 11
-    programs** — every tag in that program is controller-scoped. Nothing was
-    lost that could have been kept. Elmsdale does carry 63 program tags across
-    3 of its 9 programs (`InfeedData` 33, `TiltHoist` 21, `PlanerInterface` 9),
-    and `Elmsdale_NoProgramLogic.L5X` already exists and **keeps all 63 while
-    cutting routines 59 → 3** — it is the clean intermediate and it is simply
-    uncaptured.
+    programs** — every tag in that program is controller-scoped. Elmsdale does
+    carry 63 program tags across 3 of its 9 programs (`InfeedData` 33,
+    `TiltHoist` 21, `PlanerInterface` 9).
+
+    **THE LOGIC STEP IS NOW SPLIT, captured 2026-09-14.**
+    `Elmsdale_NoProgramLogic.L5X` keeps all 9 programs and all 63 program tags
+    and cuts routines 59 → 3, and it reads **760,800 against 722,288 predicted**.
+    That places an intermediate rung inside the bundled step:
+
+    | | actual | predicted | residual |
+    |---|---:|---:|---:|
+    | `NoAlarms` | 904,856 | 895,864 | +8,992 |
+    | `NoProgramLogic` | 760,800 | 722,288 | **+38,512** |
+    | `NoLogic` | 733,988 | 695,320 | +38,668 |
+
+    | sub-step | what it removes | actual | predicted | engine |
+    |---|---|---:|---:|---:|
+    | A | 56 routines, 962 rungs | 144,056 | 173,576 | **−29,520** |
+    | B | 9 program shells, 63 program tags, 3 routines, 114 rungs | 26,812 | 26,968 | **−156** |
+
+    **Sub-step B is effectively exact — 0.6% on a 26,812-byte step — and it
+    carries every program shell and every program tag in the file.** The
+    engine charges 6,688 for the 63 program tags, 20,280 of `routine_logic` for
+    the 3 routines, and **zero for the 9 program shells**. Landing within 156
+    says program shells really are free at this level and program-tag pricing is
+    right. Neither is where the error is.
+
+    **All of the over-charge is in sub-step A, and it is content-dependent, not
+    a scale factor.** Per rung:
+
+        sub-step A (56 machine-logic routines)   180.4 predicted   149.7 actual   +20.5%
+        sub-step B (3 alarm/message routines)    177.9 predicted   176.5 actual    +0.8%
+
+    Per instruction use, 42.5 predicted against 34.8 actual in A, and 33.3
+    against 33.0 in B. Two sets of real rungs out of one real program, one
+    priced almost exactly and the other 20% over. **That kills a global
+    `routine_logic` multiplier for the third time** — after the 578 `logic_instr`
+    rows and after the two-file ladder — because any multiplier that fixes A
+    breaks B.
+
+    The instruction mixes do not obviously explain it; both sets are dominated
+    by XIC/MOV/OTE/XIO. What differs: A averages 3.98 instruction uses per rung
+    against B's 5.34, and A contains all 54 JSRs and all 65 NOPs in the file
+    while B contains none. A also holds every `_SBR_*` subroutine and the cam
+    routines (`_SBR_LevellingCalcs` alone is 13,924 predicted, the largest
+    single routine in the program).
+
+    **What this says about the next instrument.** Another category ladder adds
+    one equation. A **per-program** strip of Elmsdale adds nine, over nine
+    different real logic mixes with per-routine predicted bytes already known
+    for each. That is the discriminating measurement now, and it is the same
+    export cut a different way rather than anything generated.
 
     **TAG-BASED ALARMS ARE THE SECOND-LARGEST CATEGORY IN BOTH REAL FILES, and
     they are not the parked ALMD/ALMA question.** The alarms step removes
