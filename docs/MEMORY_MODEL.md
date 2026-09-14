@@ -1436,6 +1436,11 @@ condition hangs off a single BOOL array tag with `Input="[n]"`.
 
 **Scale matters more than the error does: this is 19% and 21% of total
 controller memory respectively — the second-largest category in both files.**
+
+Distinct from a scheduled program named for alarms. Elmsdale carries both: 200
+controller Alarm Manager conditions, and an `AlarmsAndMessages` program of
+ordinary ladder. They are measured by different strip files and never
+double-count.
 Any statement that alarms are out of scope applies to the ALMD/ALMA
 *instructions* (zero occurrences in the real set) and not to these. The
 unexplained 107 bytes per condition is OQ-ALARMCONDREAL.

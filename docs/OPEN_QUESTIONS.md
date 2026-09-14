@@ -2034,7 +2034,7 @@ the matching footnote at the bottom, not inline.
 
     | category removed | Elmsdale | Griffin |
     |---|---:|---:|
-    | tag-based alarms | **+21,440** | +728 |
+    | controller-scope Alarm Manager alarms | **+21,440** | +728 |
     | programs + program tags + routines + rungs | **−29,676** | **−9,220** |
     | modules | +18,076 | **−15,580** |
     | axis / motion | +7,928 | **0 — exact** |
@@ -2079,7 +2079,10 @@ the matching footnote at the bottom, not inline.
     | B | 9 program shells, 63 program tags, 3 routines, 114 rungs | 26,812 | 26,968 | **−156** |
 
     **Sub-step B is effectively exact — 0.6% on a 26,812-byte step — and it
-    carries every program shell and every program tag in the file.** The
+    carries every program shell and every program tag in the file.** The 3
+    routines it removes are the `AlarmsAndMessages` **program's** routines —
+    ordinary scheduled ladder, unrelated to the controller-scope Alarm Manager
+    definitions removed by the `NoAlarms` rung. The
     engine charges 6,688 for the 63 program tags, 20,280 of `routine_logic` for
     the 3 routines, and **zero for the 9 program shells**. Landing within 156
     says program shells really are free at this level and program-tag pricing is
@@ -2088,8 +2091,8 @@ the matching footnote at the bottom, not inline.
     **All of the over-charge is in sub-step A, and it is content-dependent, not
     a scale factor.** Per rung:
 
-        sub-step A (56 machine-logic routines)   180.4 predicted   149.7 actual   +20.5%
-        sub-step B (3 alarm/message routines)    177.9 predicted   176.5 actual    +0.8%
+        sub-step A (56 machine-logic routines)          180.4 pred   149.7 act   +20.5%
+        sub-step B (AlarmsAndMessages' 3 routines)      177.9 pred   176.5 act    +0.8%
 
     Per instruction use, 42.5 predicted against 34.8 actual in A, and 33.3
     against 33.0 in B. Two sets of real rungs out of one real program, one
@@ -3962,8 +3965,17 @@ the matching footnote at the bottom, not inline.
     `AlarmConditions` container are the **only** elements that differ — no tags,
     rungs, routines, programs, UDTs or AOIs moved.
 
-    These are controller-scope **Alarm Manager** alarms. Only the alarm
-    definitions were stripped; the associated tags remain in the `NoAlarms`
+    These are controller-scope **Alarm Manager** alarms, and they must not be
+    confused with a scheduled program that happens to be named for alarms.
+    Elmsdale has both: 200 controller Alarm Manager conditions, and a separate
+    `AlarmsAndMessages` **program** of ordinary ladder whose
+    `TiltHoist_Alarms` routine makes 161 references to `Alarms_TiltHoist`. The
+    two are measured by different files and never double-count — `NoAlarms`
+    strips the definitions and keeps the program, the per-program `NoAlarmMsg`
+    strips the program and keeps the definitions, and because the associated
+    array is a CONTROLLER tag neither strip leaves a dangling reference.
+
+    Only the alarm definitions were stripped; the associated tags remain in the `NoAlarms`
     files as ordinary controller tags, so their data cost is NOT inside this
     step. `alarm_conditions` prices the definitions 800 + 500n + an
     associated-tag term keyed on each `AssocTag1/2/3` target's resolved type.
@@ -4088,7 +4100,7 @@ the matching footnote at the bottom, not inline.
     | `InfeedData` | 4 | 31 | 36,488 | 19,160 | +17,328 |
     | `PlanerInterface` | 3 | 21 | 26,376 | 9,932 | +16,444 |
     | `Housekeeping` | 5 | 27 | 25,508 | 9,280 | +16,228 |
-    | `AlarmsAndMessages` | 3 | 114 | 36,324 | 20,764 | +15,560 |
+    | `AlarmsAndMessages` (the program) | 3 | 114 | 36,324 | 20,764 | +15,560 |
 
     **Those sum to +167,204 against a whole-file residual of +30,432 — 5.5x
     too much.** A per-program cost cannot behave that way. A 3-routine program
@@ -4134,10 +4146,12 @@ the matching footnote at the bottom, not inline.
     (760,800) and `NoLogic` (733,988) imply the engine OVER-charges program
     content by 29,676, while the rebased per-program batch implies it is right
     to within about +4,950 in total. Those differ by roughly 34,600. Also
-    unexplained: removing the whole `AlarmsAndMessages` program costs 36,324
-    actual, while removing its 3 routines **and** all 63 program tags **and**
-    all 9 program shells costs 26,812 — strictly more content for strictly less
-    memory, which no monotone cost model permits.
+    unexplained: removing the whole `AlarmsAndMessages` **program** costs
+    36,324 actual, while removing its same 3 routines **and** all 63 program
+    tags **and** all 9 program shells costs 26,812 — strictly more content for
+    strictly less memory, which no monotone cost model permits. (Neither of
+    those touches the controller Alarm Manager, which is stripped by a
+    different file.)
 
     So one of the two capture sessions carries an error of 18,000–25,000 and
     the arithmetic cannot say which. **Every Elmsdale conclusion in

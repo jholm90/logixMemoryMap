@@ -208,6 +208,12 @@ programs stripped (443,128 bytes over 400 conditions, 243,040 over 200). They
 are the second-largest category in both files. See `OQ-ALARMCONDREAL`. Do not
 let the ALMD park above be cited against them; it was, for two days.
 
+Three separate things share the word "alarm" here and must never be reported as
+one: the **ALMD/ALMA instructions** (parked, absent from the real set), the
+**controller-scope Alarm Manager** `<AlarmCondition>` definitions (the 19–21%
+above), and an ordinary scheduled **program** named for alarms, such as
+Elmsdale's `AlarmsAndMessages`. They are measured by different files.
+
 This is the general rule, not a special case for alarms: before starting a task,
 check whether the feature appears in `samples/local/` at all. If it does not, it
 waits.
