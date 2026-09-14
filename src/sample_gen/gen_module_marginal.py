@@ -104,6 +104,7 @@ from sample_gen.gen_assumed_closeout import (
 from sample_gen.gen_module_motion import (
     _MOTION_GROUP_TAG_XML,
     _axis_tag,
+    bus_supply_with_converter,
     _drive_module_xml,
 )
 from sample_gen.gen_module_sweep import _MODULE_CHAINS
@@ -269,9 +270,14 @@ def arm_a_n8() -> int:
     """n=8 for every catalog that already has n=1/2/4 on record."""
     n = 0
     for catalog in sorted(_ERS3_CATALOGS):
+        # Same bus-supply fix as the n=1/2/4 sweep in gen_assumed_closeout, so
+        # n=8 stays differenceable against them. See that comment.
+        supply_module, _converter = bus_supply_with_converter()
         blocks = "\n".join(
-            _drive_module_xml(f"Drv{i + 1}", catalog, "false", address=f"192.168.1.{20 + i}")
-            for i in range(ARM_A_COUNT)
+            [supply_module]
+            + [_drive_module_xml(f"Drv{i + 1}", catalog, "false",
+                                 address=f"192.168.1.{20 + i}")
+               for i in range(ARM_A_COUNT)]
         )
         target = ("AsmDrv" + "".join(c for c in catalog if c.isalnum())[:14])[:24]
         l5x = build_l5x(target_name=target, tags_xml="", extra_modules_xml=blocks)
@@ -369,12 +375,20 @@ def arm_c_drive_with_axis() -> int:
     n = 0
     for catalog, counts in (("2198-D012-ERS3", (1, 2, 4, 8)), ("2198-S086-ERS3", (1, 2))):
         for copies in counts:
+            # FIXED 2026-09-14: every one of this arm's six captures carried a
+            # Studio build error, one per drive module, because the file had no
+            # 2198 bus supply and no converter axis. A drive with no bus power in
+            # its sharing group fails Build while the file still converts, so
+            # actual_bytes came from a project missing part of what it measured.
+            supply_module, converter_axis = bus_supply_with_converter()
             modules = "\n".join(
-                _drive_module_xml(f"Drv{i + 1}", catalog, "false", address=f"192.168.1.{20 + i}")
-                for i in range(copies)
+                [supply_module]
+                + [_drive_module_xml(f"Drv{i + 1}", catalog, "false",
+                                     address=f"192.168.1.{20 + i}")
+                   for i in range(copies)]
             )
             tags = "\n".join(
-                [_MOTION_GROUP_TAG_XML]
+                [_MOTION_GROUP_TAG_XML, converter_axis]
                 + [_axis_tag(f"Ax{i + 1}", f"Drv{i + 1}:Ch1") for i in range(copies)]
             )
             slug = _slug(catalog)

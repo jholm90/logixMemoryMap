@@ -830,6 +830,13 @@ module_overhead_by_catalog:
   '5069-IY4/A': { bytes: 4040, confidence: FITTED }
   '5069-OBV8S/A': { bytes: 1915, confidence: FITTED }
   '2198-C4004-ERS': { bytes: 4065, confidence: ASSUMED }
+  # DOWNGRADED KNOWN -> ASSUMED 2026-09-14. 4,113 came from the asmclose_2198_*
+  # sweep, and those files had NO 2198-P bus supply, so Studio converted them and
+  # then failed Build on bus power once per drive module -- part of every one of
+  # them never reached the controller. That is also what the family's otherwise
+  # unexplained EXTRA flat over-charge at n=1 was. The generators are fixed and
+  # all 26 rows cleared for recapture; until that lands this number is a
+  # measurement of a project missing some of its own content.
   # The six -ERS3 drives below have NO repeat_bytes, deliberately. asmclose_*
   # measures one -- 4,113 first, 3,129 after, a 984 discount, exact at n=1/2/4/8
   # on all six -- but every asmclose file holds a BARE drive module with no axis
@@ -839,18 +846,18 @@ module_overhead_by_catalog:
   # bare-drive rate anyway was 112,176 of the 189,570 bytes the discount removed
   # from the real programs, on a family that is 4.07% of their total. See
   # module_overhead_repeat_discount and OQ-MODULEMARGINAL.
-  '2198-D012-ERS3': { bytes: 4113, confidence: KNOWN }
-  '2198-D020-ERS3': { bytes: 4113, confidence: KNOWN }
-  '2198-D032-ERS3': { bytes: 4113, confidence: KNOWN }
-  '2198-D057-ERS3': { bytes: 4113, confidence: KNOWN }
+  '2198-D012-ERS3': { bytes: 4113, confidence: ASSUMED }
+  '2198-D020-ERS3': { bytes: 4113, confidence: ASSUMED }
+  '2198-D032-ERS3': { bytes: 4113, confidence: ASSUMED }
+  '2198-D057-ERS3': { bytes: 4113, confidence: ASSUMED }
   '2198-H008-ERS': { bytes: 3629, confidence: ASSUMED }
   '2198-P031': { bytes: 3613, confidence: ASSUMED }
   '2198-P070': { bytes: 3613, confidence: ASSUMED }
   '2198-P141': { bytes: 3613, confidence: ASSUMED }
   '2198-P208': { bytes: 3589, confidence: ASSUMED }
   '2198-RP200': { bytes: 3617, confidence: ASSUMED }
-  '2198-S086-ERS3': { bytes: 4113, confidence: KNOWN }
-  '2198-S130-ERS3': { bytes: 4113, confidence: KNOWN }
+  '2198-S086-ERS3': { bytes: 4113, confidence: ASSUMED }
+  '2198-S130-ERS3': { bytes: 4113, confidence: ASSUMED }
   '2702782': { bytes: -16, confidence: ASSUMED }
   '440C-CR30-22BBB/A': { bytes: 4388, repeat_bytes: 620, confidence: KNOWN }
   '842E-CM-M': { bytes: 3633, repeat_bytes: 2633, confidence: KNOWN }

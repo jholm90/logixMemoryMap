@@ -87,6 +87,7 @@ from sample_gen.gen_axis_composite import _AXIS_VIRTUAL_TAG_XML
 from sample_gen.gen_module_motion import (
     _MOTION_GROUP_TAG_XML,
     _axis_tag,
+    bus_supply_with_converter,
     _drive_module_xml,
 )
 from sample_gen.manifest import append_manifest_row, write_sample_unmodeled
@@ -146,17 +147,23 @@ def _dual_drive_file(n_axes: int, catalogs: tuple[str, ...], name: str,
                      description: str) -> None:
     """n_axes axes riding two-per-module on dual-axis drives, catalogs cycled."""
     n_modules = (n_axes + 1) // 2
+    # FIXED 2026-09-14: every axmarg capture carried one Studio build error per
+    # drive MODULE (n02/n04/n08/n12/n20 recorded exactly 2/4/8/12/20) because the
+    # files had no 2198 bus supply and no converter axis. See
+    # gen_module_motion.bus_supply_with_converter.
+    supply_module, converter_axis = bus_supply_with_converter()
     modules = "\n".join(
-        _drive_module_xml(f"Drv{i + 1:02d}", catalogs[i % len(catalogs)], "false",
-                          address=f"192.168.1.{20 + i}")
-        for i in range(n_modules)
+        [supply_module]
+        + [_drive_module_xml(f"Drv{i + 1:02d}", catalogs[i % len(catalogs)], "false",
+                             address=f"192.168.1.{20 + i}")
+           for i in range(n_modules)]
     )
     axis_tags = []
     for i in range(n_axes):
         module_index = i // 2
         channel = "Ch1" if i % 2 == 0 else "Ch3"
         axis_tags.append(_axis_tag(f"Ax{i + 1:02d}", f"Drv{module_index + 1:02d}:{channel}"))
-    tags = "\n".join([_MOTION_GROUP_TAG_XML] + axis_tags)
+    tags = "\n".join([_MOTION_GROUP_TAG_XML, converter_axis] + axis_tags)
     _write(build_l5x(target_name=name[:24], tags_xml=tags, extra_modules_xml=modules),
            name, description)
 
@@ -201,15 +208,17 @@ def arm_catalog_crossing() -> int:
 def arm_mixed() -> int:
     n = 8
     n_modules = (n + 1) // 2
+    supply_module, converter_axis = bus_supply_with_converter()
     modules = "\n".join(
-        _drive_module_xml(f"Drv{i + 1:02d}", ONE_CATALOG, "false",
-                          address=f"192.168.1.{20 + i}")
-        for i in range(n_modules)
+        [supply_module]
+        + [_drive_module_xml(f"Drv{i + 1:02d}", ONE_CATALOG, "false",
+                             address=f"192.168.1.{20 + i}")
+           for i in range(n_modules)]
     )
     cip = [_axis_tag(f"Ax{i + 1:02d}", f"Drv{i // 2 + 1:02d}:{'Ch1' if i % 2 == 0 else 'Ch3'}")
            for i in range(n)]
     virt = [_virtual_axis_tag(f"Vax{i + 1:02d}") for i in range(n)]
-    tags = "\n".join([_MOTION_GROUP_TAG_XML] + cip + virt)
+    tags = "\n".join([_MOTION_GROUP_TAG_XML, converter_axis] + cip + virt)
     _write(
         build_l5x(target_name=f"AxMargMix{n:02d}", tags_xml=tags, extra_modules_xml=modules),
         f"axmarg_mixed_n{n:02d}",

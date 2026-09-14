@@ -2956,7 +2956,55 @@ the matching footnote at the bottom, not inline.
     the two file shapes differ by 8 somewhere outside the module term. Flagged
     rather than chased: it is 16 bytes on a 1,712-byte constant.
 
-    **CAPTURE ERRORS: 6 row(s)** flagged here by `scripts/capture_errors.py`
+    **ROOT CAUSE OF 33 ERRORED ROWS FOUND AND FIXED 2026-09-14.** A 2198 drive
+    needs its 2198-P bus supply module AND that supply's converter axis -- an
+    AXIS_CIP_DRIVE whose `AxisConfiguration` is `"Non-Regenerative AC/DC
+    Converter"`, pointed at the supply's `Ch1`. Without them Studio converts the
+    file and then fails Build, once PER DRIVE MODULE:
+
+        Primary Bus Sharing Group 1 contains a module configured as Shared DC or
+        Shared DC/DC with no module configured as Shared AC/DC or Shared DC -
+        Non-CIP Converter.
+
+    Only one of the 33 rows carried that text. The error COUNTS identified the
+    rest: `axmarg_1cat_n{02,04,08,12,20}` record exactly 2/4/8/12/20 errors, and
+    `axis_scale_n{02..20}_dual` -- the same axis counts on half as many modules --
+    record n/2 + 1. Per drive module, not per axis.
+
+    The representation is the one the `kinetix_drive_without_bus_supply` lint rule
+    said it could not check: that rule tests only for a supply MODULE, noting the
+    power group "is not an attribute of `<Module>` -- it appears nowhere in the
+    real corpus either". It is on the AXIS_CIP_DRIVE TAG.
+    `BaillieLeitchField_Edger` carries 25 `"Position Loop"` axes and 2 converters
+    (`MotionModule="BUS_601A:Ch1"`, `"BUS_601B:Ch1"`); `SJ_Gormley` 27 and 2.
+
+    **This also explains the -ERS3 family's otherwise unexplained EXTRA flat
+    over-charge at n=1** (recorded above as +6,384 for the D-series before the
+    per-extra-drive term). Those files had no bus supply either, so part of every
+    one of them never reached the controller. That is why segment 14 excluded the
+    2198 repeat rate as measured-on-a-broken-shape, and it means the six
+    `'2198-*-ERS3': { bytes: 4113, confidence: KNOWN }` first-instance entries
+    rest on the same broken captures and are **suspect, not KNOWN**.
+
+    Fixed in `gen_module_motion.bus_supply_with_converter()`, which returns both
+    halves together because needing one without the other is always a bug, and
+    applied in `gen_assumed_closeout` (the n=1/2/4 2198 sweep), `gen_module_marginal`
+    (Arm A n=8 and Arm C drive+axis), and `gen_axis_marginal`. A second real defect
+    was corrected alongside it: `gen_module_axis_scale` put a dual drive's second
+    axis on **Ch2**, and across the three real Kinetix exports there are 33 `Ch1`
+    references, 25 `Ch3` and **no `Ch2` at all**.
+
+    Two new lint rules make both unshippable: `kinetix_axis_without_converter` and
+    `drive_axis_unreal_channel`. They caught 36 and 9 committed files respectively
+    before the fix; the converter rule is down to 6 and the channel rule to 0.
+
+    **48 rows had their capture columns cleared** -- 26 `asmclose_2198_*`, 9
+    `axmarg_*`, 9 `axis_scale_*_dual*`, 6 `modmarg_drvaxis_*` (the last of which
+    was Arm C, whose whole purpose was to measure the drives WITH their axes and
+    which had failed for this exact reason). All need recapture. Nothing wired
+    regresses: the 2198 repeat rate was already excluded in segment 14.
+
+    **CAPTURE ERRORS: 0 row(s)** flagged here by `scripts/capture_errors.py`
     (step 2b) after the 616-capture merge of 2026-09-13. Suspect, not wrong:
     `actual_bytes` is filled in but part of the file may never have reached the
     controller, which reads as the model over-predicting.
@@ -3618,7 +3666,14 @@ the matching footnote at the bottom, not inline.
     assumption the data cannot support, which is the same mistake the axis
     promotion already made once today.
 
-    **CAPTURE ERRORS: 74 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    **CAPTURE ERRORS: 56 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    Was 74. **18 of them were CLEARED 2026-09-14** -- the nine `axmarg_*` drive
+    files and the nine `axis_scale_*_dual*` files -- because their content changed:
+    a 2198-P bus supply plus its converter axis were added to the first group and
+    the second group's dual-axis channel was corrected from Ch2 to Ch3. Their old
+    `actual_bytes` measured a project whose drives never got bus power, so it
+    describes content the repo no longer holds. See OQ-MODULEMARGINAL for the
+    root cause and the evidence.
     65 captured WITH Studio build errors, so their `actual_bytes` is
     SUSPECT rather than wrong — part of the file may never have reached the
     controller, which inflates apparent over-prediction. None of them carries

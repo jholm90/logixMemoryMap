@@ -1131,6 +1131,130 @@ def _kinetix_bus_supply_findings(root: ET.Element) -> list[LintFinding]:
     )]
 
 
+_CONVERTER_AXIS_CONFIG = "Non-Regenerative AC/DC Converter"
+
+
+def _kinetix_converter_axis_findings(root: ET.Element) -> list[LintFinding]:
+    """A bus-sharing group of 2198 drives needs a CONVERTER AXIS, not just a
+    supply module.
+
+    This is the rule _kinetix_bus_supply_findings above said it could not write.
+    That one checks only that a 2198-P/RP supply module exists, with the comment
+    that the power GROUP "is not an attribute of <Module> -- it appears nowhere in
+    the real corpus either". It appears on the AXIS_CIP_DRIVE TAG. Real Kinetix
+    exports carry a converter axis whose AxisParameters read
+    AxisConfiguration="Non-Regenerative AC/DC Converter" with
+    MotionModule="<the supply>:Ch1", alongside the servo axes at
+    AxisConfiguration="Position Loop" -- two of them in
+    BaillieLeitchField_Edger (25 Position Loop, 2 converters) and two in
+    SJ_Gormley (27 Position Loop, 2 converters).
+
+    Without one, Studio converts the file and then fails Build with:
+
+        Primary Bus Sharing Group 1 contains a module configured as Shared DC or
+        Shared DC/DC with no module configured as Shared AC/DC or Shared DC -
+        Non-CIP Converter.
+
+    once PER DRIVE MODULE. That is how this was identified across 33 rows that
+    had no error text: axmarg_1cat_n{02,04,08,12,20} record exactly 2/4/8/12/20
+    errors, and axis_scale_n{02..20}_dual -- same axis counts on half as many
+    modules -- record 2/3/4/5/7/9/11, i.e. n/2 + 1. Per module, not per axis.
+
+    The cost consequence is the reason it matters: the file still captures, so
+    actual_bytes is filled in from a project whose drives never got bus power,
+    and every one of those rows reads as the model over-predicting.
+    """
+    configs = [
+        el.get("AxisConfiguration") or ""
+        for el in root.iter("AxisParameters")
+    ]
+    servo = [c for c in configs if c and c != _CONVERTER_AXIS_CONFIG]
+    if not servo:
+        return []
+    if _CONVERTER_AXIS_CONFIG in configs:
+        return []
+    drives = sorted({
+        c for m in root.iter("Module")
+        if _KINETIX_DRIVE.match(c := m.get("CatalogNumber") or "")
+        and not _KINETIX_SUPPLY.match(c)
+    })
+    if not drives:
+        return []
+    return [LintFinding(
+        "kinetix_axis_without_converter",
+        f"{len(servo)} servo axis tag(s) on {', '.join(drives)} and NO converter axis "
+        f"(an AXIS_CIP_DRIVE whose AxisConfiguration is "
+        f"'{_CONVERTER_AXIS_CONFIG}', pointed at the bus supply's Ch1). Studio converts "
+        f"this and then fails Build once per drive module with 'Primary Bus Sharing Group 1 "
+        f"contains a module configured as Shared DC ... with no module configured as Shared "
+        f"AC/DC', so the capture measures a project whose drives never got bus power.",
+    )]
+
+
+_CONVERTER_AXIS_CONFIG = "Non-Regenerative AC/DC Converter"
+_REAL_DRIVE_CHANNELS = ("Ch1", "Ch3")
+
+
+def _kinetix_converter_axis_findings(root: ET.Element) -> list[LintFinding]:
+    """2198 servo axes need a CONVERTER AXIS, not just a supply module.
+
+    This is the rule _kinetix_bus_supply_findings above said it could not write.
+    That one checks only that a 2198-P/RP supply module exists, noting the power
+    GROUP "is not an attribute of <Module> -- it appears nowhere in the real
+    corpus either". It is on the AXIS_CIP_DRIVE TAG. Real Kinetix exports pair
+    their servo axes with a converter axis whose AxisParameters read
+    AxisConfiguration="Non-Regenerative AC/DC Converter" and
+    MotionModule="<the supply>:Ch1" -- 25 servo axes and 2 converters in
+    BaillieLeitchField_Edger, 27 and 2 in SJ_Gormley.
+
+    Without one Studio converts the file and then fails Build once PER DRIVE
+    MODULE with "Primary Bus Sharing Group 1 contains a module configured as
+    Shared DC ... with no module configured as Shared AC/DC". The file still
+    CAPTURES, so actual_bytes is filled in from a project whose drives never got
+    bus power, and the row reads as the model over-predicting.
+    """
+    configs = [el.get("AxisConfiguration") or "" for el in root.iter("AxisParameters")]
+    servo = [c for c in configs if c and c != _CONVERTER_AXIS_CONFIG]
+    if not servo or _CONVERTER_AXIS_CONFIG in configs:
+        return []
+    drives = sorted({
+        c for m in root.iter("Module")
+        if _KINETIX_DRIVE.match(c := m.get("CatalogNumber") or "")
+        and not _KINETIX_SUPPLY.match(c)
+    })
+    if not drives:
+        return []
+    return [LintFinding(
+        "kinetix_axis_without_converter",
+        "%d servo axis tag(s) on %s and NO converter axis (an AXIS_CIP_DRIVE whose "
+        "AxisConfiguration is '%s', pointed at the bus supply's Ch1). Studio converts this "
+        "and then fails Build once per drive module on bus sharing, so the capture measures "
+        "a project whose drives never got bus power."
+        % (len(servo), ", ".join(drives), _CONVERTER_AXIS_CONFIG),
+    )]
+
+
+def _drive_axis_channel_findings(root: ET.Element) -> list[LintFinding]:
+    """A 2198 drive's axes sit on Ch1 and Ch3, never Ch2.
+
+    Across the three real Kinetix exports: 33 Ch1 references, 25 Ch3, and ZERO
+    Ch2. A dual-axis drive's second axis is Ch3.
+    """
+    bad = sorted({
+        module_channel for el in root.iter("AxisParameters")
+        if (ref := el.get("MotionModule") or "") and ":" in ref
+        and (module_channel := ref) and ref.rsplit(":", 1)[1] not in _REAL_DRIVE_CHANNELS
+        and ref.rsplit(":", 1)[1].startswith("Ch")
+    })
+    if not bad:
+        return []
+    return [LintFinding(
+        "drive_axis_unreal_channel",
+        "axis tag(s) pointed at %s. A real 2198 drive's axes are on Ch1 and Ch3 -- the real "
+        "corpus has 33 Ch1 and 25 Ch3 references and no Ch2 at all." % ", ".join(bad),
+    )]
+
+
 def _module_configdata_findings(root: ET.Element) -> list[LintFinding]:
     """A module's ConfigSize must match its own payload, and its ProductCode
     must match its catalog.
@@ -1194,6 +1318,9 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     findings.extend(_module_slot_findings(root))
     findings.extend(_chassis_size_findings(root))
     findings.extend(_kinetix_bus_supply_findings(root))
+    findings.extend(_kinetix_converter_axis_findings(root))
+    findings.extend(_drive_axis_channel_findings(root))
+    findings.extend(_kinetix_converter_axis_findings(root))
     findings.extend(_module_configdata_findings(root))
     findings.extend(_invalid_logix_name_findings(root))
     findings.extend(_safety_module_findings(root))

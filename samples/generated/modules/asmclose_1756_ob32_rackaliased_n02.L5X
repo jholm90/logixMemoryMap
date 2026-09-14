@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="AsmClo1756OB32rack" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 10 18:01:31 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="AsmClo1756OB32rack" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 10 18:01:31 2026" LastModifiedDate="Thu Sep 10 18:01:31 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="AsmClo1756OB32rack" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Sep 14 01:11:52 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="AsmClo1756OB32rack" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Sep 14 01:11:52 2026" LastModifiedDate="Mon Sep 14 01:11:52 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -406,7 +406,7 @@
 </Communications>
 </Module>
 
-<Module Name="TestMod2_1756OB32" CatalogNumber="1756-OB32" Vendor="1" ProductType="7" ProductCode="17" Major="3" Minor="3" ParentModule="TestMod1_1756OB32" ParentModPortId="1" Inhibited="false" MajorFault="false">
+<Module Name="TestMod2_1756OB32_c1" CatalogNumber="1756-OB32" Vendor="1" ProductType="7" ProductCode="17" Major="3" Minor="3" ParentModule="TestMod1_1756OB32_c1" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="1" Address="3" Type="ICP" Upstream="true" />

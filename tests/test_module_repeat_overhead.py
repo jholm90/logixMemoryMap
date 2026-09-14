@@ -201,14 +201,21 @@ def test_an_unmeasured_catalog_keeps_paying_the_first_instance_rate(model):
 
 
 def test_the_six_2198_ers3_drives_all_cost_the_same(model):
-    """They were ASSUMED at 10,497 / 7,377 / 7,341 against a real 4,624, and
+    """They were guessed at 10,497 / 7,377 / 7,341 against a measured 4,624, and
     all six measure identically, so the per-catalog distinction between them was
-    an artifact of guessing. Correcting this is what unmasked OQ-REALUNDER."""
+    an artifact of guessing. Correcting this is what unmasked OQ-REALUNDER.
+
+    Still ASSUMED, not KNOWN, since 2026-09-14: the asmclose_2198_* files the
+    4,113 came from had NO 2198-P bus supply, so Studio converted them and then
+    failed Build on bus power once per drive module -- part of every one of them
+    never reached the controller, which is also what the family's otherwise
+    unexplained extra flat over-charge at n=1 was. The generators are fixed and
+    all 26 rows are cleared for recapture."""
     catalogs = ["2198-D012-ERS3", "2198-D020-ERS3", "2198-D032-ERS3",
                 "2198-D057-ERS3", "2198-S086-ERS3", "2198-S130-ERS3"]
     table = model.module_overhead_by_catalog
     values = {table.overhead_for(c, 1) for c in catalogs}
     assert len(values) == 1, values
     overhead, confidence = values.pop()
-    assert confidence == "KNOWN"
-    assert overhead < 7341, "must be below every one of the old ASSUMED guesses"
+    assert confidence == "ASSUMED", "measured on files that failed Build on bus power"
+    assert overhead < 7341, "must be below every one of the old guesses"

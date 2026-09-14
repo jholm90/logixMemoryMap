@@ -296,6 +296,40 @@ _MOTION_GROUP_TAG_XML = """\
       </Tag>"""
 
 
+def bus_supply_with_converter(
+    name: str = "P208", address: str = "192.168.1.1", axis_name: str = "DcBus",
+) -> tuple[str, str]:
+    """The (module_xml, axis_tag_xml) a file of 2198 servo drives needs to BUILD.
+
+    Returns both halves together because needing one without the other is always
+    a bug. A 2198 drive requires a 2198-P/RP bus supply module AND that supply's
+    own converter axis -- an AXIS_CIP_DRIVE whose AxisConfiguration is
+    "Non-Regenerative AC/DC Converter", pointed at the supply's Ch1. With the
+    supply module but no converter axis, Studio converts the file and then fails
+    Build once PER DRIVE MODULE with:
+
+        Primary Bus Sharing Group 1 contains a module configured as Shared DC or
+        Shared DC/DC with no module configured as Shared AC/DC or Shared DC -
+        Non-CIP Converter.
+
+    That is the shape of every real Kinetix export in the corpus:
+    BaillieLeitchField_Edger carries 25 "Position Loop" axes and 2 converters
+    (MotionModule="BUS_601A:Ch1" and "BUS_601B:Ch1"), SJ_Gormley 27 and 2. It is
+    also why the failure stayed invisible: the file still CAPTURES, so
+    actual_bytes gets filled in from a project whose drives never got bus power,
+    and every such row then reads as the model over-predicting.
+
+    Identified 2026-09-14 across 33 rows, only one of which carried error text.
+    The error counts gave it away: axmarg_1cat_n{02,04,08,12,20} record exactly
+    2/4/8/12/20 errors, while axis_scale_n{02..20}_dual -- the same axis counts on
+    half as many modules -- record n/2 + 1. Per drive module, not per axis.
+    """
+    module = _P208_MODULE_XML.replace('Name="P208"', 'Name="%s"' % name, 1)
+    if address != "192.168.1.1":
+        module = module.replace('Address="192.168.1.1"', 'Address="%s"' % address)
+    return module, _dcbus_axis_tag(axis_name, "%s:Ch1" % name)
+
+
 def group_motion_power_supply() -> None:
     """P208 power supply module alone, no axis -- pure baseline, isolates
     what a bare motion power-supply module costs with zero axes on it."""

@@ -65,6 +65,7 @@ from sample_gen.builders import tag_xml
 from sample_gen.gen_module_motion import _drive_module_xml
 from sample_gen.gen_module_sweep import _MODULE_CHAINS
 from sample_gen.gen_module_sweep_variants import _MODULE_VARIANTS
+from sample_gen.gen_module_motion import bus_supply_with_converter
 from sample_gen.manifest import append_manifest_row, write_sample_unmodeled
 from sample_gen.wrapper import build_l5x
 
@@ -216,9 +217,20 @@ def group_a_ers3_drives() -> int:
     n = 0
     for catalog in sorted(_ERS3_CATALOGS):
         for count in COUNTS:
+            # FIXED 2026-09-14: a 2198 drive needs its 2198-P bus supply in the
+            # project or Studio converts the file and then fails Build on bus
+            # power. These files had none, which is what lint's
+            # kinetix_drive_without_bus_supply was written for, and it explains
+            # the -ERS3 family's otherwise unexplained EXTRA flat error at n=1:
+            # part of the project never reached the controller. No axes here --
+            # bare-drive is the measurement this arm exists for; the supply is
+            # the minimum that lets it build.
+            supply_module, _converter = bus_supply_with_converter()
             blocks = "\n".join(
-                _drive_module_xml(f"Drv{i + 1}", catalog, "false", address=f"192.168.1.{20 + i}")
-                for i in range(count)
+                [supply_module]
+                + [_drive_module_xml(f"Drv{i + 1}", catalog, "false",
+                                     address=f"192.168.1.{20 + i}")
+                   for i in range(count)]
             )
             target = ("AsmDrv" + "".join(c for c in catalog if c.isalnum())[:14])[:24]
             l5x = build_l5x(target_name=target, tags_xml="", extra_modules_xml=blocks)

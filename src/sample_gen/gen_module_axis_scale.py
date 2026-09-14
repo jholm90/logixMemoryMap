@@ -102,8 +102,11 @@ def _build(n_axes: int, shape: str, with_regen: bool, file_idx: int) -> tuple[st
             ip += 1
             axis_a = f"Ax{file_idx}_{k}A"
             axis_b = f"Ax{file_idx}_{k}B"
+            # Ch1/Ch3, not Ch1/Ch2 -- corrected 2026-09-14. A real dual-axis
+            # 2198 drive's second axis is on Ch3: across the three real Kinetix
+            # exports there are 33 Ch1 and 25 Ch3 references and ZERO Ch2.
             tags.append(_axis_tag(axis_a, f"{mod_name}:Ch1"))
-            tags.append(_axis_tag(axis_b, f"{mod_name}:Ch2"))
+            tags.append(_axis_tag(axis_b, f"{mod_name}:Ch3"))
             axis_names.extend([axis_a, axis_b])
     else:
         raise ValueError(shape)
