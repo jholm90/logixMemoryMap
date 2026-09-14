@@ -18,7 +18,7 @@ project's ±8 universal-residual band.
 | 6 | `stx_*` | 30 | 30 | 0 | OQ-STEXPR | **CLOSED — one law replaces a five-entry table** |
 | 7 | `genem_*` | 27 | 24 | 0 | OQ-MODULESTRUCTURAL | **CLOSED for ETHERNET-MODULE — 2 arms invalid, rebuilt** |
 | 8 | `ntag_*` | 25 | 25 | 0 | OQ-VERIFINSTR | **CLOSED — 20/20 exact; the other 5 kill a OQ-SERIESOUTPUT candidate** |
-| 9 | `identnamelen_*` | 24 | 19 | 5 | OQ-IDENTNAMELEN | DEFERRED — has errored rows, worked at the end |
+| 9 | `identnamelen_*` | 24 | 19 | 5 | OQ-IDENTNAMELEN | **CLOSED — name cost is a STEP; 19/19 exact, was 7/19** |
 | 10 | `udtmn2_*` | 23 | 23 | 0 | OQ-UDTMEMBERNAME | **CLOSED — with 11; biggest real-file gain of the day** |
 | 11 | `udtmn_*` | 24 | 24 | 0 | OQ-UDTMEMBERNAME | **CLOSED — its length arm is what discriminated the form** |
 | 12 | `cpttier_*` | 22 | 22 | 0 | OQ-CMPCPTLAYOUT | **CLOSED — tier-2 extra-operand rate was a tier-1 rate** |
@@ -1080,3 +1080,69 @@ between points that already agree.
 The alarm BIT-count probe specced in segment 21 was **not built** — zero ALMD /
 ALARM_DIGITAL usage across all sixteen real programs, so it is parked with the
 rest of that family.
+
+
+## Segment 9 — `identnamelen_*`, OQ-IDENTNAMELEN: CLOSED
+
+**19 of 19 byte-exact, against 7 of 19 before.** Three findings, and the third
+was invisible until both arms were read together.
+
+### The law is a step, not a ramp
+
+`8 * floor(namelen / 8)` per identifier — the same form already used for tag, UDT
+and AOI-definition names, so the project now has one name law instead of two.
+
+The old three-regime fit was anchored at 1, 4, 8, 16, 32 and 40 characters and the
+new law **agrees with it at every one of those anchors**. It was wrong only across
+the interval it had to interpolate — which its own entry called "an interpolation
+between two anchors rather than measured":
+
+| name length | old (ramp) | measured (step) |
+|---:|---:|---:|
+| 5 | 2 | 0 |
+| 6 | 4 | 0 |
+| 7 | 6 | 0 |
+| 9 | 9 | 8 |
+| 12 | 12 | 8 |
+
+`identnamelen_prog_c{01..12}` reads 25,688 flat for lengths 1–7 and 25,768 flat
+for 8–12: seven files at seven different lengths on one total, then five files at
+five lengths on another. A ramp cannot produce that.
+
+### Ordinary routines pay it, and only JSR targets were charged
+
+`identnamelen_rtn_c{01,04,08,12,16,32,40}` holds 10 non-JSR routines and reads
+0 / 0 / 80 / 80 / 160 / 320 / 400 — 8 bytes per routine per bucket, the same rate
+as a program name. The engine predicted all seven files **flat**, because routine
+names only ever went through `jsr_target_declaration`.
+
+### The n−1 convention is per program for routines
+
+Neither arm could settle this alone. A flat project-wide n−1 makes the `rtn` arm
+exact and over-charges every `prog` file by exactly 80, because the two arms
+distribute the same routine count differently: `rtn` puts 11 routines in **one**
+program (10 charged), `prog` puts 11 routines across **11** programs, one each
+(none charged). The first routine in each program is inside the baseline
+`fixed_base_per_routine` was fitted against — which is also what keeps
+`identnamelen_rtn_c01` and `_c04` exact at zero.
+
+### Effect
+
+| | before | after |
+|---|---:|---:|
+| segment 9 rows byte-exact | 7/19 | **19/19** |
+| real programs, mean \|%\| | 1.6091 | 1.6112 |
+| real programs, sum-weighted | +1.2261% | +1.2417% |
+
+The real set gives up 0.016pp. The step law lowers the charge for every 9–15,
+17–23 and 25–31 character name, real programs are full of them, and the real set
+under-predicts — so removing an over-charge costs the headline. Fifth time today
+the same arithmetic has appeared. The old value was a self-documented
+interpolation; this one is measured on the sweep built to measure it, and 19 of 19
+rows land on the byte.
+
+### Still open
+
+`identnamelen_task_c{04,08,16,32,40}` (5 rows) was never captured, so whether a
+**Task's** own name follows the same law is untested. Those are the 5 rows this
+segment was deferred for.

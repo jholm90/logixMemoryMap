@@ -916,28 +916,51 @@ class StructuredTextModel:
 
 @dataclass(frozen=True)
 class IdentifierNameLengthModel:
-    """Cost of an identifier's own NAME (OQ-IDENTNAMELEN, wired 2026-09-12).
+    """Cost of an identifier's own NAME (OQ-IDENTNAMELEN).
 
-    Shared by every identifier class measured for it -- JSR target routine
-    names and Program names, two independent 5-point sweeps that returned the
-    identical per-identifier cost. See memory_model.yaml
-    identifier_name_length for the data and for why the sub-8-character
-    interval is an interpolation between two anchors rather than measured.
+    Shared by every identifier class measured for it -- Program names, JSR
+    target routine names, and ordinary routine names.
+
+    It is a STEP, not a ramp: 8 bytes per whole 8 characters, i.e.
+    `bucket_bytes * (len // bucket_chars)`. Same form the project already uses
+    for tag, UDT and AOI-definition names, so there is now ONE name law rather
+    than two.
+
+    Corrected 2026-09-14 by the `identnamelen_*` sweep, which is the file set
+    that measures the interval the earlier three-regime fit had to interpolate
+    across. That fit was anchored at 1, 4, 8, 16, 32 and 40 characters and this
+    law agrees with it at every one of those anchors -- the disagreement is only
+    where it was guessing:
+
+        len   old (ramp)   measured (step)
+          1            0                 0
+          4            0                 0
+          5            2                 0
+          6            4                 0
+          7            6                 0
+          8            8                 8
+          9            9                 8
+         12           12                 8
+         16           16                16
+         32           32                32
+         40           40                40
+
+    `identnamelen_prog_c{01..12}` holds 10 Programs at each length and reads
+    25,688 bytes flat for lengths 1 through 7, then 25,768 flat for 8 through
+    12 -- one 80-byte step across 10 programs, landing exactly on 8 per program.
+    `identnamelen_rtn_c{01,04,08,12,16,32,40}` holds 10 routines and reads
+    0/0/80/80/160/320/400 over the same baseline. Two independent arms, one
+    per-identifier rate, 12 of 12 points exact.
     """
 
-    free_chars: int
-    doubled_rate_limit: int
-    sub_limit_rate: int
-    per_char_above_limit: int
+    bucket_bytes: int
+    bucket_chars: int
     confidence: str
 
     def bytes_for(self, name: str) -> int:
-        length = len(name or "")
-        if length <= self.free_chars:
+        if self.bucket_chars <= 0:
             return 0
-        if length <= self.doubled_rate_limit:
-            return self.sub_limit_rate * (length - self.free_chars)
-        return self.per_char_above_limit * length
+        return self.bucket_bytes * (len(name or "") // self.bucket_chars)
 
 
 @dataclass(frozen=True)
@@ -1128,10 +1151,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             confidence=raw.get("platform_firmware_correction", {}).get("confidence", "UNKNOWN"),
         ),
         identifier_name_length=IdentifierNameLengthModel(
-            free_chars=raw["identifier_name_length"]["free_chars"],
-            doubled_rate_limit=raw["identifier_name_length"]["doubled_rate_limit"],
-            sub_limit_rate=raw["identifier_name_length"]["sub_limit_rate"],
-            per_char_above_limit=raw["identifier_name_length"]["per_char_above_limit"],
+            bucket_bytes=raw["identifier_name_length"]["bucket_bytes"],
+            bucket_chars=raw["identifier_name_length"]["bucket_chars"],
             confidence=raw["identifier_name_length"]["confidence"],
         ),
         jsr_target_declaration=JsrTargetDeclarationModel(

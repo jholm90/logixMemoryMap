@@ -1273,6 +1273,63 @@ the matching footnote at the bottom, not inline.
     `actual_bytes` is filled in but part of the file may never have reached the
     controller, which reads as the model over-predicting.
 
+    **CLOSED 2026-09-14 (capture-batch segment 9). 19 of 19 rows byte-exact,
+    against 7 of 19 before. Two corrections, and the second one was invisible
+    until both arms were read together.**
+
+    **1. The law is a STEP, not a ramp: `8 * floor(namelen / 8)`** per
+    identifier -- the same form the project already uses for tag, UDT and
+    AOI-definition names, so there is now one name law rather than two. The
+    previous three-regime fit (0 below 5 characters, 2/char to 8, then 1 x len)
+    was anchored at 1, 4, 8, 16, 32 and 40, and the new law agrees with it at
+    **every one of those anchors**. It was wrong only across the interval it had
+    to interpolate -- which its own entry described as "an interpolation between
+    two anchors rather than measured", and which is exactly what this sweep
+    measures:
+
+        len   old (ramp)   measured (step)
+          5            2                 0
+          6            4                 0
+          7            6                 0
+          9            9                 8
+         12           12                 8
+
+    `identnamelen_prog_c{01..12}` carries 10 Programs at each length and reads
+    25,688 flat for lengths 1-7 then 25,768 flat for 8-12 -- seven files at seven
+    lengths on one total, then five files at five lengths on another. A ramp
+    cannot produce that.
+
+    **2. ORDINARY routines pay it too, and only JSR targets were being charged.**
+    `identnamelen_rtn_c{01,04,08,12,16,32,40}` carries 10 non-JSR routines and
+    reads 0 / 0 / 80 / 80 / 160 / 320 / 400 over its baseline -- 8 bytes per
+    routine per bucket, identical to the per-program rate. The engine predicted
+    those seven files FLAT, because routine names were charged only through
+    `jsr_target_declaration`.
+
+    **3. The n-1 convention is PER PROGRAM for routines, per project for
+    programs** -- and this is the part neither arm could settle alone. Charging
+    routines with a flat project-wide n-1 makes the `rtn` arm exact and
+    over-charges every `prog` file by exactly 80. The two arms distribute the
+    same routine count differently: `rtn` puts 11 routines in ONE program (10
+    charged), `prog` puts 11 routines across 11 programs, one each (none
+    charged). The first routine in each program is inside the baseline
+    `fixed_base_per_routine` was fitted against, which is also what keeps
+    `identnamelen_rtn_c01` and `_c04` exact at zero.
+
+    **Effect on the real set: slightly worse, and the change is still right.**
+    1.6091% -> 1.6112% mean, +1.2261% -> +1.2417% sum-weighted. The step law
+    lowers the charge for every 9-15, 17-23 and 25-31 character name, real
+    programs are full of them, and the real set under-predicts -- so removing an
+    over-charge costs the headline. That is the fifth time today the same
+    arithmetic has appeared, and the reasoning is the same: the old value was a
+    self-documented interpolation, this one is measured on a sweep built to
+    measure it, and 19 of 19 rows land on the byte.
+
+    **Still open: the TASK arm.** `identnamelen_task_c{04,08,16,32,40}` (5 rows)
+    was never captured, so whether a Task's own name follows the same law is
+    untested. Those are the 5 errored/uncaptured rows this segment carried.
+
+
 14. **OQ-193ECMETR** — new, real, genuinely undiagnosed (now covering TWO
     catalogs — see the correction below). 2026-09-02, real Studio
     5000 error on `composite_realistic_v2_18`/`_50` ("Error:

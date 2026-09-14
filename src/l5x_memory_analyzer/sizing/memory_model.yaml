@@ -2345,12 +2345,48 @@ task_program_overhead:
 # Confirmed on the whole measured range including len=40, which is why this
 # is wired now: the question was held open waiting for that capture, and it
 # had already landed.
+# An identifier's own NAME costs 8 bytes per whole 8 characters -- a STEP, not a
+# ramp, and the same form already used for tag, UDT and AOI-definition names, so
+# there is one name law in this project rather than two.
+#
+# CORRECTED 2026-09-14 (capture-batch segment 9) from the three-regime ramp
+# `0 below 5 chars, 2/char to 8, then 1 x len`. That ramp was anchored at 1, 4,
+# 8, 16, 32 and 40 characters and this law agrees with it at every one of those
+# anchors; the disagreement is confined to the interval it had to interpolate
+# across, which its own entry described as "an interpolation between two anchors
+# rather than measured":
+#
+#   len   old (ramp)   measured (step)
+#     1            0                 0
+#     4            0                 0
+#     5            2                 0
+#     6            4                 0
+#     7            6                 0
+#     8            8                 8
+#     9            9                 8
+#    12           12                 8
+#    16           16                16
+#    32           32                32
+#    40           40                40
+#
+# Two independent arms, 12 of 12 points exact, one per-identifier rate:
+#
+#   identnamelen_prog_c{01..12}   10 Programs at each length. Reads 25,688 flat
+#                                 for lengths 1-7 and 25,768 flat for 8-12: one
+#                                 80-byte step over 10 programs = 8 each.
+#   identnamelen_rtn_c{01,04,08,  10 routines at each length. Reads 0 / 0 / 80 /
+#   12,16,32,40}                  80 / 160 / 320 / 400 over the same baseline.
+#
+# The routine arm also showed that ORDINARY routines pay this, not just JSR
+# targets: those 10 routines are not JSR targets, the engine charged them
+# nothing, and the capture says 8 each per 8-character bucket. Charged for
+# routines beyond the first, matching routine_extra's own n-1 convention -- the
+# first routine's name is inside the baseline fixed_base_per_routine was fitted
+# against, which is why identnamelen_rtn_c01 and _c04 are exact at zero.
 identifier_name_length:
-  free_chars: 4
-  doubled_rate_limit: 8
-  sub_limit_rate: 2
-  per_char_above_limit: 1
-  confidence: FITTED
+  bucket_bytes: 8
+  bucket_chars: 8
+  confidence: KNOWN
 
 jsr_target_declaration:
   per_target: 152

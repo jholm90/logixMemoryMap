@@ -394,6 +394,10 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
 
     logic_entries: list[tuple[str, str, str, int, str]] = []
     n_plain_routines = 0
+    # (program, routine) for every ordinary (non-JSR, non-Safety) routine, in
+    # document order, so the shell block below can charge each name past the
+    # first one IN ITS OWN PROGRAM.
+    plain_routine_names: list[tuple[str, str]] = []
     for routine in all_routines:
         if routine.is_jsr_target:
             # 2026-08-22's "target content is already folded into the
@@ -479,6 +483,8 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         is_plain = "JSR" not in routine.instruction_counts
         if is_plain and not routine.is_safety_program:
             n_plain_routines += 1
+            plain_routine_names.append(
+                (routine.program_name or "", routine.routine_name or ""))
         logic_bytes, logic_basis = compute_routine_logic_bytes(
             routine, model.logic_instructions, tag_types, charge_shell=not is_plain
         )
@@ -608,6 +614,24 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             for program_el in named[1:]:
                 shell_bytes += model.identifier_name_length.bytes_for(
                     program_el.get("Name") or "")
+        # A ROUTINE's own name costs the same, and ordinary routines were getting
+        # nothing -- only JSR targets were charged, via jsr_target_declaration.
+        #
+        # PER PROGRAM, not per project: the first routine in each program is
+        # free and every additional one in that program pays. The two arms of
+        # the identnamelen_* sweep separate those two readings cleanly, because
+        # they distribute the same routine count differently.
+        # identnamelen_rtn_c* puts 11 routines in ONE program and reads 10 x 8
+        # per 8-character bucket; identnamelen_prog_c* puts 11 routines across
+        # 11 programs, one each, and reads ZERO for their names at every length.
+        # A flat project-wide n-1 fits the first and over-charges the second by
+        # exactly 80 on all twelve files.
+        seen_programs: set[str] = set()
+        for program_name, routine_name in plain_routine_names:
+            if program_name not in seen_programs:
+                seen_programs.add(program_name)
+                continue
+            shell_bytes += model.identifier_name_length.bytes_for(routine_name)
         shell_basis = weakest(model.logic_instructions.confidence, overhead.confidence)
         # Own category, NOT "routine_logic" -- this entry's path is
         # "task_program_shell", not a "program:X/Y" routine path, so it
