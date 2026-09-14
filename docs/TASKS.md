@@ -540,3 +540,58 @@ Recapture, separately from the above: the 5 stale `aoi_logic_scale_*` /
 - Segments 18 and 19 are marked reviewed-with-12 in the tracker rather than
   pending: their data was read in full, it just does not close.
 
+
+
+## Conversion status audit, 2026-09-14 (CLAUDE.md step 2)
+
+Step 2 had never been run as a cross-reference because it had no tool.
+`scripts/conversion_status.py` is that tool now. Of 3,498 committed generated
+L5X files: **3,277 last recorded `ok`, 55 last recorded FAILED, 166 have no
+`convert_log` record at all.**
+
+`convert_log`'s `message` column only ever says *"The Import was cancelled due to
+errors ... See error log"*, so it carries no per-file diagnosis. Lint has grown
+enough since these ran that it now names the cause for 30 of the 55.
+
+### The 55 that failed
+
+| n | family | lint diagnosis | disposition |
+|---:|---|---|---|
+| 12 | `modulesweep_*` | `chassis_size_mismatch`, `non_standard_processor` | **OPEN — discard candidate** |
+| 10 | `modulesweep_*` | `kinetix_drive_without_bus_supply`, `non_standard_processor` | **OPEN — discard candidate** |
+| 6 | `modulesweep_*` | `non_standard_processor` | **OPEN — discard candidate** |
+| 2 | `modulerack_bender_full_program*` | `kinetix_axis_without_converter` | **OPEN — fixable, generator not yet touched** |
+| 9 | `predefprobe_*` | lint clean | **OPEN — needs the Studio error log** |
+| 5 | `identnamelen_task_c*` | lint clean | OPEN — flagged in OQ-IDENTNAMELEN |
+| 5 | `platform_plateql330_*` | lint clean | OPEN — flagged in OQ-REAL5069 |
+| 3 | `genem_dtsint_*` | lint clean | **OPEN — needs the Studio error log** |
+| 3 | `uwclose_*` | lint clean | OPEN — segment 29, never captured |
+
+The 28 `modulesweep_*` are the discard candidates because
+`gen_assumed_closeout`'s own docstring documents that generator as known-bad --
+hardcoded module XML missing `<ExtendedProperties>`, plus a corrupted ConfigData
+payload at 119 L5K values against the real 118 -- and says the `asmclose_*` sweep
+supersedes it with clean captures. 26 of the 28 hold no data at all. **Not
+deleted: discarding removes the record that those catalogs were attempted, and
+that is a call for the project owner, not a cleanup.**
+
+### Fixed on the spot
+
+`modulesweep_1734_ob8s_a` and `_b` had a FAILED *last* status while still
+carrying `actual_bytes` -- a capture taken from an earlier version of the file.
+A later failure supersedes an earlier success exactly as a later success
+supersedes an earlier failure, and that rule had only ever been applied in one
+direction. Both cleared for recapture.
+
+### The 166 with no record
+
+`aoidshape` 54, `udtslot` 52, `stc` 21, `srout` 16, `closeout` 11,
+`composite` 9, `aoierr` 3 -- almost all generated after the last conversion run,
+so never submitted rather than defective. The 9 `composite` are the existing
+"9 never-converted composite_realistic_r2" item.
+
+### Tooling gap worth closing
+
+The conversion harness should capture the real Studio error-log line per file,
+the way the memory-capture harness now does. Without it, 25 of these 55 cannot
+be diagnosed at all -- the same blocker as the AOI calibration files.
