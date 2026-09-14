@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="IdentNameTask" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Sep 14 02:03:52 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="IdentNameTask" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Sep 14 02:03:52 2026" LastModifiedDate="Mon Sep 14 02:03:52 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="IdentNameTask" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Sep 14 19:26:08 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="IdentNameTask" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Sep 14 19:26:08 2026" LastModifiedDate="Mon Sep 14 19:26:08 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -109,27 +109,27 @@
 
 </ScheduledPrograms>
 </Task>
-<Task Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX00" Type="Periodic" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<Task Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX00" Type="PERIODIC" Rate="10" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
 <ScheduledPrograms>
 <ScheduledProgram Name="TaskProgHostXX00"/>
 </ScheduledPrograms>
 </Task>
-<Task Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX01" Type="Periodic" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<Task Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX01" Type="PERIODIC" Rate="10" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
 <ScheduledPrograms>
 <ScheduledProgram Name="TaskProgHostXX01"/>
 </ScheduledPrograms>
 </Task>
-<Task Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX02" Type="Periodic" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<Task Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX02" Type="PERIODIC" Rate="10" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
 <ScheduledPrograms>
 <ScheduledProgram Name="TaskProgHostXX02"/>
 </ScheduledPrograms>
 </Task>
-<Task Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX03" Type="Periodic" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<Task Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX03" Type="PERIODIC" Rate="10" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
 <ScheduledPrograms>
 <ScheduledProgram Name="TaskProgHostXX03"/>
 </ScheduledPrograms>
 </Task>
-<Task Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX04" Type="Periodic" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<Task Name="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX04" Type="PERIODIC" Rate="10" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
 <ScheduledPrograms>
 <ScheduledProgram Name="TaskProgHostXX04"/>
 </ScheduledPrograms>

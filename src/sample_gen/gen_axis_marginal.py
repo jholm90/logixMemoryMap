@@ -99,7 +99,14 @@ AXIS_COUNTS = (1, 2, 4, 8, 12, 16, 20)
 CAT_SWEEP_COUNTS = (2, 4, 8, 12, 20)
 
 # The single-axis arm's own catalog, so axmarg_1cat differences against it.
-ONE_CATALOG = "2198-S086-ERS3"
+# 2026-09-14: was 2198-S086-ERS3, which _dual_drive_file rode two-per-module on
+# Ch1/Ch3. S086 is not that shape -- the one real dual-axis S086 in the corpus
+# (EmporiumEdger DRV01_BedRolls) uses Ch1/Ch2, and every real D-series dual uses
+# Ch1/Ch3. Studio rejected every even-numbered axis in all six files with
+# "Invalid channel/node for motion module". D020 is a real Ch1/Ch3 dual, the
+# most-attested drive in the corpus (36x), and is NOT the catalog the
+# axmarg_ncat_*_1cat arm uses (D012), so the two arms stay distinct.
+ONE_CATALOG = "2198-D020-ERS3"
 # The dual arm's four, in its own order.
 FOUR_CATALOGS = ("2198-D012-ERS3", "2198-D020-ERS3", "2198-D032-ERS3", "2198-D057-ERS3")
 

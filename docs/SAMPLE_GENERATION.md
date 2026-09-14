@@ -276,3 +276,50 @@ connects upward to its coupler, so its own address lives on the port carrying
 position, not a card slot.
 
 `lint.py`'s `chassis_size_mismatch` enforces this for dynamic backplanes only.
+
+## Building a 2198 Kinetix module: the Major revision decides ConfigSize
+
+Found 2026-09-14 from a conversion round in which 15 of 32 files were rejected
+with "Data type mismatch - the object's value does not match its data type" on
+`Communications/ConfigData/Data`.
+
+**`ConfigSize` is a function of the module's `Major` revision, not of its
+catalog number.** Read out of every 2198 module in `samples/local/`:
+
+| module class | Major | ConfigSize / L5K value count |
+|---|---|---|
+| drives `2198-D*-ERS3`, `2198-S*-ERS3` | 7 | 376 / 96 |
+| | 9 | 448 / 114 |
+| | 11 | 448 / 114 |
+| | 13 | 468 / 119 |
+| | 14 | 468 / 119 |
+| supplies `2198-P*` | any (3, 11, 13, 14 seen) | 376 / 96 |
+| `2198-RP200` | 11 | 452 / 115 |
+
+The same catalog appears at different revisions in different real programs —
+Griffin carries D012/D020/D032/D057/S086 all at Major 11 with 448/114, while
+Baillie and SJ_Gormley carry the same catalogs at Major 13/14 with 468/119. So
+a `(catalog, Major)` pair fixes the payload and a catalog alone does not.
+
+`sample_gen/data/kinetix.py` had listed D020/D032/D057 at Major 11 and S130 at
+Major 11 while storing their Major-14 and Major-13 payloads. Every stored
+payload is an exact byte match to a real module, so the payloads were never
+wrong — the revision they were paired with was. D012, correctly paired at Major
+14, imported clean throughout, which is what made the fault look catalog-specific.
+`lint.py`'s `module_major_configsize_mismatch` now enforces the pairing, and
+`module_identity_mismatch` now checks `Major` as well as ProductType/ProductCode
+(it had been unpacked and discarded).
+
+## Which channel a 2198 drive's second axis goes on
+
+`Ch1` and `Ch3` for every D-series dual drive — 2198-D012/D020/D032/D057 — with
+one D057 in the corpus also using `Ch4`.
+
+`Ch2` is real but appears exactly once anywhere: `2198-S086-ERS3`
+`DRV01_BedRolls` in EmporiumEdger, at Major 13. No D-series drive uses it, and
+no catalog mixes the two schemes. An S086 riding two axes on Ch1/Ch3 is
+rejected with "Invalid channel/node for motion module", which is what sank six
+`axmarg_*` files; the one-catalog arm now uses 2198-D020-ERS3, a real Ch1/Ch3
+dual and the most-attested drive in the corpus.
+
+`2198-S130-ERS3` and every `2198-P*` supply are Ch1 only.

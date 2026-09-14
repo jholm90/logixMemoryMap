@@ -32,12 +32,30 @@ mechanically against the pairs below, so this class cannot ship again.
 from __future__ import annotations
 
 # catalog -> (Vendor, ProductType, ProductCode, Major, Minor)
+# THE MAJOR REVISION DECIDES ConfigSize, NOT THE CATALOG. Verified 2026-09-14
+# against every 2198 module in the real corpus:
+#
+#     drives (D*/S*-ERS3)   Major 7 -> 376/96   Major 9 or 11 -> 448/114
+#                           Major 13 or 14 -> 468/119
+#     supplies (P*)         376/96 at every Major observed (3, 11, 13, 14)
+#     2198-RP200            452/115 at Major 11
+#
+# Griffin carries D012/D020/D032/D057/S086 all at Major 11 with 448/114;
+# Baillie and SJ_Gormley carry the same catalogs at Major 13/14 with 468/119.
+# So a (catalog, Major) pair fixes the payload and a catalog alone does not.
+#
+# This table previously listed D020/D032/D057 at Major 11 and S130 at Major 11
+# while storing their Major-14 / Major-13 payloads, a combination that occurs in
+# no real export. Studio rejected exactly those catalogs with "Data type mismatch
+# - the object's value does not match its data type" while D012 (Major 14, and
+# correctly paired) imported clean. Each Major below is now the revision its own
+# stored payload was read from; lint.py enforces the pairing.
 MODULE_IDENTITY: dict[str, tuple[str, str, str, str, str]] = {
     '2198-C4004-ERS': ('1', '37', '78', '13', '1'),   # attested 1x
     '2198-D012-ERS3': ('1', '45', '11', '14', '1'),   # attested 18x
-    '2198-D020-ERS3': ('1', '45', '12', '11', '1'),   # attested 36x
-    '2198-D032-ERS3': ('1', '45', '13', '11', '1'),   # attested 25x
-    '2198-D057-ERS3': ('1', '45', '14', '11', '1'),   # attested 12x
+    '2198-D020-ERS3': ('1', '45', '12', '14', '1'),   # attested 36x
+    '2198-D032-ERS3': ('1', '45', '13', '14', '1'),   # attested 25x
+    '2198-D057-ERS3': ('1', '45', '14', '14', '1'),   # attested 12x
     '2198-H008-ERS': ('1', '37', '47', '7', '1'),   # attested 8x
     '2198-P031': ('1', '48', '1', '11', '1'),   # attested 2x
     '2198-P070': ('1', '48', '2', '11', '1'),   # attested 2x
@@ -45,7 +63,7 @@ MODULE_IDENTITY: dict[str, tuple[str, str, str, str, str]] = {
     '2198-P208': ('1', '48', '4', '14', '1'),   # attested 18x
     '2198-RP200': ('1', '48', '9', '11', '1'),   # attested 1x
     '2198-S086-ERS3': ('1', '45', '7', '13', '1'),   # attested 11x
-    '2198-S130-ERS3': ('1', '45', '8', '11', '1'),   # attested 4x
+    '2198-S130-ERS3': ('1', '45', '8', '13', '1'),   # attested 4x
 }
 
 # catalog -> {(ConfigSize, value_count): comma-joined values}

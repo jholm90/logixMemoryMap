@@ -91,7 +91,12 @@ def main() -> None:
             tags_xml=tag_xml("Dummy", "DINT"),
             extra_rungs_xml=rungs,
             extra_tasks_xml=_EVENT_TASK_XML,
-            extra_scheduled_programs_xml=_EVENT_PROGRAM_XML,
+            # 2026-09-14: this was extra_scheduled_programs_xml=, which injects
+            # into MainTask's <ScheduledPrograms> list. A whole <Program> element
+            # landed there instead of in <Programs>, so EvtProgram was never
+            # declared and Studio rejected all three files with "Error creating
+            # 'ScheduledProgram' (Requested item could not be found)".
+            extra_programs_xml=_EVENT_PROGRAM_XML,
         )
         name = f"uwclose_event_n{n:05d}"
         out = OUT_ROOT / f"{name}.L5X"

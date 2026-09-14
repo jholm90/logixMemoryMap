@@ -1250,9 +1250,18 @@ def _drive_axis_channel_findings(root: ET.Element) -> list[LintFinding]:
         return []
     return [LintFinding(
         "drive_axis_unreal_channel",
-        "axis tag(s) pointed at %s. A real 2198 drive's axes are on Ch1 and Ch3 -- the real "
-        "corpus has 33 Ch1 and 25 Ch3 references and no Ch2 at all." % ", ".join(bad),
+        "axis tag(s) pointed at %s. A real 2198 D-series drive's axes are on Ch1 and Ch3. "
+        "Ch2 is real but ONLY on 2198-S086-ERS3 (one instance in the corpus, "
+        "EmporiumEdger DRV01_BedRolls at Major 13); no D-series drive anywhere uses it, "
+        "and no catalog mixes the two schemes." % ", ".join(bad),
     )]
+
+
+# Major revision -> ConfigSize, for 2198 DRIVES only (supplies are 376 at every
+# Major, and 2198-RP200 is 452). Read out of every 2198 drive in the real corpus
+# 2026-09-14: Major 7 -> 376, Major 9 and 11 -> 448, Major 13 and 14 -> 468.
+_DRIVE_MAJOR_CONFIGSIZE = {"7": 376, "9": 448, "11": 448, "13": 468, "14": 468}
+_DRIVE_CATALOG_RE = re.compile(r"^2198-[DS]\d+-ERS3?$")
 
 
 def _module_configdata_findings(root: ET.Element) -> list[LintFinding]:
@@ -1271,8 +1280,9 @@ def _module_configdata_findings(root: ET.Element) -> list[LintFinding]:
         name = module.get("Name") or "(unnamed)"
         identity = MODULE_IDENTITY.get(catalog)
         if identity is not None:
-            _vendor, product_type, product_code, _major, _minor = identity
-            for attr, expected in (("ProductType", product_type), ("ProductCode", product_code)):
+            _vendor, product_type, product_code, major, _minor = identity
+            for attr, expected in (("ProductType", product_type), ("ProductCode", product_code),
+                                   ("Major", major)):
                 actual = module.get(attr)
                 if actual is not None and actual != expected:
                     findings.append(LintFinding(
@@ -1280,6 +1290,27 @@ def _module_configdata_findings(root: ET.Element) -> list[LintFinding]:
                         f"Module {name} ({catalog}): {attr}=\"{actual}\" but every real "
                         f"{catalog} in the corpus uses \"{expected}\". A wrong ProductCode "
                         f"gives the module another catalog's identity.",
+                    ))
+        # The Major revision decides ConfigSize on a 2198 drive, not the catalog.
+        # 2026-09-14: D020/D032/D057 shipped at Major 11 carrying their Major-14
+        # payload and S130 at Major 11 carrying its Major-13 payload -- pairings
+        # that exist in no real export, and Studio rejected every one of them
+        # with "Data type mismatch". D012, correctly paired at Major 14, imported.
+        if _DRIVE_CATALOG_RE.match(catalog):
+            major_attr = module.get("Major")
+            expected_size = _DRIVE_MAJOR_CONFIGSIZE.get(major_attr)
+            for config in module.iter("ConfigData"):
+                size_attr = config.get("ConfigSize")
+                if expected_size is None or size_attr is None:
+                    continue
+                if int(size_attr) != expected_size:
+                    findings.append(LintFinding(
+                        "module_major_configsize_mismatch",
+                        f"Module {name} ({catalog}): Major {major_attr} with "
+                        f"ConfigSize={size_attr}. Every real 2198 drive at Major "
+                        f"{major_attr} carries ConfigSize={expected_size} "
+                        f"({_DRIVE_MAJOR_CONFIGSIZE}). Change the Major to match the "
+                        f"payload's own donor revision, not the payload to match a Major.",
                     ))
         for config in module.iter("ConfigData"):
             size_attr = config.get("ConfigSize")

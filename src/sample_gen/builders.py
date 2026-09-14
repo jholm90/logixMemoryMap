@@ -1262,6 +1262,16 @@ def task_xml(task_name: str, program_name: str, task_type: str = "CONTINUOUS",
     <EventInfo EventTrigger="..."/> element -- either "EVENT Instruction
     Only" (no EventTag) or "Axis Watch" (EventTag pointing at a real
     AXIS_CIP_DRIVE/AXIS_VIRTUAL tag, confirmed real in the Gormley corpus)."""
+    # Case-normalised BEFORE the membership test. 2026-09-14: a caller passed
+    # task_type="Periodic" and this test, being case-sensitive, matched neither
+    # branch -- so the Task went out with no Rate at all AND a mixed-case Type.
+    # Studio rejected all five identnamelen_task_* files with "Required property
+    # 'Rate' was missing". Real exports are always upper-case.
+    task_type = (task_type or "").upper()
+    if task_type not in ("CONTINUOUS", "PERIODIC", "EVENT"):
+        raise ValueError(
+            f"task_type {task_type!r} is not one of CONTINUOUS/PERIODIC/EVENT"
+        )
     rate_attr = ' Rate="10"' if task_type in ("PERIODIC", "EVENT") else ""
     disable_outputs = "true" if task_type == "EVENT" else "false"
     event_tag_attr = f' EventTag="{event_tag}"' if event_tag else ""
