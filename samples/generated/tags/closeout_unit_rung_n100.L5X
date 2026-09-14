@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="CloseUnitRung" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Sep 14 01:27:50 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="CloseUnitRung" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Sep 14 01:27:50 2026" LastModifiedDate="Mon Sep 14 01:27:50 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+      <Tag Name="CuBit0" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="CuBit1" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="CuDint0000" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+              <Rung Number="0" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(0,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="1" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(1,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="2" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(2,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="3" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(3,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="4" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(4,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="5" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(5,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="6" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(6,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="7" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(7,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="8" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(8,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="9" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(9,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="10" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(10,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="11" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(11,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="12" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(12,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="13" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(13,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="14" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(14,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="15" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(15,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="16" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(16,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="17" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(17,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="18" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(18,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="19" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(19,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="20" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(20,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="21" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(21,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="22" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(22,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="23" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(23,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="24" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(24,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="25" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(25,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="26" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(26,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="27" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(27,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="28" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(28,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="29" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(29,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="30" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(30,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="31" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(31,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="32" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(32,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="33" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(33,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="34" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(34,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="35" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(35,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="36" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(36,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="37" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(37,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="38" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(38,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="39" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(39,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="40" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(40,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="41" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(41,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="42" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(42,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="43" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(43,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="44" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(44,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="45" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(45,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="46" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(46,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="47" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(47,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="48" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(48,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="49" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(49,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="50" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(50,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="51" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(51,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="52" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(52,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="53" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(53,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="54" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(54,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="55" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(55,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="56" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(56,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="57" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(57,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="58" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(58,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="59" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(59,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="60" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(60,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="61" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(61,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="62" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(62,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="63" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(63,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="64" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(64,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="65" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(65,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="66" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(66,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="67" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(67,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="68" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(68,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="69" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(69,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="70" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(70,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="71" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(71,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="72" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(72,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="73" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(73,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="74" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(74,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="75" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(75,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="76" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(76,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="77" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(77,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="78" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(78,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="79" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(79,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="80" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(80,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="81" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(81,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="82" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(82,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="83" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(83,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="84" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(84,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="85" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(85,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="86" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(86,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="87" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(87,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="88" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(88,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="89" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(89,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="90" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(90,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="91" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(91,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="92" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(92,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="93" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(93,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="94" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(94,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="95" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(95,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="96" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(96,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="97" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(97,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="98" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(98,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+              <Rung Number="99" Type="N">
+                <Text><![CDATA[XIC(CuBit0)MOV(99,CuDint0000)OTE(CuBit1);]]></Text>
+              </Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

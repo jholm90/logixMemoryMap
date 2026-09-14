@@ -147,8 +147,8 @@ def group_controls() -> int:
         rung_xml(i, SHAPES[i % len(SHAPES)][1] + ";") for i in range(13))
     n += _write(
         _build("AoiShpMix13", mix_rungs), "aoishape_control_mix13",
-        "AOI definition (3 In / 1 Out / 2 Local), internal Logic routine with the SAME 13 "
-        "mixed rungs aoi_logic_scale_010 carries (the 5-shape cycle, 3/3/3/2/2), 0 instances "
+        "AOI definition (3 In / 1 Out / 2 Local), internal Logic routine with 13 rungs of "
+        "the same 5-shape cycle aoi_logic_scale_010 draws from (3/3/3/2/2), 0 instances "
         "-- OQ-AOIINTERNALLOGIC error-shape isolation control. Its error count is directly "
         "comparable to aoi_logic_scale_010's recorded 1 -- the BYTES are not, since the AOI "
         "type name is a different length and that carries its own cost. If this file "
@@ -157,9 +157,83 @@ def group_controls() -> int:
     return n
 
 
+def _mix_rungs(instr_count: int) -> str:
+    """The five-shape cycle packed until `instr_count` instructions are placed --
+    the same packer gen_aoi_internal_logic_isolation._logic_rungs uses, so a file
+    built here is directly comparable to an aoi_logic_scale_* file at the same
+    count. Note the packer counts INSTRUCTIONS, not rungs: 10 instructions is 7
+    rungs, not 10, which is why aoi_logic_scale_010 holds 7."""
+    pieces = []
+    rung_idx = 0
+    total = 0
+    while total < instr_count:
+        piece = SHAPES[rung_idx % len(SHAPES)][1]
+        pieces.append(rung_xml(rung_idx, piece + ";"))
+        total += piece.count("(")
+        rung_idx += 1
+    return "".join(pieces)
+
+
+_ENABLE_IN_FALSE_ROUTINE_XML = (
+    '<Routine Name="EnableInFalse" Type="RLL">'
+    f"<RLLContent>{rung_xml(0, 'XIC(In2)OTE(Out0);')}</RLLContent>"
+    "</Routine>"
+)
+
+
+def group_error_reproduction() -> int:
+    """Re-emit what the five errored calibration rows carry, under NEW ids.
+
+    Those rows -- aoi_logic_scale_{010,050,100} at 1/8/16 errors and
+    aoi_multiroutine_{control,real} at 8 -- were captured 2026-08-31 against
+    content the repo no longer holds: the files were deleted, then rebuilt
+    2026-09-12 on a builder that had moved, and the step-2b gate reports all five
+    STALE. Nothing can be concluded from those numbers; the shapes have to be
+    re-captured, not re-read.
+
+    Three files, not six. The 15-file single-shape sweep and aoishape_control_mix13
+    already captured at ZERO errors and between them cover everything the 000 and
+    010 points test -- aoi_logic_scale_010's Logic routine is 7 rungs carrying 10
+    instructions of exactly those five shapes. What no clean-capture file covers is
+    larger content and the second internal routine.
+
+    New ids on purpose: regenerating in place would leave old captured
+    actual_bytes attached to different content, the failure already documented for
+    asmclose_1756_ob32_rackaliased.
+    """
+    n = 0
+    inputs, outputs, locals_ = _shape_members()
+    for label, instr_count, second_routine in (
+        ("mix050", 50, False), ("mix100", 100, False), ("tworoutine", 50, True),
+    ):
+        aoi_name = "AoiErr" + label[0].upper() + label[1:]
+        definition, _storage = aoi_xml(
+            aoi_name, inputs, outputs, [], locals_,
+            logic_rungs_xml=_mix_rungs(instr_count),
+            extra_routines_xml=(_ENABLE_IN_FALSE_ROUTINE_XML if second_routine else ""),
+        )
+        l5x = build_l5x(target_name=aoi_name, tags_xml="", extra_aoi_xml=definition)
+        second = (", PLUS a second EnableInFalse routine of one rung -- the real "
+                  "HomeToTorque shape" if second_routine else "")
+        n += _write(
+            l5x, f"aoierr_{label}",
+            f"AOI definition (3 In / 1 Out / 2 Local), internal Logic routine carrying "
+            f"{instr_count} instructions of the same five-shape mix aoi_logic_scale_* uses"
+            f"{second}, 0 instances -- OQ-AOIINTERNALLOGIC error reproduction. The five errored "
+            f"calibration rows were captured 2026-08-31 against content deleted and rebuilt "
+            f"2026-09-12 on a changed builder, so the step-2b gate reports all five STALE and "
+            f"their error counts cannot be used. This re-emits the shape under a NEW id so the "
+            f"count measures content the repo actually holds. Segment 15 captured all five shapes "
+            f"individually, and the 13-rung mix, at ZERO errors -- so a clean result here means "
+            f"the errors belonged to the old builder output and the thread closes, while an error "
+            f"localizes the cause to content SIZE or the second routine, neither of which any "
+            f"clean-capture file exercises.")
+    return n
+
+
 def main() -> None:
     total = 0
-    for fn in (group_one_shape_per_file, group_controls):
+    for fn in (group_one_shape_per_file, group_controls, group_error_reproduction):
         count = fn()
         print(f"{fn.__name__}: {count} file(s)")
         total += count

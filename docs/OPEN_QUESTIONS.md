@@ -3666,8 +3666,14 @@ the matching footnote at the bottom, not inline.
     assumption the data cannot support, which is the same mistake the axis
     promotion already made once today.
 
-    **CAPTURE ERRORS: 56 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
-    Was 74. **18 of them were CLEARED 2026-09-14** -- the nine `axmarg_*` drive
+    **CAPTURE ERRORS: 51 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    Was 74, then 56. The last 5 went when `axis_scale` was trimmed from 18 files to
+    7 on 2026-09-14: nine count points per shape bought nothing a four-point
+    geometric ladder does not, every one of them needed recapture anyway for the
+    Ch2/Ch3 fix, and the marginal has been flat wherever this project has measured
+    one. Removed: `axis_scale_n{04_dual,06_single,06_dual,12_single,12_dual,
+    16_single,16_dual,20_single,20_dual,20_dual_regen,08_single_regen}`.
+    **18 were CLEARED 2026-09-14** -- the nine `axmarg_*` drive
     files and the nine `axis_scale_*_dual*` files -- because their content changed:
     a 2198-P bus supply plus its converter axis were added to the first group and
     the second group's dual-axis channel was corrected from Ch2 to Ch3. Their old

@@ -1007,3 +1007,76 @@ it**, and the model needs no change.
   at the 32-bit word boundary and **no second step at 64**, so it is not a
   per-word term; one step cannot be generalised from one occurrence. 8 bytes,
   recorded not wired.
+
+
+## Errored-row review, 2026-09-14
+
+Every row in the manifest with a recorded build error, worked to a fix or a
+reason. 148 rows carried `error_count > 0`; only **3 carried any error text**,
+because the capture tooling's error-log reader only began working 2026-09-10 and
+everything before that recorded a count and nothing else.
+
+### The 33 motion rows: one cause, fixed
+
+A 2198 drive needs its 2198-P bus supply module **and** that supply's converter
+axis. Covered in full in OQ-MODULEMARGINAL; the short version is that the error
+counts identified it where the text was missing — `axmarg_1cat_n{02,04,08,12,20}`
+record exactly 2/4/8/12/20 and `axis_scale_n{02..20}_dual` record n/2 + 1, so it
+is per drive **module**. Four generators fixed, two lint rules added, 48 rows
+cleared for recapture, and the six `2198-*-ERS3` first-instance values downgraded
+KNOWN → ASSUMED because they rest on the same broken captures.
+
+### The 87 composite rows: all superseded, and they never touched a number
+
+Every errored composite row is from **v2, v3 or the old `_rN` batch. Not one is
+from v4**, which is 74 files and 74 clean. And they were never feeding anything:
+`is_valid_capture()` already rejects a row with a non-zero `error_count`, so all
+87 sit outside every accuracy figure. The `composite` numbers quoted in segments
+14 and 15 were computed on 91 clean rows.
+
+What those numbers *do* blend is a superseded generator:
+
+| generation | clean rows | mean \|%\| |
+|---|---:|---:|
+| v4 (current) | 74 | **1.548** |
+| v2/v3 | 3 | 1.138 |
+| older / `_rN` | 14 | 2.511 |
+| all | 91 | 1.683 |
+
+Per CLAUDE.md's rule on contaminated aggregates, the honest composite figure is
+**v4's 1.548%**; the 14 older/`_rN` rows at 2.511% are what pull the blended
+number to 1.683%. So segment 15's "composite got worse, 1.663 → 1.682" is real
+but is a statement about a metric that is a quarter superseded.
+
+### The 271 rows whose error status was never recorded
+
+Captured 2026-08-22 to 08-30, before the tooling logged `error_count` at all, so
+a blank there means **unknown**, not clean. `is_valid_capture(strict=True)`
+already existed for exactly this and was off by default, so corpus counts have
+been treating all 271 as clean.
+
+**The sixteen real programs are unaffected — 0 of 16 blank — so every real-file
+number reported today stands.** `scripts/quick_eval.py` is now strict by default
+(3,195 rows accepted → 2,924) with `--lenient` to include them, labelled.
+
+### Trimmed
+
+`axis_scale` 18 files → **7**. Nine count points per shape bought nothing a
+four-point geometric ladder does not, the marginal has been flat wherever this
+project has measured one, n=8 already falsifies a step, and all 18 needed
+recapture anyway for the Ch1/Ch3 correction. Kept: 1/2/4/8 single, 2/8 dual, one
+regen toggle — both marginals, a matched pair at each end, no interpolation
+between points that already agree.
+
+### Built
+
+| files | what | question |
+|---:|---|---|
+| 3 | `aoierr_{mix050,mix100,tworoutine}` | OQ-AOIINTERNALLOGIC — re-emit the five errored calibration shapes under NEW ids, since the originals were captured 2026-08-31 against content deleted and rebuilt 09-12 and the gate reports all five STALE. Trimmed from 6 to 3: segment 15 already captured every single shape and the 13-rung mix at zero errors, so only larger content and the second internal routine are uncovered. |
+| 4 | `closeout_en2t_n{01,02,04,08}` | OQ-MODULEMARGINAL — EN2T alone, no downstream child, to split 1756-EN2T from rack-aliased 1756-OB32 against `modmarg_ob32chain_*`. |
+| 4 | `closeout_cptmix_d{dint,real}o{real,dint}_m{1,2}` | OQ-CPTARRANGE — cptdest's shape pinned, mismatch COUNT swept. Sweeping operand count cannot work: n operands forces n−1 operators. |
+| 3 | `closeout_unit_{udttag,dinttag,rung}_n100` | the platform family's 12n + 32, one component per file. |
+
+The alarm BIT-count probe specced in segment 21 was **not built** — zero ALMD /
+ALARM_DIGITAL usage across all sixteen real programs, so it is parked with the
+rest of that family.

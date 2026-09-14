@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="AoiShpMix13" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Sep 14 01:25:19 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="AoiShpMix13" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Sep 14 01:25:19 2026" LastModifiedDate="Mon Sep 14 01:25:19 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="AoiErrMix050" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Sep 14 01:25:19 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="AoiErrMix050" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Sep 14 01:25:19 2026" LastModifiedDate="Mon Sep 14 01:25:19 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -22,7 +22,7 @@
 
 </Modules>
 <AddOnInstructionDefinitions>
-    <AddOnInstructionDefinition Name="AoiShpMix13" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+    <AddOnInstructionDefinition Name="AoiErrMix050" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
       <Parameters>
 <Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
 <Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
@@ -62,6 +62,52 @@
                 <Text><![CDATA[XIC(In2)OTE(Out0);]]></Text>
               </Rung>              <Rung Number="12" Type="N">
                 <Text><![CDATA[CLR(Loc0);]]></Text>
+              </Rung>              <Rung Number="13" Type="N">
+                <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
+              </Rung>              <Rung Number="14" Type="N">
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
+              </Rung>              <Rung Number="15" Type="N">
+                <Text><![CDATA[MOV(In0,In1);]]></Text>
+              </Rung>              <Rung Number="16" Type="N">
+                <Text><![CDATA[XIC(In2)OTE(Out0);]]></Text>
+              </Rung>              <Rung Number="17" Type="N">
+                <Text><![CDATA[CLR(Loc0);]]></Text>
+              </Rung>              <Rung Number="18" Type="N">
+                <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
+              </Rung>              <Rung Number="19" Type="N">
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
+              </Rung>              <Rung Number="20" Type="N">
+                <Text><![CDATA[MOV(In0,In1);]]></Text>
+              </Rung>              <Rung Number="21" Type="N">
+                <Text><![CDATA[XIC(In2)OTE(Out0);]]></Text>
+              </Rung>              <Rung Number="22" Type="N">
+                <Text><![CDATA[CLR(Loc0);]]></Text>
+              </Rung>              <Rung Number="23" Type="N">
+                <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
+              </Rung>              <Rung Number="24" Type="N">
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
+              </Rung>              <Rung Number="25" Type="N">
+                <Text><![CDATA[MOV(In0,In1);]]></Text>
+              </Rung>              <Rung Number="26" Type="N">
+                <Text><![CDATA[XIC(In2)OTE(Out0);]]></Text>
+              </Rung>              <Rung Number="27" Type="N">
+                <Text><![CDATA[CLR(Loc0);]]></Text>
+              </Rung>              <Rung Number="28" Type="N">
+                <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
+              </Rung>              <Rung Number="29" Type="N">
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
+              </Rung>              <Rung Number="30" Type="N">
+                <Text><![CDATA[MOV(In0,In1);]]></Text>
+              </Rung>              <Rung Number="31" Type="N">
+                <Text><![CDATA[XIC(In2)OTE(Out0);]]></Text>
+              </Rung>              <Rung Number="32" Type="N">
+                <Text><![CDATA[CLR(Loc0);]]></Text>
+              </Rung>              <Rung Number="33" Type="N">
+                <Text><![CDATA[ADD(In0,In1,Loc1);]]></Text>
+              </Rung>              <Rung Number="34" Type="N">
+                <Text><![CDATA[EQU(In0,In1)OTE(Out0);]]></Text>
+              </Rung>              <Rung Number="35" Type="N">
+                <Text><![CDATA[MOV(In0,In1);]]></Text>
               </Rung></RLLContent></Routine>
       </Routines>
     </AddOnInstructionDefinition>

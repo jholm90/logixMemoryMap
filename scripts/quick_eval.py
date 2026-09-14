@@ -53,8 +53,17 @@ def _rows() -> list[dict]:
         return list(csv.DictReader(handle))
 
 
-def _usable(row: dict) -> bool:
-    ok, _ = is_valid_capture(row)
+def _usable(row: dict, lenient: bool = False) -> bool:
+    """STRICT by default, which also rejects a row whose error_count is blank.
+
+    271 rows were captured 2026-08-22..08-30, before the capture tooling recorded
+    error_count at all, so a blank there means the build status was never recorded
+    -- not that the build was clean. Counting them as clean is how a real error
+    hides. None of the sixteen real programs is affected (0 of 16 blank), so the
+    only accuracy number that counts is unchanged either way; this keeps the
+    corpus counts honest. --lenient includes them, labelled.
+    """
+    ok, _ = is_valid_capture(row, strict=not lenient)
     return ok and os.path.exists(row.get("l5x_path") or "")
 
 
@@ -65,8 +74,9 @@ def _errored(row: dict) -> bool:
         return False
 
 
-def select(rows: list[dict], family: str | None, full: bool) -> list[dict]:
-    usable = [r for r in rows if _usable(r)]
+def select(rows: list[dict], family: str | None, full: bool,
+           lenient: bool = False) -> list[dict]:
+    usable = [r for r in rows if _usable(r, lenient)]
     if full:
         return usable
     chosen: dict[str, dict] = {}
@@ -130,16 +140,20 @@ def main() -> int:
     ap.add_argument("--full", action="store_true",
                     help="every captured row (reconciliation and final checks only)")
     ap.add_argument("--worst", type=int, default=6)
+    ap.add_argument("--lenient", action="store_true",
+                    help="also include the 271 rows whose error_count was never "
+                         "recorded (captured before the tooling logged it)")
     args = ap.parse_args()
 
     rows = _rows()
-    picked = select(rows, args.family, args.full)
+    picked = select(rows, args.family, args.full, args.lenient)
     results = evaluate(picked)
     by_real = [r for r in results if r[1] == REAL_CATEGORY]
     rest = [r for r in results if r[1] != REAL_CATEGORY]
 
+    mode = "LENIENT" if args.lenient else "strict"
     if args.full:
-        print(f"FULL SWEEP: {len(results)} of {len(rows)} manifest rows")
+        print(f"FULL SWEEP ({mode}): {len(results)} of {len(rows)} manifest rows")
         _report("real programs (the only accuracy number)", by_real, args.worst)
         buckets = collections.defaultdict(list)
         for r in rest:

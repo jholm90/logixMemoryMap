@@ -129,17 +129,22 @@ def _write(out_name: str, l5x: str, description: str) -> None:
 # (n_axes, shape, with_regen) -- comparison pairs at matched n_axes wherever
 # both shapes divide evenly; n=1 is single-only (a dual module can't produce
 # an odd axis count on its own).
+# TRIMMED 2026-09-14, 18 files to 7. The measurement is a per-axis and a
+# per-module marginal, and every one of these files has to be recaptured anyway
+# because the dual shape's second axis was on Ch2 instead of Ch3. Nine count
+# points per shape buys nothing a four-point geometric ladder does not: the
+# marginal has been flat wherever it has been measured in this project (the
+# module repeat discount is flat at n=1/2/4/8 across 13 catalogs), and n=8 is
+# already the point that falsifies a step. 1/2/4/8 single plus 2/8 dual gives
+# both marginals, one matched single-vs-dual pair at each end, and one regen
+# toggle. 6/12/16/20 and the second regen file were interpolation between points
+# that already agree.
 _PLAN: list[tuple[int, str, bool]] = [
     (1, "single", False),
     (2, "single", False), (2, "dual", False),
-    (4, "single", False), (4, "dual", False),
-    (6, "single", False), (6, "dual", False),
+    (4, "single", False),
     (8, "single", False), (8, "dual", False),
-    (8, "single", True), (8, "dual", True),
-    (12, "single", False), (12, "dual", False),
-    (16, "single", False), (16, "dual", False),
-    (20, "single", False), (20, "dual", False),
-    (20, "dual", True),
+    (8, "dual", True),
 ]
 
 
