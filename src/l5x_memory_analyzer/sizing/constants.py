@@ -602,6 +602,13 @@ class LogicInstructionModel:
     safety_task_program_shell_confidence: str
     aoi_internal_per_rung: int = 0
     aoi_internal_per_rung_confidence: str = "FITTED"
+    # Extra cost of an AOI-internal instruction that writes a non-BOOL
+    # destination, over and above the per-instruction weight it would carry in
+    # an ordinary Program routine. Supersedes aoi_internal_per_rung above, which
+    # was the same number on the wrong carrier. See memory_model.yaml
+    # aoi_internal_per_word_destination for the five families behind it.
+    aoi_internal_per_word_destination: int = 0
+    aoi_internal_per_word_destination_confidence: str = "KNOWN"
     # Cost of one AOI call site: a base plus a rate per parameter passed (the
     # instance tag is not a parameter) -- see memory_model.yaml aoi_call_site.
     aoi_call_site_bytes: int = 0
@@ -1362,6 +1369,10 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             aoi_logic_composite_surcharge_per_instr=raw["logic_instructions"]["aoi_logic_composite_surcharge_per_instr"],
             aoi_internal_per_rung=raw["logic_instructions"].get("aoi_internal_per_rung", 0),
             aoi_internal_per_rung_confidence=raw["logic_instructions"].get("aoi_internal_per_rung_confidence", "FITTED"),
+            aoi_internal_per_word_destination=raw["logic_instructions"].get(
+                "aoi_internal_per_word_destination", 0),
+            aoi_internal_per_word_destination_confidence=raw["logic_instructions"].get(
+                "aoi_internal_per_word_destination_confidence", "KNOWN"),
             jsr_target_composite_surcharge_per_instr=raw["logic_instructions"]["jsr_target_composite_surcharge_per_instr"],
             composite_surcharge_confidence=raw["logic_instructions"]["composite_surcharge_confidence"],
             composite_surcharge_cap=raw["logic_instructions"]["composite_surcharge_cap"],

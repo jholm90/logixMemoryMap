@@ -211,6 +211,59 @@ _TYPED_CALL_START = re.compile(
 )
 
 
+# Which argument of a call is its DESTINATION, 0-based; -1 means the last one.
+# Only instructions that WRITE one appear here -- a comparison like EQU or LES
+# has no destination and must not be given a notional one, which is exactly the
+# distinction the AOI-internal surcharge below turns on (real: EQU costs nothing
+# extra inside an AOI, MOV/ADD/CLR cost 4 each).
+_DESTINATION_ARG = {
+    "MOV": -1, "ADD": -1, "SUB": -1, "MUL": -1, "DIV": -1, "MOD": -1,
+    "CLR": 0, "CPT": 0, "COP": -1, "FLL": -1, "BTD": 2, "CONCAT": -1,
+    "SWPB": -1, "SQR": -1, "NEG": -1, "ABS": -1, "TOD": -1, "FRD": -1,
+    "DEG": -1, "RAD": -1, "SIN": -1, "COS": -1, "TAN": -1, "LN": -1,
+    "LOG": -1, "XPY": -1, "TRN": -1, "AND": -1, "OR": -1, "XOR": -1,
+    "NOT": -1, "BSL": -1, "BSR": -1, "STOD": -1, "STOR": -1, "DTOS": -1,
+    "RTOS": -1, "INSERT": -1, "DELETE": -1, "MID": -1, "UPPER": -1,
+    "LOWER": -1,
+}
+_ANY_CALL_START = re.compile(r"\b([A-Z][A-Z0-9_]{1,9})\(")
+
+
+def word_destination_count(rung_texts: list[str], types: dict[str, str]) -> int:
+    """How many instructions in these rungs write a destination that is NOT a
+    BOOL, resolved against `types` (name -> declared data type).
+
+    This resolves types in the parser, against the convention that
+    typed_calls/cpt_calls leave resolution to sizing/logic.py, and the reason
+    is that the only caller is parse_aoi_internal_logic: an AOI's parameters
+    and local tags are declared INSIDE the same element as its rungs, so there
+    is no file-level tag table to defer to. A name that cannot be resolved at
+    all is treated as a word, because a destination is never a literal and an
+    unresolved one in this corpus is overwhelmingly a word rather than a BOOL.
+    """
+    total = 0
+    for text in rung_texts:
+        for match in _ANY_CALL_START.finditer(text):
+            position = _DESTINATION_ARG.get(match.group(1))
+            if position is None:
+                continue
+            args = _extract_call_args(text, match.end())
+            if not args:
+                continue
+            if position == -1:
+                position = len(args) - 1
+            if position >= len(args):
+                continue
+            # An array subscript or a structure member both resolve to the
+            # base tag's declared type, which is how `types` is keyed.
+            dest = args[position].strip().split("[")[0].split(".")[0]
+            if types.get(dest, "DINT") != "BOOL":
+                total += 1
+    return total
+
+
+
+
 def _typed_instruction_calls(rung_texts: list[str]) -> list[tuple[str, list[str]]]:
     """One entry per real call to a type-sensitive instruction, each the
     (mnemonic, [operand_token, ...]) pair -- e.g. 'ADD(TD0,TD1,TD2)' ->
@@ -466,6 +519,13 @@ class RoutineLogic:
     # instruction), additive on top of every leg's own instruction weight
     # (already counted normally via instruction_counts above).
     branch_bracket_instruction_count: int = 0
+    # AOI-INTERNAL ONLY: how many of this routine's instructions write a
+    # non-BOOL destination. Left at 0 for ordinary Program routines, where the
+    # per-instruction weights are already exact (instr_* is within the universal
+    # +8 band at every count from 10 to 5,000 for MOV/CLR/ADD/EQU/XIC/OTE
+    # alike). Inside an AOI the same instructions cost 4 more each -- see
+    # memory_model.yaml aoi_internal_per_word_destination.
+    word_destination_count: int = 0
 
     @property
     def path(self) -> str:
@@ -770,6 +830,16 @@ def parse_aoi_internal_logic(
         if not rung_texts:
             continue
         aoi_calls, aoi_call_params = aoi_call_sites(rung_texts, declared_aoi_names)
+        # The AOI's own parameters and local tags ARE its tag table -- nothing
+        # outside the definition is addressable from its rungs.
+        internal_types = {
+            el.get("Name", ""): el.get("DataType", "")
+            for el in aoi_el.iter("Parameter")
+        }
+        internal_types.update({
+            el.get("Name", ""): el.get("DataType", "")
+            for el in aoi_el.iter("LocalTag")
+        })
         result[name] = RoutineLogic(
             program_name="",
             routine_name=name,
@@ -784,5 +854,6 @@ def parse_aoi_internal_logic(
             indirect_index_kinds=_indirect_index_kinds(rung_texts),
             cmp_calls=_cmp_calls(rung_texts),
             branch_bracket_instruction_count=_branch_bracket_instruction_count(rung_texts),
+            word_destination_count=word_destination_count(rung_texts, internal_types),
         )
     return result

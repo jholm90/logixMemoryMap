@@ -1080,6 +1080,59 @@ the matching footnote at the bottom, not inline.
     Studio 5000 error-log line** for one of the original six files rather than
     another round of inference.
 
+    **CAPTURED 2026-09-14 (segment 15). All 17 at ZERO errors, the 13-rung mix
+    included. No rung shape is at fault**, so that condition is met: the original
+    five errored rows were broken by the surrounding project structure, and the
+    next step is the raw Studio error-log line. Two rounds of shape inference
+    have now been tried and both were wrong; there is no third.
+
+    **The calibration question this was protecting is answered. The AOI-internal
+    weighting under-charged by exactly 4 bytes per instruction that WRITES A
+    NON-BOOL DESTINATION. Wired 2026-09-14, KNOWN.**
+
+        aoishape_{mov,add,clr}_n{1,5,10}    +4 per rung
+        aoishape_{xicote,equote}_n{1,5,10}   0 at every count
+        aoishape_control_empty               0
+        aoishape_control_mix13              +32 on 8 word destinations
+        aoistr_scale_rung_n{011..085}       +4 per rung, 7.7x span
+        realscale_aoiint_n{0..12000}         0 through 12,000 instructions
+
+    MOV/ADD/CLR write a DINT, OTE writes a BOOL, EQU and XIC write nothing. ADD
+    at three operands, MOV at two and CLR at one all cost the same +4, so it is
+    not per-operand. `control_mix13` is the additive cross-check on a mixed file:
+    3 MOV + 3 CLR + 2 ADD = 8, residual 8x4 exactly. All 27 rows across the five
+    families are byte-exact with it wired.
+
+    **This explains `aoi_internal_per_rung`** — the 4 bytes/rung measured
+    2026-09-10, which looked perfect and was rejected for making the 122-file
+    `aoi` family four times worse. Right number, wrong carrier:
+    `aoistr_scale_rung`'s rungs are `XIC(EnableIn)MOV(In0,In1);`, **one MOV
+    each**, so per-rung and per-word-destination coincide on that family and
+    nowhere else. Both readings that note was stuck between are dead — per-rung
+    requires xicote/equote to cost 4 (they cost 0), and per-instruction-at-2
+    requires a 2-instruction rung to cost more than a 1-instruction rung (the
+    split is the other way round).
+
+    **Negative control: PROGRAM routines are unaffected.**
+    `instr_{mov,clr,add,equ,xic,ote}_n{10..5000}` all sit at the universal +8
+    per-file residual — the same 8 for every instruction at every count to 5,000.
+    The weights are already right outside an AOI. `word_destination_count` is
+    populated by `parse_aoi_internal_logic` only and stays 0 for
+    `parse_rll_routines`.
+
+    Real set 1.6289% -> **1.6051%** mean, +1.2579% -> **+1.1797%** sum-weighted;
+    corpus byte-exact 1,220 -> 1,235. `composite` gets worse, 1.663% -> 1.682%,
+    recorded rather than hidden — it is the family whose own generator defects
+    are still open.
+
+    **Still open here:** segments 30/31 (`aoi_logic_scale_*`,
+    `aoi_multiroutine_*`) need recapture and are now a TEST of this law rather
+    than an input to it. `_DESTINATION_ARG` in `parser/logic.py` covers 42
+    mnemonics; MOV/ADD/CLR are measured and the rest are classified from
+    documented operand order, so a mnemonic whose destination sits elsewhere
+    would be mis-charged by 4. Real AOI-internal inventory: 11,241 instructions
+    across 6 of the 16 programs, of which the measured three are 1,716.
+
     **CAPTURE ERRORS: 5 row(s)** — `aoi_logic_scale_010/050/100`,
     `aoi_multiroutine_control/real`. These were routed to OQ-AOIDEFITEMIZE and
     OQ-BUILDFAIL-OPEN by sample-prefix rules, so the rows that invalidate this

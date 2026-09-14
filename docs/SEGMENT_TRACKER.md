@@ -24,7 +24,7 @@ project's ±8 universal-residual band.
 | 12 | `cpttier_*` | 22 | 22 | 0 | OQ-CMPCPTLAYOUT | **CLOSED — tier-2 extra-operand rate was a tier-1 rate** |
 | 13 | `modmarg_*` | 19 | 19 | 6 | OQ-MODULEMARGINAL | DEFERRED -- has errored rows, worked at the end |
 | 14 | `asmclose_*` | 71 | 69 | 0 | OQ-MODULEIO | **WIRED — repeat discount on for 10 catalogs, 2 rows cleared, 4 flagged bad** |
-| 15 | `aoishape_*` | 17 | 17 | 0 | OQ-AOIINTERNALLOGIC | pending |
+| 15 | `aoishape_*` | 17 | 17 | 0 | OQ-AOIINTERNALLOGIC | **CLOSED + WIRED — no shape errors; +4/word-destination, 27/27 exact** |
 | 16 | `axmarg_*` | 16 | 16 | 9 | OQ-AXISMARGINAL | DEFERRED -- has errored rows, worked at the end |
 | 17 | `platform_*` | 15 | 10 | 0 | OQ-REAL5069 | pending |
 | 18 | `cmpfl_*` | 13 | 13 | 0 | OQ-CMPCPTLAYOUT | reviewed with 12 — 13 single-rung points, not derivable |
@@ -768,3 +768,56 @@ a systematic error the model already carries. What it buys is that the module
 term is no longer knowingly wrong where it was measured, and that the real
 under-prediction OQ-REALUNDER has to close is now sized at +1.2579% with the
 clean catalogs in, nearer +1.63% once the two suspect families are resolved.
+
+
+## Segment 15 — `aoishape_*`, OQ-AOIINTERNALLOGIC: CLOSED and WIRED
+
+Two results, one per question the family carried.
+
+**The shape question: no rung shape is at fault.** All 17 rows captured at zero
+errors, the 13-rung mix included. The generator stated the consequence in
+advance: the original five errored calibration rows were broken by the
+surrounding project structure, so the next step is the raw Studio 5000
+error-log line for one of those six files. Two rounds of shape inference have
+been tried and both were wrong.
+
+**The calibration question: the weighting under-charged by 4 bytes per
+AOI-internal instruction that writes a non-BOOL destination.**
+
+| family | rung shape | residual |
+|---|---|---|
+| `aoishape_{mov,add,clr}_n{1,5,10}` | `MOV` / `ADD` / `CLR` | +4 per rung |
+| `aoishape_{xicote,equote}_n{1,5,10}` | `XIC`+`OTE`, `EQU`+`OTE` | 0 at every count |
+| `aoishape_control_empty` | no logic | 0 |
+| `aoishape_control_mix13` | all five, 13 rungs | +32 |
+| `aoistr_scale_rung_n{011..085}` | `XIC`+`MOV` | +4 per rung |
+| `realscale_aoiint_n{0..12000}` | `XIC`+`OTE` | 0 through 12,000 |
+
+MOV/ADD/CLR write a DINT, OTE writes a BOOL, EQU and XIC write nothing. Operand
+count is irrelevant — CLR has one, MOV two, ADD three, all +4. `control_mix13`
+is the additive cross-check on a mixed file: 3 MOV + 3 CLR + 2 ADD = 8 word
+destinations, residual 8×4 exactly. **All 27 rows byte-exact once wired.**
+
+This explains `aoi_internal_per_rung`, the 4 bytes/rung measured 2026-09-10 that
+looked perfect and was rejected for making the `aoi` family four times worse:
+right number, wrong carrier. `aoistr_scale_rung`'s rungs are
+`XIC(EnableIn)MOV(In0,In1);` — one MOV each — so per-rung and
+per-word-destination coincide there and nowhere else.
+
+**Negative control.** `instr_{mov,clr,add,equ,xic,ote}_n{10..5000}` sit at the
+universal +8 per-file residual, the same 8 for every instruction at every count
+to 5,000 instructions. Program-routine weights are already right; only the
+AOI-internal path under-charged, so `word_destination_count` is populated by
+`parse_aoi_internal_logic` alone.
+
+### Effect
+
+| | before | after |
+|---|---:|---:|
+| real programs, mean \|%\| | 1.6289 | **1.6051** |
+| real programs, sum-weighted | +1.2579% | **+1.1797%** |
+| corpus rows byte-exact | 1,220 | 1,235 |
+| `composite` mean \|%\| | 1.663 | 1.682 |
+
+This more than recovers segment 14's 0.028pp cost and leaves the sum-weighted
+figure better than before either change.

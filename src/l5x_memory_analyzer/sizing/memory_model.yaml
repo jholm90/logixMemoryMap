@@ -2592,6 +2592,58 @@ logic_instructions:
   # causes it is not proportional to rung count in general.
   aoi_internal_per_rung: 0
   aoi_internal_per_rung_confidence: FITTED
+  # SUPERSEDED 2026-09-14 by aoi_internal_per_word_destination below. The 4
+  # above was the right NUMBER on the wrong CARRIER, which is why it was exact
+  # on its own sweep and wrong everywhere else: aoistr_scale_rung's rungs are
+  # `XIC(EnableIn)MOV(In0,In1);`, one MOV each, so a per-rung reading and a
+  # per-MOV reading are identical on that family and nowhere else.
+  #
+  # An AOI-internal instruction that WRITES a non-BOOL destination costs 4 bytes
+  # more than the same instruction in a Program routine. One that writes a BOOL,
+  # or writes nothing at all, costs exactly the same. Derived 2026-09-14
+  # (capture-batch segment 15) from five families that agree with no
+  # counter-example anywhere in the corpus:
+  #
+  #   family                 rung shape                   residual
+  #   aoishape_mov_n{1,5,10} MOV(In0,In1)                 +4 per rung
+  #   aoishape_add_n{1,5,10} ADD(In0,In1,Loc1)            +4 per rung
+  #   aoishape_clr_n{1,5,10} CLR(Loc0)                    +4 per rung
+  #   aoishape_xicote_n*     XIC(In2)OTE(Out0)             0 at all counts
+  #   aoishape_equote_n*     EQU(In0,In1)OTE(Out0)         0 at all counts
+  #   aoistr_scale_rung_n*   XIC(EnableIn)MOV(In0,In1)    +4 per rung, 11..85
+  #   realscale_aoiint_n*    XIC(...)OTE(...)              0 through 12,000
+  #
+  # The two candidates this was previously stuck between are both dead. Per-RUNG
+  # requires xicote and equote to cost 4 each; they cost 0. Per-INSTRUCTION at 2
+  # requires a 2-instruction rung to cost 4 and a 1-instruction rung 2; the
+  # observed split is the other way round. What separates them is the
+  # destination: MOV/ADD/CLR write a DINT, OTE writes a BOOL, EQU writes nothing.
+  # ADD at 3 operands, MOV at 2 and CLR at 1 all cost the same +4, so it is not
+  # per-operand either.
+  #
+  # Cross-checked on a MIXED file rather than only on single-shape ladders:
+  # aoishape_control_mix13 cycles all five shapes over 13 rungs, giving 3 MOV +
+  # 3 CLR + 2 ADD = 8 word destinations, and its residual is +32. Exact.
+  #
+  # PROGRAM routines are NOT affected and must not be: instr_{mov,clr,add,equ,
+  # xic,ote}_n{10,50,100,1000,5000} sit at the universal +8 per-file residual at
+  # every one of those counts, the same 8 for every instruction and every count.
+  # The per-instruction weights are already right outside an AOI; only the
+  # AOI-internal path under-charges.
+  #
+  # Effect, measured before wiring: the `aoi` calibration rows go from a mean
+  # absolute residual of 22.4 to 0.0 (10 of 10 byte-exact), `aoistructure` from
+  # 64.4 to 43.9 with five more rows exact, and all sixteen held-out real
+  # programs improve. The one family that gets worse is `composite`, by 412
+  # bytes on a 32,084-byte mean residual -- 1.3% of an error that family already
+  # carries for unrelated reasons (OQ-COMPOSITESCALE, and its v3 template
+  # defects are still open). Recorded rather than hidden: it is the only
+  # contrary signal, and it is the least clean instrument in the corpus.
+  #
+  # KNOWN: five families, zero counter-examples, exact on a mixed file, and the
+  # negative control (Program routines) is exact at 5,000 instructions.
+  aoi_internal_per_word_destination: 4
+  aoi_internal_per_word_destination_confidence: KNOWN
   jsr_target_composite_surcharge_per_instr: 0
   composite_surcharge_confidence: FITTED
   # composite_surcharge_cap, wired 2026-09-03 ("tweak something else

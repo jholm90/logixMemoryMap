@@ -297,6 +297,21 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                     content_basis = weakest(
                         content_basis, model.logic_instructions.aoi_internal_per_rung_confidence
                     )
+                # 2026-09-14, OQ-AOIINTERNALLOGIC: an AOI-internal instruction
+                # that WRITES a non-BOOL destination costs 4 more than the same
+                # instruction in a Program routine; one writing a BOOL, or
+                # writing nothing, costs the same. This is what per_rung above
+                # was really measuring -- aoistr_scale_rung's rungs carry one
+                # MOV each, so per-rung and per-word-destination are the same
+                # number there and nowhere else. See memory_model.yaml
+                # aoi_internal_per_word_destination.
+                per_word_dest = model.logic_instructions.aoi_internal_per_word_destination
+                if per_word_dest and internal_routine.word_destination_count:
+                    content_bytes += per_word_dest * internal_routine.word_destination_count
+                    content_basis = weakest(
+                        content_basis,
+                        model.logic_instructions.aoi_internal_per_word_destination_confidence,
+                    )
                 def_bytes += content_bytes
                 def_basis = weakest(def_basis, content_basis)
             definition_entries.append((
