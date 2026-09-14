@@ -502,6 +502,54 @@ Recapture, separately from the above: the 5 stale `aoi_logic_scale_*` /
   +0.086..+0.224. A global logic scale-up is ruled out by the 578 `logic_instr`
   rows. Full reasoning in OQ-REALUNDER.
 
+### Added 2026-09-14 (strip ladder captured, task #128 closed for real)
+
+**TWO LADDERS CAPTURED, `elmsdale` (5069-L330ERM v35) and `griffin`
+(1756-L81E v35), seven rungs each.** Full reasoning and the step table are in
+OQ-REALUNDER. Headline: **compiled ladder is OVER-charged on both files**, so
+the five-segment hypothesis that the real-file deficit lives in `routine_logic`
+is dead and must not be refit. The remaining error is in tag-based alarms, the
+controller shell, modules, and UDT/AOI definitions.
+
+Nothing is being wired from two data points. In priority order, what the ladder
+says to do next:
+
+1. **Parse, do not capture: the alarm associated-tag audit (OQ-ALARMCONDREAL).**
+   Dump `AssocTag1/2/3` targets and their resolved types for all 200 Elmsdale
+   and 400 Griffin conditions, and check whether the 107-byte-per-condition gap
+   between the two files is explained by associated-tag type mix. Zero new
+   files, zero captures, and it is a 19–21%-of-total-memory category. Do this
+   first.
+2. **Three generated files: the controller-shell probe (OQ-CTLSHELL).**
+   1756-L81E v35 empty, plus one with a real `EthernetPorts`/`Bus` block and one
+   with `Trends`/`DataLogs`/`QuickWatchLists` populated. Worth 0.2–0.6% of real
+   error across all sixteen files and it is the cheapest item on the board.
+   SPEC ONLY until asked — CLAUDE.md step 7.
+3. **One more real ladder rung, hand-made, not generated: split the logic step.**
+   Both `NoLogic` files contain **zero `<Program>` elements**, so the step
+   bundles program shells + program tags + routines + rungs. The clean cut keeps
+   every `<Program>`, `<Tags>` and `<Routine>` and empties only rung content
+   (`<RLLContent/>` present but empty). Griffin is the arm to do it on — it has
+   zero program tags, so its logic step is already clean of tag cost and one
+   file finishes the split. `Elmsdale_NoProgramLogic.L5X` already exists
+   (9 programs, 63 program tags, 3 routines, 477 rungs of which 363 are
+   AOI-internal) and is uncaptured; capturing it gives a partial Elmsdale split
+   for free.
+4. **A third ladder, on a program that OVER-predicts.** Both captured ladders
+   disagree in sign on three of seven categories. `emporiumedger_20250905r1`
+   (−2.077%) or `salamanca_20250425r00` (−1.475%) would say which of the two
+   patterns is typical. Do not fit any category constant until a third arm
+   exists.
+
+Retired by the ladder, do not spend on these:
+- **Axis is exact on Griffin** — 0 bytes of error over 37 axis tags and 778,728
+  bytes, the largest single category in that file. The "axis is ~650 KB of
+  unwired real exposure" line in OQ-REALUNDER's candidate list is obsolete.
+- **A global `routine_logic` scale-up.** Ruled out twice now: by the 578
+  `logic_instr` rows, and now by direct measurement in both directions.
+- **The empty-project baseline constant.** It is byte-exact on every generated
+  empty file; the real-shell gap is unpriced content, not a wrong constant.
+
 ### Added 2026-09-13 (capture-batch segment 8)
 
 - Nothing to build. Segment 8 needed no engine change and no new files: the four

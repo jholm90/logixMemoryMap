@@ -188,6 +188,22 @@ separately-modeled cost (custom string definitions, SIZE instruction,
 odd-byte UDT array packing) -- not folded into the baseline itself, each
 has its own constant.
 
+**SECOND CAVEAT, 2026-09-14: the baseline is exact on GENERATED files and short
+on REAL exports, and the difference is unpriced shell content, not a wrong
+constant.** The strip ladder read a bare real 1756-L81E v35 export shell (one
+Task, zero Programs, zero Tags, zero DataTypes, zero AOIs, one Module) at
+**21,096 against 13,296 predicted**, and a 5069-L330ERM shell at **17,360
+against 13,288** -- 3,736 apart where the model has them 8 apart. The constant
+itself must not be raised: `emptyroutine_n01` is a generated 1756-L81E v35 file
+carrying a program and a routine the real shell does not, reads 18,884, and the
+engine is byte-exact on it, as it is on `emptyrungs_*`,
+`aoishape_control_empty` and `axis_baseline_motiongroup_only`. A real export
+carries controller-shell content generated files do not -- the controller's own
+`Module` element with real `EKey`/`Ports`/`Bus`/`EthernetPorts`, `SafetyInfo`,
+`RedundancyInfo`, `Security`, `Trends`, `DataLogs`, `TimeSynchronize`, `CST`,
+`WallClockTime`, `QuickWatchLists` -- all of it priced at zero today. See
+OPEN_QUESTIONS.md OQ-CTLSHELL.
+
 **CAVEAT, 2026-08-23: the empty-project baseline is not a constant.** It
 changes with processor and firmware. Confirmed true, and **partially wired 2026-08-29** -- see
 `docs/OPEN_QUESTIONS.md` OQ-BASELINE-PROCFW for the full derivation. Rather
@@ -1397,11 +1413,51 @@ shared-alias case no longer exists against the current engine (real
 -16/rung per additional program instead). See RESOLVED_QUESTIONS.md
 OQ-XPROGREF. No formula change needed.
 
+## Tag-based alarm conditions, measured inside real content (2026-09-14)
+
+`alarm_conditions` = 800 file base + 500 per condition + an associated-tag term
+keyed on the resolved type of each `AssocTag1/2/3` target (BOOL 88, DINT/REAL
+92, STRING 256, unresolved 256). Derived exactly from the 37-file `alarmcond_*`
+batch; see memory_model.yaml for the derivation and for what was proved free
+(alarm name length, message text, severity, delay values).
+
+**First measurement inside real content, from the strip ladder.** Two real
+programs were captured with and without their alarm elements, an exhaustive
+element-tag diff confirming `AlarmCondition` / `AlarmConfig` / `HMIGroup` /
+`AlarmConditions` were the only elements that moved:
+
+| program | conditions | actual | predicted | per condition actual | per condition predicted |
+|---|---:|---:|---:|---:|---:|
+| `griffin_stackerline_1mar25` | 400 | 443,128 | 442,400 | 1,107.8 | 1,106.0 |
+| `elmsdale_20251017r01` | 200 | 243,040 | 221,600 | **1,215.2** | 1,108.0 |
+
+Within 0.16% on one file, 8.8% short on the other. In both programs every
+condition hangs off a single BOOL array tag with `Input="[n]"`.
+
+**Scale matters more than the error does: this is 19% and 21% of total
+controller memory respectively — the second-largest category in both files.**
+Any statement that alarms are out of scope applies to the ALMD/ALMA
+*instructions* (zero occurrences in the real set) and not to these. The
+unexplained 107 bytes per condition is OQ-ALARMCONDREAL.
+
 ## Change log
 
 Log every constant change here with date + which sample(s) drove the change, so
 there's a record of *why* a number is what it is, not just what it currently is.
 
+- **2026-09-14** — **No constant changed. The strip ladder was captured on two
+  real programs and it overturned a standing hypothesis rather than producing a
+  number.** Compiled ladder is OVER-charged on both files (−29,676 Elmsdale,
+  −9,220 Griffin), killing five segments' worth of the assumption that the
+  real-file deficit lives in `routine_logic`. Axis is byte-exact on Griffin over
+  778,728 bytes. Tag-based alarms measured at 19–21% of total memory with the
+  wired model within 0.16% on one file and 8.8% short on the other
+  (OQ-ALARMCONDREAL). A bare real controller shell is 7,800 (L81E) / 4,072
+  (5069) above the baseline, which is unpriced shell content and NOT a wrong
+  baseline constant (OQ-CTLSHELL). Nothing wired: three of seven ladder
+  categories disagree in sign between the two files, which is two data points
+  and the shape of a constant that is really a function of something
+  unidentified.
 - **2026-08-22** — Landed in code (`memory_model.yaml`/`constants.py`/
   `udt.py`/`report.py`): per-tag flat overhead (`84 + 8×floor(len/8)`),
   UDT DataType-definition cost (`168 + 16×member_count` + name cost +

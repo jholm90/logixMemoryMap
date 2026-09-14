@@ -68,11 +68,18 @@ do not lead with the contaminated number and explain it away afterwards.
 (three on 5069-L330ERM, one on 5069-L320ERMS3). The older claim that every real
 program is a 1756-L8x was true of the nine-file set and is not true now.
 
-What 5069 does not need is a per-platform cost model. Measured 2026-09-14
-(capture-batch segment 17): a 5069-L306ER and a 1756-L81E carrying identical
-content at five densities produce **byte-identical residuals at every density**,
-so the whole platform difference is the empty-project baseline constant, which is
-already wired exactly. See `OQ-REAL5069`.
+What 5069 does not need is a per-platform cost model for CONTENT. Measured
+2026-09-14 (capture-batch segment 17): a 5069-L306ER and a 1756-L81E carrying
+identical content at five densities produce **byte-identical residuals at every
+density**, so the platform difference is a single project-level constant rather
+than a per-feature one. See `OQ-REAL5069`.
+
+That constant is exact on generated files and is NOT exact on real exports. The
+strip ladder (2026-09-14) read a bare 1756-L81E v35 real shell at 21,096 against
+a predicted 13,296, and a 5069-L330ERM shell at 17,360 against 13,288 — 3,736
+apart where the engine has them 8 apart. The gap is unpriced controller-shell
+content that generated files do not carry, not the baseline constant, which
+remains byte-exact on every generated empty file. See `OQ-CTLSHELL`.
 
 ## Working method
 This is iterative empirical work, not a one-shot build. The standing loop:
@@ -186,11 +193,20 @@ The same applies to reading the corpus generally — filter first, then parse.
 Never parse every L5X to answer a question about one family.
 
 ## Out of scope until real-file error is under 1%
-**ALMD / ALMA / ALARM_DIGITAL / ALARM_ANALOG.** Verified 2026-09-14: **zero
-occurrences across all sixteen real programs.** No alarm-instruction question may
-be worked, and no alarm test file generated, ahead of something that moves real
-prediction error. `OQ-ALARMDEF` and the `almd_*` / `alarmbits_*` / `alarmdef_*`
-/ `alarmsep_*` families are parked on that basis, not closed.
+**ALMD / ALMA / ALARM_DIGITAL / ALARM_ANALOG — the INSTRUCTIONS.** Verified
+2026-09-14: **zero occurrences across all sixteen real programs.** No
+alarm-instruction question may be worked, and no alarm-instruction test file
+generated, ahead of something that moves real prediction error. `OQ-ALARMDEF`
+and the `almd_*` / `alarmbits_*` / `alarmdef_*` / `alarmsep_*` families are
+parked on that basis, not closed.
+
+**This does NOT park tag-based alarm conditions, which are a different feature
+and are the opposite of out of scope.** `<AlarmCondition>` / `<AlarmConfig>` /
+`<HMIGroup>` elements hanging off a tag are present in real programs and the
+strip ladder measured them at **19% and 21% of total memory** on the two real
+programs stripped (443,128 bytes over 400 conditions, 243,040 over 200). They
+are the second-largest category in both files. See `OQ-ALARMCONDREAL`. Do not
+let the ALMD park above be cited against them; it was, for two days.
 
 This is the general rule, not a special case for alarms: before starting a task,
 check whether the feature appears in `samples/local/` at all. If it does not, it

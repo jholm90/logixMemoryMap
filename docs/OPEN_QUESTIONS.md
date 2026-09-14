@@ -1824,11 +1824,37 @@ the matching footnote at the bottom, not inline.
     9 committed file(s) attempted and never reached `ok` in
     `convert_log.csv`: `predefprobe_opcua_server_address`, `predefprobe_ref_to_axis_cip_drive`, `predefprobe_ref_to_axis_consumed`, `predefprobe_ref_to_axis_general_drive`, `predefprobe_ref_to_axis_servo`, `predefprobe_ref_to_axis_servo_drive` (+3 more)
 
-43. **OQ-REALUNDER** — new 2026-09-12, and it is now the single biggest thing
-    between this project and its North Star. **Every one of the 16 real
-    programs under-predicts, mean |error| 3.65%, worst 6.06%** — outside the
-    2% CLAUDE.md calls a broken estimator, and the first time the real set has
-    read this way.
+43. **OQ-REALUNDER** — new 2026-09-12, and it is still the single biggest
+    thing between this project and its North Star.
+
+    **STATE AS OF 2026-09-14 (recomputed live, not read from the manifest):
+    mean |error| 1.6112%, sum-weighted +1.2417%, worst 3.264%. Eleven files
+    under-predict, five now OVER-predict.** The name of this entry is now half
+    wrong and is kept only because everything downstream cites it.
+
+    | real program | delta (actual − predicted) | % |
+    |---|---:|---:|
+    | `superior_2025_02_21` | +102,142 | +3.264% |
+    | `ipc_edgerline_20251217r1` | +69,886 | +3.098% |
+    | `elmsdale_20251017r01` | +30,432 | +2.651% |
+    | `k3m16_edgers_20220808r00` | +85,468 | +2.113% |
+    | `emporiumedger_20250905r1` | −35,395 | −2.077% |
+    | `cmu_2025_10_14r00` | +103,446 | +1.983% |
+    | `eastperry_2025_02_21` | +86,249 | +1.861% |
+    | `salamanca_20250425r00` | −20,092 | −1.475% |
+    | `emporium_2025_05_28r01` | +101,039 | +1.416% |
+    | `flarefunction_311d_1074245` | −14,090 | −1.312% |
+    | `murraybros_20260122r1` | +11,386 | +1.233% |
+    | `accutally_20260803` | +71,266 | +1.188% |
+    | `mrfp_edger_2026_06_01_r00` | +22,653 | +0.993% |
+    | `griffin_stackerline_1mar25` | −15,540 | −0.658% |
+    | `horizon_edger_march18` | −6,904 | −0.391% |
+    | `pukall_gang_20260414_r00` | −1,648 | −0.066% |
+
+    The original 2026-09-12 reading, retained because the reasoning below was
+    written against it: **every one of the 16 under-predicted, mean |error|
+    3.65%, worst 6.06%** — outside the 2% CLAUDE.md calls a broken estimator,
+    and the first time the real set had read that way.
 
     | real program | delta | % |
     |---|---:|---:|
@@ -1994,6 +2020,98 @@ the matching footnote at the bottom, not inline.
     operators, which fired four times on `accutally` and is stale since segment 6
     measured AND and XOR at exactly the tier-1 rate. That file now reports zero
     coverage gaps.
+
+    ---
+
+    **LADDER CAPTURED 2026-09-14, TWO PROGRAMS, AND IT OVERTURNS THIS ENTRY'S
+    CENTRAL HYPOTHESIS.** Seven-rung descending ladders were built and captured
+    for `elmsdale_20251017r01` (5069-L330ERM v35) and
+    `griffin_stackerline_1mar25` (1756-L81E v35) — full, then minus alarms,
+    minus programs+logic, minus modules, minus axis/motion, minus tags, minus
+    UDT and AOI definitions, down to the bare controller shell. Sign convention
+    below is the manifest's: **positive = the engine UNDER-charged that
+    category.**
+
+    | category removed | Elmsdale | Griffin |
+    |---|---:|---:|
+    | tag-based alarms | **+21,440** | +728 |
+    | programs + program tags + routines + rungs | **−29,676** | **−9,220** |
+    | modules | +18,076 | **−15,580** |
+    | axis / motion | +7,928 | **0 — exact** |
+    | controller tags | −8,075 | −2,745 |
+    | UDT + AOI definitions | +16,667 | +3,477 |
+    | bare controller shell | +4,072 | +7,800 |
+    | **whole file** | **+30,432** | **−15,540** |
+
+    The step errors sum to the whole-file residual, but that is telescoping
+    bookkeeping and is true by construction — it is not independent evidence
+    that the split is right. What IS evidence is that the two files were
+    stripped identically and disagree in sign on three of seven categories.
+
+    **COMPILED LADDER IS OVER-CHARGED ON BOTH FILES.** This entry has spent
+    five segments assuming the missing bytes were in `routine_logic`, on the
+    strength of a bimodal `residual / routine_logic_bytes` ratio. The ladder
+    says the opposite: removing all program content over-recovers by 29,676 on
+    Elmsdale and 9,220 on Griffin. The bimodality was a correlation — real
+    programs with more ladder also have more of whatever the real term is — not
+    a cause. **Do not fit a logic scale-up. The hypothesis is dead.**
+
+    Caveat that bounds how much this step can be pushed on: both `NoLogic`
+    files contain **zero `<Program>` elements**, so the step bundles program
+    shells, program tags, routines and rungs into one number and cannot
+    separate them. Elmsdale lost 63 program tags in that step; Griffin had zero
+    program tags to begin with, so Griffin's −9,220 is at least clean of tag
+    cost.
+
+    **TAG-BASED ALARMS ARE THE SECOND-LARGEST CATEGORY IN BOTH REAL FILES, and
+    they are not the parked ALMD/ALMA question.** The alarms step removes
+    `<AlarmCondition>` / `<AlarmConfig>` / `<HMIGroup>` elements hanging off a
+    single BOOL array tag — 200 on Elmsdale, 400 on Griffin — and an exhaustive
+    element-tag diff of full-vs-NoAlarms shows those are the ONLY elements that
+    differ, so the step is clean. It is worth **243,040 bytes on Elmsdale (21%
+    of the whole program) and 443,128 on Griffin (19%)**.
+
+        per condition   Elmsdale  actual 1,215.2   predicted 1,108.0
+                        Griffin   actual 1,107.8   predicted 1,106.0
+
+    `alarm_conditions` (800 + 500n + associated-tag costs) is within 0.16% on
+    Griffin and 8.8% short on Elmsdale. Two files, one nearly exact and one not,
+    on a category this large, is the highest-value open thread this ladder
+    produced. See OQ-ALARMCONDREAL.
+
+    **THE BARE CONTROLLER SHELL IS UNDER-CHARGED ON BOTH, AND IT IS NOT THE
+    BASELINE CONSTANT.** Both `Empty` files are genuine: one Task, zero
+    Programs, zero Tags, zero DataTypes, zero AOIs, one Module (the controller).
+    Griffin_Empty is 1756-L81E v35 — the exact platform every generated test
+    file uses — and reads **21,096 against a predicted 13,296**. But
+    `emptyroutine_n01`, a GENERATED 1756-L81E v35 file that carries a program
+    and a routine the shell does not, reads 18,884 and the engine is
+    byte-exact on it, as it is on `emptyrungs_*`, `aoishape_control_empty` and
+    `axis_baseline_motiongroup_only`. The baseline constant is therefore right;
+    a real export's controller shell carries ~2,400+ bytes of content the
+    generated files do not have and the engine prices at zero. Candidates, none
+    of them yet priced: the controller's own `Module` element with real
+    `EKey` / `Ports` / `Bus` / `EthernetPorts` config, `SafetyInfo`,
+    `RedundancyInfo`, `Security`, `Trends`, `DataLogs`, `TimeSynchronize`,
+    `CST`, `WallClockTime`, `QuickWatchLists`. See OQ-CTLSHELL.
+
+    **MODULES DISAGREE IN SIGN**, +18,076 under on Elmsdale against −15,580
+    over on Griffin, so there is no single module correction to make and any
+    fitted one would be fitting to the difference between two files. Elmsdale
+    carries 28 non-controller modules, Griffin 18.
+
+    **AXIS IS EXACTLY RIGHT ON GRIFFIN** — 0 bytes of error across 37 axis tags
+    and 778,728 bytes, the largest single category in that file — and +7,928 on
+    Elmsdale across 8 axis tags. That is a strong result for the axis model and
+    it retires the "axis is unwired exposure" line in the candidate list above.
+
+    **What the ladder does NOT resolve, and why nothing is being wired from it
+    yet.** Two files is two data points. Three of seven categories disagree in
+    sign between them, which is exactly the shape of a constant that is really
+    a function of something not yet identified. Every constant this project has
+    fitted from a collinear or two-point measurement has had to be unwound
+    later. The next move is the missing third arm and the logic/shell split,
+    specified in TASKS.md, not a refit.
 
 23. **OQ-DEFSCALE** — definition- and instance-count scaling. **CAPTURED
     AND RECONCILED 2026-09-11, all 30 files, zero import errors. Four exact
@@ -2569,7 +2687,14 @@ the matching footnote at the bottom, not inline.
     began working 2026-09-10, so it needs RECAPTURE before its number is used.
     It is excluded from every figure quoted above.
 
-30. **OQ-REAL5069** — **SHELVED 2026-09-11 until 2026-09-18. Not closed,
+30. **OQ-REAL5069** — *amended 2026-09-14 by the strip ladder: the
+    "identical content, identical residual" result holds and is not in doubt,
+    but it was measured on GENERATED files. On real exports the two platforms'
+    bare shells differ by 3,736 where the engine has them 8 apart. Read this
+    entry as "no per-platform CONTENT model is needed", not "the platform
+    difference is fully wired". The residue is unpriced controller-shell
+    content — see OQ-CTLSHELL.*
+    **SHELVED 2026-09-11 until 2026-09-18. Not closed,
     and not to be raised again before then.**
 
     Two corrections belong on the record first.
@@ -3095,7 +3220,11 @@ the matching footnote at the bottom, not inline.
     paragraph raised is implemented and measured above; it changes nothing on
     any of the sixteen.
 
-33. **OQ-ALARMDEF** — **PARKED 2026-09-14, not closed. Zero ALMD / ALMA /
+33. **OQ-ALARMDEF** — *scope note added 2026-09-14: this entry covers the ALMD
+    / ALMA INSTRUCTIONS only. Tag-based `<AlarmCondition>` elements are a
+    separate feature, are present in real programs at 19–21% of total memory,
+    and are NOT parked — see OQ-ALARMCONDREAL.*
+    **PARKED 2026-09-14, not closed. Zero ALMD / ALMA /
     ALARM_DIGITAL / ALARM_ANALOG occurrences across all sixteen real programs**,
     verified by direct grep. Nothing in this entry can move real prediction
     error, so it waits behind everything that can, and no further alarm test
@@ -3752,3 +3881,88 @@ the matching footnote at the bottom, not inline.
     1 committed file(s) attempted and never reached `ok` in
     `convert_log.csv`: `daxis_axis_cip_drive`
 
+
+44. **OQ-ALARMCONDREAL** — new 2026-09-14, from the strip ladder. Tag-based
+    alarm conditions are the **second-largest category in both real programs
+    measured**, and the wired model is nearly exact on one of them and 8.8%
+    short on the other.
+
+    | | conditions | actual step | predicted step | per condition actual | per condition predicted |
+    |---|---:|---:|---:|---:|---:|
+    | `griffin_stackerline_1mar25` | 400 | 443,128 | 442,400 | 1,107.8 | 1,106.0 |
+    | `elmsdale_20251017r01` | 200 | 243,040 | 221,600 | **1,215.2** | 1,108.0 |
+
+    That is 19% and 21% of the whole program respectively. The step is clean:
+    an exhaustive element-tag diff of each full export against its `NoAlarms`
+    sibling shows `AlarmCondition`, `AlarmConfig`, `HMIGroup` and the
+    `AlarmConditions` container are the **only** elements that differ — no tags,
+    rungs, routines, programs, UDTs or AOIs moved.
+
+    In both files every condition hangs off a **single BOOL array tag** with
+    `Input="[n]"`, and the owning tag survives the strip. `alarm_conditions`
+    prices them 800 + 500n + associated-tag costs by resolved type.
+
+    **The question is what makes an Elmsdale condition 107 bytes more expensive
+    than a Griffin one.** Both carry the identical 37-attribute
+    `AlarmCondition` shape. Ruled out already by the `alarmcond_*` batch
+    (RESOLVED_QUESTIONS, OQ-ALARMCOND): alarm name length, message text,
+    severity, and delay values are all free. Not yet separated: the
+    `AssocTag1/2/3` targets' resolved types (the one term that is type-keyed),
+    `Expression` content, `HMIGroup` contents, and whether the owning BOOL
+    array's own size participates.
+
+    **This is NOT the parked ALMD/ALMA question (OQ-ALARMDEF).** That entry is
+    parked because zero ALMD/ALMA *instructions* appear in any of the sixteen
+    real programs, which remains true. Tag-based alarm *conditions* are a
+    different feature, they are present in real programs, and on the evidence
+    above they are one of the largest single levers on real-file error. The
+    CLAUDE.md scope note has been corrected accordingly.
+
+    **Next measurement:** dump the `AssocTag1/2/3` targets and resolved types
+    for all 200 Elmsdale and 400 Griffin conditions and check whether the
+    107-byte gap is entirely explained by associated-tag type mix before any
+    constant is touched. That is a parse of two files, not a capture batch, and
+    it should be done before anything is generated.
+
+45. **OQ-CTLSHELL** — new 2026-09-14, from the strip ladder. **A real export's
+    bare controller shell costs ~2,400+ bytes that the engine prices at zero,
+    and it is NOT the empty-project baseline constant.**
+
+    | | actual | predicted | under |
+    |---|---:|---:|---:|
+    | `Griffin_Empty` (1756-L81E v35) | 21,096 | 13,296 | **+7,800** |
+    | `Elmsdale_Empty` (5069-L330ERM v35) | 17,360 | 13,288 | **+4,072** |
+
+    Both are genuinely empty: one Task, zero Programs, zero Tags, zero
+    DataTypes, zero AOIs, one Module (the controller itself).
+
+    **The baseline constant is right and must not be touched.** `Griffin_Empty`
+    is 1756-L81E v35 — the exact platform every generated test file uses — yet
+    `emptyroutine_n01`, a generated file on that same platform that carries a
+    program and a routine `Griffin_Empty` does not, reads 18,884 and the engine
+    is **byte-exact** on it, as it is on `emptyrungs_n00010/00100/01000`,
+    `aoishape_control_empty` and `axis_baseline_motiongroup_only`. Raising the
+    baseline by 7,800 would break every one of those.
+
+    So the cost is in content a real export carries and a generated one does
+    not. Present in both `Empty` files and priced at zero today: the
+    controller's own `Module` element with real `EKey` / `Ports` / `Bus` /
+    `EthernetPorts` configuration, `SafetyInfo`, `RedundancyInfo`, `Security`,
+    `Trends`, `DataLogs`, `TimeSynchronize`, `CST`, `WallClockTime`, and (5069
+    only) `QuickWatchLists`.
+
+    The two platforms differ by **3,736** at empty where the engine has them 8
+    apart. That does not contradict OQ-REAL5069's finding that a 5069 and a
+    1756 carrying identical *content* have byte-identical residuals — that test
+    used generated files, which carry none of the above — but it does mean the
+    platform difference is larger on real exports than the wired constant, and
+    OQ-REAL5069's conclusion should be re-read as "no per-platform *content*
+    model is needed", not "the platform difference is fully wired".
+
+    **Next measurement:** this is the cheapest high-value item on the board and
+    it needs only two or three generated files, not a batch — a 1756-L81E v35
+    empty project with (a) nothing added, (b) the controller's real
+    `EthernetPorts`/`Bus` block copied in, (c) `Trends` + `DataLogs` +
+    `QuickWatchLists` populated. If (b) or (c) moves the number, the term is
+    identified in one capture round. This affects all sixteen real files
+    uniformly, so it is worth 0.2–0.6% of real error on its own.

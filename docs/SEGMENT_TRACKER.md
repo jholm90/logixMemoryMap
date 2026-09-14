@@ -517,11 +517,16 @@ its four outputs are four different instructions and it pays the same 12 each as
 
 So the discount needs no repetition, ignores instruction type, exempts parallel
 branches, is exact at three output counts — and the sixteen real programs still
-reject it (2.07% → 2.90%). Taken with OQ-REALUNDER's finding that real logic is
-9–22% SHORT, the coherent reading is that **the discount is real and universal
-and a larger unpriced positive term in real ladder swamps it** — one missing term
-explaining both, rather than two opposite-signed errors in one category. That
-makes `strip_ladder.py`'s L2 rung the decisive measurement for this entry too.
+reject it (2.07% → 2.90%).
+
+**STALE AS OF 2026-09-14, corrected here rather than left standing.** The
+reading above was that real ladder is 9–22% SHORT and a larger unpriced positive
+term swamps the discount. The strip ladder was captured on 2026-09-14 and says
+the opposite: compiled ladder is **OVER**-charged on both programs measured
+(−29,676 Elmsdale, −9,220 Griffin). So the real set rejecting the discount is
+NOT explained by a missing positive term in ladder, and the "9–22% short" figure
+it rested on was a ratio, not a measurement. Why the sixteen reject an exactly
+measured discount is once again open. See OQ-REALUNDER.
 
 Nothing wired, nothing generated. Four constants confirmed, one candidate
 eliminated, and the two open logic questions joined into one.
@@ -1146,3 +1151,24 @@ rows land on the byte.
 `identnamelen_task_c{04,08,16,32,40}` (5 rows) was never captured, so whether a
 **Task's** own name follows the same law is untested. Those are the 5 rows this
 segment was deferred for.
+
+
+## Not a segment — the strip ladder, captured 2026-09-14
+
+The ladder is a different instrument from the 31 segments above: it measures a
+category's cost INSIDE real content rather than isolating one variable in a
+generated file. Two programs were captured at seven rungs each, `elmsdale`
+(5069-L330ERM v35) and `griffin` (1756-L81E v35). Full table and reasoning in
+OQ-REALUNDER; what matters for reading the segments above:
+
+- **Compiled ladder is OVER-charged on both files.** Every segment that reasoned
+  from "real ladder is 9–22% short" was reasoning from a ratio, not a
+  measurement, and those passages are corrected in place where they appear.
+- **Axis is byte-exact on Griffin** across 37 axis tags and 778,728 bytes.
+  Segment 21's axis work needs no follow-up on the real set.
+- **Tag-based alarms are 19–21% of total real memory** and were being treated as
+  parked because ALMD/ALMA instructions are absent. Different feature. The
+  CLAUDE.md scope note is corrected.
+- **Nothing was wired.** Three of seven categories disagree in sign between the
+  two files. A third ladder on an over-predicting program is specified in
+  TASKS.md before any category constant moves.
