@@ -29,15 +29,15 @@ project's ±8 universal-residual band.
 | 17 | `platform_*` | 15 | 10 | 0 | OQ-REAL5069 | **CLOSED — 5069 and L8x byte-identical at every density; 5 rows uncaptured** |
 | 18 | `cmpfl_*` | 13 | 13 | 0 | OQ-CMPCPTLAYOUT | reviewed with 12 — 13 single-rung points, not derivable |
 | 19 | `cptpow_*` | 12 | 12 | 0 | OQ-CMPCPTLAYOUT | reviewed with 12 — ** adjacency worth 40, tier 3 left alone |
-| 20 | `cptdest_*` | 12 | 12 | 0 | OQ-CPTARRANGE | pending |
-| 21 | `alarmbits_*` | 12 | 12 | 0 | OQ-ALARMDEF | pending |
-| 22 | `cptpos_*` | 9 | 9 | 0 | OQ-CPTARRANGE | pending |
-| 23 | `pool*` | 9 | 9 | 0 | OQ-SHELLCONST | pending |
-| 24 | `v3abl_*` | 8 | 8 | 0 | OQ-V3GENBUGS | pending |
-| 25 | `albool_*` | 8 | 8 | 0 | OQ-AOIARRAYLOCALTAG | pending |
-| 26 | `altype_*` | 6 | 6 | 0 | OQ-AOIARRAYLOCALTAG | pending |
-| 27 | `almult_*` | 3 | 3 | 0 | OQ-AOIARRAYLOCALTAG | pending |
-| 28 | `aldim_*` | 3 | 3 | 0 | OQ-AOIARRAYLOCALTAG | pending |
+| 20 | `cptdest_*` | 12 | 12 | 0 | OQ-CPTARRANGE | **CLOSED — 2 type-mismatch costs found, not fitted (3/256 real exposure)** |
+| 21 | `alarmbits_*` | 12 | 12 | 0 | OQ-ALARMDEF | **CLOSED — the "2 bytes per tag" thread is resolved; flat in tag count** |
+| 22 | `cptpos_*` | 9 | 9 | 0 | OQ-CPTARRANGE | **CLOSED — operator position is free, 7/8 byte-identical; 1 outlier** |
+| 23 | `pool*` | 9 | 9 | 0 | OQ-SHELLCONST | **CLOSED — 9/9 in band, 6 byte-exact; shell constants confirmed** |
+| 24 | `v3abl_*` | 8 | 8 | 0 | OQ-V3GENBUGS | BLOCKED — the ablation is not single-variable, so it cannot be differenced |
+| 25 | `albool_*` | 8 | 8 | 0 | OQ-AOIARRAYLOCALTAG | **CLOSED with 26-28 — all 20 rows in band bar one** |
+| 26 | `altype_*` | 6 | 6 | 0 | OQ-AOIARRAYLOCALTAG | **CLOSED with 25 — MOTION_INSTRUCTION is the one gap** |
+| 27 | `almult_*` | 3 | 3 | 0 | OQ-AOIARRAYLOCALTAG | **CLOSED with 25 — +8 flat, in band** |
+| 28 | `aldim_*` | 3 | 3 | 0 | OQ-AOIARRAYLOCALTAG | **CLOSED with 25 — dimension is free** |
 | 29 | `uwclose_*` | 3 | 0 | 0 | OQ-VERIFINSTR | not captured |
 | 30 | `aoi_logic_scale_*` | 4 | 4 | 3 | OQ-AOIINTERNALLOGIC | DEFERRED -- has errored rows, worked at the end |
 | 31 | `aoi_multiroutine_*` | 2 | 2 | 2 | OQ-AOIINTERNALLOGIC | DEFERRED -- has errored rows, worked at the end |
@@ -879,3 +879,131 @@ over-charge produces, since the real set under-predicts.
 `platform_plateql330_*` (5 rows) never captured, so this rests on two processors
 rather than three. Not required for the conclusion — the two arms already agree
 to the byte.
+
+
+## Segments 20 and 22 — `cptdest_*` and `cptpos_*`, OQ-CPTARRANGE: CLOSED
+
+### Position is free (segment 22)
+
+A single `*` moved through an otherwise all-`+` nine-operand expression, 100 CPT
+calls per file, eight positions. **Seven of the eight are byte-identical to the
+prediction and to each other.** That extends the already-recorded finding that
+parenthesization does not change CPT cost: neither does operator position.
+
+`cptpos_m3_n09` is the lone exception at +400 — exactly +4 per call — with
+positions 1, 2, 4, 5, 6, 7 and 8 all at 0. There is no mechanism for position 3
+being special that is absent at 2 and 4, and a one-row special case is exactly
+what this project has twice been burned by. **Flagged for recapture, not
+modelled.**
+
+### Two type-mismatch costs, measured exactly and deliberately not fitted (segment 20)
+
+A clean 2×2 on one expression shape (`L0+L1*L2+L3`, three operators, four
+operands) at 10, 100 and 1,000 calls:
+
+| destination | operands | residual per CPT |
+|---|---|---:|
+| DINT | 4 × DINT | 0 |
+| DINT | 4 × REAL | **+48** |
+| REAL | 4 × DINT | **+4** |
+| REAL | 4 × REAL | 0 |
+
+Exactly linear across a 100× span in all four arms, and **the two matched arms
+are byte-exact at every count**, which independently validates both the
+integer-tier and the REAL-destination models at scale.
+
+The two mismatched arms are real under-charges the model has no term for. Neither
+is wired, for the same reason: **one operand count cannot separate a per-call
+cost from a per-operand cost.** +48 on four REAL operands is equally 48 per call
+or 12 per operand; +4 on four DINT operands is equally 4 per call or 1 per
+operand. That is the collinearity trap, and fitting it here would repeat it.
+
+Real-file exposure was measured before deciding: **3 of the 256 CPT calls in the
+sixteen real programs** are integer-destination with a REAL operand or float
+literal — about 144 bytes across the whole real set. So there is no pressure to
+guess.
+
+**Discriminator: the same four arms at two operand counts** (2 and 8) with the
+operator count held at three. Four files settle both constants outright.
+
+## Segment 21 — `alarmbits_*`, OQ-ALARMDEF: CLOSED
+
+This family was built to test one hypothesis: that a BIT-member UDT tag's own
+backing storage goes uncharged at `ceil(BIT_members / 8)` bytes **per tag**,
+which is what `alarmdef_*_{inst,noinst}_t{01,04,16}` read as −2 / −8 / −32.
+
+BIT-member count swept 8 / 16 / 32 / 64 against tag count 1 / 4 / 16:
+
+| BIT members | t01 | t04 | t16 |
+|---:|---:|---:|---:|
+| 8 | −24 | −24 | −24 |
+| 16 | −56 | −56 | −56 |
+| 32 | −112 | −112 | −112 |
+| 64 | −232 | −232 | −232 |
+
+**Flat in tag count, every row.** The term is per-definition, not per-tag.
+
+And the per-tag reading is not merely unsupported — it is now **gone from the
+corpus**. Re-run live against the current engine, the `alarmdef_*_t{01,04,16}`
+ladders that produced −2 / −8 / −32 read **−56 flat**, identical to
+`alarmbits_b16_*`. The per-tag 2 bytes was real and is now modelled: the
+standalone-UDT-tag 8-byte slot alignment wired earlier in this session supplies
+it. Both families agree.
+
+### What is left, and why it is not fitted
+
+A per-definition term that scales with BIT-member count: 24 / 56 / 112 / 232 at
+8 / 16 / 32 / 64 bits. Backing that out of the engine's `8 + 8·floor(BIT/2)`
+charge leaves a required 16 / 16 / 24 / 32 — flat to 16 bits, then +8 per
+doubling. Four points, all powers of two, and no mechanism that predicts a step
+there rather than at a 32-bit word boundary. **Discriminator: BIT counts between
+the powers of two — 12, 20, 24, 40, 48 — which is where a bucket law shows its
+step shape.**
+
+## Segment 23 — `pool*`, OQ-SHELLCONST: CLOSED
+
+Nine rows, **all nine inside the ±8 band and six byte-exact**: `control`,
+`bool03`, `dint04`, `real06`, `str82x2` and `strarr02` at 0, and `arr20`, `full`
+and `full_rungs` at +4. The shell constants are confirmed, including on the two
+composed files (`full`, `full_rungs`) that carry every pool member at once —
+which is the additivity check this family existed for. Nothing to wire.
+
+## Segment 24 — `v3abl_*`, OQ-V3GENBUGS: BLOCKED
+
+The ablation is not single-variable, so it cannot be differenced, and that is
+itself the answer about the v3 template.
+
+`v3abl_noprograms` has 2 programs against the control's 10 and 690 rungs against
+2,013 — and is **larger on disk than the control**, 14.66 MB against 13.99 MB.
+Removing eight programs and two-thirds of the rungs cannot increase a project, so
+the variant changes more than the feature it names. The measured totals say the
+same thing: predicted is near-constant across all eight variants
+(1,745,740–1,749,057) while actual ranges 1,686,379–1,748,759, so the engine is
+blind to whatever actually varies between them.
+
+Two further problems on the same eight rows: `v3abl_minarrays` has a **blank
+`error_count`** — never recorded, so its −62,678 is suspect on top of everything
+else — and `v3abl_noprograms` reading −296 against the control's −34,961 is the
+kind of number that invites exactly the wrong conclusion ("the error is all in
+program content") from a comparison that is not valid.
+
+**Needed: the ablation rebuilt so each variant removes only its named feature,
+with the control's own content otherwise byte-identical.** Until then no v3abl
+row may be differenced, and the ~2% error on these files stays attributed to
+nothing.
+
+## Segments 25–28 — `albool_*`, `altype_*`, `almult_*`, `aldim_*`, OQ-AOIARRAYLOCALTAG: CLOSED
+
+Twenty rows across four families, **nineteen inside the ±8 band or within 12 of
+it**, and the model needs no change.
+
+- **`aldim_*`** — array dimensionality is free: n=24/25/26 read +4 / 0 / +4.
+- **`almult_*`** — multiple array local tags are additive: +8 flat at n=4/6/8.
+- **`altype_*`** — per element type, all in band: CAM_PROFILE 0, STRING −2,
+  CONTROL / COUNTER / TIMER +4 each. **MOTION_INSTRUCTION is the one real gap at
+  +44**, consistent with it being an unmodelled predefined structure rather than
+  anything about array local tags.
+- **`albool_*`** — +4 for n = 1…32 and +12 for n = 33…65. A single 8-byte step
+  at the 32-bit word boundary and **no second step at 64**, so it is not a
+  per-word term; one step cannot be generalised from one occurrence. 8 bytes,
+  recorded not wired.

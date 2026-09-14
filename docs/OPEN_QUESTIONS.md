@@ -339,6 +339,24 @@ the matching footnote at the bottom, not inline.
    arms above test the two mechanisms (a per-array term, or 4-byte
    granularity) that could produce it.
 
+    **CLOSED 2026-09-14 (segments 25-28). 20 rows across four families, nineteen
+    in or within 12 of the +-8 band, and the model needs no change.**
+
+    - **`aldim_n000{24,25,26}_def_only`** -- array dimensionality is free:
+      +4 / 0 / +4.
+    - **`almult_n0{4,6,8}_def_only`** -- multiple array local tags are additive:
+      +8 flat at all three counts.
+    - **`altype_*_n00010_def_only`** -- per element type, all in band: CAM_PROFILE
+      0, STRING -2, CONTROL / COUNTER / TIMER +4 each. **MOTION_INSTRUCTION is the
+      one real gap at +44**, which is consistent with it being an unmodelled
+      predefined structure (OQ-PREDEFINED) rather than anything about array local
+      tags.
+    - **`albool_n*_def_only`** -- +4 for n = 1..32 and +12 for n = 33..65. One
+      8-byte step at the 32-bit word boundary and **no second step at 64**, so it
+      is not a per-word term, and a single occurrence of a step cannot be
+      generalised. 8 bytes, recorded not wired.
+
+
 6b. **OQ-MODULESTRUCTURAL** — NEW, 2026-09-04, and it changes the target
    for OQ-MODULEIO below. The target application is testing an unknown
    file, and every catalog module number cannot be captured
@@ -1569,6 +1587,32 @@ the matching footnote at the bottom, not inline.
     from the model, so this cannot recur for a type the model already knows —
     which is what CLAUDE.md's no-hardcoded-sizes rule exists to prevent.
 
+    **ABLATION CAPTURED 2026-09-14 (segment 24) AND IT CANNOT BE DIFFERENCED.
+    That is itself the finding about the v3 template. BLOCKED.**
+
+    Each `v3abl_*` variant is supposed to remove exactly one feature from a common
+    control. `v3abl_noprograms` has 2 programs against the control's 10 and 690
+    rungs against 2,013 -- and is **larger on disk than the control**, 14.66 MB
+    against 13.99 MB. Removing eight programs and two-thirds of the rungs cannot
+    increase a project, so the variant changes more than the feature it names.
+
+    The totals say the same. Predicted is near-constant across all eight variants
+    (1,745,740 to 1,749,057) while actual ranges 1,686,379 to 1,748,759, so the
+    engine is blind to whatever actually differs between them.
+
+    Two further problems on the same eight rows. `v3abl_minarrays` has a **blank
+    `error_count`** -- never recorded -- so its -62,678 is suspect on top of being
+    undifferenceable. And `v3abl_noprograms` reading -296 against the control's
+    -34,961 invites exactly the wrong conclusion ("the whole error is program
+    content") from a comparison that is not valid; it is recorded here so that
+    reading is not reached a second time.
+
+    **Needed: the ablation rebuilt so each variant removes only its named feature,
+    with the control's content otherwise byte-identical.** Until then no `v3abl_`
+    row may be differenced and the ~2% error on these files stays attributed to
+    nothing.
+
+
 16. **OQ-JSRSCALE / OQ-COMPOSITESCALE** — the composite AOI/JSR surcharge.
     **REFITTED ON REAL PROGRAMS 2026-09-04. Was the project's #1 error
     source; is now its largest remaining one, but 5x smaller.**
@@ -1997,6 +2041,17 @@ the matching footnote at the bottom, not inline.
     Both are constants, not slopes, so neither affects the OQ-DEFSCALE
     reading above.
 
+    **The `pool*` arm is CLOSED 2026-09-14 (segment 23). Nine rows, all nine
+    inside the +-8 band, six byte-exact**: `control`, `bool03`, `dint04`,
+    `real06`, `str82x2` and `strarr02` at 0, and `arr20`, `full` and `full_rungs`
+    at +4. The two composed files are the point -- `full` and `full_rungs` carry
+    every pool member at once and land in band, so the shell constants are
+    additive and none of them needed changing.
+
+    That does NOT close the two constants above: `pool*` is a different generator
+    from `shellscale_*`, so the -23 and the -815 are untouched by it. The -815 in
+    particular still wants identifying.
+
 
     **THE -23, LOCALISED 2026-09-12 -- and it is a TAG constant, not a shell or
     logic one.** A residual census over every clean generated capture: of 2,563
@@ -2338,6 +2393,47 @@ the matching footnote at the bottom, not inline.
         the part neither existing family can give -- whether 348 is per FILE or
         per RUNG, since every captured file in both families has exactly 100
         rungs and cannot distinguish 348 once from 3.48 each.
+
+
+    **ANSWERED 2026-09-14 (segments 20 and 22). Arrangement is free. CLOSED.**
+
+    `cptpos_m{1..8}_n09` moves a single `*` through an otherwise all-`+`
+    nine-operand expression, 100 CPT calls per file. **Seven of the eight
+    positions are byte-identical to the prediction and to each other**, which
+    extends the already-recorded parenthesization result: neither grouping nor
+    position changes the cost. `cptpos_add_n09`, the all-`+` control, is exact.
+
+    `cptpos_m3_n09` is the lone exception at +400 -- exactly +4 per call -- with
+    positions 1, 2, 4, 5, 6, 7 and 8 all at 0. There is no mechanism for position
+    3 being special that is absent at 2 and 4. **Flagged for RECAPTURE, not
+    modelled**; a one-row special case is what this project has twice been burned
+    by.
+
+    **Two type-mismatch costs found on the way, measured exactly and deliberately
+    not fitted.** `cptdest_d{dint,real}o{dint,real}_n{00010,00100,01000}` is a
+    clean 2x2 on one shape (`L0+L1*L2+L3`, three operators, four operands):
+
+        destination   operands      residual per CPT
+        DINT          4 x DINT                     0
+        DINT          4 x REAL                   +48
+        REAL          4 x DINT                    +4
+        REAL          4 x REAL                     0
+
+    Exactly linear across a 100x span in all four arms, and **both matched arms
+    are byte-exact at every count** -- an independent validation of the
+    integer-tier and REAL-destination models at scale.
+
+    The two mismatched arms are real under-charges with no term in the model, and
+    neither is wired because **one operand count cannot separate a per-call cost
+    from a per-operand cost**: +48 on four REAL operands is equally 48 per call or
+    12 per operand, and +4 on four DINT operands equally 4 per call or 1 per
+    operand. Real-file exposure was measured before deciding -- **3 of the 256 CPT
+    calls in the sixteen real programs** are integer-destination with a REAL
+    operand or float literal, roughly 144 bytes across the whole real set -- so
+    there is no pressure to guess.
+
+    **Discriminator: the same four arms at two operand counts (2 and 8), operator
+    count held at three.** Four files settle both constants outright.
 
 
 29. **OQ-STEXPR** — the ST assignment law's four remaining assumptions.
@@ -2922,7 +3018,31 @@ the matching footnote at the bottom, not inline.
     alarm term: the `d1_*` UDT carries 16 BIT members against 2 in the d0N
     files, and the law above accounts for the difference to the byte.
 
-    **WHAT IS STILL OPEN: 2 bytes per tag.** Exactly four of the 68 rows carry a
+    **THE "2 BYTES PER TAG" THREAD IS CLOSED 2026-09-14 (segment 21). It was
+    never per-tag, and the per-tag bytes are now modelled anyway.**
+
+    `alarmbits_b{08,16,32,64}_t{01,04,16}` sweeps BIT-member count against tag
+    count. The residual is **flat in tag count on every one of the 12 rows** --
+    -24 / -56 / -112 / -232 at 8 / 16 / 32 / 64 BIT members, identical at t01,
+    t04 and t16. A per-tag term cannot do that.
+
+    Re-run live against the current engine, the `alarmdef_*_t{01,04,16}` ladders
+    that produced the -2 / -8 / -32 below now read **-56 flat**, identical to
+    `alarmbits_b16_*`. So the per-tag 2 bytes was real and is now supplied by the
+    standalone-UDT-tag 8-byte slot alignment wired earlier on 2026-09-14. Both
+    families agree, and the hypothesis below is superseded rather than merely
+    unconfirmed.
+
+    **What is left is a per-DEFINITION term scaling with BIT-member count**, and
+    it is not fitted. Backing 24 / 56 / 112 / 232 out of the engine's
+    `8 + 8*floor(BIT/2)` charge leaves a required 16 / 16 / 24 / 32: flat to 16
+    bits, then +8 per doubling. Four points, all powers of two, and no mechanism
+    predicting a step there rather than at a 32-bit word boundary.
+    **Discriminator: BIT counts BETWEEN the powers of two -- 12, 20, 24, 40, 48
+    -- which is where a bucket law shows its step shape.**
+
+    *Superseded hypothesis, retained because the numbers are still the record:*
+    Exactly four of the 68 rows carry a
     residual beyond the law, and they are the tag ladders:
 
         inst_t01   -2      noinst_t01   -2
