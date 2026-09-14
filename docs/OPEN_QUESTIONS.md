@@ -4067,3 +4067,95 @@ the matching footnote at the bottom, not inline.
     `QuickWatchLists` populated. If (b) or (c) moves the number, the term is
     identified in one capture round. This affects all sixteen real files
     uniformly, so it is worth 0.2–0.6% of real error on its own.
+
+46. **OQ-LADDERBASE** — new 2026-09-14, and it blocks every conclusion the
+    strip ladder produced on Elmsdale. **The per-program strip batch and the
+    category ladder batch cannot both be true, and the discrepancy is
+    18,000–25,000 bytes.**
+
+    Nine per-program variants of `elmsdale_20251017r01` were captured — each
+    the full export minus exactly one `<Program>`. Scored against the captured
+    full-file actual of 1,147,896, every one of the nine is under-charged by a
+    near-constant amount that has no relationship to program size:
+
+    | program removed | routines | rungs | actual drop | predicted drop | engine |
+    |---|---:|---:|---:|---:|---:|
+    | `TiltHoist` | 21 | 267 | 109,004 | 81,264 | +27,740 |
+    | `TiltHoist_Infeed` | 10 | 79 | 37,640 | 18,892 | +18,748 |
+    | `Inputs` | 4 | 110 | 33,956 | 15,256 | +18,700 |
+    | `Outputs` | 4 | 33 | 27,948 | 9,520 | +18,428 |
+    | `TiltHoist_Outfeed` | 5 | 31 | 29,036 | 11,008 | +18,028 |
+    | `InfeedData` | 4 | 31 | 36,488 | 19,160 | +17,328 |
+    | `PlanerInterface` | 3 | 21 | 26,376 | 9,932 | +16,444 |
+    | `Housekeeping` | 5 | 27 | 25,508 | 9,280 | +16,228 |
+    | `AlarmsAndMessages` | 3 | 114 | 36,324 | 20,764 | +15,560 |
+
+    **Those sum to +167,204 against a whole-file residual of +30,432 — 5.5x
+    too much.** A per-program cost cannot behave that way. A 3-routine program
+    and a 21-routine program cannot both cost ~17,000 more than predicted while
+    the file containing all nine is only 30,432 short.
+
+    **It is a baseline problem, not a model problem, and two independent checks
+    say so.**
+
+    *Base-free check.* `Inputs` and `Outputs` carry the same four routine names
+    (`C102`, `JB101`, `Main`, `MCP101`) and differ only in content — 110 rungs
+    against 33. Their predicted drops differ by 5,736 and their actual drops by
+    6,008: **a gap of 272** with no baseline involved at all. The engine is
+    right on the margin; the constant is common to every variant, which is the
+    signature of a wrong shared base.
+
+    *Solving for the base.* Setting each program's error to zero implies a
+    full-file actual of 1,129,148 … 1,132,336 for seven of the nine, tightly
+    clustered. Taking the median, **1,129,868 — 18,028 below the captured
+    1,147,896** — re-scores the batch as:
+
+        TiltHoist_Outfeed      +0        InfeedData          -700
+        Outputs             +400        Housekeeping      -1,800
+        Inputs              +672        PlanerInterface   -1,584
+        TiltHoist_Infeed    +720        AlarmsAndMessages -2,468
+        TiltHoist         +9,712
+
+    Eight of nine inside ±2,500, from +15,560…+18,748. (This fit is circular on
+    its own — the base is derived from the same rows it then scores. The
+    independent evidence is below.)
+
+    **THE INDEPENDENT CONFIRMATION, and it closes a second anomaly at the same
+    time.** The alarms step does not use any per-program file. Re-scored against
+    1,129,868 it goes from **+21,440 to +3,412**, and Elmsdale's cost per alarm
+    condition moves from 1,215.2 to **1,125.1** against Griffin's measured
+    1,107.8. The 107-byte-per-condition disagreement that OQ-ALARMCONDREAL was
+    opened for is 17 bytes once the base is corrected. **One wrong number
+    explains both anomalies**, which is a far better account than two unrelated
+    structural effects.
+
+    **What does NOT reconcile, and why nothing may be wired yet.** The Trials
+    ladder rungs are still inconsistent with that base. `NoProgramLogic`
+    (760,800) and `NoLogic` (733,988) imply the engine OVER-charges program
+    content by 29,676, while the rebased per-program batch implies it is right
+    to within about +4,950 in total. Those differ by roughly 34,600. Also
+    unexplained: removing the whole `AlarmsAndMessages` program costs 36,324
+    actual, while removing its 3 routines **and** all 63 program tags **and**
+    all 9 program shells costs 26,812 — strictly more content for strictly less
+    memory, which no monotone cost model permits.
+
+    So one of the two capture sessions carries an error of 18,000–25,000 and
+    the arithmetic cannot say which. **Every Elmsdale conclusion in
+    OQ-REALUNDER, OQ-ALARMCONDREAL and the logic-step split is provisional
+    until this is settled.** Griffin's ladder is unaffected — it is a separate
+    program captured in one pass and its steps close without a floating base.
+
+    **CAPTURE ERRORS: 1 row(s)** — `NoPlanerInterface` built with a
+    program-tag-not-found error, and the cause is identified: `TiltHoist_Outfeed`
+    references `PlanerInterface.AutoRequest` and `PlanerInterface.Running`, the
+    only two cross-program tag references in the entire export. Every other
+    variant is structurally clean (scheduled-program lists, main-routine
+    attributes and JSR targets all verified consistent), so that error does not
+    contaminate the other eight.
+
+    **The measurement that settles it, and it is three files in one session:**
+    the unmodified full export, `Elmsdale_NoAlarms`, and any one per-program
+    variant, captured back to back without the software being restarted between
+    them. If the full export reads ~1,129,868 the per-program batch is right and
+    the Trials full-file number was wrong; if it reads 1,147,896 again then the
+    per-program batch shares a common defect and the ladder stands.

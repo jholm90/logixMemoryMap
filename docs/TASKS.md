@@ -565,6 +565,23 @@ Retired by the ladder, do not spend on these:
 - **The empty-project baseline constant.** It is byte-exact on every generated
   empty file; the real-shell gap is unpriced content, not a wrong constant.
 
+### Added 2026-09-14 (per-program strip: the two batches disagree)
+
+**STOP WIRING ANYTHING FROM ELMSDALE.** The nine per-program variants and the
+Trials category ladder cannot both be true; they differ by 18,000–25,000 bytes.
+A single wrong full-file baseline (captured 1,147,896 against an implied
+~1,129,868) explains the per-program batch AND the alarm-per-condition anomaly
+at once, but does not reconcile the `NoProgramLogic` / `NoLogic` rungs. Full
+reasoning and the settling measurement in OQ-LADDERBASE.
+
+**Next capture is three files in one session, back to back:** the unmodified
+`Elmsdale_20251017r01` export, `Elmsdale_NoAlarms`, and any one per-program
+variant. Nothing generated, nothing new to build.
+
+Also fixed en route: the archive's `Elmsdale_20251017r01.L5X` is mislabelled —
+it is the `NoOutputs` variant (8 programs, `Outputs` missing). The true full
+export was not in the batch, which is part of how the baseline went unchecked.
+
 ### Added 2026-09-13 (capture-batch segment 8)
 
 - Nothing to build. Segment 8 needed no engine change and no new files: the four
