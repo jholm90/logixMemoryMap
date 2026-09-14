@@ -302,7 +302,7 @@ Status(msg) {
         ; --- Wait for PowerShell's next-file handoff (file existence = "go") ---
         Status("Waiting for next file from PowerShell...")
         while !FileExist(OPEN_REQUEST_PATH)
-            Sleep 50
+            Sleep 250
         FileDelete OPEN_REQUEST_PATH   ; consumed -- PowerShell won't write a new one until this is gone
 
         ; Explicitly grab focus onto Logix Designer -- whatever last had
