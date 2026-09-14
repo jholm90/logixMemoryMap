@@ -305,3 +305,42 @@ The remaining rows split three ways:
 - **Genuinely unfixed** — 11 rows, kept, listed in OQ-BUILDFAIL-OPEN. These
   need the real Studio 5000 error text; nothing in the repo diagnoses them
   and guessing is what produced the invented alarm ConditionTypes.
+
+
+## Build-counter abbreviation (fixed 2026-09-14)
+
+`logix_build_capture.ahk` read Studio's Error/Warning/Message counts off the
+count buttons with `^(\d+)`. Studio abbreviates anything over 999 in those
+buttons, and can render a thousands separator, so:
+
+| button text | was recorded | actual |
+|---|---:|---:|
+| `1K Errors` | **1** | ≥1,000 |
+| `1.2K Errors` | **1** | ~1,200 |
+| `1,234 Errors` | **1** | 1,234 |
+| `12K Errors` | **12** | ~12,000 |
+
+A build with thousands of errors therefore logged as **one** error and passed
+downstream as very nearly clean — `is_valid_capture()` rejects it, so it was not
+silently used, but the row read as a trivial single-error blip rather than a total
+failure, which is how one would get triaged last instead of first.
+
+Two changes. `ExpandCountToken()` now parses the comma and K/M forms, so the
+button fallback can never read 1,234 as 1. And **Studio's own summary line is
+used as the authority**: `Complete - N error(s), M warning(s)` carries the count
+unabbreviated however large it is, and nothing was reading it. It is parsed off
+the RAW pane text, because `ReadErrorLog()` keeps only the leading characters and
+the summary sits at the end. When the buttons and the summary disagree, the
+summary wins and the disagreement is recorded in `error_log`. When a count is
+abbreviated and no summary is available, the expansion is a rounded floor and is
+labelled as one rather than passed off as exact.
+
+The PowerShell side needed no change: its `^\d+$` counter validation still holds,
+because the AHK side still emits a plain integer or an empty string.
+
+**One consequence for existing data.** Any row captured before this fix that
+reads exactly `1` error is ambiguous — a genuine single error, or a `1K` misread.
+Eight rows read 1; two (`almd_minimal`, `almd_realtext`) have error text proving a
+real single error, and of the remaining six only `composite_realistic_v2_18` is a
+file large enough to plausibly reach 1,000 errors, and it is from a superseded
+generator. The others are small files where 1,000 errors is not possible.

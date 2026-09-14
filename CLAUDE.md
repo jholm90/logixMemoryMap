@@ -33,8 +33,9 @@ A result outside 2% on a real file is a broken estimator, not an open
 question.
 
 ## How accuracy is measured
-On real programs only. The nine real production exports in `samples/local/`
-are the held-out set and the sole basis for any headline accuracy number.
+On real programs only. The **sixteen** real production exports in
+`samples/local/` are the held-out set and the sole basis for any headline
+accuracy number.
 
 The generated corpus is a **measurement instrument** for isolating one
 variable at a time. It is not evidence the tool works — the model is fitted
@@ -63,8 +64,15 @@ keep — but nothing new gets invested there. When a corpus-wide number is
 dragged down by L7x/1769 rows, report the figure excluding them and say so;
 do not lead with the contaminated number and explain it away afterwards.
 
-Note that 5069 has **zero real-file validation** — every one of the nine
-real programs is a 1756-L8x. See `OQ-REAL5069`.
+5069 **is** represented in the real set: four of the sixteen are 5069
+(three on 5069-L330ERM, one on 5069-L320ERMS3). The older claim that every real
+program is a 1756-L8x was true of the nine-file set and is not true now.
+
+What 5069 does not need is a per-platform cost model. Measured 2026-09-14
+(capture-batch segment 17): a 5069-L306ER and a 1756-L81E carrying identical
+content at five densities produce **byte-identical residuals at every density**,
+so the whole platform difference is the empty-project baseline constant, which is
+already wired exactly. See `OQ-REAL5069`.
 
 ## Working method
 This is iterative empirical work, not a one-shot build. The standing loop:

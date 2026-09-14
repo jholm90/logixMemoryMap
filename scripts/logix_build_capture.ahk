@@ -80,14 +80,65 @@ global COMPILER_ERROR_MARKER := "Compiler Error"
 ; Retries AFTER the first attempt, so a file gets at most 6 builds total.
 global MAX_COMPILER_ERROR_RETRIES := 5
 
-; Pulls the leading integer out of button/label text like "0 Warnings",
-; "3 Errors", "1 Warning" -- handles singular/plural and any wording since
-; it only looks for digits at the start. Returns "" (not "0") if nothing
-; matched, so a bad ControlGetText read doesn't silently log a false zero.
-ExtractCount(text) {
-    if RegExMatch(Trim(text), "^(\d+)", &m)
+; Studio abbreviates a count over 999 in those buttons -- "1K Errors" for
+; anything from 1,000 up -- and depending on locale can also render it with a
+; thousands separator, "1,234 Errors". The old `^(\d+)` match returned "1" for
+; BOTH, so a build with thousands of errors was logged as ONE error and waved
+; through as very nearly clean. Found 2026-09-14.
+;
+; Expands a leading count token to a plain integer:
+;   "999"    -> 999      "1,234" -> 1234
+;   "1K"     -> 1000     "1.2K"  -> 1200      "2M" -> 2000000
+; Returns "" for anything it cannot read, never a fabricated 0.
+ExpandCountToken(token) {
+    token := Trim(StrReplace(token, ","))
+    if RegExMatch(token, "i)^(\d+(?:\.\d+)?)\s*([KM])$", &m) {
+        mult := (StrUpper(m[2]) = "M") ? 1000000 : 1000
+        return String(Round(m[1] * mult))
+    }
+    if RegExMatch(token, "^(\d+)$", &m)
         return m[1]
     return ""
+}
+
+; True when the token was ABBREVIATED, so its expansion is a rounded floor
+; rather than the real count. Studio's own summary line carries the exact
+; number; this only flags the button fallback so a rounded value is never
+; mistaken for a measured one.
+IsAbbreviatedCount(token) {
+    return RegExMatch(Trim(StrReplace(token, ",")), "i)^\d+(?:\.\d+)?\s*[KM]$") ? true : false
+}
+
+; Pulls the leading count out of button/label text like "0 Warnings",
+; "3 Errors", "1 Warning", "1K Errors", "1,234 Errors" -- handles
+; singular/plural and any wording since it only looks at the leading token.
+; Returns "" (not "0") if nothing matched, so a bad ControlGetText read
+; doesn't silently log a false zero.
+ExtractCount(text) {
+    if RegExMatch(Trim(text), "i)^([\d.,]+\s*[KM]?)\b", &m)
+        return ExpandCountToken(m[1])
+    return ""
+}
+
+; Studio's own summary line -- "Complete - N error(s), M warning(s)" -- carries
+; the count UNABBREVIATED however large it is, which makes it the authority the
+; count buttons are not. Parsed off the RAW log text, because ReadErrorLog()
+; keeps only the first MAX_ERROR_LOG_CHARS characters and this line is at the
+; END. Returns a Map with "" for anything absent.
+ParseSummaryCounts(rawLog) {
+    out := Map("Error", "", "Warning", "")
+    if (rawLog = "")
+        return out
+    ; Both counts come out of the SAME summary match. A loose
+    ; "([\d,]+)\s*warning" would happily match the first "0 warnings" inside an
+    ; individual error message earlier in the log.
+    if RegExMatch(rawLog, "i)Complete\s*-\s*([\d,]+)\s*error\(?s?\)?\s*,\s*([\d,]+)\s*warning", &m) {
+        out["Error"] := ExpandCountToken(m[1])
+        out["Warning"] := ExpandCountToken(m[2])
+    } else if RegExMatch(rawLog, "i)Complete\s*-\s*([\d,]+)\s*error", &m) {
+        out["Error"] := ExpandCountToken(m[1])
+    }
+    return out
 }
 
 
@@ -109,13 +160,16 @@ BuildPopupExpected(title) {
 
 FindCountButtons() {
     counts := Map("Error", "", "Warning", "", "Message", "")
+    ; Records any count Studio rendered abbreviated, so the caller can prefer
+    ; the exact summary-line value and can say when it had to round.
+    abbreviated := ""
     seen := ""
     ctrls := ""
     try ctrls := WinGetControls("A")
     catch
-        return {counts: counts, seen: "(WinGetControls failed)"}
+        return {counts: counts, seen: "(WinGetControls failed)", abbreviated: ""}
     if !IsObject(ctrls)
-        return {counts: counts, seen: "(no controls)"}
+        return {counts: counts, seen: "(no controls)", abbreviated: ""}
 
     for ctrl in ctrls {
         if !RegExMatch(ctrl, "^Button\d+$")
@@ -128,11 +182,16 @@ FindCountButtons() {
             continue
         seen .= (seen = "" ? "" : " | ") ctrl "=" txt
         for kind in ["Error", "Warning", "Message"] {
-            if (counts[kind] = "") && RegExMatch(txt, "i)^(\d+)\b.*\b" kind, &m)
-                counts[kind] := m[1]
+            ; Same abbreviation trap as ExtractCount: the leading token can be
+            ; "1K" or "1,234", and a bare \d+ match reads either as 1.
+            if (counts[kind] = "") && RegExMatch(txt, "i)^([\d.,]+\s*[KM]?)\b.*\b" kind, &m) {
+                counts[kind] := ExpandCountToken(m[1])
+                if IsAbbreviatedCount(m[1])
+                    abbreviated .= (abbreviated = "" ? "" : "; ") kind "=" Trim(m[1])
+            }
         }
     }
-    return {counts: counts, seen: seen}
+    return {counts: counts, seen: seen, abbreviated: abbreviated}
 }
 
 ; Studio 5000 formats some numeric fields (confirmed: the Capacity/OCD
@@ -429,6 +488,30 @@ Status(msg) {
 				WarningValue := found.counts["Warning"]
 				MessageValue := found.counts["Message"]
 
+        ; Studio's own summary line is the AUTHORITY over those buttons: it
+        ; carries the count unabbreviated however large it is, while the buttons
+        ; render anything over 999 as "1K". Read off the raw log, since
+        ; ReadErrorLog() keeps only the leading characters and the summary is at
+        ; the end. Before 2026-09-14 nothing read it, and a build with thousands
+        ; of errors was logged as 1 error and passed as very nearly clean.
+        CountNote := ""
+        summary := ParseSummaryCounts(ReadErrorLogRaw())
+        if (summary["Error"] != "") {
+            if (ErrorValue != "" && ErrorValue != summary["Error"])
+                CountNote .= "[count buttons said " ErrorValue " error(s), Studio's summary line "
+                           . "says " summary["Error"] "; summary used] "
+            ErrorValue := summary["Error"]
+        } else if (found.abbreviated != "") {
+            ; Abbreviated button and no summary to fall back on: the expansion
+            ; is a rounded FLOOR, not a measurement. Recorded rather than passed
+            ; off as exact, because the whole point of this fix is that a large
+            ; count must never read as a small one OR as a precise one.
+            CountNote .= "[count ABBREVIATED by Studio (" found.abbreviated ") and no summary "
+                       . "line available -- value is a rounded floor, not exact] "
+        }
+        if (summary["Warning"] != "")
+            WarningValue := summary["Warning"]
+
         ; No build ran, so those buttons still hold the PREVIOUS file's
         ; numbers. Blanked rather than logged: a blank error_count reads
         ; downstream as "never recorded" (accuracy_report.py --strict),
@@ -438,6 +521,7 @@ Status(msg) {
             ErrorValue := ""
             WarningValue := ""
             MessageValue := ""
+            CountNote := ""
             Status("Counters blanked -- no build ran for this catalog.")
         }
 
@@ -558,7 +642,7 @@ Status(msg) {
 
         ; --- Hand results back to PowerShell ---
         handoffFile := FileOpen(HANDOFF_PATH, "w")
-        ErrorLog := ReadErrorLog()
+        ErrorLog := CountNote ReadErrorLog()
         handoffFile.Write("error_count,warning_count,message_value,ocd_value,window_title,error_log`n")
         handoffFile.Write(StripCommas(ErrorValue) "," StripCommas(WarningValue) "," StripCommas(MessageValue) "," OCDValue "," CsvQuote(WindowTitle) "," CsvQuote(ErrorLog) "`n")
         handoffFile.Close()
