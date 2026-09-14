@@ -26,7 +26,7 @@ project's ±8 universal-residual band.
 | 14 | `asmclose_*` | 71 | 69 | 0 | OQ-MODULEIO | **WIRED — repeat discount on for 10 catalogs, 2 rows cleared, 4 flagged bad** |
 | 15 | `aoishape_*` | 17 | 17 | 0 | OQ-AOIINTERNALLOGIC | **CLOSED + WIRED — no shape errors; +4/word-destination, 27/27 exact** |
 | 16 | `axmarg_*` | 16 | 16 | 9 | OQ-AXISMARGINAL | DEFERRED -- has errored rows, worked at the end |
-| 17 | `platform_*` | 15 | 10 | 0 | OQ-REAL5069 | pending |
+| 17 | `platform_*` | 15 | 10 | 0 | OQ-REAL5069 | **CLOSED — 5069 and L8x byte-identical at every density; 5 rows uncaptured** |
 | 18 | `cmpfl_*` | 13 | 13 | 0 | OQ-CMPCPTLAYOUT | reviewed with 12 — 13 single-rung points, not derivable |
 | 19 | `cptpow_*` | 12 | 12 | 0 | OQ-CMPCPTLAYOUT | reviewed with 12 — ** adjacency worth 40, tier 3 left alone |
 | 20 | `cptdest_*` | 12 | 12 | 0 | OQ-CPTARRANGE | pending |
@@ -821,3 +821,61 @@ AOI-internal path under-charged, so `word_destination_count` is populated by
 
 This more than recovers segment 14's 0.028pp cost and leaves the sum-weighted
 figure better than before either change.
+
+
+## Segment 17 — `platform_*`, OQ-REAL5069: CLOSED
+
+Identical content at five densities on each processor. Flat across densities
+would mean a real constant, growing a rate, zero that the platform is not the
+cause.
+
+| density | 5069-L306ER | 1756-L81E |
+|---:|---:|---:|
+| 0 | 0 | 0 |
+| 25 | −332 | −332 |
+| 100 | −1,232 | −1,232 |
+| 400 | −4,832 | −4,832 |
+| 1,600 | −19,232 | −19,232 |
+
+**Identical to the byte at every density**, and both empty-project rows exact
+(18,160 and 18,128). The whole platform difference is the 32-byte baseline
+constant, already wired exactly. No per-platform rate exists, so the rejected
+per-platform baseline that once broke 612 files stays rejected for a second
+independent reason: there is nothing for it to fit.
+
+### The shared 12n + 32 is real and is not the platform's
+
+Exact at all four densities on both arms. Each unit is one UDT tag + one DINT
+tag + one rung and **all three scale together** — the collinearity trap, seventh
+occurrence. Two are independently exact elsewhere (`dscale2_udt_u001_t{1..500}`
+is flat in tag count over a 500× span; `instr_*` is in band to 5,000
+instructions), but the rung here is `XIC(PeBit0)MOV(0,PeDint0000)OTE(PeBit1);` —
+three instructions with a **literal** MOV source — which no isolating family
+covers. Not attributed. Discriminator: three files at one fixed unit count, each
+carrying only one component.
+
+### Found on the way: `udt_definition_extra` was a stale double charge
+
+`dscale2_udt` read a residual of exactly −16 × n_udt, flat in tag count from 1 to
+500, so unambiguously per-definition. Zeroing `definition_scale_correction.udt_definition_extra`
+makes 14 of its 18 rows byte-exact and all 18 land in band. Two things had gone
+wrong: its own derivation comment reads its sign backwards (`delta = actual −
+pred = −16·n_udt` means over-charged, and the entry adds 16 more), and segments
+10/11 later wired the real per-definition UDT member-name pool that supplied
+those bytes. A compensation constant left in place after the real term arrives is
+a double charge.
+
+| | before | after |
+|---|---:|---:|
+| corpus rows byte-exact | 1,235 | **1,323** |
+| corpus rows within ±8 | 1,912 | **2,049** |
+| real programs, sum-weighted | +1.1797% | +1.2261% |
+
+The real headline gives up 0.046pp — the same cancellation every removed
+over-charge produces, since the real set under-predicts.
+
+### Needed
+
+`platform_plateql330_*` (5 rows) never captured, so this rests on two processors
+rather than three. Not required for the conclusion — the two arms already agree
+to the byte.

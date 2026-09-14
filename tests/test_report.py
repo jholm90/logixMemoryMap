@@ -127,12 +127,14 @@ def test_udt_definition_cost_appears_once_per_type_used_by_multiple_instances():
     definition = definition_entries[0]
     assert definition.data_type == "Point3D"
     # base(160) + per_member(16)*3 + name_per_8_chars(8)*ceil(7/8)=1
-    # +16 since 2026-09-13: a UDT DEFINITION costs 16 more than the
-    # member-count-and-name formula gives (memory_model.yaml
-    # definition_scale_correction, exact over 14 rows, 1..25 definitions).
     # +8 since 2026-09-13: the declared members' NAME POOL -- X, Y, Z are
     # 3*(1+1) = 6 characters rounded up to the 8-byte boundary.
-    assert definition.bytes == 160 + 16 * 3 + 8 * 1 + 16 + 8
+    # The `definition_scale_correction.udt_definition_extra` term that used to
+    # add another 16 here was ZEROED 2026-09-14: it was a compensation constant
+    # standing in for bytes the name pool above now models properly, and having
+    # both was a double charge. dscale2_udt reads -16 x n_udt flat in tag count
+    # over a 500x span with it in, and 14 of 18 rows byte-exact with it out.
+    assert definition.bytes == 160 + 16 * 3 + 8 * 1 + 8
 
     by_path = {e.path: e for e in entries}
     point_a = by_path["controller/PointA"]

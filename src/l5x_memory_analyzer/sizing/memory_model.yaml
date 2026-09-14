@@ -1689,8 +1689,29 @@ alias_overhead:
 # 3 is not 4-aligned, which is unusual for this project. It is what 14 rows
 # spanning a 500x tag count say, measured at -3.000 per tag at every one of the
 # nine count points in the u001 sweep alone, so it is not a rounding artifact.
+#
+# udt_definition_extra ZEROED 2026-09-14 (segment 17). It was 16 and it was
+# stale: with it at 16 the dscale2_udt sweep reads a residual of exactly
+# -16 x n_udt -- flat in tag count from 1 to 500, so unambiguously a
+# per-DEFINITION term -- and setting it to 0 makes 14 of those 18 rows
+# byte-exact and all 18 land inside the +-8 band.
+#
+# Two things went wrong and both are worth stating. The derivation above reads
+# its own sign backwards: `delta = actual - pred = -16 x n_udt` means the
+# prediction is 16 too HIGH per definition, i.e. over-charged, and the entry it
+# produced adds 16 more. And the bytes it was standing in for have since been
+# modelled properly -- segments 10 and 11 wired the real UDT member-name pool
+# (udt_definition.member_name_pool_*), which is also per-definition, exactly the
+# shape to absorb this. A compensation constant left in place after the real
+# term arrived is a double charge.
+#
+# Corpus effect: byte-exact rows 1,235 -> 1,323, within +-8 1,912 -> 2,049. The
+# sixteen real programs get 0.046pp worse on sum-weighted (+1.1797% ->
+# +1.2261%), which is the same cancellation this project keeps finding: they
+# under-predict, so removing any over-charge hurts the headline. Recorded, not
+# hidden. OQ-REALUNDER is the single remaining cause.
 definition_scale_correction:
-  udt_definition_extra: 16
+  udt_definition_extra: 0
   udt_tag_extra: -4
   aoi_instance_extra: -8
   # And an AOI DEFINITION is over-charged 3. This is the remaining 3*n_def term

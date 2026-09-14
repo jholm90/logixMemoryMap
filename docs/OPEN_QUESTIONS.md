@@ -2441,6 +2441,53 @@ the matching footnote at the bottom, not inline.
     Priority: low, by the project owner's call. The residual is real and
     lives somewhere else.
 
+    **CAPTURED AND ANSWERED 2026-09-14 (segment 17). 10 of the 15 landed, and
+    they say the platform costs nothing beyond the baseline constant already
+    wired. CLOSED.**
+
+    The design was: identical content at five densities on each of three
+    processors, so flat-across-densities means a real constant, growing means a
+    rate, and zero means the platform is not the cause. Each density unit is one
+    `PlatEqUdt` tag (8 DINTs), one DINT tag and one rung, byte-identical across
+    platforms.
+
+        density   5069-L306ER    1756-L81E
+              0             0            0
+             25          -332         -332
+            100        -1,232       -1,232
+            400        -4,832       -4,832
+          1,600       -19,232      -19,232
+
+    **The two processors' residuals are identical to the byte at every density**,
+    and both empty-project rows are exact (18,160 and 18,128 predicted and
+    actual). So the entire platform difference is the 32-byte baseline constant,
+    which is already wired exactly. There is no per-platform rate, and the
+    rejected per-platform baseline that broke 612 files stays rejected for a
+    second, independent reason: even if it had fitted, there is nothing for it
+    to fit.
+
+    That settles the question this entry was shelved on. It does NOT make 5069
+    a validated platform end-to-end — see the residual below, which is shared
+    and is not 5069's.
+
+    **A real finding that is NOT the platform's, and must not be fitted here.**
+    Both arms over-predict by exactly `12n + 32`, exact at all four densities on
+    both processors. Each unit contains a UDT tag, a DINT tag and a rung, and
+    **all three scale together in this family**, which is the collinearity trap
+    this project has now hit seven times. Two of the three are independently
+    exact elsewhere -- `dscale2_udt_u001_t{001..500}` is flat in tag count over
+    a 500x span, so a UDT tag is not it, and `instr_*` sits in the universal +-8
+    band to 5,000 instructions -- but the rung here is
+    `XIC(PeBit0)MOV(0,PeDint0000)OTE(PeBit1);`, a three-instruction rung with a
+    LITERAL MOV source, which no isolating family covers. So the 12 is not
+    attributed. **The discriminator is three files at one fixed unit count, each
+    carrying only one of the three components.**
+
+    **`platform_plateql330_*` (5 rows) never captured**, so the equivalence
+    result rests on two processors rather than three. A second 5069 model would
+    confirm it; it is not needed to reach the conclusion, since the two arms
+    already agree to the byte.
+
     ---
 
     *Original entry, retained for history:*
