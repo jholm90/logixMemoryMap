@@ -514,27 +514,32 @@ controller shell, modules, and UDT/AOI definitions.
 Nothing is being wired from two data points. In priority order, what the ladder
 says to do next:
 
-1. **Parse, do not capture: the alarm associated-tag audit (OQ-ALARMCONDREAL).**
-   Dump `AssocTag1/2/3` targets and their resolved types for all 200 Elmsdale
-   and 400 Griffin conditions, and check whether the 107-byte-per-condition gap
-   between the two files is explained by associated-tag type mix. Zero new
-   files, zero captures, and it is a 19–21%-of-total-memory category. Do this
-   first.
+1. ~~Alarm associated-tag audit (OQ-ALARMCONDREAL).~~ **DONE 2026-09-14, and it
+   ruled itself out.** Both programs use the identical `Alarms_SE` UDT at
+   `Dimensions=200` with the identical three members referenced; all 37
+   `AlarmCondition` attributes are identically distributed apart from names,
+   which are proven free. The only structural difference left standing is
+   **conditions per associated array element** — Elmsdale 1:1, Griffin 2:1 —
+   and `base + flat-per-condition` provably cannot fit both files (the solve
+   gives a non-integer 1000.44 per condition). **What is now needed is 4–6
+   files sweeping conditions-per-array-element and array size with condition
+   count held fixed, plus re-submitting the four never-captured
+   `alarmcond_type_{trip,trip_high,trip_low,deviation}` rows** — condition type
+   is assumed free and has never actually been measured, and every real
+   condition is `TRIP`. SPEC ONLY until asked.
 2. **Three generated files: the controller-shell probe (OQ-CTLSHELL).**
    1756-L81E v35 empty, plus one with a real `EthernetPorts`/`Bus` block and one
    with `Trends`/`DataLogs`/`QuickWatchLists` populated. Worth 0.2–0.6% of real
    error across all sixteen files and it is the cheapest item on the board.
    SPEC ONLY until asked — CLAUDE.md step 7.
-3. **One more real ladder rung, hand-made, not generated: split the logic step.**
-   Both `NoLogic` files contain **zero `<Program>` elements**, so the step
-   bundles program shells + program tags + routines + rungs. The clean cut keeps
-   every `<Program>`, `<Tags>` and `<Routine>` and empties only rung content
-   (`<RLLContent/>` present but empty). Griffin is the arm to do it on — it has
-   zero program tags, so its logic step is already clean of tag cost and one
-   file finishes the split. `Elmsdale_NoProgramLogic.L5X` already exists
-   (9 programs, 63 program tags, 3 routines, 477 rungs of which 363 are
-   AOI-internal) and is uncaptured; capturing it gives a partial Elmsdale split
-   for free.
+3. **Capture `Elmsdale_NoProgramLogic.L5X`. The file already exists; it has
+   never been given a number.** It keeps all 9 programs and all 63 program tags
+   while cutting routines 59 → 3, so `NoAlarms → NoProgramLogic` isolates 56
+   routines and 962 rungs of pure ladder, and `NoProgramLogic → NoLogic`
+   isolates the 9 program shells. That splits Elmsdale's bundled logic step
+   with no new file. Griffin needs no equivalent for program tags — its source
+   export has **zero** program tags in all 11 programs — but a Griffin twin
+   would still split its 11 program shells from its 1,519 rungs.
 4. **A third ladder, on a program that OVER-predicts.** Both captured ladders
    disagree in sign on three of seven categories. `emporiumedger_20250905r1`
    (−2.077%) or `salamanca_20250425r00` (−1.475%) would say which of the two

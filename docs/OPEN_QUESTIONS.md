@@ -2058,10 +2058,16 @@ the matching footnote at the bottom, not inline.
 
     Caveat that bounds how much this step can be pushed on: both `NoLogic`
     files contain **zero `<Program>` elements**, so the step bundles program
-    shells, program tags, routines and rungs into one number and cannot
-    separate them. Elmsdale lost 63 program tags in that step; Griffin had zero
-    program tags to begin with, so Griffin's −9,220 is at least clean of tag
-    cost.
+    shells, routines and rungs into one number and cannot separate them.
+
+    Program tags are NOT a confound on Griffin, and the source file says so:
+    `Griffin_StackerLine_1Mar25_r00.L5X` has **zero program tags in all 11
+    programs** — every tag in that program is controller-scoped. Nothing was
+    lost that could have been kept. Elmsdale does carry 63 program tags across
+    3 of its 9 programs (`InfeedData` 33, `TiltHoist` 21, `PlanerInterface` 9),
+    and `Elmsdale_NoProgramLogic.L5X` already exists and **keeps all 63 while
+    cutting routines 59 → 3** — it is the clean intermediate and it is simply
+    uncaptured.
 
     **TAG-BASED ALARMS ARE THE SECOND-LARGEST CATEGORY IN BOTH REAL FILES, and
     they are not the parked ALMD/ALMA question.** The alarms step removes
@@ -2096,9 +2102,25 @@ the matching footnote at the bottom, not inline.
     `CST`, `WallClockTime`, `QuickWatchLists`. See OQ-CTLSHELL.
 
     **MODULES DISAGREE IN SIGN**, +18,076 under on Elmsdale against −15,580
-    over on Griffin, so there is no single module correction to make and any
-    fitted one would be fitting to the difference between two files. Elmsdale
-    carries 28 non-controller modules, Griffin 18.
+    over on Griffin — and the two machines are built differently in exactly the
+    way that would cause it. Griffin is a **Kinetix 5700 shared DC bus**: two
+    `2198-P208` supplies feeding ten `2198-*-ERS3` drives on one bus, plus five
+    generic `ETHERNET-MODULE`, 18 non-CPU modules total. Elmsdale is
+    **distributed discrete devices**: 22 POINT I/O modules behind three 1734
+    adapters, four PowerFlex 525 and three PowerFlex 755, 28 non-CPU modules
+    total, each its own Ethernet connection.
+
+        Elmsdale  +18,076 under / 28 modules  =  +645 per module
+        Griffin   −15,580 over  / 18 modules  =  −866 per module
+                  −15,580 over  / 10 ERS3 drives = −1,558 per drive
+
+    So this is not one constant that is slightly wrong in both directions; it is
+    a bus-connected drive costing less than the table charges and a discrete
+    device costing more. Directly implicated: `repeat_bytes` was removed from
+    all six `2198-*-ERS3` catalogs on 2026-09-13 and their confidence downgraded
+    KNOWN → ASSUMED, which raised the per-drive charge — and Griffin is the real
+    program with ten of them. That is a specific, testable regression rather
+    than a general module question. See OQ-MODULEMARGINAL.
 
     **AXIS IS EXACTLY RIGHT ON GRIFFIN** — 0 bytes of error across 37 axis tags
     and 778,728 bytes, the largest single category in that file — and +7,928 on
@@ -3898,18 +3920,41 @@ the matching footnote at the bottom, not inline.
     `AlarmConditions` container are the **only** elements that differ — no tags,
     rungs, routines, programs, UDTs or AOIs moved.
 
-    In both files every condition hangs off a **single BOOL array tag** with
-    `Input="[n]"`, and the owning tag survives the strip. `alarm_conditions`
-    prices them 800 + 500n + associated-tag costs by resolved type.
+    These are controller-scope **Alarm Manager** alarms. Only the alarm
+    definitions were stripped; the associated tags remain in the `NoAlarms`
+    files as ordinary controller tags, so their data cost is NOT inside this
+    step. `alarm_conditions` prices the definitions 800 + 500n + an
+    associated-tag term keyed on each `AssocTag1/2/3` target's resolved type.
 
-    **The question is what makes an Elmsdale condition 107 bytes more expensive
-    than a Griffin one.** Both carry the identical 37-attribute
-    `AlarmCondition` shape. Ruled out already by the `alarmcond_*` batch
-    (RESOLVED_QUESTIONS, OQ-ALARMCOND): alarm name length, message text,
-    severity, and delay values are all free. Not yet separated: the
-    `AssocTag1/2/3` targets' resolved types (the one term that is type-keyed),
-    `Expression` content, `HMIGroup` contents, and whether the owning BOOL
-    array's own size participates.
+    **ASSOCIATED-TAG AUDIT DONE 2026-09-14, AND IT RULES ITSELF OUT.** All 600
+    Elmsdale and 1,200 Griffin associated-tag references were resolved:
+
+        Elmsdale   Alarms_TiltHoist[0..199].{Number, Description, MoreInfo}
+        Griffin    StackerAlarms[0..199].{Number, Description, MoreInfo}
+
+    Both arrays are **the same UDT, `Alarms_SE`, at the same `Dimensions=200`**,
+    with the same members (`SINT` filler, `BIT Active`, `STRING Description`,
+    `STRING MoreInfo`, `DINT Number`) and the same three members referenced.
+    An attribute-by-attribute frequency diff of all 600 conditions shows every
+    one of the 37 `AlarmCondition` attributes identically distributed between
+    the two programs **except the tag names themselves**, which the `alarmcond_*`
+    batch already proved free. So associated-tag type mix cannot explain the
+    gap, and neither can severity, delays, condition type, or HMI group.
+
+    **The one structural difference found: conditions per array element.**
+    Elmsdale has 200 conditions over a 200-element array (1:1). Griffin has
+    **400 conditions over a 200-element array (2:1)** — its alarms come in two
+    named sets, `StackerAlarm*` and `Stacker3Alarm*`, both pointing into the
+    same 200 elements.
+
+    **And the two files cannot both fit the wired shape.** Solving
+    `cost = B + n·k` on the two measured steps gives
+
+        200,088 = 200k   ->   k = 1000.44,  B = 42,952
+
+    A non-integer per-condition cost means `base + flat-per-condition` is the
+    wrong shape for a real Alarm Manager, not that one of the constants is
+    slightly off. Two files cannot say what the right shape is.
 
     **This is NOT the parked ALMD/ALMA question (OQ-ALARMDEF).** That entry is
     parked because zero ALMD/ALMA *instructions* appear in any of the sixteen
@@ -3918,11 +3963,25 @@ the matching footnote at the bottom, not inline.
     above they are one of the largest single levers on real-file error. The
     CLAUDE.md scope note has been corrected accordingly.
 
-    **Next measurement:** dump the `AssocTag1/2/3` targets and resolved types
-    for all 200 Elmsdale and 400 Griffin conditions and check whether the
-    107-byte gap is entirely explained by associated-tag type mix before any
-    constant is touched. That is a parse of two files, not a capture batch, and
-    it should be done before anything is generated.
+    **What the existing `alarmcond_*` batch already covers, and its two gaps.**
+    39 of 43 rows captured clean. `alarmcond_count_bare_n000..n128` pins
+    800 + 500 per condition exactly; `alarmcond_count_real_n001..n128` runs at
+    exactly 1,104 per condition (500 + 604 of associated-tag cost), which is
+    within 4 bytes of Griffin's measured 1,107.8 — the synthetic family and the
+    real Griffin agree. Elmsdale at 1,215.2 is the outlier. Every row in the
+    family reads `predicted = actual − 16` including `n000`, which has zero
+    conditions, so that 16 is the generator shell and not an alarm term — it
+    must not be wired as one.
+
+    Never captured, and both are real gaps: `alarmcond_type_{trip, trip_high,
+    trip_low, deviation}` (condition type is assumed free and has never been
+    measured; every real condition is `TRIP`) and `alarmcond_hmigroup_len64`.
+
+    **Next measurement, and it is small.** Hold condition count fixed and sweep
+    **conditions per associated array element** (1:1, 2:1, 4:1) and array size
+    independently — that is the only structural difference the audit left
+    standing. Four to six files, plus the four never-captured
+    `alarmcond_type_*` rows re-submitted.
 
 45. **OQ-CTLSHELL** — new 2026-09-14, from the strip ladder. **A real export's
     bare controller shell costs ~2,400+ bytes that the engine prices at zero,
