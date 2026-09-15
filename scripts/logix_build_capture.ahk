@@ -302,7 +302,7 @@ Status(msg) {
         ; --- Wait for PowerShell's next-file handoff (file existence = "go") ---
         Status("Waiting for next file from PowerShell...")
         while !FileExist(OPEN_REQUEST_PATH)
-            Sleep 250
+            Sleep 500
         FileDelete OPEN_REQUEST_PATH   ; consumed -- PowerShell won't write a new one until this is gone
 
         ; Explicitly grab focus onto Logix Designer -- whatever last had
@@ -323,7 +323,7 @@ Status(msg) {
             continue
         }
         WinActivate
-        Sleep 100
+        Sleep 250
 
         Status("Opening next file (from clipboard)")
         Send "^o"
@@ -332,9 +332,9 @@ Status(msg) {
             MsgBox "Open Project dialog didn't appear within 5s -- check the Ctrl+O shortcut."
             continue
         }
-        Sleep 25
+        Sleep 250
         Send "^v"   ; paste the path PowerShell put on the clipboard
-        Sleep 100
+        Sleep 250
         Send "{Enter}"
 				
 				sleep 1000
