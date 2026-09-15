@@ -323,7 +323,7 @@ Status(msg) {
             continue
         }
         WinActivate
-        Sleep 100
+        Sleep 250
 
         Status("Opening next file (from clipboard)")
         Send "^o"
@@ -332,9 +332,9 @@ Status(msg) {
             MsgBox "Open Project dialog didn't appear within 5s -- check the Ctrl+O shortcut."
             continue
         }
-        Sleep 25
+        Sleep 250
         Send "^v"   ; paste the path PowerShell put on the clipboard
-        Sleep 100
+        Sleep 250
         Send "{Enter}"
 				
 				sleep 1000
@@ -440,7 +440,7 @@ Status(msg) {
             Sleep 50
             Status("b")
             Send "b"
-            Sleep 300
+            Sleep 10
 
             buildPopupTitle := "Building"
             maxAppearSeconds := 120   ; a big file can take minutes just to START
