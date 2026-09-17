@@ -768,7 +768,20 @@ the matching footnote at the bottom, not inline.
     2026-09-10, so these need RECAPTURE before their numbers are used.
     `jsr_target_content_scale_010`, `jsr_target_content_scale_050`, `jsr_target_content_scale_100`, `jsr_target_content_scale_150`
 
-8. **OQ-EVENTTRIGGER** — new, real. task_extra (+700) was derived only
+8. **OQ-EVENTTRIGGER** — **the instruction half CLOSED 2026-09-17 and WIRED.**
+    The EVENT instruction had no weight in the table at all and was charged
+    zero. `uwclose_event_n{00010,00100,01000}` -- an EVENT task plus n rungs of
+    `EVENT(EvtTask);`, nothing else varying -- reads 20,232 / 25,272 / 75,672
+    against a flat predicted 19,664, so the under-charge is 568 / 5,608 /
+    56,008: **exactly 56n + 8**, the 8 being the universal per-file residual.
+    Three counts spanning 100x with zero residual, so KNOWN. Wired as
+    `logic_instructions.weights.EVENT: 56`; all three rows now land at +8.
+
+    The trigger-SOURCE half of this entry (what an EVENT task's own
+    configuration costs, as against the instruction that fires it) is untouched
+    and stays open below.
+
+    task_extra (+700) was derived only
     from CONTINUOUS+PERIODIC tasks; EVENT-type tasks are completely
     untested, and so is trigger-source (Axis Watch vs. EVENT-instruction)
     within EVENT. Two files built, awaiting capture.[^eventtrigger]
@@ -3258,8 +3271,52 @@ the matching footnote at the bottom, not inline.
     which had failed for this exact reason). All need recapture. Nothing wired
     regresses: the 2198 repeat rate was already excluded in segment 14.
 
-    **CAPTURE ERRORS: 0 row(s)** flagged here by `scripts/capture_errors.py`
-    (step 2b) after the 616-capture merge of 2026-09-13. Suspect, not wrong:
+    **CAPTURE ERRORS: 6 row(s)** flagged here by `scripts/capture_errors.py`
+    (step 2b), 2026-09-17 -- `modmarg_drvaxis_2198_d012_ers3_n{01,02,04,08}` and
+    `modmarg_drvaxis_2198_s086_ers3_n{01,02}`. Was 0.
+
+    **AND THEY FINALLY CARRY ERROR TEXT, WHICH DIAGNOSES A DEFECT IN EVERY
+    GENERATED KINETIX FILE.** Studio says, once per drive:
+
+        Drv1: Primary Bus Sharing Group 1 contains a module configured as
+        Shared DC or Shared DC/DC with no module configured as Shared AC/DC
+        or Shared DC - Non-CIP Converter.
+
+    So the drive declares itself a **Shared DC** bus member and nothing in its
+    group declares itself the **Shared AC/DC** converter. Adding the `2198-P208`
+    module and its converter axis -- done on 2026-09-13 -- was necessary and is
+    not sufficient: the P208 has to be configured as the converter *for that
+    group*, and it is not.
+
+    **Why, and it is a structural flaw in how payloads are stored.** Bus sharing
+    lives inside the module's `ConfigData` L5K blob, not in any attribute the
+    generator sets. `sample_gen/data/kinetix.py` keys payloads by CATALOG, but
+    bus sharing is a per-PROJECT, per-BUS property, so a payload lifted from a
+    shared-bus drive in one real export carries that export's bus role and group
+    number into a generated file whose supply came from somewhere else. A table
+    keyed on catalog alone cannot produce a coherent bus.
+
+    **Located but NOT decoded, and it must not be guessed.** Across all real
+    2198 drives the only indices that vary in a bus-shaped way are **50, 52, 58,
+    62** in the 114-value (Major 9/11) layout and **51, 53, 59, 63** in the
+    119-value (Major 13/14) layout -- one pair per channel, since 50 always
+    equals 58 and 52 always equals 62. Griffin's drives read `(0,0)`, `(2,0)` or
+    `(2,4)` there, which says plainly that **some real drives are standalone and
+    some are shared** on the same project. That is consistent with 0 = standalone
+    and 2 = Shared DC, but the enum is inferred, not measured, and no constant
+    may be set from it.
+
+    **The fix that needs no decoding, and the donor already exists.** Griffin
+    carries three genuinely standalone drives -- `EM112_StickReclaimDeck`
+    (2198-D012-ERS3), `EM114_StickUnscrambler` (D012) and `EM101_PkgDeck1`
+    (D057) -- all reading `0` at every one of those four indices. A standalone
+    drive requires no converter, so the error cannot arise, and the generated
+    files would stop needing a P208 at all. Whether a standalone drive costs the
+    same bytes as a shared one is then a question the corpus can answer, rather
+    than a confound the corpus is silently carrying.
+
+    Not done here because it changes the shape of every generated Kinetix file
+    and that is a decision, not a cleanup. Suspect, not wrong:
     `actual_bytes` is filled in but part of the file may never have reached the
     controller, which reads as the model over-predicting.
 
@@ -3924,7 +3981,14 @@ the matching footnote at the bottom, not inline.
     assumption the data cannot support, which is the same mistake the axis
     promotion already made once today.
 
-    **CAPTURE ERRORS: 51 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
+    **CAPTURE ERRORS: 57 row(s)** flagged here by `scripts/capture_errors.py` (step 2b),
+    recounted 2026-09-17. Was 51; the 6 added are `axis_scale_n02_dual`,
+    `axis_scale_n08_dual`, `axis_scale_n08_dual_regen` and
+    `axmarg_ncat_n08_{1cat,2cat,4cat}`, all newly captured in the 212-row batch
+    and all failing for the SAME newly-diagnosed reason as OQ-MODULEMARGINAL's
+    six -- see the bus-sharing diagnosis recorded there. This is the first time
+    any axis-family row has carried real Studio error text.
+    Previously 51, before that 74, then 56.
     Was 74, then 56. The last 5 went when `axis_scale` was trimmed from 18 files to
     7 on 2026-09-14: nine count points per shape bought nothing a four-point
     geometric ladder does not, every one of them needed recapture anyway for the
@@ -4173,3 +4237,50 @@ the matching footnote at the bottom, not inline.
     them. If the full export reads ~1,129,868 the per-program batch is right and
     the Trials full-file number was wrong; if it reads 1,147,896 again then the
     per-program batch shares a common defect and the ladder stands.
+
+47. **OQ-STEXPR-OPERATOR** — new 2026-09-17, split out of OQ-STEXPR by the
+    21-row `stc_*` closeout. **Every number below is measured and none of it may
+    be wired, because each operator has exactly two points and the fit needs
+    two parameters.**
+
+    Each file is 1,000 ST assignment statements, one operator kind, so the
+    per-statement under-charge is the file total over 1,000:
+
+    | shape | operators | dest | per statement |
+    |---|---:|---|---:|
+    | `stc_prem1_{add,sub,mul,div,mod}` | 1 | DINT | **0 — exact** |
+    | `stc_prem1_{and,or,xor}` | 1 | DINT | **+84** |
+    | `stc_prem1_pow` | 1 | DINT | **+84** |
+    | `stc_opkind_or` | 4 | DINT | **0 — exact** |
+    | `stc_opkind_pow` | 4 | DINT | **−168** |
+    | `stc_premreal_add` | 4 | REAL | **0 — exact** |
+    | `stc_premreal_mul` | 4 | REAL | **−64** |
+    | `stc_premreal_pow` | 4 | REAL | **−288** |
+    | `stc_conv_sint` | 1 | REAL ← SINT | **+88** |
+    | `stc_conv_int` | 1 | REAL ← INT | **+112** |
+    | `stc_conv_lint` | 1 | REAL ← LINT | **−96** |
+    | `stc_conv_mixed` | 1 | REAL ← mixed | **+44** |
+
+    **THE BLOCKER, and it is the trap this project has fallen into before.** OR
+    is +84 short at one operator and exact at four. Fitting that needs both a
+    first-operator rate and an extra-operand rate — two unknowns from two
+    points, exactly determined and therefore unfalsifiable. Any pair of numbers
+    that reproduces 1 and 4 is as good as any other, and there is no third count
+    to reject the wrong one. Same for `**` and for every REAL-destination shape.
+
+    `+`, `-`, `*`, `/` and `MOD` are genuinely exact at both counts, so the
+    existing ST law is right for arithmetic and wrong only for the bitwise
+    operators, `**`, and type conversion.
+
+    **What would close it: a 2-operator point for each arm.** Six files —
+    `and`, `or`, `xor`, `pow` at DINT, and `mul`, `pow` at REAL, each at exactly
+    2 operators, same 1,000-statement shape as the existing files so they
+    difference straight against both ends. That over-determines every fit and
+    the existing 1- and 4-operator rows become the check rather than the fit.
+    SPEC ONLY, not generated.
+
+    Also measured and also blocked: `stc_callone_n{00010,00100,01000}` reads a
+    flat **+268** for one AOI call in an ST routine, identical at all three
+    statement counts — so it does not interact with routine length. But all
+    three files contain exactly ONE call, so per-call and once-per-routine fit
+    identically. A 2-call and a 5-call file separate them.

@@ -788,6 +788,16 @@ module_overhead_by_catalog:
   '1756-CNB/D': { bytes: 448, confidence: ASSUMED }
   '1756-DHRIO/E': { bytes: 1392, confidence: ASSUMED }
   '1756-DNB': { bytes: 7536, confidence: ASSUMED }
+  # 1756-EN2T: wired 2026-09-17 from the `closeout_en2t_n{01,02,04,08}` sweep
+  # built for exactly this -- every copy directly under Local, no downstream
+  # child, so nothing rack-aliased can contaminate it. It had been force-averaged
+  # out of this table and left on the flat 1672 default because 1conn and
+  # 2conn/rackaliased disagreed. Measured under-charge is -1,248 / -2,488 /
+  # -4,968 / -9,928, whose first differences are -1,240 / -2,480 / -4,960: a flat
+  # -1,240 per module with the usual -8 per file, zero residual at four counts.
+  # So the real flat overhead is 1672 - 1240 = 432, and no repeat discount is
+  # visible (the marginal cost is identical from the first copy to the eighth).
+  '1756-EN2T': { bytes: 432, confidence: KNOWN }
   '1756-EN4TR': { bytes: 3608, repeat_bytes: 2088, confidence: KNOWN }
   '1756-ENBT/A': { bytes: 2580, confidence: ASSUMED }
   '1756-HSC/A': { bytes: 2759, confidence: ASSUMED }
@@ -846,18 +856,40 @@ module_overhead_by_catalog:
   # bare-drive rate anyway was 112,176 of the 189,570 bytes the discount removed
   # from the real programs, on a family that is 4.07% of their total. See
   # module_overhead_repeat_discount and OQ-MODULEMARGINAL.
-  '2198-D012-ERS3': { bytes: 4113, confidence: ASSUMED }
-  '2198-D020-ERS3': { bytes: 4113, confidence: ASSUMED }
-  '2198-D032-ERS3': { bytes: 4113, confidence: ASSUMED }
-  '2198-D057-ERS3': { bytes: 4113, confidence: ASSUMED }
+  # 2198 -ERS3 drives: per-catalog first-copy and repeat cost, wired 2026-09-17
+  # from the `asmclose_2198_*_n{01,02,04,08}` sweep -- 24 rows, all err=0, and the
+  # FIRST clean data this family has ever produced (the 2026-09-14 capture was
+  # taken from ACDs built before the Major/ConfigSize fix and read identically
+  # for all six catalogs, which is how the per-catalog difference stayed hidden).
+  #
+  # Measured marginal per extra drive, flat across every interval:
+  #     D012 / D020 / D032 / D057 / S086     3,640
+  #     S130                                 3,376
+  # Measured first-copy actual at n=1:
+  #     D020 / D032 / D057    26,760   (the old flat 4113 was exact here)
+  #     D012 / S086           22,752   (4,008 less)
+  #     S130                  26,496   (264 less)
+  # The engine had been charging 4,624 per drive at every count, so every 2198
+  # drive was over-charged by 984 (1,248 for S130) per copy beyond the first.
+  #
+  # ONE NON-CONFORMING POINT, deliberately not fitted: asmclose_2198_d012_ers3_n08
+  # reads 52,240 where D012's own three linear points predict 48,232 -- and 52,240
+  # is exactly what D020/D032/D057 read at n=8. Its window title names the right
+  # ACD so it is not a mis-capture, but S086 shares D012's base and runs linear
+  # through all four counts, so D012 is wired from its three linear points and
+  # that row needs recapture before it is believed. See OQ-MODULEMARGINAL.
+  '2198-D012-ERS3': { bytes: 105, repeat_bytes: 3129, confidence: KNOWN }
+  '2198-D020-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
+  '2198-D032-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
+  '2198-D057-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
   '2198-H008-ERS': { bytes: 3629, confidence: ASSUMED }
   '2198-P031': { bytes: 3613, confidence: ASSUMED }
   '2198-P070': { bytes: 3613, confidence: ASSUMED }
   '2198-P141': { bytes: 3613, confidence: ASSUMED }
   '2198-P208': { bytes: 3589, confidence: ASSUMED }
   '2198-RP200': { bytes: 3617, confidence: ASSUMED }
-  '2198-S086-ERS3': { bytes: 4113, confidence: ASSUMED }
-  '2198-S130-ERS3': { bytes: 4113, confidence: ASSUMED }
+  '2198-S086-ERS3': { bytes: 105, repeat_bytes: 3129, confidence: KNOWN }
+  '2198-S130-ERS3': { bytes: 3849, repeat_bytes: 2865, confidence: KNOWN }
   '2702782': { bytes: -16, confidence: ASSUMED }
   '440C-CR30-22BBB/A': { bytes: 4388, repeat_bytes: 620, confidence: KNOWN }
   '842E-CM-M': { bytes: 3633, repeat_bytes: 2633, confidence: KNOWN }
@@ -2387,6 +2419,11 @@ identifier_name_length:
   bucket_bytes: 8
   bucket_chars: 8
   confidence: KNOWN
+  # Wired 2026-09-17 from identnamelen_task_c{04,08,16,32,40}, the 5 rows
+  # segment 9 was deferred for. A task name costs the same 8-per-8-chars step as
+  # any other identifier but never zero; 8 at length 4 where a program or
+  # routine name costs 0.
+  task_min_bytes: 8
 
 jsr_target_declaration:
   per_target: 152
@@ -2852,6 +2889,14 @@ logic_instructions:
     OTL: 16      # solo -- unchanged
     OTU: 16      # solo -- unchanged
     NOP: 16      # solo -- unchanged
+    # EVENT: wired 2026-09-17, OQ-EVENTTRIGGER's unweighted closeout. The
+    # instruction had NO weight at all and was charged 0. `uwclose_event_n*`
+    # (an EVENT task plus n rungs of "EVENT(EvtTask);", nothing else varying)
+    # reads 20,232 / 25,272 / 75,672 against a predicted 19,664 at every count,
+    # so the under-charge is 568 / 5,608 / 56,008 -- exactly 56n + 8, with the 8
+    # being the universal per-file residual this corpus carries everywhere.
+    # Three counts spanning 100x, zero residual, so KNOWN not fitted.
+    EVENT: 56
     # SIZE: added 2026-08-23 -- excluded from the original 244-file sweep
     # (real bracket-subscript bug, see docs/OPEN_QUESTIONS.md history) but
     # now has clean real data (5-point rung-count sweep, bare array-tag

@@ -1450,6 +1450,36 @@ unexplained 107 bytes per condition is OQ-ALARMCONDREAL.
 Log every constant change here with date + which sample(s) drove the change, so
 there's a record of *why* a number is what it is, not just what it currently is.
 
+- **2026-09-17** — **Four families taken from badly wrong to byte-exact, and
+  the real-set headline moved the WRONG way as a result. Both halves are the
+  finding.** Wired, every one measured with zero residual:
+
+  1. **EVENT instruction = 56 bytes.** It had no weight at all.
+     `uwclose_event_n{10,100,1000}` = 56n + 8 exactly, three counts over 100x.
+  2. **1756-EN2T = 432, not the 1672 fallback.** `closeout_en2t_n{1,2,4,8}`
+     gives a flat −1,240 per module with zero curvature; the catalog had been
+     force-averaged out of the table and left on the default.
+  3. **The six 2198 -ERS3 drives are NOT identical and carry no repeat
+     discount.** 24 recaptured rows fit `total = C + n x r` at 23 of 24 points:
+     r = 3,640 per copy (3,376 for S130), C = 23,120 except D012/S086 at 19,112.
+     The engine had been charging 4,624 per copy at every count. The one
+     outlier, `asmclose_2198_d012_ers3_n08`, is excluded rather than fitted.
+  4. **A Task's own name costs, with a minimum of 8.** Programs and routines
+     are floor(len/8) beyond doubt (`identnamelen_prog_c01..c07` all cost 0);
+     a task never costs zero. All five task rows now byte-exact.
+
+  **Real set 1.6112% -> 1.7036% mean.** It got worse because every one of these
+  corrections reduces a prediction, and eleven of the sixteen real programs
+  UNDER-predict. The five that over-predict all improved --
+  `griffin_stackerline` went **−0.658% -> −0.069%**, and Griffin is the program
+  whose strip ladder independently measured a module over-charge of 15,580,
+  which this removes. Two independent instruments agreeing is worth more than
+  the headline. This is the fifth time a measured-exact correction has made the
+  headline worse, and it means the honest under-charge is larger than the number
+  has ever suggested -- see OQ-REALUNDER. A constant that is exact on 23 of 24
+  measured points is not reverted to flatter a mean; that is precisely how the
+  6,384-per-drive ERS3 over-charge propped up this project's accuracy for weeks.
+
 - **2026-09-14** — **No constant changed. The strip ladder was captured on two
   real programs and it overturned a standing hypothesis rather than producing a
   number.** Compiled ladder is OVER-charged on both files (−29,676 Elmsdale,

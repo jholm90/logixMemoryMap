@@ -614,6 +614,14 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             for program_el in named[1:]:
                 shell_bytes += model.identifier_name_length.bytes_for(
                     program_el.get("Name") or "")
+        # A TASK's own name costs too, and had no term at all -- the five
+        # identnamelen_task_* rows were the ones segment 9 closed without. Same
+        # n-1 convention as task_extra: the first task's name is inside the
+        # baseline. Tasks use bytes_for_task, which never returns zero.
+        for task in all_tasks[1:]:
+            if task.is_safety:
+                continue
+            shell_bytes += model.identifier_name_length.bytes_for_task(task.name)
         # A ROUTINE's own name costs the same, and ordinary routines were getting
         # nothing -- only JSR targets were charged, via jsr_target_declaration.
         #

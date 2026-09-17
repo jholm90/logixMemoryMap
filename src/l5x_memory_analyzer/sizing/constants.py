@@ -956,11 +956,31 @@ class IdentifierNameLengthModel:
     bucket_bytes: int
     bucket_chars: int
     confidence: str
+    task_min_bytes: int = 0
 
     def bytes_for(self, name: str) -> int:
         if self.bucket_chars <= 0:
             return 0
         return self.bucket_bytes * (len(name or "") // self.bucket_chars)
+
+    def bytes_for_task(self, name: str) -> int:
+        """A TASK name never costs zero, unlike a program's or a routine's.
+
+        identnamelen_task_c{04,08,16,32,40} (5 extra Periodic tasks per file)
+        reads 40 / 40 / 80 / 160 / 200, so 8 / 8 / 16 / 32 / 40 per task. The
+        plain floor law gives 0 at length 4, which is the one length that
+        disagrees -- and 40 is five times 8, not the corpus's +/-8 per-file
+        noise. Program and routine names are floor beyond doubt
+        (identnamelen_prog_c01..c07 all cost exactly 0), so this minimum is
+        specific to tasks.
+
+        8 * ceil(len/8) fits the same five points identically and differs only
+        for a name of 9..15 or 17..23 characters, which no captured task name
+        has. Not distinguishable yet -- see OQ-IDENTNAMELEN.
+        """
+        if self.bucket_chars <= 0:
+            return 0
+        return max(self.task_min_bytes, self.bytes_for(name))
 
 
 @dataclass(frozen=True)
@@ -1154,6 +1174,7 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             bucket_bytes=raw["identifier_name_length"]["bucket_bytes"],
             bucket_chars=raw["identifier_name_length"]["bucket_chars"],
             confidence=raw["identifier_name_length"]["confidence"],
+            task_min_bytes=raw["identifier_name_length"].get("task_min_bytes", 0),
         ),
         jsr_target_declaration=JsrTargetDeclarationModel(
             per_target=raw.get("jsr_target_declaration", {}).get("per_target", 0),

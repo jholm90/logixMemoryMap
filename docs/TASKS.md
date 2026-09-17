@@ -565,6 +565,36 @@ Retired by the ladder, do not spend on these:
 - **The empty-project baseline constant.** It is byte-exact on every generated
   empty file; the real-shell gap is unpriced content, not a wrong constant.
 
+### Added 2026-09-17 (212-row batch reviewed; four families closed, two blocked)
+
+Gates first: step 2 clean (3,442 ok / 3 FAILED / 9 never submitted); step 2b now
+passes after two stale counts were corrected -- OQ-AXISMARGINAL 51 -> 57 and
+OQ-MODULEMARGINAL 0 -> 6.
+
+**CLOSED AND WIRED** -- EVENT instruction (56/rung), 1756-EN2T (432), the six
+2198 -ERS3 per-catalog costs (flat per copy, no discount), and Task name cost
+(step with a minimum of 8). Full derivations in MEMORY_MODEL.md's changelog.
+
+**NEWLY DIAGNOSED, not fixed: every generated Kinetix file declares a shared DC
+bus with no converter.** Studio's own text, available for the first time:
+"Primary Bus Sharing Group N contains a module configured as Shared DC or Shared
+DC/DC with no module configured as Shared AC/DC". Bus sharing lives in the
+module ConfigData blob and is a per-PROJECT property, but payloads are stored
+per-CATALOG, so mixing donors across real exports cannot produce a coherent bus.
+Full diagnosis, the located-but-undecoded indices, and the standalone-donor fix
+are in OQ-MODULEMARGINAL. This is a decision about file shape, not a cleanup.
+
+**BLOCKED ON A MISSING MIDPOINT, deliberately not fitted (OQ-STEXPR-OPERATOR).**
+The 21 `stc_*` rows measure real ST costs -- bitwise operators +84 at one
+operand, `**` −168 at four, REAL destinations −64/−288, type conversion
++88/+112/−96/+44 -- but every operator has exactly two points and needs two
+parameters. Six 2-operator files would over-determine it. SPEC ONLY.
+
+**Still open from this batch:** `asmclose_2198_d012_ers3_n08` needs recapture
+(reads 52,240 where D012's own three linear points give 48,232), and the 8
+`axmarg_*` / 6 `modmarg_drvaxis_*` rows cannot be used until the bus-sharing
+shape is settled.
+
 ### Added 2026-09-14 (Kinetix guards made catalog-aware; 163 stale files found)
 
 The channel guard that was supposed to prevent the axmarg failure **existed and
