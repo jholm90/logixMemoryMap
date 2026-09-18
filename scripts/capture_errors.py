@@ -146,6 +146,29 @@ def _conversion_failures(rows: list[dict]) -> list[dict]:
     return out
 
 
+# A question's own HEADING, not any bold mention of it. A loose pattern once
+# matched a bold cross-reference inside another entry and truncated the span
+# before its CAPTURE ERRORS line, which surfaced the moment 35 questions moved
+# into one file at once.
+#
+# Every heading style the two documents use, which is one pattern rather than
+# one per file -- a document reorganised into "## 6. OQ-X" headings was
+# reported as having no entry at all, because the open-file pattern accepted
+# only the numbered-list form. The doc structure should not be dictated by
+# which of several equivalent forms a regex happens to know:
+#
+#     ## OQ-X -- ...          a question closed on its own
+#     ## 6. OQ-X -- ...       a numbered section heading
+#     6. **OQ-X** -- ...      a numbered list entry
+#     ## **OQ-X** -- ...      either, with the id emphasised
+#
+# A heading or list marker is REQUIRED. Allowing a bare "**OQ-X**" at line
+# start makes the pattern match a bold cross-reference again and truncates the
+# span before its CAPTURE ERRORS line -- which is exactly how this broke when
+# the requirement was relaxed.
+_HEADING_RE = r"^(?:#+ *(?:\d+[a-z]?\. *)?|\d+[a-z]?\. *)\*{0,2}(OQ-[A-Z0-9][A-Z0-9-]*)"
+
+
 def _entry_spans(text: str, heading: str) -> dict[str, str]:
     """Each question's own section of a questions document, keyed by its id."""
     spans: dict[str, str] = {}
@@ -165,8 +188,7 @@ def _all_entry_spans() -> tuple[dict[str, str], dict[str, str]]:
     closed question's errors as unrecordable.
     """
     open_spans = _entry_spans(
-        OPEN_QUESTIONS.read_text(encoding="utf-8"),
-        r"^\d+[a-z]?\. \*\*(OQ-[A-Z0-9][A-Z0-9-]*)\*\*")
+        OPEN_QUESTIONS.read_text(encoding="utf-8"), _HEADING_RE)
     closed_spans: dict[str, str] = {}
     if RESOLVED_QUESTIONS.exists():
         closed_text = RESOLVED_QUESTIONS.read_text(encoding="utf-8")
@@ -176,9 +198,7 @@ def _all_entry_spans() -> tuple[dict[str, str], dict[str, str]]:
         # were moved into this file at once. Both heading styles are in use:
         # "## OQ-X — ..." for one closed on its own, and "12. **OQ-X**" for
         # an entry moved over wholesale with its numbering intact.
-        closed_spans = _entry_spans(
-            closed_text,
-            r"^(?:#+ *|\d+[a-z]?\. \*\*)(OQ-[A-Z0-9][A-Z0-9-]*)")
+        closed_spans = _entry_spans(closed_text, _HEADING_RE)
     return open_spans, closed_spans
 
 
