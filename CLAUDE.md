@@ -231,6 +231,39 @@ waits.
   holds synthetic and generated test files only; real program exports stay in
   the gitignored `samples/local/`.
 
+## The real exports in `samples/local/` are READ-ONLY. No exceptions.
+**Never modify a real program export and expect the result to build.** It
+will not. A derived variant is not a cheap test file; it is a broken project
+that costs a Studio session to discover. This is a hard line, drawn
+2026-09-18 after the FlareFunction ladder failed on import with **19 errors**.
+
+The specific reasons, so this is not re-litigated as a tooling problem:
+
+- **An XML round-trip destroys CDATA, and Studio's schema requires it.**
+  `<Line>` inside `STContent` fails outright with *"Required CDATA for
+  element 'Line' was missing"* — an empty `<![CDATA[]]>` is not the same
+  token as an empty element. String `<Data>` and `<DefaultData>` payloads
+  fail as *"String invalid"* the same way. FlareFunction carries 10,097
+  CDATA sections.
+- **Deleting a definition orphans everything typed by it**, and the cascade
+  is not local: one failed AOI took out its own `LocalTag`, two controller
+  tags and a program tag with *"Data type does not exist"*.
+- **Byte-identity is the only acceptable proof, and it is not achievable
+  here.** Element-for-element equality is NOT sufficient — the failed ladder
+  passed exactly that check (97,211 elements, every rung `Text` matching) and
+  still would not import. Anything short of a byte-identical round trip of
+  the untouched file is a guess.
+
+So: a real export is an INPUT. It gets parsed and predicted against, never
+rewritten. The strip-ladder approach — subtracting categories from a real
+program to attribute its residual — is **dead by this rule**, not merely
+difficult, and `scripts/strip_ladder.py` may not be revived, reimplemented
+with a different XML library, or worked around by text-level surgery.
+
+Whatever a ladder would have measured has to come from files that are built
+as valid projects from the start, or from a variant that Studio itself
+produced by exporting after a delete made in Logix Designer.
+
 ## Style
 - Terse answers and commits. Do not restate the plan before doing it; spend
   the effort on the estimator and on keeping the docs honestly current.

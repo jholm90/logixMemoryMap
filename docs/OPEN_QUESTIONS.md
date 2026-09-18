@@ -4495,46 +4495,24 @@ the matching footnote at the bottom, not inline.
     1 committed file(s) attempted and never reached `ok` in
     `convert_log.csv`: `daxis_axis_cip_drive`
 
-    **THIRD STRIP LADDER BUILT 2026-09-18 — `FlareFunction_311D`, and it is
-    the OPPOSITE PROFILE to the two already stripped.** Elmsdale and Griffin
-    both UNDER-predict and both carry hundreds of alarm conditions.
-    FlareFunction OVER-predicts (1,089,519 predicted against 1,074,245 actual,
-    −15,274, −1.42%), carries ZERO alarm conditions, and has the highest
-    compiled-logic share of all sixteen real programs (39.5%). If the residual
-    were one missing term with one sign, this file could not exist.
+    **THE STRIP-LADDER APPROACH IS DEAD, 2026-09-18, and this entry may not
+    reach for it again.** A FlareFunction ladder was built and refused on
+    import with **19 errors**. The cause is structural, not a bug to fix: an
+    XML round trip destroys CDATA, and Studio's schema requires it — `<Line>`
+    fails with *"Required CDATA for element 'Line' was missing"*, string
+    `<Data>`/`<DefaultData>` fails as *"String invalid"*, and one broken AOI
+    cascaded into four more tags as *"Data type does not exist"*. The ladder
+    had passed an element-for-element equality check against the original
+    (97,211 elements, every rung `Text` matching) and was still worthless,
+    so that check is not evidence of anything.
 
-    The predictions below are PRE-REGISTERED — written before any capture, so
-    the ladder can falsify them rather than be fitted to them. Each row is what
-    the current engine says that category costs inside this real program:
-
-    | rung | strips | predicted total | predicted step |
-    |---|---|---:|---:|
-    | L0 | nothing | 1,089,519 | — |
-    | L2 | every rung to NOP, every ST line | 668,359 | 421,160 |
-    | L3 | 2 axis tags + MotionGroup | 621,743 | 46,616 |
-    | L4 | 33 I/O modules | 565,628 | 56,115 |
-    | L5 | 12 AOI defs + their instance tags | 529,728 | 35,900 |
-    | L6 | all 694 remaining tags | 184,876 | 344,852 |
-    | L7 | all 103 UDT defs — bare shell | 97,612 | 87,264 |
-
-    **L1 IS OMITTED DELIBERATELY, NOT FORGOTTEN.** The alarm strip removes zero
-    elements from this file, so `l1_noalarms` is byte-identical to `l0_full`.
-    Capturing it would consume a slot to measure a known zero.
-
-    **The L7 rung is simultaneously the OQ-CTLSHELL probe.** 97,612 predicted
-    for a bare 5069-L320ERMS3 shell that still carries a real controller's
-    configuration; the generated-file baseline for that processor is a far
-    smaller number, and the difference is the unpriced controller-shell content
-    OQ-CTLSHELL was opened for — measured here on a second processor family
-    rather than inferred from the 1756-L81E case alone.
-
-    **OQ-LADDERBASE APPLIES TO THIS LADDER IN FULL.** All seven rungs must be
-    captured in ONE Studio session with no restart between them. Two sessions
-    on Elmsdale disagree by 18,000–25,000 bytes — 50–70% of the smallest step
-    above (35,900, the AOI rung) and a third to a half of the motion and module
-    steps. A ladder split across sessions measures the session boundary, not
-    the category.
-
+    See the READ-ONLY rule in `CLAUDE.md`. The consequence for THIS question:
+    the two existing Elmsdale/Griffin ladders are the only per-category real
+    measurements that will ever exist, no third one is coming, and
+    OQ-LADDERBASE — which says those two disagree by 18,000–25,000 bytes —
+    can no longer be settled by generating more rungs. Attribution of the
+    real-set residual has to come from files built as valid projects, or from
+    variants Studio itself exported after a delete made in Logix Designer.
 
 44. **OQ-ALARMCONDREAL** — new 2026-09-14, from the strip ladder. Tag-based
     alarm conditions are the **second-largest category in both real programs
