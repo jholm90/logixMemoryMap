@@ -978,6 +978,57 @@ the matching footnote at the bottom, not inline.
     series. Opened 2026-09-13 (capture-batch segment 5), replacing the closed
     OQ-COMPOSITESCALE at this slot. **16 files built, awaiting capture.**
 
+    **CAPTURE 2026-09-18, 25 files, all converted `ok`, all `error_count` 0.
+    Kept short deliberately.**
+
+    **Arm A, `sroutc_c{1,2,4}_k{1,2,4,8}` — THE RATIO HYPOTHESIS IS DEAD.** The
+    grid is completely FLAT in condition count:
+
+        per rung      k=1    k=2    k=4    k=8
+        c=1             0    -12    -36    -84
+        c=2             0    -12    -36    -84
+        c=4             0    -12    -36    -84
+
+    Identical to the byte at every one of the twelve cells. The discount is
+    −12 × (k − 1) and condition count does not enter it. `sroutc_c01_k01` reads
+    0, matching `srout_ote_k01` exactly, so the control holds.
+
+    This was specified as "the decisive measurement for the whole project"
+    because a condition/output RATIO was the one hypothesis that reconciled the
+    synthetic families with the real ones. **It does not.** The law is now
+    confirmed by a FOURTH independent family and all sixteen real programs still
+    reject it (applying it: 1.70% → 3.22%, every file worse).
+
+    **What is left, and it is now the only candidate.** Every generated file that
+    shows the discount repeats ONE rung 1,000 times. Rung COUNT is excluded
+    (200 and 1,000 give the same per-rung figure) and tag UNIQUENESS is excluded
+    (`srout_oteuniq_k08`). What has never been varied is **rung IDENTITY within
+    a file** — real ladder never repeats a rung, and no file in the corpus
+    contains a multi-output shape where every rung differs.
+
+    That is the same systematic corpus defect OQ-TAGORDER names at tag scope:
+    **the corpus is uniform where real programs vary.** Two independent
+    questions now point at it. A file of 1,000 DISTINCT 4-output rungs, against
+    `sroutc_c01_k04`'s 1,000 identical ones, settles it and costs one file.
+
+    **Arm B, `cpttri_k3_*` — the k=3 tier truth table is closed.** t211 and t221
+    read 0, t212 reads +4/rung. `cpttri_pow_p3_adjacent` reads **+48/rung**:
+    `**` adjacency is a real unmodelled effect, separate from operator count.
+
+    **Arm C, `stc2_*` — THE FALSIFICATION TEST PASSED.** These are the six
+    2-operator midpoints specified to over-determine the ST constants wired from
+    single points earlier the same day. Four of six land at exactly **0**:
+    `and`, `or`, `xor` at two operators, and both all-float rows
+    (`premreal2_mul`, `premreal2_pow`). So the bitwise premium of 0 and the
+    all-float premiums of 0 and 8 hold at a second operator count and are no
+    longer single-point. Only `stc2_prem2_pow` is off, at +28/rung — the DINT
+    `**` premium of 38 is right at four operators and not at two.
+
+    **Arm D, `cptnar_j*` — narrowing is badly wrong on mixed-width shapes**:
+    +88, +204 and +120 per rung. OQ-CPTNARROW's `rate_T × k − 132` was derived on
+    uniform-width operands and does not survive mixing. Real exposure is still 27
+    calls in one program, so this stays unwired.
+
     Two captured single-shape sweeps say the engine over-charges by exactly 12
     bytes per output instruction beyond the first in a series cascade:
 
