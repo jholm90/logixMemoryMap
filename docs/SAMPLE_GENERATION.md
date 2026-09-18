@@ -323,3 +323,74 @@ rejected with "Invalid channel/node for motion module", which is what sank six
 dual and the most-attested drive in the corpus.
 
 `2198-S130-ERS3` and every `2198-P*` supply are Ch1 only.
+
+## Literal-operand batch — SPEC ONLY, not generated (OQ-LITERALOPERAND)
+
+Written 2026-09-18. **Not built.** CLAUDE.md step 7: test files are supplied,
+not written here, and no prior batch authorises the next.
+
+**What it measures.** An immediate numeric literal in an instruction operand
+costs bytes the engine charges at zero. Measured on the bench at **+4.000 bytes
+per slot** for a REAL literal in a REAL-typed MAM parameter (six slots, one
+rung, +24 exactly). The question is the rate for every OTHER operand type,
+because integer literals are 51,265 of the 52,195 unpriced slots in the real
+set — 98% of the mass, and the part the measurement does not cover.
+
+**The hypothesis.** An immediate costs the width of its type, stored inline:
+REAL 4 (measured), DINT 4, INT 2, SINT 1, LINT 8. The competing hypothesis is
+that the cost follows the SLOT's declared type rather than the literal's. These
+two differ whenever a small integer sits in a wide slot, which is what arm B
+below is for.
+
+**Held fixed in every file** — 1756-L81E, v35, one Task, one Program, one
+Routine, identical tag population across every file in an arm, and every tag
+still both DECLARED and REFERENCED in both members of each pair. That last
+point is what made the bench measurement clean, and dropping it would confound
+the literal term with tag-declaration cost. Enforced by
+`non_standard_processor` / `non_standard_firmware`.
+
+**Arm A — per-type rate. 10 files, 5 pairs.** One pair per operand type:
+SINT, INT, DINT, LINT, REAL. Each pair is 1,000 `MOV` rungs; the tag member of
+the pair moves a tag of that type, the literal member moves a literal of that
+type into the same destination. The source tag exists and is referenced by a
+held-fixed `EQU` in both members. **Discriminates:** the per-type rate directly,
+as (literal member − tag member) / 1000. Differences against the existing
+`typesweep_*` captures, which hold the same shape with tag operands only.
+
+**Arm B — literal type vs slot type. 4 files.** A DINT destination fed by, in
+turn, a literal written `5`, `5.0`, a SINT-range literal, and a DINT-range
+literal beyond INT range (e.g. `70000`). All four are one `MOV` × 1,000 into the
+same DINT tag. **Discriminates:** whether the cost tracks the literal's written
+form, its magnitude, or the destination's declared width. If all four are equal,
+the cost follows the slot and arm A's table is indexed by destination type; if
+they differ, it follows the literal.
+
+**Arm C — is it per-slot or per-distinct-value? 3 files.** 1,000 `ADD` rungs,
+each with two literal operands: (i) both literals the same value in every rung,
+(ii) both literals distinct within the rung but repeated across rungs,
+(iii) every literal distinct across all 2,000 slots. **Discriminates:** a
+per-slot cost from a constant-pool cost. `OQ-SERIESOUTPUT`'s candidate B died
+this way — assuming per-occurrence when the real law was per-distinct — so this
+arm is not optional. If (iii) > (i), there is a pool and the term is
+per-distinct-value, which would change the real-set arithmetic substantially
+since real programs reuse `0` and `1` heavily.
+
+**Arm D — small-literal folding. 3 files.** 1,000 `MOV` rungs with literal
+`0`, `1`, and `12345` into a DINT. **Discriminates:** whether Studio special-
+cases 0/1 (a plausible compiler optimisation). This matters out of proportion
+to its size: `0` and `1` are the most common literals in real ladder, so if
+they are free the 205,060-byte integer exposure is much smaller than it looks.
+
+**Arm E — does the instruction family matter? 4 files.** The same DINT literal
+in a `MOV` destination-side operand, an `EQU` comparison operand, a `JSR`
+parameter, and an `MAM` motion parameter, 1,000 each. **Discriminates:** whether
+the +4 generalises across instruction families or is specific to motion
+parameter blocks. The bench measurement is MAM only; MOV and EQU carry 18,924 of
+the real slots between them and are the actual prize.
+
+**20 files total.** Every file answers a currently-open question and there is no
+padding toward a roster size.
+
+**Run `scripts/confound_check.py` on every arm before capture.** Each arm varies
+exactly one dimension between consecutive files; that script exists because five
+separate families turned out not to.

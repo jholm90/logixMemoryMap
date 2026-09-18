@@ -11,6 +11,46 @@ Every entry is tagged with a confidence level:
 - **FITTED** — derived from regression against sample data, includes residual error
 - **UNKNOWN** — placeholder, blocked on an open question
 
+## Immediate literal operands — MEASURED, NOT WIRED (OQ-LITERALOPERAND)
+
+An immediate numeric literal in an instruction operand costs bytes on top of the
+instruction's own weight. The engine currently charges this **only** inside CPT
+expressions, CMP operands and ST statements; in every other instruction a
+literal operand is free, which is wrong.
+
+| case | cost | confidence |
+|---|---:|---|
+| REAL literal, REAL-typed motion parameter | **4** | MEASURED 2026-09-18, bench, 6 slots one rung |
+| REAL literal inside a CPT expression | 4 | FITTED — `cpt_expression.real_dest.per_float_literal`, 12 files at 1/2/3 literals |
+| DINT / INT / SINT / LINT literal, any instruction | **UNKNOWN** | hypothesis: the type's width, inline |
+
+**The measurement.** One rung in one project, edited in Logix Designer and
+compiled by Studio, Capacity read twice. Six MAM operand slots changed from a
+tag reference to the immediate `99.99`, with the four source tags still declared
+AND still referenced by `EQU` on the same rung in both versions:
+
+    74,224  -> 74,248   = +24 over 6 slots = +4.000 per slot, exactly
+
+**Two independent paths agree on 4.** The CPT model fitted 4 per float literal
+across 12 files; MAM measures 4 per float literal on the bench. One constant
+turning up in two unrelated instructions priced by two unrelated code paths is
+what a general law looks like, not a per-instruction quirk.
+
+**Why nothing is wired.** The 4 is measured for a REAL literal only. Across the
+seventeen real programs there are 52,195 unpriced literal operand slots — 12.1%
+of all 432,850 operand slots, worth 208,780 bytes at 4 each, which is 25.4% of
+the total residual — but **51,265 of them are INTEGER literals at an unmeasured
+rate**, and only 930 are float. Charging the integer slots at 4 extrapolates
+55× beyond the evidence. Fitting the rate against the real set gives
+mean-optimal 2 and max-optimal 6.5, and that disagreement is itself evidence
+that a single flat rate is the wrong shape and the cost is type-dependent.
+
+**Hypothesis to measure:** an immediate costs the width of its type, stored
+inline — REAL 4 (measured), DINT 4, INT 2, SINT 1, LINT 8 — matching the Atomic
+data types table below. The competing hypothesis is that it follows the SLOT's
+declared width rather than the literal's. 20-file spec in
+`docs/SAMPLE_GENERATION.md`, "Literal-operand batch". See `OQ-LITERALOPERAND`.
+
 ## Atomic data types (KNOWN)
 
 | Type | Bytes | Notes |

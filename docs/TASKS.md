@@ -106,9 +106,29 @@ withdrawn** (OQ-CTLSHELL closed 2026-09-18): a File|New 1756-L81E at v35 reads
 17,352 against 18,112 — the engine **over**-charging by 760. The gap was a
 component constant compared against a whole-file capture.
 
-So an uncounted-content term remains the only shape not eliminated, but it now
-has **zero** measured support at the shell level, and the shell is the one
-place it was ever observed. It is a hypothesis, not a lead.
+So an uncounted-content term remains the only shape not eliminated, and at the
+time this was written it had **zero** measured support.
+
+**That held for about six hours. 2026-09-18, same day: `OQ-LITERALOPERAND`.**
+An immediate numeric literal in an instruction operand costs **+4.000 bytes**
+that the engine charges at zero — measured on the bench in Logix Designer, six
+operand slots in one MAM rung, +24 exactly, with the tags still declared and
+still referenced in both versions. It is not proportional to any category the
+engine counts, so the ceiling experiment does not bound it. This is the term
+this paragraph said did not exist.
+
+Exposure: **52,195 unpriced literal operand slots across the seventeen, 12.1%
+of all operand slots, 208,780 bytes at 4 each = 25.4% of the residual.** And it
+is the first candidate all session to move the **max**: 3.6309% → 2.9022%,
+against a cheating eight-parameter ceiling of 2.5919%. The mean barely moves
+(1.5951 → 1.5818) because the term can only add bytes and seven files
+over-predict.
+
+Nothing is wired. The +4 is measured for a REAL literal in a REAL-typed motion
+parameter, which is 930 of the 52,195 slots; 98% of the mass is integer
+literals at an unmeasured rate, and mean-optimal (2) disagrees with max-optimal
+(6.5), which says a single flat rate is the wrong shape. A 20-file spec is in
+`docs/SAMPLE_GENERATION.md`. See `OQ-LITERALOPERAND`.
 
 **The instrument that could find the rest is gone.** Attribution by
 subtraction from a real export is dead by the read-only rule, and no

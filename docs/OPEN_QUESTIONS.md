@@ -1,7 +1,9 @@
 # Open Questions
 
-**FOUR. Down from forty on 2026-09-18, and the thirty-six that went were not
-abandoned — they were bounded.**
+**FIVE. Down from forty on 2026-09-18, and the thirty-six that went were not
+abandoned — they were bounded. The fifth is `OQ-LITERALOPERAND`, opened
+2026-09-18 on a bench measurement, and it is the only question on this list
+with a measured mechanism that the ceiling experiment does not bound.**
 
 An eight-parameter per-category fit, fitted directly on the held-out real
 programs (cheating, an upper bound), reaches mean 1.0149% / max 2.5919% and
@@ -28,9 +30,11 @@ What is left is what that experiment does NOT bound:
 "unpriced controller shell" it was opened for does not exist. It was a
 component constant compared against a whole-file capture, on top of a wrong
 actual. The engine predicts a File|New project exactly — 18,112 against
-18,112. Reasoning in `RESOLVED_QUESTIONS.md`. That removes the last measured
-evidence of content the engine does not count at all, which strengthens the
-ceiling conclusion rather than weakening it.
+18,112. Reasoning in `RESOLVED_QUESTIONS.md`. That removed the last measured evidence
+of content the engine does not count at all — **for about six hours.**
+`OQ-LITERALOPERAND`, below, supplies new evidence of exactly that shape, from a
+bench measurement rather than a strip ladder, and it is the first candidate all
+session to move the **max**.
 
 **The bar for opening a new one:** state, before any file is built, how many
 percentage points it should move on the seventeen real programs and by what
@@ -39,7 +43,115 @@ answers it and the question does not get opened.
 
 ---
 
-1. **OQ-EXPORTSCOPE** — new, 2026-09-04. The estimation path has to handle
+1. **OQ-LITERALOPERAND** — new, 2026-09-18. **An immediate numeric literal in
+    an instruction operand costs bytes the engine does not charge.** Measured
+    on the bench, in Logix Designer, by editing one rung in one project and
+    reading Capacity twice:
+
+        74,224   MAM(axVirtual,MAM,1,Position,Speed,% of Maximum,AccelDecel,
+                     % of Maximum,AccelDecel,% of Maximum,Trapezoidal,Jerk,
+                     Jerk,% of Maximum,Disabled,Current,0,None,0,0)
+        74,248   MAM(axVirtual,MAM,1,99.99,99.99,% of Maximum,99.99,
+                     % of Maximum,99.99,% of Maximum,Trapezoidal,99.99,
+                     99.99,% of Maximum,Disabled,Current,0,None,0,0)
+
+    Six operand slots changed from a tag reference to an immediate REAL
+    literal. **+24 bytes, so +4.000 per slot, six for six.** Everything else in
+    the file is identical, and — the reason this is clean — the four tags
+    `Position`, `Speed`, `AccelDecel`, `Jerk` are still declared AND still
+    referenced in both versions, by the four `EQU` instructions on the same
+    rung. So this is not a tag being deleted. It is the same tag population
+    with six operand slots re-pointed at inline constants.
+
+    **The engine charges 0 for this.** Run on both rung texts it returns 320
+    bytes for each — a zero delta against a real 24.
+
+    **It is not a new constant.** `memory_model.yaml`
+    `cpt_expression.real_dest.per_float_literal` is already **4**, "confirmed
+    across 12 files at 1, 2 and 3 float literals". The same 4 bytes now shows
+    up in MAM, an unrelated instruction, priced by a completely separate code
+    path. One constant appearing independently in two unrelated places is what
+    a general law looks like rather than a per-instruction quirk. Today the
+    engine applies it **only** inside CPT expressions, CMP operands and ST
+    statements; every other instruction's literals are free.
+
+    **Why this matters more than its size.** `docs/TASKS.md` argues, from the
+    ceiling experiment, that the only shape not eliminated is "a term that is
+    NOT proportional to any category the engine currently counts", and — as
+    edited earlier the same day, after OQ-CTLSHELL was withdrawn — that such a
+    term had **zero** measured support. This is that term, and it now has
+    support. It is not a category scale, so the ceiling experiment does not
+    bound it.
+
+    **Exposure on the seventeen real programs**, counting numeric literals in
+    operand slots of instructions that are not CPT or CMP:
+
+    | | count | at 4 bytes |
+    |---|---:|---:|
+    | integer literals | 51,265 | 205,060 |
+    | float literals | 930 | 3,720 |
+    | **total** | **52,195** | **208,780** |
+
+    **12.1% of all 432,850 operand slots in the real set**, and 208,780 bytes
+    is **25.4%** of the +822,938 residual. Every one of the seventeen carries
+    between 8.8% and 16.2% literal slots, so this is not one file's quirk. Far
+    above the 0.5% noise floor. Top carriers: MOV 9,835, EQU 9,089, ADD 5,259,
+    NEQ 3,132, COP 2,841, JSR 2,631, GRT 2,488, LIM 1,990, FLL 1,877.
+
+    **What charging it does to the real set** (float held at the measured 4,
+    integer swept — baseline is mean 1.5951%, max 3.6309%):
+
+    | int cost | mean | max | <1% | <2% |
+    |---:|---:|---:|---:|---:|
+    | 0 (measured case only) | 1.5973 | 3.6198 | 4/17 | 11/17 |
+    | 2 | **1.5818** | 3.3811 | 4/17 | 12/17 |
+    | 4 | 1.5885 | 3.1424 | 5/17 | 12/17 |
+    | 6.5 | 1.5951 | **2.9022** | 5/17 | 12/17 |
+
+    Read this carefully, because the headline is the max and not the mean.
+
+    - **The max moves, and nothing else all session has.** 3.6309% → 2.9022%.
+      For scale, the cheating eight-parameter ceiling fit — all category scales
+      floated directly on the held-out files — only reached max 2.5919%. A
+      single mechanistic term gets most of that way without fitting anything
+      per-category.
+    - **The mean barely moves** (1.5951 → 1.5818 at best, 0.013 points) because
+      the term can only ADD bytes and seven of the seventeen already
+      over-predict. All six of the worst files improve; all seven
+      over-predictors get worse. That is the pattern CLAUDE.md warns about, and
+      it is a reason to be careful about the rate, not a reason to dismiss the
+      mechanism — the mechanism is measured, the over-prediction in those seven
+      files is a separate defect.
+    - **Mean-optimal is 2, max-optimal is 6.5.** They disagree, which is
+      positive evidence that a single flat rate is the WRONG SHAPE and the true
+      cost is type-dependent.
+
+    **NOTHING IS WIRED, and the reason is specific.** The +4 is measured for a
+    REAL literal in a REAL-typed motion parameter. That case is 930 slots,
+    worth 3,720 bytes — negligible on its own. **98% of the mass is integer
+    literals, and the measurement says nothing about them.** Charging 51,265
+    slots at a rate extrapolated 55× beyond its evidence is exactly the move
+    that has produced every bad constant in this project. The per-type rates
+    have to be measured before any of this lands.
+
+    **The hypothesis to test** is that an immediate costs the width of its
+    type, inline: REAL 4 (measured), DINT 4, INT 2, SINT 1, LINT 8. The
+    mean-optimal flat rate of 2 sitting between 1 and 4 is consistent with a
+    real population that is a mix of DINT and narrower slots. The competing
+    hypothesis is that the cost follows the SLOT's declared type rather than
+    the literal's, which the same batch separates.
+
+    **Spec written** — `docs/SAMPLE_GENERATION.md`, "Literal-operand batch".
+    Not generated: CLAUDE.md step 7, ask every time.
+
+    **Why this measurement is trustworthy when the strip ladder was not.** It
+    was made by editing a project in Logix Designer and letting Studio compile
+    it, not by rewriting exported XML. One rung changed, Capacity read twice.
+    That is the path the read-only rule explicitly leaves open — "a variant
+    that Studio itself produced" — and it is the first thing all session to
+    produce a usable number from a real program.
+
+2. **OQ-EXPORTSCOPE** — new, 2026-09-04. The estimation path has to handle
     controller, UDT, AOI, program, routine and rung-logic exports.
     Anything that is not a controller export cannot use the base load, but
     rungs, routines and
@@ -71,7 +183,7 @@ answers it and the question does not get opened.
     needs a controller at the bench rather than a generator run.
 
 
-2. **OQ-BUILDFAIL-OPEN** — the 11 sample files that genuinely still fail to
+3. **OQ-BUILDFAIL-OPEN** — the 11 sample files that genuinely still fail to
     build, 2026-09-05. Audited down from 138 `error_count > 0` rows: 72 were
     stale captures against files regenerated after the fact (cleared, they
     re-run automatically), 13 were superseded by exact `realscale_*` tests,
@@ -121,7 +233,7 @@ answers it and the question does not get opened.
     `convert_log.csv`: `predefprobe_opcua_server_address`, `predefprobe_ref_to_axis_cip_drive`, `predefprobe_ref_to_axis_consumed`, `predefprobe_ref_to_axis_general_drive`, `predefprobe_ref_to_axis_servo`, `predefprobe_ref_to_axis_servo_drive` (+3 more)
 
 
-3. **OQ-REALUNDER** — new 2026-09-12, and it is still the single biggest
+4. **OQ-REALUNDER** — new 2026-09-12, and it is still the single biggest
     thing between this project and its North Star.
 
 
@@ -590,7 +702,7 @@ answers it and the question does not get opened.
     specified in TASKS.md, not a refit.
 
 
-4. **OQ-RUNGSHAPE** — new 2026-09-18, and it is the largest measured
+5. **OQ-RUNGSHAPE** — new 2026-09-18, and it is the largest measured
     evidence gap in the project. **The compiled-logic weights were fitted on
     a rung shape that real ladder almost never has.**
 
