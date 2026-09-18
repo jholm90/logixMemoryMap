@@ -8,20 +8,24 @@ routine reported "0% measured" even though its instruction weights reproduce
 real captures to the byte.
 
 This replaces the tag with a measurement. For each instruction it finds the
-captured files where that instruction is the VARIABLE UNDER TEST -- a single-
-shape `instr_*` sweep, where the only thing moving is that opcode -- and
-records how far the engine's prediction actually landed from the controller's
-own reading.
+captured files where that instruction is the VARIABLE UNDER TEST -- exactly
+one non-scaffold opcode, compiled logic the dominant cost, enough occurrences
+for the slope to beat the per-file base -- and records how far the engine's
+prediction actually landed from the controller's own reading.
 
-    293 of 299 isolated rows are within 0.1%. Median 0.030%.
+    307 of 413 qualifying rows within 0.1%. Median 0.0030%.
+
+The tail is not noise and must not be averaged away: CPT sits at 3.27% mean
+and 119.6% worst because the SINT/INT widening defect is real and unfixed, and
+that is exactly what a confidence display is for.
 
 XIC, XIO, OTE and NOP get no isolated sweep of their own because they ARE the
 scaffolding every other test rung is built from. They are not unmeasured --
 they are the most-measured weights in the model: the `emptyrungs` sweep fixes
 NOP and the per-rung base, and the 2026-09-18 `rshape_arr_*` files hold eight
 XICs and one OTE fixed while moving only the branch arrangement and came back
-byte-exact at every leg count. They are pinned here explicitly rather than
-being reported as unknown.
+byte-exact at every leg count. `confidence.py` pins them explicitly rather
+than reporting them as unknown.
 
 Output is written into memory_model.yaml as data, per CLAUDE.md: a sizing
 constant belongs in the model file, not in code. Re-run whenever a capture
@@ -54,6 +58,12 @@ CALL = re.compile(r"\b([A-Z][A-Z0-9_]{1,15})\s*\(")
 # output, so these appear everywhere and can never be "the one thing moving".
 SCAFFOLD = ("XIC", "XIO", "OTE", "NOP")
 
+# A file counts as measuring its one opcode only if compiled logic is most of
+# what it costs, and only if the opcode appears enough times for the slope to
+# dominate the per-file base.
+LOGIC_SHARE_FLOOR = 0.25
+MIN_OCCURRENCES = 5
+
 MODEL_YAML = REPO_ROOT / "src" / "l5x_memory_analyzer" / "sizing" / "memory_model.yaml"
 
 
@@ -62,8 +72,17 @@ def measure() -> dict[str, list[float]]:
     for row in load_manifest():
         if not is_valid_capture(row):
             continue
-        if not row["sample_id"].startswith(("instr_", "instrfirst_", "verif_", "vinstr_")):
-            continue
+        # An isolation file is identified by WHAT IT CONTAINS -- exactly one
+        # non-scaffold opcode -- never by its name. Two filename whitelists
+        # were tried first and both silently dropped real evidence: `verif_`
+        # missed all 33 hand-verified `verifinstr_*` motion files and made
+        # every motion instruction look untested, and the next attempt still
+        # missed `unweighted_*`, `uwclose_*`, `forloop_*`, `lbljmp_*` and
+        # `subrtn_*`. Naming conventions drift; the rung text does not.
+        if row["sample_id"].startswith("realprog_"):
+            continue                      # held-out set, never a fitting input
+        if not (row.get("actual_bytes") or "").strip():
+            continue                      # specced but never captured
         path = REPO_ROOT / row["l5x_path"]
         if not path.exists():
             continue
@@ -84,6 +103,19 @@ def measure() -> dict[str, list[float]]:
             continue
         predicted = sum(e.bytes for e in entries)
         actual = int(row["actual_bytes"])
+
+        # The file's error only measures this instruction if the instruction
+        # is what the file mostly COSTS. A tag-packing test whose rungs are
+        # all NOP contains exactly one opcode and is not a NOP test: its error
+        # belongs to the tags. Without this, NOP picked up 2,057 "samples" and
+        # a 94.8% worst case borrowed from whatever those files were really
+        # testing, and CPT inherited the cptnar narrowing defect the same way.
+        logic = sum(e.bytes for e in entries if e.category == "routine_logic")
+        if predicted <= 0 or logic / predicted < LOGIC_SHARE_FLOOR:
+            continue
+        if ops[subject[0]] < MIN_OCCURRENCES:
+            continue
+
         per[subject[0]].append(abs(actual - predicted) / actual * 100)
     return per
 
