@@ -1,351 +1,230 @@
-# AOI Sizing — Known / Unknown Map
+# AOI Sizing — What Is Known and What Is Not
 
-AOIs are a large foundation of real PLC code and need 100% accuracy. This
-doc is the gameplan — a plain accounting of what's actually
-confirmed about AOI sizing versus what's still a real gap, so there's
-something concrete to correct or add to rather than a vague "still working
-on it." Update this file whenever an item below moves from unknown to
-known, or a new unknown surfaces — don't let it go stale the way the
-instruction table almost did.
+AOIs are a large part of real PLC code, so this needs to be right. This file is
+the honest accounting: what is confirmed and wired, what is genuinely still open,
+and which plausible-looking answers have already been refuted.
 
-## What an AOI *is*, structurally, in L5X (confirmed, not in question)
+Constants live in `MEMORY_MODEL.md`. This file is the map.
 
-- An `AddOnInstructionDefinition` element declares Parameters (Input/
-  Output/InOut) and LocalTags — same member-list shape as a UDT's
-  `DataType`, just with a `Usage` attribute per parameter.
-- An AOI-*typed tag* (an "instance") sizes exactly like a UDT-typed tag
-  built from that same member list — Input/Output/LocalTags contribute to
-  the instance's own storage, **InOut parameters do NOT** (an InOut
-  parameter is a reference to the CALLER's own tag, not separate storage
-  inside the instance). Confirmed against real corpus, wired in
-  `parser/aoi.py`.
-- Required/Visible/Hidden are per-parameter flags controlling what a
-  calling rung must/may/can't wire at the call site (the
-  explanation, tested): `Required=true` → tag mandatory on the call;
-  `Required=false, Visible=true` → some value mandatory but wiring is
-  optional (can be omitted, matches real corpus precedent); neither →
-  hidden, tag-browser access only, never appears on a call. This is
-  about call-site *syntax validity*, not proven to be zero-effect on byte
-  size — see the Known/Unknown split below, it turns out to matter a
-  little.
+---
 
-## KNOWN — confirmed, wired, trust these
+## What an AOI is, structurally
 
-1. **Standalone AOI-instance tag sizing (scalar, one instance).** Exact
-   fit — an AOI-typed tag sizes as `Σ(Input+Output+LocalTag member sizes)
-   + tag_overhead`, same formula as an ordinary UDT-typed tag. Confirmed
-   across many real files, 0.00% residual when the AOI's own *definition*
-   cost isn't in play (see the definition-cost gap below — that's a
-   *separate* line item the engine currently doesn't charge at all, not
-   an error in the instance formula itself).
+Not in question.
 
-2. **AOI array-of-instances, pure-atomic members (no BOOL anywhere).**
-   Real per-element array cost (~124/instance) is close to the engine's
-   own UDT-style array assumption (128/instance) — small ~4/instance gap,
-   consistent with ordinary small-residual noise seen elsewhere in this
-   project, not a distinct new effect. Trust the plain per-instance
-   formula for BOOL-free AOI arrays.
+- An `AddOnInstructionDefinition` declares Parameters (Input, Output, InOut) and
+  LocalTags — the same member-list shape as a UDT's `DataType`, with a `Usage`
+  attribute per parameter.
+- **An AOI-typed tag sizes exactly like a UDT-typed tag** built from that member
+  list. Input, Output and LocalTags contribute to the instance's storage.
+  **InOut parameters do not** — an InOut is a reference to the caller's own tag,
+  not separate storage inside the instance.
+- **Required and Visible are per-parameter flags governing call-site syntax:**
+  - `Required="true"` → a tag is mandatory on the call.
+  - `Required="false" Visible="true"` → some value is mandatory but wiring is
+    optional, and it may be a **literal**. This is the combination that lets a
+    literal reach a parameter.
+  - Neither → hidden. Tag-browser access only, never appears on a call.
 
-3. **Required/Visible/Hidden call-site syntax.** Confirmed real: Required
-   params must be wired, Visible-optional params may be omitted (matches
-   real `PTimer` corpus precedent), Hidden params never appear on a call.
-   This governs whether a generated test file *builds at all* — already
-   load-bearing for every AOI test file this project writes.
+  This governs whether a generated test file builds at all, so it is load-bearing
+  for every AOI test file.
 
-## UNKNOWN — real, open, no formula yet (this is the actual gap)
+---
 
-0. **THE STRUCTURAL BLIND SPOT (2026-09-06, OQ-AOISTRUCT) — read this
-   first, it reframes everything below.** The definition-cost function is
-   `base 1184 + per-item rate (or per-TYPE rate for a single-type def) +
-   AOI TYPE-name length buckets`, and that is the whole of it. Seven
-   structural properties of an AOI are therefore priced at exactly zero,
-   with the real-corpus frequency of each measured across 81 real AOI
-   definitions / 2,120 real Parameters+LocalTags:
+## Known and wired
 
-   | unpriced | real corpus |
-   |---|---|
-   | member NAME length | mean 12.1 chars, max 32 |
-   | member DESCRIPTIONS | 803 of 2,120 have one; zero ever generated |
-   | InOut parameters | 94 real; skipped outright by `compute_aoi_definition_cost` |
-   | predefined-struct members | TIMER 557, DateTime 120, COUNTER 66, STRING 58, MOTION_INSTRUCTION 36, MESSAGE 15 — none ever generated |
-   | array dimensions | 46 real dimensioned members, counted as one item each |
-   | counts past the fitted range | real AOIs reach 102 params / 128 locals / 85 internal rungs; corpus topped out near 6/2/1 |
-   | extra internal routines | 7 of 81 have EnableInFalse and/or Prescan besides Logic |
+### Instance tags — exact
 
-   Why it matters more than the byte counts suggest: this tool is going to
-   strangers (2026-09-05, *"I plan on sharing this for people
-   outside my company and their code will be very different and use
-   different aois"*), and every item in that table is a property their AOIs
-   will have in different amounts than the. A correction fitted against
-   the definitions that recur across the nine real projects — `PTimer`,
-   `HomeToTorque`, `T_ADD`, `Debounce` and the other byte-identical shared
-   AOIs — would score well here and be worthless there.
+An AOI-typed tag costs `Σ(Input + Output + LocalTag member sizes) + tag_overhead`,
+the same formula as an ordinary UDT-typed tag, with zero residual across many real
+files.
 
-   `gen_aoi_structure.py` (56 files) isolates each property, one per group,
-   with the AOI type name held constant across all 56 so the one priced
-   name term cannot contaminate the readings. The model predicts a dead
-   flat line across every group except the three scale sweeps, so any
-   spread in the captured numbers is an unpriced item. **Blocked on
-   capture.**
+This was worth a large accuracy jump on its own: engine error on the real corpus
+fell from 41.6% to 29.5% (alias tags plus predefined structures) to 8.8% once AOI
+instance sizing landed.
 
+### Definition cost — one itemised form
 
-1. **AOI DEFINITION cost — WIRED 2026-08-27, close but not total closure.**
-   The full `localtype_*`/`paramtype_*`/`aoidefcost_type*` def_only batch
-   (85/85 AOI manifest rows) had landed captured but sat unprocessed —
-   closed this pass. `aoi_definition` (memory_model.yaml) now uses a
-   per-type declared-item rate (BOOL=16, SINT=18, INT=18, DINT=20, REAL=20,
-   LINT=24 per item, base=1184 unchanged) whenever an AOI declares items of
-   a SINGLE type — this directly fixes the previously-flagged "BOOL/LINT-
-   heavy AOIs under-predicted" gap (LINT-heavy: was -32/item, now exact;
-   BOOL-run: was -5-6%, now ~1.1%). Live-recomputed against all 85 captured
-   AOI rows: 32 exact, 52 within 1%, 1 at 2.10% (`aoi_array_localtag_1_
-   instance` — that's the separate array-vs-definition-cost tangle, item 3
-   below, not a def-cost miss). Deliberately did NOT extend per-type rates
-   to MIXED-type AOI defs (some DINT + some BOOL together) — real data
-   proves the rates don't compose additively once BOOL sits alongside
-   another type (`aoi_boolpack_interspersed20_def_only`, 20 BOOL + 20 DINT,
-   matches the OLD flat-20 formula exactly; a naive per-type sum
-   under-predicts it by 80). Mixed-type AOI defs keep the flat
-   per_declared_item=20 rate, which real realistic-shape data
-   (`BasicAOI`/`RealisticAOI50`) already sits within 1-2% of. See
-   memory_model.yaml's `aoi_definition` comment for the full derivation.
+An AOI's declaration has a real one-time cost independent of any instance. The
+form is in `MEMORY_MODEL.md`: a base, 12 per declared member, each member's own
+data bytes, 24 per 32-bit word the declared BOOLs occupy, an 8-aligned pool for
+the member names, and a bucketed term for the AOI's own type name.
 
-   **AOI name length — CLOSED 2026-08-30.** Follows
-   `8*max(0,(len(name)-8)//4) - 8`, confirmed 7/7 exact against real
-   `aoiname_len08/09/13/16/20/25/30_def_only`. Wired as
-   `AoiDefinitionModel.name_length_bytes`. A real off-by-one bucket-
-   boundary bug (first divisor tried, `(len-7)//4`, put len=19 one bucket
-   too high — invisible against the 7 tested points, caught by cross-
-   checking two AOI-array-packing files that only differ in name length)
-   was found and fixed along the way — see RESOLVED_QUESTIONS.md.
+Measured on **124 definition-only files** — no instance tag anywhere and no
+internal rungs, so the definition is the only AOI cost in the file. **70 land
+exactly, 122 of 124 inside ±8.**
 
-   Required/Visible/Hidden's small +-16 definition-cost swing —
-   CLOSED 2026-08-25, confirmed noise, no real effect.
+### Type-name length — closed
 
-   Original per-item-count/type-scaling questions this item used to track
-   (now folded into the wired formula above), kept for history:
-   - Does it scale with parameter count? **The one dataset built to
-     answer this (`paramcount_n02/n04/n08_def_only`) is contaminated** —
-     a stale-capture-window bug (OQ-CAPTURERACE) means `n04` accidentally
-     recorded `n02`'s value and `n08`'s reading is also suspect. Clean
-     recapture (`paramcount_n04_def_only_v2`/`n08_def_only_v2`) is
-     generated and sitting in the manifest, awaiting a real capture.
-   - Does the ordinary UDT-definition formula (`168 + 16×member_count`,
-     name-length term, BOOL-run bonus) apply unchanged to AOIs? **No —
-     confirmed different, and now a real shape exists.** The contaminated
-     `paramcount_n04/n08_def_only` retest (`_v2` files, OQ-CAPTURERACE)
-     landed clean 2026-08-25 (`error_count=0` both). Real gap vs. the
-     currently-predicted value: n04=1272, n08=1344 → linear at exactly
-     **18/param**, extrapolating to a flat **~1200** at param_count=0. The
-     3rd point (`paramcount_n02_def_only`, real actual=19360) — generated
-     under an older code path with a different predicted_bytes baseline,
-     not directly comparable on the gap number — still checks out: the
-     fitted formula (baseline + 1200 + 18×2) predicts 19364 against a real
-     19360, a 4-byte miss. **`aoi_def_cost ≈ 1200 + 18×param_count`,
-     DINT/Input-only, 0-instance shape, 3 points, essentially zero
-     residual.** Not wired (needs more param TYPES — INT/BOOL/REAL/Output/
-     InOut all untested — before trusting `18/param` as universal, and the
-     UDT-definition formula comparison above is still worth running once
-     more param shapes exist), but this is the clearest signal yet on the
-     AOI-vs-UDT structural difference confirmed is real in the
-     2026-08-25 Q&A (see below) — plausibly the ~1200 flat term IS that
-     extra bookkeeping. **Generated 2026-08-25, `gen_aoi_generalization.py`,
-     awaiting capture:** INT/BOOL/REAL Input params at n=2/4/8 (9 files)
-     and Output/InOut direction at n=4/8 (4 files), matching the confirmed
-     DINT/Input points exactly so the comparison isolates only type or
-     direction.
-   - Does Required/Visible/Hidden affect DEFINITION cost, not just
-     call-site syntax? **RESOLVED 2026-08-27 — no, not materially.**
-     Live-recomputed against the current (post-per-type-rate-fix) engine:
-     `reqvis_allhidden/allrequired_n4_def_only` = 19,400 (gap +8, 0.04%),
-     `reqvis_allvisibleoptional_n4_def_only` = 19,416 (gap +24, 0.12%),
-     `reqvis_mixed_n4_def_only` = 19,384 (gap -8, 0.04%) — the ±16 swing
-     originally flagged (2026-08-25) as "real but unexplained" is well
-     within the same small universal noise band already seen throughout
-     this project, not a distinct step pattern. **2026-08-25: does size
-     differ between not-visible, visible and required parameters?**
-     Extended to the BOOL Input + InOut
-     AXIS_CIP_DRIVE shape via `group_axis_aoi_inout_reqvis_sweep`
-     (`axis_aoi_inout_reqvis_hidden/visibleoptional/required_def_only`,
-     captured, landed at 43,256 / 43,272 / 43,256): same tiny ±16 pattern,
-     confirming this holds even with an InOut param in the mix, not just
-     the DINT-only case. No formula change needed — the existing per-type
-     rate already predicts all 7 of these within 1.5%, most within 0.15%.
+`8 × max(0, (len − 8) // 4) − 8`, exact at seven points.
 
-2. **AOI array-of-instances, BOOL-heavy members — 2026-08-25: SOLVED for
-   the tested shape, formula found, not yet wired (see confidence caveat
-   below).** Real per-element array cost depends on how many of the AOI's
-   30 members are BOOL, and it turns out to be exactly linear:
+### Internal logic — wired
 
-   **`marginal_bytes_per_instance = 124 - 4 × bool_member_count`**
-   (bool_member_count out of 30 total members in every AOI tested here)
+All of an AOI's internal routines are aggregated into one pseudo-routine and
+weighted with the ordinary instruction table. **Per-routine count does not matter,
+only total content.** Cut maximum residual on the isolation sweep from 12.02% to
+0.55%.
 
-   Confirmed against 8 real data points, computed by direct subtraction
-   between consecutive instance counts within each ratio (same tag pool,
-   only instance count varies — this project's standard methodology), and
-   every single one lands on the formula exactly:
+### Call site — wired
 
-   | BOOL members (of 30) | formula (124-4n) | real marginal/instance |
-   |---|---|---|
-   | 0  | 124 | ~124 (KNOWN #2 above) |
-   | 1  | 120 | 120 |
-   | 5  | 104 | 104 |
-   | 10 | 84  | 84 |
-   | 15 | 64  | 64 (the original single ratio point) |
-   | 20 | 44  | 44 |
-   | 25 | 24  | 24 |
-   | 29 | 8   | 8 |
-   | 30 | 4   | ~4 (boundary sweep below) |
+`120 + 16 per parameter passed`, the instance tag not counting. Fixed by two
+independently written generators with different AOI shapes.
 
-   Zero residual at every point — this is about as clean a fit as this
-   project has ever produced.
+### Instance arrays — wired
 
-   **The 32-element-boundary hypothesis is REFUTED.** The original guess
-   was "BOOL members inside an AOI pack across array elements the way a
-   top-level BOOL array does" (32-per-word), which predicts a step
-   discontinuity at 32 instances. The boundary-crossing sweep
-   (n=16/31/32/33/48/64/65/96, all-BOOL 30/30) shows NO such step — real
-   marginal cost is a flat ~4/instance across the entire range (31→32:
-   +0, 32→33: +8, 48→64: +4.0/instance, 65→96: +3.87/instance — noisy at
-   the byte level but flat, no boundary feature). Whatever the real
-   Rockwell mechanism is, it is NOT simple 32-per-word cross-element bit
-   packing. From field experience (2026-08-25): never seen this
-   documented anywhere — this formula is purely empirical, no known
-   mechanism behind the `124 - 4n` shape.
+The whole block is padded to an 8-byte boundary:
+`8 × ceil(n × per_instance / 8)`. 48 of 48 captured families agree with zero
+exceptions across 17 distinct per-instance sizes.
 
-   **Confidence caveat — why this isn't wired into memory_model.yaml
-   yet:** every single data point above comes from AOIs with the SAME
-   total member count (30). The formula could genuinely be universal
-   (some per-BOOL-member packing effect independent of how many other
-   members exist) or could be specific to 30-member AOIs (e.g. if the
-   real mechanism depends on total member count, not just BOOL count).
-   Untested. **This is now the single highest-value next AOI test**: repeat
-   the same ratio sweep at a different total member count (e.g. 10 or 60
-   members) to see if `124 - 4n` still holds or the coefficients shift.
+### Required / Visible / Hidden do not affect definition cost
 
-   **Generated 2026-08-25, `gen_aoi_generalization.py`, awaiting capture:**
-   the ratio sweep at member_count=10/20/60 (5 ratio points × 3 instance
-   counts each, 45 files) plus a layout variant (BOOL-first/BOOL-last/
-   interspersed at the confirmed 15/30 ratio, 6 files) to test whether the
-   formula holds at other member counts and whether BOOL position (not
-   just count) matters.
+Closed. An apparent ±16 swing is inside the project noise band, confirmed across
+both the DINT-only case and a BOOL-Input-plus-InOut-AXIS shape.
 
-3. **AOI array cost vs AOI definition cost — currently tangled
-   together, can't be cleanly separated.** Because the definition-cost
-   gap (unknown #1) is itself unresolved, every array-of-instances
-   number above is really "definition cost (unknown) + N × per-element
-   cost (partially known)" collapsed into one real Capacity reading —
-   there's no way yet to know how much of any array file's gap belongs to
-   which piece. Solving #1 first would make #2's numbers much easier to
-   trust.
+---
 
-4. **Nested/composite AOIs — small residual, re-checked 2026-08-30.**
-   Stale as of this update: the "2,000-3,600 byte gap" figure below was
-   written before the AOI definition-cost formula (base + per-type-rate +
-   name-length) existed at all — re-run against the CURRENT engine, that
-   gap has almost entirely closed. `aoi_nested_inout_1_instance`=+275,
-   `aoi_nested_inout_10_instance`=+204, `aoi_boolpack_interspersed20_
-   1_instance`=-100, `aoi_realistic_50_instance_1`/`aoi_realistic_
-   composite_1_instance`=-92 each, `aoi_boolpack_consecutive20_
-   1_instance`=-92, `aoi_boolpack_clean_alternating_def_only`=-56,
-   `aoi_boolpack_clean_grouped_def_only`=-48 — all now under 1.5% of file
-   total, most of it plausibly the same small universal per-file noise
-   band already accepted throughout this project (±8 to ±32), not a
-   distinct nesting-specific effect. Still genuinely open (not yet
-   confirmed as pure noise vs. a small real residual), but the scale of
-   the question has changed completely from what this section used to
-   say — worth a fresh look once more real captures land, not treated as
-   settled either way.
+## Refuted — do not re-derive these
 
-## Questions where the knowledge would help most
+Each of these fitted its own data cleanly and is wrong. They are recorded because
+every one of them looks like an answer.
 
-These are the places where "how does Logix actually compile this" is a
-real Rockwell-internals question, not something more test files alone can
-answer cleanly. **Quick-fire Q&A run 2026-08-25 (the request) —
-answers below.**
+### `marginal_bytes_per_instance = 124 − 4 × bool_member_count`
 
-- Is there a real, known reason an AOI's own compiled definition would
-  cost differently than an ordinary UDT's, structurally? (e.g. does an
-  AOI carry extra internal bookkeeping — a signature/revision hash, an
-  edit-in-progress flag, something visible in Logix Designer's own
-  compare/verify tooling — that a plain UDT doesn't?)
-  **Answered: yes, AOIs carry real extra metadata.** Confirms the
-  definition-cost gap (unknown #1 above) is a genuine structural AOI-vs-
-  UDT difference, not measurement noise or an artifact of test shape —
-  raises the priority of actually fitting that gap's formula, since it's
-  now confirmed to be a real, permanent line item every AOI-using program
-  pays, not something that might wash out with more data.
-- Is BOOL-parameter packing inside an array of AOI instances something
-  you've seen discussed/documented anywhere (Rockwell KB, AB forums), or
-  is this genuinely undocumented territory that only shows up empirically?
-  **Answered: never seen it documented.** Stays purely empirical — no
-  shortcut to a known mechanism, the boundary-crossing (n=16/31/32/33/
-  48/64/65/96) and ratio sweeps already generated/awaiting capture are
-  the only path to a mechanism here.
-- Does the Required/Visible/Hidden flag combination have any known
-  real-world effect on compiled size, or is the small ±16 swing seen
-  above more likely something else entirely (e.g. an artifact of exactly
-  which parameters got marked Hidden vs Visible, not the flag pattern
-  itself)?
-  **Answered: unknown, needs more data.** Stays open — the
-  `group_axis_aoi_inout_reqvis_sweep` files (BOOL Input + InOut
-  AXIS_CIP_DRIVE, hidden/visible-optional/required) already generated and
-  awaiting capture are the next data point; no reason yet to expect the
-  DINT-only ±16 result to hold or not hold on this shape.
+Zero residual at **nine** points, from 0 to 30 BOOL members. About as clean a fit
+as this project has produced. **Superseded.**
 
-## Where this leaves the "100% accuracy" goal
+Every point came from AOIs with the same total member count (30), so the formula
+could not distinguish a per-BOOL effect from something depending on total member
+count. The real mechanism is the **8-byte block alignment** above: composition
+only moved the per-instance size, and the residue mod 8 was doing all the work.
 
-**2026-08-30 update: the BOOL-array-packing "KNOWN, confirmed exact"
-claim below was wrong — downgraded to FITTED.** It was only ever checked
-at 3 sparse instance counts per shape (n=1/10/25); 27 real dense points
-that were sitting unreconciled prove the formula misses by a real,
-n-parity-dependent amount for single-packed-word AOIs (`8*ceil(n/2)+B`,
-not the wired linear form) and diverges further for the 2-word (60-BOOL)
-case. See OPEN_QUESTIONS.md OQ-AOIBOOLPACK-PAIRING for the full data and
-`gen_aoi_boolpack_pairing.py` for the 23 new files generated (not yet
-captured) to close it properly. AOI type-name length, separately, IS now
-closed — see OQ-AOIDEF.
+### The 32-element boundary hypothesis
 
-**2026-08-26 update: both unknown #1 (definition cost) and the BOOL-array-
-packing mechanism are now WIRED into `memory_model.yaml`, closing the
-"nothing wired yet" gap the 2026-08-25 update below still had.**
-BOOL-array-packing: `aoi_array` (flat_discount=4, bool_word_size=32,
-bool_word_extra=4) — confirmed across 4 member counts at 3 sparse n
-each, see RESOLVED (this doc's own earlier sections); **confidence
-downgraded KNOWN → FITTED 2026-08-30, see update above.** Definition cost:
-`aoi_definition` (base=1184, per_declared_item=20), confidence FITTED, NOT
-KNOWN — confirmed exact on 2 independent axes (local-tag count, param
-count) but DINT-rate only; a real localtype/paramtype sweep already shows
-BOOL/LINT cost differently (unmodeled), so every AOI's definition-cost
-number is now a real, non-zero, DINT-confirmed FLOOR rather than the
-previous silent zero — an honest improvement, not a claim of exactness for
-every AOI. Both are also now drillable in the UI (`sizing/tree.py`'s
-`expand_definition_children`, the Phase 2/2b "locals+params breakdown"
-ask). Still tangled/unresolved: AOI name length, BOOL run/pack adjacency at
-the definition level, and non-DINT parameter types — see OPEN_QUESTIONS.md
-OQ-AOIDEF for the live detail, this doc stays the high-level map.
+The guess was that BOOL members inside an array of AOI instances pack across
+elements the way a top-level BOOL array does, 32 per word, predicting a step
+discontinuity at 32 instances.
 
-**2026-08-25 update: real progress, not there yet.** BOOL-array-packing
-(unknown #2) now has a clean, zero-residual formula (`124 - 4×bool_count`)
-confirmed at 8 real data points and a refuted competing hypothesis — the
-single biggest jump in AOI understanding this project has made. Definition
-cost (unknown #1) now has a real linear shape too (`~1200 + 18×param_count`,
-3 clean points) instead of a bare list of unexplained gaps. Neither is
-wired yet — both are confirmed at only one AOI shape (30 members / DINT-
-Input-only respectively) and need a second shape to confirm the
-coefficients generalize before memory_model.yaml gets touched. That's now
-a concrete, narrow, two-item next-batch target instead of an open-ended
-unknown.
+**Refuted.** A boundary-crossing sweep at n = 16, 31, 32, 33, 48, 64, 65 and 96
+shows no such step — marginal cost is flat across the whole range, with no
+boundary feature. Whatever the mechanism is, it is not cross-element bit packing.
 
-Below is the pre-2026-08-25 state for what's still genuinely unresolved:
-definition cost (formula found, still needs a 2nd shape to confirm),
-BOOL-array-packing mechanism (partially characterized, 3 more shapes
-generated awaiting capture), and the two are currently tangled together in
-every array data point. Nothing above is guessed into `memory_model.yaml`
-— every AOI number the tool currently reports is either the confirmed
-scalar-instance formula (trustworthy) or silently missing the definition-
-cost line item entirely (a real, known, currently-unflagged
-under-prediction for every AOI-using real program). That under-prediction
-being currently invisible to a user is itself worth fixing before anything
-else on this list — even a rough, clearly-labeled-as-estimated definition-
-cost number would be more honest than reporting 0.
+### Four separate fitted definition-cost terms
+
+A per-declared-item rate of 20, a per-type rate table (BOOL 16, SINT 18, INT 18,
+DINT 20, REAL 20, LINT 24), a per-character member-name rate, and a
+per-member-type extra. **Each fitted its own sweep exactly. All four were absorbing
+parts of the same error.** `MEMORY_MODEL.md` records what each was really
+measuring.
+
+The mixed-versus-single-type split went with them. Per-type rates appeared not to
+compose additively once BOOL sat beside another type **because the name-pool error
+was surfacing as a composition effect**, not because of any real interaction.
+
+### `aoi_def_cost ≈ 1200 + 18 × param_count`
+
+Three clean points, essentially zero residual, DINT-Input-only. Superseded by the
+itemised form.
+
+---
+
+## Genuinely open
+
+### 1. The structural blind spot — the one that matters for strangers' code
+
+**This reframes everything else.** The definition-cost form prices a finite list of
+properties. Several structural properties of a real AOI are therefore priced at
+whatever the itemised terms happen to cover, and the generated corpus barely
+exercises them.
+
+Measured across 81 real AOI definitions and 2,120 real parameters and LocalTags:
+
+| property | real corpus |
+|---|---|
+| member name length | mean 12.1 characters, max 32 |
+| member descriptions | 803 of 2,120 have one; the corpus generated none |
+| InOut parameters | 94 real |
+| predefined-struct members | TIMER 557, DateTime 120, COUNTER 66, STRING 58, MOTION_INSTRUCTION 36, MESSAGE 15 — the corpus generated none |
+| array dimensions | 46 real dimensioned members |
+| counts past the fitted range | real AOIs reach 102 parameters, 128 locals, 85 internal rungs; the corpus topped out near 6, 2 and 1 |
+| extra internal routines | 7 of 81 have EnableInFalse or Prescan besides Logic |
+
+**Why this matters more than the byte counts suggest.** This tool is going to
+people whose AOIs will have these properties in different amounts. **A correction
+fitted against the definitions that recur across the real projects — the
+byte-identical shared AOIs like `PTimer`, `HomeToTorque` and `Debounce` — would
+score well on the real set and be worthless on theirs.**
+
+So: **never fit anything to a specific AOI name.** Cost models must be functions of
+structure. A 56-file isolation batch exists, one property per group, with the AOI
+type name held constant across all of them so the one priced name term cannot
+contaminate the readings. The model predicts a dead flat line across every group
+except the deliberate scale sweeps, so **any spread in the captured numbers is an
+unpriced item.** Blocked on capture.
+
+### 2. The 8-byte definition term
+
+Exactly 0 on 70 instrument files and exactly +8 on 35. Confounded three ways:
+the type-name bucket boundary, a fixed offset inside the name pool, and member
+order. A 54-file batch is built to break the confound.
+
+The base is deliberately set to centre the residual on zero for the 124-file
+instrument. **A base 8 higher scores more exact rows corpus-wide and is
+deliberately not taken** — taking it would bury the term rather than solve it.
+
+### 3. AOI BOOL packing
+
+Unlike UDT members, AOI parameters and LocalTags of type BOOL appear in the L5X as
+plain `DataType="BOOL"` with no hidden-SINT or BIT-alias representation. **Whether
+they pack 8 per byte like a UDT member or allocate unpacked like a standalone tag
+is unconfirmed.**
+
+Implemented as unpacked at 4 bytes, which is what the XML shape shows. This is an
+open question, not a KNOWN fact.
+
+### 4. Three instance-array families still vary with instance count
+
+The 8-byte block rule is exact on every family that can test it, but three remain
+count-dependent. Closeout files are generated, not captured. This is why the array
+rule stays FITTED.
+
+### 5. Nested and composite AOIs
+
+Residuals now sit under 1.5% of file total, most of it plausibly the same
+per-file noise band accepted throughout the project. **Not yet confirmed as pure
+noise versus a small real effect.** The scale of the question has changed
+completely — worth a fresh look when more captures land, not treated as settled
+either way.
+
+---
+
+## Rockwell-internals questions
+
+Places where "how does Logix actually compile this" is a genuine internals
+question that more test files alone cannot answer cleanly.
+
+**Does an AOI's compiled definition cost differently from an ordinary UDT's,
+structurally?** **Yes — AOIs carry real extra metadata.** This confirms the
+definition cost is a genuine structural AOI-versus-UDT difference, not measurement
+noise or an artifact of test shape. It is a real, permanent line item every
+AOI-using program pays, and it will not wash out with more data.
+
+**Is BOOL-parameter packing inside an array of AOI instances documented
+anywhere?** **No.** Genuinely undocumented territory that only shows up
+empirically. There is no shortcut to a known mechanism here.
+
+---
+
+## Where this leaves the accuracy goal
+
+AOI cost is no longer the largest gap. It was — for a long period every AOI-using
+program was silently missing the definition-cost line entirely, a real, known,
+unflagged under-prediction. That is fixed and drillable in the UI.
+
+What remains is small in bytes and large in risk: **the byte counts are close, and
+the confidence that they stay close on unfamiliar AOIs is not measured.** Items 1
+and 3 above are the ones that decide whether this tool works on someone else's
+code, and neither is a byte-count question.
+
+**A rough, clearly-labelled estimate is more honest than reporting zero.** That
+principle is what got the definition cost wired in the first place, and it still
+applies to anything on the open list.

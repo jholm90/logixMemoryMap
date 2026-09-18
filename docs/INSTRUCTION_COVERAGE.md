@@ -1,499 +1,256 @@
 # Instruction Coverage
 
-What fraction of real logic is actually sized with confidence, instruction
-by instruction. The table covers every instruction natively supported on
-the controller, with a confidence column for size calculation and a
-frequency column for how often it appears across the full sample corpus
-(both the newer set and the
-original set). The target is full confidence on every instruction actually
-in use. **This file is refreshed every time real capture data lands**, with
-no exceptions.
+What fraction of real logic is actually sized, instruction by instruction.
+**Regenerated whenever capture data lands** — the counts below are live, not
+transcribed.
 
-## Rung arrangement is validated, 2026-09-18
+Measured over the 17 real production exports: **41,374 RLL rungs,
+125,275 instruction occurrences, 107 distinct native mnemonics**, plus
+96 distinct AOI definitions whose call sites are counted separately.
 
-The per-instruction weights below are all fitted on a corpus that is **9.4%
-branched rungs and 62% single-instruction rungs**, against real programs at
-**68.7%** and **7%** — measured over 41,136 real rungs and 255,027 real
-instruction occurrences versus 525,936 corpus rungs. That gap was the largest
-suspected error source in compiled logic, on the reasoning that terms
+## Headline
+
+**99.72% of every real instruction occurrence carries a weight.** The
+unweighted remainder is **0.282%** — 6 mnemonics, 353 occurrences — and is listed
+in full below rather than rounded away.
+
+Real logic is extremely top-heavy: **4 mnemonics cover half of all
+occurrences, 18 cover 90%, and 44 cover 99%.** The long tail is real but
+individually negligible, which is what the noise-floor rule in `CLAUDE.md` is for.
+
+## What "weighted" and "accurate" each mean
+
+These are two different things and the table separates them.
+
+**Weight** is the per-occurrence byte cost the engine charges. A blank means the
+engine charges nothing for that mnemonic.
+
+**Measured accuracy** is how far the engine's whole-file prediction actually landed
+from the controller's reading, on captured files where **that instruction was the
+only variable under test** — exactly one non-scaffold opcode, compiled logic the
+dominant cost, and enough occurrences for the slope to beat the per-file base. It
+is produced by `scripts/derive_instruction_accuracy.py`, which identifies isolation
+files **by what they contain, never by name.**
+
+A dash means no file isolates that instruction. That is not the same as untested:
+XIC, XIO, OTE and NOP are the scaffolding every other test rung is built from, so
+they can never be the single variable — but they are the **most-measured weights in
+the model**, fixed by the empty-rung sweep and confirmed byte-exact by the
+arrangement sweeps.
+
+## Two caveats that bound every "exact" claim here
+
+**1. Every weight was fitted with DINT, LINT or REAL operands.** Operand type
+changes the real cost substantially for ADD, SUB, MUL, DIV, MOD, EQU, GEQ, GRT,
+LEQ, LES, NEQ, MOV, LIM and CPT — together a large share of the occurrence count
+below. SINT and INT cost +88 to +164 more per rung; STRING costs +52 more for EQU
+and NEQ. The operand-type surcharge is wired, but there is no per-operand-type
+breakdown of the real corpus, so **read the headline as "the instruction mix is
+understood," not "every real occurrence sizes exactly."** A program doing heavy
+SINT or INT math will size less accurately than this table implies.
+
+**2. A per-rung term is still confounded with the per-instruction terms.** Every
+calibration file is one instruction per rung, so a per-rung cost and a
+per-instruction cost cannot be separated in the weights below. The attempt to
+isolate it landed on the series-output law instead. See `OQ-RUNGSHAPE`.
+
+## Rung arrangement is validated
+
+The weights are fitted on a corpus that is **9.4% branched rungs and 62%
+single-instruction rungs**, against real programs at **68.7% and 7%**. That gap was
+the largest suspected error source in compiled logic, on the reasoning that terms
 calibrated on flat one-instruction rungs need not hold on real ladder.
 
-**Measured, and the terms hold exactly.** The `rshape_arr_legs*` files put
-eight XIC conditions and one OTE into 500 rungs and move only the
-arrangement — all in series, then 2, 4 and 8 parallel legs. Predicted steps
-of +12, +8 and +16 bytes per rung are correct **to the byte at every leg
-count**, and `rshape_mix_{series,branch}` confirms it at the real
-population's composition (1–10 conditions per rung, 70% carrying three or
-more) with a predicted series-versus-branch step of −5,400 that also lands
-exactly.
+**Measured, and the terms hold exactly.** Holding eight XIC conditions and one OTE
+fixed across 500 rungs and moving only the arrangement — all in series, then 2, 4
+and 8 parallel legs — the predicted steps are correct **to the byte at every leg
+count**. A second pair confirms it at the real population's composition (1 to 10
+conditions per rung, 70% carrying three or more), where the predicted
+series-versus-branch step also lands exactly.
 
-So the branch coverage gap is a real fact about the corpus and is **not** an
-error: `branch_bracket_cost_per_instruction` extrapolates correctly outside
-the shape it was fitted on. What remains unseparated is a per-rung term —
-every calibration file here is one instruction per rung, so a per-rung cost
-and a per-instruction cost are perfectly confounded in the weights below. The
-attempt to isolate it landed on the series-output law instead; see
-`OQ-RUNGSHAPE`.
+So the branch coverage gap is a real fact about the corpus and is **not** an error:
+the branch-bracket cost extrapolates correctly outside the shape it was fitted on.
 
-## Methodology
+## Structured Text is priced by these same weights
 
-- **Corpus:** every real `.L5X` file under `samples/local/` (54 files,
-  gitignored real production exports — spans the original corpus plus the
-  `DnR_Personal/` set). Not the synthetic `samples/generated/` files.
-- **Scope:** RLL routines only (`Type="RLL"`). **This is now a counting
-  choice, not a modelling limit** — as of 2026-09-04 ST *is* sized
-  (`sizing/structured_text.py`), and the reason the table stays RLL-only is
-  that instruction cost proved IDENTICAL in both languages, so counting ST
-  call sites separately would double-report the same evidence. Four
-  ST/RLL pairs built operand-for-operand identical came back separated by
-  exactly +432 — the ST routine shell — and by nothing else:
+The table counts RLL only. **That is a counting choice, not a modelling limit** —
+instruction cost proved identical in both languages, so counting ST call sites
+separately would double-report the same evidence.
 
-  | pair | ST | RLL | difference |
-  |---|---:|---:|---:|
-  | COP x1000 | 135,376 | 134,944 | +432 |
-  | DTOS x1000 | 95,376 | 94,944 | +432 |
-  | SIZE x1000 | 151,376 | 150,944 | +432 |
-  | CPT-mirror x1000 | 475,376 | 474,944 | +432 |
+Four ST/RLL pairs built operand-for-operand identical came back separated by
+exactly **+432** — the ST routine shell — and by nothing else:
 
-  So every weight in this table applies unchanged to the same instruction
-  called from ST. The practical consequence for coverage: the real corpus
-  has 297 ST routines / 24,017 ST lines whose instruction content is now
-  priced by these same numbers, where before 2026-09-04 it contributed
-  exactly ZERO. A handful of real SBR/RET/JSR examples only exist in ST in
-  this corpus; the RLL numbers below for those come from other RLL call
-  sites.
-- **Counting unit:** one occurrence per *rung* an instruction's mnemonic
-  appears in (matches how `parser/logic.py` counts — `RoutineLogic.
-  instruction_counts` — not a raw substring count that could double-count
-  a mnemonic appearing twice in one rung's text).
-- **Native vs AOI:** a mnemonic is only counted as a native instruction if
-  it is NOT a declared `AddOnInstructionDefinition` name in that same
-  file — otherwise it's a custom AOI call, excluded from this table
-  entirely (AOI *definition* cost is its own open question, see
-  `docs/OPEN_QUESTIONS.md` OQ-AOIDEF; this table is about native
-  instruction *logic* sizing only).
-- **A real bug caught building this table (2026-08-23):** the first pass
-  of the analysis script used a strict `<Text><![CDATA[...]]></Text>`
-  regex with no whitespace tolerance — most of this project's own
-  generated samples export that way (single line), but a lot of real
-  Studio-5000-exported files pretty-print it across multiple lines. That
-  silently undercounted real usage by ~98% until fixed. **This was a bug
-  in the scratch analysis script only, not in the production parser** —
-  `parser/logic.py` uses `xml.etree.ElementTree`'s real DOM, which is
-  whitespace-agnostic by construction and was never affected.
+| pair | ST | RLL | difference |
+|---|---:|---:|---:|
+| COP x1000 | 135,376 | 134,944 | +432 |
+| DTOS x1000 | 95,376 | 94,944 | +432 |
+| SIZE x1000 | 151,376 | 150,944 | +432 |
+| CPT-mirror x1000 | 475,376 | 474,944 | +432 |
 
-## Confidence categories
+So every weight below applies unchanged to the same instruction called from ST. The
+real set carries **4 ST routines and 1,098 ST lines** whose instruction
+content is priced by these numbers.
 
-- **CONFIRMED** — exact fit (0.00% residual) against real Capacity data,
-  correctly wired into `memory_model.yaml`/the engine.
-- **WRONG** — wired into the engine, but proven incorrect by real data
-  (CPT only — see `docs/OPEN_QUESTIONS.md` OQ-CMPCPTLAYOUT. The engine
-  currently still applies this wrong weight because removing it and
-  implying 0 cost would be worse, not because it's trusted).
-- **BUILD FAILED** — real capture confirms the documented/assumed call
-  syntax doesn't actually work in Studio 5000 on a standard (non-Safety)
-  controller: MAM/MAJ/MAS/MRP (2026-08-25, every single rung of every real
-  capture file errored), plus MAPC (2026-08-25, same signature — errored
-  on its x10 capture despite looking clean at n=1). Contributes 0. Do NOT
-  retry with a guessed variant — needs a real corpus or Studio-5000-
-  verified reference for the correct call shape first. MAPC is an active
-  priority fix, not a defer item — see "Where to focus next" below.
-- **CAPTURED, blocked on unmodeled structure** — the instruction's own
-  LOGIC weight may be resolved (MCCP: 204/rung, MSG: 48/rung, both
-  2026-08-25), but the instruction also references a brand-new predefined
-  structure (CAM for MCCP, MESSAGE for MSG) with no byte-size formula of
-  its own yet — a real program using it still throws a partial SizeError
-  for that operand's own tag. MAPC moved out of this category (to BUILD
-  FAILED) once its x10 capture showed a real build failure, unrelated to
-  the CAM-structure gap.
-- **NO DATA** — never tested at all. Contributes 0 to any estimate.
-- **OUT OF SCOPE (Safety)** — requires a GuardLogix/Safety PLC CPU; this
-  project is explicitly out-of-scope for Safety programs (`CLAUDE.md`
-  OQ-SAFETY). DCS is a Safety-only instruction by design. CROUT joined
-  this category 2026-08-25 — CROUT is a Safety instruction and requires a
-  safety PLC CPU. Its earlier 100% build-failure reading on a standard
-  5069-L306ER capture is now explained: not a bad corpus transplant, a
-  fundamentally wrong controller class. Retesting CROUT on a standard
-  controller will never succeed and isn't worth attempting again.
+## Counting rules
 
-## Wired and reclassified 2026-09-12
+- **One occurrence per rung a mnemonic appears in**, matching how the parser
+  counts — not a raw substring count that would double-count a mnemonic appearing
+  twice in one rung.
+- **A mnemonic is native only if it is not a declared AOI name in that same file.**
+  Several Rockwell-authored AOIs share names with what look like instructions;
+  counting them as native would both inflate the instruction count and lose the AOI
+  call-site cost.
+- Real exports only. The generated corpus is the instrument, not the evidence.
 
-Found by `scripts/unreconciled.py`: ten instruction count sweeps had been
-captured, were clean, and had never been differenced. Every one was being
-charged ZERO. Each slope is exact at n=10/100/1000, differenced between
-consecutive points so the shared per-file base cancels, and the same slope
-comes out of both intervals:
+## The table
 
-| instruction | bytes/rung | real uses (16 held-out programs) |
-|---|---:|---:|
-| MCD | 184 | 6 |
-| PID | 156 | 0 |
-| MAG | 124 | 40 |
-| MCS | 120 | 0 |
-| UPPER | 84 | 0 |
-| STOR | 80 | 10 |
-| FBC | 76 | 0 |
-| LFU | 72 | 0 |
-| RTOS | 72 | 4 |
-| BRK | 56 | 0 |
+Sorted by real usage. Measured accuracy is mean / worst, with sample count.
 
-`PID` here is the per-RUNG weight of the PID instruction, a different quantity
-from the 180-byte PID predefined STRUCTURE: a PID rung costs 156 for the
-instruction plus whatever its PID-typed control tag costs as data.
+| Instruction | Real usage | Occurrences | Weight | Measured accuracy |
+|---|---:|---:|---:|---|
+| XIC | 21.67% | 27,146 | 4 | — |
+| OTE | 16.29% | 20,413 | 16 | 0.0142% / 0.0205% (2) |
+| MOV | 9.75% | 12,219 | 36 | 0.0076% / 0.0202% (16) |
+| XIO | 9.00% | 11,280 | 4 | — |
+| EQU | 4.73% | 5,921 | 20 | 0.0022% / 0.0136% (8) |
+| OTL | 4.35% | 5,452 | 16 | 0.0142% / 0.0205% (2) |
+| ADD | 3.39% | 4,253 | 40 | 0.0023% / 0.0127% (7) |
+| OTU | 3.16% | 3,962 | 16 | 0.0142% / 0.0205% (2) |
+| ONS | 3.15% | 3,946 | 36 | 0.0064% / 0.0101% (2) |
+| TON | 2.13% | 2,665 | 20 | 0.0126% / 0.0186% (2) |
+| NEQ | 2.12% | 2,661 | 20 | 0.0022% / 0.0136% (8) |
+| NOP | 2.10% | 2,629 | 16 | 0.0094% / 0.0205% (3) |
+| GRT | 1.93% | 2,421 | 20 | 0.0025% / 0.0136% (7) |
+| CLR | 1.70% | 2,129 | 32 | 0.0095% / 0.0146% (2) |
+| LES | 1.60% | 2,005 | 20 | 0.0025% / 0.0136% (7) |
+| JSR | 1.25% | 1,567 | 68 | 0.9112% / 1.4034% (27) |
+| SUB | 1.14% | 1,432 | 40 | 0.0023% / 0.0127% (7) |
+| COP | 1.00% | 1,254 | 112 | 0.0102% / 0.0234% (3) |
+| LEQ | 0.99% | 1,246 | 20 | 0.0025% / 0.0136% (7) |
+| GEQ | 0.93% | 1,160 | 20 | 0.0025% / 0.0136% (7) |
+| LIM | 0.62% | 781 | 52 | 0.0016% / 0.0088% (7) |
+| JMP | 0.60% | 747 | 40 | — |
+| LBL | 0.56% | 697 | 64 | — |
+| MUL | 0.54% | 675 | 56 | 0.0018% / 0.0101% (7) |
+| RES | 0.46% | 578 | 20 | 0.0126% / 0.0186% (2) |
+| DIV | 0.45% | 560 | 56 | 0.0018% / 0.0101% (7) |
+| CONCAT | 0.41% | 511 | 104 | 0.0106% / 0.0240% (3) |
+| FLL | 0.39% | 490 | 68 | 0.0055% / 0.0088% (2) |
+| CTU | 0.35% | 434 | 20 | 0.0126% / 0.0186% (2) |
+| CPS | 0.31% | 385 | 112 | 0.0102% / 0.0234% (3) |
+| CPT | 0.27% | 341 | not a flat weight | 3.2725% / 119.6078% (164) |
+| MOD | 0.23% | 289 | 56 | 0.0018% / 0.0101% (7) |
+| RET | 0.20% | 246 | 0 | — |
+| MCCP | 0.16% | 200 | 204 | — |
+| AFI | 0.15% | 192 | 4 | 0.0126% / 0.0186% (2) |
+| MAS | 0.15% | 186 | 100 | — |
+| GSV | 0.15% | 182 | 84 | 0.0116% / 0.0255% (3) |
+| BTD | 0.12% | 147 | 64 | 0.0058% / 0.0092% (2) |
+| SSV | 0.10% | 128 | 84 | 0.0116% / 0.0255% (3) |
+| MAM | 0.10% | 127 | 224 | 0.0244% / 0.0244% (1) |
+| MAPC | 0.10% | 126 | 260 | — |
+| SBR | 0.10% | 121 | 0 | — |
+| DTOS | 0.09% | 114 | 72 | 0.0053% / 0.0084% (2) |
+| TOF | 0.09% | 107 | 20 | 0.0126% / 0.0186% (2) |
+| MEQ | 0.06% | 78 | 32 | 0.0072% / 0.0113% (2) |
+| CMP | 0.06% | 77 | 76 | 0.0194% / 0.2380% (14) |
+| RTO | 0.06% | 74 | 20 | 0.0126% / 0.0186% (2) |
+| EVENT | 0.05% | 57 | 56 | 0.0000% / 0.0000% (1) |
+| AVE | 0.05% | 57 | 176 | — |
+| ABS | 0.04% | 55 | 120 | 0.0099% / 0.0229% (3) |
+| BSL | 0.03% | 43 | 60 | — |
+| MRP | 0.03% | 42 | 128 | — |
+| SIZE | 0.03% | 42 | 128 | 0.0096% / 0.0224% (3) |
+| MAG | 0.03% | 37 | 124 | 0.0000% / 0.0000% (1) |
+| MAW | 0.03% | 37 | 128 | — |
+| BSR | 0.03% | 34 | 60 | — |
+| MDW | 0.03% | 34 | 60 | — |
+| MVM | 0.03% | 32 | 56 | 0.0064% / 0.0101% (2) |
+| MAH | 0.02% | 30 | 60 | — |
+| MAJ | 0.02% | 29 | 236 | 0.0240% / 0.0240% (1) |
+| MCSV | 0.02% | 25 | 96 | 0.0000% / 0.0000% (2) |
+| XOR | 0.02% | 23 | 40 | — |
+| AND | 0.02% | 23 | 40 | 0.0067% / 0.0067% (1) |
+| MASR | 0.02% | 21 | 60 | — |
+| MAFR | 0.02% | 21 | 60 | — |
+| MAR | 0.01% | 17 | 196 | 0.0255% / 0.0255% (1) |
+| MSG | 0.01% | 16 | 48 | — |
+| FFL | 0.01% | 15 | 72 | — |
+| XPY | 0.01% | 14 | 116 | 0.0101% / 0.0232% (3) |
+| MDR | 0.01% | 14 | 68 | — |
+| FFU | 0.01% | 13 | 72 | — |
+| NOT | 0.01% | 12 | 40 | — |
+| MSO | 0.01% | 12 | 60 | — |
+| MSF | 0.01% | 12 | 60 | — |
+| STOD | 0.01% | 10 | 80 | 0.0118% / 0.0259% (3) |
+| ATN | 0.01% | 10 | 60 | — |
+| DEG | 0.01% | 10 | 64 | — |
+| STOR | 0.01% | 10 | 80 | 0.0000% / 0.0000% (2) |
+| NEG | 0.01% | 9 | 40 | — |
+| UID | 0.01% | 8 | 40 | 0.0000% / 0.0000% (2) |
+| UIE | 0.01% | 8 | 40 | 0.0000% / 0.0000% (2) |
+| MID | 0.01% | 8 | 100 | 0.0108% / 0.0243% (3) |
+| DELETE | 0.01% | 8 | 100 | 0.0108% / 0.0243% (3) |
+| TAN | 0.01% | 7 | 60 | — |
+| SRT | 0.01% | 7 | 116 | — |
+| MCD | 0.01% | 7 | 184 | 0.0000% / 0.0000% (2) |
+| RAD | 0.00% | 6 | 116 | — |
+| TRN | 0.00% | 4 | 52 | — |
+| SQR | 0.00% | 4 | 52 | — |
+| OR | 0.00% | 4 | 40 | 0.0067% / 0.0067% (1) |
+| SWPB | 0.00% | 4 | 76 | — |
+| ESTOP | 0.00% | 4 | **unweighted** | — |
+| ROUT | 0.00% | 4 | **unweighted** | — |
+| FOR | 0.00% | 2 | 80 | — |
+| RTOS | 0.00% | 2 | 72 | 0.0095% / 0.0146% (2) |
+| FIND | 0.00% | 2 | 100 | — |
+| MASD | 0.00% | 2 | 60 | — |
+| MGSD | 0.00% | 2 | 56 | — |
+| MGSR | 0.00% | 2 | 56 | — |
+| FSC | 0.00% | 2 | 104 | — |
+| LC | 0.00% | 2 | **unweighted** | — |
+| SCP | 0.00% | 1 | **unweighted** | — |
+| LOG | 0.00% | 1 | 60 | 0.0000% / 0.0000% (1) |
+| COS | 0.00% | 1 | 60 | 0.0000% / 0.0000% (1) |
+| SIN | 0.00% | 1 | 60 | 0.0000% / 0.0000% (1) |
+| INSERT | 0.00% | 1 | 116 | — |
+| RIN | 0.00% | 1 | **unweighted** | — |
 
-**`DTR` = 40, WIRED 2026-09-18.** The recapture landed clean (`error_count = 0`
-at all three counts, so the missing-NOP fix worked) and the three
-`unweighted_dtr_*` files read +404, +4,004 and +40,004 at 10, 100 and 1,000
-rungs — exactly 40.000 per rung two orders of magnitude apart, with the family's
-universal +4 per file left over.
+## The unweighted remainder
 
-Two corrections to what this section used to say. DTR was charged **nothing**,
-not 16: it never appeared in `logic_instructions.weights` at all. And the earlier
-"its sweep says the real cost is 0" was read off the errored capture, which is
-exactly the trap the suspect-not-wrong rule exists to prevent — the rungs were
-being rejected one per rung, so of course they cost nothing.
+Six mnemonics, 353 occurrences, 0.282% of all real logic.
 
-The five siblings in the same sweep — AND 40, OR 40, RTOS 72, LFU 72, UPPER 84 —
-all read the universal +4 at all three counts, so that batch **confirms** the
-weights they already carried rather than measuring them. DTR was the only one of
-the six still unpriced when the captures landed.
+| mnemonic | occurrences | status |
+|---|---:|---|
+| CPT | 341 | **Not a flat weight by design.** Priced per call from its own expression's operator tokens. Deliberately absent from the weight table so the per-mnemonic loop cannot double-count it. |
+| ESTOP | 4 | Safety-family instruction. Out of scope. |
+| ROUT | 4 | Safety-family instruction. Out of scope. |
+| LC | 2 | Never tested. Below the noise floor. |
+| SCP | 1 | Never tested. Below the noise floor. |
+| RIN | 1 | Safety-family instruction. Out of scope. |
 
-**Reclassified, not wired:**
+**CPT is the one that matters**, and it is not a gap — it is the one instruction
+whose cost genuinely cannot be a flat per-rung number. Its expression model is in
+`MEMORY_MODEL.md`. The known defect there is narrow-integer widening, which reads
+as the worst measured accuracy of any instruction in the table.
 
-- **ESTOP, ROUT, LC, RIN — OUT OF SCOPE (Safety), 11 real uses.** All four
-  appear only inside a GuardLogix SafetyProgram, which this project does not
-  size at all; CROUT was reclassified the same way 2026-08-24. Identified from
-  their real call shapes, every one of which takes the `_S`-suffixed safety
-  reset tags that exist only in a safety task. Reporting them as unpriced
-  overstated the hole and buried the gaps that are real.
-- **SCP — a USER AOI, not a built-in, 4 real uses.** Four real exports declare
-  an `AddOnInstructionDefinition` named SCP; a fifth calls it without
-  declaring it. Its arity varies across the corpus (3 operands in one program,
-  7 in another), which is itself the signature of a user AOI. The gap there is
-  a partial export, not a missing weight.
+**SCP and LC are the only genuinely untested mnemonics in real use**, at three
+occurrences between them. Deliberately not worked: a precise number on a negligible
+feature is a day not spent on the residual.
 
-**Net effect on the held-out programs: unpriced native instruction uses fell
-from 133 to 57, and every one of the 57 is EVENT.** Its per-rung cost has
-never been measured — `eventtask_instronly` is a single point, which can
-confirm a total but cannot separate the instruction from the file — so
-`gen_unweighted_closeout.py` sweeps it at 10/100/1000 with the call shape
-transplanted verbatim from the real corpus. Awaiting capture.
+## Instructions that are out of scope or will not build
 
-The summary table below is NOT recomputed for these changes: its occurrence
-counts are corpus-wide rather than held-out-only, and re-deriving them is a
-separate job from this one. The per-instruction rows are correct; treat the
-rollup percentages as dated.
+**Safety family** — DCS, CROUT, ROUT, ESTOP, RIN. These require a safety CPU. Not
+weight-table gaps; there is nothing to fix on a standard controller.
 
+**ALMD, ALMA, ALARM_DIGITAL and ALARM_ANALOG as instructions** — zero occurrences
+across all real programs. Parked, not closed. This does **not** park tag-based
+alarm conditions, which are a different feature and are 19–21% of total memory on
+the two real programs measured.
 
-## Coverage summary (by real occurrence, not by distinct instruction count)
+**MAM, MAJ, MAS and MRP** fail to build with the bare 2-operand
+`(Axis, MotionInstruction)` signature that works for MAH and MSO. Each needs its
+own full parameter list. A verified MAM shape, transplanted from a project Studio
+compiled, is in `MEMORY_MODEL.md`. **Do not retry with a guessed variant.**
 
-| Status | Occurrences | % of all native instruction usage |
-|---|---|---|
-| CONFIRMED | 199,728 | 99.17% |
-| WRONG | 840 | 0.42% |
-| BUILD FAILED | 0 | 0.00% |
-| NO DATA | 386 | 0.19% |
-| CAPTURED, blocked on CAM structure | 129 | 0.06% |
-| CAPTURED, blocked on MESSAGE structure | 99 | 0.05% |
-| OUT OF SCOPE (Safety) | 98 | 0.05% |
-
-Note, 2026-08-26: the pre-fix BUILD FAILED total here (695) never matched
-the sum of the individual BUILD FAILED rows in the per-instruction table
-below (582, all MAM/MAJ/MAS/MRP) — a stale rollup left over from before
-MAPC/CROUT were reclassified out of this bucket, not something introduced
-by today's edit. Corrected to match the per-row data directly rather than
-guess at the missing 113.
-
-**98.88% of every real instruction occurrence across the whole corpus is
-already an exact, confirmed fit** — up from 98.44% two batches ago, after
-the `gen_instruction_firstpass.py` x10 captures landed: 32 of the 33
-CAPTURED-preliminary instructions resolved clean (INSERT/AVE/TND/MAFR/
-MASR/MDW/BSL/NEG/BSR/TRN/FFU/FFL/NOT/FAL/FSC/FIND/XOR/OSR/OSF/UID/UIE/
-SRT/SWPB/ATN/DEG/MASD/TAN/MGSD/MGSR/RAD/MCR/SQR), plus MCCP/MSG's LOGIC
-weight (204/48) resolved separately from their still-unmodeled CAM/
-MESSAGE operand cost. **The CAPTURED-preliminary category is now empty**
-— every instruction that had n=1 data and an x10 file waiting has been
-resolved one way or the other. The 33rd, CROUT, did NOT resolve clean at
-first. CROUT is a Safety instruction and requires a safety PLC CPU, which
-is the real explanation for its 100% build failure (not a bad
-corpus transplant) — CROUT moved to OUT OF SCOPE alongside DCS, not
-BUILD FAILED, since there is nothing to fix on a standard controller.
-MAPC's build failure was real and unrelated to Safety scope — root-caused
-(undeclared axis tag + reused axis for slave/master) and **CONFIRMED FIXED
-2026-08-25**, real capture landed error_count=0, logic weight 260/rung,
-wired. MAPC moved from BUILD FAILED to CONFIRMED. MAM/MAJ/MAS/MRP's build
-failure was ALSO a real generator bug, **root-caused and FIXED 2026-08-26**
-(bare 2-operand MAH/MSO-shaped calls used for 4 instructions that each need
-their own full parameter list — fixed with real corpus-transplanted
-templates): all 4 now CONFIRMED, wired at MAM=224/MAJ=236/MAS=100/MRP=128
-blocks/rung. **The BUILD FAILED category is now empty.** The remaining
-~0.82% is: 0.42% actively WRONG (CPT), 0.19% genuinely never tested, 0.11%
-blocked on the still-unmodeled CAM/MESSAGE predefined structures, and 0.05%
-out of scope (Safety: DCS+CROUT).
-
-**CAVEAT, 2026-08-25 — CONFIRMED here means "the mnemonic's weight is an
-exact fit for the operand type it was tested with," almost always
-DINT/LINT/REAL. It does NOT mean the weight is correct for every operand
-type a real program might use.** Real data (`typesweep_*` sweep, see
-`docs/OPEN_QUESTIONS.md` OQ-OPERANDTYPE) shows ADD/SUB/MUL/DIV/MOD/EQU/
-GEQ/GRT/LEQ/LES/NEQ/MOV/LIM/CPT — together a large share of the
-"CONFIRMED" occurrence count above — cost substantially more per rung
-when their operands are SINT or INT rather than DINT/LINT/REAL (+88 to
-+164 blocks/rung depending on instruction), and STRING costs +52/rung for
-EQU/NEQ specifically. This is not reflected in the occurrence counts
-above (there is no per-operand-type breakdown of the real corpus), so the
-98.44% figure should be read as "the instruction mix is understood," not
-"every real occurrence sizes exactly" — a corpus with heavy SINT/INT math
-usage will size less accurately than this table implies until
-OQ-OPERANDTYPE is wired. Not lowering the CONFIRMED count for this
-because the underlying mnemonic-level fits ARE exact for the tested type;
-this is a new dimension (operand type) the table doesn't yet capture, not
-a retraction of the existing weight fits.
-
-## Full table
-
-100 distinct native instructions found across 201,393 real RLL rung
-occurrences, 54 real corpus files (spans the original set and the
-`DnR_Personal` set together).
-
-| Instruction | Corpus usage % | Occurrences | Sizing confidence |
-|---|---|---|---|
-| XIC | 21.64% | 43587 | CONFIRMED (exact fit, 0.00% residual) |
-| OTE | 16.03% | 32287 | CONFIRMED (exact fit, 0.00% residual) |
-| XIO | 9.57% | 19271 | CONFIRMED (exact fit, 0.00% residual) |
-| MOV | 9.36% | 18849 | CONFIRMED (exact fit, 0.00% residual) |
-| EQU | 4.90% | 9875 | CONFIRMED (exact fit, 0.00% residual) |
-| OTL | 3.74% | 7530 | CONFIRMED (exact fit, 0.00% residual) |
-| OTU | 3.52% | 7080 | CONFIRMED (exact fit, 0.00% residual) |
-| ONS | 3.25% | 6539 | CONFIRMED (exact fit, 0.00% residual) |
-| TON | 2.83% | 5702 | CONFIRMED (exact fit, 0.00% residual) |
-| ADD | 2.78% | 5596 | CONFIRMED (exact fit, 0.00% residual) |
-| NOP | 2.20% | 4433 | CONFIRMED (exact fit, 0.00% residual) |
-| NEQ | 2.07% | 4162 | CONFIRMED (exact fit, 0.00% residual) |
-| CLR | 1.70% | 3426 | CONFIRMED (exact fit, 0.00% residual) |
-| GRT | 1.54% | 3095 | CONFIRMED (exact fit, 0.00% residual) |
-| LES | 1.28% | 2575 | CONFIRMED (exact fit, 0.00% residual) |
-| COP | 1.27% | 2550 | CONFIRMED (exact fit, 0.00% residual) |
-| JSR | 1.14% | 2300 | PARTIAL (0.00-0.09% on DINT/REAL params; real ~9.8% gap on STRING/UDT params; target routine's own logic content WIRED 2026-08-31 (max 4.75% residual in isolation), plus a composite-scale content surcharge WIRED 2026-09-02 (max 5.66% residual at composite project scale, FITTED, R²=0.66) -- see OQ-JSRPARAMCOST/OQ-COMPOSITESCALE) |
-| SUB | 0.95% | 1909 | CONFIRMED (exact fit, 0.00% residual) |
-| GEQ | 0.91% | 1823 | CONFIRMED (exact fit, 0.00% residual) |
-| LIM | 0.74% | 1488 | CONFIRMED (exact fit, 0.00% residual) |
-| JMP | 0.67% | 1347 | CONFIRMED (exact fit, 0.00% residual) |
-| LEQ | 0.63% | 1275 | CONFIRMED (exact fit, 0.00% residual) |
-| RES | 0.58% | 1171 | CONFIRMED (exact fit, 0.00% residual) |
-| MUL | 0.54% | 1092 | CONFIRMED (exact fit, 0.00% residual) |
-| DIV | 0.50% | 1016 | CONFIRMED (exact fit, 0.00% residual) |
-| LBL | 0.46% | 934 | CONFIRMED (exact fit, 0.00% residual) |
-| CONCAT | 0.43% | 858 | CONFIRMED (exact fit, 0.00% residual) |
-| CPT | 0.42% | 840 | WRONG (wired, proven incorrect -- see CPT finding) |
-| AFI | 0.42% | 836 | CONFIRMED (exact fit, 0.00% residual) |
-| FLL | 0.41% | 817 | CONFIRMED (exact fit, 0.00% residual) |
-| CTU | 0.33% | 656 | CONFIRMED (exact fit, 0.00% residual) |
-| CPS | 0.27% | 551 | CONFIRMED (exact fit, 0.00% residual) |
-| GSV | 0.26% | 531 | CONFIRMED (exact fit, 0.00% residual) |
-| BTD | 0.20% | 398 | CONFIRMED (exact fit, 0.00% residual) |
-| DTOS | 0.19% | 389 | CONFIRMED (exact fit, 0.00% residual) |
-| MOD | 0.19% | 383 | CONFIRMED (exact fit, 0.00% residual) |
-| SSV | 0.16% | 318 | CONFIRMED (exact fit, 0.00% residual) |
-| TOF | 0.14% | 292 | CONFIRMED (exact fit, 0.00% residual) |
-| RTO | 0.13% | 262 | CONFIRMED (exact fit, 0.00% residual) |
-| MAS | 0.12% | 249 | CONFIRMED (real capture 2026-08-26: generator bug fixed with real full-parameter template, exact fit, 100 blocks/rung) |
-| FOR | (not in the real-corpus frequency table -- ST/LAD loop header) | - | CONFIRMED (2026-09-11, weight 80: forloop_for_r{001,005,025,100} short by exactly 80 x rung_count, four points, zero intercept; cross-checked against its JSR control arm at +8/rung) |
-| RET | 0.12% | 237 | CONFIRMED ZERO (2026-09-11, subrtn_* 12/12 exact -- an isolated RET in its own routine costs nothing beyond the routine shell; listed at 0 rather than absent, so it is a measurement and not a gap) |
-| MID | 0.11% | 212 | CONFIRMED (exact fit, 0.00% residual) |
-| CMP | 0.10% | 203 | CONFIRMED (exact fit, 0.00% residual) |
-| INSERT | 0.10% | 192 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| MAM | 0.09% | 186 | CONFIRMED (real capture 2026-08-26: generator bug fixed with real full-parameter template, exact fit, 224 blocks/rung) |
-| MCCP | 0.06% | 129 | CONFIRMED (logic weight 204/rung wired 2026-08-25; the CAM operand's own data space was closed 2026-09-11 -- base 4 + align8(12*n), zero residual on all 15 captured CAM points) |
-| SBR | 0.06% | 128 | CONFIRMED ZERO (2026-09-11, subrtn_* 12/12 exact -- sbronly and sbrret agree with the bare shell at 1/5/25/100 routines, which cross-checks both weights at once) |
-| MAPC | 0.06% | 113 | CONFIRMED (real capture 2026-08-25: bug fixed — undeclared axis tag + same-axis reuse — corrected call built error_count=0, logic weight 260/rung, wired) |
-| MAJ | 0.05% | 106 | CONFIRMED (real capture 2026-08-26: generator bug fixed with real full-parameter template, exact fit, 236 blocks/rung) |
-| MSG | 0.05% | 99 | CAPTURED, blocked on unmodeled MESSAGE structure (LOGIC weight resolved/wired 2026-08-25 -- 48/rung -- but MESSAGE operand's own tag data space still unmodeled) |
-| MEQ | 0.05% | 94 | CONFIRMED (exact fit, 0.00% residual) |
-| SIZE | 0.05% | 92 | CONFIRMED (exact fit, 0.00% residual) |
-| ABS | 0.05% | 91 | CONFIRMED (exact fit, 0.00% residual) |
-| MAH | 0.04% | 79 | CONFIRMED (exact fit, 0.00% residual) |
-| DELETE | 0.04% | 78 | CONFIRMED (exact fit, 0.00% residual) |
-| AVE | 0.03% | 69 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| MVM | 0.03% | 68 | CONFIRMED (exact fit, 0.00% residual) |
-| MSO | 0.03% | 66 | CONFIRMED (exact fit, 0.00% residual) |
-| DCS | 0.03% | 65 | OUT OF SCOPE (Safety instruction, CLAUDE.md OQ-SAFETY) |
-| TND | 0.03% | 59 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| MAFR | 0.03% | 58 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| MASR | 0.03% | 57 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| XPY | 0.02% | 42 | CONFIRMED (exact fit, 0.00% residual) |
-| MRP | 0.02% | 41 | CONFIRMED (real capture 2026-08-26: generator bug fixed with real full-parameter template, exact fit, 128 blocks/rung) |
-| MDW | 0.02% | 36 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| BSL | 0.02% | 34 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| CROUT | 0.02% | 33 | OUT OF SCOPE (Safety instruction, requires a GuardLogix/Safety PLC CPU, established 2026-08-25. Explains the 100% build failure on a standard 5069-L306ER capture: not a bad corpus transplant, a wrong controller class) |
-| NEG | 0.02% | 33 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| STOD | 0.02% | 31 | CONFIRMED (exact fit, 0.00% residual) |
-| BSR | 0.01% | 29 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| TRN | 0.01% | 29 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| FFU | 0.01% | 28 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| FFL | 0.01% | 26 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| NOT | 0.01% | 24 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| FAL | 0.01% | 24 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| FSC | 0.01% | 21 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| FIND | 0.01% | 21 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| XOR | 0.01% | 21 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| OSR | 0.01% | 16 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| OSF | 0.01% | 13 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| UID | 0.01% | 12 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| UIE | 0.01% | 12 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| SRT | 0.01% | 12 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| SWPB | 0.00% | 9 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| ATN | 0.00% | 9 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| DEG | 0.00% | 9 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| FBC | 0.00% | 8 | NO DATA (0 contribution -- never tested, deliberately skipped rather than guessed, see OQ-INSTRFIRSTPASS) |
-| MASD | 0.00% | 7 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| TAN | 0.00% | 7 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| MDR | 0.00% | 6 | NO DATA (0 contribution -- never tested) |
-| MGSD | 0.00% | 5 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| MGSR | 0.00% | 5 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| RAD | 0.00% | 5 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| PID | 0.00% | 3 | NO DATA (0 contribution -- never tested, deliberately skipped rather than guessed, see OQ-INSTRFIRSTPASS) |
-| MCR | 0.00% | 2 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| SQR | 0.00% | 2 | CONFIRMED (exact fit, 0.00% residual, resolved 2026-08-25) |
-| SCP | 0.00% | 2 | NO DATA (0 contribution -- never tested, deliberately skipped rather than guessed, see OQ-INSTRFIRSTPASS) |
-| LFU | 0.00% | 1 | NO DATA (0 contribution -- never tested) |
-| CTD | 0.00% | 1 | CONFIRMED (2026-08-25, direct confirmation: "100% the same as a CTU," no test needed) |
-| ALMD | 0.00% | 1 | NO DATA (0 contribution -- never tested) |
-| PIDE | 0.00% | 0 | NO DATA (0 contribution -- never tested) |
-| SQO | 0.00% | 0 | NO DATA (0 contribution -- never tested) |
-| SQI | 0.00% | 0 | NO DATA (0 contribution -- never tested) |
-| ALMA | 0.00% | 0 | NO DATA (0 contribution -- never tested) |
-| RTOR | 0.00% | 0 | NO DATA (0 contribution -- never tested) |
-
-The last 5 rows (0 real occurrences) are common, well-documented native AB
-instructions included for completeness even though this specific corpus
-never happened to use them — not an exhaustive list of every AB
-instruction that exists, just the notable ones worth tracking as this
-project's corpus grows.
-
-## Where to focus next, by real impact
-
-1. **CPT (840 occurrences, 0.42%) — LARGELY CLOSED 2026-09-04.** This
-   entry used to read "actively WRONG, not just untested, and the single
-   largest remaining non-CONFIRMED bucket". That is no longer true, and the
-   history is worth keeping because it shows what moved the needle.
-
-   **REAL-destination CPT is exact on all 47 captured calls** (was 8/11 on
-   the probes that isolate operand type). What unlocked it, 2026-09-04, was
-   that INTs use a behind-the-scenes conversion to DINT.
-   Two corrections fell straight out of that:
-   - **LINT operands cost NOTHING.** `cptrd_operand_lint` is the all-REAL
-     control with only the operand type swapped and lands byte-identical
-     at 244/rung. The model had been charging it 40/operand and
-     over-predicting that file by 26.79%.
-   - **SINT/INT operands cost +256/rung** — the narrow-to-DINT widening.
-     LINT, already 64-bit, skips it.
-
-   Two more came from re-fitting the ladder properly: the operator-count
-   step is at >= 3, not >= 5 (the old form over-charged the 6- and
-   8-operator files by exactly 4 each), and `**` is its own tier rather
-   than a special case for a lone pow.
-
-   **Integer-destination CPT** improved too: the two-tier mix is now priced
-   per tier (`100 + 24*t1 + 40*t2`), 19/23 exact against 15/23. That
-   cross-validates against data it was not fitted on — the single-operator
-   captures put MUL/DIV exactly 16 above ADD/SUB, and fitting the
-   multi-operator mixes independently returns 40 - 24 = 16 — and it
-   collapses onto the uniform-tier path, reproducing the whole pure-ADD
-   chain (124/148/172/196/220/268/316) by a second route. This fixed
-   `typesweep_cpt_dint_n01000`, previously the worst CPT file at +3.81%.
-
-   **What is genuinely still open**, and deliberately not patched over:
-   four two-tier points sit exactly -4 and no linear model in (t1, t2) can
-   reach them. `cptmix_scaling_grouped_n05` and `..._alternating_n05` have
-   identical tier counts and measure 232 vs 228, while at 11 operators the
-   same pair measures identically — so operator ARRANGEMENT matters
-   somewhere but not consistently. See OQ-CPTARRANGE.
-
-   `gen_cpt_closeout.py` (58 files) covers every remaining CPT dimension,
-   found by enumerating the model's dimensions and checking each against
-   the corpus rather than by guessing. That audit turned up three holes
-   that had never been tested at all: INT operand count (zero files), a
-   float literal with an INTEGER destination (zero of ~97 integer-dest
-   captures have one, while real logic writes `CPT(Dest,A*1.5+B)`
-   routinely), and multiple `**` on the real-dest path. Blocked on capture.
-
-2. **MAPC (113 occurrences, 0.06%) — RESOLVED 2026-08-25.** Flagged as an
-   instruction needing full accuracy; bug root-caused
-   (undeclared axis tag + reused axis for slave/master), fixed, corrected
-   call built error_count=0 on real capture same day, logic weight
-   260/rung wired. No longer a focus item.
-3. **MAM/MAJ/MAS/MRP (582 occurrences, 0.29%) — RESOLVED 2026-08-26.** Was
-   confirmed BUILD FAILED on the original bare 2-operand call shape. The
-   full-parameter-list fix (real per-instruction templates, not a guessed
-   shape, built in `gen_motion_instructions.py`) is now capture-confirmed:
-   all files build error_count=0, clean 2-point linear fit wired
-   (MAM=224, MAJ=236, MAS=100, MRP=128 blocks/rung). No longer a focus
-   item. CROUT (33 occurrences) is NOT in this category any
-   more — confirmed it's a Safety-only instruction (needs a
-   GuardLogix CPU), moved to OUT OF SCOPE, nothing to fix.
-4. **MCCP's CAM structure gap (129 occurrences, 0.06%)** — MCCP's own
-   LOGIC weight is resolved; what's left is purely CAM's own byte-size
-   formula (real XML shape confirmed, size isn't — see
-   `docs/OPEN_QUESTIONS.md` for the mechanistic writeup: CAM's L5K matches
-   its Decorated shape exactly, no hidden fields like CAM_PROFILE has, a
-   real and encouraging structural difference). Needs a dedicated CAM
-   count sweep (e.g. 1/5/10/20/50 elements) to turn that into a formula.
-   **MSG (99 occurrences, 0.05%) downgraded from this list** (2026-08-25):
-   MESSAGE size is acceptable at the 90% tier because MSG is not a common
-   instruction in practice. Not pursuing a MESSAGE byte-size sweep
-   further; MSG's LOGIC weight (48/rung) stays resolved and wired, the
-   still-unmodeled MESSAGE operand cost is deliberately left as-is.
-5. **RET (237) / SBR (128)** — 365 combined, 0.18%. Can't be tested as
-   bare instructions (always paired with JSR); `gen_jsr_sbr_ret.py`
-   covers the JSR/SBR/RET combination — real data exists in the manifest
-   (`jsr_paramcount_*`, `jsr_mixedio_*`, `jsr_multiret_*`) but hasn't been
-   turned into RET/SBR-specific weights yet (see OQ-JSRPARAMCOST, which
-   covers the JSR-side finding from this same data).
-6. Everything else (FBC/PID/SCP deliberately skipped rather than guessed,
-   plus a long tail of <10-occurrence math/shift/search instructions) —
-   diminishing returns, not worth a dedicated sweep until a specific real
-   program shows heavy usage of one of them.
-
-## Zero-operand (non-tag) instructions, 2026-09-12
-
-Split into two very different states.
-
-**Solved.** `NOP` (16) and `AFI` (4) are confirmed at five count points each —
-n = 10 / 50 / 100 / 1,000 / 5,000 — and every one reconciles at a flat −8, the
-universal per-file residual, across that whole 500× range.
-
-**Weights right, evidence thin.** `TND` (24), `UID` (40), `UIE` (40) and `MCR`
-(16) rest on exactly TWO real points apiece, `instrfirst_<x>` at n=1 and
-`instrfirst_<x>_x10` at n=10. Their slopes are exact at those points — TND 216
-bytes over 9 extra instructions, UID and UIE 360 over 9, MCR 144 over 9, each
-matching its wired weight and the real bytes with no remainder — and all four
-sit at a flat −12 rather than a growing residual, so nothing looks wrong. But
-two points cannot separate a true per-instruction constant from a first-pass
-offset plus a different slope, and none has ever been measured above 10 while
-NOP and AFI were checked to 5,000. `ntag_{tnd,uid,uie,mcr}_n{00010..05000}`
-closes that asymmetry by using NOP and AFI's own count points.
-
-Separately, every existing UID and UIE point measures a **bare, unmatched**
-instruction, which is not how either is used — they bracket an uninterruptible
-region. `ntag_uidpair_n*` measures matched pairs, and
-`ntag_uidpair_withbody_n00100` checks whether instructions inside a protected
-region cost what they cost outside one.
-
-**Not priced at all, and not testable without a verified rung: `EOT`, `IOT`,
-`SFR`, `SFP`.** All four are real Logix instructions with no weights-table
-entry, so every use costs zero today. Files for them were written and
-withdrawn rather than shipped:
-
-- `lint.py` rejects all four as unrecognized, which is accurate — no real rung
-  containing one has ever been verified into this project.
-- `SFR(routine, step)` and `SFP(routine, step)` address an SFC routine by name.
-  This project's builders produce no SFC routines, so such a file would name a
-  routine that does not exist, Studio would reject the rung, and the rest of
-  the project would still import and still fill in `actual_bytes` — the exact
-  mechanism that produced OQ-AOIINTERNALLOGIC's suspect calibration.
-- `IOT`'s operand is a real output module reference, not a plain DINT, and
-  `EOT`'s is an SFC storage bit. Both invented shapes are guesses.
-
-Per CLAUDE.md's transplant-never-compose rule, these four need **one verified
-rung apiece from a real export**, not a synthesized one.
+**CTD** is untested deliberately — zero real usage.
