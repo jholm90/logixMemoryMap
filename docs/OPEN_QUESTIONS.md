@@ -4392,6 +4392,83 @@ the matching footnote at the bottom, not inline.
     at either a flat 1,672 they do not cost or, for the rack-aliased ones,
     at zero.
 
+    **IN-DEPTH REVIEW 2026-09-18 — all 27 rows captured and read. Every slope
+    is now measured; NOTHING is wired, and the reason is a classifier problem
+    rather than a measurement one.**
+
+    **The per-card cost, by connection format.** Differencing consecutive card
+    counts within each format, which cancels both the adapter and the file base:
+
+    | format | n=1 | 2 | 4 | 8 | 16 | per card |
+    |---|---:|---:|---:|---:|---:|---:|
+    | Optimized | +574 | +566 | +566 | +582 | +582 | **0 — flat** |
+    | Enhanced | +648 | −496 | −2,776 | −7,304 | −16,392 | **−1,136** |
+    | Enhanced Data | +643 | −218 | −1,924 | −5,320 | −12,144 | **−852** |
+
+    The Optimized arm is FLAT across a 16x span — a rack-aliased card is priced
+    correctly today and the +570 it carries is a per-file constant, not a slope.
+    The other two are over-charged by 1,136 and 852 per card, exactly linear
+    from n=4 upward (n=2 and n=4 sit 8 and 16 off the line, the usual small
+    noise). Their difference, 284, is the same order as the 294 bytes per card
+    the three original real captures put on Enhanced Data over Enhanced, so the
+    RELATIVE ordering the model has is right and the absolute level is not.
+
+    **The module-NAME measurement, which was the naming arm's whole point, and
+    it is unambiguous.** `pioname_enhdata_len{05,08,16,24,32}_n08` — 8 cards,
+    name length the only variable:
+
+        length     5      8     16     24     32
+        residual -4,808 -4,808 -4,744 -4,680 -4,616
+
+    Length 5 and length 8 are IDENTICAL, and every 8 characters after that is
+    exactly +64 across 8 cards, i.e. **8 bytes per card per 8 characters, with
+    the first 8 characters free.** The engine charges a module name nothing at
+    all, so this is a direct measurement of an unmodeled quantity, as designed.
+    The named-versus-nameless arm adds that having a Name AT ALL costs 64 per
+    card (+64, +128, +256, +512 at n=1, 2, 4, 8 — per card, no free first one),
+    but a nameless module cannot occur in a real export, so that 64 is already
+    inside the per-catalog `module_overhead` that was fitted on real modules.
+
+    **NOT wired, and the disagreement is worth stating precisely.** The measured
+    module-name law is `8 × ((len − 1) // 8)` — a full eight characters free.
+    The shared `identifier_name_length` law, KNOWN from the program, task,
+    routine and JSR-target sweeps, is `8 × (len // 8)` — it charges 8 at exactly
+    length 8, where these files measure 0. One 8-byte bucket apart, on the
+    strength of one length pair. Real exposure across all sixteen programs is
+    **449 modules and 4,816 bytes, 0.05% of the real set**, so introducing a
+    SECOND name law for that is not justified; recorded here instead, and the
+    len05/len08 pair should be repeated before anyone acts on it.
+
+    **The per-card correction is NOT wired because real cards cannot be
+    classified.** Real exposure is 45 POINT I/O modules in 4 of the 16
+    programs — Elmsdale 20, FlareFunction 14, CMU 7, K3M16 4 — so at 1,136 per
+    card this is 38,000 to 51,000 bytes, material. But at the CARD level an
+    Enhanced card and an Optimized card are structurally identical in L5X: both
+    carry no `<Connection>` element at all, and they differ only in the
+    adapter's InputTag. 34 of the 45 real cards are in exactly that
+    indistinguishable state. The two formats' corrections differ by 1,136, so
+    guessing is worse than not charging.
+
+    And the sweep cannot settle it, by its own admission: the Optimized arm
+    changes the adapter CATALOG at the same time as the format, so "Optimized is
+    flat" and "that adapter is flat" are not separated either.
+
+    **One observation that should be tested rather than believed.** Applying
+    −1,136 per card to Elmsdale's 20 cards takes its residual from **+22,862 to
+    +142** — from 1.99% to 0.01%. That is either a coincidence or it says
+    Elmsdale's racks are Enhanced and this is most of its remaining error. The
+    same correction makes FlareFunction, which over-predicts, substantially
+    worse. So the hypothesis is testable and the test is cheap: Elmsdale's
+    adapters are named `JB101_IO`, `C102_IO` and `MCP101_IO`, and reading which
+    format each one uses off the real export settles which way the correction
+    goes on the one real program where it matters most.
+
+    **What is needed: two files, not twelve.** The same adapter catalog
+    (`1734-AENT/B`) carrying 8 cards in Enhanced and in Optimized form — the
+    one comparison this batch confounded. That separates the format from the
+    adapter, and with it the 34 unclassifiable real cards become classifiable
+    by their adapter's InputTag shape.
+
 
 42. **OQ-AXISMARGINAL** — new 2026-09-11, and the largest single-sign
     unreconciled block in the corpus. Found by `scripts/unreconciled.py`, also
