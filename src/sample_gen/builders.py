@@ -148,6 +148,26 @@ def _array_body_xml(data_type: str, count: int, radix: str | None = "Decimal", e
     return f'<Array DataType="{data_type}" Dimensions="{count}"{radix_attr}>{elements}</Array>'
 
 
+def _array2d_body_xml(data_type: str, rows: int, cols: int,
+                      radix: str | None = "Decimal") -> str:
+    """A two-dimensional array's decorated data.
+
+    Shape taken verbatim from a real export (FlareFunction_311D, tag
+    `Cell_Fault_TMR`, TIMER[5,32]) rather than extrapolated from the 1-D
+    writer, because the two attributes disagree in a way that is easy to get
+    wrong: the TAG's own Dimensions attribute is SPACE separated ("5 32")
+    while the ARRAY element's is COMMA separated ("5,32"), and each Element's
+    Index carries both subscripts as "[r,c]".
+    """
+    elements = "".join(
+        f'<Element Index="[{r},{c}]" Value="{_default_value(data_type)}" />'
+        for r in range(rows) for c in range(cols)
+    )
+    radix_attr = f' Radix="{radix}"' if radix else ""
+    return (f'<Array DataType="{data_type}" Dimensions="{rows},{cols}"'
+            f'{radix_attr}>{elements}</Array>')
+
+
 def _string_structure_member_xml(name: str) -> str:
     return (
         f'<StructureMember Name="{name}" DataType="STRING">'
@@ -358,6 +378,8 @@ def tag_xml(
             _array_body_xml(data_type, dimensions[0], radix=None, element_fn=lambda i: structure_body)
             if dimensions else structure_body
         )
+    elif len(dimensions) == 2:
+        data_body = _array2d_body_xml(data_type, dimensions[0], dimensions[1], radix)
     elif dimensions:
         data_body = _array_body_xml(data_type, dimensions[0], radix)
     else:

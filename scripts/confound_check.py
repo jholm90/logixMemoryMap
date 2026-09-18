@@ -38,6 +38,31 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 CALL = re.compile(r"\b([A-Z][A-Z0-9_]{1,15})\s*\(")
 
 
+def _split_operands(s: str) -> list[str]:
+    """Split on top-level commas only.
+
+    A naive split counts `COP(Hist[0,0],Tmp[0,0],800)` as five operands
+    because of the subscript commas. That mistake was made and briefly
+    believed on 2026-09-18 -- it manufactured a "COP takes four and five
+    operands in real programs, and the corpus only builds three" finding that
+    does not exist. With bracket-aware splitting, 19 of the top 20 real
+    instructions have operand counts the corpus already covers exactly.
+    """
+    out, depth, cur = [], 0, ""
+    for ch in s:
+        if ch in "[(":
+            depth += 1
+        elif ch in "])":
+            depth -= 1
+        if ch == "," and depth == 0:
+            out.append(cur)
+            cur = ""
+        else:
+            cur += ch
+    out.append(cur)
+    return [a.strip() for a in out if a.strip()]
+
+
 def profile(path: str) -> dict[str, object] | None:
     """The dimensions a sizing model can charge for. Each is compared as a
     whole, so a change anywhere inside one counts as that dimension moving."""
@@ -72,7 +97,7 @@ def profile(path: str) -> dict[str, object] | None:
         if "[" in txt:
             branches += 1
         for m in re.finditer(r"\b([A-Z][A-Z0-9_]{1,15})\s*\(([^()]*)\)", txt):
-            args = [a.strip() for a in m.group(2).split(",") if a.strip()]
+            args = _split_operands(m.group(2))
             opcodes[m.group(1)] += 1
             operands[(m.group(1), len(args))] += 1
             exprs[(m.group(1), tuple(args))] += 1
@@ -88,6 +113,15 @@ def profile(path: str) -> dict[str, object] | None:
         "operand text": dict(exprs),
         "rung count": rungs,
         "branched rungs": branches,
+        # ARRANGEMENT. The opcode multiset and the operand text are both
+        # identical whether eight XICs sit in series or in two branch legs of
+        # four, so without this a family built to test arrangement -- which is
+        # the largest measured evidence gap in the project -- reads as
+        # byte-identical. Operand contents are blanked so only the bracket
+        # structure and opcode order remain.
+        "rung structure": dict(collections.Counter(
+            re.sub(r"\(([^()]*)\)", "()", (rg.findtext("Text") or "").strip())
+            for rg in root.iter("Rung"))),
         "ST lines": sum(len(list(c)) for c in root.iter("STContent")),
         # ST bodies live in <STContent><Line>, not in <Rung><Text>, so the
         # rung sweep above cannot see them. Without this, a family that varies
@@ -132,6 +166,15 @@ def profile(path: str) -> dict[str, object] | None:
 _IMPLIED_BY = {
     "operand text": ("operand shapes", "instruction inventory"),
     "operand shapes": ("instruction inventory",),
+    # The multiset of rung shapes determines how many rungs there are and how
+    # many of them branch, so reporting those alongside it is the same
+    # double-count as operand text against instruction inventory.
+    # Chained: inventory -> structure -> count/branching. `differing` tests
+    # parents against everything that moved, not against what it has already
+    # printed, so the whole chain collapses to its most informative link.
+    "rung structure": ("instruction inventory",),
+    "rung count": ("rung structure", "instruction inventory"),
+    "branched rungs": ("rung structure", "instruction inventory"),
     "ST text": ("ST lines",),
     "tag dimensions": ("tag inventory",),
     "tag name lengths": ("tag inventory",),

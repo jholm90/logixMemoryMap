@@ -174,8 +174,10 @@ Run this sequence in order, without being asked:
    question, and there is no minimum roster size to pad toward — if the genuine
    work is 20 files, spec 20.
 
-   The one exception is `scripts/strip_ladder.py`, which derives variants of a
-   real export James already supplied rather than inventing a shape.
+   There is no exception. `scripts/strip_ladder.py` used to be one, on the
+   grounds that it derived variants of a real export rather than inventing a
+   shape; that exemption is withdrawn — see the read-only rule below. A
+   derived variant does not build.
 8. **Report**: what changed, what is now closed, what is genuinely still
    open with the full-depth reasoning already applied, the
    conversion-failure log from step 2, and **step 2b's error flags — which

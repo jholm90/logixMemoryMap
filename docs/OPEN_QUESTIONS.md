@@ -4899,12 +4899,25 @@ files were captured, so that batch confirms them rather than measuring them.
     occurrences (**63%**), and a 4-byte error across those four is **1.35
     percentage points** — the whole +1.375% residual.
 
-    Per-instruction operand-shape gaps the corpus never tested, from the same
-    sweep: `TON` is 71% three-operand / **29% four-operand** in real programs
-    and **100% three-operand** in the corpus; `COP` is 97/2/2 across three,
-    four and five operands against 100% three; `MOV`, `ADD`, `LES`, `GRT`,
-    `SUB`, `XIC`, `XIO`, `OTU`, `OTL` and `CLR` each carry a small tail of
-    higher operand counts with no corpus coverage at all.
+    **CORRECTION, same day.** This entry first claimed a per-instruction
+    operand-count gap — `TON` at 29% four-operand, `COP` across three, four
+    and five, and a tail on eight others. **That finding was an artefact and
+    is withdrawn.** It came from splitting operands on every comma, which
+    counts `COP(Hist[0,0],Tmp[0,0],800)` as five operands and
+    `TON(System_Fault_TMR[0,0],?,?)` as four. With bracket-aware splitting,
+    **19 of the top 20 real instructions have operand counts the corpus
+    already covers exactly** — every one is a single count at 100% on both
+    sides. The only survivor is `JSR`, whose real calls run 2 to 16 operands
+    against a corpus that is 100% two, and that is already the subject of
+    `OQ-JSRPARAMCOST`. The splitter is fixed in `scripts/confound_check.py`
+    and locked by a test.
+
+    **What the corrected sweep does show, and it is a clean gap: 2-D array
+    subscripts as instruction operands.** 2,364 of 254,703 real operand
+    references (**0.93%**) carry a `[i,j]` subscript. The corpus has **zero**,
+    across 942,157 operand references. That matches the tag survey in
+    `OQ-TAGSHAPE`, where 2-D arrays are 0.16% of real tags and 0.00% of
+    corpus tags. It is small, but unlike the withdrawn claim it is real.
 
     **What this does NOT yet explain.** Branch density cannot be the residual
     carrier: it is nearly flat across the sixteen (58.6%–76.1%) and correlates
@@ -4948,6 +4961,39 @@ files were captured, so that batch confirms them rather than measuring them.
     from a real export is dead (see the read-only rule in `CLAUDE.md`), so a
     built-from-scratch sweep at the real shape is now the only way to price
     arrangement.
+
+    **BATCH GENERATED 2026-09-18 — 14 files, `rshape_*`, all 1756-L81E v35,
+    all lint clean, every consecutive pair differencing on exactly one
+    dimension (`python scripts/confound_check.py --family '^rshape_'`).**
+    Predictions PRE-REGISTERED below, before any capture, so the batch can
+    falsify the engine rather than be fitted to it.
+
+    | file | predicted | step | what the step prices |
+    |---|---:|---:|---|
+    | `rshape_arr_legs01_n00500` | 42,904 | — | 8 XIC in series + OTE, 500 rungs |
+    | `rshape_arr_legs02_n00500` | 48,904 | +6,000 | 2 legs of 4 → **+12/rung** |
+    | `rshape_arr_legs04_n00500` | 52,904 | +4,000 | 4 legs of 2 → **+8/rung** |
+    | `rshape_arr_legs08_n00500` | 60,904 | +8,000 | 8 legs of 1 → **+16/rung** |
+    | `rshape_pack_i{01,02,04,08,16}` | **434,112 each** | **0** | 4,000 OTEs at 1/2/4/8/16 per rung |
+    | `rshape_mix_series_n00500` | 39,312 | — | real composition, all series |
+    | `rshape_mix_branch_n00500` | 44,712 | +5,400 | same multiset in legs → +10.8/rung |
+    | `rshape_sub2d_a_flat_n00500` | 37,884 | — | flat `DINT[400]`, `[i]` |
+    | `rshape_sub2d_b_decl_n00500` | 39,568 | +1,684 | 2-D declaration, unreferenced |
+    | `rshape_sub2d_c_ref_n00500` | 39,568 | **0** | `[i,j]` subscript instead of `[i]` |
+
+    **Two of those are the sharp ones.** Group B says the engine charges
+    **nothing** for rung count at a fixed instruction inventory — all five
+    files predict the identical 434,112 over 4,000 OTEs packed from 1 to 16
+    per rung. If the captures differ at all, there is a per-rung term the
+    model does not have, and that is the 62%-versus-7% gap turned into a
+    number. Group D says the engine charges **nothing** for a 2-D subscript
+    over a 1-D one; the declaration alone is 1,684.
+
+    Group A's own steps are already non-monotone under the current model —
+    +12, +8 then +16 bytes per rung for 2, 4 and 8 legs — which is the
+    `branch_bracket_cost_per_instruction` term extrapolating outside the
+    9.4%-branched corpus it was fitted on. A smooth measured curve there
+    would falsify it directly.
 
 50. **OQ-TAGSHAPE** — new 2026-09-18. **Controller tags are 59.00% of all
     predicted mass across the sixteen, so the whole residual would be a 2.36%

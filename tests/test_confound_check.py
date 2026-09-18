@@ -83,3 +83,22 @@ def test_a_finer_dimension_does_not_double_report_its_parent(tmp_path):
     a = _write(tmp_path, "a.L5X", _rung("XIC(A)OTE(B);"))
     b = _write(tmp_path, "b.L5X", _rung("XIO(A)OTE(B);"))
     assert differing(a, b) == ["instruction inventory"]
+
+
+def test_branch_arrangement_is_visible(tmp_path):
+    """Same opcodes, same operands, different bracket structure -- the exact
+    shape OQ-RUNGSHAPE was opened to test, and invisible to every other
+    dimension."""
+    a = _write(tmp_path, "a.L5X", _rung("XIC(A)XIC(B)OTE(C);"))
+    b = _write(tmp_path, "b.L5X", _rung("[XIC(A),XIC(B)]OTE(C);"))
+    assert differing(a, b) == ["rung structure"]
+
+
+def test_subscript_commas_are_not_operand_separators(tmp_path):
+    """`COP(Hist[0,0],Tmp[0,0],800)` is three operands, not five. Counting
+    them naively manufactured a real-versus-corpus operand-shape gap that does
+    not exist."""
+    from confound_check import _split_operands
+    assert _split_operands("Hist[0,0],Tmp[0,0],800") == ["Hist[0,0]", "Tmp[0,0]", "800"]
+    assert _split_operands("A,B,C") == ["A", "B", "C"]
+    assert _split_operands("") == []
