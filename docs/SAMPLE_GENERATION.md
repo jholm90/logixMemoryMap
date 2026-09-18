@@ -324,73 +324,86 @@ dual and the most-attested drive in the corpus.
 
 `2198-S130-ERS3` and every `2198-P*` supply are Ch1 only.
 
-## Literal-operand batch — SPEC ONLY, not generated (OQ-LITERALOPERAND)
+## Literal-operand batch — BUILT 2026-09-18 (OQ-LITERALOPERAND)
 
-Written 2026-09-18. **Not built.** CLAUDE.md step 7: test files are supplied,
-not written here, and no prior batch authorises the next.
+29 files, `src/sample_gen/gen_literaloperand.py`, written to
+`samples/generated/logic/` as `litop_*`. Generated on explicit request; the
+BOOL arm (F) was added to the original 20-file spec at the same time.
 
 **What it measures.** An immediate numeric literal in an instruction operand
 costs bytes the engine charges at zero. Measured on the bench at **+4.000 bytes
 per slot** for a REAL literal in a REAL-typed MAM parameter (six slots, one
 rung, +24 exactly). The question is the rate for every OTHER operand type,
 because integer literals are 51,265 of the 52,195 unpriced slots in the real
-set — 98% of the mass, and the part the measurement does not cover.
+set — 98% of the mass, and the part the bench does not cover.
 
 **The hypothesis.** An immediate costs the width of its type, stored inline:
 REAL 4 (measured), DINT 4, INT 2, SINT 1, LINT 8. The competing hypothesis is
-that the cost follows the SLOT's declared type rather than the literal's. These
-two differ whenever a small integer sits in a wide slot, which is what arm B
-below is for.
+that the cost follows the SLOT's declared type rather than the literal's.
 
-**Held fixed in every file** — 1756-L81E, v35, one Task, one Program, one
-Routine, identical tag population across every file in an arm, and every tag
-still both DECLARED and REFERENCED in both members of each pair. That last
-point is what made the bench measurement clean, and dropping it would confound
-the literal term with tag-declaration cost. Enforced by
-`non_standard_processor` / `non_standard_firmware`.
+**The engine predicts a ZERO delta for every pair in this batch.** Verified
+after generation: all five arm-A pairs, and every file within arms B, C, D and
+F, carry identical `predicted_bytes`. That is the defect, stated as a
+falsifiable prediction — any non-zero capture delta is the unmodelled cost.
 
-**Arm A — per-type rate. 10 files, 5 pairs.** One pair per operand type:
-SINT, INT, DINT, LINT, REAL. Each pair is 1,000 `MOV` rungs; the tag member of
-the pair moves a tag of that type, the literal member moves a literal of that
-type into the same destination. The source tag exists and is referenced by a
-held-fixed `EQU` in both members. **Discriminates:** the per-type rate directly,
-as (literal member − tag member) / 1000. Differences against the existing
-`typesweep_*` captures, which hold the same shape with tag operands only.
+**Held fixed everywhere** — 1756-L81E at v35 (enforced by
+`non_standard_processor` / `non_standard_firmware`), one Task, one Program, one
+Routine, 1,000 rungs, and the source tag both DECLARED and REFERENCED in every
+member of every pair by a byte-identical `EQU`. That last point is what made
+the bench measurement clean; without it the literal term is confounded with
+per-tag declaration cost, which is 84+ bytes and would swamp a 4-byte effect.
 
-**Arm B — literal type vs slot type. 4 files.** A DINT destination fed by, in
-turn, a literal written `5`, `5.0`, a SINT-range literal, and a DINT-range
-literal beyond INT range (e.g. `70000`). All four are one `MOV` × 1,000 into the
-same DINT tag. **Discriminates:** whether the cost tracks the literal's written
-form, its magnitude, or the destination's declared width. If all four are equal,
-the cost follows the slot and arm A's table is indexed by destination type; if
-they differ, it follows the literal.
+| arm | files | what moves | what it decides |
+|---|---:|---|---|
+| A `litop_type_*` | 10 | destination type, tag vs literal | the per-type rate, directly, as (lit − tag) / 1000 |
+| B `litop_form_*` | 4 | the literal, on a fixed DINT destination | slot width vs value magnitude vs written form |
+| C `litop_pool_*` | 3 | number of distinct values over 2,000 fixed slots | per-slot cost vs constant-pool cost |
+| D `litop_fold_*` | 3 | literal 0 / 1 / 2 | whether Studio folds 0 and 1 |
+| E `litop_family_*` | 3 | instruction family at a fixed literal | whether the law reaches MOV/EQU/JSR |
+| F `litop_bool_*` | 4 | one AOI call-site argument | whether a BOOL slot prices 0/1 differently |
+| G `litop_mam_*` | 2 | the bench shape at n=1000 | whether the pipeline reproduces the bench |
 
-**Arm C — is it per-slot or per-distinct-value? 3 files.** 1,000 `ADD` rungs,
-each with two literal operands: (i) both literals the same value in every rung,
-(ii) both literals distinct within the rung but repeated across rungs,
-(iii) every literal distinct across all 2,000 slots. **Discriminates:** a
-per-slot cost from a constant-pool cost. `OQ-SERIESOUTPUT`'s candidate B died
-this way — assuming per-occurrence when the real law was per-distinct — so this
-arm is not optional. If (iii) > (i), there is a pool and the term is
-per-distinct-value, which would change the real-set arithmetic substantially
-since real programs reuse `0` and `1` heavily.
+**Arm A caveat that will bite if ignored.** SINT and INT predict far higher than
+DINT (254,288 and 290,288 against 74,288) because the existing
+`operand_type_surcharge` charges narrow-integer widening. It is identical within
+each pair, so it does not touch the pair differences — but the per-type rate
+must be read from WITHIN-pair differences only. Comparing `litop_type_sint_lit`
+against `litop_type_dint_lit` measures that surcharge, not the literal.
 
-**Arm D — small-literal folding. 3 files.** 1,000 `MOV` rungs with literal
-`0`, `1`, and `12345` into a DINT. **Discriminates:** whether Studio special-
-cases 0/1 (a plausible compiler optimisation). This matters out of proportion
-to its size: `0` and `1` are the most common literals in real ladder, so if
-they are free the 205,060-byte integer exposure is much smaller than it looks.
+**Arm E differences against arm A, not internally.** Comparing MOV to EQU to
+JSR necessarily moves instruction inventory, so `confound_check` flags those
+pairs and is right to. Each arm-E file differences against
+`litop_type_dint_tag_n01000`, the identical MOV shape with a tag operand.
 
-**Arm E — does the instruction family matter? 4 files.** The same DINT literal
-in a `MOV` destination-side operand, an `EQU` comparison operand, a `JSR`
-parameter, and an `MAM` motion parameter, 1,000 each. **Discriminates:** whether
-the +4 generalises across instruction families or is specific to motion
-parameter blocks. The bench measurement is MAM only; MOV and EQU carry 18,924 of
-the real slots between them and are the actual prize.
+**Arm F is a MECHANISM probe, not a real shape.** All 886 real `DigitalSensor`
+call sites pass exactly two TAG arguments — instance plus the one Required
+input — and set the optional inputs on the instance tag. A literal into a BOOL
+parameter is therefore not attested in any real program. The arm is kept
+because BOOL is the one atomic width where the width hypothesis predicts
+something different, and because 0/1 folding is the highest-leverage unknown in
+arm D. It must not be cited as real-shape evidence. Parameters are
+`Required="false" Visible="true"`, the flag pair that permits a literal or a tag
+at the call site; `Required="true"` demands a wired tag and would reject the
+literal.
 
-**20 files total.** Every file answers a currently-open question and there is no
-padding toward a roster size.
+**Arm G is the pipeline control and is deliberately isolated.** Its operand list
+is transplanted verbatim from the rung Studio compiled — transplant, never
+compose, the rule that exists because bare composed MAM/MAJ/MAS/MRP rungs failed
+every rung once. Only tag names are substituted, for `verified_tags.py` blocks
+of the same types (`Axis1` AXIS_VIRTUAL, `MCD` MOTION_INSTRUCTION), because
+those blocks are verbatim real. The pair should differ by 24,000 bytes; if it
+does not, the generated pipeline does not reproduce the bench and nothing else
+here can be trusted. `predicted_bytes` is 0 for both — an `AXIS_*` tag makes it
+uncomputable (OQ-AXISSTRUCT) — so this pair is differenced against itself.
 
-**Run `scripts/confound_check.py` on every arm before capture.** Each arm varies
-exactly one dimension between consecutive files; that script exists because five
-separate families turned out not to.
+**Verify with** `python scripts/confound_check.py --family '^litop_<arm>'` per
+arm. A whole-family run walks files alphabetically and so crosses arm
+boundaries, which legitimately varies several dimensions; scope to one arm to
+check the pairs that are actually differenced. All ten differenceable arms pass.
+
+**This batch found a sixth blind spot in `confound_check.py`**, which is why it
+exists: its instruction regex required an ALL-CAPS mnemonic, so every AOI call
+site's operands were invisible, and it reported the four arm-F files — whose
+call arguments genuinely differ — as IDENTICAL. A false negative is the one
+failure worse than not checking. The pattern now accepts mixed-case names, which
+is what real AOIs have (`DigitalSensor`, `AnalogSensor`, `PTimer`).

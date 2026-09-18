@@ -141,8 +141,37 @@ answers it and the question does not get opened.
     hypothesis is that the cost follows the SLOT's declared type rather than
     the literal's, which the same batch separates.
 
-    **Spec written** — `docs/SAMPLE_GENERATION.md`, "Literal-operand batch".
-    Not generated: CLAUDE.md step 7, ask every time.
+    **29 FILES BUILT 2026-09-18**, on request, by
+    `src/sample_gen/gen_literaloperand.py` into `samples/generated/logic/` as
+    `litop_*`. Seven arms: A per-destination-type rate (10 files, the arm the
+    question turns on), B literal form vs slot width vs value magnitude (4),
+    C per-slot vs constant-pool (3), D whether Studio folds 0 and 1 (3),
+    E whether the law reaches MOV/EQU/JSR where the mass is (3), F whether a
+    BOOL slot prices 0/1 differently (4), G the bench shape at n=1000 as a
+    pipeline control (2). Full per-arm reasoning in
+    `docs/SAMPLE_GENERATION.md`.
+
+    **The engine predicts a ZERO delta for every pair in the batch** — verified
+    after generation. That is the defect stated as a falsifiable prediction: any
+    non-zero capture delta is the unmodelled cost, and the per-type table falls
+    straight out of arm A as (literal file − tag file) / 1000.
+
+    **Read arm A WITHIN pairs only.** SINT and INT predict far higher than DINT
+    (254,288 and 290,288 against 74,288) because `operand_type_surcharge`
+    charges narrow-integer widening. It is identical within each pair so it does
+    not touch the differences, but comparing `litop_type_sint_lit` against
+    `litop_type_dint_lit` measures that surcharge, not the literal.
+
+    **Arm F is a mechanism probe, not a real shape**, and the entry should not
+    later be cited as though it were: all 886 real `DigitalSensor` call sites
+    pass exactly two TAG arguments — instance plus the one Required input — and
+    set the optional inputs on the instance tag, so a literal into a BOOL
+    parameter is not attested anywhere in the real set. It is worth four files
+    anyway because BOOL is the one atomic width where the width hypothesis
+    predicts something different, and because 0/1 folding is the
+    highest-leverage unknown in arm D — `0` and `1` are the most common
+    literals in real ladder, so if they are free the 205,060-byte integer
+    exposure collapses and this whole question drops down the queue.
 
     **Why this measurement is trustworthy when the strip ladder was not.** It
     was made by editing a project in Logix Designer and letting Studio compile

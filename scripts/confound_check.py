@@ -35,7 +35,13 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-CALL = re.compile(r"\b([A-Z][A-Z0-9_]{1,15})\s*\(")
+# Mixed case, not just ALL-CAPS: an AOI call site is an instruction too, and
+# real AOI names are mixed-case (DigitalSensor, AnalogSensor, PTimer). With an
+# ALL-CAPS-only pattern the checker was blind to every AOI call site's
+# operands, and reported four litop_bool_* files whose call arguments genuinely
+# differ as IDENTICAL -- a false negative, which is the one failure mode worse
+# than not checking at all. Sixth blind spot found in this script.
+CALL = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]{1,39})\s*\(")
 
 
 def _split_operands(s: str) -> list[str]:
@@ -102,7 +108,7 @@ def profile(path: str) -> dict[str, object] | None:
         rungs += 1
         if "[" in txt:
             branches += 1
-        for m in re.finditer(r"\b([A-Z][A-Z0-9_]{1,15})\s*\(([^()]*)\)", txt):
+        for m in re.finditer(r"\b([A-Za-z_][A-Za-z0-9_]{1,39})\s*\(([^()]*)\)", txt):
             args = _split_operands(m.group(2))
             opcodes[m.group(1)] += 1
             operands[(m.group(1), len(args))] += 1
