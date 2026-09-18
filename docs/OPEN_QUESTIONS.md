@@ -2924,12 +2924,31 @@ the matching footnote at the bottom, not inline.
     REAL path charges 4. These three files exist precisely because no
     integer-destination CPT capture had ever contained one, and real logic writes
     `CPT(Dest,A*1.5+B)` routinely. **120+ bytes per rung is the largest single
-    unpriced CPT term found in this project.** NOT wired: k=1 and k=2 differ by 4
-    while k=2 and k=3 differ by 64, so it is not linear in the literal count and
-    three points cannot say what it is.
+    unpriced CPT term found in this project.**
 
-    **What is needed, in priority order.** (a) A 1..6 float-literal sweep at a
-    fixed operator count and integer destination, for (5) — the biggest number
+    **NOT wired, and the reason is a CONFOUND IN THE FILES rather than a hard
+    law.** The three shapes vary the operator count alongside the literal count:
+
+        file            expression                 operators  float lits  per rung
+        cptidflit_k1    L0*1.5+L1                       2          1         +120
+        cptidflit_k2    L0*1.5+L1*2.5                   3          2         +124
+        cptidflit_k3    L0*1.5+L1*2.5-L2/3.5            5          3         +188
+
+    So "not linear in the literal count", written here earlier the same day, was
+    the wrong diagnosis. Fitting `a x literals + b x operators + c` reproduces
+    all three EXACTLY — a = −56, b = +60, c = +56 — and that is worthless:
+    three parameters against three points is exactly determined, unfalsifiable,
+    and it returns a NEGATIVE per-literal rate, which is not a thing. Same trap
+    OQ-STEXPR-OPERATOR was stuck in, except there a regime split dissolved it and
+    here there is nothing to dissolve.
+
+    **What is needed, in priority order.** (a) FOUR integer-destination files at
+    a FIXED operator count of three, varying only the float literals:
+    `L0*1.5+L1*L2` (1), `L0*1.5+L1*2.5` (2), `L0*1.5*2.5+L1` (3) and
+    `L0*1.5*2.5*3.5` (3 again, moved) — the last pair separating literal COUNT
+    from literal POSITION. The 1..6 sweep at a fixed operator count written here
+    before would have repeated the confound, because the existing files' operator
+    skeleton is what changes between them. This is still the biggest number
     here. (b) Three files to settle the −352: the identical rung shape with the
     pool's LINT tags removed entirely, with exactly one LINT tag, and with four
     of which one is referenced. (c) An n=5 REAL-dest discriminator set — all-REAL
