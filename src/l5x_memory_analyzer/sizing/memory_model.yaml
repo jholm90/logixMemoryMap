@@ -465,6 +465,38 @@ empty_project_baseline:
 # flat constant (the mean of the 2 points) is the current best estimate,
 # NOT a confirmed per-connection or per-point rate. Applied ONCE per
 # module (not per Connection) until more data says otherwise.
+# Rack-aliased module overhead (OQ-POINTIOCONN), FITTED and wired 2026-09-18.
+#
+# A module whose I/O is aliased into its parent's Slot array
+# (<RackConnection><InAliasTag/>) used to be charged its declared data and NO
+# overhead at all, on the honest grounds that there was zero data for that
+# shape. The pioconn_* count sweep is that data and had been captured and never
+# differenced: five counts per format, 1/2/4/8/16 cards, everything else held
+# identical.
+#
+#     format          detection                       real per card
+#     Optimized       RackConnection/InAliasTag                 488
+#     Enhanced        no <Connections> element at all           568
+#     Enhanced Data   its own InputData <Connection>            856
+#
+# Per-card marginals for the Optimized arm are 480 / 488 / 492 / 488 across the
+# four intervals, so FITTED not KNOWN -- the ~8-byte wobble is real and
+# unexplained. The engine was charging these cards about 34 bytes each (their
+# declared data alone), so the missing overhead is 488 - 34 = 454.
+#
+# ONLY the rack-aliased term is wired here. The Enhanced and Enhanced Data
+# figures say the 1734 per-catalog entries over-charge those two formats by
+# roughly 1,136 and 853 per card, but that table was fitted from 126 real
+# module captures and re-cutting it by connection format is a separate change
+# with much wider reach. See OQ-POINTIOCONN.
+#
+# Direction on real files is the reason this one is safe to apply: 455 of the
+# ~530 POINT I/O cards across the sixteen real exports are rack-aliased, so the
+# correction RAISES predictions, which is the direction eleven of sixteen need.
+rack_aliased_module:
+  overhead_bytes: 454
+  confidence: FITTED
+
 module_overhead:
   bytes: 1672
   confidence: FITTED

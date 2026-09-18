@@ -1095,6 +1095,11 @@ class MemoryModel:
     safety_capable_baseline_delta: SafetyCapableBaselineDeltaModel
     catalog_baseline_delta: CatalogBaselineDeltaModel
     platform_firmware_correction: PlatformFirmwareCorrectionModel
+    # OQ-POINTIOCONN: overhead for a module whose I/O is aliased into its
+    # parent's Slot array, on top of its own declared data. See
+    # memory_model.yaml rack_aliased_module.
+    rack_aliased_module_bytes: int = 0
+    rack_aliased_module_confidence: str = "FITTED"
 
 
 def load_memory_model(path: str | Path | None = None) -> MemoryModel:
@@ -1185,6 +1190,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             confidence=raw.get("jsr_target_declaration", {}).get("confidence", "UNKNOWN"),
         ),
         zero_connection_module_bytes=raw.get("zero_connection_module", {}).get("bytes", 0),
+        rack_aliased_module_bytes=raw.get("rack_aliased_module", {}).get("overhead_bytes", 0),
+        rack_aliased_module_confidence=raw.get("rack_aliased_module", {}).get("confidence", "FITTED"),
         zero_connection_module_confidence=raw.get("zero_connection_module", {}).get("confidence", "UNKNOWN"),
         module_overhead_confidence=module_overhead["confidence"],
         module_connection_data=ModuleConnectionDataModel(

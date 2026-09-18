@@ -880,9 +880,21 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             # modules in it, so most of that family's -9% to -28% is its priced
             # cards' own ASSUMED overheads being too low, which needs the
             # per-catalog refit (OQ-MODULESTRUCTURAL), not this.
+            # 2026-09-18, OQ-POINTIOCONN: the overhead is no longer unmodelled
+            # for the rack-aliased shape. The pioconn_* count sweep (five counts
+            # per connection format, 1/2/4/8/16 cards, everything else held
+            # identical) had been captured and never differenced; it puts a
+            # rack-aliased card at 488 bytes all-in against the ~34 of declared
+            # data charged here, so 454 of overhead was missing. FITTED, not
+            # KNOWN: the per-card marginals are 480/488/492/488 and that wobble
+            # is real. See memory_model.yaml rack_aliased_module.
+            rack_overhead = (
+                model.rack_aliased_module_bytes if module.uses_rack_connection else 0
+            )
             module_entries.append((
                 f"modules/{label}", "module_io", module.catalog_number,
-                module.module_defined_bytes, "UNKNOWN",
+                module.module_defined_bytes + rack_overhead,
+                model.rack_aliased_module_confidence if rack_overhead else "UNKNOWN",
             ))
             continue
         # 2026-08-29, OQ-MODULEIO: real per-catalog overhead (memory_model.yaml
