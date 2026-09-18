@@ -46,6 +46,57 @@ candidate that can only add bytes is wrong before it is tested.
 | 9 | **One capture roster, not five** — **DONE 2026-09-18 by construction** | There is exactly one roster outstanding: the rung-shape sweep specified in `OQ-RUNGSHAPE`. Items 2 and 3 closed without needing captures, and item 10 is dead, so nothing else is queued to trickle out separately. Awaiting approval to generate (CLAUDE.md step 7). | none direct |
 | 10 | ~~Refresh the strip ladders~~ | **DEAD** — see the read-only rule in `CLAUDE.md`. A derived variant of a real export does not build. | none |
 
+### Capture 2026-09-18 — what the 23-file batch settled
+
+| family | outcome |
+|---|---|
+| `rshape_arr_*` (4) | **exact at every leg count.** Branch/arrangement terms are right; the 68.7%-vs-9.4% coverage gap is not an error |
+| `rshape_mix_*` (2) | **exact.** Confirms the above at the real rung composition |
+| `rshape_sub2d_*` (3) | **2-D subscripts cost 0.** Declaration step 1,688 measured vs 1,684 predicted |
+| `rshape_pack_*` (5) | **confounded by my design** — OTE is an output, so packing it built series cascades. Re-measures `OQ-SERIESOUTPUT` at −12.000 exactly, four new points; kills its candidate B (rung uniqueness). Rung packing still open |
+| `tgord_*` (6) | **all six byte-identical. Order is free.** `OQ-TAGORDER` closed |
+| `prodcons_*` (3) | **Produced costs +1,072/tag, unmodeled** — 48.6% under-prediction on that file. Consumed row SUSPECT (20 build errors) |
+
+13 of 22 clean rows byte-exact, 17 within 8. **Nothing was wired**: the two
+non-exact results are a known law that real files still reject, and a
+single-point rate that cannot separate per-tag from per-file. Real set
+unchanged at mean 1.5607%.
+
+### NEXT BATCH — SPEC ONLY, 9 files, not generated
+
+Two questions the 2026-09-18 capture opened or left open, and nothing else.
+Every file 1756-L81E v35. Ask before generating.
+
+**Group 1 — rung packing, done correctly this time (5 files).**
+`rpack2_i{01,02,04,08,16}_n04000x`. The last attempt used OTE and built
+series cascades; this one keeps the output count at exactly one per rung so
+no cascade can form. Each rung is `XIC(a)…XIC(z)OTE(Out_r)` with a fixed
+total of **4,000 XIC** distributed 1, 2, 4, 8 and 16 per rung — 4,000 rungs
+down to 250. The OTE count then equals the rung count and moves with it, so
+each file also carries one OTE per rung; that term is subtracted using
+`rshape_arr_*`, which prices XIC arrangement and a single OTE exactly. What
+it discriminates: whether a per-rung cost exists at all once the series-output
+law is excluded by construction. This is the one term that could still be
+hiding inside every instruction weight in the model, because every
+calibration file in the corpus is one instruction per rung.
+
+**Group 2 — the Produced tag cost (4 files).** `prodcons_produced` is the
+only genuinely new unmodeled cost this batch found: **+1,072 bytes per tag,
+48.6% under-predicted**, and one file cannot say what carries it.
+- `prodcons_n{05,10,20,40}` — 5, 10, 20 and 40 Produced tags of the same UDT
+  at `ProduceCount=1`. Four counts read the slope directly and separate a
+  per-tag rate from a per-file one.
+- If the slope is flat, `prodcons_pc{2,4}` holds the tag count at 20 and
+  moves `ProduceCount` to 2 and 4, which says whether the cost is per tag or
+  per consumer connection.
+
+**NOT in this batch, deliberately.** Consumed is untestable without a
+producing module in the project, which is a larger shape than this answers;
+its one row is suspect and stays flagged rather than being guessed at. The
+`srout_branch_*` and `srout_mixed/same` files that test `OQ-SERIESOUTPUT`
+candidates C and D already exist and are uncaptured — they belong in the same
+Studio session but need no generation.
+
 ### What has already been ruled out, so it is not re-tried
 
 Each of these was tested against the sixteen on 2026-09-18 and failed. The

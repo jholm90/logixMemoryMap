@@ -1171,6 +1171,48 @@ the matching footnote at the bottom, not inline.
       5-byte UDTs — the first array arm that can see an element-padding rule at
       two different residues.
 
+    **FOUR NEW POINTS 2026-09-18, and one long-standing candidate is DEAD.**
+    The `rshape_pack_i*` files were built to isolate a per-rung term and
+    instead landed squarely on this law, because they pack OTEs — output
+    instructions — more densely per rung. Extra series outputs and the
+    rung-count drop are the same number in that design, so the files cannot
+    say which of the two they measured; see the confound note in
+    `OQ-RUNGSHAPE`. What they CAN say is what the value is, and it is −12 at
+    four fresh points:
+
+    | file | rungs | OTE/rung | extra outputs | delta | per extra output |
+    |---|---:|---:|---:|---:|---:|
+    | `rshape_pack_i02` | 2,000 | 2 | 2,000 | −24,000 | **−12.000** |
+    | `rshape_pack_i04` | 1,000 | 4 | 3,000 | −36,000 | **−12.000** |
+    | `rshape_pack_i08` | 500 | 8 | 3,500 | −42,000 | **−12.000** |
+    | `rshape_pack_i16` | 250 | 16 | 3,750 | −45,000 | **−12.000** |
+
+    `rshape_pack_i01`, one OTE per rung and therefore no cascade at all, is
+    byte-exact. The law now holds at k = 2, 3, 4, 8 and 16 across three
+    unrelated shapes, and **candidate A is settled**: it is linear at 12 per
+    extra output, not a one-time step and not capped, out to fifteen extra
+    outputs in a single rung.
+
+    **CANDIDATE B IS DEAD, and it was the leading explanation.** The entry
+    argued that both original sweeps repeat a BYTE-IDENTICAL rung thousands of
+    times over the same operand tags, and that real ladder never does — so
+    deduplication of repeated rung structure, not a genuine layout rule, might
+    be what the −12 measures. **Every rung in the `rshape_pack_*` files writes
+    its own distinct bits** (`B0000`…`B3999`, each addressed exactly once), so
+    no two rungs are identical and no tag is addressed twice. The discount
+    survives at exactly −12. It is a real per-output layout rule, not an
+    artefact of repetition.
+
+    That sharpens the paradox rather than resolving it: a law now exact at
+    five counts across three shapes, with rung uniqueness ruled out, is still
+    rejected by all sixteen real programs (applying it takes mean absolute
+    error from 2.07% to 2.90% and makes every one of them worse). Candidates C
+    and D — series versus parallel at matched output counts, and repeated
+    versus distinct output TYPES — remain the open ones, and the
+    `srout_branch_*` and `srout_mixed/same` files that test them are still
+    uncaptured.
+
+
 12. **OQ-AOIINTERNALLOGIC** — new, real, corpus-wide gap, found 2026-08-31:
     AOIs were closed out without ever putting logic inside one. Every AOI
     has at least one internal subroutine and can have more (HomeToTorque
@@ -4740,161 +4782,6 @@ the matching footnote at the bottom, not inline.
     the Trials full-file number was wrong; if it reads 1,147,896 again then the
     per-program batch shares a common defect and the ladder stands.
 
-48. **OQ-TAGORDER** — new 2026-09-18, raised from outside the model: "BOOL
-    LINT INT DINT BOOL takes up different space in the controller than another
-    order." **Does the ORDER in which controller tags are declared change what
-    they cost?**
-
-    **It has never been tested. Confirmed by search, not assumed.** The only
-    order-varying files in the entire corpus are `aoidshape_order_*` — five
-    files that permute AOI DEFINITION MEMBERS — and every tag family declares
-    tags GROUPED BY TYPE: `type_bool_50tag` is 50 consecutive BOOLs,
-    `typesweep_*` uses one fixed pool, `array_*` and `udtslot_*` the same. Not
-    one file in 3,076 captured rows holds a mixed tag multiset and varies only
-    the order.
-
-    **The one order result that exists says order is free — at a DIFFERENT
-    SCOPE.** `aoidshape_order_{boolsfirst,dintsfirst,alternating,pairs,blocks5}`
-    permute the same BOOL/DINT multiset five ways inside an AOI definition and
-    all five read **19,672 actual, +12 delta, byte-identical**. That is a real
-    measurement about MEMBERS OF ONE PACKED STRUCTURE. Controller tags are
-    separately allocated objects. The first does not answer the second and must
-    not be cited as if it does.
-
-    **Real programs look nothing like the corpus on this axis.** The declared
-    type CHANGES between consecutive controller tags **33–60% of the time**
-    (median ~52%) across the sixteen; generated files are ~0%. Dominant
-    transitions: BOOL→DINT 1,297, DINT→BOOL 1,249, then REAL↔DINT and
-    BOOL↔REAL. BOOL and DINT together are **58% of the 31,532 real tags**.
-
-    **One correction to the hypothesis as raised, and it narrows the target.**
-    8-byte types are essentially absent from the real set: **2 LINT tags out of
-    31,532**, zero LREAL, zero ULINT. An alignment effect at LINT boundaries
-    cannot be the real-file residual whatever it does in principle. The version
-    that matters is BOOL/DINT/REAL interleaving.
-
-    **WHY THIS SURVIVES THE TEST THAT KILLED EVERY OTHER TAG HYPOTHESIS.**
-    2026-09-18 ruled out a per-tag constant at any value, a per-BOOL-tag
-    constant, and a proportional scale on tag bytes — all three move the
-    aggregate bias and leave the spread untouched. **An order effect is
-    invisible to all three by construction**: it changes what a file costs
-    without changing any count, so no per-unit or per-category correction can
-    express it and no correlation against tag count can detect it. That day's
-    conclusion should be read as "tags are not wrong by a scalar", NOT "tags are
-    not wrong".
-
-    It also fits the one signal that did survive: a 1% proportional increase on
-    tag bytes cut the real spread 1.037 → 0.813, the only thing measured that
-    day which moved spread rather than bias. A per-file order effect looks
-    exactly like that from outside — roughly proportional to tag count, but
-    varying file to file with how the engineer happened to declare them.
-
-    **SPEC — 8 files, one fixed multiset, order the only variable.** Same design
-    as `aoidshape_order_*`, one scope up. 25 BOOL + 25 DINT controller tags,
-    identical names and name lengths, nothing else in the file:
-
-      1. `tagorder_grouped_bd`   — 25 BOOL then 25 DINT
-      2. `tagorder_grouped_db`   — 25 DINT then 25 BOOL
-      3. `tagorder_alternating`  — B D B D … (49 transitions)
-      4. `tagorder_pairs`        — B B D D B B D D …
-      5. `tagorder_blocks5`      — BBBBB DDDDD …
-      6. `tagorder_realchurn`    — the literal declaration sequence of the first
-         50 controller tags of a real export, types transplanted, so the corpus
-         finally contains one file with real churn
-
-    Plus a three-type arm matching real composition (BOOL/DINT/REAL 33/25/11):
-
-      7. `tagorder3_grouped`     — grouped by type
-      8. `tagorder3_realchurn`   — real transition sequence
-
-    **Read it by differencing WITHIN the set: all eight carry identical tag
-    multisets, so any spread between them IS the order effect and nothing
-    else** — no baseline, no engine constant, no other family involved. If they
-    land together, order is free at tag scope too and this closes in one capture
-    round. If they spread, the per-transition cost falls straight out of file 3
-    (49 transitions) against file 1 (1 transition).
-
-    **Priority: HIGH.** It touches 58% of real tags, it is the only untested
-    dimension found that a scalar correction cannot express, and it is eight
-    files.
-
-
----
-
-# SECOND PASS: THE IN-DEPTH REVIEW, 2026-09-18
-
-The table above was a triage — every entry recomputed, each given a status. This
-pass went through the ones it left open one at a time, re-derived each question's
-numbers from the captures on disk rather than from what the entry claimed, and
-either wired the result or said in counted terms why not. **Real set 1.6894% →
-1.6566% mean absolute error over the sixteen held-out programs, every one of them
-the right way.** Corpus mean 1.4758% → below it, with two families rebuilt:
-Structured Text 8.3291% → **0.0091%** and `unweighted_*` 4.6865% → **0.1574%**.
-
-## Closed and wired in this pass
-
-| question | what it turned out to be |
-|---|---|
-| **OQ-JSRPARAMCOST** | Every SLOPE closed. `b_multiparam_extra = 4` keyed on TOTAL operands (the row that decides it went +3,952 → −56); `per_target` 152 → 160 from an exact `8t − 280` across t = 1..50. What is left is two flat per-file constants, −184 and −280, on files of 18–256 KB. |
-| **OQ-STEXPR** | All four assumptions measured. The one-operator row is a LOOKUP per operator class, not a lookup plus a premium; the premium vanishes on all-float operands; `**` is 38 not 80; conversion is per SOURCE keyed on the source's type; the AOI-call one-time is per ROUTINE. |
-| **OQ-STEXPR-OPERATOR** | The "two unknowns from two points" blocker was a misreading of the law's own shape — it already has two regimes, so each point pins a constant alone. The six 2-operator files are now the falsification test, not the enabler. |
-| **OQ-CPTARRANGE** | Arrangement is real and the rule is exact: +4 iff EXACTLY TWO tier-1 operators precede the first tier-2 one. Six rows out of 28, and it retro-explains four points it was not fitted to. |
-| **OQ-VERIFINSTR** | `DTR = 40` (it had no weight at all, not the 16 the entry claimed) and 112 per JSR target whose SBR/RET carry operands — which also collapses OQ-JSRPARAMCOST's two file constants from 96 apart to 16. |
-| **OQ-AOIINTERNALLOGIC** | The unmeasured `_DESTINATION_ARG` exposure SIZED at 9,312 bytes (0.09%) for every classification being wrong at once, so no test batch is justified. Two real table defects fixed: five entries named the wrong operand, and five word-destination writers were missing, GSV among them at 363 real occurrences. |
-
-## Read in full and deliberately NOT wired, with the count
-
-| question | measured | why it stays unwired |
-|---|---|---|
-| **OQ-COMPOSITESCALE** | The categories ARE additive: hold logic at 0 and every D×A×M combination reads within 40 of zero. The single non-additive term is compiled logic at −24 per rung, which is −12 × (3 − 1) — the OQ-SERIESOUTPUT law at a rung width nothing else tests. | It makes `addit_*` the THIRD independent confirmation of a law all sixteen real programs reject. The `sroutc_*` grid is the decisive measurement for the whole project. |
-| **OQ-CPTREALDEST** | The ladder is exact at 7, 9 and 10 operators; `**` is +8 per extra operator, not a flat 12; the integer-destination float literal is +120 to +188 per rung and charged NOTHING. | The 5-operator base is a shape CONTRADICTION (324 all-REAL against 328 for three parenthesised/float-literal families) and every candidate fix repairs 4 rows and breaks 10. The float-literal term is not linear over three points. |
-| **OQ-CPTNARROW** | `rate_T × k − 132`, eight of ten points exact, and SINT ≠ INT, which this entry assumed. | 27 real CPT calls with a narrow operand, all in ONE program, ~1,300 bytes. |
-| **OQ-POINTIOCONN** | Optimized is FLAT across a 16x span; Enhanced −1,136 per card; Enhanced Data −852. Module names cost 8 per 8 characters with the first 8 free. | 34 of the 45 real POINT I/O cards are structurally indistinguishable between the two formats that differ by 1,136, and the sweep confounds format with adapter catalog. Two files fix that. |
-
-## The one normalisation that had to be found before anything could be read
-
-**A per-file constant of −352 runs through all 58 captured `cpt` rows from
-`gen_cpt_closeout.py`** — except the five whose logic references a LINT tag,
-which sit at 0. With that one substitution every residual in the batch is its
-baseline plus an exact multiple of 4 bytes per rung, no exceptions. Without it
-the batch looks like noise, and several readings in OQ-CPTREALDEST and
-OQ-CPTARRANGE had been contaminated by a spurious 352 from differencing against
-an older generator. The −352 itself is unexplained and has its own three-file
-probe specified.
-
-## Doc currency fixed in this pass
-
-Seven `**CAPTURE ERRORS**` blocks were stale — `scripts/capture_errors.py` only
-checks questions it routes errored rows TO, so a block whose rows have since been
-recaptured is invisible to the gate and survives as a false warning. Audited all
-19 against the gate's routing; the seven are replaced with a note recording that
-those numbers are now known to come from clean captures. Two stale claims inside
-entries were corrected: OQ-AOIINTERNALLOGIC's "11,241 instructions across 6 of
-the 16 programs" (the real figure is 38,821 across all sixteen) and
-OQ-VERIFINSTR's five siblings, which were already weighted by the time their
-files were captured, so that batch confirms them rather than measuring them.
-
-    **BATCH GENERATED 2026-09-18 — 6 files, `tgord_*`.** The same 400 tags in
-    all six (100 each of BOOL, INT, DINT, LINT) with identical names, so
-    nothing moves but the sequence: `grouped`, `widefirst`, `narrowfirst`,
-    `alternating`, `pairs`, `shuffled` (fixed seed). All lint clean, all
-    1756-L81E v35, every consecutive pair differencing on exactly one
-    dimension.
-
-    **PRE-REGISTERED PREDICTION: all six at 56,528 bytes.** The engine has no
-    order term at all, so it predicts the six identical. That makes this a
-    clean yes/no: if the captures agree, order is free at tag scope and this
-    question closes for good; if they split, the two width-ordered files
-    should be the extremes if the mechanism is adjacent-tag alignment padding,
-    and `pairs` against `alternating` separates a per-transition cost from a
-    per-tag one.
-
-    A confound check caught one defect before this batch was committed: the
-    control was originally grouped in ascending width order, which reproduced
-    `narrowfirst` exactly and would have wasted a capture slot. The control
-    now groups as DINT, BOOL, LINT, INT — deliberately not width-sorted.
-
-
 49. **OQ-RUNGSHAPE** — new 2026-09-18, and it is the largest measured
     evidence gap in the project. **The compiled-logic weights were fitted on
     a rung shape that real ladder almost never has.**
@@ -5016,6 +4903,60 @@ files were captured, so that batch confirms them rather than measuring them.
     9.4%-branched corpus it was fitted on. A smooth measured curve there
     would falsify it directly.
 
+    **CAPTURED 2026-09-18. Three of the four groups came back BYTE-EXACT, and
+    the fourth is confounded by my own design error.**
+
+    | group | result |
+    |---|---|
+    | **A** arrangement at fixed inventory | **all four exact, delta 0** at 1, 2, 4 and 8 legs |
+    | **B** rung packing | **−12 per unit at all four points — but see below** |
+    | **C** real rung composition | **both exact, delta 0**; the series/branch step of −5,400 is predicted to the byte |
+    | **D** 2-D subscripts | +4 / +8 / +8 — inside the universal ±8; the subscript step is **exactly 0** |
+
+    **GROUP A CLOSES THE BRANCH QUESTION, NEGATIVELY.** The predicted steps of
+    +12, +8 and +16 bytes per rung looked like a term extrapolating badly
+    outside its 9.4%-branched calibration. They are correct to the byte at
+    every leg count. Group C confirms it at a realistic rung composition
+    rather than a uniform 8-condition rung. **So the 68.7%-versus-9.4% branch
+    coverage gap is real as a coverage fact and is NOT an error**: the
+    arrangement terms already in the model price real-shaped ladder exactly.
+    That removes the largest suspected error source in compiled logic.
+
+    **GROUP B DOES NOT MEASURE WHAT IT WAS BUILT TO MEASURE.** It was supposed
+    to isolate a per-rung term by holding the instruction inventory fixed at
+    4,000 OTEs and varying only how many rungs they sit in. OTE was chosen
+    because its isolated weight is confirmed exact — but **OTE is an OUTPUT
+    instruction**, so packing more per rung builds a series-output cascade,
+    which `OQ-SERIESOUTPUT` already prices at −12 per output beyond the first.
+    In this design the two are not merely correlated, they are the same
+    number: extra series outputs equals the rung-count drop **identically in
+    every file**.
+
+    | file | rungs | OTE/rung | extra outputs | rung-count drop | delta | per unit |
+    |---|---:|---:|---:|---:|---:|---:|
+    | `i01` | 4,000 | 1 | 0 | 0 | 0 | — |
+    | `i02` | 2,000 | 2 | 2,000 | 2,000 | −24,000 | **−12.000** |
+    | `i04` | 1,000 | 4 | 3,000 | 3,000 | −36,000 | **−12.000** |
+    | `i08` | 500 | 8 | 3,500 | 3,500 | −42,000 | **−12.000** |
+    | `i16` | 250 | 16 | 3,750 | 3,750 | −45,000 | **−12.000** |
+
+    The series-output reading is much the likelier of the two, because −12 is
+    the value `OQ-SERIESOUTPUT` already measured on two unrelated shapes; a
+    per-rung term would have to coincide with it exactly. Either way **the
+    rung-packing question stays open**, and the confound-checker did not catch
+    this one because both readings are the same single dimension in the
+    profile — a reminder that the checker verifies that one thing moves, not
+    that the one thing moving is the thing you meant.
+
+    **THE CORRECTED SPEC, 5 files, not yet generated.** Hold the total
+    instruction count fixed and keep the output count fixed at one per rung,
+    so no cascade can form: each rung is `XIC(a)...XIC(z)OTE(out_r)`, with
+    4,000 XICs distributed 1, 2, 4, 8 and 16 to a rung. The OTE count then
+    tracks the rung count rather than being held fixed, so the pair must be
+    differenced against group A — which prices XIC arrangement exactly — to
+    subtract it. Failing that, a two-arm design varying XIC-per-rung at fixed
+    rung count in one arm and rung count at fixed XIC-per-rung in the other.
+
 50. **OQ-TAGSHAPE** — new 2026-09-18. **Controller tags are 59.00% of all
     predicted mass across the sixteen, so the whole residual would be a 2.36%
     error there. It is not. Every tag shape real programs use is already
@@ -5081,3 +5022,37 @@ files were captured, so that batch confirms them rather than measuring them.
     for. This closes a coverage claim rather than chasing the residual — the
     entry's own arithmetic puts the whole untested population at about 8,700
     bytes against 653,678.
+
+    **CAPTURED 2026-09-18, and the prediction was WRONG on one of the two.**
+
+    | file | predicted | actual | delta | per tag |
+    |---|---:|---:|---:|---:|
+    | `prodcons_base` | 22,648 | 22,640 | −8 | exact |
+    | `prodcons_consumed` | 22,648 | 22,640 | −8 | **SUSPECT — see below** |
+    | `prodcons_produced` | 22,648 | **44,080** | **+21,432** | **+1,072** |
+
+    **A Produced tag costs 1,072 bytes more than the same tag declared Base.**
+    21,440 over 20 tags, exactly, against a total the engine puts at 22,648 —
+    it is under-predicting that file by **48.6%**. The `<ProduceInfo>` block
+    carries a cost the model has no term for at all.
+
+    **NOT WIRED, and one file is why.** 20 tags in one file gives a rate, not
+    a shape: per-tag, per-file and per-produced-connection are not separated,
+    and `ProduceCount` was fixed at 1 throughout so the connection-count
+    dimension is untouched. **SPEC, 4 files:** `prodcons_n{05,10,20,40}` at a
+    fixed `ProduceCount=1`, which reads the slope directly; plus
+    `prodcons_pc{2,4}` holding the tag count at 20 and moving `ProduceCount`,
+    which says whether the cost is per tag or per consumer connection.
+
+    **CAPTURE ERRORS: 1 row(s)** — `prodcons_consumed` captured with
+    `error_count = 20` — one error per Consumed tag, which is what a Consumed
+    tag does when the producing controller it names is not in the project.
+    Its `actual_bytes` reads identical to the Base control, and that is
+    exactly what would happen if all 20 tags failed to build and never reached
+    the controller. **The row is suspect, not wrong, and may not be used
+    either way**: it is not evidence that Consumed is free, and it is not
+    evidence that it is not. Re-testing it needs a producing module in the
+    file, which is a different and larger shape than this batch was built for.
+
+    So the coverage claim is **partly** closed: 2-D arrays free, Produced
+    measured and unmodeled, Consumed still untested.

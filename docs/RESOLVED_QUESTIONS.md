@@ -4210,3 +4210,40 @@ L7x/1769 rows; 0.019% across the 55 active-platform rows).
     bit, so both invented shapes are guesses. Per CLAUDE.md's
     transplant-never-compose rule these four need **one verified rung apiece
     from a real export**. Recorded in `docs/INSTRUCTION_COVERAGE.md`.
+
+## OQ-TAGORDER — tag declaration order is FREE
+
+**Closed 2026-09-18, measured, six files, all six byte-identical.** Raised
+from outside the model: "BOOL LINT INT DINT BOOL takes up different space in
+the controller than another order." It does not.
+
+`tgord_{grouped,widefirst,narrowfirst,alternating,pairs,shuffled}` each hold
+the SAME 400 controller tags — 100 each of BOOL, INT, DINT and LINT, with
+identical names — and move nothing but the declaration sequence. The engine,
+which has no order term at all, predicted all six at **56,528**. All six
+captured at **56,528**, delta 0, `error_count` 0.
+
+That covers the widest span the multiset allows: strictly descending width,
+strictly ascending width, one-of-each rotation (the maximum number of width
+transitions possible), two-of-each, a fixed seeded shuffle, and grouped by
+type. **If adjacent-tag alignment padding existed, `widefirst` and
+`narrowfirst` would be the extremes and they are equal to the byte.**
+
+This also generalises the one prior order result rather than merely agreeing
+with it. `aoidshape_order_*` had shown order to be free INSIDE an AOI
+definition, which is a packed structure whose layout Logix controls; the
+open question was whether a controller tag list — a series of independently
+allocated slots — behaves differently. It does not. **Order is free at both
+scopes.**
+
+The question was worth asking and worth closing rather than assuming: before
+this batch the corpus had no file anywhere that held a mixed tag multiset and
+varied only the order, so every order effect was invisible to every test the
+project had run. It changes cost without changing any count, which is exactly
+what a per-tag rate, a per-type rate and a category scale all fail to see.
+
+A defect caught by `scripts/confound_check.py` before the batch was
+committed: the control was originally grouped in ascending width order, which
+reproduced `narrowfirst` exactly and would have spent a capture slot on a
+duplicate.
+

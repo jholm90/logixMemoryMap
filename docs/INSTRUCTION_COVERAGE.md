@@ -9,6 +9,32 @@ original set). The target is full confidence on every instruction actually
 in use. **This file is refreshed every time real capture data lands**, with
 no exceptions.
 
+## Rung arrangement is validated, 2026-09-18
+
+The per-instruction weights below are all fitted on a corpus that is **9.4%
+branched rungs and 62% single-instruction rungs**, against real programs at
+**68.7%** and **7%** — measured over 41,136 real rungs and 255,027 real
+instruction occurrences versus 525,936 corpus rungs. That gap was the largest
+suspected error source in compiled logic, on the reasoning that terms
+calibrated on flat one-instruction rungs need not hold on real ladder.
+
+**Measured, and the terms hold exactly.** The `rshape_arr_legs*` files put
+eight XIC conditions and one OTE into 500 rungs and move only the
+arrangement — all in series, then 2, 4 and 8 parallel legs. Predicted steps
+of +12, +8 and +16 bytes per rung are correct **to the byte at every leg
+count**, and `rshape_mix_{series,branch}` confirms it at the real
+population's composition (1–10 conditions per rung, 70% carrying three or
+more) with a predicted series-versus-branch step of −5,400 that also lands
+exactly.
+
+So the branch coverage gap is a real fact about the corpus and is **not** an
+error: `branch_bracket_cost_per_instruction` extrapolates correctly outside
+the shape it was fitted on. What remains unseparated is a per-rung term —
+every calibration file here is one instruction per rung, so a per-rung cost
+and a per-instruction cost are perfectly confounded in the weights below. The
+attempt to isolate it landed on the series-output law instead; see
+`OQ-RUNGSHAPE`.
+
 ## Methodology
 
 - **Corpus:** every real `.L5X` file under `samples/local/` (54 files,
