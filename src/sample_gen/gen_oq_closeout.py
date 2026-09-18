@@ -208,14 +208,65 @@ def arm_c_st_two_operator() -> int:
     return n
 
 
+# ---------------------------------------------------------------- ARM D
+# CPT destination narrowing (OQ-CPTARRANGE). The 2x2 is already exact:
+# DINT<-DINT and REAL<-REAL both read 0 at three rung counts each, and widening
+# (REAL<-DINT) is a flat +4. Narrowing (DINT<-REAL) is the live term and it is
+# the one with real exposure -- 41 such calls across seven distinct real
+# programs. Measured at j = 0, 1, 2 and 4 REAL operands out of four:
+# 0, +172, +132, +48 per rung. Two forms fit the three nonzero points within two
+# bytes (213 - 41j, and 48 + 41*(4-j)) and j=3 separates them. The 6-operand
+# pair then says whether the rate is per REAL operand or per remaining DINT one,
+# which the fixed 4-operand width cannot.
+NARROW_SHAPES = {
+    "j3of4": ("Dest", "R0+R1*R2+L3"),
+    "j3of6": ("Dest", "R0+R1*R2+L3+L4+L5"),
+    "j5of6": ("Dest", "R0+R1*R2+R3+R4+L5"),
+}
+
+
+def arm_d_cpt_destination_narrowing() -> int:
+    from sample_gen.builders import tag_xml as _tag
+    tags = "\n".join(
+        [_tag("Dest", "DINT")]
+        + [_tag(f"R{i}", "REAL") for i in range(6)]
+        + [_tag(f"L{i}", "DINT") for i in range(6)]
+    )
+    n = 0
+    for label, (dest, expr) in NARROW_SHAPES.items():
+        sample_id = f"cptnar_{label}_n{RUNGS:05d}"
+        l5x = build_l5x(
+            target_name=f"CptNar{label.upper()}",
+            tags_xml=tags,
+            extra_rungs_xml=rungs_xml(RUNGS, lambda _i, d=dest, e=expr: f"CPT({d},{e});"),
+        )
+        _emit(
+            sample_id, l5x, LOGIC_ROOT,
+            f"CPT({dest},{expr}) x {RUNGS} rungs -- DINT destination narrowing from REAL "
+            f"operands. Arm D of OQ-CPTARRANGE. The same-type cases are already exact at "
+            f"three counts each and widening is a flat +4; narrowing reads 0 / +172 / +132 "
+            f"/ +48 per rung at j = 0/1/2/4 REAL operands, where two forms fit the three "
+            f"nonzero points within two bytes. j3of4 is the missing fourth point that "
+            f"separates them; j3of6 and j5of6 hold the REAL count and the DINT count "
+            f"respectively against a wider expression, which says which one the rate is on. "
+            f"41 such calls exist across seven real programs, so unlike OQ-CPTNARROW this "
+            f"thread can actually move the real set.",
+            "logic_instr",
+        )
+        n += 1
+    return n
+
+
 def main() -> None:
     a = arm_a_condition_by_output()
     b = arm_b_cpt_tier_truth_table()
     c = arm_c_st_two_operator()
+    d = arm_d_cpt_destination_narrowing()
     print(f"Arm A (OQ-SERIESOUTPUT condition x output): {a}")
     print(f"Arm B (OQ-CMPCPTLAYOUT tier truth table):   {b}")
     print(f"Arm C (OQ-STEXPR-OPERATOR 2-op midpoints):  {c}")
-    print(f"Total: {a + b + c}")
+    print(f"Arm D (OQ-CPTARRANGE narrowing j=3 + width): {d}")
+    print(f"Total: {a + b + c + d}")
 
 
 if __name__ == "__main__":
