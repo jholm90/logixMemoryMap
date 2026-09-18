@@ -46,6 +46,67 @@ candidate that can only add bytes is wrong before it is tested.
 | 9 | **One capture roster, not five** — **DONE 2026-09-18 by construction** | There is exactly one roster outstanding: the rung-shape sweep specified in `OQ-RUNGSHAPE`. Items 2 and 3 closed without needing captures, and item 10 is dead, so nothing else is queued to trickle out separately. Awaiting approval to generate (CLAUDE.md step 7). | none direct |
 | 10 | ~~Refresh the strip ladders~~ | **DEAD** — see the read-only rule in `CLAUDE.md`. A derived variant of a real export does not build. | none |
 
+### THE CEILING — measured 2026-09-18. Read this before specifying any more work.
+
+**No per-category correction can pass the stopping rule on the sixteen. This
+is measured, not suspected, and it is the single most important number in the
+project.**
+
+Two experiments, both on the current engine:
+
+**1. The ceiling of the model SHAPE.** Let all eight category scales float
+freely and fit them *directly on the held-out sixteen* — which is cheating,
+and is an upper bound no honest procedure can beat:
+
+    baseline                    mean 1.5607   max 3.6309   4/16 <1%
+    8 free scales, fitted on
+    the answer itself           mean 1.0149   max 2.5919   9/16 <1%   NOT MET
+
+Even allowed to see the answer, an eight-parameter per-category model does
+not reach mean <1% AND max <2%.
+
+**2. Does any of it generalise?** Leave-one-out: fit the same eight scales on
+fifteen files, score the sixteenth:
+
+    baseline                    mean 1.5607   max 3.6309   4/16 <1%
+    leave-one-out               mean 1.5539   max 3.1802   5/16 <1%
+
+**0.007 points, and 8 of 16 files get WORSE.** That is a coin flip. The
+1.0149% above was pure overfitting; cross-validation erases essentially all
+of it.
+
+**What this means concretely.** Tuning any category constant — alarm
+conditions, module I/O, UDT definitions, AOI definitions, task shells,
+baselines — cannot move the headline, because the best possible combination
+of all of them together is worth 0.007 points on unseen files. Any future
+task whose mechanism is "a category is scaled slightly wrong" is dead on
+arrival, and there is no point capturing files to measure one.
+
+The two categories whose required per-file scale is even self-consistent are
+`controller_tag` (0.949–1.092, CV 0.039) and `routine_logic` (0.919–1.199,
+CV 0.087). Everything else ranges into the absurd — `program_tag` needs a
+scale of 347 on one file and −26 on another — which is a restatement of the
+finding that those categories are too small to carry the residual.
+
+**What could still work, and it is one thing.** A term that is NOT
+proportional to any category the engine currently counts — real content that
+is not being counted at all. `OQ-CTLSHELL` is the only measured evidence of
+such a thing (a bare real controller shell read 3,736 bytes above prediction
+where generated empty files are byte-exact). Sixteen files at that magnitude
+is ~60,000 bytes, about 0.13 points — real, but not 0.56.
+
+**The instrument that could find the rest is gone.** Attribution by
+subtraction from a real export is dead by the read-only rule, and no
+generated file can carry content that generated files do not have, which is
+the definition of the gap. That is not a reason to keep trying variations; it
+is the reason the target as written may not be reachable at all.
+
+**Consequence for the goal.** `CLAUDE.md`'s stopping rule (mean <1% AND max
+<2%) should be treated as unproven-reachable rather than pending. The
+achieved and defensible figure is **mean 1.5607%, max 3.6309%, 11 of 16
+inside 2%**, and the evidence says more batches of the current kind will not
+change it.
+
 ### Capture 2026-09-18 — what the 23-file batch settled
 
 | family | outcome |
