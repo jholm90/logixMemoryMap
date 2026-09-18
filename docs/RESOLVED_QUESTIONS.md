@@ -3738,61 +3738,6 @@ all), `OQ-AOIDEFITEMIZE`, `OQ-V3GENBUGS`, `OQ-BUILDFAIL-OPEN`, `OQ-AXISCOMBO`,
 `OQ-REAL5069`, `OQ-DEFSCALE`, `OQ-BASELINE-PROCFW` (contaminated only by dead
 L7x/1769 rows; 0.019% across the 55 active-platform rows).
 
----
-
-# SECOND PASS: THE IN-DEPTH REVIEW, 2026-09-18
-
-The table above was a triage — every entry recomputed, each given a status. This
-pass went through the ones it left open one at a time, re-derived each question's
-numbers from the captures on disk rather than from what the entry claimed, and
-either wired the result or said in counted terms why not. **Real set 1.6894% →
-1.6566% mean absolute error over the sixteen held-out programs, every one of them
-the right way.** Corpus mean 1.4758% → below it, with two families rebuilt:
-Structured Text 8.3291% → **0.0091%** and `unweighted_*` 4.6865% → **0.1574%**.
-
-## Closed and wired in this pass
-
-| question | what it turned out to be |
-|---|---|
-| **OQ-JSRPARAMCOST** | Every SLOPE closed. `b_multiparam_extra = 4` keyed on TOTAL operands (the row that decides it went +3,952 → −56); `per_target` 152 → 160 from an exact `8t − 280` across t = 1..50. What is left is two flat per-file constants, −184 and −280, on files of 18–256 KB. |
-| **OQ-STEXPR** | All four assumptions measured. The one-operator row is a LOOKUP per operator class, not a lookup plus a premium; the premium vanishes on all-float operands; `**` is 38 not 80; conversion is per SOURCE keyed on the source's type; the AOI-call one-time is per ROUTINE. |
-| **OQ-STEXPR-OPERATOR** | The "two unknowns from two points" blocker was a misreading of the law's own shape — it already has two regimes, so each point pins a constant alone. The six 2-operator files are now the falsification test, not the enabler. |
-| **OQ-CPTARRANGE** | Arrangement is real and the rule is exact: +4 iff EXACTLY TWO tier-1 operators precede the first tier-2 one. Six rows out of 28, and it retro-explains four points it was not fitted to. |
-| **OQ-VERIFINSTR** | `DTR = 40` (it had no weight at all, not the 16 the entry claimed) and 112 per JSR target whose SBR/RET carry operands — which also collapses OQ-JSRPARAMCOST's two file constants from 96 apart to 16. |
-| **OQ-AOIINTERNALLOGIC** | The unmeasured `_DESTINATION_ARG` exposure SIZED at 9,312 bytes (0.09%) for every classification being wrong at once, so no test batch is justified. Two real table defects fixed: five entries named the wrong operand, and five word-destination writers were missing, GSV among them at 363 real occurrences. |
-
-## Read in full and deliberately NOT wired, with the count
-
-| question | measured | why it stays unwired |
-|---|---|---|
-| **OQ-COMPOSITESCALE** | The categories ARE additive: hold logic at 0 and every D×A×M combination reads within 40 of zero. The single non-additive term is compiled logic at −24 per rung, which is −12 × (3 − 1) — the OQ-SERIESOUTPUT law at a rung width nothing else tests. | It makes `addit_*` the THIRD independent confirmation of a law all sixteen real programs reject. The `sroutc_*` grid is the decisive measurement for the whole project. |
-| **OQ-CPTREALDEST** | The ladder is exact at 7, 9 and 10 operators; `**` is +8 per extra operator, not a flat 12; the integer-destination float literal is +120 to +188 per rung and charged NOTHING. | The 5-operator base is a shape CONTRADICTION (324 all-REAL against 328 for three parenthesised/float-literal families) and every candidate fix repairs 4 rows and breaks 10. The float-literal term is not linear over three points. |
-| **OQ-CPTNARROW** | `rate_T × k − 132`, eight of ten points exact, and SINT ≠ INT, which this entry assumed. | 27 real CPT calls with a narrow operand, all in ONE program, ~1,300 bytes. |
-| **OQ-POINTIOCONN** | Optimized is FLAT across a 16x span; Enhanced −1,136 per card; Enhanced Data −852. Module names cost 8 per 8 characters with the first 8 free. | 34 of the 45 real POINT I/O cards are structurally indistinguishable between the two formats that differ by 1,136, and the sweep confounds format with adapter catalog. Two files fix that. |
-
-## The one normalisation that had to be found before anything could be read
-
-**A per-file constant of −352 runs through all 58 captured `cpt` rows from
-`gen_cpt_closeout.py`** — except the five whose logic references a LINT tag,
-which sit at 0. With that one substitution every residual in the batch is its
-baseline plus an exact multiple of 4 bytes per rung, no exceptions. Without it
-the batch looks like noise, and several readings in OQ-CPTREALDEST and
-OQ-CPTARRANGE had been contaminated by a spurious 352 from differencing against
-an older generator. The −352 itself is unexplained and has its own three-file
-probe specified.
-
-## Doc currency fixed in this pass
-
-Seven `**CAPTURE ERRORS**` blocks were stale — `scripts/capture_errors.py` only
-checks questions it routes errored rows TO, so a block whose rows have since been
-recaptured is invisible to the gate and survives as a false warning. Audited all
-19 against the gate's routing; the seven are replaced with a note recording that
-those numbers are now known to come from clean captures. Two stale claims inside
-entries were corrected: OQ-AOIINTERNALLOGIC's "11,241 instructions across 6 of
-the 16 programs" (the real figure is 38,821 across all sixteen) and
-OQ-VERIFINSTR's five siblings, which were already weighted by the time their
-files were captured, so that batch confirms them rather than measuring them.
-
 ## OQ-CAMSCALAR — CLOSED as OQ-CAMSHAPE 2026-09-11 (see
     RESOLVED_QUESTIONS.md: container shape is a non-effect, the CAM base was
     corrected 8 -> 4 with 8-byte element-block alignment, CAM_PROFILE

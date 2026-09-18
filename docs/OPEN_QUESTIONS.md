@@ -4671,3 +4671,136 @@ the matching footnote at the bottom, not inline.
     the Trials full-file number was wrong; if it reads 1,147,896 again then the
     per-program batch shares a common defect and the ladder stands.
 
+48. **OQ-TAGORDER** — new 2026-09-18, raised from outside the model: "BOOL
+    LINT INT DINT BOOL takes up different space in the controller than another
+    order." **Does the ORDER in which controller tags are declared change what
+    they cost?**
+
+    **It has never been tested. Confirmed by search, not assumed.** The only
+    order-varying files in the entire corpus are `aoidshape_order_*` — five
+    files that permute AOI DEFINITION MEMBERS — and every tag family declares
+    tags GROUPED BY TYPE: `type_bool_50tag` is 50 consecutive BOOLs,
+    `typesweep_*` uses one fixed pool, `array_*` and `udtslot_*` the same. Not
+    one file in 3,076 captured rows holds a mixed tag multiset and varies only
+    the order.
+
+    **The one order result that exists says order is free — at a DIFFERENT
+    SCOPE.** `aoidshape_order_{boolsfirst,dintsfirst,alternating,pairs,blocks5}`
+    permute the same BOOL/DINT multiset five ways inside an AOI definition and
+    all five read **19,672 actual, +12 delta, byte-identical**. That is a real
+    measurement about MEMBERS OF ONE PACKED STRUCTURE. Controller tags are
+    separately allocated objects. The first does not answer the second and must
+    not be cited as if it does.
+
+    **Real programs look nothing like the corpus on this axis.** The declared
+    type CHANGES between consecutive controller tags **33–60% of the time**
+    (median ~52%) across the sixteen; generated files are ~0%. Dominant
+    transitions: BOOL→DINT 1,297, DINT→BOOL 1,249, then REAL↔DINT and
+    BOOL↔REAL. BOOL and DINT together are **58% of the 31,532 real tags**.
+
+    **One correction to the hypothesis as raised, and it narrows the target.**
+    8-byte types are essentially absent from the real set: **2 LINT tags out of
+    31,532**, zero LREAL, zero ULINT. An alignment effect at LINT boundaries
+    cannot be the real-file residual whatever it does in principle. The version
+    that matters is BOOL/DINT/REAL interleaving.
+
+    **WHY THIS SURVIVES THE TEST THAT KILLED EVERY OTHER TAG HYPOTHESIS.**
+    2026-09-18 ruled out a per-tag constant at any value, a per-BOOL-tag
+    constant, and a proportional scale on tag bytes — all three move the
+    aggregate bias and leave the spread untouched. **An order effect is
+    invisible to all three by construction**: it changes what a file costs
+    without changing any count, so no per-unit or per-category correction can
+    express it and no correlation against tag count can detect it. That day's
+    conclusion should be read as "tags are not wrong by a scalar", NOT "tags are
+    not wrong".
+
+    It also fits the one signal that did survive: a 1% proportional increase on
+    tag bytes cut the real spread 1.037 → 0.813, the only thing measured that
+    day which moved spread rather than bias. A per-file order effect looks
+    exactly like that from outside — roughly proportional to tag count, but
+    varying file to file with how the engineer happened to declare them.
+
+    **SPEC — 8 files, one fixed multiset, order the only variable.** Same design
+    as `aoidshape_order_*`, one scope up. 25 BOOL + 25 DINT controller tags,
+    identical names and name lengths, nothing else in the file:
+
+      1. `tagorder_grouped_bd`   — 25 BOOL then 25 DINT
+      2. `tagorder_grouped_db`   — 25 DINT then 25 BOOL
+      3. `tagorder_alternating`  — B D B D … (49 transitions)
+      4. `tagorder_pairs`        — B B D D B B D D …
+      5. `tagorder_blocks5`      — BBBBB DDDDD …
+      6. `tagorder_realchurn`    — the literal declaration sequence of the first
+         50 controller tags of a real export, types transplanted, so the corpus
+         finally contains one file with real churn
+
+    Plus a three-type arm matching real composition (BOOL/DINT/REAL 33/25/11):
+
+      7. `tagorder3_grouped`     — grouped by type
+      8. `tagorder3_realchurn`   — real transition sequence
+
+    **Read it by differencing WITHIN the set: all eight carry identical tag
+    multisets, so any spread between them IS the order effect and nothing
+    else** — no baseline, no engine constant, no other family involved. If they
+    land together, order is free at tag scope too and this closes in one capture
+    round. If they spread, the per-transition cost falls straight out of file 3
+    (49 transitions) against file 1 (1 transition).
+
+    **Priority: HIGH.** It touches 58% of real tags, it is the only untested
+    dimension found that a scalar correction cannot express, and it is eight
+    files.
+
+
+---
+
+# SECOND PASS: THE IN-DEPTH REVIEW, 2026-09-18
+
+The table above was a triage — every entry recomputed, each given a status. This
+pass went through the ones it left open one at a time, re-derived each question's
+numbers from the captures on disk rather than from what the entry claimed, and
+either wired the result or said in counted terms why not. **Real set 1.6894% →
+1.6566% mean absolute error over the sixteen held-out programs, every one of them
+the right way.** Corpus mean 1.4758% → below it, with two families rebuilt:
+Structured Text 8.3291% → **0.0091%** and `unweighted_*` 4.6865% → **0.1574%**.
+
+## Closed and wired in this pass
+
+| question | what it turned out to be |
+|---|---|
+| **OQ-JSRPARAMCOST** | Every SLOPE closed. `b_multiparam_extra = 4` keyed on TOTAL operands (the row that decides it went +3,952 → −56); `per_target` 152 → 160 from an exact `8t − 280` across t = 1..50. What is left is two flat per-file constants, −184 and −280, on files of 18–256 KB. |
+| **OQ-STEXPR** | All four assumptions measured. The one-operator row is a LOOKUP per operator class, not a lookup plus a premium; the premium vanishes on all-float operands; `**` is 38 not 80; conversion is per SOURCE keyed on the source's type; the AOI-call one-time is per ROUTINE. |
+| **OQ-STEXPR-OPERATOR** | The "two unknowns from two points" blocker was a misreading of the law's own shape — it already has two regimes, so each point pins a constant alone. The six 2-operator files are now the falsification test, not the enabler. |
+| **OQ-CPTARRANGE** | Arrangement is real and the rule is exact: +4 iff EXACTLY TWO tier-1 operators precede the first tier-2 one. Six rows out of 28, and it retro-explains four points it was not fitted to. |
+| **OQ-VERIFINSTR** | `DTR = 40` (it had no weight at all, not the 16 the entry claimed) and 112 per JSR target whose SBR/RET carry operands — which also collapses OQ-JSRPARAMCOST's two file constants from 96 apart to 16. |
+| **OQ-AOIINTERNALLOGIC** | The unmeasured `_DESTINATION_ARG` exposure SIZED at 9,312 bytes (0.09%) for every classification being wrong at once, so no test batch is justified. Two real table defects fixed: five entries named the wrong operand, and five word-destination writers were missing, GSV among them at 363 real occurrences. |
+
+## Read in full and deliberately NOT wired, with the count
+
+| question | measured | why it stays unwired |
+|---|---|---|
+| **OQ-COMPOSITESCALE** | The categories ARE additive: hold logic at 0 and every D×A×M combination reads within 40 of zero. The single non-additive term is compiled logic at −24 per rung, which is −12 × (3 − 1) — the OQ-SERIESOUTPUT law at a rung width nothing else tests. | It makes `addit_*` the THIRD independent confirmation of a law all sixteen real programs reject. The `sroutc_*` grid is the decisive measurement for the whole project. |
+| **OQ-CPTREALDEST** | The ladder is exact at 7, 9 and 10 operators; `**` is +8 per extra operator, not a flat 12; the integer-destination float literal is +120 to +188 per rung and charged NOTHING. | The 5-operator base is a shape CONTRADICTION (324 all-REAL against 328 for three parenthesised/float-literal families) and every candidate fix repairs 4 rows and breaks 10. The float-literal term is not linear over three points. |
+| **OQ-CPTNARROW** | `rate_T × k − 132`, eight of ten points exact, and SINT ≠ INT, which this entry assumed. | 27 real CPT calls with a narrow operand, all in ONE program, ~1,300 bytes. |
+| **OQ-POINTIOCONN** | Optimized is FLAT across a 16x span; Enhanced −1,136 per card; Enhanced Data −852. Module names cost 8 per 8 characters with the first 8 free. | 34 of the 45 real POINT I/O cards are structurally indistinguishable between the two formats that differ by 1,136, and the sweep confounds format with adapter catalog. Two files fix that. |
+
+## The one normalisation that had to be found before anything could be read
+
+**A per-file constant of −352 runs through all 58 captured `cpt` rows from
+`gen_cpt_closeout.py`** — except the five whose logic references a LINT tag,
+which sit at 0. With that one substitution every residual in the batch is its
+baseline plus an exact multiple of 4 bytes per rung, no exceptions. Without it
+the batch looks like noise, and several readings in OQ-CPTREALDEST and
+OQ-CPTARRANGE had been contaminated by a spurious 352 from differencing against
+an older generator. The −352 itself is unexplained and has its own three-file
+probe specified.
+
+## Doc currency fixed in this pass
+
+Seven `**CAPTURE ERRORS**` blocks were stale — `scripts/capture_errors.py` only
+checks questions it routes errored rows TO, so a block whose rows have since been
+recaptured is invisible to the gate and survives as a false warning. Audited all
+19 against the gate's routing; the seven are replaced with a note recording that
+those numbers are now known to come from clean captures. Two stale claims inside
+entries were corrected: OQ-AOIINTERNALLOGIC's "11,241 instructions across 6 of
+the 16 programs" (the real figure is 38,821 across all sixteen) and
+OQ-VERIFINSTR's five siblings, which were already weighted by the time their
+files were captured, so that batch confirms them rather than measuring them.
