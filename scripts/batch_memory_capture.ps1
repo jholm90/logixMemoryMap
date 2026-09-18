@@ -89,6 +89,7 @@
 param(
     [Parameter(Mandatory = $true)][string]$ConvertLog,
     [string]$ManifestPath = (Join-Path $PSScriptRoot "..\samples\manifest.csv"),
+    [string]$CapturesPath = (Join-Path $PSScriptRoot "..\samples\captures.csv"),
     [string]$HandoffPath = (Join-Path $PSScriptRoot "ahk_runtime\ahk_handoff.csv"),
     [string]$OpenRequestPath = (Join-Path $PSScriptRoot "ahk_runtime\open_request.txt"),
     [int]$TimeoutSeconds = 1200,
@@ -179,13 +180,30 @@ function Get-RelPath($fullPath) {
     ($parts[$idx..($parts.Length - 1)]) -join '/'
 }
 
-$ManifestColumns = "sample_id,description,category,l5x_path,predicted_bytes,actual_bytes,delta,delta_pct," +
-    "controller_model,firmware_rev,date_tested,notes,error_count,warning_count,message_value,window_title,error_log"
+# THIS SCRIPT NO LONGER WRITES manifest.csv.
+#
+# It used to Export-Csv the whole ~3,600-row manifest on every run, while the
+# generators rewrote the same file from the other machine. Two whole-file
+# rewrites of one file from two places is a guaranteed conflict on every pull,
+# and it cost more time than the measurements did. The columns split cleanly by
+# who writes them, so they now live in two files and neither writer touches the
+# other's:
+#
+#   samples/manifest.csv   the SPEC  -- generators only
+#   samples/captures.csv   the RESULT -- this script only
+#
+# delta/delta_pct are gone rather than moved: a stored delta goes stale the
+# moment any sizing constant changes, every reader recomputes it live, and it
+# was a derived value sitting in the one file two writers fought over.
+$CaptureColumns = "sample_id,actual_bytes,controller_model,firmware_rev,date_tested," +
+    "notes,error_count,warning_count,message_value,window_title,error_log"
 
-if (-not (Test-Path $ManifestPath)) {
-    $ManifestColumns | Out-File -FilePath $ManifestPath -Encoding utf8
+if (-not (Test-Path $CapturesPath)) {
+    $CaptureColumns | Out-File -FilePath $CapturesPath -Encoding utf8
 }
+# The spec side is still READ, to resolve sample_id and category for each file.
 $manifest = @(Import-Csv $ManifestPath)
+$captures = @(Import-Csv $CapturesPath)
 $alreadyLogged = @{}
 # 2026-08-25: "any test that fails for window title mismatch should
 # be rerun... make sure you can rerun those tests next time without me
@@ -198,11 +216,16 @@ $alreadyLogged = @{}
 # this script runs against the same $ConvertLog -- no ACD rebuild needed,
 # since convert_log.csv already has status=ok for it (only the capture
 # READ was suspect, not the conversion).
-$manifest | Where-Object { $_.actual_bytes -and ($_.notes -notmatch 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC') } |
-    ForEach-Object { $alreadyLogged[$_.l5x_path] = $true }
+# actual_bytes and notes are CAPTURE columns, so these scans read captures.csv.
+# It is keyed on sample_id and carries no l5x_path, so each hit is resolved
+# back to a path through the spec side.
+$pathById = @{}
+$manifest | ForEach-Object { $pathById[$_.sample_id] = $_.l5x_path }
+$captures | Where-Object { $_.actual_bytes -and ($_.notes -notmatch 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC') } |
+    ForEach-Object { if ($pathById.ContainsKey($_.sample_id)) { $alreadyLogged[$pathById[$_.sample_id]] = $true } }
 $mismatchFlagged = @{}
-$manifest | Where-Object { $_.notes -match 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC' } |
-    ForEach-Object { $mismatchFlagged[$_.l5x_path] = $true }
+$captures | Where-Object { $_.notes -match 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC' } |
+    ForEach-Object { if ($pathById.ContainsKey($_.sample_id)) { $mismatchFlagged[$pathById[$_.sample_id]] = $true } }
 
 $rows = Import-Csv $ConvertLog | Where-Object { $_.status -eq "ok" }
 $remaining = $rows | Where-Object { -not $alreadyLogged.ContainsKey((Get-RelPath $_.l5x_path)) }
@@ -245,7 +268,7 @@ foreach ($row in $remaining) {
     $relPath = Get-RelPath $row.l5x_path
     $meta = Get-SampleIdAndDescription $row.l5x_path
     $category = Get-Category $row.l5x_path
-    $existing = $manifest | Where-Object { $_.l5x_path -eq $relPath } | Select-Object -First 1
+    $existing = $captures | Where-Object { $_.sample_id -eq $meta.Id } | Select-Object -First 1
     $fileSw = [System.Diagnostics.Stopwatch]::StartNew()
 
     Write-Host ""
@@ -434,15 +457,14 @@ foreach ($row in $remaining) {
             $existing | Add-Member -NotePropertyName error_log -NotePropertyValue $errorLog
         }
     } else {
-        $manifest += [pscustomobject]@{
-            sample_id = $meta.Id; description = $meta.Desc; category = $category; l5x_path = $relPath
-            predicted_bytes = ""; actual_bytes = $blocksUsed; delta = $delta; delta_pct = $deltaPct
+        $captures += [pscustomobject]@{
+            sample_id = $meta.Id; actual_bytes = $blocksUsed
             controller_model = $declaredProc; firmware_rev = $declaredFw; date_tested = $date; notes = $notes
             error_count = $errorCount; warning_count = $warningCount; message_value = $messageValue
             window_title = $windowTitle; error_log = $errorLog
         }
     }
-    $manifest | Export-Csv -Path $ManifestPath -NoTypeInformation -Encoding utf8
+    $captures | Export-Csv -Path $CapturesPath -NoTypeInformation -Encoding utf8
     $fileSw.Stop()
     $fileSeconds = [math]::Round($fileSw.Elapsed.TotalSeconds, 1)
     $fileTimes += $fileSeconds

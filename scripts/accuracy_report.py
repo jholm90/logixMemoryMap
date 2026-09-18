@@ -60,6 +60,13 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+# The manifest is split in two so that the generators and the capture
+# tooling never write the same file: samples/manifest.csv holds the spec,
+# samples/captures.csv the results. load_manifest() joins them back into
+# the row shape this script already expects.
+sys.path.insert(0, str(REPO_ROOT / "src"))
+from sample_gen.manifest_store import load_manifest  # noqa: E402
+
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from l5x_memory_analyzer.sizing.constants import load_memory_model  # noqa: E402
@@ -100,8 +107,7 @@ def is_valid_capture(row: dict, strict: bool = False) -> tuple[bool, str]:
 
 def collect(category_filter: str | None = None, strict: bool = False) -> tuple[list[dict], collections.Counter]:
     model = _MODEL
-    with open(MANIFEST, encoding="utf-8-sig", newline="") as f:
-        rows = list(csv.DictReader(f))
+    rows = load_manifest()
 
     results: list[dict] = []
     excluded: collections.Counter = collections.Counter()

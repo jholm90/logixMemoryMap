@@ -5023,36 +5023,21 @@ the matching footnote at the bottom, not inline.
     entry's own arithmetic puts the whole untested population at about 8,700
     bytes against 653,678.
 
-    **CAPTURED 2026-09-18, and the prediction was WRONG on one of the two.**
+    **PRODUCED / CONSUMED TAGS ARE CLOSED, 2026-09-18 — FORCE-CLOSED, NOT
+    SOLVED.** Produced tags do carry an unmodeled +1,072 bytes each, and it is
+    not worth another file: they are **0.11% of real tags**, Consumed 0.06%,
+    and the bulk of what such a tag costs is already charged through its UDT
+    definition and its module. The measurement and the reasoning are in
+    `RESOLVED_QUESTIONS.md`. **Do not reopen this and do not spec another
+    produced/consumed file.**
 
-    | file | predicted | actual | delta | per tag |
-    |---|---:|---:|---:|---:|
-    | `prodcons_base` | 22,648 | 22,640 | −8 | exact |
-    | `prodcons_consumed` | 22,648 | 22,640 | −8 | **SUSPECT — see below** |
-    | `prodcons_produced` | 22,648 | **44,080** | **+21,432** | **+1,072** |
+    **CAPTURE ERRORS: 1 row(s)** — `prodcons_consumed`, `error_count = 20`,
+    one per Consumed tag. It names this entry in its manifest description so
+    it routes here, but the question it belonged to is closed; the row is
+    suspect, is not used in either direction, and no re-test is planned. See
+    the force-close in `RESOLVED_QUESTIONS.md`.
 
-    **A Produced tag costs 1,072 bytes more than the same tag declared Base.**
-    21,440 over 20 tags, exactly, against a total the engine puts at 22,648 —
-    it is under-predicting that file by **48.6%**. The `<ProduceInfo>` block
-    carries a cost the model has no term for at all.
-
-    **NOT WIRED, and one file is why.** 20 tags in one file gives a rate, not
-    a shape: per-tag, per-file and per-produced-connection are not separated,
-    and `ProduceCount` was fixed at 1 throughout so the connection-count
-    dimension is untouched. **SPEC, 4 files:** `prodcons_n{05,10,20,40}` at a
-    fixed `ProduceCount=1`, which reads the slope directly; plus
-    `prodcons_pc{2,4}` holding the tag count at 20 and moving `ProduceCount`,
-    which says whether the cost is per tag or per consumer connection.
-
-    **CAPTURE ERRORS: 1 row(s)** — `prodcons_consumed` captured with
-    `error_count = 20` — one error per Consumed tag, which is what a Consumed
-    tag does when the producing controller it names is not in the project.
-    Its `actual_bytes` reads identical to the Base control, and that is
-    exactly what would happen if all 20 tags failed to build and never reached
-    the controller. **The row is suspect, not wrong, and may not be used
-    either way**: it is not evidence that Consumed is free, and it is not
-    evidence that it is not. Re-testing it needs a producing module in the
-    file, which is a different and larger shape than this batch was built for.
-
-    So the coverage claim is **partly** closed: 2-D arrays free, Produced
-    measured and unmodeled, Consumed still untested.
+    The 2-D array thread from this entry IS resolved on its own terms:
+    subscripting a 2-D array costs 0, the declaration costs 1,688 measured
+    against 1,684 predicted. That leaves no uncovered real tag shape worth a
+    capture slot.

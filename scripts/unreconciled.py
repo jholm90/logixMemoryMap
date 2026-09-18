@@ -26,6 +26,13 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+# The manifest is split in two so that the generators and the capture
+# tooling never write the same file: samples/manifest.csv holds the spec,
+# samples/captures.csv the results. load_manifest() joins them back into
+# the row shape this script already expects.
+sys.path.insert(0, str(REPO_ROOT / "src"))
+from sample_gen.manifest_store import load_manifest  # noqa: E402
+
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from l5x_memory_analyzer.parser.export_scope import (  # noqa: E402
@@ -57,7 +64,7 @@ def main() -> int:
     args = ap.parse_args()
 
     model = load_memory_model()
-    rows = list(csv.DictReader(open(MANIFEST, newline="", encoding="utf-8-sig")))
+    rows = load_manifest()
 
     out: list[dict] = []
     for r in rows:

@@ -16,12 +16,14 @@ from l5x_memory_analyzer.sizing.report import build_report
 from sample_gen.lint import lint_or_raise
 
 REPO_ROOT = Path(__file__).parent.parent.parent
-MANIFEST_PATH = REPO_ROOT / "samples" / "manifest.csv"
-MANIFEST_COLUMNS = (
-    "sample_id,description,category,l5x_path,predicted_bytes,actual_bytes,"
-    "delta,delta_pct,controller_model,firmware_rev,date_tested,notes,"
-    "error_count,warning_count,message_value,window_title,error_log"
-).split(",")
+from sample_gen.manifest_store import (  # noqa: E402
+    MANIFEST_PATH, SPEC_COLUMNS, load_manifest, write_specs,
+)
+
+# The manifest holds the SPEC only -- what a sample is. Results live in
+# samples/captures.csv and are written solely by the capture tooling, so the
+# generators and that tooling never write the same file. See manifest_store.
+MANIFEST_COLUMNS = list(SPEC_COLUMNS)
 
 
 def predicted_bytes(l5x_text: str) -> int:
@@ -72,47 +74,25 @@ def write_sample_unmodeled(l5x_text: str, out_path: Path) -> None:
     out_path.write_text(l5x_text, encoding="utf-8")
 
 
-def append_manifest_row(sample_id: str, description: str, category: str, l5x_path: Path, bytes_predicted: int) -> None:
-    """Upsert keyed on sample_id: regenerating a sample updates its existing
-    row (description/category/predicted_bytes) in place rather than piling up
-    a duplicate, so any actual_bytes already logged against that sample_id
-    survives a regeneration untouched."""
+def append_manifest_row(sample_id: str, description: str, category: str,
+                        l5x_path: Path, bytes_predicted: int) -> None:
+    """Upsert the SPEC row for one sample, keyed on sample_id.
+
+    Regenerating a sample updates its description, category, path and
+    predicted_bytes in place rather than piling up a duplicate. It cannot
+    disturb any capture logged against that sample_id, because captures are a
+    different file this function never opens -- which is the whole point of
+    the split.
+    """
     rel_path = str(l5x_path.relative_to(REPO_ROOT))
-    rows = []
-    header = list(MANIFEST_COLUMNS)
-    if MANIFEST_PATH.exists():
-        # utf-8-SIG, not utf-8: the capture tooling is PowerShell Export-Csv,
-        # which writes UTF-8 with a BOM. Reading it as plain utf-8 pulls the
-        # BOM into the first header cell, and the write below then re-quotes
-        # that mangled cell -- the header stops being "sample_id" and every
-        # DictReader consumer (scripts/audit_confidence.py) fails with a
-        # KeyError. Round-tripping BOM-aware keeps the file byte-compatible
-        # with the tool that also writes it.
-        with open(MANIFEST_PATH, newline="", encoding="utf-8-sig") as f:
-            all_rows = list(csv.reader(f))
-            if all_rows:
-                header = all_rows[0]     # the file's own header wins
-            rows = all_rows[1:]
-
-    updated = False
-    for row in rows:
-        if row and row[0] == sample_id:
-            row[1:5] = [description, category, rel_path, str(bytes_predicted)]
-            updated = True
+    rows = [{k: r[k] for k in SPEC_COLUMNS} for r in load_manifest()]
+    row = {"sample_id": sample_id, "description": description, "category": category,
+           "l5x_path": rel_path, "predicted_bytes": str(bytes_predicted)}
+    for i, existing in enumerate(rows):
+        if existing["sample_id"] == sample_id:
+            rows[i] = row
             break
-    if not updated:
-        # Width comes from the header, not a hardcoded count: the capture
-        # tooling has added columns before (error_log, 2026-09-10) and a
-        # fixed-length literal here silently writes short rows when it does.
-        row = [sample_id, description, category, rel_path, str(bytes_predicted)]
-        rows.append(row + [""] * (len(header) - len(row)))
+    else:
+        rows.append(row)
+    write_specs(rows)
 
-    with open(MANIFEST_PATH, "w", newline="", encoding="utf-8-sig") as f:
-        # QUOTE_ALL matches the convention the capture tooling
-        # writes the file in (every field double-quoted) -- csv.writer's
-        # QUOTE_MINIMAL default reformatted every unchanged row on the
-        # next regeneration, producing a spurious full-file diff with zero
-        # actual data change (2026-08-24, caught reviewing a real diff).
-        writer = csv.writer(f, quoting=csv.QUOTE_ALL)
-        writer.writerow(header)
-        writer.writerows(rows)

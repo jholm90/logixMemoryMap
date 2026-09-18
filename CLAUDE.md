@@ -187,6 +187,45 @@ Run this sequence in order, without being asked:
 
 Only then ask about pushing.
 
+## The sample bookkeeping is SPLIT. Two files, two writers, no merge battle.
+`samples/manifest.csv` is the **SPEC** — `sample_id, description, category,
+l5x_path, predicted_bytes` — and only the generators write it.
+`samples/captures.csv` is the **RESULT** — `actual_bytes`, the controller and
+firmware, `date_tested`, `notes` and the four error/warning columns — and only
+`batch_memory_capture.ps1` writes it. Neither writer opens the other's file.
+
+Read them with `load_manifest()` from `src/sample_gen/manifest_store.py`,
+which joins on `sample_id` and returns the row shape every script already
+expects. Never open `samples/manifest.csv` directly to read a capture value.
+
+`delta` and `delta_pct` are **deleted, not moved**. A stored delta goes stale
+the moment any sizing constant changes, this file already forbids trusting
+one, and every reader recomputes live — it was a derived value sitting in the
+one place two writers fought over.
+
+Drawn 2026-09-18: both producers used to rewrite all ~3,600 rows of one file
+on every run, from two different machines, which conflicts on literally every
+pull. Editing that file IS the purpose of a capture run, so the conflict was
+never the user's error. `.gitattributes` marks both files `merge=union` as a
+backstop for two appends racing, and `load_manifest()` collapses any duplicate
+`sample_id`, last row winning.
+
+## A feature below the noise floor does not get a capture slot
+**Roughly 0.5% of real tags or real instructions is the floor.** Under it, a
+question is closed without being solved, however cleanly it would measure. A
+precise number on a negligible feature is still a day not spent on the
+residual, and the corpus has repeatedly absorbed days this way.
+
+Force-closed on this basis 2026-09-18: **produced and consumed tags** (0.11%
+and 0.06% of real tags). A Produced tag really does carry +1,072 bytes the
+model does not charge — measured, not guessed — and it is still closed,
+because the entire real population of them is on the order of a thousand
+bytes against a 653,678-byte residual, and most of what such a tag costs is
+already charged through its UDT definition and its module. **Do not reopen it
+and do not spec another file for it.** See `RESOLVED_QUESTIONS.md`.
+
+Apply the floor BEFORE building, not after capturing.
+
 ## Cost of measurement
 The corpus is over 2,500 captured rows. A full recompute re-parses every one of
 them and takes minutes; a scoped one takes seconds. **Use

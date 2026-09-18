@@ -37,6 +37,13 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
+# The manifest is split in two so that the generators and the capture
+# tooling never write the same file: samples/manifest.csv holds the spec,
+# samples/captures.csv the results. load_manifest() joins them back into
+# the row shape this script already expects.
+sys.path.insert(0, str(REPO / "src"))
+from sample_gen.manifest_store import load_manifest  # noqa: E402
+
 sys.path.insert(0, str(REPO / "src"))
 
 from sample_gen.lint import lint_l5x  # noqa: E402
@@ -64,8 +71,7 @@ def last_status() -> dict[str, str]:
 
 
 def manifest_rows() -> dict[str, dict]:
-    with open(MANIFEST, encoding="utf-8-sig", newline="") as handle:
-        return {row["sample_id"]: row for row in csv.DictReader(handle)}
+    return {row["sample_id"]: row for row in load_manifest()}
 
 
 def main() -> int:

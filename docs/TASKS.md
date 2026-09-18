@@ -62,7 +62,7 @@ non-exact results are a known law that real files still reject, and a
 single-point rate that cannot separate per-tag from per-file. Real set
 unchanged at mean 1.5607%.
 
-### NEXT BATCH — SPEC ONLY, 9 files, not generated
+### NEXT BATCH — SPEC ONLY, 5 files, not generated
 
 Two questions the 2026-09-18 capture opened or left open, and nothing else.
 Every file 1756-L81E v35. Ask before generating.
@@ -80,19 +80,8 @@ law is excluded by construction. This is the one term that could still be
 hiding inside every instruction weight in the model, because every
 calibration file in the corpus is one instruction per rung.
 
-**Group 2 — the Produced tag cost (4 files).** `prodcons_produced` is the
-only genuinely new unmodeled cost this batch found: **+1,072 bytes per tag,
-48.6% under-predicted**, and one file cannot say what carries it.
-- `prodcons_n{05,10,20,40}` — 5, 10, 20 and 40 Produced tags of the same UDT
-  at `ProduceCount=1`. Four counts read the slope directly and separate a
-  per-tag rate from a per-file one.
-- If the slope is flat, `prodcons_pc{2,4}` holds the tag count at 20 and
-  moves `ProduceCount` to 2 and 4, which says whether the cost is per tag or
-  per consumer connection.
-
-**NOT in this batch, deliberately.** Consumed is untestable without a
-producing module in the project, which is a larger shape than this answers;
-its one row is suspect and stays flagged rather than being guessed at. The
+**Produced/Consumed is CLOSED and will not be worked.** See
+`RESOLVED_QUESTIONS.md`. The
 `srout_branch_*` and `srout_mixed/same` files that test `OQ-SERIESOUTPUT`
 candidates C and D already exist and are uncaptured — they belong in the same
 Studio session but need no generation.

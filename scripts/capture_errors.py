@@ -49,6 +49,13 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+# The manifest is split in two so that the generators and the capture
+# tooling never write the same file: samples/manifest.csv holds the spec,
+# samples/captures.csv the results. load_manifest() joins them back into
+# the row shape this script already expects.
+sys.path.insert(0, str(REPO_ROOT / "src"))
+from sample_gen.manifest_store import load_manifest  # noqa: E402
+
 MANIFEST = REPO_ROOT / "samples" / "manifest.csv"
 RESOLVED_QUESTIONS = REPO_ROOT / "docs" / "RESOLVED_QUESTIONS.md"
 OWNERS = REPO_ROOT / "samples" / "oq_owners.csv"
@@ -235,8 +242,7 @@ def main(argv: list[str] | None = None) -> int:
                     help="print every offending sample_id, not just the counts")
     args = ap.parse_args(argv)
 
-    with open(MANIFEST, newline="", encoding="utf-8-sig") as f:
-        rows = list(csv.DictReader(f))
+    rows = load_manifest()
 
     errored = _errored_rows(rows)
     unconverted = _conversion_failures(rows)

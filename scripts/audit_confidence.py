@@ -34,6 +34,13 @@ from pathlib import Path
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+# The manifest is split in two so that the generators and the capture
+# tooling never write the same file: samples/manifest.csv holds the spec,
+# samples/captures.csv the results. load_manifest() joins them back into
+# the row shape this script already expects.
+sys.path.insert(0, str(REPO_ROOT / "src"))
+from sample_gen.manifest_store import load_manifest  # noqa: E402
+
 MODEL = REPO_ROOT / "src" / "l5x_memory_analyzer" / "sizing" / "memory_model.yaml"
 MANIFEST = REPO_ROOT / "samples" / "manifest.csv"
 
@@ -57,7 +64,7 @@ def _clean_capture(row: dict) -> bool:
 
 def main() -> int:
     model = yaml.safe_load(MODEL.read_text(encoding="utf-8"))
-    rows = {r["sample_id"]: r for r in csv.DictReader(MANIFEST.open(encoding="utf-8-sig"))}
+    rows = {r["sample_id"]: r for r in load_manifest()}
 
     stale: list[tuple[str, str]] = []
     for type_name, spec in (model.get("predefined_structures") or {}).items():

@@ -4247,3 +4247,34 @@ committed: the control was originally grouped in ascending width order, which
 reproduced `narrowfirst` exactly and would have spent a capture slot on a
 duplicate.
 
+
+## Produced / Consumed tags — FORCE-CLOSED as below the noise floor
+
+**Closed 2026-09-18 by decision, not by solving it, and that distinction is
+the point.** A Produced tag does cost more than the model charges. It is not
+worth another capture slot, and no further file may be specced for it.
+
+**What was measured.** `prodcons_{base,produced,consumed}`, 20 tags of one UDT
+each. Base captured at 22,640 against 22,648 predicted (−8, the universal
+band). **Produced captured at 44,080 against 22,648 — +21,432, a 48.6%
+under-prediction, exactly 1,072 bytes per tag.** The `<ProduceInfo>` block
+carries a cost the model has no term for.
+
+**Why it is closed anyway.** Produced tags are **0.11% of the 31,532 tags in
+the sixteen real programs** and Consumed 0.06%. The headline residual is
+653,678 bytes; at 1,072 each, the entire real Produced population is on the
+order of a thousand bytes. Most of what such a tag costs is already charged —
+through the UDT definition that types it and through the module that carries
+the connection — so the unmodeled part is the remainder, not the tag.
+
+**The Consumed row is suspect and stays that way.** `prodcons_consumed`
+captured with `error_count = 20`, one per tag, which is what a Consumed tag
+does when the producing controller it names is absent from the project. It
+read identical to the Base control, which is equally consistent with all 20
+tags never reaching the controller. Testing it properly needs a producer
+module in the file. That will not be built.
+
+**The general rule this established**, now in `CLAUDE.md`: a feature below
+roughly 0.5% of real tags or real instructions does not get a capture slot,
+however cleanly it measures. A precise number on a negligible feature is
+still a day not spent on the residual.
