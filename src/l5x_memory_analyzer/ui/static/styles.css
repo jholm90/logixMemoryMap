@@ -172,6 +172,7 @@ body {
   background: var(--panel-bg);
   overflow: hidden;
 }
+#panel-treemap { overflow: hidden; }
 #panel-treemap.split-mode #treemap-main { flex: 1 1 50%; }
 #panel-treemap.split-mode #details-dock { display: flex; flex: 1 1 50%; }
 
@@ -199,7 +200,7 @@ body {
 #list-table-dock { font-size: 0.78rem; }
 
 #breadcrumb {
-  padding: 0.4rem 1rem;
+  padding: 0.4rem 0;
   font-size: 0.8rem;
   color: var(--text-dim);
 }
@@ -240,7 +241,13 @@ body {
 .sibling-item:hover .sibling-bytes { color: #fff; opacity: 0.85; }
 
 main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
-.panel { display: none; height: 100%; }
+/* A panel scrolls its OWN content. With height:100% and no overflow the
+   scroll area was whatever was left after the toolbar, budget bar and nav
+   row, so a long list ran past the bottom and its scrollbar stopped short
+   of the real end of the content. min-height:0 is required for that to
+   work inside the flex column -- without it the panel refuses to shrink
+   below its content and clips instead of scrolling. */
+.panel { display: none; height: 100%; min-height: 0; overflow: auto; }
 .panel.active { display: block; }
 
 /* 2026-08-27: the treemap panel now splits in half on demand (the
@@ -379,7 +386,20 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
 #errors-footer.hidden { display: none; }
 
 /* ---- navigation row: Back button beside the breadcrumb ---- */
-#nav-row { display: flex; align-items: center; gap: 8px; }
+/* The nav row sits OUTSIDE <main>, so it never picked up main's 1rem side
+   gutter: the Back arrow ran into the window edge and the level stats ran
+   off the other one. Matching main's padding puts the arrow's left edge in
+   line with the treemap's left edge, and keeps the stats inside the same
+   bounds as the bar they describe. #breadcrumb drops its own horizontal
+   padding so the trail is not indented twice. */
+#nav-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  box-sizing: border-box;
+}
 #nav-row #breadcrumb { flex: 1 1 auto; min-width: 0; }
 /* Back reads as part of the breadcrumb trail, not a toolbar control --
    it navigates the same path the crumbs do, so it matches the crumbs'
@@ -581,6 +601,7 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
   flex: 0 0 auto;
   margin-left: auto;
   padding-left: 1rem;
+  padding-right: 0;
   display: flex;
   align-items: baseline;
   gap: 0.9rem;
@@ -591,3 +612,36 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
 #level-stats .stat-label { opacity: 0.7; margin-right: 0.3rem; }
 #level-stats .stat-value { color: var(--text, inherit); font-variant-numeric: tabular-nums; }
 #level-stats .stat-value.stat-size { font-weight: 600; }
+
+/* ---- list: % of Parent / % of Controller as bars ----
+   Same geometry as .conf-cell / .conf-bar-sm beside them, so the three
+   proportion columns share one visual grammar instead of one being a bar
+   and the others bare numerals. */
+.pct-cell { display: flex; align-items: center; gap: 0.4rem; }
+.pct-bar {
+  flex: 0 0 auto;
+  width: 68px;
+  height: 5px;
+  border-radius: 2px;
+  background: var(--bar-track, rgba(127, 127, 127, 0.25));
+  overflow: hidden;
+}
+.pct-fill { display: block; height: 100%; }
+.pct-fill.pct-parent { background: var(--accent, #4a9eff); }
+/* Deliberately a different hue from % of parent: the two numbers answer
+   different questions and a reader must not blend them. */
+.pct-fill.pct-controller { background: var(--accent-2, #9b7fe0); }
+.pct-num { font-variant-numeric: tabular-nums; font-size: 0.78rem; }
+
+/* ---- free controller space ("Show Empty Space") ----
+   Deliberately unlike every other tile: this is the one block that is not
+   memory the project uses, and it must never be mistaken for a category
+   that could be optimised away. Hatched and desaturated rather than a
+   flat colour from the category palette. */
+.tile-empty-space rect,
+rect.tile-empty-space {
+  fill: var(--bar-track, rgba(127, 127, 127, 0.22));
+  stroke: var(--border, #333);
+  stroke-dasharray: 4 3;
+}
+.pct-fill.pct-empty { background: var(--text-dim, #888); }

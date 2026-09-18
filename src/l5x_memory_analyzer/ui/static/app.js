@@ -9,6 +9,7 @@
 // (anything else) instead.
 
 let REPORT = null;
+let SHOW_EMPTY = false;  // "Show Empty Space": free controller memory as a tile
 let CURRENT_NODE = null; // node currently shown as the treemap root
 let NODE_STACK = [];     // ancestors of CURRENT_NODE, for the breadcrumb
 let SORT_STATE = { key: "bytes", dir: -1 };
@@ -142,6 +143,7 @@ function renderCurrentLevel(recordHistory = true) {
   renderBreadcrumb();
   renderNodeActions();
   renderLevelStats();
+  syncEmptySpaceControl();
   renderTreemap();
   renderList();
   renderTypeSummary();
@@ -277,11 +279,29 @@ function confidenceBreakdown(node) {
       }
       return;
     }
+    // `basis` is weakest()-of-subtree. Charging a node's WHOLE byte count
+    // to it is wrong whenever the subtree is mixed: one small FITTED piece
+    // under a pile of KNOWN children made the parent read 0% measured,
+    // while drilling to the leaves showed 100% KNOWN. Reported as exactly
+    // that symptom. When the server could not summarise a drillable node,
+    // its mix is genuinely unknown-to-us, so say so instead of asserting
+    // the pessimistic tier as fact.
+    if (isDrillable(n) && !(kids && kids.length)) {
+      acc.UNRESOLVED = (acc.UNRESOLVED || 0) + nodeValue(n);
+      return;
+    }
     add(n.basis, nodeValue(n));
   };
   visit(node);
+  const unresolved = acc.UNRESOLVED || 0;
   const total = acc.KNOWN + acc.FITTED + acc.ASSUMED + acc.UNKNOWN;
-  return { ...acc, total, knownPct: total ? (acc.KNOWN / total) * 100 : null };
+  // knownPct is over the bytes we can actually attribute. A node whose mix
+  // could not be resolved reports null rather than a number that would be
+  // read as measured fact.
+  return {
+    ...acc, total, unresolved,
+    knownPct: total ? (acc.KNOWN / total) * 100 : null,
+  };
 }
 
 // A tag of a UDT/AOI type gets a link to the definition that declares it.
@@ -317,6 +337,9 @@ function navigateToDefinition(typeName) {
 function confidenceBarHtml(node) {
   const c = confidenceBreakdown(node);
   // Zero bytes is not low confidence. Say why it is zero instead.
+  if (!c.total && c.unresolved) {
+    return `<div class="conf-label">mix not resolved &mdash; drill in to measure</div>`;
+  }
   if (!c.total) {
     return node.alias_of
       ? `<div class="conf-label">no storage of its own &mdash; alias of ` +
@@ -380,11 +403,25 @@ function escapeHtml(value) {
     .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
+// The array subscript belongs on the TYPE, not the name: a tag is called
+// `DintTag` and its type is `DINT[999]`. Studio itself reads that way, and
+// `DintTag[999]` names an element that does not exist as a tag. displayName
+// is therefore the bare name; displayType carries the dimensions.
 function displayName(node) {
-  const dims = node.dimensions || node.dims;
-  if (Array.isArray(dims) && dims.length) return `${node.name}[${dims.join(",")}]`;
-  if (typeof node.array_length === "number") return `${node.name}[${node.array_length}]`;
   return node.name;
+}
+
+function arrayDims(node) {
+  const dims = node.dimensions || node.dims;
+  if (Array.isArray(dims) && dims.length) return dims.join(",");
+  if (typeof node.array_length === "number") return String(node.array_length);
+  return null;
+}
+
+function displayType(node, fallback) {
+  const base = node.data_type || fallback || "";
+  const dims = arrayDims(node);
+  return dims ? `${base}[${dims}]` : base;
 }
 
 function fmtBytes(n) {
@@ -435,6 +472,61 @@ function routineCountFor(groupNode) {
   return routines && routines.children ? routines.children.length : null;
 }
 
+// ---- free controller space as a block (root level only) ----
+//
+// Every other tile is memory the project USES. Free space is the
+// complement, and it only has a meaning against the whole controller --
+// inside a UDT or a program there is no such thing as "the empty part", so
+// the control and the tile both exist at the root and nowhere else. The
+// checkbox hides itself once drilled in rather than offering a toggle that
+// would do nothing.
+function atRoot() {
+  return !!(REPORT && CURRENT_NODE && CURRENT_NODE === REPORT.hierarchy);
+}
+
+function emptySpaceBytes() {
+  if (!REPORT || !REPORT.budget_bytes) return 0;
+  return Math.max(0, REPORT.budget_bytes - (REPORT.total_bytes || 0));
+}
+
+function emptySpaceAvailable() {
+  return atRoot() && emptySpaceBytes() > 0;
+}
+
+function emptySpaceNode() {
+  const bytes = emptySpaceBytes();
+  return {
+    name: "Free space",
+    data_type: "unused",
+    value: bytes,
+    children: null,
+    basis: "KNOWN",
+    is_empty_space: true,
+    // Capacity minus what the project uses -- it is arithmetic on a
+    // published controller budget, not an estimate of anything.
+    confidence: { KNOWN: bytes, FITTED: 0, ASSUMED: 0, UNKNOWN: 0, total: bytes },
+  };
+}
+
+// The children to lay out for a level: the node's own, plus the free-space
+// block when it applies. Every renderer goes through here so the treemap,
+// the list and the docked list cannot disagree about what is on screen.
+function levelChildren(node) {
+  const kids = (node && node.children) || [];
+  if (SHOW_EMPTY && emptySpaceAvailable() && node === CURRENT_NODE && atRoot()) {
+    return [...kids, emptySpaceNode()];
+  }
+  return kids;
+}
+
+function syncEmptySpaceControl() {
+  const el = document.getElementById("empty-space-toggle");
+  if (!el) return;
+  el.hidden = !emptySpaceAvailable();
+  const box = document.getElementById("empty-space-input");
+  if (box) box.checked = SHOW_EMPTY;
+}
+
 // ---- tabs ----
 
 // Depth and the Details split only mean anything to the treemap -- depth
@@ -445,9 +537,16 @@ function routineCountFor(groupNode) {
 function syncTreemapOnlyControls(tab) {
   const onTreemap = tab === "treemap";
   for (const el of [document.querySelector(".depth-stepper"),
-                    document.getElementById("split-toggle")]) {
+                    document.getElementById("split-toggle"),
+                    document.getElementById("empty-space-toggle")]) {
     if (el) el.hidden = !onTreemap;
   }
+  // Hiding the toggle is not enough: the dock stayed OPEN behind the other
+  // tabs, so returning to the treemap landed on a half-width map nobody
+  // asked for. Leaving the treemap closes it, and it is re-openable only
+  // while the treemap is the active tab.
+  if (!onTreemap && SPLIT_OPEN) closeSplitDock();
+  if (onTreemap) syncEmptySpaceControl();
 }
 
 function setupTabs() {
@@ -472,16 +571,36 @@ function setupTabs() {
 // tab pair) alongside the SVG. The full-page List/Type Summary tabs are
 // untouched -- this is an additional way to see the same data, not a
 // replacement.
+function closeSplitDock() {
+  SPLIT_OPEN = false;
+  const panel = document.getElementById("panel-treemap");
+  const btn = document.getElementById("split-toggle");
+  if (panel) panel.classList.remove("split-mode");
+  if (btn) btn.classList.remove("active");
+}
+
 function setupSplitDock() {
   const btn = document.getElementById("split-toggle");
   const treemapPanel = document.getElementById("panel-treemap");
   btn.addEventListener("click", () => {
+    // Only meaningful while the treemap is on screen; the button is hidden
+    // elsewhere, but a stray keyboard activation must not half-split a
+    // panel the user cannot see.
+    if (!document.getElementById("panel-treemap").classList.contains("active")) return;
     SPLIT_OPEN = !SPLIT_OPEN;
     treemapPanel.classList.toggle("split-mode", SPLIT_OPEN);
     btn.classList.toggle("active", SPLIT_OPEN);
     // Let the layout settle before measuring the SVG's new (halved) width.
     requestAnimationFrame(renderTreemap);
   });
+
+  const box = document.getElementById("empty-space-input");
+  if (box) {
+    box.addEventListener("change", () => {
+      SHOW_EMPTY = box.checked;
+      renderCurrentLevel(false);
+    });
+  }
 
   document.querySelectorAll(".dock-tab-btn").forEach(dbtn => {
     dbtn.addEventListener("click", () => {
@@ -1033,7 +1152,8 @@ function subLabelFor(node) {
     const instr = node.rung_instructions || [];
     if (instr.length) lines.push(instr.slice(0, 4).join(" "));
   } else if (node.data_type) {
-    lines.push(`[${node.data_type}]`);
+    // Dimensioned, so a tile reads DINT[999] like the list and the tooltip.
+    lines.push(`[${displayType(node)}]`);
   }
   lines.push(fmtBytes(nodeValue(node)));
   return lines;
@@ -1100,7 +1220,7 @@ const BULK_EXPAND_THRESHOLD = 100;
 async function renderTreemap() {
   const svg = document.getElementById("treemap-svg");
   if (!svg.clientWidth) return; // hidden tab, nothing to measure yet
-  const children = CURRENT_NODE.children || [];
+  const children = levelChildren(CURRENT_NODE);
 
   // Depth-2 mode needs every visible node's own children loaded before we
   // can lay any of it out -- fetch them all up front (they're cheap local
@@ -1378,7 +1498,7 @@ function showTooltip(ev, node) {
       (node.rung_text
         ? `<div class="rung-text">${node.rung_text.replace(/[&<>]/g, ch =>
             ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[ch]))}</div>`
-        : `${node.data_type}<br>`) +
+        : `${escapeHtml(displayType(node))}<br>`) +
       (rc != null ? `${rc} rung${rc === 1 ? "" : "s"}<br>` : "") +
       `${fmtBytes(node.value)} (${fmtBlocks(node.value)} blocks)<br>` +
       (node.tier === "estimated" ? `<span class="tier-chip">ESTIMATED</span>` : "") +
@@ -1431,15 +1551,16 @@ function hideTooltip() {
 // each other.
 
 function currentLevelRows() {
-  const kids = CURRENT_NODE.children || [];
+  const kids = levelChildren(CURRENT_NODE);
   const total = kids.reduce((s, c) => s + nodeValue(c), 0);
   return kids.map(c => {
     const bytes = nodeValue(c);
     return {
       node: c,
       name: displayName(c),
-      // Name the container instead of the useless "(group)".
-      data_type: c.data_type || groupKind(c),
+      // Name the container instead of the useless "(group)", and carry the
+      // array subscript here rather than on the name -- see displayType.
+      data_type: displayType(c, groupKind(c)),
       bytes,
       pct_of_total: total ? (bytes / total) * 100 : 0,
       pct_of_controller: (REPORT && REPORT.total_bytes) ? (bytes / REPORT.total_bytes) * 100 : 0,
@@ -1751,6 +1872,17 @@ document.addEventListener("click", () => {
   document.querySelectorAll(".filter-popup").forEach(el => el.remove());
 });
 
+// A share reads far faster as a bar than as four digits, and the eye can
+// compare rows without reading any of them. Built to the same geometry as
+// the confidence cell beside it so the three columns line up rather than
+// each inventing their own width.
+function pctCellHtml(pct, cls) {
+  const v = Math.max(0, Math.min(100, pct || 0));
+  return `<div class="pct-cell"><div class="pct-bar">` +
+    `<span class="pct-fill ${cls}" style="width:${v}%"></span>` +
+    `</div><span class="pct-num">${(pct || 0).toFixed(2)}%</span></div>`;
+}
+
 function renderListInto(tableId) {
   const table = document.getElementById(tableId);
   if (!table) return;
@@ -1795,8 +1927,8 @@ function renderListInto(tableId) {
       `<td>${escapeHtml(e.name)}${subNote}</td>` +
       `<td>${escapeHtml(e.data_type)}</td>` +
       `<td class="num">${Math.round(e.bytes).toLocaleString()}</td>` +
-      `<td class="num">${e.pct_of_total.toFixed(2)}%</td>` +
-      `<td class="num">${e.pct_of_controller.toFixed(2)}%</td>` +
+      `<td>${pctCellHtml(e.pct_of_total, "pct-parent")}</td>` +
+      `<td>${pctCellHtml(e.pct_of_controller, "pct-controller")}</td>` +
       `<td>${conf}</td>`;
     tbody.appendChild(tr);
   }
