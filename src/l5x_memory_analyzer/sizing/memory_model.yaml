@@ -795,6 +795,41 @@ module_connection_data:
   confidence: KNOWN
 
 module_overhead_by_catalog:
+  # FOURTEEN CATALOGS ADDED 2026-09-18 (OQ-MODULEIO). Each had NO entry here and
+  # was falling back to the flat 1,672 while a single-variable `modulesweep_*`
+  # row measuring it had been captured and clean the whole time. Derived by the
+  # subtraction this table already documents: the catalog's overhead is 1,672
+  # plus the file's residual, with the ADAPTER's own residual differenced out
+  # first where the file carries one. Each entry names its control row.
+  #
+  # ASSUMED, matching the existing batch: one isolation row per catalog.
+  #
+  # ONLY CATALOGS ON THE PRICED BRANCH ARE HERE, and that distinction cost two
+  # wrong derivations before it was seen. `report.py` handles rack-aliased and
+  # zero-connection modules in an EARLIER branch that `continue`s before this
+  # table is ever consulted, so an entry for such a catalog is inert. Six more
+  # catalogs were measured the same way and are deliberately absent for that
+  # reason -- 1756-OW16I (+4,594), 1734-8CFG/C (+1,308), 1794-IB16XOB16P/A
+  # (+1,100), 1794-IA16/A (+992), 1794-OA8/A and 1794-OW8/A (+905 each). Their
+  # numbers are real and unfixable from here; see OQ-MODULEIO.
+  #
+  # ETHERNET-PANELVIEW is excluded too: its two connection variants derive -336
+  # and +646 for the same catalog, so what varies is the connection count, which
+  # belongs in module_connection_data. 1734-AENTR/C reads -66, noise-sized, and
+  # is an adapter, which this table's own note warns can absorb a child rack.
+  '1734-232ASC/C': { bytes: 3044, confidence: ASSUMED }  # +1372 vs the flat 1672 -- modulesweep_1734_232asc_c minus modulesweep_1734_aent_c
+  '1734-485ASC/C': { bytes: 2806, confidence: ASSUMED }  # +1134 vs the flat 1672 -- modulesweep_1734_485asc_c minus modulesweep_1734_aent_b
+  '1734-IB8S/B': { bytes: 928, confidence: ASSUMED }  # -744 vs the flat 1672 -- modulesweep_1734_ib8s_b_variant_1conn minus modulesweep_1734_aent_c
+  '1734-IE2V/C': { bytes: 2337, confidence: ASSUMED }  # +665 vs the flat 1672 -- modulesweep_1734_ie2v_c minus modulesweep_1734_aent_c
+  '1734-IE4C/C': { bytes: 3435, confidence: ASSUMED }  # +1763 vs the flat 1672 -- modulesweep_1734_ie4c_c minus modulesweep_1734_aentr_b
+  '1734-IK/C': { bytes: 2585, confidence: ASSUMED }  # +913 vs the flat 1672 -- modulesweep_1734_ik_c minus modulesweep_1734_aentr_b
+  '1734-IR2/C': { bytes: 2425, confidence: ASSUMED }  # +753 vs the flat 1672 -- modulesweep_1734_ir2_c minus modulesweep_1734_aent_c
+  '1794-IB32/A': { bytes: 1954, confidence: ASSUMED }  # +282 vs the flat 1672 -- modulesweep_1794_ib32_a minus modulesweep_1794_acn15_c
+  '1794-IR8/A': { bytes: 3983, confidence: ASSUMED }  # +2311 vs the flat 1672 -- modulesweep_1794_ir8_a minus modulesweep_1794_acn15_c
+  '1794-OE4/B': { bytes: 2914, confidence: ASSUMED }  # +1242 vs the flat 1672 -- modulesweep_1794_oe4_b minus modulesweep_1794_acn15_c
+  '1794-VHSC/A': { bytes: 5952, confidence: ASSUMED }  # +4280 vs the flat 1672 -- modulesweep_1794_vhsc_a minus modulesweep_1794_acn15_c
+  'PowerFlex 525-EENET': { bytes: 7018, confidence: ASSUMED }  # +5346 vs the flat 1672 -- modulesweep_powerflex_525_eenet (Local + this module only)
+  'PowerFlex 755-EENET': { bytes: 4108, confidence: ASSUMED }  # +2436 vs the flat 1672 -- modulesweep_powerflex_755_eenet (Local + this module only)
   '150 SMC Flex-E': { bytes: 6614, confidence: ASSUMED }
   # 1,592 with the connection law above and the 400-byte config array charged as
   # declared: genem_in002/in010/in450 land exactly at 2,024 / 2,056 / 3,816 real

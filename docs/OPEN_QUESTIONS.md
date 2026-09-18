@@ -585,6 +585,62 @@ the matching footnote at the bottom, not inline.
    1st), and a handful of catalogs with real connection-variant-dependent
    overhead.[^moduleio]
 
+
+    **IN-DEPTH REVIEW 2026-09-18 — thirteen catalogs wired off isolation rows
+    that had been captured and clean the whole time. Real set 1.6566% ->
+    1.5611%, the largest single improvement of this review.**
+
+    `modulesweep_*` is 96 single-variable rows and 54 of them sat outside ±8.
+    Each measures one catalog on top of an adapter whose own row is separately
+    captured, so the catalog's overhead falls straight out: 1,672 plus the
+    file's residual, with the adapter's residual differenced out first. Thirteen
+    catalogs derived that way are now in `module_overhead_by_catalog`, and every
+    one of their isolation rows lands at **exactly 0** afterwards.
+
+    Largest: PowerFlex 525-EENET +5,346, 1794-VHSC/A +4,280, PowerFlex
+    755-EENET +2,436, 1794-IR8/A +2,311, 1734-IE4C/C +1,763.
+
+    **THE THING THAT COST TWO WRONG DERIVATIONS, recorded so the next person
+    does not repeat it.** `report.py` handles rack-aliased and zero-connection
+    modules in a branch that `continue`s BEFORE `module_overhead_by_catalog` is
+    ever consulted. An entry for such a catalog is inert. The first attempt
+    wired twenty catalogs without checking which branch each took, and the
+    isolation rows did not move; the second attempt read each module's charged
+    bytes from the report and mistook `module_defined_bytes + overhead` for the
+    overhead alone. Only the third — splitting the catalogs by branch first —
+    produced entries that land their own rows at zero. **Check the branch before
+    deriving a per-catalog constant.**
+
+    **Six catalogs are measured and NOT wireable from this table**, because they
+    take the rack-aliased branch: 1756-OW16I **+4,594**, 1734-8CFG/C +1,308,
+    1794-IB16XOB16P/A +1,100, 1794-IA16/A +992, 1794-OA8/A and 1794-OW8/A +905
+    each. Every rack-aliased module is charged the same flat 454 regardless of
+    catalog (`rack_aliased_module`, wired earlier today), and these say the true
+    cost varies by thousands between catalogs. **That flat 454 is an average
+    over catalogs that genuinely differ, and it is the same finding as
+    OQ-POINTIOCONN's per-card result seen from the other side.** Fixing it means
+    giving the rack-aliased branch a per-catalog table of its own, which is a
+    code change, not a constant.
+
+    `1783-NATR` was wired and removed the same day: its isolation row did not
+    move at all, so it reaches a bypass branch too, and its −2,344 is unfixable
+    from here.
+
+    **The caveat that matters, stated because one real file shows it.** Each
+    constant is measured on a file containing exactly ONE module of that
+    catalog, so it is the FIRST-instance cost. This table already carries a
+    `repeat_bytes` discount for 16 catalogs measured the same way, and nothing
+    measures one for these thirteen. `realprog_murraybros` carries FOUR
+    PowerFlex 525-EENET drives and moves from +1.150% to −1.178% — an
+    over-correction of roughly 10,600 across those four, which implies a repeat
+    discount near 3,600 per additional drive. Elmsdale, with six affected
+    modules of mixed catalogs, moves the other way and lands almost exactly:
+    **+1.991% -> −0.247%**.
+
+    **One file settles the discount**: `modulesweep_powerflex_525_eenet` at two
+    and four drives, everything else identical. PowerFlex 525-EENET is 12 of the
+    21 real occurrences of these catalogs, so it is the one worth measuring.
+
    **The marginal-cost sub-thread is closed 2026-09-13 (capture-batch segment
    14, 71 `asmclose_*` rows).** The law is `d x (n - 1)` per catalog, flat at
    n=1/2/4/8, and it is wired for the ten catalogs whose rate was measured on a
