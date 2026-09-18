@@ -2139,6 +2139,73 @@ the matching footnote at the bottom, not inline.
 43. **OQ-REALUNDER** — new 2026-09-12, and it is still the single biggest
     thing between this project and its North Star.
 
+
+    **IN-DEPTH REVIEW 2026-09-18 — the strongest correlate was tested with a
+    MEASURED constant rather than a fitted one, and it does not work. Recorded
+    because it is the most tempting wrong turn left in this question.**
+
+    Correlating each real program's residual against every category and every
+    structural counter, with the engine as it stands today:
+
+    | driver | corr(residual bytes) | implied per-unit |
+    |---|---:|---:|
+    | **routine count** | **+0.888** | +656 |
+    | routine_logic bytes | +0.853 | +0.163 |
+    | rung count | +0.785 | +38 |
+    | program count | +0.773 | +4,934 |
+    | tag count | +0.704 | +26 |
+
+    Routine count is the strongest single correlate in the whole set, and it
+    survives normalising for file size better than size itself does:
+    `corr(residual%, routine count) = +0.699` against
+    `corr(residual%, file bytes) = +0.575`. On its face that is a missing
+    per-routine cost of roughly 650 bytes.
+
+    **And there is an independently MEASURED per-routine constant available to
+    test it with**: OQ-DEFSCALE's +260 one-time for a routine containing AOI
+    calls, which the RLL path does not charge and which 764 real routines would
+    carry. This is the rare case where a correlation can be checked against a
+    number that was not fitted to it.
+
+    It fails:
+
+        subtracted per routine-with-AOI-calls    mean |%|     sum-weighted
+        nothing (as wired)                        1.5607        +1.3750%
+        200                                       1.5458        +1.0536%
+        260  (the measured value)                 1.5484        +0.9572%
+        400                                       1.5546        +0.7322%
+        656  (the fitted value)                   1.5659        +0.3208%
+
+    **The BIAS collapses and the SPREAD does not move at all.** Every value from
+    200 to 656 leaves mean absolute error within 0.02 points of where it started,
+    while the aggregate bias goes from +1.375% to +0.32%. The correction pushes
+    the seven already-over-predicting programs further over by exactly as much as
+    it pulls the nine under-predicting ones back: murraybros −1.17% -> −1.62%,
+    pukall −0.55% -> −1.23%, emporiumedger −1.79% -> −2.15%, salamanca −1.05% ->
+    −1.51%, griffin −0.11% -> −0.63%.
+
+    **So routine count explains the sign of the aggregate error and nothing about
+    which programs are wrong.** The +0.888 is what a per-unit correlation looks
+    like when the unit count and the file size both span 10x across sixteen
+    points: it explains most of the variance in BYTES while explaining none of it
+    in percent, because the byte variance is dominated by the largest files.
+    This is the same collinearity trap `memory_model.yaml` already records for
+    the 52/21 AOI/JSR refit, arrived at from a different direction.
+
+    **What this rules out, concretely.** Any per-routine, per-rung, per-program
+    or per-tag constant fitted to the real set will move the bias and leave the
+    spread, because all four are collinear with size. The remaining error is not
+    a missing per-unit cost. It is either per-FILE (which the strip ladder's
+    OQ-CTLSHELL already sized at +7,800 / +4,072) or content-dependent in a way
+    none of these counters captures.
+
+    **It also stands as real-set evidence on OQ-DEFSCALE's open carrier
+    question**, though not proof: if the 260 were genuinely per routine, applying
+    it to 764 real routines should have tightened the spread rather than only
+    shifting the bias. It did not. That is consistent with per-file, and
+    consistent with per-routine plus a compensating error elsewhere, so the
+    two-calling-routine probe is still the thing that settles it.
+
     **STATE AS OF 2026-09-14 (recomputed live, not read from the manifest):
     mean |error| 1.6112%, sum-weighted +1.2417%, worst 3.264%. Eleven files
     under-predict, five now OVER-predict.** The name of this entry is now half
