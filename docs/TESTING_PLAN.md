@@ -1,346 +1,297 @@
-# Testing / Validation Plan
+# Testing and Validation
 
-Goal: for every sample L5X, get a real controller-reported memory-used number
-to compare against this tool's prediction. This is the whole feedback loop that
-Phases 3/4/4b run on — get the procedure locked before generating 30-40 files
-against it, or the whole batch has to be redone.
+How a prediction becomes a measured number, and every validity rule that governs
+whether a captured row may be used.
 
-## Procedure per sample (offline compile, no hardware/emulator — settled 2026-08-20)
+**The whole feedback loop runs on this.** Get the procedure right before
+generating files against it, or the batch has to be redone.
 
-**Corrected 2026-08-20, resolving OQ-EMULATE:** no download to a
-controller or Emulate is needed at all. Logix Designer shows memory usage in
-Controller Properties as soon as a project **successfully compiles/verifies
-offline** — that was an incorrect assumption in this file's earlier version
-of the procedure (and made the Logix Echo/SDK-download research below look
-more load-bearing than it turned out to be; keeping that research inline
-since it's still accurate about what the SDK can do, just not the critical
-path for this loop). Design rule of thumb: build/validate primarily against
-real hardware (L6/L7/L8, no emulator) when a physical download-and-run check
-is actually warranted — not the default per-sample step. Real unit available
-for that: a 5069-L306ERS (CompactLogix 5380-class, no safety program on it).
+---
 
-Researched 2026-08-20 (see OQ-GENMETHOD for sourcing): Rockwell publishes an
-official **Logix Designer SDK** (.NET, `RockwellAutomation.LogixDesigner`)
-plus two CLI tools built on it in `RockwellAutomation/ra-logix-designer-vcs-custom-tools`
-(GitHub) — `l5xplode`/`l5xgit`. `l5xgit l5x2acd --l5x <file> --acd <file>` converts
-L5X → ACD headlessly, no Logix Designer UI interaction. This is real and confirmed
-(Rockwell's own repo, requires Logix Designer SDK 2.2+), not a hypothetical.
-`scripts/batch_l5x_to_acd.ps1` in this repo wraps it over a whole folder.
+## The procedure
 
-What's confirmed to exist in the SDK beyond that (via `ra-logix-cicd`'s
-`LogixDesigner_ClassLibrary`/`LogixEcho_ClassLibrary` sample code): `LogixProject`
-exposes `SaveAsync`/`DownloadAsync`/`SetCommunicationsPathAsync` and per-type
-`GetTagValue*Async`/`SetTagValue*Async` once online, and separately the
-**FactoryTalk Logix Echo** SDK can spin up an emulated chassis+controller
-straight from an ACD file. Neither is needed for the default loop now that
-offline compile is enough — worth revisiting only if the SDK turns out to
-also expose a scripted "verify project, read compiled memory stat" call
-*without* going online, which would close the automation loop with zero
-hardware involved at all. Not yet researched; flag for whoever picks this up
-next rather than assumed.
+No download and no emulator. **Logix Designer shows memory usage in Controller
+Properties as soon as a project successfully compiles offline.**
 
-**RESOLVED 2026-08-20 (OQ-MEMREADMETHOD): there is no programmatic memory
-read, online or offline.** GSV has no memory attribute on any Logix 5000
-platform, and Rockwell's documented MSG/CIP path is explicitly unsupported
-on the entire current controller lineup regardless. Controller Properties →
-Memory tab, read by eye, is the only method — but per the correction above,
-it only requires an offline compile, not a download.
+1. Convert the sample L5X to ACD — `scripts/batch_l5x_to_acd.ps1`, batched.
+2. Open in Logix Designer and verify. **A sample that does not compile is not
+   valid data.**
+3. Read memory used: Controller Properties → Memory tab.
+   `scripts/batch_memory_capture.ps1` opens each ACD in turn and captures this so
+   the file-hunting and row formatting are not manual, even though the read itself
+   always will be.
+4. The result lands in `samples/captures.csv`. Predicted-versus-actual is computed
+   live, never stored.
 
-1. Convert the sample L5X to ACD (`scripts/batch_l5x_to_acd.ps1`, batchable —
-   no per-sample manual import).
-2. Open in Logix Designer, verify/compile (no errors — a sample that doesn't
-   compile is not valid data). No download, no going online.
-3. Read memory used: Controller Properties → Memory tab (bytes used / bytes
-   free) — this is the only method, confirmed, and available right after
-   compile. `scripts/batch_memory_capture.ps1` opens each converted ACD in
-   turn and prompts for this number so the file-hunting and manifest-row
-   formatting isn't manual too, even though the read itself always will be
-   (update that script's comments to stop implying a download step).
-4. Record predicted vs. actual, delta.
-5. Log to `samples/manifest.csv` (batch_memory_capture.ps1 does this per-row,
-   resumable across a multi-session batch of hundreds of samples).
+**There is no programmatic memory read, online or offline.** GSV has no memory
+attribute on any Logix 5000 platform, and Rockwell's documented MSG/CIP path is
+explicitly unsupported across the current controller lineup. Controller Properties,
+read by eye, is the only method.
 
-Keep controller model/firmware rev consistent across a comparison set (don't
-mix CompactLogix models mid-test — memory reporting granularity may differ),
-but there's no shared physical resource to reset between samples anymore
-since nothing gets downloaded — each ACD compile is independent.
+Each ACD compile is independent — nothing is downloaded, so there is no shared
+physical resource to reset between samples.
 
-Occasional spot-check against the 5069-L306ERS (actual download, real
-running memory) is still worth doing periodically to confirm compiled/
-offline-shown memory actually matches what the controller reports once
-running — not proven identical yet, just assumed for now.
+> **Worth doing periodically:** spot-check against real hardware with an actual
+> download, to confirm the offline compiled figure matches what a running
+> controller reports. Assumed identical, not proven.
 
-## Window-title-mismatch retries are automatic (2026-08-25)
+### What the SDK can and cannot do
 
-"Any test that fails for window title mismatch should be rerun... make sure
-you can rerun those tests next time without me prompting you." The AHK/
-PowerShell capture loop cross-checks the Logix Designer window title against
-the file it just asked to be opened (`batch_memory_capture.ps1`) — a
-mismatch means the automation may have read stale data (a real confirmed
-case: a request for one file came back with the previous file's title still
-showing, the switch silently hadn't happened yet). That row's `actual_bytes`
-is untrustworthy and gets flagged `WINDOW TITLE MISMATCH` in `notes`, but
-until 2026-08-25 the script's own "already logged" check only looked at
-whether `actual_bytes` was non-empty — a mismatched row still has a (wrong)
-value there, so it silently counted as done forever and never got retried
-without someone manually blanking the row.
+Rockwell publishes a Logix Designer SDK (.NET, `RockwellAutomation.LogixDesigner`)
+plus the `l5xplode` / `l5xgit` CLI tools built on it.
+`l5xgit l5x2acd --l5x <file> --acd <file>` converts headlessly with no UI
+interaction, and `batch_l5x_to_acd.ps1` wraps it over a folder.
 
-**Fixed at the source, not by hand-editing rows each time:**
-`batch_memory_capture.ps1`'s already-logged filter now also excludes any row
-whose `notes` still says `WINDOW TITLE MISMATCH` — that row is treated as
-never-captured and gets picked back up automatically the very next time the
-script runs against the same `convert_log.csv`. No ACD rebuild needed:
-`convert_log.csv` already has `status=ok` for it (the L5X→ACD conversion
-succeeded; only the *capture read* was suspect), so a retry just re-opens
-the existing ACD and re-reads the Capacity tab. A successful retry naturally
-clears the flag (the row's `notes` gets overwritten with the fresh
-cross-check result), so this self-heals with no manual bookkeeping on
-either side. On this project's side: any manifest reconciliation (merging
-in a pushed capture batch) also blanks the capture columns for rows still
-carrying that flag rather than trusting the stale `actual_bytes`, so a
-retry is never skipped just because the row "looked" logged.
+Beyond that the SDK exposes `SaveAsync`, `DownloadAsync`,
+`SetCommunicationsPathAsync` and per-type tag get/set once online, and FactoryTalk
+Logix Echo can spin up an emulated chassis from an ACD file. **Neither is needed**
+now that offline compile is enough.
 
-## Zero-Capacity retries are automatic too (2026-08-27)
+The one thing that would close the loop with no hardware at all is a scripted
+"verify project, read compiled memory stat" call that works offline. **Not yet
+researched** — flagged rather than assumed.
 
-"if memory size is 0 it needs to be flagged and not counted." A real
-controller's Capacity-tab reading is never actually 0 (every project carries
-the `empty_project_baseline` floor at minimum), so a literal `"0"`
-`ocd_value` from AHK is a bad-read symptom (wrong dialog/field focused, a
-timing glitch), not real data. Same fix, same mechanism as the window-title
-case above: `batch_memory_capture.ps1` flags it `ZERO CAPACITY` in `notes`
-and excludes that row from "already logged," so it's automatically retried
-next run with no manual re-flagging needed.
+---
 
-## A row that BUILT WITH ERRORS is never a valid fitting point (2026-09-04)
+## Capture validity: the rules that decide whether a row may be used
 
-**"some of those results had errors and should not have been counted as a
-valid result. i am concerned that you are changing models with bad data —
-ensure it is all valid data!"**
+All of these are enforced by `scripts/accuracy_report.py::is_valid_capture` so
+they cannot be forgotten. **Every one of them exists because it already went
+wrong.**
 
-`error_count > 0` means the project did not fully compile, so its Capacity
-reading is of an INCOMPLETE project. Those rows are not merely noisy —
-they manufacture a *systematic, directional* false signal, because
-whatever content failed to build is missing from `actual_bytes` while the
-engine still predicts it. That reads exactly like "we over-predict," and
-it will pull a fitted constant the wrong way.
+### A row that built with errors is never a valid fitting point
 
-This is not hypothetical. It cost a real wrong model change the same day
-the rule was written: the entire 18-file `axis_scale_*` sweep has
-`error_count = drives + 1` on every single file (n01_single=2 …
-n20_single=21), and its residuals are almost perfectly linear in drive
-count — so it looked like a beautiful, exact "each additional drive on a
-shared DC bus is over-charged by 3,288/5,200 bytes" finding, was derived
-to 0 residual on 18/18 points, and was wired and committed. It was an
-artifact of the drives failing to build. Reverted the same session.
+`error_count > 0` means the project did not fully compile, so the reading is of an
+**incomplete** project. These rows are not merely noisy — they manufacture a
+**systematic, directional** false signal, because whatever failed to build is
+missing from the actual figure while the engine still predicts it. **That reads
+exactly like "we over-predict," and it pulls a fitted constant the wrong way.**
 
-**Rules, applied by `scripts/accuracy_report.py::is_valid_capture` so this
-can't be forgotten again:**
+> This cost a real wrong model change. An 18-file axis sweep carried
+> `error_count = drives + 1` on every single file, and its residuals were almost
+> perfectly linear in drive count — so it looked like an exact "each additional
+> drive on a shared DC bus is over-charged" finding, was derived to zero residual
+> on 18 of 18 points, and was wired and committed. It was an artifact of the
+> drives failing to build. Reverted the same session.
 
-1. Any analysis, fit, or "we're off by X%" claim uses ONLY rows with
-   `error_count` of 0 or blank, no `WINDOW TITLE MISMATCH`, no
-   `ZERO CAPACITY`, and a real integer `actual_bytes`.
-2. A clean, exact-looking linear fit is NOT evidence of validity. Check
-   `error_count` FIRST, before believing a residual pattern — the
-   axis_scale fit was exact on 18/18 points and still wrong.
-3. Corpus-wide, 132 of 1,978 captured rows (6.7%) are invalid by this
-   rule, concentrated in `composite` (87) and `modules` (28) — the two
-   categories carrying the most error, so the filter matters most exactly
-   where it's most tempting to fit.
+**A clean, exact-looking linear fit is not evidence of validity. Check the error
+count first, before believing any residual pattern.**
 
-## 1769-series (CompactLogix 5370) requires clicking "Estimate" first (2026-08-27)
+Such a row is **suspect, not wrong**. Never quietly use one, and **never quietly
+drop one either** — both are how a real double-digit error hides for days. Say in
+any report which questions are carrying suspect rows and how many.
+`scripts/capture_errors.py` enforces that.
 
-"the 1769 processors require 'estimate' button before giving memory sizes."
-Real Studio 5000 UI behavior, confirmed against real capture attempts:
-1756/5069-family processors show a real Capacity number in Controller
-Properties immediately, but 1769-series (`v35_l16er`/`l18er`/`l18erm`/`l19er`/
-`l24er`/`l24er_qbfc1b`/`l27erm_qbfc1b`/`l33er`/`l30erm`, all real 1769-L1xER/
-L2xER/L3xER catalog numbers) don't — the "Estimate" button has to be clicked
-first before the tab shows anything meaningful. **The AHK loop does not do
-this today** and would silently read a stale/blank/wrong value for any
-1769-series file without it. All 9 of the currently-staged 1769 points were
-manually reported for this reason (see `manifest.csv` notes,
-`MANUAL ENTRY`), not captured automatically. **Before building or capturing
-any FUTURE 1769-series test file**, `logix_build_capture.ahk` needs an extra
-click-Estimate step added for that processor family specifically, or every
-such row needs to keep going through manual reporting.
+### A capture below the empty-project baseline is a bad read
 
-## Firmware the SDK cannot open skips L5X->ACD conversion automatically (2026-08-27)
+**No Logix project can report using less memory than an empty project on the same
+controller.** `is_valid_capture()` rejects anything below
+`empty_project_baseline_bytes`, read from the model rather than hardcoded so the
+floor tracks it.
 
-The Logix Designer SDK refuses some firmware revisions outright, with an
-explicit and permanent error rather than a transient one, so retrying such
-a file every pass is pure waste. `batch_l5x_to_acd.ps1` recognises that
-SDK-version-unsupported message on a FAILED row and skips reconverting
-that file on future passes, as long as its content hash has not changed
-since the failure was recorded. If the sample is regenerated at an
-SDK-supported firmware revision the hash differs and it is tried again
-automatically.
+> Found in a batch that passed every check the project then had. 24 rows came back
+> at 2,976 bytes and 6 more at 6,640, for controllers whose empty baseline is
+> 69,600 to 98,944. Every one had zero errors, no warning, blank notes, and a
+> window title matching the expected file exactly. Left in, those 30 rows alone
+> moved the corpus mean error from **0.68% to 32.17%**.
 
-Same self-healing pattern as the window-title-mismatch and zero-capacity
-fixes above, just on the conversion side rather than the capture side.
+The floor only stops bad rows reaching a fit. **It does not fix the underlying
+tooling bug** — a capacity dialog read before the project finished loading is the
+obvious suspect, unconfirmed.
 
-The generated corpus is 1756-L81E at v35 throughout (enforced by
-`sample_gen.lint`'s `non_standard_firmware` rule), so in normal operation
-nothing should reach this path at all.
+### Window-title mismatch — retried automatically
 
-## Manifest columns (`samples/manifest.csv`)
+The capture loop cross-checks the Studio window title against the file it asked
+to be opened. A mismatch means the automation may have read stale data — a real
+confirmed case had a request for one file come back with the previous file's title
+still showing, the switch not yet having happened.
 
-`sample_id, description, category (tag|udt|aoi|module|logic_bit|logic_other), l5x_path, predicted_bytes, actual_bytes, delta, delta_pct, controller_model, firmware_rev, date_tested, notes`
+That row's value is untrustworthy and gets flagged. **The subtle part:** an
+"already logged" check that only asks whether the value is non-empty will treat a
+mismatched row as done forever, because it does have a value — a wrong one. The
+filter now also excludes any row still flagged, so it is picked back up
+automatically on the next run.
 
-## Sample isolation principle
+No rebuild is needed: the conversion succeeded and only the read was suspect, so a
+retry re-opens the existing ACD. A successful retry overwrites the flag, so this
+self-heals with no manual bookkeeping. On reconciliation, such rows have their
+capture columns **cleared** rather than their stale values trusted.
 
-Every sample changes exactly one variable from the baseline. If testing "does
-UDT member order affect size," the sample pair is identical in every respect
-except member order — same member types/count, only order differs. This is what
-makes the manifest usable for regression later instead of a pile of
-unreproducible one-offs.
+### Zero capacity — retried automatically
 
-## Phase 3 sample set (tag/UDT/AOI — see TASKS.md for the generation list)
+A real capacity reading is never 0 — every project carries the empty-project floor
+at minimum. A literal `0` is a bad-read symptom: wrong dialog or field focused, or
+a timing glitch. Same flag-and-exclude mechanism, same automatic retry.
 
-Each sample should be sized to produce a *measurable* delta against baseline —
-10k-element arrays exist specifically because a single tag's byte difference
-could get lost in memory reporting granularity/rounding. If a controller only
-reports memory in some rounded unit (KB, page-aligned, etc — unconfirmed),
-scale samples up until deltas are unambiguous, and note the observed rounding
-granularity in MEMORY_MODEL.md once discovered.
+### A blank error count is weaker evidence than an explicit zero
 
-## Phase 4/4b sample set (logic)
+A few hundred captured rows have a **blank** error count rather than a `0` — they
+were captured before the column existed, so nobody recorded the build status
+either way.
 
-Same isolation principle, scaled by rung/instruction count instead of tag size:
-generate the same logic pattern at N=10, 100, 1000 instances to (a) get a
-measurable delta and (b) confirm the relationship is linear (it should be,
-for straight-line bit logic with no shared subroutine effects) before fitting
-a single per-instruction weight from just two data points.
+`is_valid_capture()` counts them, and should: measured both ways the difference on
+the corpus headline is small, so discarding hundreds of real rows on a hunch would
+be its own unforced error. `accuracy_report.py --strict` excludes them when that
+needs re-checking.
 
-## Exit criteria
+**Where it does matter is anchoring.** When a single row is the pair or control for
+a new measurement, a blank means the whole comparison rests on a build nobody
+verified. **Prefer an explicit-zero row for that job**, or test more than one
+instruction so a single soft anchor cannot carry the conclusion alone.
 
-Phase 3 and Phase 4/4b each close per PROJECT_PLAN.md's stated exit criteria.
-Tolerance resolved (OQ-TOLERANCE, 2026-08-20): **tag/UDT (exact tier) within
-1% = good, 3% = acceptable, >5% = a real gap worth chasing, not a rounding
-error.** Logic/program-structure memory (estimated tier) isn't held to the
-same bar. Compiled logic size is a guess at best, so it is expected to
-carry more slop by nature of the problem, not a target to force down to 1%. Don't move to UI
-work (Phase 5) with an open, unresolved tag/UDT discrepancy just because
-logic sizing is more interesting — an error in the "exact" tier undermines
-the tool's whole value proposition more than an acknowledged estimate in the
-logic tier does.
+### Build counts above 999 are abbreviated
 
-## A blank `error_count` is weaker evidence than an explicit `0`
+Studio abbreviates the error and warning counts on its count buttons and can render
+a thousands separator. A naive `^(\d+)` read gives:
 
-Found 2026-09-04 while picking the RLL partner for an ST instruction test.
-**268 of the 1,841 captured rows have a BLANK `error_count`**, not a `0` —
-they were captured before that column existed, so nobody recorded the build
-status either way. `is_valid_capture()` counts them, and should: measured
-both ways, the difference on the corpus headline is small (mean |error|
-0.679% counting them vs 0.693% excluding them; within ±1% 87.6% vs 89.1%),
-so throwing 268 real rows away on a hunch would be its own unforced error.
-`scripts/accuracy_report.py --strict` excludes them whenever that needs
-re-checking.
-
-Where it does matter is **anchoring**: when a single row is the pair or
-control for a new measurement, a blank there means the whole comparison
-rests on a build nobody verified. Prefer an explicit-`0` row for that job,
-or test more than one instruction so a single soft anchor cannot carry the
-conclusion on its own (`gen_st_sizing.py`'s group D pairs four instructions
-for exactly this reason — `instr_cop_n01000` is blank, the other three are
-explicit `0`).
-
-## A capture below the empty-project baseline is a bad read, not a small project
-
-Found 2026-09-04, in a capture batch that passed every check this project
-had. 24 fw-matrix rows came back at **2,976 bytes** and 6 more at **6,640**,
-for 1769 controllers whose EMPTY-project baseline is 69,600-98,944. Every
-one of them had `error_count` 0, no warning, blank notes, and a window title
-that matched the expected ACD exactly — so `WINDOW TITLE MISMATCH`, `ZERO
-CAPACITY` and the build-error filter all passed them through. Left in, those
-30 rows alone moved the corpus mean |error| from **0.68% to 32.17%**.
-
-No Logix project can report using less memory than an empty project on the
-same controller. `is_valid_capture()` now rejects anything below
-`empty_project_baseline_bytes` (13,296 — read from the model, not
-hardcoded, so the floor tracks the model). This is a physical impossibility
-check, and it belongs in the Python validity logic rather than in whoever
-happens to be reading the CSV that day.
-
-The underlying capture-tooling bug is NOT fixed by this — the floor only
-stops bad rows from reaching a fit. Those 30 files still need a real
-re-capture, and the reason a clean-looking run produced a 2,976 reading is
-worth root-causing before the next batch (a Capacity dialog read before the
-project finished loading is the obvious suspect, unconfirmed).
-
-## Auditing error_count > 0: stale-vs-genuine before anything else
-
-2026-09-05: every run of the capture script skips a large number of files,
-and each one has to be dealt with. A file that is not wanted is deleted
-from the manifest; otherwise it is repaired so the sample can be captured.
-
-138 rows carried `error_count > 0`. The first cut is not "what's broken" —
-it is **whether the failing capture is even about the file that exists
-today**:
-
-```
-file's last git-write time  vs  the row's date_tested
-```
-
-If the L5X was regenerated AFTER the capture, the recorded errors were
-against a version that no longer exists. **72 of the 138 were exactly
-that** — captures taken before the 2026-09-03 P208 DC-bus / axis-channel
-fixes, on files that were rewritten hours later. Nothing was wrong with
-them; they just needed their capture columns cleared so the next pass
-picks them up. Diagnosing any of those as a live bug would have been
-chasing a ghost.
-
-Do this check FIRST, every time, before reading a single error message.
-
-The remaining rows split three ways:
-- **Superseded** — the question has since been answered exactly by a
-  better-designed test. `jsr_target_content_scale_*` and
-  `aoi_logic_scale_*`/`aoi_multiroutine_*` were both replaced by
-  `realscale_*` ladders that solved their questions with zero residual, so
-  the broken originals have no remaining value. Deleted, files and rows.
-- **Obsolete corpus** — `composite_realistic_*` v1/v2 (40 rows). Replaced by
-  the v4 batch and, far more importantly, by 8 real captured customer
-  programs. A synthetic composite is a proxy for a real program; once real
-  programs are on file the proxy stops earning its keep, and a broken proxy
-  never did.
-- **Genuinely unfixed** — 11 rows, kept, listed in OQ-BUILDFAIL-OPEN. These
-  need the real Studio 5000 error text; nothing in the repo diagnoses them
-  and guessing is what produced the invented alarm ConditionTypes.
-
-
-## Build-counter abbreviation (fixed 2026-09-14)
-
-`logix_build_capture.ahk` read Studio's Error/Warning/Message counts off the
-count buttons with `^(\d+)`. Studio abbreviates anything over 999 in those
-buttons, and can render a thousands separator, so:
-
-| button text | was recorded | actual |
+| button text | naive read | actual |
 |---|---:|---:|
-| `1K Errors` | **1** | ≥1,000 |
-| `1.2K Errors` | **1** | ~1,200 |
-| `1,234 Errors` | **1** | 1,234 |
-| `12K Errors` | **12** | ~12,000 |
+| `1K Errors` | 1 | ≥1,000 |
+| `1.2K Errors` | 1 | ~1,200 |
+| `1,234 Errors` | 1 | 1,234 |
+| `12K Errors` | 12 | ~12,000 |
 
-A build with thousands of errors therefore logged as **one** error and passed
-downstream as very nearly clean — `is_valid_capture()` rejects it, so it was not
-silently used, but the row read as a trivial single-error blip rather than a total
-failure, which is how one would get triaged last instead of first.
+**A build with thousands of errors logged as one error** and read downstream as
+very nearly clean. The validity filter rejected it either way, so it was never
+silently used — but it looked like a trivial blip rather than a total failure,
+which is how it would get triaged last instead of first.
 
-Two changes. `ExpandCountToken()` now parses the comma and K/M forms, so the
-button fallback can never read 1,234 as 1. And **Studio's own summary line is
-used as the authority**: `Complete - N error(s), M warning(s)` carries the count
-unabbreviated however large it is, and nothing was reading it. It is parsed off
-the RAW pane text, because `ReadErrorLog()` keeps only the leading characters and
-the summary sits at the end. When the buttons and the summary disagree, the
-summary wins and the disagreement is recorded in `error_log`. When a count is
-abbreviated and no summary is available, the expansion is a rounded floor and is
-labelled as one rather than passed off as exact.
+Two fixes. The count parser now handles the comma and K/M forms. And **Studio's own
+summary line is the authority** — `Complete - N error(s), M warning(s)` carries the
+count unabbreviated however large, and nothing was reading it. It is parsed off the
+raw pane text, because the error-log reader keeps only the leading characters and
+the summary sits at the end. **When the buttons and the summary disagree, the
+summary wins** and the disagreement is recorded. When a count is abbreviated and no
+summary is available, the expansion is a rounded floor and is labelled as one.
 
-The PowerShell side needed no change: its `^\d+$` counter validation still holds,
-because the AHK side still emits a plain integer or an empty string.
+> One consequence for existing data: any row captured before this fix reading
+> exactly `1` error is ambiguous — a genuine single error, or a `1K` misread. Only
+> a file large enough to plausibly reach 1,000 errors is in doubt.
 
-**One consequence for existing data.** Any row captured before this fix that
-reads exactly `1` error is ambiguous — a genuine single error, or a `1K` misread.
-Eight rows read 1; two (`almd_minimal`, `almd_realtext`) have error text proving a
-real single error, and of the remaining six only `composite_realistic_v2_18` is a
-file large enough to plausibly reach 1,000 errors, and it is from a superseded
-generator. The others are small files where 1,000 errors is not possible.
+### Firmware the SDK cannot open is skipped automatically
+
+The SDK refuses some firmware revisions outright, with a permanent rather than
+transient error, so retrying every pass is pure waste. A failed row carrying that
+message is skipped on future passes **as long as its content hash has not changed**.
+Regenerate the sample at a supported revision and the hash differs, so it is tried
+again automatically.
+
+Same self-healing pattern as the capture-side flags, on the conversion side.
+
+The generated corpus is one processor at one firmware throughout, enforced by lint,
+so in normal operation nothing should reach this path.
+
+---
+
+## Auditing rows with errors: stale versus genuine, before anything else
+
+Every capture run skips files, and each one has to be dealt with. **The first cut
+is not "what is broken" — it is whether the failing capture is even about the file
+that exists today:**
+
+    the file's last write time   vs   the row's capture date
+
+**If the L5X was regenerated after the capture, the recorded errors were against a
+version that no longer exists.** In one audit, 72 of 138 error rows were exactly
+that — captures taken before a generator fix, on files rewritten hours later.
+Nothing was wrong with them; they needed their capture columns cleared so the next
+pass would pick them up. **Diagnosing any of those as a live bug would have been
+chasing a ghost.**
+
+Do this check first, every time, before reading a single error message.
+
+What remains splits three ways:
+
+- **Superseded** — the question has since been answered exactly by a
+  better-designed test. Delete the files and the rows; a broken original has no
+  remaining value once its question is closed with zero residual.
+- **Obsolete** — a synthetic composite is a proxy for a real program. **Once real
+  programs are on file the proxy stops earning its keep, and a broken proxy never
+  did.**
+- **Genuinely unfixed** — kept and listed in `OPEN_BUILD_ERRORS.md`. These need the
+  real Studio error text. **Guessing is what produced the invented alarm condition
+  types**, all four of which were rejected.
+
+---
+
+## Platform notes
+
+**1769-series requires clicking Estimate first.** 1756 and 5069 processors show a
+real capacity figure immediately; 1769-series does not — the Estimate button has to
+be clicked before the tab shows anything meaningful. **The AHK loop does not do
+this**, so it would silently read a stale or blank value. Existing 1769 points were
+manually reported for this reason. 1769 is dead architecture, so this is not being
+fixed; any future 1769 file needs manual reporting or an extra AHK step.
+
+**Keep controller model and firmware consistent across a comparison set.** Memory
+reporting granularity may differ between families, and a file on a different
+processor or firmware cannot be differenced against the existing captures without
+first subtracting a baseline difference that is itself only approximately known —
+which defeats the isolation test.
+
+---
+
+## Sample design principles
+
+### One variable
+
+**Every sample changes exactly one variable from its pair.** Testing whether UDT
+member order affects size means two files identical in every respect except order —
+same member types, same count, only the order differs.
+
+This is what makes the corpus usable for regression later instead of a pile of
+unreproducible one-offs. `scripts/confound_check.py` checks it mechanically, across
+18 dimensions, and has found six blind spots in itself doing so.
+
+### Scale until the delta is unambiguous
+
+A single tag's byte difference can be lost in reporting granularity. 10,000-element
+arrays exist for exactly that reason. For logic, generate the same pattern at 10,
+100 and 1,000 instances — both to get a measurable delta and **to confirm the
+relationship is linear before fitting a weight from two points.**
+
+### Hold the source tag declared and referenced
+
+When a pair moves an operand from a tag to something else, **keep the tag both
+declared and referenced in both members**. Otherwise the term under test is
+confounded with per-tag declaration cost, which is 84+ bytes and swamps most
+effects being measured.
+
+---
+
+## Tolerance
+
+| tier | good | acceptable | a real gap |
+|---|---|---|---|
+| Tag / UDT / AOI (exact) | within 1% | 3% | above 5% |
+| Logic (estimated) | not held to the same bar | | |
+
+Compiled logic size is a fitted heuristic by nature of the problem, so it carries
+more slop. That is not a target to force down.
+
+**Do not defer an open discrepancy in the exact tier because the logic tier is
+more interesting.** An error in the tier the tool calls exact undermines its whole
+value proposition more than an acknowledged estimate does.
+
+The project-wide noise floor is **±8 bytes**. Treat a residual inside it as
+agreement.
+
+---
+
+## The standing loop
+
+When a batch of captures lands, run this in order:
+
+1. **Reconcile** into `samples/captures.csv` by row-level merge on `sample_id`.
+   Recompute deltas against the current engine — never trust a stored one.
+2. **Check conversion status.** Cross-reference every committed file against the
+   last recorded status for that exact filename. Any committed file with no `ok`
+   on record is logged explicitly, never silently dropped.
+3. **Run `capture_errors.py`** and do not proceed past a non-zero exit.
+4. **Re-derive** sizing formulas from the new data and wire what is now confirmed.
+5. **Full-depth open-questions review.** Recompute every question's rows live
+   against the current engine. New engine state can retroactively resolve or break
+   an older row, so re-check everything, not just this batch.
+6. **Bring the docs current together.**
+7. **Specify the next batch — do not generate it.** Ask first, every time.
+8. **Report**, including which questions carry suspect rows and how many.

@@ -1,122 +1,263 @@
 # Command Reference
 
-Every command/script invocation used on this project, in one place, so
-nothing has to get re-dug-out of chat history. Grouped by what it's for:
-capture pipeline (run on the Windows machine with Studio 5000), analyzer
-CLI and webpage, and the sample generators.
+Every command used on this project. Three groups: the analyzer itself, the
+capture pipeline (Windows, with Studio 5000), and the analysis and generation
+scripts.
 
-## 1. Capture pipeline (PowerShell + AHK) — the daily driver
+---
 
-Full procedure: `docs/TESTING_PLAN.md`. Three pieces, run in order.
+## 1. The analyzer
 
-### 1a. Convert L5X -> ACD (`scripts/batch_l5x_to_acd.ps1`)
+Run from `src/`, no install needed:
 
-Wraps Rockwell's own `l5xgit` CLI (Logix Designer SDK). Resumable, content-
-hash-based staleness tracking — safe to re-run against the same
-`-OutputDir` any time.
+```bash
+cd src
+python -m l5x_memory_analyzer.cli ui    path/to/file.L5X   # treemap, file loaded
+python -m l5x_memory_analyzer.cli ui                       # treemap, file picker
+python -m l5x_memory_analyzer.cli size  path/to/file.L5X   # flat byte breakdown
+python -m l5x_memory_analyzer.cli dump  path/to/file.L5X   # raw parsed XML
+```
+
+`ui` options: `--host` (default `127.0.0.1`), `--port` (default `8765`),
+`--no-browser`.
+
+After `pip install -e .` the same subcommands work as `l5x-memory-analyzer`
+from anywhere:
+
+```bash
+l5x-memory-analyzer ui path/to/file.L5X --port 9000 --no-browser
+```
+
+## 2. Tests
+
+```bash
+python -m pytest -q
+```
+
+`pyproject.toml` sets `pythonpath = ["src"]` and `testpaths = ["tests"]`, so bare
+`pytest` works from the repo root once dev extras are installed
+(`pip install -e ".[dev]"`).
+
+---
+
+## 3. Capture pipeline
+
+Run on the Windows machine with Studio 5000. Full procedure in
+`TESTING_PLAN.md`. Three pieces, in order.
+
+### 3a. Convert L5X to ACD
+
+`scripts/batch_l5x_to_acd.ps1` wraps Rockwell's `l5xgit` CLI from the Logix
+Designer SDK. Resumable, with content-hash staleness tracking — safe to re-run
+against the same output directory any time.
 
 ```powershell
-# First run after upgrading this script (adopts already-converted files
-# instead of paying for a full reconvert):
+# First run after upgrading the script, to adopt already-converted files
+# instead of paying for a full reconvert:
 ./batch_l5x_to_acd.ps1 -InputDir ..\samples\generated -OutputDir C:\l5x_scratch\acd -AdoptExisting
 
 # Every run after that:
 ./batch_l5x_to_acd.ps1 -InputDir ..\samples\generated -OutputDir C:\l5x_scratch\acd
 ```
 
-Params: `-InputDir` (required), `-OutputDir` (required), `-L5xGitPath`
-(default `l5xgit`), `-UnsafeSkipDependencyCheck`, `-AdoptExisting`.
+Parameters: `-InputDir` and `-OutputDir` (both required), `-L5xGitPath` (default
+`l5xgit`), `-UnsafeSkipDependencyCheck`, `-AdoptExisting`.
 
-Auto-pushes `convert_log.csv` to `main` when it finishes (via
-`_autopush.ps1`, dot-sourced internally — nothing extra to run).
+Pushes `convert_log.csv` when it finishes.
 
-### 1b. AHK companion (`scripts/logix_build_capture.ahk`)
+> **Conversion success does not mean the program compiles.** The SDK only opens
+> and parses the project. It performs no ladder verification, so a file with a
+> missing array subscript converts cleanly and never builds at scale. That is what
+> `src/sample_gen/lint.py` is for.
 
-Must already be running before step 1c. Drives Studio 5000's File > Open
-inside the same already-running instance (~5s/file vs ~65s for a full
-close/reopen).
+### 3b. AHK companion
 
-- `Ctrl+F1` — start the capture loop
-- `Esc` — abort
-- `F9` — debug helper, dumps control text on the active window
+`scripts/logix_build_capture.ahk` **must already be running before step 3c.** It
+drives Studio's File > Open inside the same already-running instance — about 5
+seconds per file against about 65 for a full close and reopen.
 
-### 1c. Capture real memory readings (`scripts/batch_memory_capture.ps1`)
+| key | action |
+|---|---|
+| `Ctrl+F1` | start the capture loop |
+| `Esc` | abort |
+| `F9` | debug helper — dump control text on the active window |
 
-Consumes `convert_log.csv` from step 1a. Fully unattended — no prompts,
-safe to leave running overnight against the full corpus.
+### 3c. Capture memory readings
+
+`scripts/batch_memory_capture.ps1` consumes `convert_log.csv` from 3a. Fully
+unattended, safe to leave running overnight.
 
 ```powershell
-# Smoke test on the first 10 files before committing to a full run:
+# Smoke test the first 10 files before committing to a full run:
 ./batch_memory_capture.ps1 -ConvertLog C:\l5x_scratch\acd\convert_log.csv -Limit 10
 
-# Full run, same command without -Limit:
+# Full run:
 ./batch_memory_capture.ps1 -ConvertLog C:\l5x_scratch\acd\convert_log.csv
 ```
 
-Params: `-ConvertLog` (required), `-ManifestPath` (default
-`samples/manifest.csv`), `-HandoffPath`, `-OpenRequestPath`,
-`-TimeoutSeconds` (default 1200), `-Limit`.
+Parameters: `-ConvertLog` (required), `-ManifestPath`, `-HandoffPath`,
+`-OpenRequestPath`, `-TimeoutSeconds` (default 1200), `-Limit`.
 
-Controller model and firmware are **not** parameters — they are read from
-each L5X's own `Controller/@ProcessorType` and
-`RSLogix5000Content/@SoftwareRevision`. They used to be mandatory switches
-(removed 2026-09-06 — the script should never have asked for values the
-L5X already declares), and whatever was typed on the
-command line got stamped onto every manifest row regardless of what the
-file declared: 1,926 of 1,959 captured rows ended up carrying a processor
-that contradicted their own XML. A file whose head cannot be parsed now
-records `UNKNOWN` and a `PROCTYPE-UNREAD` note rather than a guess.
+**Controller model and firmware are not parameters.** They are read from each
+L5X's own `Controller/@ProcessorType` and
+`RSLogix5000Content/@SoftwareRevision`. A file whose head cannot be parsed records
+`UNKNOWN` with a `PROCTYPE-UNREAD` note rather than a guess.
 
-Auto-pushes `samples/manifest.csv` to `main` when it finishes — same
-mechanism as 1a. Window-title-mismatch and zero-Capacity rows are
-detected and retried automatically on the next run, no manual re-flagging
-(see `docs/TESTING_PLAN.md`).
+> They used to be mandatory switches, and whatever was typed on the command line
+> was stamped onto every row regardless of what the file declared — 1,926 of 1,959
+> captured rows ended up carrying a processor that contradicted their own XML.
+> **Never ask for a value the file already states.**
 
-**Known gap:** 1769-series processors (`L1xER`/`L2xER`/`L3xER`) need the
-"Estimate" button clicked before Controller Properties shows a Capacity
-number — the AHK loop doesn't do this yet, so those rows still need
-manual reporting.
+Writes `samples/captures.csv` and pushes it when finished. Window-title-mismatch
+and zero-capacity rows are detected and retried automatically on the next run.
 
-## 2. Analyzer CLI + webpage
+> **Known gap:** 1769-series processors need the Estimate button clicked before
+> Controller Properties shows a capacity figure. The AHK loop does not do this, so
+> those rows need manual reporting. 1769 is dead architecture, so this is not
+> being fixed.
 
-See also the [README's Usage section](../README.md#usage) for the short
-version. Full syntax:
+---
 
-```bash
-# From the repo's src/ directory, no install needed:
-cd src
-python -m l5x_memory_analyzer.cli dump  path/to/file.L5X   # raw XML dump
-python -m l5x_memory_analyzer.cli size  path/to/file.L5X   # flat byte breakdown, tags/UDT/AOI
-python -m l5x_memory_analyzer.cli ui    path/to/file.L5X   # treemap webpage, pre-loaded
-python -m l5x_memory_analyzer.cli ui                       # treemap webpage, File->Open picker
+## 4. Analysis scripts
 
-# ui options:
-#   --host 127.0.0.1   (default)
-#   --port 8765         (default)
-#   --no-browser        don't auto-open the default browser
-```
+### `quick_eval.py` — the accuracy check
 
-Or, after `pip install -e .` from the repo root, the same subcommands are
-available as a console script:
+**The default instrument.** Evaluates the family under test, all seventeen real
+programs, and one sentinel per category to catch a change that leaked further
+than intended. Prints `STOPPING RULE ... MET / NOT MET` every run.
 
 ```bash
-l5x-memory-analyzer dump path/to/file.L5X
-l5x-memory-analyzer ui   path/to/file.L5X --port 9000 --no-browser
+python scripts/quick_eval.py --family '<regex>'
+python scripts/quick_eval.py --full          # every manifest row
 ```
 
-## 3. Sample generator — parameterized CLI (`sample_gen.cli`)
+Use `--full` for exactly two things: reconciling a newly landed capture batch,
+and the single final check before a constant is committed. **Not for iterating** —
+a full recompute re-parses thousands of rows and takes minutes where a scoped one
+takes seconds.
 
-Run from `src/`. Every subcommand writes an L5X to
+Other flags: `--worst N`, `--lenient`, `--include-dead` (1756-L7x and 1769 rows,
+excluded by default as dead architecture).
+
+### `capture_errors.py` — the error gate
+
+Routes every capture that errored to the open question that asked for the test,
+and fails if any of them has nowhere to be recorded.
+
+```bash
+python scripts/capture_errors.py          # the gate
+python scripts/capture_errors.py --list   # every offending sample_id
+```
+
+Two classes are routed:
+
+- Rows with `error_count > 0`. The L5X imported and built, but Studio reported
+  errors, so **`actual_bytes` is SUSPECT rather than wrong** — part of the file
+  may never have reached the controller, which shows up as the model apparently
+  over-predicting.
+- Committed generated files that were attempted and never reached `ok`.
+
+**A file with no conversion-log row at all is not a failure** — it has simply
+never been submitted, which is the normal state of a batch built today.
+
+Ownership comes from the `OQ-` identifier in the sample's own manifest
+description, so **every generator must name its question there**.
+`samples/oq_owners.csv` covers the two cases a description cannot: a legacy family
+whose generator no longer exists, and a closed question handing its errored rows
+to its successor. An explicit entry wins over the description.
+
+The gate requires a `**CAPTURE ERRORS: <n> row(s)**` line in each owning
+question's entry, with `<n>` matching the live count. **Exit 1 on a missing line,
+a stale count, or an unowned row** — the count cannot drift without failing the
+check, which is the whole point.
+
+> This exists because it already failed once: a 31-file family sat unexamined at
+> +10.5% because every file carried errors, no error text was recorded, and
+> nothing tied that fact to the question the files were built to answer.
+
+### `unreconciled.py` — captured rows nobody acted on
+
+Recomputes every captured row against the **current** engine and groups the ones
+outside a tolerance by sweep family.
+
+```bash
+python scripts/unreconciled.py
+python scripts/unreconciled.py --threshold 64 --csv out.csv
+```
+
+A stored delta cannot answer this — it goes stale the moment any constant moves,
+which is exactly how a clean, exact, answered measurement hides in plain sight.
+**A family with many rows, one sign, and a median far from zero is an unreconciled
+measurement, not noise.**
+
+### `confound_check.py` — does this family isolate one variable?
+
+Profiles a family across 18 dimensions and fails when consecutive files move more
+than one.
+
+```bash
+python scripts/confound_check.py --family '^litop_type_sint'
+```
+
+**Scope it to one arm.** A whole-family run walks files alphabetically and crosses
+arm boundaries, which legitimately varies several dimensions.
+
+> This script exists because generated shapes have repeatedly turned out not to be
+> the shape they claimed, and it has since found six blind spots in itself —
+> expressions inside rung operands, ST bodies, definition member order, rung
+> structure, tag declaration order, and mixed-case AOI call sites. A file that
+> converts cleanly is not evidence the shape is right.
+
+### `derive_instruction_accuracy.py` — measured per-instruction accuracy
+
+Finds every captured file where one instruction is the variable under test and
+records how far the engine actually landed from the controller's reading. Writes
+the table into `memory_model.yaml`.
+
+```bash
+python scripts/derive_instruction_accuracy.py
+python scripts/derive_instruction_accuracy.py --write
+```
+
+**Isolation files are identified by what they CONTAIN, never by name.** Two
+filename whitelists were tried and both silently dropped real evidence. Naming
+conventions drift; rung text does not.
+
+### Others
+
+| script | purpose |
+|---|---|
+| `accuracy_report.py` | full corpus accuracy report and the shared capture-validity rule |
+| `predict_batch.py` | whole-file predictions — the only figure comparable to a controller capacity reading |
+| `audit_confidence.py` | confidence-tier audit across the model |
+| `coverage_audit.py` | instruction and feature coverage against real usage |
+| `conversion_status.py` | cross-reference committed files against the conversion log |
+| `extract_module_data.py`, `extract_kinetix_data.py` | pull real module shapes out of the corpus |
+| `l5x_validator/` | schema validation helpers |
+| `LaunchUI.pyw` | double-click launcher for the UI, no console window |
+
+> **`strip_ladder.py` may not be used.** Deriving variants of a real export by
+> rewriting its XML is forbidden — see the read-only rule in `CLAUDE.md`. The
+> script remains only so its history is not lost. Do not revive it, reimplement it
+> with a different XML library, or work around it with text-level surgery.
+
+---
+
+## 5. Sample generators
+
+### Parameterised CLI
+
+Run from `src/`. Each subcommand writes an L5X to
 `samples/generated/<category>/` and a `samples/manifest.csv` row with
-`predicted_bytes` filled in from this project's own sizing engine.
+`predicted_bytes` filled in by the sizing engine.
 
 ```bash
-# UDT + one tag of that type
+# A UDT plus one tag of that type
 python -m sample_gen.cli udt --name MotorStatus \
     --member Running:BOOL --member Speed:DINT --member Faulted:BOOL \
     --out motorstatus_test
 
-# N tags of a given type/dimensions
+# N tags of a given type and dimensions
 python -m sample_gen.cli tags --type DINT --dims 10000 --out dint_10k_array
 
 # N rungs of a given instruction pattern
@@ -126,154 +267,94 @@ python -m sample_gen.cli rungs --count 1000 \
     --comment-len 100 --out xic_ote_1000_comment100
 ```
 
-Full flag reference (`--help` on each subcommand shows all of these):
-`udt` — `--name --member --member-desc-len --type-desc-len --tag-desc-len
---tag-dims --instances --out`.
-`tags` — `--type --dims --count --desc-len --name-prefix --name-len --out`.
-`rungs` — `--count --instr --comment-len --decl-tag --out`.
+Flags (`--help` on each shows all):
 
-## 4. Sample generator — one-shot sweep scripts
-
-Every other test batch is its own standalone script (`python -m
-sample_gen.<name>`, no arguments — each one is a fixed, already-designed
-sweep). Listed here for reference/re-running, not because you'd typically
-type these by hand. Grouped by what they test; each writes its own files
-+ manifest rows, same as the CLI above.
-
-### Tags / UDT
-| Command | Covers |
+| subcommand | flags |
 |---|---|
-| `python -m sample_gen.gen_batch2` | Nested UDTs, nested arrays |
-| `python -m sample_gen.gen_mixed_udt` | OQ-MIXEDUDT |
-| `python -m sample_gen.gen_arraypack_boolarray` | OQ-BOOLARRAY, OQ-UDTARRAYALIGN, OQ-ARRAYPACK |
-| `python -m sample_gen.gen_tagscope_alias` | OQ-TAGSCOPE, OQ-ALIASSIZE |
-| `python -m sample_gen.gen_comment_sweep` | Comment/description-length sweep |
-| `python -m sample_gen.gen_sweep_batch` | Large general sweep batch |
-| `python -m sample_gen.gen_retest_v2` | Retest of 6 rows flagged by the 2026-08-25 manifest audit |
+| `udt` | `--name --member --member-desc-len --type-desc-len --tag-desc-len --tag-dims --instances --out` |
+| `tags` | `--type --dims --count --desc-len --name-prefix --name-len --out` |
+| `rungs` | `--count --instr --comment-len --decl-tag --out` |
 
-### AOI
-| Command | Covers |
-|---|---|
-| `python -m sample_gen.gen_aoi_sweep` | Big AOI data-sizing sweep |
-| `python -m sample_gen.gen_aoi_sweep2` | Second AOI sweep, closing remaining items |
-| `python -m sample_gen.gen_aoi_array_packing` | AOI-instance-array packing resolution |
-| `python -m sample_gen.gen_aoi_boolpack_clean` | Clean re-test of OQ-AOIBOOLPACK |
-| `python -m sample_gen.gen_aoi_closure` | Small targeted AOI additions |
-| `python -m sample_gen.gen_aoi_generalization` | AOI generalization batch |
-| `python -m sample_gen.gen_aoi_nested_inout` | Nested AOI-with-required-InOut-param |
-| `python -m sample_gen.gen_aoi_required_visible` | AOI Parameter Required/Visible flag sweep |
-| `python -m sample_gen.gen_boolpack_test` | OQ-BOOLPACK isolating sample pair |
+### One-shot sweep scripts
 
-### Logic / instructions
-| Command | Covers |
-|---|---|
-| `python -m sample_gen.gen_logic_sweep` | Per-instruction logic-sizing sweep |
-| `python -m sample_gen.gen_logic_typesweep` | Instruction operand-TYPE sweep |
-| `python -m sample_gen.gen_logic_random_mix` | Random-combination logic validation harness |
-| `python -m sample_gen.gen_instruction_firstpass` | First-pass single-instruction coverage sweep |
-| `python -m sample_gen.gen_cpt_comprehensive` | CPT comprehensive batch |
-| `python -m sample_gen.gen_cpt_confirm` | CPT operator-tier linearity confirmation |
-| `python -m sample_gen.gen_cpt_mixed_operators` | CPT mixed-operator-tier cost sweep |
-| `python -m sample_gen.gen_cmpcpt_complexity` | CPT/CMP expression-complexity sweep |
-| `python -m sample_gen.gen_cmpcpt_layout` | CPT/CMP operand-layout and background-optimization sweep |
-| `python -m sample_gen.gen_indirect_addressing` | Indirect addressing overhead |
-| `python -m sample_gen.gen_lbljmp_rules` | LBL/JMP validation-rule sweep |
-| `python -m sample_gen.gen_jsr_sbr_ret` | JSR/SBR/RET parameter-passing sweep |
-| `python -m sample_gen.gen_jsr_decompose` | JSR param-cost follow-up (OQ-JSRPARAMCOST) |
-| `python -m sample_gen.gen_branch_empty_rungs` | Phase 4 bit-logic closeout, branch/empty rungs |
-| `python -m sample_gen.gen_empty_routine` | OQ-EMPTYROUTINE |
-| `python -m sample_gen.gen_phase3_closeout` | Phase 3 literal-checklist closeout |
-| `python -m sample_gen.gen_batch3_followups` | Batch 3 follow-up sweep |
-
-### Task / Program / Routine
-| Command | Covers |
-|---|---|
-| `python -m sample_gen.gen_task_overhead` | Per-Task overhead, isolated from logic |
-| `python -m sample_gen.gen_task_overhead_disentangle` | Per-Task overhead disentangling, missing axis |
-| `python -m sample_gen.gen_xprogref` | OQ-XPROGREF round 2 |
-
-### Motion / Axis
-| Command | Covers |
-|---|---|
-| `python -m sample_gen.gen_axis_composite` | Axis + composite-UDT sweep |
-| `python -m sample_gen.gen_motion_instructions` | MAM/MAJ/MAS/MRP motion instructions |
-| `python -m sample_gen.gen_motion_predefined` | OQ-PREDEFINED: MOTION_INSTRUCTION, CAM_PROFILE |
-| `python -m sample_gen.gen_motion_syntax_combos` | MAM/MAJ/MAS/MRP keyword-combination validation |
-| `python -m sample_gen.gen_cam_sweep` | CAM structure byte-size count sweep |
-
-### Modules / I/O
-| Command | Covers |
-|---|---|
-| `python -m sample_gen.gen_io_modules` | I/O module sizing sweep, first batch |
-| `python -m sample_gen.gen_module_sweep` | Full I/O module sweep — one file per real corpus catalog |
-| `python -m sample_gen.gen_module_sweep_variants` | Real catalogs with 2+ different real configurations |
-| `python -m sample_gen.gen_module_sweep_gap` | Closes the last real catalog coverage gap |
-| `python -m sample_gen.gen_module_motion` | Motion/drive module batch (Kinetix power supply + axis) |
-| `python -m sample_gen.gen_module_vfd` | VFD (PowerFlex 525/755) module batch |
-| `python -m sample_gen.gen_module_prototype` | Module/IO prototype batch |
-| `python -m sample_gen.gen_module_kinetix_bus` | Full Kinetix 5700 shared-bus test |
-| `python -m sample_gen.gen_module_rack_pointio` | Point I/O rack tests, multiple real modules on one adapter |
-| `python -m sample_gen.gen_module_rack_1756local` | 1756 local rack, multiple real ControlLogix I/O modules |
-| `python -m sample_gen.gen_module_rack_1756remote` | 1756 local rack talking to a 1756 remote rack over Ethernet |
-| `python -m sample_gen.gen_module_bender_full` | Full-fidelity replica of a real Bender program (69 modules) |
-
-### Strings
-| Command | Covers |
-|---|---|
-| `python -m sample_gen.gen_string_tagoverhead` | STRING/custom-string tag_overhead resolution |
-| `python -m sample_gen.gen_string_closure` | STRING closure batch |
-| `python -m sample_gen.gen_string_batch2` | STRING accuracy batch 2 |
-| `python -m sample_gen.gen_string_close_out` | STRING closing batch, round 2 |
-
-## 5. Tests
+Every other batch is a standalone script taking no arguments — each is a fixed,
+already-designed sweep:
 
 ```bash
-# From the repo root:
-python3 -m pytest tests -q
+python -m sample_gen.gen_<name>
 ```
 
-`pyproject.toml` sets `pythonpath = ["src"]` and `testpaths = ["tests"]`,
-so plain `pytest` also works from the repo root once `dev` extras are
-installed (`pip install -e ".[dev]"`).
+**Each script's own module docstring is its documentation**: what it measures,
+what is held fixed, what each file discriminates, and which question it answers.
+Read that rather than a summary table, which goes stale. There are around 140.
 
+Grouped by area:
 
-## `python scripts/capture_errors.py` — step 2b, the error gate
+**Tags and UDTs** — `batch2`, `mixed_udt`, `arraypack_boolarray`, `tagscope_alias`,
+`comment_sweep`, `sweep_batch`, `retest_v2`, `udt_membername`, `udt_membername2`,
+`udt_realworld_isolation`, `udttagslot_closeout`, `tagorder`, `pool_residual`,
+`defscale`, `defscale2`, `shell_scale`, `additivity`
 
-Routes every capture that errored to the open question that asked for the
-test, and fails if any of them has nowhere to be recorded.
+**Strings** — `string_tagoverhead`, `string_closure`, `string_batch2`,
+`string_close_out`, `custom_string_array_closure`
 
-Two classes: rows with `error_count > 0` (the L5X imported and built, but
-Studio reported errors, so `actual_bytes` is SUSPECT rather than wrong), and
-committed generated files that were attempted and never reached `ok` in
-`convert_log.csv`. A file with no `convert_log` row at all is NOT a failure —
-it has simply never been submitted, which is the normal state of a batch built
-today.
+**AOIs** — `aoi_sweep`, `aoi_sweep2`, `aoi_array_packing`,
+`aoi_array_align_closeout`, `aoi_arraylocaltag_sweep`, `aoi_arraylocaltag2`,
+`aoi_boolmix_grid`, `aoi_boolpack_clean`, `aoi_boolpack_pairing`,
+`aoi_boolpack_pairing_iso2`, `aoi_closeout2`, `aoi_closure`,
+`aoi_generalization`, `aoi_internal_logic_isolation`,
+`aoi_internal_shape_isolation`, `aoi_localtag_density`, `aoi_nested_inout`,
+`aoi_orphaned_def`, `aoi_required_visible`, `aoi_structure`,
+`aoidefshape_closeout`, `boolpack_test`, `driveaxis_aoi`
 
-Ownership comes from the `OQ-` identifier in the sample's own manifest
-description, so every generator must name its question there.
-`samples/oq_owners.csv` covers the two cases a description cannot: a legacy
-family whose generator no longer exists, and a closed question handing its
-errored rows to its successor (`oq:OQ-OLD` as the prefix means "any row whose
-description names OQ-OLD"). An explicit entry wins over the description.
+**Logic and instructions** — `logic_sweep`, `logic_typesweep`,
+`logic_random_mix`, `instruction_firstpass`, `unweighted_instructions`,
+`unweighted_closeout`, `nontag_instruction_sweep`, `verified_instructions`,
+`branch_empty_rungs`, `branchdepth_closeout`, `branchdepth_staggered`,
+`rungshape`, `seriesoutput_closeout`, `literaloperand`, `empty_routine`,
+`indirect_addressing`, `lbljmp_rules`, `msg_typesweep`, `phase3_closeout`,
+`batch3_followups`, `model_gap_closers`, `oq_closeout`, `assumed_closeout`,
+`segment_closeout`
 
-The gate requires a `**CAPTURE ERRORS: <n> row(s)**` line in each owning
-question's entry, in `OPEN_QUESTIONS.md` or `RESOLVED_QUESTIONS.md`, with `<n>`
-matching the live count. Exit 1 on a missing line, a stale count, or an
-unowned row — the count cannot drift without failing the check, which is the
-whole point.
+**Expressions** — `cpt_comprehensive`, `cpt_confirm`, `cpt_mixed_operators`,
+`cpt_arrangement_closeout`, `cpt_closeout`, `cmpcpt_complexity`,
+`cmpcpt_layout`, `cmpcpt_expr_closeout`
 
-    python scripts/capture_errors.py          # the gate
-    python scripts/capture_errors.py --list   # every offending sample_id
+**Structured Text** — `st_sizing`, `st_expression_grid`, `st_closeout`
 
+**JSR, SBR and subroutines** — `jsr_sbr_ret`, `jsr_decompose`,
+`jsr_midchain_isolation`, `jsr_multi_distinct_targets`,
+`jsr_multi_distinct_targets_scale`, `jsr_paramcost_closeout`,
+`jsr_paramtype_isolation`, `jsr_paramtype_isolation_iso2`,
+`jsr_target_content_scale`, `subroutine_and_for`
 
-## `python scripts/unreconciled.py` — captured rows nobody acted on
+**Tasks, programs and scope** — `task_overhead`, `task_overhead_disentangle`,
+`xprogref`, `program_multi_distinct_scale`, `event_task_trigger`
 
-Recomputes every captured row against the CURRENT engine and groups the ones
-outside a tolerance by sweep family. The manifest's own `delta` column cannot
-answer this: it goes stale the moment any constant moves, which is exactly how
-a clean, exact, answered measurement hides in plain sight. A family with many
-rows, one sign, and a median far from zero is an unreconciled measurement, not
-noise.
+**Motion and axis** — `axis_composite`, `axis_marginal`, `motion_instructions`,
+`motion_predefined`, `motion_syntax_combos`, `cam_sweep`, `cam_closure`,
+`module_axis_scale`
 
-    python scripts/unreconciled.py
-    python scripts/unreconciled.py --threshold 64 --csv out.csv
+**Modules and I/O** — `io_modules`, `module_sweep`, `module_sweep_variants`,
+`module_sweep_gap`, `module_motion`, `module_vfd`, `module_prototype`,
+`module_kinetix_bus`, `module_marginal`, `module_bridge_placeholder`,
+`module_cip_generic_scale`, `module_rack_pointio`, `module_pointio_rack`,
+`pointio_conn_sweep`, `module_rack_1756local`, `module_rack_1756remote`,
+`module_1756_rack_scale`, `module_5069_aent_rack`, `module_bender_full`,
+`generic_ethernet_module`, `prodcons`
+
+**Alarms** — `alarm_conditions`, `alarm_definitions`, `alarm_bitbacking`,
+`alarm_separation`, `almd_singletag`
+
+**Platform and baseline** — `fw_catalog_matrix`, `platform_equivalence`,
+`blockbyte_l71`, `identname_closeout`, `predefined_probe`
+
+**Composite and realistic** — `composite_realistic`, `composite_realistic_v2`,
+`composite_realistic_v3`, `composite_realistic_v4`, `realscale_surcharge`,
+`murraybros_shape`, `v3_error_ablation`
+
+> **Test files are supplied, not invented.** Ask before generating a batch, every
+> time; no prior batch authorises the next. The deliverable at the design step is a
+> written spec — what varies, what is held fixed, what each file discriminates,
+> and against which existing captures it differences — not files on disk. See
+> `SAMPLE_GENERATION.md`.
