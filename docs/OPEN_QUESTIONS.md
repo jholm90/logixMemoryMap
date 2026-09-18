@@ -3942,6 +3942,49 @@ the matching footnote at the bottom, not inline.
     itemized member breakdown are two different computations, and they
     disagree by a large margin on every real AOI.
 
+
+    **IN-DEPTH REVIEW 2026-09-18 — the `mbshape_*` family read in full, and the
+    answer is that it is NOT a per-member constant, which is worth knowing
+    because the shape of the residual makes it look like one.**
+
+    `mbshape_*` is 15 files built to a real program's AOI profile (19
+    definitions, 453 parameters, 280 local tags) with one axis varied at a time.
+    It sits at 2.36% mean absolute error while every isolated AOI family is
+    essentially exact -- `aoipack_*` 281 rows at 0.048%, `aoistructure` 110 rows
+    at 0.118%, `aoi` 159 rows at 0.037%. So whatever this is, it does not show up
+    when one AOI is measured alone.
+
+    Regressing the residual on definition count, parameter count and local-tag
+    count over all 15 rows:
+
+        residual = -1.9 x parameters - 1.9 x locals - 97     RMS 1,496 -> 33
+
+    Parameters and locals carry it at the SAME rate, from two independent axes
+    over a 2.3x span, and the fit is tight. Definition count does not: its
+    coefficient is +2.4 and its three rows are the three worst fits (+85, -61,
+    +57). `mbshape_rungs_{05,10,20}` are byte-identical to each other, so AOI
+    internal rung count is priced correctly and contributes nothing here.
+
+    **Why it is NOT wired: the rate is not an integer, and splitting it does not
+    make it one.** A per-member cost has to be a whole number of bytes. Fitting
+    BOOL and non-BOOL members separately gives -1.11 and -2.62 and barely moves
+    the residual (RMS 35 against 37 for the single shared rate), so the
+    BOOL-packing explanation is refuted rather than unconfirmed. A non-integral
+    per-member rate that is stable across two axes is the signature of something
+    being counted at a different granularity than the thing it correlates with.
+
+    **Real exposure is small**: roughly 5,000 declared members across the 331 AOI
+    definitions in the sixteen programs, so about 9,500 bytes, 0.01%. This is not
+    where the remaining error is, which is the other reason it is recorded rather
+    than fitted.
+
+    **What would settle it**: a single-definition file with the same
+    BOOL/BOOL/REAL/DINT/BOOL/REAL type cycle, member count swept 6/12/24/48. If
+    the rate survives at one definition it is genuinely per member and the
+    non-integer is an averaging artifact to be decomposed; if it vanishes, it
+    belongs to the 19-definition shape and the per-member reading is a
+    coincidence of this family's construction.
+
     Found 2026-09-11 while making the treemap sum to the report. For each
     AOI, `report.py` charges a definition cost (per-declared-member rate
     table plus the type-name-length bucket, OQ-AOIDEF's wiring), while
