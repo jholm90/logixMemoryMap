@@ -1450,6 +1450,79 @@ unexplained 107 bytes per condition is OQ-ALARMCONDREAL.
 Log every constant change here with date + which sample(s) drove the change, so
 there's a record of *why* a number is what it is, not just what it currently is.
 
+- **2026-09-18** — **The in-depth open-questions review. Seven constants wired,
+  all measured with zero residual, and the real set went 1.6894% -> 1.6566%
+  mean absolute error over the sixteen held-out programs, every one of them the
+  right way.** Two corpus families went from badly wrong to essentially exact:
+  Structured Text 8.3291% -> 0.0091% (60 of 69 rows byte-exact) and the
+  `unweighted_*` instruction sweep 4.6865% -> 0.1574%.
+
+  1. **`jsr_param_cost.b_multiparam_extra = 4`**, keyed on TOTAL operands
+     (inputs plus outputs) at a threshold of 2. Solved by separating the
+     per-call slope from the per-file constant across every paramcount row with
+     more than one call count: `p = 4, c = -176` reproduces thirteen rows at
+     call counts 10, 100 and 1,000. `jsr_multiret_n02_r01000` decides the
+     total-operand keying: +3,952 under the input-only reading, -56 under this
+     one. (OQ-JSRPARAMCOST)
+  2. **`jsr_target_declaration.per_target` 152 -> 160.** The zero-param
+     multi-target sweep's residual was exactly `8t - 280` across t = 1..50, two
+     generators, name lengths 4..40. (OQ-JSRPARAMCOST)
+  3. **`jsr_target_declaration.sbr_ret_operand_bytes = 112`**, once per target
+     whose SBR/RET carry operands. `unweighted_sbrret_t{001,010,050,200}` give
+     exactly 112 per target at every step; the 12 parameterless `subrtn_*` files
+     still measure exactly 0, so `SBR: 0` and `RET: 0` stay correct and the
+     OPERANDS are what cost. It also collapses the two JSR file-level constants
+     from 96 apart to 16 apart. (OQ-VERIFINSTR)
+  4. **`DTR = 40` per rung.** It had NO weight at all, not the 16 the open
+     question claimed. `unweighted_dtr_n{10,100,1000}` = +404 / +4,004 /
+     +40,004. Its five siblings in the same sweep read the universal +4, so
+     AND 40, OR 40, RTOS 72, LFU 72 and UPPER 84 are now confirmed by real data
+     rather than assumed. (OQ-VERIFINSTR)
+  5. **Structured Text gets its OWN operator classification**, because it
+     measurably is not the ladder CPT tier table. One-operator DINT lookups by
+     operator class: additive 40, multiplicative 56, bitwise 124, `**` 204.
+     Per-operator premiums at two or more operators: DINT bitwise 0 and `**` 38
+     (not tier 3's 80); all-floating-point multiplicative 0 and `**` 8. The
+     premium follows the OPERANDS, not the destination -- `st_expr_cpt_mirror`
+     is the only file in the corpus that separates those two readings.
+     (OQ-STEXPR, OQ-STEXPR-OPERATOR)
+  6. **ST REAL-destination conversion is per SOURCE, keyed on the source's own
+     type**: DINT 48, SINT 92, INT 104, LINT 0. `stc_conv_mixed` is an
+     independent additivity check and lands to the byte. Plus
+     **`st_aoi_call_routine_bytes = 264`**, once per ST routine containing any
+     AOI call -- separated from per-call by three files at one call against four
+     at a thousand. (OQ-STEXPR)
+  7. **`cpt_expression.leading_tier1_run_length = 2` / `_run_bytes = 4`.**
+     Arrangement is real: a two-tier mix costs 4 more iff EXACTLY TWO tier-1
+     operators precede the first tier-2 one. The six +4 rows in the 28-file
+     `cptarrange_*` sweep are exactly the six run-of-2 rows, and the rule
+     retro-explains the alternating/grouped n=5 pair, their agreement at n=11,
+     and the three (2,1) files stuck 4 short -- none of which it was fitted to.
+     (OQ-CPTARRANGE)
+
+  **Two parser defects found and fixed on the way, both of the
+  right-answer-wrong-reason kind.** `_DESTINATION_ARG` gave COP, CPS, FLL, BSL
+  and BSR a destination position of -1, which inspects the LENGTH operand; it
+  charged correctly only because a literal length does not resolve to BOOL.
+  And `sizing/structured_text.py`'s `_NUMBER` matched the digits inside
+  identifiers, so `R0 * R1` counted five integer literals -- harmless until the
+  ST operator premium started keying on exactly that. Also added five
+  word-destination writers the table was missing, GSV among them at 363 real
+  occurrences.
+
+  **Measured and deliberately NOT wired, with the count of what each candidate
+  fixes and breaks:** the REAL-dest CPT 5-operator base (324 all-REAL against
+  328 for three older parenthesised/float-literal families -- every candidate
+  change fixes 4 rows and breaks 10); `**` on the REAL-dest path (+8 per extra
+  operator, entangled with that base); the integer-destination float literal
+  (+120 to +188 per rung, the largest unpriced CPT term in the project, and not
+  linear in the literal count over three points); the POINT I/O per-card
+  connection-format correction (-1,136 Enhanced, -852 Enhanced Data, Optimized
+  flat -- unwireable because 34 of the 45 real POINT I/O cards are structurally
+  indistinguishable between the two formats that differ by 1,136); and the
+  module-NAME law (8 bytes per 8 characters with the first 8 free, one bucket
+  off the KNOWN shared identifier law, whole real exposure 4,816 bytes).
+
 - **2026-09-17** — **Four families taken from badly wrong to byte-exact, and
   the real-set headline moved the WRONG way as a result. Both halves are the
   finding.** Wired, every one measured with zero residual:
