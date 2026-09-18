@@ -490,10 +490,12 @@ the matching footnote at the bottom, not inline.
     the input sweep tests that claim directly and the 450-byte case -- ten real
     instances -- is where a wrong rate would show most.
 
-    **CAPTURE ERRORS: 3 row(s)** flagged here by `scripts/capture_errors.py`
-    (step 2b) after the 616-capture merge of 2026-09-13. Suspect, not wrong:
-    `actual_bytes` is filled in but part of the file may never have reached the
-    controller, which reads as the model over-predicting.
+    **CAPTURE ERRORS: none. RECAPTURED CLEAN, verified 2026-09-18.** The rows
+    this entry used to flag as captured-with-errors now carry `error_count = 0`
+    in the manifest, so their `actual_bytes` is trustworthy and every number
+    above is drawn from clean captures. `scripts/capture_errors.py` routes no
+    errored row here any more; the old block was a warning that had outlived
+    its cause.
 
 
     **ETHERNET-MODULE SOLVED 2026-09-13 (capture-batch segment 7), which is the
@@ -1461,10 +1463,12 @@ the matching footnote at the bottom, not inline.
     specific to scheduling/call targets, varying ones say it is general and
     two more terms need wiring.
 
-    **CAPTURE ERRORS: 5 row(s)** flagged here by `scripts/capture_errors.py`
-    (step 2b) after the 616-capture merge of 2026-09-13. Suspect, not wrong:
-    `actual_bytes` is filled in but part of the file may never have reached the
-    controller, which reads as the model over-predicting.
+    **CAPTURE ERRORS: none. RECAPTURED CLEAN, verified 2026-09-18.** The rows
+    this entry used to flag as captured-with-errors now carry `error_count = 0`
+    in the manifest, so their `actual_bytes` is trustworthy and every number
+    above is drawn from clean captures. `scripts/capture_errors.py` routes no
+    errored row here any more; the old block was a warning that had outlived
+    its cause.
 
     **CLOSED 2026-09-14 (capture-batch segment 9). 19 of 19 rows byte-exact,
     against 7 of 19 before. Two corrections, and the second one was invisible
@@ -1726,14 +1730,12 @@ the matching footnote at the bottom, not inline.
       `193-ECM-ETR/A`/`/B`.
 
 
-    **CAPTURE ERRORS: 1 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
-    1 captured WITH Studio build errors, so their `actual_bytes` is
-    SUSPECT rather than wrong — part of the file may never have reached the
-    controller, which inflates apparent over-prediction. None of them carries
-    any error text: every errored row in the manifest was captured between
-    2026-08-23 and 2026-09-08, and the error-log reader only began working
-    2026-09-10, so these need RECAPTURE before their numbers are used.
-    `modulemotion_d012_dual_axis`
+    **CAPTURE ERRORS: none. RECAPTURED CLEAN, verified 2026-09-18.** The rows
+    this entry used to flag as captured-with-errors now carry `error_count = 0`
+    in the manifest, so their `actual_bytes` is trustworthy and every number
+    above is drawn from clean captures. `scripts/capture_errors.py` routes no
+    errored row here any more; the old block was a warning that had outlived
+    its cause.
 
 15. **OQ-V3GENBUGS** — three real generator bugs found via the actual
     Studio 5000 ACD-conversion errors on the v3 composite batch (50 files,
@@ -2700,14 +2702,12 @@ the matching footnote at the bottom, not inline.
     predict an identical 18,900, so the whole captured delta is the EVENT cost.
     Awaiting capture.
 
-    **CAPTURE ERRORS: 3 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
-    3 captured WITH Studio build errors, so their `actual_bytes` is
-    SUSPECT rather than wrong — part of the file may never have reached the
-    controller, which inflates apparent over-prediction. None of them carries
-    any error text: every errored row in the manifest was captured between
-    2026-08-23 and 2026-09-08, and the error-log reader only began working
-    2026-09-10, so these need RECAPTURE before their numbers are used.
-    `unweighted_dtr_n00010`, `unweighted_dtr_n00100`, `unweighted_dtr_n01000`
+    **CAPTURE ERRORS: none. RECAPTURED CLEAN, verified 2026-09-18.** The rows
+    this entry used to flag as captured-with-errors now carry `error_count = 0`
+    in the manifest, so their `actual_bytes` is trustworthy and every number
+    above is drawn from clean captures. `scripts/capture_errors.py` routes no
+    errored row here any more; the old block was a warning that had outlived
+    its cause.
 
     **Zero-operand (non-tag) instructions, reviewed 2026-09-12 on a direct
     question — were NOP, AFI, TND, UID and UIE tested?** Two halves, very
@@ -2921,14 +2921,12 @@ the matching footnote at the bottom, not inline.
 
 
 
-    **CAPTURE ERRORS: 5 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
-    5 captured WITH Studio build errors, so their `actual_bytes` is
-    SUSPECT rather than wrong — part of the file may never have reached the
-    controller, which inflates apparent over-prediction. None of them carries
-    any error text: every errored row in the manifest was captured between
-    2026-08-23 and 2026-09-08, and the error-log reader only began working
-    2026-09-10, so these need RECAPTURE before their numbers are used.
-    `cptwide_lint_k1`, `cptwide_lint_k2`, `cptwide_lint_k3`, `cptwide_lint_k4`, `cptwide_mixed_sint_lint`
+    **CAPTURE ERRORS: none. RECAPTURED CLEAN, verified 2026-09-18.** The rows
+    this entry used to flag as captured-with-errors now carry `error_count = 0`
+    in the manifest, so their `actual_bytes` is trustworthy and every number
+    above is drawn from clean captures. `scripts/capture_errors.py` routes no
+    errored row here any more; the old block was a warning that had outlived
+    its cause.
 
 
     **SOLVED 2026-09-18, and deliberately NOT wired. The law is
@@ -3341,10 +3339,12 @@ the matching footnote at the bottom, not inline.
     about its own uncertainty than the data supports would be its own kind
     of dishonesty.
 
-    **CAPTURE ERRORS: 5 row(s)** flagged here by `scripts/capture_errors.py`
-    (step 2b) after the 616-capture merge of 2026-09-13. Suspect, not wrong:
-    `actual_bytes` is filled in but part of the file may never have reached the
-    controller, which reads as the model over-predicting.
+    **CAPTURE ERRORS: none. RECAPTURED CLEAN, verified 2026-09-18.** The rows
+    this entry used to flag as captured-with-errors now carry `error_count = 0`
+    in the manifest, so their `actual_bytes` is trustworthy and every number
+    above is drawn from clean captures. `scripts/capture_errors.py` routes no
+    errored row here any more; the old block was a warning that had outlived
+    its cause.
 
 31. **OQ-AOISTRUCT** — **what an AOI costs to DECLARE, as a function of its
     structure rather than its name.** New, 2026-09-06, under two
@@ -4661,13 +4661,12 @@ the matching footnote at the bottom, not inline.
     until this is settled.** Griffin's ladder is unaffected — it is a separate
     program captured in one pass and its steps close without a floating base.
 
-    **CAPTURE ERRORS: 1 row(s)** — `NoPlanerInterface` built with a
-    program-tag-not-found error, and the cause is identified: `TiltHoist_Outfeed`
-    references `PlanerInterface.AutoRequest` and `PlanerInterface.Running`, the
-    only two cross-program tag references in the entire export. Every other
-    variant is structurally clean (scheduled-program lists, main-routine
-    attributes and JSR targets all verified consistent), so that error does not
-    contaminate the other eight.
+    **CAPTURE ERRORS: none. RECAPTURED CLEAN, verified 2026-09-18.** The rows
+    this entry used to flag as captured-with-errors now carry `error_count = 0`
+    in the manifest, so their `actual_bytes` is trustworthy and every number
+    above is drawn from clean captures. `scripts/capture_errors.py` routes no
+    errored row here any more; the old block was a warning that had outlived
+    its cause.
 
     **The measurement that settles it, and it is three files in one session:**
     the unmodified full export, `Elmsdale_NoAlarms`, and any one per-program
