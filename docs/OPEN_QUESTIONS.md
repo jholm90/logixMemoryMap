@@ -2786,6 +2786,97 @@ the matching footnote at the bottom, not inline.
     5-operator +4 is really the same arrangement effect OQ-CPTARRANGE
     found on the integer path, wearing a different hat. Blocked on capture.
 
+    **IN-DEPTH REVIEW 2026-09-18 — the captures landed, and the FIRST thing
+    they say is that every number in this batch had to be normalised before it
+    could be read. Two of the sub-questions are now closed.**
+
+    **(0) A per-file constant of −352 runs through the whole `gen_cpt_closeout`
+    batch, and it is why this looked unreadable.** Of the 58 captured `cpt` rows
+    from it, 53 sit at −352 plus a whole number of 4-bytes-per-rung; the other
+    five — `cptwide_lint_k1..k4` and `cptwide_mixed_sint_lint` — sit on a
+    baseline of **0**. The discriminator is exact and mechanical: **a file whose
+    logic REFERENCES one of the pool's LINT tags has baseline 0; one that does
+    not has baseline −352.**
+
+    With that one substitution, **every one of the 58 residuals is its baseline
+    plus an exact multiple of 4 bytes per rung. No exceptions.** That is what
+    makes the batch usable, and it is also a warning: any conclusion drawn by
+    differencing a file in this batch against a file from an OLDER generator
+    carries a spurious 352, and several readings in this entry were contaminated
+    that way before this was found.
+
+    The −352 itself is NOT explained. It is numerically 4 × 88, the engine's
+    charge for the four unreferenced LINT tags `N0..N3` that `gen_cpt_closeout`
+    adds to the shared pool, so the arithmetic is consistent with "unreferenced
+    LINT tags cost nothing, and referencing any one of them costs the full 352".
+    That reading is uncomfortable — it makes one reference pay for four tags —
+    and the measured standalone LINT tag slot is 4 bytes (`type_lint_50tag`,
+    KNOWN), which does not obviously produce 88. Not patched. Recorded as the
+    normalisation it is, with its own probe named below.
+
+    **(1) The REAL-dest operator ladder is EXACT at 7, 9 and 10 operators.**
+    `cptrdops_n07/n09/n10` all sit precisely on baseline, so `124 + 40n` holds
+    and there is no ">= 5 step". That half of the question is closed.
+
+    **(2) The 5-operator anomaly is NOT an operator-count effect, and it is not
+    resolved either — it is now a CONTRADICTION between shapes.** The two
+    all-REAL, unparenthesised 5-operator files built for this
+    (`cptrdarrange_alternating_n05`, `cptrdarrange_grouped_n05`) both read −4 per
+    rung against `operator_count_base[5] = 328`: they measure the ladder's 324.
+    The three older families that pinned 328 still measure 328 and are still
+    exact.
+
+    | n=5 REAL-dest shape | measures |
+    |---|---:|
+    | all-REAL, no parentheses, `R0+R1*R2+R3*R4+R1` | **324** |
+    | parenthesised, mixed DINT/REAL, `(R0+L1)*L2-L3/L4+L5` | 328 |
+    | nested parentheses, `L5+(L4-(L3/(L2*(R0+R1))))` | 328 |
+    | no parentheses, three float literals, `R0*1.5+R1*2.5-R2/3.5` | 328 |
+
+    No single discriminator covers all four. Parenthesisation explains the middle
+    two and fails on the last; integer operands explain the middle two and fail
+    on the last; the leading-tier-1-run rule that CLOSED the integer path (see
+    OQ-CPTARRANGE) predicts 324 for the run-of-1 rows and breaks eight of them.
+    **Left at 328, unchanged**, because every candidate change fixes fewer rows
+    than it breaks — applying the integer path's rule here with base 324 fixes 4
+    and breaks 10. Counted, not guessed at.
+
+    **(3) `**` on the REAL-dest path is per-operator, and the rate is not what is
+    wired.** Normalised, `cptrdpow_k2` is **+12 per rung** and `cptrdpow_k3` is
+    **+20** — a clean +8 per additional `**`, which answers the question the two
+    files were built for: per operator, not per call. The wired `pow_extra: 8`
+    plus `pow_with_tier2_extra: 4` charges a flat 12 for any count, so it is
+    right at k=1 by construction and 8 short per extra `**`. NOT wired, and the
+    reason is (2): `cptrd_powmulti_n05` is a 5-operator pow row, so the pow base
+    and the 5-operator base are entangled and moving one moves the other. They
+    have to be settled together.
+
+    **(4) The narrow-operand rate is badly wrong, and SINT and INT do not
+    match.** Normalised per rung — SINT k=0..4: 0, **−92**, **−44**, 0, **+44**;
+    INT k=0..4: 0, **−80**, **−20**, **+36**, **+92**. Both monotone in k with a
+    roughly constant step after k=1 (SINT ~+48 per operand, INT ~+56) and a large
+    negative jump at k=1, so the one-point fit `3*40 + 136` is wrong in base and
+    rate, and the assumption that the two narrow types behave identically is
+    refuted. That belongs to OQ-CPTNARROW below and is cross-referenced rather
+    than duplicated.
+
+    **(5) A float literal with an INTEGER destination is unpriced, and it is
+    large.** `cptidflit_k1/k2/k3` normalise to **+120, +124 and +188 per rung**:
+    the integer CPT path charges nothing at all for a float literal where the
+    REAL path charges 4. These three files exist precisely because no
+    integer-destination CPT capture had ever contained one, and real logic writes
+    `CPT(Dest,A*1.5+B)` routinely. **120+ bytes per rung is the largest single
+    unpriced CPT term found in this project.** NOT wired: k=1 and k=2 differ by 4
+    while k=2 and k=3 differ by 64, so it is not linear in the literal count and
+    three points cannot say what it is.
+
+    **What is needed, in priority order.** (a) A 1..6 float-literal sweep at a
+    fixed operator count and integer destination, for (5) — the biggest number
+    here. (b) Three files to settle the −352: the identical rung shape with the
+    pool's LINT tags removed entirely, with exactly one LINT tag, and with four
+    of which one is referenced. (c) An n=5 REAL-dest discriminator set — all-REAL
+    parenthesised, all-REAL with one float literal, mixed-operand unparenthesised
+    — which separates the three candidates for (2) in three files.
 
 
     **CAPTURE ERRORS: 1 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
@@ -2964,6 +3055,58 @@ the matching footnote at the bottom, not inline.
 
     **Discriminator: the same four arms at two operand counts (2 and 8), operator
     count held at three.** Four files settle both constants outright.
+
+    **THE ARRANGEMENT RULE IS SOLVED AND WIRED 2026-09-18, and it is exact on
+    every row that ever contradicted a tier-count model.**
+
+    The 28-file `cptarrange_*` sweep captured: four arrangements at every operator
+    count 3 through 9, tier counts held fixed, 100 rungs each. Read after
+    subtracting the batch's −352 per-file constant (see OQ-CPTREALDEST, item 0 —
+    without that subtraction these rows look like noise):
+
+    | arrangement | n=3 | 4 | 5 | 6 | 7 | 8 | 9 | leading tier-1 run |
+    |---|---:|---:|---:|---:|---:|---:|---:|---|
+    | alternating | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 at every n |
+    | frontloaded | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 at every n |
+    | grouped | **+4** | **+4** | 0 | 0 | 0 | 0 | 0 | 2, 2, 3, 3, 4, 4, 5 |
+    | split | 0 | 0 | 0 | 0 | **+4** | **+4** | **+4** | 1, 1, 1, 1, 2, 2, 2 |
+
+    **The six rows that cost 4 more are exactly the six rows whose leading run of
+    tier-1 operators is 2.** Every other row has a run of 0, 1, 3, 4 or 5 and
+    costs nothing extra. One rule, 28 rows, zero residual:
+
+        + 4 bytes per call iff EXACTLY TWO tier-1 operators precede the first
+          tier-2 operator
+
+    It also retro-explains every point this question was opened for, without
+    being fitted to any of them:
+
+      * `cptmix_scaling_grouped_n05` (`L0+L1+L2*L3*L4`, run 2) costs 4 more than
+        `cptmix_scaling_alternating_n05` (run 1) at identical tier counts — the
+        original smoking gun.
+      * The same pair is IDENTICAL at 11 operators, which is what made this look
+        inconsistent: at n=11 the grouped run is 6, not 2.
+      * The three (2,1) files the two-tier refit left 4 short —
+        `cptcx_operatormix_mixedops`, `_nested` and
+        `cptcx_spotcheck_mixedops4op_n100`, all measuring 192 where the model
+        said 188 — are `L0+L1+L2*L3`, a run of 2.
+
+    Wired as `cpt_expression.leading_tier1_run_length: 2` /
+    `leading_tier1_run_bytes: 4`. All 28 `cptarrange_*` rows now sit on the
+    identical −352, so nothing arrangement-dependent is left unpriced on the
+    integer path. `tests/test_logic_sizing.py` previously pinned those four as
+    unexplained misses and now pins the rule with the real captured numbers.
+
+    Why exactly two and not "two or more" is not known, and it is stored as the
+    measurement it is rather than smoothed into a curve.
+
+    **The REAL-destination path is NOT given this rule**, and the reason is
+    counted rather than asserted: `cptrdarrange_grouped_n04` needs it (+4, run of
+    2) but the eight parenthesised n=5 rows that pin `operator_count_base[5]` at
+    328 have a run of 1, so applying the rule there together with the 324 those
+    new files measure fixes 4 rows and breaks 10. See OQ-CPTREALDEST item 2 — the
+    two questions are entangled at n=5 and have to be settled together.
+
 
 
 29. **OQ-STEXPR** — **ALL FOUR ASSUMPTIONS MEASURED AND WIRED 2026-09-18.**

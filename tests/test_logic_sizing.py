@@ -510,7 +510,11 @@ def test_cpt_t1_t2_mix_is_priced_per_tier_not_per_operator():
     assert cost_for(["+", "*", "+", "*"]) == 100 + 2 * 24 + 2 * 40     # 228
     # Unbalanced -- where it was not. Swapping one T1 for one T2 must move
     # the answer by exactly 16; under a flat per-operator rate it moved by 0.
-    assert cost_for(["+", "*", "*"]) - cost_for(["+", "+", "*"]) == 16
+    # Compared at a leading tier-1 run of 1 on both sides, so the arrangement
+    # term (OQ-CPTARRANGE, wired 2026-09-18) is held constant: `+ + *` has a
+    # run of 2 and legitimately carries 4 more than the tier counts alone say.
+    assert cost_for(["+", "*", "*"]) - cost_for(["*", "+", "*"]) == 0
+    assert cost_for(["+", "+", "*"]) - cost_for(["+", "*", "+"]) == 4
     assert cost_for(["+", "+", "+", "*", "*", "*", "*"]) == 332  # real: 332
     assert cost_for(["+", "*", "+", "*", "+", "*", "+"]) == 316  # real: 316
     # Collapses onto the uniform-tier branch, which computes it a different
@@ -518,21 +522,31 @@ def test_cpt_t1_t2_mix_is_priced_per_tier_not_per_operator():
     assert cost_for(["+", "*"]) - 40 + 24 == cost_for(["+", "+"])
 
 
-def test_cpt_t1_t2_mix_has_four_known_unexplained_misses():
-    """Documents the four real points no linear (t1, t2) model can hit.
+def test_cpt_t1_t2_mix_arrangement_term_is_a_leading_run_of_exactly_two():
+    """The four points no linear (t1, t2) model could hit are now explained.
 
-    The system is over-determined and inconsistent, so this is a real
-    arrangement effect rather than a bad fit: cptmix_scaling_grouped_n05 and
-    cptmix_scaling_alternating_n05 have IDENTICAL operator tier counts (2
-    and 2) yet measure 232 and 228 -- while at 11 operators the same
-    alternating/grouped pair measures identically. Rather than invent a rule
-    from four points, the miss is pinned here so a future refit that claims
-    to explain it has to move these numbers deliberately. See OQ-CPTARRANGE.
+    OQ-CPTARRANGE, measured 2026-09-18 from the 28-file cptarrange_* sweep: a
+    two-tier mix costs 4 more when EXACTLY TWO tier-1 operators precede the
+    first tier-2 one. Runs of 0, 1, 3, 4 and 5 cost nothing extra, which is why
+    the alternating and grouped pair agree at 11 operators and differ at 5.
+
+    This test used to pin those four as unexplained misses. It now pins the
+    rule, and the numbers it asserts are the REAL captured ones.
     """
     cost_for = MODEL.logic_instructions.cpt_expression.cost_for
-    # Real captured cost is 192 (cptcx_operatormix_mixedops / _nested and
-    # cptcx_spotcheck_mixedops4op_n100 all agree); the model says 188.
-    assert cost_for(["+", "-", "*"]) == 188
+    # cptcx_operatormix_mixedops / _nested and cptcx_spotcheck_mixedops4op_n100
+    # all measure 192. The tier counts alone give 188; the run of two gives 192.
+    assert cost_for(["+", "-", "*"]) == 192
+    # cptmix_scaling_alternating_n05 measures 228 and _grouped_n05 measures 232,
+    # at identical tier counts. Run of 1 versus run of 2.
+    assert cost_for(["+", "*", "+", "*"]) == 228
+    assert cost_for(["+", "+", "*", "*"]) == 232
+    # And they agree again once the grouped run is longer than two, which is the
+    # n=11 observation that made this look inconsistent.
+    assert (cost_for(["+", "+", "+", "*", "*", "*"])
+            == cost_for(["+", "*", "+", "*", "+", "*"]))
+    # A leading tier-2 operator means no run at all.
+    assert cost_for(["*", "+", "+"]) == cost_for(["+", "*", "+"])
 
 
 def test_cpt_pow_tier_mix_solved_for_t1t3_and_t2t3():

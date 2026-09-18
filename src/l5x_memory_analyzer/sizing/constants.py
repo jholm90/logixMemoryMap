@@ -358,6 +358,29 @@ class CptExpressionModel:
     # Per-tier override for the rate above, keyed by the operator's own tier
     # cost. The scalar was measured on ADD alone; tier 2 is 40, not 24.
     per_extra_same_tier_by_tier_cost: dict = field(default_factory=dict)
+    # ARRANGEMENT: a two-tier mix whose leading run of tier-1 operators is
+    # exactly this long, before the first tier-2 operator, costs extra.
+    # OQ-CPTARRANGE, measured 2026-09-18 -- see memory_model.yaml.
+    leading_tier1_run_length: int = 0
+    leading_tier1_run_bytes: int = 0
+
+    def leading_tier1_run_extra(self, tiers: list[int], add_tier: int) -> int:
+        """The arrangement term: tier COUNTS are not enough.
+
+        `L0+L1+L2*L3` and `L0+L1*L2+L3` have identical tier counts and differ by
+        4 real bytes. Across the 28-file cptarrange_* sweep -- four arrangements
+        at every operator count 3 through 9, tier counts held fixed -- the
+        discriminator is exactly how many tier-1 operators precede the first
+        tier-2 one, and only a run of exactly two costs anything.
+        """
+        if not self.leading_tier1_run_bytes:
+            return 0
+        run = 0
+        for tier in tiers:
+            if tier != add_tier:
+                break
+            run += 1
+        return self.leading_tier1_run_bytes if run == self.leading_tier1_run_length else 0
 
     @staticmethod
     def _normalize(op: str) -> str:
@@ -504,6 +527,7 @@ class CptExpressionModel:
                 self.two_tier_mix_base
                 + self.two_tier_mix_per_tier1 * n_tier1
                 + self.two_tier_mix_per_tier2 * n_tier2
+                + self.leading_tier1_run_extra(tiers, add_tier)
             )
         if set(tiers) in ({add_tier, pow_tier}, {mul_tier, pow_tier}):
             return self.pow_tier_mix_base + self.pow_tier_mix_per_operator * len(operators)
@@ -1458,6 +1482,10 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 two_tier_mix_base=raw["cpt_expression"]["two_tier_mix_base"],
                 two_tier_mix_per_tier1=raw["cpt_expression"]["two_tier_mix_per_tier1"],
                 two_tier_mix_per_tier2=raw["cpt_expression"]["two_tier_mix_per_tier2"],
+                leading_tier1_run_length=raw["cpt_expression"].get(
+                    "leading_tier1_run_length", 0),
+                leading_tier1_run_bytes=raw["cpt_expression"].get(
+                    "leading_tier1_run_bytes", 0),
                 pow_tier_mix_base=raw["cpt_expression"]["pow_tier_mix_base"],
                 pow_tier_mix_per_operator=raw["cpt_expression"]["pow_tier_mix_per_operator"],
                 three_tier_mix_base_by_remainder={

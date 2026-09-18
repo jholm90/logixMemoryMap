@@ -2016,6 +2016,35 @@ cpt_expression:
   # 19 of 23 real two-tier points exact, against 15 for the flat rate.
   two_tier_mix_per_tier1: 24
   two_tier_mix_per_tier2: 40
+  # ARRANGEMENT IS REAL AND THE RULE IS EXACT -- OQ-CPTARRANGE, measured
+  # 2026-09-18 from the 28-file cptarrange_* sweep. Tier counts alone are not
+  # enough, which the comment in constants.py's two-tier branch had flagged as
+  # "arrangement therefore matters somewhere, but not consistently".
+  #
+  # The sweep holds the tier counts fixed at every operator count 3 through 9 and
+  # varies only the ORDER, four ways. Reading its residuals requires subtracting
+  # the -352 per-file constant that runs through this entire generated batch (see
+  # OQ-CPTREALDEST); after that every row is an exact multiple of 4 bytes per
+  # rung over 100 rungs, with no exceptions in 58 rows.
+  #
+  # Tabulating the leading run of tier-1 operators before the first tier-2 one:
+  #
+  #   arrangement    n=3  4  5  6  7  8  9      leading tier-1 run
+  #   alternating     0   0  0  0  0  0  0      1 at every n
+  #   frontloaded     0   0  0  0  0  0  0      0 at every n
+  #   grouped        +4  +4  0  0  0  0  0      2, 2, 3, 3, 4, 4, 5
+  #   split           0   0  0  0 +4 +4 +4      1, 1, 1, 1, 2, 2, 2
+  #
+  # The +4 rows and the run-of-2 rows are THE SAME SIX ROWS. Every other row has
+  # a run of 0, 1, 3, 4 or 5 and costs nothing extra. One rule, 28 rows, zero
+  # residual, and it also explains the three (2,1) files the two-tier refit left
+  # at 4 -- `L0+L1+L2*L3` has a run of 2 -- and cptmix_scaling_grouped_n05, whose
+  # tier counts match cptmix_scaling_alternating_n05 exactly.
+  #
+  # Why exactly two and not "two or more" is not known. It is stored as the
+  # measurement it is: a run of 2, nothing else.
+  leading_tier1_run_length: 2
+  leading_tier1_run_bytes: 4
   # T1T3/T2T3 mixed expression (POW alongside exactly one of ADD/SUB or
   # MUL/DIV/MOD), wired 2026-08-25 -- OQ-CMPCPTLAYOUT. Real capture data
   # already existed (2026-08-24, gen_cpt_mixed_operators.py's
