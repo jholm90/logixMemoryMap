@@ -263,8 +263,12 @@ def test_jsr_param_cost_a_charged_once_even_with_two_call_sites():
     # a per-call cost.
     assert sub.bytes == 144 + 16 + _JSR_SURCHARGE + MODEL.jsr_target_declaration.cost_for('SubTest', MODEL.identifier_name_length)
     main = by_path["program:MainProgram/MainRoutine"]
-    # jsr_fixed_base(5096) + JSR weight(72)*2 calls + B(2)=4+20*2=44 *2 calls
-    assert main.bytes == 5096 + MODEL.logic_instructions.weights['JSR'] * 2 + 44 * 2
+    # jsr_fixed_base(5096) + JSR weight * 2 calls + B(2) * 2 calls. B(2) carries
+    # b_multiparam_extra: the measured 4-byte step every call site passing 2 or
+    # more operands pays (OQ-JSRPARAMCOST, 2026-09-18), so B(2) = 4 + 20*2 + 4.
+    b_two = MODEL.logic_instructions.jsr_param_cost.b_cost(2)
+    assert b_two == 48
+    assert main.bytes == 5096 + MODEL.logic_instructions.weights['JSR'] * 2 + b_two * 2
 
 
 def test_jsr_output_param_cost_charged_per_call_site():
@@ -305,8 +309,12 @@ def test_jsr_output_param_cost_charged_per_call_site():
     logic_entries = [e for e in entries if e.tier == ESTIMATED]
     by_path = {e.path: e for e in logic_entries}
     main = by_path["program:MainProgram/MainRoutine"]
-    # jsr_fixed_base(5096) + JSR weight(72) + B(1)=4+20=24 + output_param_cost(20)*2
-    assert main.bytes == 5096 + MODEL.logic_instructions.weights['JSR'] + 24 + 20 * 2
+    # jsr_fixed_base(5096) + JSR weight + B(1, m_out=2) + output_param_cost(20)*2.
+    # b_multiparam_extra keys on the TOTAL operand count, so this call -- 1 input
+    # and 2 outputs -- pays it even though n_in is 1: B = 4 + 20*1 + 4 = 28.
+    b_one_two = MODEL.logic_instructions.jsr_param_cost.b_cost(1, 2)
+    assert b_one_two == 28
+    assert main.bytes == 5096 + MODEL.logic_instructions.weights['JSR'] + b_one_two + 20 * 2
     sub = by_path["program:MainProgram/SubTest"]
     # A(1) unaffected by output param count (not yet adjusted -- see
     # OPEN_QUESTIONS.md OQ-JSRPARAMCOST), plus SubTest's own content (one
@@ -853,3 +861,25 @@ def test_cmp_comparison_and_boolean_operators_are_not_arithmetic():
     connective is already priced by compound_cost, and double-charging it
     would break every bare compound CMP, all of which measure exact."""
     assert _one_rung_routine("CMP(L0>L1&&L2<L3)OTE(TB0);").cmp_calls[0].operators == []
+
+
+def test_jsr_multiparam_step_keys_on_total_operands_not_input_count():
+    """OQ-JSRPARAMCOST, 2026-09-18. B(n) is not affine in n: every call site
+    that references 2 or more operands pays a measured 4-byte step, and a call
+    passing 1 input plus 2 outputs pays it exactly like one passing 2 inputs.
+
+    The discriminator is jsr_multiret_n02_r01000 -- 1 input, 2 outputs, 1,000
+    calls -- which was +3,952 under the input-only reading and -56 under this
+    one. Keying on n_in alone leaves +4/call unpriced there.
+    """
+    cost = MODEL.logic_instructions.jsr_param_cost
+    # Below the threshold: no step. One operand in, nothing back.
+    assert cost.b_cost(1, 0) == cost.b_base + cost.b_per_param
+    # At and above it, from either direction, and only once per call site.
+    assert cost.b_cost(2, 0) == cost.b_base + cost.b_per_param * 2 + 4
+    assert cost.b_cost(1, 1) == cost.b_base + cost.b_per_param + 4
+    assert cost.b_cost(1, 2) == cost.b_base + cost.b_per_param + 4
+    assert cost.b_cost(5, 2) == cost.b_base + cost.b_per_param * 5 + 4
+    # A zero-operand JSR is untouched -- 1,973 of the real corpus's JSR calls
+    # pass nothing, and no captured row asks for a step there.
+    assert cost.b_cost(0, 0) == cost.b_base

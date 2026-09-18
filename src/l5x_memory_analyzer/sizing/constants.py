@@ -572,12 +572,24 @@ class JsrParamCostModel:
     b_per_param: int
     confidence: str
     output_param_cost: int
+    b_multiparam_extra: int = 0
+    b_multiparam_threshold: int = 2
 
     def a_cost(self, n: int) -> int:
         return self.a_base + self.a_per_param * n
 
-    def b_cost(self, n: int) -> int:
-        return self.b_base + self.b_per_param * n
+    def b_cost(self, n: int, m_out: int = 0) -> int:
+        """Per-call-site cost of a JSR passing n input and m_out output params.
+
+        The `b_multiparam_extra` step is measured, not fitted -- see
+        memory_model.yaml jsr_param_cost. It is keyed on the TOTAL operand
+        count, inputs plus outputs, not on the input count alone: a call
+        passing 1 input and 2 outputs pays it and a call passing 1 input and
+        nothing back does not."""
+        total_operands = n + m_out
+        extra = (self.b_multiparam_extra
+                 if total_operands >= self.b_multiparam_threshold else 0)
+        return self.b_base + self.b_per_param * n + extra
 
 
 @dataclass(frozen=True)
@@ -1412,6 +1424,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 b_per_param=raw["jsr_param_cost"]["b_per_param"],
                 confidence=raw["jsr_param_cost"]["confidence"],
                 output_param_cost=raw["jsr_param_cost"]["output_param_cost"],
+                b_multiparam_extra=raw["jsr_param_cost"].get("b_multiparam_extra", 0),
+                b_multiparam_threshold=raw["jsr_param_cost"].get("b_multiparam_threshold", 2),
             ),
             branch_bracket_cost_per_instruction=raw["logic_instructions"]["branch_bracket_cost_per_instruction"],
             aoi_call_site_bytes=raw.get("aoi_call_site", {}).get("bytes", 0),

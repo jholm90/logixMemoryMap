@@ -758,6 +758,115 @@ the matching footnote at the bottom, not inline.
     of real JSR calls are 0-param, and all 103 of its real 0-param
     targets have zero SBR/RET, matching the corpus norm exactly).
 
+    **IN-DEPTH REVIEW 2026-09-18 — every SLOPE in this question is now closed
+    and wired. What is left is two flat constants.**
+
+    The even-n paramtype files requested on 2026-08-31 have landed, so the
+    non-atomic surcharge now has seven param counts instead of three, and the
+    whole family was re-derived from scratch against the live engine rather
+    than patched.
+
+    **(a) The "non-linear" non-atomic surcharge was never non-linear. It was
+    measured against the wrong baseline.** Subtracting each row's own
+    atomic-param control at the SAME n — which the earlier pass did not do —
+    gives:
+
+    | n | atomic control | non-atomic | surcharge | − 800n |
+    |---:|---:|---:|---:|---:|
+    | 1 | −180 | +636 | 816 | 16 |
+    | 2 | +220 | +1,836 | 1,616 | 16 |
+    | 3 | +224 | +2,672 | 2,448 | 48 |
+    | 4 | +224 | +3,472 | 3,248 | 48 |
+    | 5 | +224 | +4,304 | 4,080 | 80 |
+    | 6 | +224 | +5,104 | 4,880 | 80 |
+    | 8 | +224 | +6,736 | 6,512 | 112 |
+
+    That last column is exactly `16 + 32 × floor((n − 1) / 2)` at every one of
+    the seven counts, with no residual at all. So
+
+        surcharge(n) = 800·n + 16 + 32·floor((n − 1) / 2)     at 100 calls
+
+    fits all 12 rows (7 UDT, 5 STRING) to the byte. The earlier "n=1 → 2.7
+    bytes/param, n=3 → 7.7, n=5 → 7.9, something changes between 1 and 3"
+    reading was an artifact: n=1's atomic control sits at −180 where every
+    n≥2 control sits at +224, a 404-byte baseline shift that was being read
+    as curvature in the surcharge.
+
+    STRING and UDT agree to the byte at n=1, 3 and 5 despite an 88-byte
+    STRING against an 8-byte 2-DINT UDT, so the cost is keyed on *non-atomic*
+    and not on the operand's size. That is now three independent counts'
+    worth of confirmation, not one.
+
+    **NOT WIRED, and the reason is a genuine ambiguity, not caution.** Every
+    non-atomic row in the corpus has exactly 100 calls, so `800n` is
+    indistinguishable from `8 per param per call` (8 × 100) and from `800 per
+    param, once per target`. The two readings differ by 100× on real files:
+    the sixteen real programs carry **176 non-atomic JSR param operands**
+    (resolved through UDT/AOI member chains — `CMU_TrayLayer` ×68, `PosnLug`
+    ×32, `Board` ×12, `CMU_Discharge` ×12, `udtServo` ×10, `ts_CIPAxis` ×8,
+    the rest in ones and twos), so per-call is **1,408 bytes across sixteen
+    files** and per-target is **~140,800 — about 1.4% of the real set, in the
+    direction the real set needs.** Wiring the wrong one either does nothing
+    or moves the headline by more than a percent for the wrong reason. This is
+    the single highest-value-per-file measurement left in the question, and it
+    is three files: `jsr_paramtype_udt_n04` at r=10 and r=1000 against the
+    existing r=100, plus one STRING r=1000 cross-check.
+
+    **(b) B(n) is not affine in n, and the step keys on TOTAL operands.
+    WIRED.** Solving for the per-call slope and the per-file constant
+    separately — possible now that several param counts have two or three call
+    counts — gives `residual(n, R) = p(n)·R + c(n)` with `p = 4, c = −176` for
+    every n ≥ 3 at all three call counts: `4×10 − 176 = −136` (n=7/9/15),
+    `4×100 − 176 = +224` (n=3/4/6/12), `4×1000 − 176 = +3,824` (n=5/8/10).
+    Thirteen rows, call counts an order of magnitude apart, one pair of
+    constants. n=1 is the control and is flat — −180 at both R=100 and
+    R=1000 — so B(1) was already right and the step sits between 1 and 2.
+
+    The step is keyed on `n_in + m_out`, not `n_in`, and the row that decides
+    that is `jsr_multiret_n02_r01000`: 1 input, 2 outputs, 1,000 calls, which
+    sat at **+3,952** and is the largest single residual this question ever
+    had. Under the input-only reading n_in = 1 and no step applies. Keying on
+    total operands takes it to **−56**, into the flat band with everything
+    else. Wired as `jsr_param_cost.b_multiparam_extra: 4` with
+    `b_multiparam_threshold: 2`. Zero-operand JSRs are untouched, which
+    matters because 1,973 of the real corpus's 2,221 JSR calls pass nothing.
+
+    **(c) A distinct JSR target costs 8 more than the model charged. WIRED.**
+    With (b) in place the zero-param multi-target sweep's residual resolved to
+    exactly `8t − 280`: −272, −256, −240, −200, −160, −120, +40, +120 at
+    t = 1, 3, 5, 10, 15, 20, 40, 50 — **+8 per target at every step**, across
+    two generators and name lengths 4 through 40 (the namelen rows are all
+    identical, so this is not a name term; that law is already correct).
+    `jsr_target_declaration.per_target` 152 → 160 flattens all thirteen rows
+    to the same −280.
+
+    **Real-set effect of (b) and (c) together: 1.6894% → 1.6753% mean absolute
+    error, and all sixteen moved the right way.** Small, as it must be — these
+    are tens of bytes per call site on megabyte files — but it is the right
+    sign and it is measured rather than fitted.
+
+    **What is actually left.** After (b) and (c) every slope in the JSR family
+    is zero. Thirty-three captured rows reduce to two flat per-file constants:
+
+    * **−184** on every param-bearing single-target file (16 rows: n = 1…15,
+      call counts 10 / 100 / 1,000 — the constant does not move with either).
+      −188 at n ≤ 2, a further 4-byte thread of its own.
+    * **−280** on every zero-param multi-target file (13 rows).
+
+    They differ by 96 and cannot be separated further here: every row in the
+    first group has exactly one distinct target, so per-file and per-target are
+    collinear, and the second group's targets have no SBR/RET at all (the
+    confirmed real rule for zero-param targets). On a real megabyte program a
+    200-byte file constant is 0.02%, so this is now the smallest thing in the
+    project, and it stays documented rather than absorbed into `a_base` where
+    it would be untraceable.
+
+    Two small threads survive alongside it: `jsr_multiret_n04_r01000` sits
+    +184 from `_n02` at the same call count and operand shape, which is the
+    2 extra RET points in the target and wants a per-RET-point rate from a
+    third point; and `jsr_midchain_real_chain`'s 56 bytes, unchanged, still
+    one data point.
+
 
     **CAPTURE ERRORS: 4 row(s)** flagged here by `scripts/capture_errors.py` (step 2b), 2026-09-11.
     4 captured WITH Studio build errors, so their `actual_bytes` is
@@ -1743,6 +1852,69 @@ the matching footnote at the bottom, not inline.
     already-generated `realscale_jsrtgt_xic_n*` ladder, which is the only
     thing that can separate per-instruction cost from per-target and
     per-routine cost at real scale.
+
+    **IN-DEPTH REVIEW 2026-09-18 — the composite residual is IDENTIFIED, and
+    it is not a composite effect at all.** The `addit_*` additivity grid
+    (33 captured rows) was built to ask whether categories interact. It
+    answers cleanly, and the answer relocates this question.
+
+    Every grid cell was re-evaluated live against the current engine and
+    sorted by its logic dimension L (rung count 0 / 400 / 4000):
+
+    | L | cells | residual range | per-rung |
+    |---:|---:|---|---:|
+    | 0 | 3 | −40 … 0 | — |
+    | 400 | 4 | −9,332 … −9,848 | −23.3 … −24.6 |
+    | 4000 | 10 | −95,732 … −96,248 | −23.93 … −24.06 |
+
+    So the residual is **−24 per rung, at two scales an order of magnitude
+    apart, across 10 independent cells**, and it is **entirely carried by the
+    L dimension**. Hold L at 0 and every combination of D (UDT definitions),
+    A (AOI definitions/instances) and M (modules) reads within 40 bytes of
+    zero. Vary D, A or M at fixed L and the residual does not move by more
+    than ±300. **The categories ARE additive.** There is no composite
+    surcharge to fit; there is one mispriced ladder term that composite files
+    happen to contain a lot of.
+
+    And that term is already known. The grid's rung shape is
+
+        XIC(Bit0)MOV(1,Dst0)ADD(Dst0,1,Dst0)OTE(Bit1);
+
+    which is **three writing instructions** (MOV, ADD, OTE). −24/rung is
+    exactly **−12 × (3 − 1)** — the OQ-SERIESOUTPUT law, at a rung width
+    nothing else in the corpus tests. `addit_*` is therefore the **third
+    independent confirmation** of that law, after the `srout_*` sweeps
+    (k = 1…8, 16 rows byte-exact) and `ntag_uidpair` (k = 2). Three unrelated
+    synthetic families, built by different generators months apart for
+    different questions, all land on −12 per extra output.
+
+    This sharpens rather than resolves the central contradiction. The same
+    −12 that is byte-exact on three synthetic families takes the sixteen real
+    programs from 1.6894% to 3.2167% and makes every one worse. The refitted
+    52/21 AOI/JSR surcharge above is now best understood as **a proxy that
+    absorbs the real files' side of that contradiction** — it is fitted on
+    real files, where the −12 does not appear, so it is soaking up whatever
+    real ladder does that synthetic cascades do not. That is why the
+    surcharge costs the corpus 1.378% → 1.423% while paying 5x on the real
+    set: the two sets disagree about one specific thing, and both terms are
+    fitted to opposite sides of it.
+
+    **Consequence for the plan.** Refitting the 52/21 surcharge harder cannot
+    reach 1%, because it is compensating for a term it does not name. The
+    decisive measurement is the `sroutc_c{1,2,4}_k{1,2,4,8}` grid (arm A of
+    `gen_oq_closeout.py`, 12 files, built and awaiting capture), which is the
+    only thing in flight that separates output count from condition count
+    inside one rung. If the discount is a function of the condition/output
+    RATIO rather than the raw output count, the real files — which carry many
+    conditions per output — sit where the discount is near zero, the
+    synthetic cascades sit where it is −12, and both sets are describing the
+    same law. That is the single hypothesis that reconciles them, and one
+    capture batch tests it.
+
+    Until then the surcharge stays at 52/21 and OQ-SERIESOUTPUT stays
+    `apply: false`. Neither is right; together they are the least wrong
+    configuration measured.
+
 
 17. **OQ-AXISCOMBO** — cited in RESOLVED_QUESTIONS.md (OQ-AXISSTRUCT,
     OQ-AXISDEEP) as "the one remaining piece," but no item by this name —

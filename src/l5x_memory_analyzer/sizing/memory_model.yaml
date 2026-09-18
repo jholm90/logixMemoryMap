@@ -2458,7 +2458,24 @@ identifier_name_length:
   task_min_bytes: 8
 
 jsr_target_declaration:
-  per_target: 152
+  # 152 -> 160, OQ-JSRPARAMCOST 2026-09-18. Measured, not fitted, and it is the
+  # last slope in the JSR family: with the per-call step above wired, the
+  # zero-param multi-target sweep's residual was exactly `8t - 280` --
+  #
+  #   distinct targets t   1     3     5    10    15    20    40    50
+  #   residual          -272  -256  -240  -200  -160  -120   +40  +120
+  #
+  # +8 per target at EVERY step, t = 1 through 50, spanning two generators
+  # (jsr_multi_distinct_targets_* and jsr_crossed_*) and name lengths 4 through
+  # 40. Ten rows, zero residual against that line. Raising per_target by that 8
+  # flattens all thirteen of those rows to the identical -280, so nothing
+  # target-dependent is left unpriced.
+  #
+  # Real-set effect, stated because it is the only number that counts: 1.6887%
+  # -> 1.6756% mean absolute error over the sixteen held-out programs, and every
+  # one of them moved the right way. They under-predict and real programs carry
+  # thousands of distinct JSR targets.
+  per_target: 160
   # per_name_char is superseded by identifier_name_length above (2026-09-12).
   # Kept at 1 to document the rate the earlier fit found -- the same 1
   # byte/char -- but the cost is now computed by the shared law so the
@@ -2495,6 +2512,51 @@ jsr_param_cost:
   # effect is real too but too small relative to a 1-distinct-target
   # sample to isolate from noise.
   output_param_cost: 20
+  # B(n) IS NOT AFFINE IN n. There is a 4-byte step between 1 and 2 input
+  # params -- OQ-JSRPARAMCOST, measured 2026-09-18, exact, not fitted.
+  #
+  # The original B(n) = 4 + 20n was solved from n=5/8/10 at one call count.
+  # Solving instead for the per-call slope and the per-file constant
+  # SEPARATELY, from every paramcount row that now has more than one call
+  # count, gives residual(n, R) = p(n) * R + c(n):
+  #
+  #   n    R=10    R=100   R=1000   =>  p     c
+  #   1      -      -180     -180       0    -180
+  #   2      -      +220        -       -      -
+  #   3      -      +224        -       -      -
+  #   4      -      +224        -       -      -
+  #   5      -      +224     +3824      4    -176
+  #   6      -      +224        -       -      -
+  #   7    -136       -          -       -      -
+  #   8      -      +224     +3824      4    -176
+  #   9    -136       -          -       -      -
+  #   10     -      +224     +3824      4    -176
+  #   12     -      +224        -       -      -
+  #   15   -136       -          -       -      -
+  #
+  # p = 4, c = -176 reproduces EVERY n >= 3 row at all three call counts with
+  # zero residual: 4*10-176 = -136 (n=7/9/15), 4*100-176 = 224 (n=3/4/6/12),
+  # 4*1000-176 = 3824 (n=5/8/10). Thirteen rows, three call counts an order of
+  # magnitude apart, one pair of constants.
+  #
+  # n=1 is the control and it is flat: -180 at BOTH R=100 and R=1000, so its
+  # per-call rate is 0, i.e. B(1) is already exactly right. The step is real and
+  # it sits between n=1 and n=2, not spread across n.
+  #
+  # THE STEP KEYS ON TOTAL OPERANDS, NOT INPUT COUNT. jsr_multiret_n02_r01000
+  # passes 1 input and 2 outputs per call and was +3,952 over 1,000 calls --
+  # +3.95/call, the same step, at n_in = 1 where the input-only reading says it
+  # should not apply. Keying on n_in + m_out takes that row to -56, which is
+  # the flat per-file band every other JSR row now sits in. The input-only
+  # reading leaves it at +3,952. So the 4 bytes belong to the call site having
+  # more than one operand to reference, whichever direction they travel.
+  #
+  # Only the per-call half is wired. The per-FILE constant left over (-184 with
+  # params, -280 at zero params) is a separate thread: every row above has
+  # exactly one distinct target, so per-file and per-target cannot be told apart
+  # here. Left in OQ-JSRPARAMCOST rather than absorbed into a_base.
+  b_multiparam_extra: 4
+  b_multiparam_threshold: 2
 
 # Cost of ONE AOI CALL SITE -- OQ-DEFSCALE, wired 2026-09-13, and the largest
 # single unmodelled item found in this project so far.
