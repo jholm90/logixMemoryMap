@@ -1215,6 +1215,11 @@ class MemoryModel:
     # memory_model.yaml rack_aliased_module.
     rack_aliased_module_bytes: int = 0
     rack_aliased_module_confidence: str = "FITTED"
+    # Measured prediction accuracy per instruction, regenerated from captures
+    # by scripts/derive_instruction_accuracy.py. Not a sizing constant -- it
+    # is how well the sizing constants have been shown to WORK, and it is what
+    # the UI reports as confidence instead of a provenance tier.
+    instruction_accuracy: dict = field(default_factory=dict)
 
 
 def load_memory_model(path: str | Path | None = None) -> MemoryModel:
@@ -1243,6 +1248,7 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
     safety_delta = raw["safety_capable_baseline_delta"]
     catalog_delta = raw.get("catalog_baseline_delta", {})
     return MemoryModel(
+        instruction_accuracy=raw.get("instruction_accuracy") or {},
         atomic_types=atomic_types,
         predefined_structures=predefined_structures,
         predefined_array_structures=predefined_array_structures,

@@ -26,6 +26,9 @@ from l5x_memory_analyzer.parser.tags import parse_tags
 from l5x_memory_analyzer.parser.tasks import parse_tasks, program_to_task_map
 from l5x_memory_analyzer.sizing.constants import MemoryModel, load_memory_model
 from l5x_memory_analyzer.sizing.alarms import alarm_conditions_for_host, alarm_lookup_tables
+from l5x_memory_analyzer.sizing.confidence import (
+    BANDS, PROVENANCE_BAND, SCAFFOLD_BAND,
+)
 from l5x_memory_analyzer.sizing.controller_budgets import load_controller_budgets
 from l5x_memory_analyzer.sizing.xref import find_usages
 from l5x_memory_analyzer.sizing.export import write_csv, write_xlsx
@@ -153,6 +156,19 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         "budget_bytes": budget.display_total_bytes if budget else None,
         "budget_architecture": budget.architecture if budget else None,
         "budget_confidence": budget.confidence if budget else None,
+        # Accuracy, not provenance. The UI used to print a provenance tier as
+        # if it were a confidence, so compiled logic -- which can never be
+        # KNOWN, by CLAUDE.md's ground-truth constraint -- read as 0%. These
+        # two carry the measured alternative: what the engine's error actually
+        # was on files where each instruction was the only variable.
+        "confidence_bands": [
+            {"key": b.key, "label": b.label, "pct": b.pct,
+             "bound": b.bound, "blurb": b.blurb}
+            for b in BANDS
+        ],
+        "instruction_accuracy": getattr(model, "instruction_accuracy", None) or {},
+        "provenance_band": dict(PROVENANCE_BAND),
+        "scaffold_band": dict(SCAFFOLD_BAND),
     }
 
     return DocState(doc=doc, model=model, data_types=data_types, tag_index=tag_index,

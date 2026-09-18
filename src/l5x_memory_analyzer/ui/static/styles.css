@@ -645,3 +645,23 @@ rect.tile-empty-space {
   stroke-dasharray: 4 3;
 }
 .pct-fill.pct-empty { background: var(--text-dim, #888); }
+
+/* ---- confidence bands (measured accuracy, not provenance) ----
+   The colour is the claim: green means an error bound earned on captures,
+   amber means a weight nothing has tested on its own, red means bytes that
+   are not in the total at all. */
+.band-chip {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.band-EXACT      { background: #1e5f3a; color: #d8f5e4; }
+.band-MEASURED   { background: #24694a; color: #d8f5e4; }
+.band-CLOSE      { background: #3d6b2a; color: #e6f5d8; }
+.band-APPROX     { background: #7a6420; color: #f7ecc8; }
+.band-UNVERIFIED { background: #7a4520; color: #f7ddc8; }
+.band-UNPRICED   { background: #7a2424; color: #f7d0d0; }

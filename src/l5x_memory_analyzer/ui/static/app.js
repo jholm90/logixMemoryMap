@@ -334,6 +334,58 @@ function navigateToDefinition(typeName) {
   if (chain) navigateToChain(chain);
 }
 
+// ---- confidence as MEASURED ACCURACY, not a provenance tag ----
+//
+// "0% measured · 100% fitted" was the old reading for every routine, and it
+// said the opposite of the truth. FITTED means "ladder size cannot be derived
+// from first principles" -- a statement about Rockwell's format, not about
+// this model's error. The model's actual error on files where one instruction
+// was the only variable is: 292 of 298 inside 0.1%.
+//
+// So a node now reports the BAND its worst component earns, with the error
+// bound that band means. The words come from the server (confidence.py) so
+// the UI cannot invent a tier the engine does not stand behind.
+function bandByKey(key) {
+  const bands = (REPORT && REPORT.confidence_bands) || [];
+  return bands.find(b => b.key === key) || bands[bands.length - 1] ||
+    { key: "UNVERIFIED", label: "Unverified", pct: 50, bound: "unbounded", blurb: "" };
+}
+
+function bandForOpcode(op) {
+  const scaffold = (REPORT && REPORT.scaffold_band) || {};
+  if (scaffold[op]) return bandByKey(scaffold[op]);
+  const acc = ((REPORT && REPORT.instruction_accuracy) || {})[op];
+  if (!acc || !acc.samples) return bandByKey("UNVERIFIED");
+  const w = acc.worst_pct;
+  if (w <= 0.1) return bandByKey("MEASURED");
+  if (w <= 1.0) return bandByKey("CLOSE");
+  if (w <= 5.0) return bandByKey("APPROX");
+  return bandByKey("UNVERIFIED");
+}
+
+// A rung is only as predictable as its least-known instruction: one MAM in an
+// otherwise plain rung is near-certain, twenty mixed ones are not.
+function bandForNode(node) {
+  const ops = node && node.rung_instructions;
+  if (Array.isArray(ops) && ops.length) {
+    let worst = null;
+    for (const raw of ops) {
+      const op = String(raw).replace(/\(.*$/, "").trim();
+      const b = bandForOpcode(op);
+      if (!worst || b.pct < worst.pct) worst = b;
+    }
+    if (worst) return worst;
+  }
+  const map = (REPORT && REPORT.provenance_band) || {};
+  return bandByKey(map[(node && node.basis) || ""] || "UNVERIFIED");
+}
+
+function bandChipHtml(node) {
+  const b = bandForNode(node);
+  return `<span class="band-chip band-${b.key}" title="${escapeHtml(b.blurb)}">` +
+    `${escapeHtml(b.label)} ${b.pct}% &middot; ${escapeHtml(b.bound)}</span>`;
+}
+
 function confidenceBarHtml(node) {
   const c = confidenceBreakdown(node);
   // Zero bytes is not low confidence. Say why it is zero instead.
@@ -351,9 +403,10 @@ function confidenceBarHtml(node) {
     ? `<span class="conf-seg ${cls}" style="width:${(v / c.total) * 100}%"></span>` : "";
   return `<div class="conf-bar">${seg(c.KNOWN, "conf-known")}${seg(c.FITTED, "conf-fitted")}` +
     `${seg(c.ASSUMED, "conf-assumed")}${seg(c.UNKNOWN, "conf-unknown")}</div>` +
-    `<div class="conf-label">${c.knownPct.toFixed(1)}% measured` +
-    (c.FITTED ? ` · ${((c.FITTED / c.total) * 100).toFixed(1)}% fitted` : "") +
-    (c.ASSUMED ? ` · ${((c.ASSUMED / c.total) * 100).toFixed(1)}% assumed` : "") +
+    `<div class="conf-label">${bandChipHtml(node)}` +
+    (c.knownPct < 100
+      ? ` <span class="text-dim">${c.knownPct.toFixed(1)}% of these bytes are ` +
+        `exactly calculable</span>` : "") +
     `</div>`;
 }
 
@@ -1501,8 +1554,7 @@ function showTooltip(ev, node) {
         : `${escapeHtml(displayType(node))}<br>`) +
       (rc != null ? `${rc} rung${rc === 1 ? "" : "s"}<br>` : "") +
       `${fmtBytes(node.value)} (${fmtBlocks(node.value)} blocks)<br>` +
-      (node.tier === "estimated" ? `<span class="tier-chip">ESTIMATED</span>` : "") +
-      `<span class="basis-chip basis-${node.basis}">${node.basis}</span>` +
+      bandChipHtml(node) +
       jsrCallsNote(node) +
       tooltipParentBar(node) +
       tooltipControllerBar(node) +
@@ -1920,8 +1972,7 @@ function renderListInto(tableId) {
         `<span class="conf-seg conf-known" style="width:${e.known_pct}%"></span>` +
         `<span class="conf-seg conf-fitted" style="width:${100 - e.known_pct}%"></span>` +
         `</div><span class="conf-pct">${e.known_pct.toFixed(0)}%</span>` +
-        (e.basis ? `<span class="basis-chip basis-${e.basis}">${e.basis}</span>` : "") +
-        (e.tier === "estimated" ? `<span class="tier-chip">ESTIMATED</span>` : "") +
+        bandChipHtml(e.node) +
         `</div>`;
     tr.innerHTML =
       `<td>${escapeHtml(e.name)}${subNote}</td>` +
