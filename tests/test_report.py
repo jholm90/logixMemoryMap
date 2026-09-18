@@ -80,9 +80,12 @@ def test_alias_tags_size_not_error():
     #   + member name pool: "DebTmr" is 6 chars + 1 = 7, rounded up to 8
     #   + name_length_bytes("fbDebounce"): 10 chars -> bucket max(0,(10-8)//4)
     #     = 0 -> 8*0 + (-8) = -8
-    #   - 3, the per-definition scale correction (definition_scale_correction)
+    #   - 7, the per-definition scale correction
+    #     (definition_scale_correction.aoi_definition_extra, corrected -3 -> -7
+    #     on 2026-09-18 once defscale_aoidefs_n001..n060 measured the definition
+    #     term on its own rather than jointly with the per-instance one)
     aoi_def = by_path["udt_definitions/fbDebounce"]
-    assert aoi_def.bytes == 1163 + 12 + 12 + 24 + 8 - 8 - 3
+    assert aoi_def.bytes == 1163 + 12 + 12 + 24 + 8 - 8 - 7
     assert aoi_def.basis == "FITTED"
 
     # total now also includes the project_baseline entry (2026-08-23,

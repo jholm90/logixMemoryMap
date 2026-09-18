@@ -60,6 +60,11 @@ KNOWN_REGISTER = [
         "the same 28 rows; runs of 0, 1, 3, 4 and 5 all cost nothing",
     ),
     (
+        "definition_scale_correction.aoi_definition_extra", -7,
+        "definition_scale_correction.aoi_definition_extra_confidence", 7,
+        "defscale_aoidefs_n001..n060, definition count the only variable",
+    ),
+    (
         "structured_text.assignment_one_operator_class_bytes.dint.bitwise", 124,
         "structured_text.assignment_operator_class_confidence", 3,
         "stc_prem1_{and,or,xor}, all three at the same +84 over additive",
@@ -98,11 +103,6 @@ KNOWN_REGISTER = [
         "structured_text.real_dest_source_conversion_bytes.LINT", 0,
         "structured_text.real_dest_source_conversion_confidence", 1,
         "stc_conv_lint reproduces the pure-REAL 56 exactly",
-    ),
-    (
-        "structured_text.st_aoi_call_routine_bytes", 264,
-        "structured_text.st_aoi_call_routine_confidence", 7,
-        "3 files at ONE call vs 4 at a thousand; a 1000x change moves it 12 bytes",
     ),
 ]
 
@@ -159,6 +159,12 @@ def test_the_five_confirmed_instruction_weights_keep_their_tier():
 # because inventing row counts for measurements someone else took would be worse
 # than naming them: the point of the guard below is to stop NEW tiers arriving
 # without evidence, not to re-audit the old ones.
+# `structured_text.st_aoi_call_routine_bytes` was in this register on the day it
+# was wired and came straight back out. The 264 is measured; what is NOT measured
+# is whether it is charged per ROUTINE or per FILE, because all 80 files in the
+# corpus that contain an AOI call have exactly one calling routine. A constant
+# whose carrier is assumed is not KNOWN, whatever its value, so it is FITTED --
+# and the register is what forced that to be said out loud.
 PRE_EXISTING_KNOWN = {
     "firmware_baseline_delta.default_confidence",
     "bool.standalone_confidence",

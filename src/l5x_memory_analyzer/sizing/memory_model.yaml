@@ -1820,10 +1820,28 @@ definition_scale_correction:
   udt_definition_extra: 0
   udt_tag_extra: -4
   aoi_instance_extra: -8
-  # And an AOI DEFINITION is over-charged 3. This is the remaining 3*n_def term
-  # of the fitted law once the per-instance -8 lands: dscale2_aoi_d060_t060
-  # sat at exactly +180 = 3 x 60 with the instance term applied.
-  aoi_definition_extra: -3
+  # And an AOI DEFINITION is over-charged. -3 -> -7, corrected 2026-09-18
+  # (OQ-DEFSCALE), which is where this term belongs rather than in
+  # aoi_definition.base -- the base is what one definition costs, this is the
+  # correction that scales with how many there are.
+  #
+  # The original -3 came from ONE point, dscale2_aoi_d060_t060 at +180 = 3 x 60,
+  # solved jointly with the per-instance -8 from the same file. A single file
+  # cannot separate two per-unit terms, and it did not.
+  # defscale_aoidefs_n{001,002,005,010,020,040,060} varies ONLY the definition
+  # count and has no instances at all, so it reads the definition term alone:
+  #
+  #   definitions   1    2     5     10     20      40      60
+  #   residual     -4   -8   -20    -40    -80    -160    -240
+  #
+  # Exactly -4 per definition more than the -3 already applied, at all seven
+  # counts, zero residual against that line. With -7 wired every one of those
+  # seven rows is byte-exact.
+  #
+  # 331 definitions across the sixteen real programs, so this is 1,324 bytes. It
+  # is wired because it is exact and costs nothing, not because it is large.
+  aoi_definition_extra: -7
+  aoi_definition_extra_confidence: KNOWN
   confidence: KNOWN
 
 udt_definition:
@@ -3704,9 +3722,22 @@ structured_text:
   # the point: an AOI costs the same from Structured Text as from a rung, one-time
   # term included.
   st_aoi_call_routine_bytes: 264
-  # KNOWN. Separated from the per-call term by three files at ONE call against
-  # four at a thousand: a 1,000x change in call count moves the residual by 12
-  # bytes. st_aoi_call_bytes/per_param stay FITTED -- they were regressed.
-  st_aoi_call_routine_confidence: KNOWN
+  # The VALUE is measured: separated from the per-call term by three files at ONE
+  # call against four at a thousand, where a 1,000x change in call count moves
+  # the residual by 12 bytes. 264 is not in doubt.
+  #
+  # FITTED, not KNOWN, and the reason is the CARRIER rather than the number.
+  # Every file in the corpus that contains an AOI call -- all 80 of them, in both
+  # languages -- has exactly ONE calling routine, so "once per routine" and "once
+  # per file" fit the data identically. This is charged per routine, which is the
+  # larger of the two readings. On the sixteen real programs the choice is worth
+  # 26 ST routines x 264 against 16 files x 264, a difference of 2,640 bytes, so
+  # it is safe either way here and would NOT be on the RLL side -- see
+  # OQ-DEFSCALE, where the same constant reappears at 260 and 764 real routines
+  # make the same ambiguity worth 200,000 bytes.
+  #
+  # Downgraded from KNOWN 2026-09-18, the same day it was wired, when the RLL
+  # twin turned up and the one-calling-routine confound became visible.
+  st_aoi_call_routine_confidence: FITTED
   st_aoi_call_confidence: FITTED
   confidence: KNOWN

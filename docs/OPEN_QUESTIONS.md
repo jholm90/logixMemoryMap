@@ -2497,6 +2497,57 @@ the matching footnote at the bottom, not inline.
     linear laws, none of them wired, and the reason is a confound, not a
     doubt about the numbers.**
 
+
+    **IN-DEPTH REVIEW 2026-09-18. One term wired exactly, one measured exactly
+    and BLOCKED by a confound that runs through the whole corpus.**
+
+    **(a) An AOI DEFINITION is over-charged 7, not 3. Wired, KNOWN.**
+    `defscale_aoidefs_n{001,002,005,010,020,040,060}` varies only the definition
+    count and carries no instances at all, so it reads the definition term
+    alone:
+
+        definitions   1    2     5     10     20      40      60
+        residual     -4   -8   -20    -40    -80    -160    -240
+
+    Exactly 4 per definition beyond the 3 already applied, at all seven counts.
+    The original −3 came from ONE file, `dscale2_aoi_d060_t060`, solved jointly
+    with the per-instance −8 from that same file — and a single file cannot
+    separate two per-unit terms. It did not. With −7 wired, all seven rows are
+    byte-exact. Corrected in `definition_scale_correction`, not in
+    `aoi_definition.base`, because the base is what one definition costs and
+    this is the term that scales with how many there are.
+
+    **(b) An RLL routine containing AOI calls carries a one-time ~260, and it is
+    the SAME constant the ST side carries at 264 — but it CANNOT be wired.**
+
+    `dscale2_aoi_d001_t{001..100}_call` reads a flat **+260** at every target
+    count from 1 to 100. Flat across a 100x span means once per file or once per
+    routine, not per call or per instance. `defscale_aoiinst_n{001..060}` reads
+    `+260 − 4n`, the same 260 plus the per-instance term.
+
+    That 260 is `st_aoi_call_routine_bytes` (264) seen in the other language,
+    within the per-instance 4. **The RLL path has no such term at all.**
+
+    **Why it is not wired: every generated file in the corpus that contains an
+    AOI call — all 80 of them, both languages — has exactly ONE calling
+    routine.** So "once per routine" and "once per file" fit every row
+    identically, and on the sixteen real programs the two readings differ by
+    **764 routines × 264 = 201,696 bytes against 16 × 264 = 4,224**. A 48x
+    spread on a term large enough to move the headline. Guessing here would be
+    the largest unforced error available in this model.
+
+    **This also forced a correction to something wired earlier the same day.**
+    `st_aoi_call_routine_confidence` was marked KNOWN when the ST batch closed;
+    it is now **FITTED**, because the 264 is measured but its CARRIER is not.
+    The ST side happens to be safe either way — 26 real ST routines against 16
+    files is 2,640 bytes — but the tier was claiming more than the data
+    supports, and the KNOWN register is what surfaced it.
+
+    **What settles it: one file with AOI calls in TWO routines**, everything
+    else held identical to `dscale2_aoi_d001_t002_call`. If the residual goes to
+    520 it is per routine; if it stays at 260 it is per file. One file decides a
+    200,000-byte term, and it unblocks the ST constant at the same time.
+
     All four sweeps came back perfectly linear with zero residual:
 
         defscale_aoidefs_n*    over-prediction = +3 x n          7 points
