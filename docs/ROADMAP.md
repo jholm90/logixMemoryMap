@@ -1,151 +1,155 @@
 # Roadmap
 
-Current focus and the next few days of planned work. Structural phases live
-in `PROJECT_PLAN.md`; individual open items live in `OPEN_QUESTIONS.md`.
-
-Last updated 2026-09-08.
+Where the tool stands and what is worth doing next. Structural phases live in
+`PROJECT_PLAN.md`; the ranked queue lives in `TASKS.md`; individual questions live
+in `OPEN_QUESTIONS.md`.
 
 ---
 
 ## Where the tool actually stands
 
-Measured on the ten real production exports, which are the only accuracy
-evidence that counts. Nine are 1756-L8x; `elmsdale` is the first real 5069,
-added 2026-09-08, and it closes OQ-REAL5069:
+Measured on the seventeen real production exports, which are the only accuracy
+evidence that counts.
 
-| file | processor | actual | predicted | delta |
-|---|---|---:|---:|---:|
-| `mrfp_edger_2026_06_01_r00` | 1756-L81E | 2,281,316 | 2,282,655 | +0.06% |
-| `k3m16_edgers_20220808r00` | 1756-L82E | 4,044,994 | 4,009,539 | −0.88% |
-| `emporiumedger_20250905r1` | 1756-L81E | 1,703,932 | 1,685,256 | −1.10% |
-| `emporium_2025_05_28r01` | 1756-L83E | 7,136,625 | 7,018,569 | −1.65% |
-| `pukall_gang_20260414_r00` | 1756-L81E | 2,502,336 | 2,460,139 | −1.69% |
-| `cmu_2025_10_14r00` | 1756-L82E | 5,217,440 | 5,110,641 | −2.05% |
-| `accutally_20260803` | 1756-L83E | 5,999,972 | 5,843,055 | −2.62% |
-| `ipc_edgerline_20251217r1` | 1756-L81E | 2,255,773 | 2,177,942 | −3.45% |
-| `elmsdale_20251017r01` | **5069-L330ERM** | 1,147,896 | 1,083,267 | −5.63% |
-| `murraybros_20260122r1` | 1756-L81E | 923,320 | 869,030 | −5.88% |
+**Mean absolute error 1.5951%. Worst case 3.6309%. Four files inside 1%, eleven
+inside 2%.** Total residual +822,938 bytes on 55,430,980 = **+1.485%**. Ten files
+under-predict, seven over-predict.
 
-Mean absolute error **2.50%** across ten files, five inside 2%, two inside 1%. Every
-file still under-predicts, so what remains is a missing cost rather than
-noise.
+| program | actual | error |
+|---|---:|---:|
+| `superior` | 3,129,275 | −3.63% |
+| `ipc_edgerline` | 2,255,773 | −3.52% |
+| `k3m16_edgers` | 4,044,994 | −2.50% |
+| `cmu` | 5,217,440 | −2.31% |
+| `cardin_trimsortstack` | 7,891,612 | −2.15% |
+| `eastperry` | 4,634,308 | −2.04% |
+| `emporiumedger` | 1,703,932 | +1.79% |
+| `emporium` | 7,136,625 | −1.76% |
+| `mrfp_edger` | 2,281,316 | −1.48% |
+| `flarefunction` | 1,074,245 | +1.42% |
+| `accutally` | 5,999,972 | −1.20% |
+| `murraybros` | 923,320 | +1.17% |
+| `salamanca` | 1,362,000 | +1.05% |
+| `pukall_gang` | 2,502,336 | +0.55% |
+| `elmsdale` | 1,147,896 | +0.24% |
+| `horizon_edger` | 1,763,760 | −0.19% |
+| `griffin_stackerline` | 2,362,176 | +0.11% |
 
-Progress this cycle: 3.51% → 3.34% (Structured Text wiring) → 2.99%
-(ST inside AOI definitions) → 2.81% (zero-connection modules) → 2.15%
-(JSR per-target/per-call split).
+**The residual is no longer one-sided.** It used to be: every file under-predicted
+and the work was to find missing bytes. Seven files now over-predict, which means
+**any candidate that can only add bytes is wrong before it is tested.**
 
----
+### How to state the accuracy
 
-## Phase 7 — Close the last 1.15%
+**The max always travels with the mean.** The honest one-line claim is *mean
+absolute error 1.60%, worst case 3.63%, read the worst case as up to 4%.* Not
+"about 1.6% accurate" — the worst file is 2.3× the mean and the distribution has
+a long right tail. Any headline number, in the README, in the UI or in a reply,
+carries both figures or it misleads.
 
-The goal is 1% on every real file. The residual is concentrated in AOI-dense
-programs, and the correlation is unambiguous: against the current residual,
-AOI axis parameters score +0.889, AOI internal rungs +0.848, AOI definition
-count +0.838, AOI local tags +0.835.
+**The blind test is the only externally meaningful evidence.** The seventeen are
+gitignored customer exports that nobody outside the project can audit, so the
+mean over them cannot be verified by anyone else — and the model was tuned while
+sixteen of them were available. One was not: `cardin_trimsortstack`, a 7.89 MB
+program on a 1756-L83E, was **predicted at 7,722,352 against an actual of
+7,891,612, +2.15%**, before its actual was used for anything. It lands inside the
+existing error distribution rather than outside it. **Lead with that, not with the
+mean.**
 
-### Immediate — waiting on capture (407 files queued)
-
-Nothing here needs new design work; it needs the capture run.
-
-| batch | files | closes |
-|---|---:|---|
-| `asmclose` | 64 | `OQ-MODULEMARGINAL` — every remaining ASSUMED item that reaches a real file |
-| `alarmdefs` | 40 | `OQ-ALARMDEF` — per-definition, per-member, instantiation and message-text cost |
-| `fwmatrix` L9 | 4 | `OQ-L9BUDGET` — per-catalog user memory for the 1756-L9xTS family |
-| `aoistructure` | 56 | `OQ-AOISTRUCT` — the seven unpriced AOI structural properties |
-| `defscale` | 30 | `OQ-DEFSCALE` — per-definition cost at real scale |
-| `cpt_closeout` | 58 | `OQ-CPTNARROW`, `OQ-CPTARRANGE` |
-| `driveaxis` | 16 | axis parameters and nested AOI instances |
-| `mbshape` | 14 | AOI-dense composite shapes |
-| `verified_instructions` | 33 | `OQ-VERIFINSTR` |
-| others | 92 | firmware matrix, module sweeps, shell scaling |
-
-The `alarmdefs` and L9 rows are new on 2026-09-08, built from the four real
-1756-L9xTS v38 exports. Both are v38-only by design: `<AlarmDefinitions>`
-appears in none of the 26 real corpus exports at MajorRev 20-35 and in all
-four at 38, and the L9 family itself postdates the v31-v37 firmwares.
-
-After this run, every ASSUMED constant that touches a real file is either
-measured or explicitly out of scope. The one exception is reported rather
-than hidden: **150 SMC Flex-E** (0.069% exposure) has no real module XML on
-file, so it cannot be tested until a real export exists.
-
-### Day 1–2 after capture
-1. Reconcile the manifest and log every conversion failure.
-2. Read the `aoistructure` flat lines. Each group is predicted to a single
-   byte across every file in it, so any spread is a directly readable
-   unpriced cost. Expected order of magnitude, largest first: member name
-   length, predefined-structure members, InOut parameters, array dimensions,
-   member descriptions, extra internal routines.
-3. Wire whichever of those come back with a clean, non-interacting slope.
-   Cross-validate every fit on held-out files before keeping it — three
-   surcharge fits and one shell hypothesis have already been rejected at
-   this step, and all four looked good in sample.
-4. Re-measure the nine real files. This is the only number that decides
-   whether the work landed.
-
-### Day 3
-5. Read the `defscale` sweeps for curvature in per-definition cost at real
-   scale. This is the same failure shape that shell scaling already turned
-   out to have — a constant fitted at n=2 and applied at n=200.
-6. Re-check every open question against the new engine state, not just the
-   ones this batch was aimed at.
-7. Design the follow-up batch from whatever the residual then points to.
-
-### Known blockers that need external input
-- One real **5069** export with a controller capture. Every real file is a
-  1756-L8x, so the entire 5069 model rests on generated files the model was
-  fitted on (`OQ-REAL5069`). This is the largest untested claim in the tool.
-- Two Studio 5000 error-log lines for the remaining build failures (one 2198
-  drive catalog, one `almd_minimal`).
-- The alarm `ConditionType` dropdown list plus one analog alarm example.
+**Every future real export should be predicted, and the number written down,
+before the controller reading is taken.** That is the only procedure that adds
+auditable evidence. A file reconciled after the fact adds a fitting input, not a
+test.
 
 ---
 
-## Phase 8 — Make it safe to hand to someone else
+## The 1% target has not been shown to be reachable
 
-The tool is going to people whose code, naming conventions and AOI libraries
-are nothing like the corpus it was fitted on. Accuracy on unfamiliar input is
-a different property from accuracy on the nine real files, and it is not yet
-measured.
+`CLAUDE.md`'s stopping rule is mean under 1% **and** max under 2%. It is checked
+in code — `scripts/quick_eval.py` prints `STOPPING RULE ... MET / NOT MET` on
+every run — and it is NOT MET.
 
-1. **Never fit anything to a specific AOI, UDT or tag name.** Cost models
-   must be functions of structure. `gen_aoi_structure.py` is built to this
-   rule and it is the standard for everything that follows.
-2. **Say what is not known.** The UI already warns on a safety project. It
-   should do the same for a platform with no real validation behind it (5069
-   today), for an export type that is not a full controller export, and for a
-   file whose instruction mix falls outside the fitted range.
-3. **Fail visibly, not silently.** Any element the model cannot price should
-   surface as a coverage notice in the UI, not vanish from the total. The
-   plumbing exists; the presentation does not.
-4. **First-run experience.** Install, point at a file, get a treemap. No
-   `cd src`, no manual dependency steps.
+**More than that: it is not shown to be achievable, and the reasoning is recorded
+so it is not re-litigated.**
 
----
+Let all eight category scales float and fit them **directly on the held-out real
+programs** — cheating, an upper bound no honest procedure can beat. The result is
+mean 1.0149% and max 2.5919%, which **still fails**. Under leave-one-out
+cross-validation that same fit is worth **0.007 percentage points**, with half the
+files getting worse.
 
-## Phase 9 — UI
+Two consequences:
 
-Deferred until accuracy is settled, but the list is kept current so the work
-is ready when the estimator stops moving.
+1. **No per-category correction can close this.** A task whose mechanism is "a
+   cost constant is slightly wrong" is dead before it starts.
+2. **Treat 1% as an aspiration that has not been shown achievable**, not as a
+   pending item. A result outside 2% on a real file is still a broken estimator,
+   not an open question.
 
-- Confidence shown per node, not just a global "estimated" flag — exact,
-  fitted and unpriced should be visually distinct at every level of the
-  drill.
-- A "what changed" comparison between two exports of the same program, which
-  is the question actually asked when a download starts failing.
-- Budget selector across CompactLogix memory sizes, with headroom shown
-  against the selected target rather than a bare byte total.
-- Alarm and axis root groups exist; module I/O should join the summed total
-  once its confidence justifies it.
-- Export the treemap itself, not only the CSV/XLSX tables.
+Changing the target to 2% would change none of the work below: a 2% **mean** is
+already met and a 2% **max** is not reachable by any per-category fit either.
 
 ---
 
-## Standing rules for this phase
+## What is left that the ceiling result does not bound
 
-- Cross-validation decides every fit. In-sample fit has been wrong four times
-  in a row on this project.
-- Real files are the scoreboard. The generated corpus is the instrument.
-- A capture row with `error_count > 0` is never a valid fitting point.
-- Fix the estimator, do not just document the gap.
+The one shape not eliminated is **a term not proportional to any category the
+engine currently counts** — real content that is not being counted at all.
+
+**That term now has measured support.** An immediate numeric literal in an
+instruction operand costs **4 bytes** that the engine charges at zero, measured on
+the bench in Logix Designer. Exposure across the real programs is 52,195 unpriced
+literal operand slots — 12.1% of all operand slots, about a quarter of the total
+residual — and it is the first candidate to move the **max**, from 3.63% to 2.90%,
+against a cheating ceiling of 2.59%.
+
+It is not wired. The 4 is measured for a REAL literal only; 98% of the exposure is
+integer literals at an unmeasured rate. A 29-file batch is built and awaiting
+capture. See `OQ-LITERALOPERAND`.
+
+---
+
+## What has been eliminated, so it is not re-tried
+
+Each of these was tested and failed. They are recorded here because every one of
+them looks reasonable on first inspection.
+
+| candidate | why it is dead |
+|---|---|
+| A global `routine_logic` scale-up | Ruled out twice: by 578 instruction rows, and by direct measurement in both directions on real programs. |
+| A constant error per instruction occurrence | Coefficient of variation 1.74 across the real set, 1.72 over the top four instructions, 1.73 per rung. Not a uniform weight error. |
+| Branch fraction as the carrier | Nearly flat across the real set at 58.6–76.1%, correlates at only −0.250. |
+| Any flat per-file constant | Swept from 2,000 to 10,000 bytes; every value made the mean worse. A per-file term moves all files equally, so bias improves and spread does not. |
+| Any per-routine, per-rung, per-program or per-tag constant | All four are collinear with size, so each moves the bias and leaves the spread. |
+| The empty-project baseline | Byte-exact on every generated empty file and on a File\|New real project (18,112 predicted, 18,112 actual). |
+| Axis sizing | Byte-exact on one real program over 37 axis tags and 778,728 bytes — the largest single category in that file. |
+| Tag declaration order | Six files, byte-identical. Order is free. |
+| Branch arrangement | Byte-exact at 1, 2, 4 and 8 legs with inventory held fixed. |
+| 2-D array subscripts | Cost zero. |
+| Attribution by subtraction from a real export | Dead by the read-only rule — the derived files do not import. Not merely difficult. |
+
+---
+
+## Known blockers needing external input
+
+- **Studio error-log lines** for the remaining build failures. See
+  `OPEN_BUILD_ERRORS.md`.
+- **The alarm `ConditionType` dropdown list** plus one analog alarm example.
+- **A real 1769 export with a controller capture**, if 1769 ever stops being dead
+  architecture. Its baseline is not modelled at all.
+
+---
+
+## Standing rules
+
+- **Cross-validation decides every fit.** In-sample fit has been wrong repeatedly
+  on this project.
+- **Real files are the scoreboard. The generated corpus is the instrument.**
+  Never report a corpus pass rate as the project's accuracy — the model is fitted
+  on it, so that number is circular.
+- **A capture row with errors is never a valid fitting point.** It is suspect, not
+  wrong: the actual figure got filled in, but part of the file may never have
+  reached the controller. Never quietly use such a row and never quietly drop it.
+- **Fix the estimator, do not just document the gap.**
+- **State up front how many percentage points a task should move.** A task that
+  cannot state that is not worked.
