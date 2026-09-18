@@ -2195,9 +2195,21 @@ the matching footnote at the bottom, not inline.
     **What this rules out, concretely.** Any per-routine, per-rung, per-program
     or per-tag constant fitted to the real set will move the bias and leave the
     spread, because all four are collinear with size. The remaining error is not
-    a missing per-unit cost. It is either per-FILE (which the strip ladder's
-    OQ-CTLSHELL already sized at +7,800 / +4,072) or content-dependent in a way
-    none of these counters captures.
+    a missing per-unit cost.
+
+    **And the per-FILE alternative is ruled out too, the same day and the same
+    way.** OQ-CTLSHELL's measured controller-shell constant (+7,800 on 1756,
+    +4,072 on 5069, from two real Empty exports) was charged to all sixteen
+    programs: mean absolute error **1.5607% -> 1.6527%**, worse, and every flat
+    per-file constant from 2,000 to 10,000 is monotonically worse still. Bias
+    improves, spread does not — because a per-file term moves all sixteen
+    equally.
+
+    **So both remaining shapes are eliminated. The residual is
+    CONTENT-DEPENDENT.** Neither counting structural units nor charging every
+    file the same can reach it, and no amount of refitting either will. What is
+    left has to come from differencing real content — the strip ladder — not
+    from correlating totals.
 
     **It also stands as real-set evidence on OQ-DEFSCALE's open carrier
     question**, though not proof: if the 260 were genuinely per routine, applying
@@ -4543,7 +4555,9 @@ the matching footnote at the bottom, not inline.
     `EthernetPorts`/`Bus` block copied in, (c) `Trends` + `DataLogs` +
     `QuickWatchLists` populated. If (b) or (c) moves the number, the term is
     identified in one capture round. This affects all sixteen real files
-    uniformly, so it is worth 0.2–0.6% of real error on its own.
+    uniformly. **The "worth 0.2–0.6% of real error" that used to end this
+    sentence is withdrawn — measured 2026-09-18, charging it COSTS 0.09 points.
+    Its value is ATTRIBUTION and the 3,736-byte platform gap, not the headline.**
 
 46. **OQ-LADDERBASE** — new 2026-09-14, and it blocks every conclusion the
     strip ladder produced on Elmsdale. **The per-program strip batch and the
