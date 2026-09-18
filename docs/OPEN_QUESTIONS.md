@@ -4948,3 +4948,54 @@ files were captured, so that batch confirms them rather than measuring them.
     from a real export is dead (see the read-only rule in `CLAUDE.md`), so a
     built-from-scratch sweep at the real shape is now the only way to price
     arrangement.
+
+50. **OQ-TAGSHAPE** — new 2026-09-18. **Controller tags are 59.00% of all
+    predicted mass across the sixteen, so the whole residual would be a 2.36%
+    error there. It is not. Every tag shape real programs use is already
+    covered, and the gaps that do exist are too small to hold it.**
+
+    Recorded as a NEGATIVE result so this is not re-opened as the obvious
+    place to look. Surveyed 31,532 real tags against 91,641 corpus tags over
+    3,479 captured files:
+
+    | shape | real | corpus | verdict |
+    |---|---:|---:|---|
+    | `Base` | 96.05% | 98.89% | covered |
+    | `Alias` | 3.77% | 1.11% | covered, formula wired |
+    | `Produced` | 0.11% | **0.00%** | **never tested** |
+    | `Consumed` | 0.06% | **0.00%** | **never tested** |
+    | scalar | 93.44% | 95.90% | covered |
+    | 1-D array | 6.40% | 4.10% | covered |
+    | 2-D array | 0.16% | **0.00%** | **never tested** |
+
+    Child elements per 1,000 real tags with **zero** corpus coverage:
+    `ProduceInfo` 1.14, `ConsumeInfo` 0.60, `Maxes` 0.35, `Mins` 0.35.
+
+    **None of those can hold the residual.** Produced, Consumed and 2-D array
+    tags together are **0.33% of real tags** — at 84 bytes of flat base each,
+    the entire untested population is about 8,700 bytes against a residual of
+    653,678. They are worth one cheap file each for completeness, not a
+    capture session.
+
+    **The name-length term was the strongest-looking candidate and is
+    CLEARED.** Real tag names run far longer than the corpus average — 91% are
+    8 characters or more and **53% are 16 or more**, against a corpus that is
+    **56.83% names of 0–7 characters** and only 2.74% in the 16–23 bucket. An
+    8-bytes-per-8-characters term (`tag_overhead.per_8_chars`) calibrated on
+    short names and applied to long ones is exactly the extrapolation that
+    broke array-of-STRING past n=100. It is not broken here: the name-length
+    families are **88 clean rows at mean 0.1207%, 66 of them byte-exact**, and
+    they cover 4, 8, 16, 32 and 40 characters directly.
+
+    **What remains unexplained on the tag side.** 368 distinct real DataTypes
+    appear in no corpus file at all, covering **4,950 tags — 15.7% of the real
+    population** (`SpecialInputs` 1,013, `DigitalSensor` 738,
+    `SingleSolValve` 369, `ts_CIPAxis` 358, `PTimer` 279). These are
+    customer UDTs and AOIs, and they are sized structurally from their own
+    member lists rather than by name, so there is no per-type constant to be
+    wrong. That reasoning is an argument, not a measurement, and it is the one
+    thread here still worth pulling if `OQ-RUNGSHAPE` does not close the gap.
+
+    **Conclusion: the residual is not in tag DATA SPACE.** It is in the
+    18.25% of mass that is compiled logic, where the evidence gap is
+    measured and large — see `OQ-RUNGSHAPE`.
