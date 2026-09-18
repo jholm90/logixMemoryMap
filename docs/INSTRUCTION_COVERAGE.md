@@ -115,12 +115,22 @@ comes out of both intervals:
 from the 180-byte PID predefined STRUCTURE: a PID rung costs 156 for the
 instruction plus whatever its PID-typed control tag costs as data.
 
-`DTR` is deliberately NOT wired. Its sweep says the real cost is 0 while the
-model charges 16, which would be a clean correction except that all three
-`unweighted_dtr_*` files captured WITH Studio build errors and carry no error
-text. A row that errored is suspect, not wrong: if part of the file never
-reached the controller then "real cost 0" is an artefact of the rungs being
-absent. Recapture first. See OQ-VERIFINSTR's CAPTURE ERRORS flag.
+**`DTR` = 40, WIRED 2026-09-18.** The recapture landed clean (`error_count = 0`
+at all three counts, so the missing-NOP fix worked) and the three
+`unweighted_dtr_*` files read +404, +4,004 and +40,004 at 10, 100 and 1,000
+rungs — exactly 40.000 per rung two orders of magnitude apart, with the family's
+universal +4 per file left over.
+
+Two corrections to what this section used to say. DTR was charged **nothing**,
+not 16: it never appeared in `logic_instructions.weights` at all. And the earlier
+"its sweep says the real cost is 0" was read off the errored capture, which is
+exactly the trap the suspect-not-wrong rule exists to prevent — the rungs were
+being rejected one per rung, so of course they cost nothing.
+
+The five siblings in the same sweep — AND 40, OR 40, RTOS 72, LFU 72, UPPER 84 —
+all read the universal +4 at all three counts, so that batch **confirms** the
+weights they already carried rather than measuring them. DTR was the only one of
+the six still unpriced when the captures landed.
 
 **Reclassified, not wired:**
 
