@@ -2045,6 +2045,11 @@ cpt_expression:
   # measurement it is: a run of 2, nothing else.
   leading_tier1_run_length: 2
   leading_tier1_run_bytes: 4
+  # KNOWN. 28 rows, four arrangements at every operator count 3..9, tier
+  # counts held fixed, zero residual -- and it reproduces four points it was
+  # not fitted to (the alternating/grouped n=5 pair, their agreement at n=11,
+  # and the three (2,1) files that sat 4 short).
+  leading_tier1_run_confidence: KNOWN
   # T1T3/T2T3 mixed expression (POW alongside exactly one of ADD/SUB or
   # MUL/DIV/MOD), wired 2026-08-25 -- OQ-CMPCPTLAYOUT. Real capture data
   # already existed (2026-08-24, gen_cpt_mixed_operators.py's
@@ -2546,6 +2551,12 @@ jsr_target_declaration:
   # discrepancy in another is the check that was missing when b_base and
   # per_target were fitted against each other.
   sbr_ret_operand_bytes: 112
+  # KNOWN. Four target counts (1/10/50/200), 112 at every step, zero residual;
+  # the 12 parameterless subrtn_* rows hold at exactly 0 as the negative
+  # control. per_target is KNOWN on the same basis: 8t - 280 exact across
+  # t = 1..50, two generators, name lengths 4..40.
+  sbr_ret_operand_confidence: KNOWN
+  per_target_confidence: KNOWN
   confidence: FITTED
 
 jsr_param_cost:
@@ -2618,6 +2629,11 @@ jsr_param_cost:
   # here. Left in OQ-JSRPARAMCOST rather than absorbed into a_base.
   b_multiparam_extra: 4
   b_multiparam_threshold: 2
+  # KNOWN, not FITTED. Thirteen rows, call counts 10 / 100 / 1,000, param
+  # counts 1..15, zero residual against p=4 / c=-176, plus jsr_multiret_n02
+  # as an independent decider on the keying. The block's FITTED tier covers
+  # a_base/a_per_param/b_per_param, which really were regressed.
+  b_multiparam_confidence: KNOWN
 
 # Cost of ONE AOI CALL SITE -- OQ-DEFSCALE, wired 2026-09-13, and the largest
 # single unmodelled item found in this project so far.
@@ -3012,6 +3028,23 @@ logic_instructions:
   # the <1% North Star.
   safety_task_program_shell: 296
   safety_task_program_shell_confidence: FITTED
+  # PER-WEIGHT TIER OVERRIDES. `confidence: FITTED` above covers the table as a
+  # whole, because most of it was regressed off mixed files. The weights listed
+  # here were each measured ALONE at three rung counts two orders of magnitude
+  # apart, with a residual that is the family's universal per-file constant and
+  # nothing else, so they are KNOWN and must not be re-derived.
+  #
+  # DTR was measured 2026-09-18 (+404 / +4,004 / +40,004 at 10 / 100 / 1,000
+  # rungs against a weight of zero). The other five read the universal +4 at all
+  # three counts in the SAME sweep, which confirms the values they already
+  # carried rather than measuring them for the first time.
+  weight_confidence:
+    DTR: KNOWN
+    AND: KNOWN
+    OR: KNOWN
+    RTOS: KNOWN
+    LFU: KNOWN
+    UPPER: KNOWN
   weights:
     # FOR / SBR / RET -- measured 2026-09-11, gen_subroutine_and_for.py.
     # All three were previously ABSENT from this table, which charged them
@@ -3561,6 +3594,12 @@ structured_text:
     # Only additive is measured on the REAL row (stx_ops01_real, and group D's
     # four conversion files). The others fall back to it and are flagged.
     real: { additive: 56 }
+  # KNOWN for every entry above and in the premium table below. Each is one
+  # 1,000-statement file with a residual that is an exact multiple of 1,000,
+  # error_count 0, measured against a control of the same shape. The REAL row's
+  # non-additive one-operator entries are the exception and are absent rather
+  # than guessed -- unmeasured_one_operator_class() flags them.
+  assignment_operator_class_confidence: KNOWN
   assignment_operator_premium:
     dint: { additive: 0, multiplicative: 16, bitwise: 0, exponent: 38 }
     real: { additive: 0, multiplicative: 0, bitwise: 0, exponent: 8 }
@@ -3585,6 +3624,11 @@ structured_text:
     SINT: 92
     INT: 104
     LINT: 0
+  # KNOWN. Three types measured directly and stc_conv_mixed is an independent
+  # additivity check that lands to the byte (56 + 48 + 92 = 196). The unsigned
+  # types are NOT measured and fall back to DINT's 48, which is why this tier
+  # covers the four keys listed and not the fallback.
+  real_dest_source_conversion_confidence: KNOWN
   # An AOI called as a bare STATEMENT from Structured Text. Charged NOTHING
   # until 2026-09-13 -- the same invisibility that hid RLL AOI call sites until
   # segment 3, and for the same reason: an ST call statement is matched by the
@@ -3625,5 +3669,9 @@ structured_text:
   # the point: an AOI costs the same from Structured Text as from a rung, one-time
   # term included.
   st_aoi_call_routine_bytes: 264
+  # KNOWN. Separated from the per-call term by three files at ONE call against
+  # four at a thousand: a 1,000x change in call count moves the residual by 12
+  # bytes. st_aoi_call_bytes/per_param stay FITTED -- they were regressed.
+  st_aoi_call_routine_confidence: KNOWN
   st_aoi_call_confidence: FITTED
   confidence: KNOWN

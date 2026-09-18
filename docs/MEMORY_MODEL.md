@@ -1445,6 +1445,36 @@ Any statement that alarms are out of scope applies to the ALMD/ALMA
 *instructions* (zero occurrences in the real set) and not to these. The
 unexplained 107 bytes per condition is OQ-ALARMCONDREAL.
 
+## The KNOWN register — measurements, not fits (2026-09-18)
+
+`confidence: FITTED` on a block says how MOST of that block was derived. It
+under-states the constants inside it that were measured alone, at several counts,
+with zero residual — and a constant left reading FITTED gets re-derived, which has
+already cost this project whole sessions. These carry their own
+`*_confidence: KNOWN` key beside the value in `memory_model.yaml`, and
+`tests/test_measured_known_constants.py` pins each one to both its value and its
+tier, so changing either without updating the evidence fails the suite.
+
+| constant | value | rows | what those rows span |
+|---|---:|---:|---|
+| `jsr_param_cost.b_multiparam_extra` | 4 | 13 | call counts 10 / 100 / 1,000 × param counts 1…15, plus `jsr_multiret_n02` as an independent decider on the keying |
+| `jsr_target_declaration.per_target` | 160 | 13 | distinct-target counts 1…50, two generators, name lengths 4…40 |
+| `jsr_target_declaration.sbr_ret_operand_bytes` | 112 | 16 | target counts 1 / 10 / 50 / 200, plus 12 parameterless `subrtn_*` controls holding at exactly 0 |
+| `logic_instructions.weights.DTR` | 40 | 3 | 10 / 100 / 1,000 rungs against a weight of zero |
+| `cpt_expression.leading_tier1_run_bytes` / `_length` | 4 / 2 | 28 | four arrangements × operator counts 3…9, tier counts held fixed |
+| `structured_text.assignment_one_operator_class_bytes.dint.bitwise` | 124 | 3 | `stc_prem1_{and,or,xor}`, all three at the same +84 over additive |
+| `…dint.exponent` | 204 | 1 | `stc_prem1_pow` |
+| `structured_text.assignment_operator_premium.dint.exponent` | 38 | 1 | `stc_opkind_pow` at four operators |
+| `…real.multiplicative` / `…real.exponent` | 0 / 8 | 2 | `stc_premreal_mul` / `stc_premreal_pow` |
+| `structured_text.real_dest_source_conversion_bytes` SINT / INT / LINT | 92 / 104 / 0 | 4 | one file per type, cross-checked exactly by `stc_conv_mixed` |
+| `structured_text.st_aoi_call_routine_bytes` | 264 | 7 | three files at ONE call against four at a thousand |
+| `logic_instructions.weights` AND / OR / RTOS / LFU / UPPER | 40 / 40 / 72 / 72 / 84 | 15 | 10 / 100 / 1,000 rungs each — **confirmed** by the DTR sweep, not first measured by it |
+
+What stays FITTED, deliberately: `a_base`, `a_per_param` and `b_per_param` in
+`jsr_param_cost`; `st_aoi_call_bytes` and `st_aoi_call_per_param_bytes`; the ST
+base ladder and the two-tier CPT mix rates. Those were regressed, and marking the
+blocks they live in KNOWN would launder them.
+
 ## Change log
 
 Log every constant change here with date + which sample(s) drove the change, so
