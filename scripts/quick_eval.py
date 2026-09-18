@@ -47,6 +47,25 @@ import l5x_memory_analyzer.sizing.report as rep  # noqa: E402
 MANIFEST = REPO / "samples" / "manifest.csv"
 REAL_CATEGORY = "real_program"
 
+# The stopping rule, so "done" is a check rather than a judgement call
+# (docs/TASKS.md ranked item 8). Both must hold on the sixteen real programs.
+STOP_MEAN_PCT = 1.0
+STOP_MAX_PCT = 2.0
+
+# Dead architecture -- 1756-L7x and 1769. CLAUDE.md keeps the existing rows but
+# forbids new investment, and they dominate every corpus average while being
+# unable to move the headline. Measured 2026-09-18: 64 captured rows, and the
+# worst sentinel in the whole corpus was one of them (fwmatrix_v33_1756_l71 at
+# 65.69%). Excluded from the
+# non-real reports by default so a corpus number is not quietly contaminated;
+# --include-dead puts them back.
+_DEAD_PROCESSOR = re.compile(r"1756-L7|^1769-|L1[0-9]ER|L2[0-9]ER|L3[0-9]ER", re.I)
+
+
+def _is_dead_architecture(row: dict) -> bool:
+    return bool(_DEAD_PROCESSOR.search(row.get("controller_model") or ""))
+
+
 
 def _rows() -> list[dict]:
     with open(MANIFEST, encoding="utf-8-sig", newline="") as handle:
@@ -116,7 +135,8 @@ def evaluate(rows: list[dict]) -> list[tuple[str, str, int, int, bool]]:
     return out
 
 
-def _report(label: str, results: list[tuple[str, str, int, int, bool]], worst: int) -> None:
+def _report(label: str, results: list[tuple[str, str, int, int, bool]], worst: int,
+            is_real: bool = False) -> None:
     if not results:
         return
     clean = [r for r in results if not r[4]]
@@ -132,6 +152,13 @@ def _report(label: str, results: list[tuple[str, str, int, int, bool]], worst: i
               f"  exact={exact}  within8={band}")
     for sid, _, a, d, _ in sorted(clean, key=lambda r: -abs(r[3] / r[2]))[:worst]:
         print(f"    {sid:<44}{d:>9}  {d/a*100:>7.3f}%")
+    if is_real and pcts:
+        mean, worst_pct = sum(pcts) / len(pcts), max(pcts)
+        ok = mean < STOP_MEAN_PCT and worst_pct < STOP_MAX_PCT
+        print(f"  STOPPING RULE (mean <{STOP_MEAN_PCT}% and max <{STOP_MAX_PCT}%): "
+              f"{'MET' if ok else 'NOT MET'} -- mean {mean:.4f}%, max {worst_pct:.4f}%, "
+              f"{sum(1 for x in pcts if x < 1)}/{len(pcts)} inside 1%, "
+              f"{sum(1 for x in pcts if x < 2)}/{len(pcts)} inside 2%")
 
 
 def main() -> int:
@@ -140,21 +167,33 @@ def main() -> int:
     ap.add_argument("--full", action="store_true",
                     help="every captured row (reconciliation and final checks only)")
     ap.add_argument("--worst", type=int, default=6)
+    ap.add_argument("--include-dead", action="store_true",
+                    help="also report 1756-L7x / 1769 rows, which are dead "
+                         "architecture and cannot move the real-set number")
     ap.add_argument("--lenient", action="store_true",
                     help="also include the 271 rows whose error_count was never "
                          "recorded (captured before the tooling logged it)")
     args = ap.parse_args()
 
     rows = _rows()
+    dead = 0
+    if not args.include_dead:
+        keep = [r for r in rows
+                if r["category"] == REAL_CATEGORY or not _is_dead_architecture(r)]
+        dead = len(rows) - len(keep)
+        rows = keep
     picked = select(rows, args.family, args.full, args.lenient)
     results = evaluate(picked)
     by_real = [r for r in results if r[1] == REAL_CATEGORY]
     rest = [r for r in results if r[1] != REAL_CATEGORY]
 
     mode = "LENIENT" if args.lenient else "strict"
+    if dead:
+        print(f"excluded {dead} dead-architecture row(s) (1756-L7x / 1769); "
+              f"--include-dead to report them")
     if args.full:
         print(f"FULL SWEEP ({mode}): {len(results)} of {len(rows)} manifest rows")
-        _report("real programs (the only accuracy number)", by_real, args.worst)
+        _report("real programs (the only accuracy number)", by_real, args.worst, is_real=True)
         buckets = collections.defaultdict(list)
         for r in rest:
             buckets[r[1]].append(r)
@@ -165,7 +204,7 @@ def main() -> int:
     print(f"SCOPED: {len(results)} row(s)"
           + (f" -- family {args.family!r} + 16 real + one sentinel per category"
              if args.family else " -- 16 real + one sentinel per category"))
-    _report("real programs (the only accuracy number)", by_real, args.worst)
+    _report("real programs (the only accuracy number)", by_real, args.worst, is_real=True)
     if args.family:
         fam = [r for r in rest if re.search(args.family, r[0])]
         _report(f"family {args.family}", fam, args.worst)

@@ -32,6 +32,13 @@ prediction error toward 1% on a real file. If it does not, it waits.
 A result outside 2% on a real file is a broken estimator, not an open
 question.
 
+**The stopping rule.** Done = **mean |error| < 1% AND max |error| < 2%** on the
+sixteen. It is checked, not judged: `scripts/quick_eval.py` prints
+`STOPPING RULE ... MET / NOT MET` on every run. Every task states up front how
+many percentage points it should move; a task that cannot state that is not
+worked. As of 2026-09-18: **NOT MET — mean 1.5607%, max 3.6309%, 4/16 inside
+1%, 11/16 inside 2%.**
+
 ## How accuracy is measured
 On real programs only. The **sixteen** real production exports in
 `samples/local/` are the held-out set and the sole basis for any headline
