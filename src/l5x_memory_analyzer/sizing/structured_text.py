@@ -81,7 +81,11 @@ _ASSIGNMENT = re.compile(r"(?P<lhs>[A-Za-z_][\w.\[\]]*)\s*:=\s*(?P<rhs>[^;]*);")
 _BARE_LITERAL_RHS = re.compile(r"^\s*(?:-?\d+(?:\.\d+)?|TRUE|FALSE)\s*$", re.I)
 _OPERATOR_TOKEN = re.compile(r"\*\*|[+\-*/]|\bMOD\b|\bAND\b|\bOR\b|\bXOR\b", re.I)
 _IDENT = re.compile(r"[A-Za-z_][\w.]*")
-_NUMBER = re.compile(r"\d+\.\d+|\d+")
+# A numeric LITERAL, not the digits inside an identifier: `R0 * R1` has no
+# literals in it, and reading its "0" and "1" as integer literals made every
+# all-REAL statement look like it had integer operands (found 2026-09-18 when
+# the operator premium started keying on exactly that).
+_NUMBER = re.compile(r"(?<![\w.])\d+(?:\.\d+)?")
 # Named sources of these types pay an implicit conversion when read into a REAL
 # destination. Integer LITERALS do not -- the cpt_mirror's `2` is not counted
 # and that file lands exactly, which is what fixes the rate at 48.
@@ -221,15 +225,30 @@ def size_st_assignments(routine: StructuredTextRoutine, model, tag_types=None):
         # multiplicative operator costs over an additive one IS that step. An
         # operator the tier table does not know (AND, OR, XOR) pays no premium,
         # which stx_opkind_and/xor measured directly at tier 1.
-        premium = sum(cpt.operator_premium_above_tier1(op) for op in call.operators)
-        integer_sources = 0
+        # ST has its OWN operator classification since 2026-09-18, measured by
+        # the 21-file stc_* closeout. Borrowing the CPT tier premium was right
+        # only for the multiplicative operators on a DINT destination: ** is 38
+        # per operator here against tier 3's 80, the premium is 0 (not 16) on a
+        # REAL destination, and a one-operator bitwise statement costs 124 rather
+        # than the additive 40 with no premium at all.
+        integer_named = sum(1 for name in call.operand_names
+                            if tag_types and tag_types.get(name) in _INTEGER_TYPES)
+        conversion_bytes = 0
         if dest_is_real and tag_types:
-            integer_sources = sum(
-                1 for name in call.operand_names
+            conversion_bytes = sum(
+                st.conversion_bytes_for(tag_types[name])
+                for name in call.operand_names
                 if tag_types.get(name) in _INTEGER_TYPES
             )
+        # The premium table follows the OPERANDS, not the destination -- an
+        # all-floating-point statement pays none. Without a tag table every
+        # statement reads as integer-operand, which is the status quo.
+        all_float = bool(tag_types) and integer_named == 0 and call.int_literals == 0
         total += st.assignment_cost(
-            len(call.operators), dest_is_real, premium, integer_sources)
+            call.operators, dest_is_real, conversion_bytes, all_float)
+        gap = st.unmeasured_one_operator_class(call.operators, dest_is_real)
+        if gap and gap not in unmeasured:
+            unmeasured.append(gap)
         # Still reported: an operator with no measured tier is unpriced either
         # way, and it is exactly what used to abort the whole report. AND, OR and
         # XOR are the exception AS OF 2026-09-13 and only in ST: stx_opkind_and

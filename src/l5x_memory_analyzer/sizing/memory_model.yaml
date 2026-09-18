@@ -3435,8 +3435,84 @@ structured_text:
   # Per INTEGER-typed NAMED source read into a REAL destination -- the implicit
   # conversion. Integer LITERALS do not pay it: the cpt_mirror's `2` and `1.5`
   # are not counted and the file lands exactly, which is what fixes the 48.
+  # Superseded 2026-09-18 by real_dest_source_conversion_bytes, which keys the
+  # rate on the SOURCE's own type. Kept as the DINT default.
   real_dest_integer_source_bytes: 48
   assignment_expression_confidence: FITTED
+  #
+  # ST HAS ITS OWN OPERATOR CLASSIFICATION AS OF 2026-09-18, and the reason is
+  # that it measurably is not the CPT tier table. OQ-STEXPR listed four things
+  # the assignment law assumed; gen_st_closeout.py's 21 files measured all four,
+  # 1,000 statements each, every residual an exact multiple of 1,000, all
+  # error_count 0. Borrowing `operator_premium_above_tier1` from ladder CPT was
+  # right for the multiplicative operators on a DINT destination and wrong
+  # everywhere else.
+  #
+  # A. THE ONE-OPERATOR ROW IS A LOOKUP PER OPERATOR CLASS, not a lookup plus a
+  #    premium. `D0 := D0 <op> D1;`, DINT throughout:
+  #
+  #      + -          40      (stc_prem1_add/sub, residual 0 -- already right)
+  #      * / MOD      56      (stc_prem1_mul/div/mod, residual 0)
+  #      AND OR XOR  124      (stc_prem1_and/or/xor, ALL THREE +84)
+  #      **          204      (stc_prem1_pow, +84)
+  #
+  #    Four operators landing on the identical +84 is what says this is a class
+  #    effect and not four coincidences. It is NOT a premium: stc_opkind_or puts
+  #    OR at FOUR operators and reads exactly the tier-1 196, residual 0, so a
+  #    bitwise operator costs nothing extra once the statement is compound. The
+  #    84 belongs to the one-operator compile only.
+  #
+  # B. THE PREMIUM COLLAPSES ON A REAL DESTINATION. Four operators, REAL
+  #    destination, REAL sources (so no conversion term intrudes), against
+  #    stx_ops04_real's measured 284:
+  #
+  #      +    284   residual 0        premium 0
+  #      *    284   residual -64      premium 0   (the wired 16/operator is 0 here)
+  #      **   316   residual -288     premium 8
+  #
+  #    So the assumption the premium "could scale with the REAL row's larger
+  #    per-operator rate" is refuted in the other direction: it vanishes. Read
+  #    physically, multiplying REALs is one FPU operation like adding them, while
+  #    multiplying DINTs is not.
+  #
+  # C. `**` IS NOT THE TIER TABLE'S 80. stc_opkind_pow, four operators, DINT:
+  #    348 against a predicted 516, so the premium is (348 - 196) / 4 = 38 per
+  #    operator, less than half of what tier 3 charges in ladder CPT. `OR` is
+  #    confirmed tier-1 at four operators (residual 0), which was the other half
+  #    of assumption C.
+  #
+  # Destination type versus operand type is NOT separated by these files: every
+  # DINT-destination file has DINT sources and every REAL-destination file REAL
+  # sources. Keyed on destination here because the base already is.
+  assignment_one_operator_class_bytes:
+    dint: { additive: 40, multiplicative: 56, bitwise: 124, exponent: 204 }
+    # Only additive is measured on the REAL row (stx_ops01_real, and group D's
+    # four conversion files). The others fall back to it and are flagged.
+    real: { additive: 56 }
+  assignment_operator_premium:
+    dint: { additive: 0, multiplicative: 16, bitwise: 0, exponent: 38 }
+    real: { additive: 0, multiplicative: 0, bitwise: 0, exponent: 8 }
+  # D. THE REAL-DESTINATION CONVERSION IS PER SOURCE, KEYED ON THE SOURCE'S OWN
+  # TYPE. One operator, REAL destination, both sources one integer type, against
+  # the 56 a pure-REAL one-operator statement costs:
+  #
+  #   sources    actual    per source
+  #   2 x DINT      152        48      (st_expr_ops1_n01000, unchanged)
+  #   2 x SINT      240        92      (stc_conv_sint, +88)
+  #   2 x INT       264       104      (stc_conv_int, +112)
+  #   2 x LINT       56         0      (stc_conv_lint, -96)
+  #
+  # And the additivity check is exact: stc_conv_mixed reads one DINT and one
+  # SINT in the same statement and lands at 196 = 56 + 48 + 92, to the byte.
+  # That settles "per source or per statement" outright -- per source.
+  #
+  # A narrower conversion costing MORE than DINT's, and LINT costing nothing, are
+  # both measured. The unsigned types are not measured and default to DINT's 48.
+  real_dest_source_conversion_bytes:
+    DINT: 48
+    SINT: 92
+    INT: 104
+    LINT: 0
   # An AOI called as a bare STATEMENT from Structured Text. Charged NOTHING
   # until 2026-09-13 -- the same invisibility that hid RLL AOI call sites until
   # segment 3, and for the same reason: an ST call statement is matched by the
@@ -3466,5 +3542,16 @@ structured_text:
   # The first argument is the instance tag and is not a parameter.
   st_aoi_call_bytes: 120
   st_aoi_call_per_param_bytes: 16
+  # The leftover one-time, SEPARATED 2026-09-18 and wired. stc_callone_n{10,100,
+  # 1000} hold the call count at exactly ONE while the routine grows 100x, and
+  # all three read +268 -- identical. So the residual the four stx_call_aoi_p*
+  # files carried (+256, +260, +268, +268 at 1,000 calls each) is a per-ROUTINE
+  # constant, not a per-call one: a 1,000x change in call count moves it by 12
+  # bytes. 264 puts all seven rows inside the universal +-8 band.
+  #
+  # This is the same ~264 an RLL routine containing AOI calls carries, which is
+  # the point: an AOI costs the same from Structured Text as from a rung, one-time
+  # term included.
+  st_aoi_call_routine_bytes: 264
   st_aoi_call_confidence: FITTED
   confidence: KNOWN

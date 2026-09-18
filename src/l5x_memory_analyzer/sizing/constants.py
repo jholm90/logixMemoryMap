@@ -900,33 +900,106 @@ class StructuredTextModel:
     st_aoi_call_bytes: int = 0
     st_aoi_call_per_param_bytes: int = 0
     st_aoi_call_confidence: str = "FITTED"
+    # ST's OWN operator classification, measured 2026-09-18 -- it is not the CPT
+    # tier table. See memory_model.yaml structured_text for the 21-file
+    # derivation and for the three places the two tables disagree.
+    assignment_one_operator_class_bytes: dict[str, dict[str, int]] = field(
+        default_factory=dict)
+    assignment_operator_premium: dict[str, dict[str, int]] = field(
+        default_factory=dict)
+    # Per named source read into a REAL destination, keyed on the SOURCE's own
+    # declared type. stc_conv_mixed confirms the additivity to the byte.
+    real_dest_source_conversion_bytes: dict[str, int] = field(default_factory=dict)
+    st_aoi_call_routine_bytes: int = 0
 
-    def assignment_cost(self, n_operators: int, dest_is_real: bool,
-                        operator_premium: int = 0,
-                        integer_sources: int = 0) -> int:
+    _OPERATOR_CLASSES = {
+        "+": "additive", "-": "additive",
+        "*": "multiplicative", "/": "multiplicative", "MOD": "multiplicative",
+        "AND": "bitwise", "OR": "bitwise", "XOR": "bitwise", "NOT": "bitwise",
+        "**": "exponent",
+    }
+
+    @classmethod
+    def operator_class(cls, operator: str) -> str:
+        """Which of the four measured ST operator classes this operator is in.
+
+        An operator nobody has classified reads as additive, the cheapest class,
+        so an unknown token cannot silently inflate a prediction.
+        """
+        return cls._OPERATOR_CLASSES.get(operator.strip().upper(), "additive")
+
+    def conversion_bytes_for(self, source_type: str) -> int:
+        """Implicit-conversion cost of reading one source of this type into a
+        REAL destination. Unmeasured types fall back to DINT's rate."""
+        table = self.real_dest_source_conversion_bytes
+        if not table:
+            return self.real_dest_integer_source_bytes
+        return table.get((source_type or "").upper(),
+                         self.real_dest_integer_source_bytes)
+
+    def assignment_cost(self, operators, dest_is_real: bool,
+                        conversion_bytes: int = 0,
+                        all_float_operands: bool = False) -> int:
         """Bytes for one ST assignment.
 
-        `operator_premium` is the sum over the statement's operators of that
-        operator's own CPT tier premium above tier 1 -- ST does not carry its
-        own operator classification, because the 16 bytes a multiplicative
-        operator costs over an additive one is exactly the tier-1-to-tier-2 step
-        in cpt_expression.operator_tier_costs. `integer_sources` counts named
-        INTEGER-typed sources read into a REAL destination; integer literals do
-        not pay the conversion.
+        `operators` is the statement's operator tokens in order. At exactly one
+        operator the cost is a LOOKUP keyed on that operator's class -- a
+        bitwise operator costs 124 where an additive one costs 40, and no
+        premium applies. At two or more it is base-plus-rate with a per-operator
+        premium, and a bitwise operator's premium is zero. Both halves are
+        measured; see memory_model.yaml.
+
+        `conversion_bytes` is the summed implicit-conversion cost of the named
+        sources, already keyed per source type by conversion_bytes_for; integer
+        LITERALS do not pay it.
+
+        `all_float_operands` selects the premium table, and it is the OPERANDS
+        that decide it rather than the destination. stc_premreal_mul (REAL
+        destination, REAL sources only) pays no multiplicative premium, while
+        st_expr_cpt_mirror_n01000 -- also a REAL destination, but multiplying a
+        DINT subexpression by a REAL and dividing a REAL by the literal 2 -- pays
+        16 per multiplicative operator. Both are byte-exact only if the premium
+        follows the operands. The base still follows the destination.
         """
         kind = "real" if dest_is_real else "dint"
-        low = self.assignment_low_operator_bytes[kind]
-        if n_operators in low:
-            base = low[n_operators]
+        premium_kind = "real" if all_float_operands else "dint"
+        n_operators = len(operators)
+        premium = 0
+        if n_operators == 1 and self.assignment_one_operator_class_bytes:
+            table = self.assignment_one_operator_class_bytes.get(kind, {})
+            base = table.get(self.operator_class(operators[0]),
+                             table.get("additive",
+                                       self.assignment_low_operator_bytes[kind][1]))
+        elif n_operators in self.assignment_low_operator_bytes[kind]:
+            base = self.assignment_low_operator_bytes[kind][n_operators]
         else:
             base = (self.assignment_two_operator_bytes[kind]
                     + self.assignment_per_operator_bytes[kind] * (n_operators - 2))
-        conversions = integer_sources if dest_is_real else 0
-        return base + operator_premium + self.real_dest_integer_source_bytes * conversions
+            rates = self.assignment_operator_premium.get(premium_kind, {})
+            premium = sum(rates.get(self.operator_class(op), 0) for op in operators)
+        return base + premium + (conversion_bytes if dest_is_real else 0)
+
+    def unmeasured_one_operator_class(self, operators, dest_is_real: bool) -> str:
+        """The class key this statement used that has no measurement, or "".
+
+        Only the additive class is measured on the REAL row at one operator, so a
+        `R0 := R1 * R2;` is a real coverage gap rather than a priced shape.
+        """
+        if len(operators) != 1 or not self.assignment_one_operator_class_bytes:
+            return ""
+        kind = "real" if dest_is_real else "dint"
+        cls = self.operator_class(operators[0])
+        if cls in self.assignment_one_operator_class_bytes.get(kind, {}):
+            return ""
+        return f"1 operator|{kind}|{cls}"
 
     def st_aoi_call_cost(self, calls: int, params: int) -> int:
+        """Per-call cost, plus the one-time a routine with any AOI call pays."""
+        if not calls:
+            return 0
         return (self.st_aoi_call_bytes * calls
-                + self.st_aoi_call_per_param_bytes * params)
+                + self.st_aoi_call_per_param_bytes * params
+                + self.st_aoi_call_routine_bytes)
 
 
 @dataclass(frozen=True)
@@ -1170,6 +1243,19 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             st_aoi_call_per_param_bytes=raw["structured_text"][
                 "st_aoi_call_per_param_bytes"],
             st_aoi_call_confidence=raw["structured_text"]["st_aoi_call_confidence"],
+            st_aoi_call_routine_bytes=raw["structured_text"].get(
+                "st_aoi_call_routine_bytes", 0),
+            assignment_one_operator_class_bytes={
+                kind: dict(table) for kind, table in
+                raw["structured_text"].get(
+                    "assignment_one_operator_class_bytes", {}).items()
+            },
+            assignment_operator_premium={
+                kind: dict(table) for kind, table in
+                raw["structured_text"].get("assignment_operator_premium", {}).items()
+            },
+            real_dest_source_conversion_bytes=dict(
+                raw["structured_text"].get("real_dest_source_conversion_bytes", {})),
             confidence=raw["structured_text"]["confidence"],
         ),
         alarm_conditions=AlarmConditionModel(

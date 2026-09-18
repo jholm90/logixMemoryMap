@@ -2966,7 +2966,32 @@ the matching footnote at the bottom, not inline.
     count held at three.** Four files settle both constants outright.
 
 
-29. **OQ-STEXPR** — the ST assignment law's four remaining assumptions.
+29. **OQ-STEXPR** — **ALL FOUR ASSUMPTIONS MEASURED AND WIRED 2026-09-18.**
+    The 21-file `stc_*` closeout captured cleanly (every row `error_count` 0,
+    every residual an exact multiple of the 1,000 statements per file) and
+    answered all four, plus the fifth item that was measured-but-unseparated.
+    The numbers and the reasoning are in **OQ-STEXPR-OPERATOR** below, which is
+    now closed rather than blocked; the headline is that the ST family went from
+    8.3291% to **0.0091%** mean absolute error, 60 of 69 rows byte-exact.
+
+    Answers, one line each:
+      1. **The one-operator premium** is not a premium. That row is a LOOKUP per
+         operator CLASS: additive 40, multiplicative 56, bitwise 124, `**` 204.
+      2. **The premium on the REAL row** does not scale up — it vanishes. And it
+         is keyed on the OPERANDS, not the destination.
+      3. **`**`** is 38 per operator in ST, not the tier table's 80. **`OR`** is
+         confirmed tier-1 at four operators.
+      4. **Conversion is per SOURCE, keyed on the source's own type**: DINT 48,
+         SINT 92, INT 104, LINT 0. `stc_conv_mixed` confirms the additivity to
+         the byte.
+      5. The AOI-call one-time IS separated and is **once per ST routine** (264),
+         not per call.
+
+    What is left on ST, unchanged and each its own single-point thread: the +228
+    on `st_jsr_param_target_n00100`, the −32 on `st_ctl_case`, and the WHILE
+    split resting on one file. The original text follows.
+
+    The ST assignment law's four remaining assumptions.
     The expression-cost thread CLOSED 2026-09-13 (capture-batch segment 6) and
     is in `docs/RESOLVED_QUESTIONS.md`: one law replaced the five-entry
     count-keyed table, 42 of 48 ST corpus rows now land exactly, corpus mean
@@ -4531,29 +4556,84 @@ the matching footnote at the bottom, not inline.
     | `stc_conv_lint` | 1 | REAL ← LINT | **−96** |
     | `stc_conv_mixed` | 1 | REAL ← mixed | **+44** |
 
-    **THE BLOCKER, and it is the trap this project has fallen into before.** OR
-    is +84 short at one operator and exact at four. Fitting that needs both a
-    first-operator rate and an extra-operand rate — two unknowns from two
-    points, exactly determined and therefore unfalsifiable. Any pair of numbers
-    that reproduces 1 and 4 is as good as any other, and there is no third count
-    to reject the wrong one. Same for `**` and for every REAL-destination shape.
+    **THE BLOCKER IS GONE, AND IT WAS NEVER A TWO-PARAMETER FIT. CLOSED AND
+    WIRED 2026-09-18.**
 
-    `+`, `-`, `*`, `/` and `MOD` are genuinely exact at both counts, so the
-    existing ST law is right for arithmetic and wrong only for the bitwise
-    operators, `**`, and type conversion.
+    The framing above -- "two unknowns from two points, exactly determined and
+    therefore unfalsifiable" -- was wrong about the model it was fitting into.
+    The ST assignment law does NOT have a single first-operator-plus-rate form.
+    It already has two separate regimes, and has had since the 30-file `stx_*`
+    grid: at fewer than two operators the cost is a LOOKUP, and at two or more it
+    is base-plus-per-operator-rate. The step between them is 108 bytes on the
+    DINT row and 148 on the REAL row, large and measured.
 
-    **What would close it: a 2-operator point for each arm.** Six files —
-    `and`, `or`, `xor`, `pow` at DINT, and `mul`, `pow` at REAL, each at exactly
-    2 operators, same 1,000-statement shape as the existing files so they
-    difference straight against both ends. That over-determines every fit and
-    the existing 1- and 4-operator rows become the check rather than the fit.
-    SPEC ONLY, not generated.
+    So the 1-operator and 4-operator points do not compete for the same two
+    parameters. Each one pins a constant in its own regime, alone:
 
-    Also measured and also blocked: `stc_callone_n{00010,00100,01000}` reads a
-    flat **+268** for one AOI call in an ST routine, identical at all three
-    statement counts — so it does not interact with routine length. But all
-    three files contain exactly ONE call, so per-call and once-per-routine fit
-    identically. A 2-call and a 5-call file separate them.
+      * `stc_prem1_and/or/xor` pin the DINT one-operator LOOKUP at **124** --
+        +84 over the additive 40, the same 84 on all three files, which is what
+        makes it a class effect rather than three coincidences. `stc_prem1_pow`
+        pins the same lookup for `**` at **204**.
+      * `stc_opkind_or` pins the DINT n>=2 bitwise premium at **0** -- four OR
+        operators read exactly the tier-1 196, residual 0. Nothing is fitted:
+        the 84 belongs to the one-operator compile and not to the operator.
+      * `stc_opkind_pow` pins the DINT n>=2 `**` premium at **38** per operator
+        (348 against 196 over four), less than half the 80 that ladder CPT's tier
+        table charges.
+      * `stc_premreal_mul` and `stc_premreal_pow` pin the all-floating-point
+        premiums at **0** and **8**. Assumption B is refuted in the opposite
+        direction from the one predicted: the premium does not scale with the
+        REAL row's larger per-operator rate, it VANISHES. Multiplying REALs is
+        one FPU operation like adding them; multiplying DINTs is not.
+      * `stc_conv_{sint,int,lint}` pin the conversion per source type at **92,
+        104 and 0**, and `stc_conv_mixed` is an independent additivity check that
+        lands to the byte: one DINT plus one SINT source is 56 + 48 + 92 = 196.
+        Four files, three unknowns, one exact cross-check -- over-determined
+        already.
+
+    **One genuinely new finding came out of wiring it, and it decides between two
+    readings nothing else in the corpus separates.** Keying the premium on the
+    DESTINATION type broke `st_expr_cpt_mirror_n01000` by exactly +32 per
+    statement. That file is `R0 := (D0+D1)*R1 - R2/2 + 1.5;` -- a REAL
+    destination, but it multiplies a DINT subexpression by a REAL and divides a
+    REAL by an integer literal. It pays 16 per multiplicative operator;
+    `stc_premreal_mul`, same count and same destination type but REAL sources
+    throughout, pays 0. **The premium follows the OPERANDS, not the
+    destination.** The base still follows the destination. Both files are exact
+    only under that split, and there is no other pair in the corpus that would
+    have caught it.
+
+    That fix exposed a real parser bug on the way: `_NUMBER` in
+    `sizing/structured_text.py` matched the digits INSIDE identifiers, so
+    `R0 := R0 * R1` counted five integer literals and every all-REAL statement
+    looked like it had integer operands. Harmless until the premium started
+    keying on exactly that. Now anchored with `(?<![\w.])`.
+
+    **`stc_callone` DOES separate per-call from per-routine, and this entry said
+    it does not.** The correction: the three `stc_callone_*` files carry one call
+    each, but the four `stx_call_aoi_p*` files they difference against carry
+    **one thousand**, and the residual is +268 at one call and +256 to +268 at a
+    thousand. A 1,000x change in call count moving the number by 12 bytes is the
+    separation. Wired as `st_aoi_call_routine_bytes: 264`, once per ST routine
+    containing any AOI call -- the same one-time an RLL routine with AOI calls
+    carries, which is the point: an AOI costs the same from Structured Text as
+    from a rung, one-time term included.
+
+    **Result: the ST family goes from 8.3291% to 0.0091% mean absolute error --
+    60 of 69 rows byte-exact, 67 of 69 inside the universal +-8.** The only two
+    outside are the two threads that were already their own: the +228 on
+    `st_jsr_param_target_n00100` and the -32 on `st_ctl_case`. Real set
+    1.6732% -> 1.6725%, flat as it must be: the sixteen held-out programs carry
+    26 ST routines between them.
+
+    **What the six 2-operator files are now for.** They were the enabler; they
+    are the FALSIFICATION TEST. Every constant above is pinned by one file, and
+    each rests on the law's existing assertion that the per-operator premium is
+    CONSTANT in n -- an assertion validated across ten counts for `+` and `*`
+    (`stx_ops02..12`) and now extended to the bitwise operators, `**` and the
+    all-float row on one count each. A 2-operator point for `and`, `or`, `xor`
+    and `pow` at DINT and for `mul` and `pow` at REAL would reject a premium that
+    is not constant in n. Worth building; no longer blocking. SPEC ONLY.
 
 ---
 
