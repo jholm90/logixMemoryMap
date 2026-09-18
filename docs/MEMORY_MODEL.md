@@ -1592,9 +1592,14 @@ there's a record of *why* a number is what it is, not just what it currently is.
   real-file deficit lives in `routine_logic`. Axis is byte-exact on Griffin over
   778,728 bytes. Tag-based alarms measured at 19–21% of total memory with the
   wired model within 0.16% on one file and 8.8% short on the other
-  (OQ-ALARMCONDREAL). A bare real controller shell is 7,800 (L81E) / 4,072
-  (5069) above the baseline, which is unpriced shell content and NOT a wrong
-  baseline constant (OQ-CTLSHELL). Nothing wired: three of seven ladder
+  (OQ-ALARMCONDREAL). **The controller-shell claim in this entry is WITHDRAWN**
+  — see OQ-CTLSHELL in RESOLVED_QUESTIONS.md. It read a bare real shell as
+  7,800 (L81E) / 4,072 (5069) above the baseline; both sides of that
+  subtraction were wrong. A File|New 1756-L81E at v35 reads 18,112 and the
+  engine predicts 18,112 exactly; 13,296 is the controller-only COMPONENT and
+  the MainTask/MainProgram/MainRoutine File|New also creates are charged
+  separately (13,296 + 4,816 = 18,112). Corrected, the sign flips to the engine
+  over-charging by 760. Nothing wired: three of seven ladder
   categories disagree in sign between the two files, which is two data points
   and the shape of a constant that is really a function of something
   unidentified.

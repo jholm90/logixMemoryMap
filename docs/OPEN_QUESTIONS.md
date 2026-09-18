@@ -183,12 +183,19 @@ answers it and the question does not get opened.
     a missing per-unit cost.
 
     **And the per-FILE alternative is ruled out too, the same day and the same
-    way.** OQ-CTLSHELL's measured controller-shell constant (+7,800 on 1756,
-    +4,072 on 5069, from two real Empty exports) was charged to all sixteen
-    programs: mean absolute error **1.5607% -> 1.6527%**, worse, and every flat
-    per-file constant from 2,000 to 10,000 is monotonically worse still. Bias
-    improves, spread does not — because a per-file term moves all sixteen
-    equally.
+    way.** A flat controller-shell constant (+7,800 on 1756, +4,072 on 5069)
+    was charged to all sixteen programs: mean absolute error **1.5607% ->
+    1.6527%**, worse, and every flat per-file constant from 2,000 to 10,000 is
+    monotonically worse still. Bias improves, spread does not — because a
+    per-file term moves all sixteen equally.
+
+    The +7,800 figure itself is **withdrawn** (OQ-CTLSHELL, closed 2026-09-18:
+    a File|New 1756-L81E at v35 reads 18,112 and the engine predicts 18,112
+    exactly; the gap was a component constant compared against a whole-file
+    capture). That does not weaken this conclusion — it strengthens it. The
+    sweep already covered 2,000 through 10,000 and every value was worse, so
+    there was no per-file constant to find whatever its provenance, and the
+    corrected delta is −760 rather than +7,800.
 
     **So both remaining shapes are eliminated. The residual is
     CONTENT-DEPENDENT.** Neither counting structural units nor charging every
@@ -416,13 +423,26 @@ answers it and the question does not get opened.
     | axis / motion | +7,928 | **0 — exact** |
     | controller tags | −8,075 | −2,745 |
     | UDT + AOI definitions | +16,667 | +3,477 |
-    | bare controller shell | +4,072 | +7,800 |
+    | bare controller shell | ~~+4,072~~ | ~~+7,800~~ **WRONG, see below** |
     | **whole file** | **+30,432** | **−15,540** |
+
+    The shell row is **withdrawn**: it compared `empty_project_baseline_bytes`
+    (13,296, a component) against a whole-file capture, and its Griffin actual
+    was wrong too. Corrected, that row is **−760** on Griffin — the engine
+    over-charging — not +7,800. Because the rows telescope, every row above it
+    absorbed the 8,560-byte difference somewhere; the individual figures are not
+    independently trustworthy.
 
     The step errors sum to the whole-file residual, but that is telescoping
     bookkeeping and is true by construction — it is not independent evidence
     that the split is right. What IS evidence is that the two files were
     stripped identically and disagree in sign on three of seven categories.
+
+    **And that evidence is itself now suspect**: the strip files were later
+    found not to import at all (19 errors, CDATA destroyed by the XML
+    round-trip), so every number in this table needs re-deriving from files
+    built as valid projects before it is cited. See the read-only rule in
+    CLAUDE.md.
 
     **COMPILED LADDER IS OVER-CHARGED ON BOTH FILES.** This entry has spent
     five segments assuming the missing bytes were in `routine_logic`, on the
@@ -506,21 +526,34 @@ answers it and the question does not get opened.
     on a category this large, is the highest-value open thread this ladder
     produced. See OQ-ALARMCONDREAL.
 
-    **THE BARE CONTROLLER SHELL IS UNDER-CHARGED ON BOTH, AND IT IS NOT THE
-    BASELINE CONSTANT.** Both `Empty` files are genuine: one Task, zero
-    Programs, zero Tags, zero DataTypes, zero AOIs, one Module (the controller).
-    Griffin_Empty is 1756-L81E v35 — the exact platform every generated test
-    file uses — and reads **21,096 against a predicted 13,296**. But
-    `emptyroutine_n01`, a GENERATED 1756-L81E v35 file that carries a program
-    and a routine the shell does not, reads 18,884 and the engine is
-    byte-exact on it, as it is on `emptyrungs_*`, `aoishape_control_empty` and
-    `axis_baseline_motiongroup_only`. The baseline constant is therefore right;
-    a real export's controller shell carries ~2,400+ bytes of content the
-    generated files do not have and the engine prices at zero. Candidates, none
-    of them yet priced: the controller's own `Module` element with real
-    `EKey` / `Ports` / `Bus` / `EthernetPorts` config, `SafetyInfo`,
-    `RedundancyInfo`, `Security`, `Trends`, `DataLogs`, `TimeSynchronize`,
-    `CST`, `WallClockTime`, `QuickWatchLists`. See OQ-CTLSHELL.
+    ~~**THE BARE CONTROLLER SHELL IS UNDER-CHARGED ON BOTH.**~~ **WITHDRAWN
+    2026-09-18.** This segment claimed Griffin_Empty read **21,096 against a
+    predicted 13,296**, a 7,800-byte hole in unpriced shell content. Both
+    numbers were wrong, and the error was a category error, not an arithmetic
+    one:
+
+    - 13,296 is `empty_project_baseline_bytes`, the controller-only scaffolding
+      **COMPONENT**. The MainTask/MainProgram/MainRoutine that File|New also
+      creates are charged separately. **A File|New 1756-L81E at v35 reads
+      18,112 and the engine predicts 18,112** — exact; 13,296 + 4,816 = 18,112.
+      Back-solved independently: `emptyrungs_n00010` at 18,272 and
+      `emptyrungs_n00100` at 19,712 give 16 bytes per empty rung, so the
+      zero-rung base is 18,272 − 160 = 18,112.
+    - The 21,096 actual was wrong too. The real Griffin_Empty figure is
+      **17,352**.
+
+    Corrected, the sign flips: 17,352 against 18,112 is the engine
+    **over**-charging by 760, not under-charging by 7,800. There is no
+    7,800-byte hole and no unpriced-shell-content question. See OQ-CTLSHELL in
+    RESOLVED_QUESTIONS.md; the `~2,400+ bytes` figure and the candidate list
+    (`SafetyInfo`, `RedundancyInfo`, `Security`, `Trends`, `DataLogs`,
+    `TimeSynchronize`, `CST`, `WallClockTime`, `QuickWatchLists`) are withdrawn
+    with it.
+
+    The general rule this cost: **quote a whole-file prediction against a
+    whole-file capture, never a component constant against a total.** And every
+    other number in this ladder segment is suspect for the separate reason in
+    CLAUDE.md — the strip files were later found not to import at all.
 
     **MODULES DISAGREE IN SIGN**, +18,076 under on Elmsdale against −15,580
     over on Griffin — and the two machines are built differently in exactly the

@@ -3727,7 +3727,7 @@ several; 12 new files sweep that.
 |---|---|
 | **OQ-LADDERBASE** | Two capture sessions on one real export disagree by 18–25k. Needs three existing files recaptured in one session. |
 | **OQ-REALUNDER** | Its own hypothesis is disproven; needs OQ-LADDERBASE settled and a third real ladder. |
-| **OQ-CTLSHELL** | Sized at +7,800 (1756) / +4,072 (5069), worth 1.7036% → 1.5964% alone. Three probe files specified; needs the decision to generate. |
+| ~~**OQ-CTLSHELL**~~ | **CLOSED 2026-09-18 and removed from this table.** It needed no file: the +7,800 was a component constant compared against a whole-file capture. File|New 1756-L81E v35 reads 18,112, engine predicts 18,112 exactly. Full entry below. |
 | **OQ-193ECMETR** | Needs the raw Studio error-log line, not a generator run. |
 | **OQ-EXPORTSCOPE** | Needs a controller at the bench. |
 | **OQ-L9BUDGET** | Needs real per-catalog user memory from an L9 controller. |

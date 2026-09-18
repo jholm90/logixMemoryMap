@@ -207,9 +207,12 @@ def main() -> int:
             _report(f"category {cat}", rws, 0)
         return 0
 
+    # Count the real rows rather than naming a number: the held-out set grows
+    # whenever another production export lands, and a hardcoded "16" was still
+    # printed after the seventeenth arrived.
+    scope = f"{len(by_real)} real + one sentinel per category"
     print(f"SCOPED: {len(results)} row(s)"
-          + (f" -- family {args.family!r} + 16 real + one sentinel per category"
-             if args.family else " -- 16 real + one sentinel per category"))
+          + (f" -- family {args.family!r} + {scope}" if args.family else f" -- {scope}"))
     _report("real programs (the only accuracy number)", by_real, args.worst, is_real=True)
     if args.family:
         fam = [r for r in rest if re.search(args.family, r[0])]

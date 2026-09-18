@@ -12,11 +12,16 @@ open-questions book as the work queue; an item not on this list is not being
 worked. Re-measure before reordering — every number below is reproducible
 from the engine as it stands.
 
-**Where the sixteen actually are:** mean |error| **1.5607%**, max **3.6309%**
-(`superior`), 4 of 16 inside 1%, 11 of 16 inside 2%. Total residual
-**+653,678 bytes on 47,539,368** = **+1.375%**. Nine files under-predict,
+**Where the seventeen actually are** (re-measured 2026-09-18 after
+`cardin_trimsortstack` landed): mean |error| **1.5951%**, max **3.6309%**
+(`superior`), 4 of 17 inside 1%, 11 of 17 inside 2%. Total residual
+**+822,938 bytes on 55,430,980** = **+1.485%**. Ten files under-predict,
 seven over-predict — the residual is **no longer one-sided**, so any
 candidate that can only add bytes is wrong before it is tested.
+
+Figures below that were measured on the sixteen-file set are labelled as such
+and were not re-run; the seventeenth moved the mean by 0.034 points and did
+not change any ranking.
 
 **Category mass across the sixteen (predicted bytes):**
 
@@ -90,10 +95,20 @@ finding that those categories are too small to carry the residual.
 
 **What could still work, and it is one thing.** A term that is NOT
 proportional to any category the engine currently counts — real content that
-is not being counted at all. `OQ-CTLSHELL` is the only measured evidence of
-such a thing (a bare real controller shell read 3,736 bytes above prediction
-where generated empty files are byte-exact). Sixteen files at that magnitude
-is ~60,000 bytes, about 0.13 points — real, but not 0.56.
+is not being counted at all.
+
+**The one piece of evidence for such a term is gone.** This paragraph used to
+cite `OQ-CTLSHELL` — a bare real controller shell reading 3,736 bytes above
+prediction where generated empty files are byte-exact — and sized it at
+~60,000 bytes over sixteen files, about 0.13 points. **That measurement is
+withdrawn** (OQ-CTLSHELL closed 2026-09-18): a File|New 1756-L81E at v35 reads
+18,112 and the engine predicts 18,112 exactly, and the real Griffin `_Empty` is
+17,352 against 18,112 — the engine **over**-charging by 760. The gap was a
+component constant compared against a whole-file capture.
+
+So an uncounted-content term remains the only shape not eliminated, but it now
+has **zero** measured support at the shell level, and the shell is the one
+place it was ever observed. It is a hypothesis, not a lead.
 
 **The instrument that could find the rest is gone.** Attribution by
 subtraction from a real export is dead by the read-only rule, and no
@@ -103,9 +118,43 @@ is the reason the target as written may not be reachable at all.
 
 **Consequence for the goal.** `CLAUDE.md`'s stopping rule (mean <1% AND max
 <2%) should be treated as unproven-reachable rather than pending. The
-achieved and defensible figure is **mean 1.5607%, max 3.6309%, 11 of 16
+achieved and defensible figure is **mean 1.5951%, max 3.6309%, 11 of 17
 inside 2%**, and the evidence says more batches of the current kind will not
 change it.
+
+### How the accuracy must be stated, 2026-09-18
+
+**The max always travels with the mean.** Quote the worst case, not just the
+average: the honest one-line claim is *mean |error| 1.60%, worst case 3.63%,
+and the worst case should be read as up to 4%* — not "about 1.6% accurate".
+A mean alone invites a reader to assume the tail is near it, and it is not:
+the worst file is 2.3× the mean. Any headline number, in the README, in the
+UI, or in a reply, carries both figures or it is misleading.
+
+**The 4% figure is the number to design around.** Three of the seventeen sit
+above 2.4% and the distribution has a long right tail, so a user opening an
+unseen export should expect up to ~4%, not 1.6%. This is a reporting rule, not
+a change to the stopping rule — the stopping rule stays as written in
+`CLAUDE.md` (mean <1% AND max <2%) and stays NOT MET. Changing the target to
+2% would not change any of the work below: the ceiling experiment says the
+best any per-category correction can do is mean 1.01% / max 2.59%, so a
+2%-mean target is already met and a 2%-max target still is not.
+
+**The seventeen cannot be independently verified, and that limits the claim.**
+Nobody outside this project has seen these files — they are gitignored
+customer exports — so the accuracy number is unauditable by anyone else, and
+"why is it accurate on some and not others" cannot be answered by pointing a
+third party at the data. Two consequences:
+
+- The **blind test is the only externally meaningful evidence**, because it is
+  the only file whose prediction was fixed before its actual was known.
+  `cardin_trimsortstack`: 7,722,352 predicted against 7,891,612 actual,
+  **+2.145%**, on the largest real program in the set. Lead with that, not
+  with the mean over a set the model was tuned against.
+- Every future real export should be **predicted and the number written down
+  before the Capacity reading is taken**. That is the only procedure that adds
+  auditable evidence; a file reconciled after the fact adds a fitting input,
+  not a test.
 
 ### Capture 2026-09-18 — what the 23-file batch settled
 
@@ -710,11 +759,20 @@ says to do next:
    `alarmcond_type_{trip,trip_high,trip_low,deviation}` rows** — condition type
    is assumed free and has never actually been measured, and every real
    condition is `TRIP`. SPEC ONLY until asked.
-2. **Three generated files: the controller-shell probe (OQ-CTLSHELL).**
-   1756-L81E v35 empty, plus one with a real `EthernetPorts`/`Bus` block and one
-   with `Trends`/`DataLogs`/`QuickWatchLists` populated. Worth 0.2–0.6% of real
-   error across all sixteen files and it is the cheapest item on the board.
-   SPEC ONLY until asked — CLAUDE.md step 7.
+2. ~~**Three generated files: the controller-shell probe (OQ-CTLSHELL).**~~
+   **CANCELLED 2026-09-18 — there is nothing to probe.** The 0.2–0.6% this was
+   costed at came from a 7,800-byte shell gap that does not exist: a File|New
+   1756-L81E at v35 reads 18,112 and the engine predicts 18,112 exactly, and
+   the real Griffin `_Empty` is 17,352 against 18,112 — a 760-byte
+   **over**-charge. The gap was a component constant (`empty_project_baseline_
+   bytes` = 13,296) compared against a whole-file capture; the
+   MainTask/MainProgram/MainRoutine File|New also creates are charged
+   separately, and 13,296 + 4,816 = 18,112. See OQ-CTLSHELL in
+   RESOLVED_QUESTIONS.md.
+
+   One byproduct was worth keeping and is recorded but **not wired**:
+   dual-IP/DLR costs **+40 bytes** (Elmsdale 17,320 → 17,360). One data point,
+   below the noise floor, no file needed.
 3. ~~Capture `Elmsdale_NoProgramLogic.L5X`.~~ **DONE 2026-09-14: 760,800
    against 722,288 predicted.** The split says program shells and program tags
    are not the problem — the sub-step carrying all 9 shells and all 63 program
@@ -746,7 +804,9 @@ Retired by the ladder, do not spend on these:
 - **A global `routine_logic` scale-up.** Ruled out twice now: by the 578
   `logic_instr` rows, and now by direct measurement in both directions.
 - **The empty-project baseline constant.** It is byte-exact on every generated
-  empty file; the real-shell gap is unpriced content, not a wrong constant.
+  empty file, and as of 2026-09-18 byte-exact on a File|New real project too
+  (18,112 predicted, 18,112 actual). There is no real-shell gap — see
+  OQ-CTLSHELL in RESOLVED_QUESTIONS.md.
 
 ### Added 2026-09-18 (the in-depth open-questions review, second pass)
 
