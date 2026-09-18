@@ -43,7 +43,7 @@ candidate that can only add bytes is wrong before it is tested.
 | 6 | **Exclude dead weight from default reports** — **DONE 2026-09-18** | `quick_eval` drops 1756-L7x / 1769 rows from the non-real reports by default (64 captured rows, including the corpus's worst sentinel at 65.69%); `--include-dead` restores them. Real rows are never filtered. | reporting only |
 | 7 | **`quick_eval` reports the 16-file mean only** — **DONE 2026-09-18** | The real-set block now carries the stopping-rule verdict; corpus blocks are labelled leak-check, not accuracy. | reporting only |
 | 8 | **Write the stopping rule down** — **DONE 2026-09-18** | In `CLAUDE.md` and enforced in code: `quick_eval` prints `STOPPING RULE ... MET / NOT MET` every run. Currently **NOT MET** — mean 1.5607%, max 3.6309%. | definition |
-| 9 | **One capture roster, not five** | Scheduling. | none direct |
+| 9 | **One capture roster, not five** — **DONE 2026-09-18 by construction** | There is exactly one roster outstanding: the rung-shape sweep specified in `OQ-RUNGSHAPE`. Items 2 and 3 closed without needing captures, and item 10 is dead, so nothing else is queued to trickle out separately. Awaiting approval to generate (CLAUDE.md step 7). | none direct |
 | 10 | ~~Refresh the strip ladders~~ | **DEAD** — see the read-only rule in `CLAUDE.md`. A derived variant of a real export does not build. | none |
 
 ### What has already been ruled out, so it is not re-tried
