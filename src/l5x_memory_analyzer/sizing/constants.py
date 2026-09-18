@@ -608,6 +608,9 @@ class LogicInstructionModel:
     # was the same number on the wrong carrier. See memory_model.yaml
     # aoi_internal_per_word_destination for the five families behind it.
     aoi_internal_per_word_destination: int = 0
+    # OQ-SERIESOUTPUT: bytes REMOVED per writing instruction beyond the first in
+    # a rung. Positive value, subtracted. See memory_model.yaml series_output.
+    series_output_extra_discount: int = 0
     aoi_internal_per_word_destination_confidence: str = "KNOWN"
     # Cost of one AOI call site: a base plus a rate per parameter passed (the
     # instance tag is not a parameter) -- see memory_model.yaml aoi_call_site.
@@ -1413,6 +1416,9 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             aoi_internal_per_rung_confidence=raw["logic_instructions"].get("aoi_internal_per_rung_confidence", "FITTED"),
             aoi_internal_per_word_destination=raw["logic_instructions"].get(
                 "aoi_internal_per_word_destination", 0),
+            series_output_extra_discount=(
+                raw.get("series_output", {}).get("extra_output_discount", 0)
+                if raw.get("series_output", {}).get("apply", False) else 0),
             aoi_internal_per_word_destination_confidence=raw["logic_instructions"].get(
                 "aoi_internal_per_word_destination_confidence", "KNOWN"),
             jsr_target_composite_surcharge_per_instr=raw["logic_instructions"]["jsr_target_composite_surcharge_per_instr"],

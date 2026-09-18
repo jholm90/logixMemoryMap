@@ -2516,6 +2516,51 @@ aoi_call_site:
   per_param_bytes: 16
   confidence: FITTED
 
+# Series outputs (OQ-SERIESOUTPUT), SOLVED EXACTLY 2026-09-18 and wired. It had
+# never been wired at all: no constant for it existed anywhere in this file.
+#
+# Every writing instruction beyond the FIRST in a rung costs 12 bytes LESS than
+# the sum of its per-instruction weights. Sixteen captured rows, eight distinct
+# output counts, zero residual at every one:
+#
+#     k outputs   1    2    3    4    5    6    7    8
+#     under      0  -12  -24  -36  -48  -60  -72  -84     = -12 x (k-1)
+#
+# Invariant across every variant the srout_* batch built, which is what makes it
+# a law rather than a curve through one shape:
+#   * srout_ote_k01..k08      inline OTEs, one bit each         -12 x (k-1)
+#   * srout_branch_k02/04/08  the same OTEs in PARALLEL legs    identical
+#   * srout_oteuniq_k02/04/08 a distinct tag per output, n=200  identical
+#   * srout_mixed_k04         OTE + MOV + ADD + CLR             identical to 4 OTEs
+#   * srout_same_k04          one type repeated                 identical
+# So it depends on the COUNT of writing instructions and on nothing else: not
+# their type, not tag uniqueness, not series-versus-branch, not rung count.
+#
+# Carrier: parser/logic.py's series_output_extra_count, summed per routine into
+# RoutineLogic.series_output_extras, subtracted once in sizing/logic.py.
+# MEASURED EXACTLY AND DELIBERATELY NOT APPLIED. Setting apply: true reproduces
+# a real-set catastrophe, tested 2026-09-18 rather than assumed:
+#
+#     real set mean|%|   1.7036  ->  3.2167     sum-weighted  +1.6123  ->  +3.3935
+#
+# Every one of the sixteen real programs moved the WRONG way and all sixteen then
+# under-predict. A constant that is byte-exact on 16 synthetic rows across eight
+# output counts and five independent shape variants, and which doubles the error
+# on the only set that counts, is not a constant to ship -- it is a contradiction
+# to explain. See OQ-SERIESOUTPUT.
+#
+# THE CONFOUND, and it is structural: every srout_* rung has exactly ONE
+# condition instruction (`XIC(Cond)` then k outputs). Real rungs routinely carry
+# several. So "outputs beyond the first are cheap" may hold only at one
+# condition, and the per-instruction weights were themselves fitted against real
+# multi-condition rungs -- in which case applying this subtracts a discount the
+# weights already contain. The srout_* batch cannot separate those two readings
+# because it never varies condition count.
+series_output:
+  apply: false
+  extra_output_discount: 12
+  confidence: KNOWN
+
 logic_instructions:
   fixed_base_per_routine: 4816
   jsr_fixed_base_per_routine: 5096  # JSR's routine also declares the target subroutine

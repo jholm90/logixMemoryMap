@@ -181,4 +181,13 @@ def compute_routine_logic_bytes(
     total += (routine.aoi_call_count * model.aoi_call_site_bytes
               + routine.aoi_call_param_count * model.aoi_call_site_per_param_bytes)
 
+    # OQ-SERIESOUTPUT, wired 2026-09-18: every writing instruction beyond the
+    # first in a rung costs 12 LESS than the sum of its own weights. Subtracted
+    # once here rather than folded into any weight, because the weights are
+    # correct for a one-output rung and it is the second output onward that is
+    # cheap. Exact on all 16 srout_* rows across 8 output counts; invariant to
+    # type, tag uniqueness and series-versus-branch. See memory_model.yaml
+    # series_output.
+    total -= routine.series_output_extras * model.series_output_extra_discount
+
     return total, model.confidence

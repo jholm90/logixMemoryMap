@@ -226,6 +226,39 @@ _DESTINATION_ARG = {
     "RTOS": -1, "INSERT": -1, "DELETE": -1, "MID": -1, "UPPER": -1,
     "LOWER": -1,
 }
+# Every mnemonic that WRITES something, for the series-output discount
+# (OQ-SERIESOUTPUT). _DESTINATION_ARG above is the word-destination set and
+# deliberately excludes the bit outputs, which do write and do count here.
+#
+# Measured directly: srout_mixed_k04 is OTE + MOV + ADD + CLR and reads exactly
+# the same -36/rung as srout_ote_k04's four OTEs, so the discount is per WRITING
+# instruction and not per type. OTE/OTL/OTU are added on that evidence; the
+# word-destination mnemonics come along because MOV/ADD/CLR are three of the
+# four measured members of that set. Nothing else has been measured, so a rung
+# whose extra outputs are timers or counters is not discounted -- see
+# OQ-SERIESOUTPUT for the files that would settle those.
+_OUTPUT_MNEMONICS = frozenset(_DESTINATION_ARG) | {"OTE", "OTL", "OTU"}
+
+
+def series_output_extra_count(rung_texts: list[str]) -> int:
+    """Sum over rungs of (writing instructions in the rung - 1), floored at 0.
+
+    A rung with one output contributes nothing; k outputs contribute k-1. Branch
+    structure is irrelevant -- srout_branch_k04 puts its four OTEs in parallel
+    legs and reads the same -36/rung as the series form -- so bracket content is
+    counted exactly like inline content and no bracket parsing is needed.
+    """
+    total = 0
+    for text in rung_texts:
+        outputs = sum(
+            1 for match in _ANY_CALL_START.finditer(text)
+            if match.group(1) in _OUTPUT_MNEMONICS
+        )
+        if outputs > 1:
+            total += outputs - 1
+    return total
+
+
 _ANY_CALL_START = re.compile(r"\b([A-Z][A-Z0-9_]{1,9})\(")
 
 
@@ -458,6 +491,10 @@ class RoutineLogic:
     # claim -- report.py now weighs a JSR target's own instructions with
     # the normal per-instruction model (charge_shell=False, so only its
     # fixed shell stays excluded).
+    # Sum over this routine's rungs of (writing instructions - 1), floored at
+    # 0 -- the series-output discount's multiplier. See
+    # series_output_extra_count and memory_model.yaml series_output.
+    series_output_extras: int = 0
     is_jsr_target: bool = False
     # 2026-09-03, OQ-SAFETYSCOPE-SIZING ("they are safety tasks and
     # safety programs therefore they need separate sizing calculations").
@@ -774,6 +811,7 @@ def parse_rll_routines(
                 jsr_target_names=frozenset(_jsr_targets(rung_texts)),
                 jsr_calls=_jsr_calls(rung_texts),
                 branch_bracket_instruction_count=_branch_bracket_instruction_count(rung_texts),
+                series_output_extras=series_output_extra_count(rung_texts),
             ))
 
     return routines
@@ -855,5 +893,6 @@ def parse_aoi_internal_logic(
             cmp_calls=_cmp_calls(rung_texts),
             branch_bracket_instruction_count=_branch_bracket_instruction_count(rung_texts),
             word_destination_count=word_destination_count(rung_texts, internal_types),
+            series_output_extras=series_output_extra_count(rung_texts),
         )
     return result
