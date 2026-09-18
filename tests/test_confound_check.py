@@ -102,3 +102,14 @@ def test_subscript_commas_are_not_operand_separators(tmp_path):
     assert _split_operands("Hist[0,0],Tmp[0,0],800") == ["Hist[0,0]", "Tmp[0,0]", "800"]
     assert _split_operands("A,B,C") == ["A", "B", "C"]
     assert _split_operands("") == []
+
+
+def test_tag_declaration_order_is_visible(tmp_path):
+    """Permuting the same tag multiset changes nothing countable, so a Counter
+    over tag types calls two order-test files byte-identical."""
+    def tags(seq):
+        return "<Tags>" + "".join(
+            f'<Tag Name="T{i}" DataType="{ty}"/>' for i, ty in enumerate(seq)) + "</Tags>"
+    a = _write(tmp_path, "a.L5X", tags(["BOOL", "BOOL", "DINT", "DINT"]))
+    b = _write(tmp_path, "b.L5X", tags(["BOOL", "DINT", "BOOL", "DINT"]))
+    assert differing(a, b) == ["tag declaration order"]

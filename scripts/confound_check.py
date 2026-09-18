@@ -77,10 +77,16 @@ def profile(path: str) -> dict[str, object] | None:
     tags = collections.Counter()
     dims = collections.Counter()
     namelens = collections.Counter()
+    # Declaration ORDER. `tags` is a Counter and so is order-blind, which
+    # makes a family that permutes the same tag multiset read as
+    # byte-identical -- the fifth blind spot of this class. Types only, not
+    # names, so renaming is not mistaken for reordering.
+    order = []
     for tg in root.iter("Tag"):
         tags[(tg.get("DataType") or "?", tg.get("TagType") or "Base")] += 1
         dims[(tg.get("Dimensions") or "").strip()] += 1
         namelens[len(tg.get("Name") or "")] += 1
+        order.append(tg.get("DataType") or "?")
 
     opcodes = collections.Counter()
     operands = collections.Counter()
@@ -106,6 +112,7 @@ def profile(path: str) -> dict[str, object] | None:
         "processor": ctl.get("ProcessorType"),
         "firmware": root.get("SoftwareRevision"),
         "tag inventory": dict(tags),
+        "tag declaration order": order,
         "tag dimensions": dict(dims),
         "tag name lengths": dict(namelens),
         "instruction inventory": dict(opcodes),
@@ -176,6 +183,7 @@ _IMPLIED_BY = {
     "rung count": ("rung structure", "instruction inventory"),
     "branched rungs": ("rung structure", "instruction inventory"),
     "ST text": ("ST lines",),
+    "tag declaration order": ("tag inventory",),
     "tag dimensions": ("tag inventory",),
     "tag name lengths": ("tag inventory",),
 }

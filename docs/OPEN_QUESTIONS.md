@@ -4874,6 +4874,27 @@ the 16 programs" (the real figure is 38,821 across all sixteen) and
 OQ-VERIFINSTR's five siblings, which were already weighted by the time their
 files were captured, so that batch confirms them rather than measuring them.
 
+    **BATCH GENERATED 2026-09-18 — 6 files, `tgord_*`.** The same 400 tags in
+    all six (100 each of BOOL, INT, DINT, LINT) with identical names, so
+    nothing moves but the sequence: `grouped`, `widefirst`, `narrowfirst`,
+    `alternating`, `pairs`, `shuffled` (fixed seed). All lint clean, all
+    1756-L81E v35, every consecutive pair differencing on exactly one
+    dimension.
+
+    **PRE-REGISTERED PREDICTION: all six at 56,528 bytes.** The engine has no
+    order term at all, so it predicts the six identical. That makes this a
+    clean yes/no: if the captures agree, order is free at tag scope and this
+    question closes for good; if they split, the two width-ordered files
+    should be the extremes if the mechanism is adjacent-tag alignment padding,
+    and `pairs` against `alternating` separates a per-transition cost from a
+    per-tag one.
+
+    A confound check caught one defect before this batch was committed: the
+    control was originally grouped in ascending width order, which reproduced
+    `narrowfirst` exactly and would have wasted a capture slot. The control
+    now groups as DINT, BOOL, LINT, INT — deliberately not width-sorted.
+
+
 49. **OQ-RUNGSHAPE** — new 2026-09-18, and it is the largest measured
     evidence gap in the project. **The compiled-logic weights were fitted on
     a rung shape that real ladder almost never has.**
@@ -5045,3 +5066,18 @@ files were captured, so that batch confirms them rather than measuring them.
     **Conclusion: the residual is not in tag DATA SPACE.** It is in the
     18.25% of mass that is compiled logic, where the evidence gap is
     measured and large — see `OQ-RUNGSHAPE`.
+
+    **THE THREE UNCOVERED SHAPES ARE NOW BUILT, 2026-09-18.** 2-D arrays are
+    the `rshape_sub2d_{a,b,c}` ladder under `OQ-RUNGSHAPE`; Produced and
+    Consumed are `prodcons_{base,produced,consumed}` — 20 tags of one UDT
+    each, differencing against the Base control on tag type alone. Both
+    shapes are copied from a real export (Elmsdale's `TiltHoistToPlaner` and
+    `PlanerToTiltHoist`) rather than extrapolated, including the part most
+    likely to be got wrong: neither carries a `<Data>` element.
+
+    **PRE-REGISTERED PREDICTION: all three at 22,648 bytes.** The engine
+    charges Produced and Consumed exactly as Base, so a split says the
+    `ProduceInfo` / `ConsumeInfo` block carries a cost the model has no term
+    for. This closes a coverage claim rather than chasing the residual — the
+    entry's own arithmetic puts the whole untested population at about 8,700
+    bytes against 653,678.
