@@ -1,221 +1,160 @@
-# Future Tests To Improve Modelling / Algorithms
+# Future Tests
 
-Tests worth running to improve the modelling, kept as a standing list
-(started 2026-09-04).
+Tests that would improve the model, kept as a standing list. Ordered by expected
+impact on real-file error.
 
-Standing rule for everything below: a test only counts once it comes back
-with `error_count = 0`, no `WINDOW TITLE MISMATCH`, no `ZERO CAPACITY` —
-see docs/TESTING_PLAN.md's "A row that BUILT WITH ERRORS is never a valid
-fitting point". Check that BEFORE reading any residual pattern.
+This is the **wish list**. The ranked queue of what is actually being worked is
+`TASKS.md`; individual questions are in `OPEN_QUESTIONS.md`.
 
-Ordered by expected impact on the <1%-on-a-real-file North Star.
+**A test only counts once it comes back with zero errors, no window-title mismatch
+and no zero-capacity flag.** Check that before reading any residual pattern — see
+`TESTING_PLAN.md`.
+
+**State up front how many percentage points a test should move.** A test that
+cannot state that is not worth running. And if the mechanism is "a category cost
+constant is slightly wrong," the ceiling result in `ROADMAP.md` already answers it.
 
 ---
 
-## 0. Composite surcharge cap vs REAL-program scale — now the #1 error source
+## 1. More real captured programs
 
-**First real virgin-file measurement, 2026-09-04.** supplied
-`Cardin_TrimSortStack_20260624r00` (1756-L83E, fw 35.13, 35 MB L5X, never
-seen by this project). Predicted **7,162,455**, actual **8,178,556** —
-**12.4% UNDER**, a miss of 1,016,101 bytes. That is the honest North Star
-number and it is nowhere near <1%.
+**The only thing that can settle anything at real scale, and nothing synthetic
+substitutes for it.**
 
-Root cause, measured not guessed: `logic_instructions.composite_surcharge_cap`
-(12,000 bytes, file-wide) suppresses **1,551,065 bytes** on this file.
-The cap was fitted against the synthetic composite corpus, which is not
-remotely representative of a real program's JSR-target content:
+Two or three more previously-unseen exports with actual capacity readings would do
+more than any generated batch. The reason is specific: **real programs sit 16× to
+54× outside the range the synthetic composites cover** on JSR-target and AOI
+content. A law fitted on the synthetic range behaves completely differently in the
+real one.
 
-| file | aoi_instr | jsr_instr | uncapped surcharge | vs the 12,000 cap |
-|---|---:|---:|---:|---:|
-| REAL Cardin_TrimSortStack | 6,255 | 30,595 | 1,563,065 | **130.3x** |
-| synthetic v4_074 | 450 | 1,899 | 98,253 | 8.2x |
-| synthetic v4_001 | 146 | 564 | 29,428 | 2.5x |
-| synthetic v2_25 | 111 | 120 | 7,860 | 0.7x |
+**Predict each new file and write the number down before the capacity reading is
+taken.** That is the only procedure that adds auditable evidence rather than
+another fitting input. It has been done once, and that blind test is the strongest
+evidence the project has.
 
-The real file has **16x to 54x more JSR-target instructions** than any
-synthetic composite. So the cap behaves completely differently in the two
-regimes: mild trimming on the files it was fitted against, total
-annihilation on a real program. With the cap the model ignores JSR-target
-content almost entirely — which is exactly the "JSR target content is NOT
-free" finding OQ-JSRPARAMCOST already proved and this cap silently undoes
-at real scale.
+## 2. The literal-operand rate table
 
-Neither setting is right on its own: capped gives -12.4%, fully uncapped
-would give **+6.5%** (predicted 8,713,520). The value that lands exactly on
-this file is a surcharge of ~1,028,000, i.e. ~66% of uncapped. That is ONE
-data point and must not be fitted on its own — the axis_scale lesson.
+A 29-file batch is built and awaiting capture. **This is the one candidate with
+measured support that the ceiling result does not bound**, and the only one so far
+that moves the max rather than the mean.
 
-**Tests needed:**
-- **More real captured programs, of varying size.** STILL OPEN, and still
-  the only thing that can fit a cap/scale law that holds at real scale.
-  Two or three more virgin files with actual Capacity readings would
-  settle the shape (constant? proportional? saturating?). Nothing
-  synthetic substitutes for this.
-- ~~A generator with REAL-scale JSR-target content~~ — **BUILT
-  2026-09-04**, `src/sample_gen/gen_realscale_surcharge.py`, 23 files,
-  awaiting capture:
-  - `realscale_jsrtgt_xic_n{10,50,100,1000,5000,10000,15000,22500}` — the
-    identical rung text and tag pool as the existing valid `instr_xic_n*`
-    captures, moved from MainRoutine into a single JSR target. Five of the
-    eight pair exactly with an existing error-free capture, so the
-    JSR-target cost falls out as a direct paired difference with no model
-    in between. Top end reaches 45,000 target instructions, past the real
-    file's 30,595. Uncapped surcharge spans 0.08x to 176x the cap.
-  - `realscale_jsrsplit_k{10,50,250}` — 20,000 target instructions held
-    constant, split across K distinct targets. First test of whether the
-    cap is really FILE-WIDE (as modelled) or per-routine.
-  - `realscale_aoiint_n{0,50,500,2000,6000,12000}` — the AOI half of the
-    surcharge with no JSR target in the file at all. There is no valid
-    nonzero AOI-content point in the corpus today (`aoi_logic_scale_*`
-    stopped at 100 instructions and errored at every nonzero point).
-  Every file is built from rung text taken verbatim from
-  `gen_logic_sweep.INSTRUCTIONS` — the only large-scale shape with a
-  proven error-free build (`randommix_05`, 27,267 rungs, 0 errors) —
-  precisely because the previous attempt at this question
-  (`jsr_target_content_scale_*`) used a hand-rolled mix and came back
-  5/26/50/75 errors, still undiagnosed.
-- ~~Structured Text is completely unmodeled~~ — **FULL BATCH GENERATED
-  2026-09-04**, `src/sample_gen/gen_st_sizing.py`, 24 files (OQ-STSIZING /
-  OQ-STCOMMENT). The first draft of this was a naive assignment-only
-  ladder written from general ST knowledge rather than measured against the
-  corpus. Once the corpus was measured, the
-  ladder turned out to be representative of nothing — real ST is ~36%
-  control flow, ~29% comments, and calls the same instructions the ladder
-  does (297 routines / 24,017 lines across 23 real files). Rebuilt as: an
-  executable-only line ladder, a comment/blank-line group (the
-  question — an RLL rung comment is confirmed FREE, but it is a separate
-  `<Comment>` element while an ST comment is inside the compiled source
-  text, so that result does not transfer), a construct group
-  (IF/ELSIF-chain/CASE/FOR/WHILE, each shape taken from a named real
-  routine), 1,000-call instruction files paired against existing valid
-  `instr_*_n01000` captures, a CPT-expression mirror, and an ST JSR target
-  with SBR/RET params. Every file predicts an identical 23,365 today, which
-  is the point. Still unmodeled in code until the capture lands. **No
-  sample-writing needed** — the corpus has more idiom than this requires.
+What it needs to return: the per-type rate for integer literals, which are 98% of
+the exposure and completely unmeasured. See `OQ-LITERALOPERAND` and the arm
+descriptions in `SAMPLE_GENERATION.md`.
 
-## 1. Structural module model (OQ-MODULESTRUCTURAL) — highest value
+## 3. A structural module model
 
-The blocker for ever predicting an UNSEEN catalog. Needs single-module
-isolation captures spanning module CLASS and POINT COUNT, so overhead can
-be fitted as `class_base + per_point * points` instead of a per-catalog
-lookup.
+**The blocker for ever predicting an unseen catalog.** Today module overhead is a
+per-catalog lookup with a flat fallback, which cannot generalise to a catalog
+nobody has captured.
 
-- **Point-count ladder within one class.** Same family/series, only the
-  point count changing: 1756 digital input at 8/16/32 points
-  (1756-IA8D, IA16, IB16, IB32), digital output at 8/16/32, analog input
-  at 4/8/16 (1756-IF4, IF8, IF16), analog output at 4/8. Gives
-  `per_point` per class directly.
-- **Same point count, different class.** 16-pt digital input vs 16-pt
-  digital output vs 16-pt analog — isolates `class_base` with point count
-  held constant.
-- **Same class across series.** 1756-IB16 vs 1769-IQ16 vs 5069-IB16 vs
-  1734-IB8 — tests whether class_base is per-series or universal. This is
-  what decides if one table generalizes across platforms.
-- **Already generated, awaiting capture:** the 12
-  `rack_5069_single_*` files (one 5069 catalog each) — these are the 5069
-  half of the "same class across series" axis.
-- **Diagnostic/specialty classes:** HSC, SERIAL, motion diagnostics,
-  safety I/O — likely their own class_base, currently all lumped into the
-  flat default.
+What would fit `class_base + per_point × points` instead:
 
-## 2. REAL-destination CPT coverage gaps
+- **Point-count ladder within one class.** Same family, only point count moving:
+  digital input at 8/16/32, digital output at 8/16/32, analog input at 4/8/16,
+  analog output at 4/8. Gives `per_point` per class directly.
+- **Same point count, different class.** 16-point digital input versus digital
+  output versus analog, point count held fixed — isolates `class_base`.
+- **Same class across series.** The same nominal module on 1756 versus 1769 versus
+  5069 versus 1734. **This is what decides whether one table generalises across
+  platforms.**
+- **Diagnostic and specialty classes** — high-speed counter, serial, motion
+  diagnostics, safety I/O. Each likely has its own base; all are currently lumped
+  into the flat default.
 
-`cpt_expression.real_dest` (wired 2026-09-04) is exact on 29/29 real rows
-but only at operator counts 1, 2 and 5.
+## 4. Module multi-instance marginal cost
 
-- REAL-destination CPT at **3, 4, 6, 8 operators** — resolves whether
-  `five_plus_operator_extra` (currently +4, resting on n=5 alone) is a
-  step at 5, a per-operator term, or tied to tier mixing.
-- **Multi-operator expressions containing `**` with a REAL destination** —
-  `single_pow_extra` is confirmed at n_ops=1 only.
-- **BOOL and LINT operands inside a REAL-destination CPT** —
-  `_CPT_INTEGER_OPERAND_TYPES` currently converts SINT/INT/DINT/LINT and
-  deliberately ignores BOOL (no real example exists).
-- **STRING operand / STRING destination CPT**, if legal — untested.
+Whether the Nth copy of a catalog costs the same as the first is measured for ten
+catalogs and open for the rest.
 
-## 3. Module multi-instance marginal cost (OQ-MODULEIO's open sub-thread)
+- **Same catalog repeated at N = 1/2/4/8/16**, on a simple discrete module with no
+  motion or safety content so the build is error-free.
+- **N distinct catalogs versus N copies of one catalog** at the same N — separates
+  "repeated catalog" from "more modules on the bus."
+- **The with-axis drive rate.** Every attempt so far captured with build errors.
+  The bare-drive rate is measured and deliberately excluded from the table because
+  no real program contains a drive with no axis tag. **Root-cause the build error
+  first — that is a prerequisite, not an analysis task.**
 
-Whether the 2nd/3rd/Nth copy of a module costs the same as the 1st is
-still genuinely open — and the one apparently-clean answer we had turned
-out to be from files that built with errors (see TESTING_PLAN.md). Needs
-a clean re-run:
+## 5. REAL-destination CPT coverage gaps
 
-- **Same catalog repeated N times**, N = 1/2/4/8/16, on a simple discrete
-  module with no motion/safety content (so the build is error-free).
-- **N distinct catalogs vs N copies of one catalog** at the same N —
-  separates "repeated catalog" from "more modules on the bus".
-- **Re-run the whole `axis_scale_*` sweep error-free.** Every one of the
-  18 files currently has `error_count = drives + 1`. Until the drive/axis
-  content builds clean, nothing about multi-drive scaling can be fitted.
-  Root-cause the per-drive error first — that is a prerequisite test, not
-  an analysis task.
+Exact on every captured row, but only at operator counts 1, 2 and 5.
 
-## 4. JSR threads
+- **3, 4, 6 and 8 operators** — resolves whether the five-plus-operator extra is a
+  step at 5, a per-operator term, or tied to tier mixing. It currently rests on
+  n=5 alone.
+- **Multi-operator expressions containing `**`** — the single-power extra is
+  confirmed at one operator only, and `**` adjacency is already known to be its own
+  unmodelled term.
+- **BOOL and LINT operands inside a REAL-destination CPT.** BOOL is deliberately
+  uncharged because no real example exists.
+- **STRING operand or destination**, if legal at all. Untested.
 
-Two effects are visible on VALID data and one is already exact:
+## 6. JSR threads
 
-- **Distinct-target count**: `jsr_multi_distinct_targets_n01..n50` gives
-  an exact `+125 bytes per additional distinct JSR target` (6/6 points,
-  `d = 125n - 280`). Not yet wired — wanted a cross-check first.
-- **Target-name length**: `namelen04/08/16/32/40` at fixed n=10 gives an
-  exact `+80 bytes per 8 characters` (5/5 points). Needs a **crossed
-  test** — name length AND target count varied together (e.g. n=20 with
-  len=32) — to tell whether the name cost is per-target or per-file. That
-  single missing cell is why neither is wired yet.
-- **STRING/UDT-typed JSR parameters**: real, unmodeled, and non-linear in
-  param count (n=1 → +271, n=3 → +2,307, n=5 → +3,939 at 100 calls).
-  Needs n = 2, 4, 6, 8, 10 to resolve the shape.
-- **`jsr_target_content_scale_*` must be re-run error-free** (currently
-  5/26/50/75 errors) before its content-scaling rate can be trusted.
+Two effects are visible on valid data and neither is wired, for the same reason:
 
-## 5. Composite / realistic-file residual
+- **Distinct-target count** gives an exact +125 bytes per additional target across
+  six points.
+- **Target-name length** gives an exact +80 per 8 characters across five points.
 
-`composite` is the North Star proxy and sits at 2.50% mean on valid rows.
-Known: it is NOT the composite surcharge (removing it entirely moves v4
-only ~0.5%), and NOT a per-element error on the filler array (residual is
-roughly constant ~-50k regardless of filler size).
+**Neither is wired because one cell is missing: a crossed test with name length and
+target count varied together.** Without it there is no way to tell whether the name
+cost is per-target or per-file. That single missing cell is the whole blocker.
 
-- **A composite generator whose feature schedule is not aliased.** Every
-  v4 feature is `i % k`, so `udt_count`, `n_arrays`, `string_count` and
-  `n_drives` are perfectly collinear (identical correlation, -0.567) and
-  no regression can separate them. Vary features INDEPENDENTLY (e.g.
-  latin-square or random-per-feature) so residual can be attributed.
-- **Composite files with NO motion content** — isolates whether the
-  residual tracks the drive/axis content or the module/tag content.
-- **Ladder between "isolation file" and "full composite"**: 2, then 5,
-  then 10 feature types combined, so the point where per-feature
-  additivity breaks down becomes visible.
+Also open:
 
-## 6. Housekeeping / re-captures
+- **STRING and UDT-typed JSR parameters** are real, unmodelled and non-linear in
+  parameter count. Needs the even counts to resolve the shape.
+- **The target content-scale sweep must be re-run error-free** before its rate can
+  be trusted.
 
-- 132 of 1,978 captured rows are invalid (`error_count > 0`), 87 of them
-  in `composite` and 28 in `modules`. Each needs its build error
-  root-caused and a clean re-run, or explicit skip-listing.
-- The three `axis_scale_*_regen` files carry captures that predate the
-  ExtendedProperties/ConfigID regeneration — stale content, needs
-  re-capture.
-- `rack_pointio_n05`'s capture predates the Bus Size fix regeneration.
+## 7. Composite-file residual
 
-## 0b. Tag-based alarm conditions — new #2 error source (OQ-ALARMCOND)
+- **A composite generator whose feature schedule is not aliased.** Every feature in
+  the current one is `i % k`, so UDT count, array count, string count and drive
+  count are **perfectly collinear** and no regression can separate them. Vary
+  features independently — latin square, or random per feature.
+- **Composite files with no motion content** — isolates whether the residual tracks
+  drive and axis content or module and tag content.
+- **A ladder between an isolation file and a full composite**: 2, then 5, then 10
+  feature types combined, so the point where per-feature additivity breaks down
+  becomes visible.
 
-**Found 2026-09-04**, after the composite surcharge refit, while reviewing
-controller alarms. **3,463 real `AlarmCondition` elements across the
-corpus, every one priced at zero**; 200-600 in each of the 8 real programs.
-The residual left over after the refit correlates **+0.583 with alarm
-count** — the strongest remaining identified driver.
+## 8. Alarm conditions inside real content
 
-Generated and awaiting capture: `gen_alarm_conditions.py`, 42 files.
-The four placeholder arrays are byte-identical across every file, so the
-whole batch differences cleanly against `alarmcond_count_bare_n000`.
+The per-condition formula is derived from a generated batch and lands within 0.16%
+on one real program and 8.8% short on another. Since alarms are 19–21% of total
+memory on those files, that 8.8% matters.
 
-Still needed beyond that batch:
-- **A real program with a KNOWN alarm count removed.** The cleanest possible
-  confirmation would be one real file captured twice, once with its alarm
-  definitions deleted — that isolates alarm cost inside a genuinely real
-  program instead of a synthetic one, and would say immediately whether the
-  synthetic per-alarm rate transfers.
-- **Alarms on a UDT-scalar host.** 8 real conditions sit on `ts_CIPAxis`
-  rather than a BOOL array; the batch only covers array hosts.
-- **AlarmSet membership.** `AlarmSetOperIncluded`/`AlarmSetRollupIncluded`
-  are true on every real condition and no file varies them; whether alarm
-  SETS carry their own cost is untested and unrepresented in the batch.
+- **Alarms on a UDT-scalar host.** A handful of real conditions sit on a UDT rather
+  than a BOOL array; the batch only covers array hosts.
+- **AlarmSet membership.** The operator and rollup inclusion flags are true on
+  every real condition and no file varies them. Whether alarm **sets** carry their
+  own cost is untested and unrepresented.
+- The clean confirmation would be **one real file captured twice, once with its
+  alarm definitions deleted in Logix Designer and re-exported by Studio itself.**
+  Not by editing the XML — see the read-only rule in `CLAUDE.md`.
+
+## 9. Housekeeping
+
+- **Rows whose capture predates a regeneration of the file** need re-capture. Their
+  recorded numbers are against content that no longer exists.
+- **Rows with build errors** need each error root-caused and a clean re-run, or
+  explicit skip-listing. Never leave one silently in the corpus either way.
+
+---
+
+## Superseded — do not re-run
+
+Recorded so these are not mistaken for open work.
+
+| test | outcome |
+|---|---|
+| Composite surcharge cap versus real scale | The cap was found to suppress over a million bytes on a real file while barely trimming the synthetic files it was fitted on. Resolved; the surcharge model was rebuilt. |
+| Structured Text sizing | Was completely unmodelled. Now one measured law covering the base ladder, operator premiums, source conversion and AOI calls from ST. |
+| Tag-based alarm conditions | Were priced at zero across thousands of real elements. Now a measured formula. |
+| Per-instruction weights for the corpus instruction mix | 99.72% of real occurrences carry a weight. |
+| Branch arrangement | Byte-exact at every leg count. Not an error source. |
+| Tag declaration order | Free. |
+| 2-D array subscripts | Cost zero. |

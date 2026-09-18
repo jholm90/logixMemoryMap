@@ -1,409 +1,410 @@
 # Sample Generation
 
-Need a repeatable, scriptable way to produce the 30-40+ test L5X files without
-hand-clicking each one in Studio 5000.
+How test L5X files are built, and every rule that decides whether one imports,
+builds and measures what it claims to.
 
-## Open question first (OQ-GENMETHOD)
+**Read this before writing a generator.** Almost every rule below exists because a
+batch was lost to it.
 
-L5X is just XML, so it's mechanically generatable — the real question is
-whether Logix Designer's File→Import will accept hand-built XML cleanly, or
-whether it needs GUIDs/checksums/schema quirks that make raw authoring
-unreliable. **First sample generated should go straight through the full
-TESTING_PLAN.md loop (import → compile → download) before writing a generator
-for the other 29+.** If import fails or requires manual fixup, pivot to one of
-the fallback approaches below rather than fighting hand-authored XML.
+---
 
-## Approach A — Direct XML authoring (preferred if OQ-GENMETHOD confirms it works)
+## The standing rule: specify, then ask
 
-Template-based generation: a script takes parameters (element count, data
-type, nesting depth, instruction type, rung count) and emits valid L5X XML
-matching Rockwell's schema for that content type. Fastest iteration — no
-Studio 5000 UI automation needed, just XML templates + a parameter sweep.
+**Test files are supplied, not invented.** The deliverable at the design step is a
+written **spec** — what varies, what is held fixed, what each file discriminates,
+and against which existing captures it differences — **not files on disk.**
 
-Needs, at minimum:
-- Tag element template (name, data type, dimensions)
-- DataType (UDT) template (name, members list)
-- AddOnInstructionDefinition template
-- Rung/Routine template (instruction text, comments)
-- A minimal-but-valid Controller wrapper (the boilerplate every L5X needs:
-  controller element, single empty task/program/routine, RSLogix5000Content
-  root with correct SchemaRevision/SoftwareRevision matching OQ-L5XVERSION)
+Ask before generating anything, every time. **No prior batch authorises the next.**
 
-## Approach B — Studio 5000 automation (fallback if raw XML import is unreliable)
+The reason is specific: generated shapes have repeatedly turned out not to be the
+shape they claimed. **A file that converts cleanly is not evidence the shape is
+right.**
 
-Logix Designer has a COM/.NET automation interface. A C# script (fits existing
-toolchain — same pattern as the WinForms V36 converter) could programmatically
-create tags/UDTs/logic in an open project, which sidesteps any raw-XML
-schema-fidelity problems since Logix Designer itself generates the L5X on
-export. Slower per-sample (UI automation overhead) but guaranteed valid.
+Every file in a batch must answer a real, currently-open question. There is no
+minimum roster size to pad toward — if the genuine work is 20 files, spec 20.
 
-## Approach C — Hybrid
+---
 
-Generate the bulk structure via Approach A (fast), but if any sample fails to
-import cleanly, hand-fix that one sample in Studio 5000 UI and re-export as the
-template for that category going forward. Practical middle ground — don't
-over-invest in perfecting the XML generator for edge cases that hit once.
+## Method
 
-## Naming / organization
+Direct XML authoring. L5X is XML and Logix Designer imports hand-built files
+cleanly, so a script takes parameters and emits valid XML. `src/sample_gen/`
+holds the generators; `src/sample_gen/builders.py` holds the composable fragment
+builders.
 
-- `samples/generated/<category>/<sample_id>_<short_desc>.L5X`
-- Every generated sample gets a row in `samples/manifest.csv` at creation time
-  (predicted_bytes filled in immediately from the tool's own calculation;
-  actual_bytes filled in after the TESTING_PLAN.md loop runs)
-- Keep generator scripts in `src/sample_gen/` so a sample can be regenerated
-  exactly (not hand-edited and drifted from its own generator)
+Generators live in the repo so a sample can be **regenerated exactly** rather than
+hand-edited and drifted from its own generator.
 
-**Generator CLI built 2026-08-20** — builds L5X files for whatever needs
-testing:
-`python -m sample_gen.cli {udt,tags,rungs} ...` -- see that module's
-docstring for exact flags. `udt` builds a UDT + one tag of it (matches the
-now-confirmed BOOL-packing-run rule exactly, see OQ-ALIGN); `tags` builds N
-tags of a given type/dimensions; `rungs` builds N rungs of an instruction
-pattern with an optional filler comment (OQ-COMMENTS). All three write the
-L5X, compute predicted_bytes via this project's own sizing engine, and log
-a manifest.csv row automatically -- actual_bytes stays blank until run
-through `scripts/batch_l5x_to_acd.ps1` + `scripts/batch_memory_capture.ps1`
-(both resumable, "press any key to stop" / "close the window at any time"
-per the spec) or manually through Studio 5000.
+### Naming and bookkeeping
 
-## Feedback loop shape
+- Files go to `samples/generated/<category>/<sample_id>.L5X`.
+- Every sample gets a row in `samples/manifest.csv` at creation, with
+  `predicted_bytes` filled in immediately from the sizing engine.
+- **Every generator must name its open question in the sample's description.**
+  `scripts/capture_errors.py` routes errored captures by that identifier, and a row
+  with no owner fails the gate.
 
-```
-generate sample → predict bytes (this tool) → import/download (Studio 5000)
-→ read actual bytes → log to manifest → diff → adjust MEMORY_MODEL.md
-→ re-predict all prior samples with new constants → confirm no regressions
-```
+### Platform standard
 
-That last step matters — a constant tuned to fix sample #12 can silently break
-the prediction for sample #4. Re-run the full manifest's predicted-vs-actual
-comparison after every constant change, not just the sample that prompted it.
+**Every generated file is 1756-L81E at firmware 35.** No exceptions.
 
-## Before hand-picking catalogs into any script (including one-off chat samples)
+The point is comparability: a file on any other processor or firmware cannot be
+differenced against the existing captures without first subtracting a baseline
+difference that is itself only approximately known, which defeats the isolation
+test.
 
-2026-09-03: two real Studio 5000 errors that were both **already
-diagnosed and fixed elsewhere in this codebase** before being rebuilt from
-scratch by hand: (1) `193-ECM-ETR/A` used directly in a scratch sample --
-already in `gen_composite_realistic.py`'s `_UNDIAGNOSED_COMPOSITE_CATALOGS`
-exclusion set with a documented real "Child module incompatible with
-parent module" error; the response was to delete it from
-`_MODULE_CHAINS` entirely. (2) Several real 5069 Compact I/O catalogs
-combined onto the default 1756-L81E non-safety controller -- `gen_module_
-sweep.py` already documents (2026-08-27) that 5069 modules need
-`_5069_PROCESSOR_TYPE = "5069-L306ER"` (a 5069-series processor, not
-1756-L81E -- `Type="5069"` Ports only match a 5069 controller's own local
-bus) and that 2 of the 6 (`_5069_SAFETY_CATALOGS`) are
-`SafetyEnabled="true"`, needing `5069-L306ERMS2` (safety-rated). The
-requirement: read each module and verify that safety-rated hardware cannot
-be placed on a non-safety processor.
+Enforced by lint's `non_standard_processor` and `non_standard_firmware` rules
+rather than left to each generator's defaults — **it has been violated twice, and
+both times the deviation looked justified at the moment it was made.**
 
-**Before writing ANY script that picks catalogs by name** (`_MODULE_CHAINS`
-keys, `_5069_*`, `_UNDIAGNOSED_*`, etc.), grep this file's own generators
-for that catalog first -- an existing exclusion set, a dedicated processor-
-type constant, or a safety-catalog set means the question is already
-answered. `sample_gen.lint.lint_l5x` now also catches the safety case
-mechanically (`safety_module_on_non_safety_controller`, checks every
-Module's own `SafetyEnabled="true"` against the file's `<SafetyInfo>`
-presence) -- run it on every generated file before sending it anywhere,
-scratch chat samples included, not just committed batches.
+The exemptions are named individually with their reason: the firmware and catalog
+matrix generators, for which sweeping those two fields *is* the variable under
+test, and one Kinetix rack that needs an L83E because three dual-axis drives plus
+two power supplies do not fit an L81E's 3 MB.
 
-## After fixing a generator bug: the committed files don't fix themselves
+### The feedback loop
 
-2026-09-04, caught via `batch_l5x_to_acd.ps1` output showing
-files still queued for conversion that had already been reported fixed.
-Real gap found: `gen_module_pointio_rack.py`'s Bus Size/slot-resize
-fix landed in the generator SOURCE (2026-09-03), and a direct in-memory
-test of the fixed function was reported as verification -- but the
-actual COMMITTED `rack_pointio_n02...n07_full/_alt` files in `samples/
-generated/` were never regenerated afterward. They still had the old,
-pre-fix content (last touched by an earlier commit), so they kept showing
-`FAILED`/never-logged in `convert_log.csv` -- not because the fix was
-wrong, but because the shipped files never picked it up. A code fix is not
-done until `python -m sample_gen.<module>` has actually been re-run and the
-resulting file diff committed -- verifying the FUNCTION in isolation is not
-the same as verifying the FILE that ships. Same session, a parallel check
-on `cipmodule_scale_*.L5X` (also flagged in the same PowerShell output)
-found the opposite: regenerating changed nothing but the export timestamp
--- that fix had already made it into the committed files; the file was
-just sitting on a stale, never-retried `FAILED` log entry from before the
-fix landed. Distinguishing these two cases (stale FILE vs. stale LOG
-entry) needs an actual regeneration + diff, every time -- not an assumption
-either way.
+    generate → predict → convert → build → read actual → reconcile → adjust
+    → re-predict EVERY prior sample → confirm no regressions
 
-## Build a real-scale batch out of already-proven rung text
+**That last step matters.** A constant tuned to fix one sample can silently break
+another. Re-run the comparison after every constant change, not just on the sample
+that prompted it.
 
-2026-09-04, on the first real virgin-file miss, against a 12% error:
+---
 
-The batch that answers a real-scale question has to actually BUILD at real
-scale, and this project has already spent one whole batch learning that the
-hard way. `jsr_target_content_scale_*` was built to answer exactly the
-JSR-target-content question, used its own hand-rolled instruction mix over
-its own hand-rolled tag pool, and came back with 5/26/50/75 build errors —
-so all four rows are invalid fitting points and the question stayed open
-for four more days. The cause of those specific errors is still genuinely
-undiagnosed; do not claim otherwise without a real Studio 5000 error-log
-line.
+## Rules that decide whether a file imports
 
-`gen_realscale_surcharge.py` (2026-09-04) is built the other way round, and
-this is the pattern to copy for any future large batch:
+### Logix identifier rules — a hard requirement on everything
 
-- **Take the rung text verbatim from `gen_logic_sweep.INSTRUCTIONS` and the
-  tag pool verbatim from its `_POOL_TAGS_XML`.** That shape has an
-  error-free build on record at 5,000 rungs (the whole `instr_*_n05000`
-  sweep) and at 27,267 rungs (`randommix_05_n27267rungs_23types`,
-  `error_count` 0). Nothing in a new batch should re-invent an operand
-  shape that a valid capture already proves.
-- **Pick counts that PAIR with existing valid captures.** Five of the eight
-  files in its JSR ladder use exactly `gen_logic_sweep.COUNTS`
-  (10/50/100/1000/5000), so each one differs from an existing error-free
-  row by one deliberate change — the rungs sit behind a JSR instead of in
-  MainRoutine — and the answer falls out as a paired difference with no
-  model in between. A ladder that shares no count with the existing corpus
-  throws that away.
-- **If the proven shape ALSO errors in the new placement, that is the
-  result**, not a setback: it isolates the placement as what Studio 5000
-  objects to, which no existing row can distinguish today.
+**Every** name in the file: tags, programs, routines, tasks, modules, UDT members,
+AOI parameters, local tags, data types, the **controller name**, and the export
+header's `TargetName`.
 
-## SBR is a condition, not an output -- every rung still needs a terminator
-
-2026-09-04, real Studio 5000 failure on `jsr_paramtype_udt_n*_r00100`: an
-SBR rung with no output instruction fails to build. SBR behaves like a
-comparison and needs an output after it, so SBR rungs are generated with a
-trailing `NOP()`.
-
-`SBR` only RECEIVES the caller's parameters. It has no effect of its own, so
-a rung containing nothing but `SBR(...)` has nothing terminating it and
-Studio 5000 rejects it — **exactly** like a bare `EQU`, and with the same
-fix:
-
-```
-SBR(P0,P1,P2)NOP();     <- correct
-SBR(P0,P1,P2);          <- rejected, no output instruction
-```
-
-`RET();` on its own rung is fine — RET is a real output, not a condition.
-Structured Text is also exempt: ST has no rungs and no output-instruction
-rule, and the real corpus carries bare `SBR( a, b, c );` ST statements
-(44 of them) that build clean.
-
-**The lesson is about where a rule lives, not about SBR.** This project
-already knew it — `lint.py`'s `_rung_missing_output_findings` was written in
-August for exactly this class, off the *"conditional instructions like
-EQU with no operand at the end of the rung"*. `SBR` simply was not in
-`_PURE_CONDITION_INSTRUCTIONS`, so 8 of the 9 generators that emit an SBR
-got the `NOP()` right **by convention** and the 9th silently did not. A rule
-enforced by convention across nine copies is a rule that will be broken by
-the tenth. When a build-validity rule turns up, add it to `lint.py` — a
-comment in the generator you happen to be editing does not protect the
-others.
-
-
-## Logix identifier rules — a hard requirement, on everything
-
-**Every** name in the file, with no exceptions: tags, programs, routines,
-tasks, modules, UDT members, AOI parameters, local tags, data types, the
-**controller/processor name** and the export header's `TargetName`.
-
-- **No trailing underscore.** `InParam00___` fails with "Error creating
-  'Parameter' (Invalid name.)".
-- **No sequential underscores.** `Bad__Name` fails the same way.
+- **No trailing underscore.**
+- **No sequential underscores.**
 - **No leading digit.**
 
-Pad a name to a target length with filler LETTERS, never underscores.
+All three fail with "Invalid name." and abort the whole import. One bad name costs
+the entire file.
+
+**Pad a name to a target length with filler letters, never underscores.**
 
 Enforced in two places, deliberately:
 
-- `builders.validate_logix_name` refuses to BUILD an illegal name.
-  `MemberSpec` validates in `__post_init__`, so every member, parameter
-  and local tag is covered by one hook; `tag_xml`, `udt_xml`,
-  `aoi_xml`, `program_xml`, `task_xml`, `custom_string_type_xml`,
-  `string_array_tag_xml`, `program_tag_xml`, `alias_tag_xml` and
-  `build_l5x`'s `target_name` each check their own.
-- `lint.py`'s `invalid_logix_name` check scans **every element with a
-  `Name` attribute**, plus the header's `TargetName`, on every file. The
-  one exemption is `<Version Name="1.1">` on an AOI revision, which is a
-  version string rather than an identifier — established by scanning all
-  3.6M `Name` attributes across the 80 real exports, where it is the only
-  name that breaks these rules and still imports.
+- `builders.validate_logix_name` refuses to **build** an illegal name.
+  `MemberSpec` validates in `__post_init__`, so one hook covers every member,
+  parameter and local tag; each builder checks its own name.
+- Lint's `invalid_logix_name` scans **every element with a `Name` attribute** plus
+  the header's `TargetName`.
 
-This has now been hit three times, and each of the first two fixes was
-applied only inside the generator that failed:
+The one exemption is `<Version Name="1.1">` on an AOI revision, which is a version
+string rather than an identifier — established by scanning millions of `Name`
+attributes across the real exports, where it is the only name that breaks these
+rules and still imports.
 
-- 2026-08, a string name-length batch.
-- 2026-09-06, a padding helper that filled names to an exact length with
-  underscores, breaking 52 of 56 files in one batch.
-- 2026-09-11, `daxis_axis_cip_drive` shipped a controller named
-  `DaxAxCIP_` — `"AXIS_CIP_DRIVE"[5:9]`, a fixed slice landing on the
-  underscore. The lint rule existed by then and did not catch it, because
-  it walked a hand-maintained list of ten element tags and `<Controller>`
-  was not one of them. That list is gone; the rule is universal.
+> This was hit three times, and **every instance came from a name composed out of
+> parts**, which is exactly what a generator author cannot see by reading their own
+> call site. The third one shipped after the lint rule existed, because that rule
+> walked a hand-maintained list of ten element tags and `<Controller>` was not one
+> of them. **That list is gone; the rule is universal.** That is why the build-time
+> guard exists alongside the lint check.
 
-Every instance came from a name COMPOSED out of parts, which is exactly
-what a generator author cannot see by reading their own call site. That is
-why the build-time guard exists alongside the lint check.
+### Every rung needs an output instruction
 
-## Racks: bus size and slot numbers are properties of the rack, not the module
+A rung containing only condition instructions has nothing terminating it and Studio
+rejects it.
 
-Module blocks in this project are copied verbatim from real exports. That is
-deliberate and it is what makes them import cleanly -- but a real module
-carries two values that belong to the application it came from, not to the
-rack being built:
+```
+SBR(P0,P1,P2)NOP();     correct
+SBR(P0,P1,P2);          rejected — no output instruction
+```
+
+**SBR only receives the caller's parameters. It has no effect of its own**, so it
+behaves exactly like a bare `EQU` and takes the same fix. `RET();` on its own rung
+is fine — RET is a real output.
+
+Structured Text is exempt: it has no rungs and no output-instruction rule, and the
+real corpus carries bare `SBR( a, b, c );` ST statements that build clean.
+
+> **The lesson is about where a rule lives, not about SBR.** Lint already had this
+> check for exactly this class; SBR simply was not in its pure-condition list. Eight
+> of nine generators emitting an SBR got the `NOP()` right **by convention** and the
+> ninth silently did not. **A rule enforced by convention across nine copies is a
+> rule the tenth will break.** When a build-validity rule turns up, put it in
+> `lint.py` — a comment in the generator you happen to be editing does not protect
+> the others.
+
+### An array-typed operand needs a subscript
+
+Real syntax always requires `[index]`, and `SIZE` needs `.DATA[0]` on its STRING
+operand. **A file with a bare array name converts cleanly and never builds at
+scale**, which is why every affected instruction came back at an identical byte
+count regardless of rung count.
+
+### A structure cannot be an AOI Input parameter
+
+**Input and Output parameters are passed by value, and Logix accepts only an atomic
+type there.** A UDT, a nested AOI, a STRING or an AXIS_* must be `Usage="InOut"`,
+which passes a reference. A `Radix` on a structure is wrong for the same reason a
+structure tag never carries one.
+
+`builders.py` raises on this at build time.
+
+### A structure-typed tag needs a Structure body
+
+Not a scalar `DataValue`, and no `Radix`. This is why exactly the files declaring
+such a tag failed while the ones with none converted.
+
+### A call site needs exactly the arguments the definition has slots for
+
+A parameter declared `Required="false" Visible="false"` is hidden — **it has no
+slot on the calling rung at all** — so wiring a value into it gives that argument
+nowhere to go.
+
+To let a **literal** reach a parameter, declare it `Required="false"
+Visible="true"`. `Required="true"` demands a wired tag.
+
+### Motion instructions need their full parameter list
+
+The bare two-operand `(Axis, MotionInstruction)` call is **MAH and MSO's own shape,
+not a general motion shape.** Real operand counts: MAM 20, MAJ 17, MAS 9, MRP 5.
+Transplant each from a real example position for position, keeping keywords and
+literals verbatim and substituting only tag names.
+
+**MAPC needs two distinct axis tags** — an axis cannot cam to itself. Any two axis
+types work; a CIP-Drive/Virtual pairing is not required.
+
+### Labels are scoped per routine
+
+Two routines can both use the same label name without colliding.
+
+---
+
+## Rules that decide whether a rack is right
+
+### Bus size and slot numbers belong to the rack, not the module
+
+Module blocks are copied verbatim from real exports. That is deliberate and it is
+what makes them import — **but a real module carries two values that belong to the
+application it came from:**
 
 - its **bus size**, which is the size of that plant's rack, and
 - its **slot address**, which is where it happened to be installed.
 
-An OB8E found at slot 8 in one application is not an OB8E that must live at
-slot 8. Next application it may be slot 2. Both values have to be recomputed
-by the generator; inheriting them is how a one-card rack ends up declaring
-fourteen slots.
+An output card found at slot 8 in one application is not a card that must live at
+slot 8. **Both values have to be recomputed by the generator; inheriting them is
+how a one-card rack ends up declaring fourteen slots.**
 
-**Fixed backplanes -- 1756 (`Port Type="ICP"`).** The slot count is a
-property of the physical chassis catalog: 4, 10, 13 or 17 slots. An
-under-populated 1756 chassis is a normal design, not a defect, and is never
-flagged.
+**Fixed backplanes — 1756 (`Port Type="ICP"`).** The slot count is a property of
+the physical chassis catalog: 4, 10, 13 or 17. An under-populated 1756 chassis is a
+normal design, never flagged.
 
-**Dynamic backplanes -- Point I/O (`PointIO`), Flex, and 5069.** There is no
-physical chassis; the bus is exactly as long as what is plugged into it. The
-bus coupler occupies one position and each card occupies one more, so a
-correctly generated rack declares the SMALLEST size that fits:
+**Dynamic backplanes — POINT I/O, FLEX and 5069.** There is no physical chassis;
+the bus is exactly as long as what is plugged into it. The coupler occupies one
+position and each card one more, so a correct rack declares the **smallest** size
+that fits:
 
     Bus Size = 1 (coupler) + number of cards
 
-Use `builders.chassis_bus_size(card_count)` for the size and
-`builders.renumber_rack_slots(modules_xml)` to renumber the cards from slot 1
-upward. `renumber_rack_slots` only touches the card-side port -- a card
-connects upward to its coupler, so its own address lives on the port carrying
-`Upstream="true"`; the coupler's own `Address="0"` downstream port is its
+Use `builders.chassis_bus_size()` for the size and `builders.renumber_rack_slots()`
+to renumber the cards from slot 1 up. That helper only touches the **card-side**
+port: a card connects upward to its coupler, so its address lives on the port
+carrying `Upstream="true"`; the coupler's own downstream `Address="0"` is its
 position, not a card slot.
 
-`lint.py`'s `chassis_size_mismatch` enforces this for dynamic backplanes only.
+Lint's `chassis_size_mismatch` enforces this for dynamic backplanes only.
 
-## Building a 2198 Kinetix module: the Major revision decides ConfigSize
+### A 2198 drive's ConfigSize is a function of its Major revision
 
-Found 2026-09-14 from a conversion round in which 15 of 32 files were rejected
-with "Data type mismatch - the object's value does not match its data type" on
-`Communications/ConfigData/Data`.
+**Not of its catalog number.**
 
-**`ConfigSize` is a function of the module's `Major` revision, not of its
-catalog number.** Read out of every 2198 module in `samples/local/`:
-
-| module class | Major | ConfigSize / L5K value count |
+| module class | Major | ConfigSize / value count |
 |---|---|---|
 | drives `2198-D*-ERS3`, `2198-S*-ERS3` | 7 | 376 / 96 |
-| | 9 | 448 / 114 |
-| | 11 | 448 / 114 |
-| | 13 | 468 / 119 |
-| | 14 | 468 / 119 |
-| supplies `2198-P*` | any (3, 11, 13, 14 seen) | 376 / 96 |
+| | 9, 11 | 448 / 114 |
+| | 13, 14 | 468 / 119 |
+| supplies `2198-P*` | any | 376 / 96 |
 | `2198-RP200` | 11 | 452 / 115 |
 
-The same catalog appears at different revisions in different real programs —
-Griffin carries D012/D020/D032/D057/S086 all at Major 11 with 448/114, while
-Baillie and SJ_Gormley carry the same catalogs at Major 13/14 with 468/119. So
-a `(catalog, Major)` pair fixes the payload and a catalog alone does not.
+The same catalog appears at different revisions in different real programs, so **a
+`(catalog, Major)` pair fixes the payload and a catalog alone does not.**
 
-`sample_gen/data/kinetix.py` had listed D020/D032/D057 at Major 11 and S130 at
-Major 11 while storing their Major-14 and Major-13 payloads. Every stored
-payload is an exact byte match to a real module, so the payloads were never
-wrong — the revision they were paired with was. D012, correctly paired at Major
-14, imported clean throughout, which is what made the fault look catalog-specific.
-`lint.py`'s `module_major_configsize_mismatch` now enforces the pairing, and
-`module_identity_mismatch` now checks `Major` as well as ProductType/ProductCode
-(it had been unpacked and discarded).
+> This rejected 15 of 32 files in one round with "Data type mismatch." Every stored
+> payload was an exact byte match to a real module — **the payloads were never
+> wrong, the revision they were paired with was.** The one catalog correctly paired
+> imported clean throughout, which is what made the fault look catalog-specific.
 
-## Which channel a 2198 drive's second axis goes on
+Lint's `module_major_configsize_mismatch` enforces the pairing, and
+`module_identity_mismatch` checks `Major` alongside ProductType and ProductCode.
 
-`Ch1` and `Ch3` for every D-series dual drive — 2198-D012/D020/D032/D057 — with
-one D057 in the corpus also using `Ch4`.
+### Which channel a 2198 drive's second axis uses
 
-`Ch2` is real but appears exactly once anywhere: `2198-S086-ERS3`
-`DRV01_BedRolls` in EmporiumEdger, at Major 13. No D-series drive uses it, and
-no catalog mixes the two schemes. An S086 riding two axes on Ch1/Ch3 is
-rejected with "Invalid channel/node for motion module", which is what sank six
-`axmarg_*` files; the one-catalog arm now uses 2198-D020-ERS3, a real Ch1/Ch3
-dual and the most-attested drive in the corpus.
+**`Ch1` and `Ch3`** for every D-series dual drive, with one real D057 also using
+`Ch4`.
+
+**`Ch2` is real but appears exactly once anywhere** — one S086 at Major 13. No
+D-series drive uses it, and no catalog mixes the two schemes. An S086 riding two
+axes on Ch1/Ch3 is rejected with "Invalid channel/node for motion module," which
+sank six files.
 
 `2198-S130-ERS3` and every `2198-P*` supply are Ch1 only.
 
-## Literal-operand batch — BUILT 2026-09-18 (OQ-LITERALOPERAND)
+### Check for an existing diagnosis before hand-picking a catalog
+
+Two real errors were rebuilt from scratch by hand when **both were already
+diagnosed and excluded elsewhere in this codebase** — one catalog sitting in a
+documented exclusion set with its real "Child module incompatible with parent
+module" error, and several 5069 catalogs combined onto the default non-safety
+controller.
+
+**Grep the generators for the catalog before using it.**
+
+---
+
+## Rules that decide whether a batch measures what it claims
+
+### Vary exactly one dimension per pair
+
+`scripts/confound_check.py` checks this mechanically across 18 dimensions. **Scope
+it to one arm** — a whole-family run walks files alphabetically and crosses arm
+boundaries.
+
+The script has found six blind spots in itself: expressions inside rung operands,
+ST bodies, definition member order, rung structure, tag declaration order, and
+mixed-case AOI call sites. **A false negative is the one failure worse than not
+checking.**
+
+### Build a real-scale batch out of already-proven rung text
+
+**The batch that answers a real-scale question has to actually build at real
+scale.**
+
+> One batch was built to answer exactly its question using a hand-rolled
+> instruction mix over a hand-rolled tag pool, came back with 5, 26, 50 and 75
+> build errors, and left the question open for four more days. **The cause of those
+> specific errors is still undiagnosed.**
+
+The pattern to copy:
+
+- **Take the rung text and tag pool verbatim from a shape with an error-free build
+  on record** at the scale you need. **Nothing in a new batch should re-invent an
+  operand shape a valid capture already proves.**
+- **Pick counts that pair with existing valid captures.** Then each file differs
+  from an error-free row by one deliberate change, and the answer falls out as a
+  paired difference with no model in between. A ladder sharing no count with the
+  existing corpus throws that away.
+- **If the proven shape also errors in the new placement, that is the result**, not
+  a setback — it isolates the placement as what Studio objects to, which no existing
+  row can distinguish.
+
+### Hold the source tag declared and referenced
+
+When a pair moves an operand from a tag to a literal, **keep the tag both declared
+and referenced in both members.** Otherwise the term under test is confounded with
+per-tag declaration cost, which is 84+ bytes and swamps most effects.
+
+### Transplant, never compose
+
+Rung text and backing tag XML for anything unusual come out of a real export
+verbatim. Composing a call shape from a manual has cost real time three times:
+invented alarm condition types (all four rejected), bare motion instruction calls
+(every rung failed), and safety tags Studio synthesises itself.
+
+### A generator fix is not done until the committed files are regenerated
+
+> A rack generator's fix landed in the source and an in-memory test of the fixed
+> function was reported as verification — **but the committed files were never
+> regenerated.** They still had pre-fix content and kept failing, not because the
+> fix was wrong but because the shipped files never picked it up.
+
+**Verifying the function is not the same as verifying the file that ships.** Re-run
+the generator and commit the diff.
+
+The opposite case exists too: regenerating another family changed nothing but a
+timestamp — that fix had already shipped, and the file was sitting on a stale,
+never-retried failure entry. **Distinguishing a stale file from a stale log entry
+needs an actual regeneration and diff, every time.**
+
+---
+
+## Current batch: literal operands
 
 29 files, `src/sample_gen/gen_literaloperand.py`, written to
-`samples/generated/logic/` as `litop_*`. Generated on explicit request; the
-BOOL arm (F) was added to the original 20-file spec at the same time.
+`samples/generated/logic/` as `litop_*`.
 
-**What it measures.** An immediate numeric literal in an instruction operand
-costs bytes the engine charges at zero. Measured on the bench at **+4.000 bytes
-per slot** for a REAL literal in a REAL-typed MAM parameter (six slots, one
-rung, +24 exactly). The question is the rate for every OTHER operand type,
-because integer literals are 51,265 of the 52,195 unpriced slots in the real
-set — 98% of the mass, and the part the bench does not cover.
+**What it measures.** An immediate numeric literal in an instruction operand costs
+bytes the engine charges at zero — measured on the bench at **+4.000 bytes per
+slot** for a REAL literal in a REAL-typed motion parameter. The question is the
+rate for every other operand type, because integer literals are 98% of the real
+exposure and the part the bench does not cover.
 
-**The hypothesis.** An immediate costs the width of its type, stored inline:
-REAL 4 (measured), DINT 4, INT 2, SINT 1, LINT 8. The competing hypothesis is
-that the cost follows the SLOT's declared type rather than the literal's.
-
-**The engine predicts a ZERO delta for every pair in this batch.** Verified
-after generation: all five arm-A pairs, and every file within arms B, C, D and
-F, carry identical `predicted_bytes`. That is the defect, stated as a
-falsifiable prediction — any non-zero capture delta is the unmodelled cost.
-
-**Held fixed everywhere** — 1756-L81E at v35 (enforced by
-`non_standard_processor` / `non_standard_firmware`), one Task, one Program, one
-Routine, 1,000 rungs, and the source tag both DECLARED and REFERENCED in every
-member of every pair by a byte-identical `EQU`. That last point is what made
-the bench measurement clean; without it the literal term is confounded with
-per-tag declaration cost, which is 84+ bytes and would swamp a 4-byte effect.
+**The engine predicts a zero delta for every pair in this batch**, verified after
+generation. That is the defect stated as a falsifiable prediction: any non-zero
+capture delta is the unmodelled cost.
 
 | arm | files | what moves | what it decides |
 |---|---:|---|---|
-| A `litop_type_*` | 10 | destination type, tag vs literal | the per-type rate, directly, as (lit − tag) / 1000 |
-| B `litop_form_*` | 4 | the literal, on a fixed DINT destination | slot width vs value magnitude vs written form |
-| C `litop_pool_*` | 3 | number of distinct values over 2,000 fixed slots | per-slot cost vs constant-pool cost |
+| A `litop_type_*` | 10 | destination type, tag versus literal | the per-type rate, directly, as (lit − tag) / 1000 |
+| B `litop_form_*` | 4 | the literal, on a fixed DINT destination | slot width versus value magnitude versus written form |
+| C `litop_pool_*` | 3 | distinct values over 2,000 fixed slots | per-slot cost versus constant-pool cost |
 | D `litop_fold_*` | 3 | literal 0 / 1 / 2 | whether Studio folds 0 and 1 |
-| E `litop_family_*` | 3 | instruction family at a fixed literal | whether the law reaches MOV/EQU/JSR |
-| F `litop_bool_*` | 4 | one AOI call-site argument | whether a BOOL slot prices 0/1 differently |
-| G `litop_mam_*` | 2 | the bench shape at n=1000 | whether the pipeline reproduces the bench |
+| E `litop_family_*` | 3 | instruction family at a fixed literal | whether the law reaches MOV, EQU and JSR |
+| F `litop_bool_*` | 4 | one AOI call-site argument | whether a BOOL slot prices 0 and 1 differently |
+| G `litop_mam_*` | 2 | the bench shape at 1,000 rungs | whether the pipeline reproduces the bench |
 
-**Arm A caveat that will bite if ignored.** SINT and INT predict far higher than
-DINT (254,288 and 290,288 against 74,288) because the existing
-`operand_type_surcharge` charges narrow-integer widening. It is identical within
-each pair, so it does not touch the pair differences — but the per-type rate
-must be read from WITHIN-pair differences only. Comparing `litop_type_sint_lit`
-against `litop_type_dint_lit` measures that surcharge, not the literal.
+**Arm A must be read WITHIN pairs only.** SINT and INT predict far higher than DINT
+because the existing operand-type surcharge charges narrow-integer widening. It is
+identical inside each pair so the differences are clean — but comparing
+`litop_type_sint_lit` against `litop_type_dint_lit` measures that surcharge, not
+the literal.
 
-**Arm E differences against arm A, not internally.** Comparing MOV to EQU to
-JSR necessarily moves instruction inventory, so `confound_check` flags those
-pairs and is right to. Each arm-E file differences against
-`litop_type_dint_tag_n01000`, the identical MOV shape with a tag operand.
+**Arm E differences against arm A, not internally.** Comparing MOV to EQU to JSR
+necessarily moves instruction inventory, so the confound checker flags those pairs
+and is right to. Each arm-E file differences against `litop_type_dint_tag`, the
+identical MOV shape with a tag operand.
 
-**Arm F is a MECHANISM probe, not a real shape.** All 886 real `DigitalSensor`
-call sites pass exactly two TAG arguments — instance plus the one Required
-input — and set the optional inputs on the instance tag. A literal into a BOOL
-parameter is therefore not attested in any real program. The arm is kept
-because BOOL is the one atomic width where the width hypothesis predicts
-something different, and because 0/1 folding is the highest-leverage unknown in
-arm D. It must not be cited as real-shape evidence. Parameters are
-`Required="false" Visible="true"`, the flag pair that permits a literal or a tag
-at the call site; `Required="true"` demands a wired tag and would reject the
-literal.
+**Arm F is a mechanism probe, not a real shape.** All real `DigitalSensor` call
+sites pass exactly two **tag** arguments — instance plus the one required input —
+and set the optional inputs on the instance tag. A literal into a BOOL parameter is
+**not attested in any real program.** The arm is kept because BOOL is the one
+atomic width where the width hypothesis predicts something different, and because
+0/1 folding is the highest-leverage unknown in arm D: those are the most common
+literals in real ladder, so if they are free the whole exposure collapses. **It
+must not be cited as real-shape evidence.**
 
-**Arm G is the pipeline control and is deliberately isolated.** Its operand list
-is transplanted verbatim from the rung Studio compiled — transplant, never
-compose, the rule that exists because bare composed MAM/MAJ/MAS/MRP rungs failed
-every rung once. Only tag names are substituted, for `verified_tags.py` blocks
-of the same types (`Axis1` AXIS_VIRTUAL, `MCD` MOTION_INSTRUCTION), because
-those blocks are verbatim real. The pair should differ by 24,000 bytes; if it
-does not, the generated pipeline does not reproduce the bench and nothing else
-here can be trusted. `predicted_bytes` is 0 for both — an `AXIS_*` tag makes it
-uncomputable (OQ-AXISSTRUCT) — so this pair is differenced against itself.
+**Arm G is the canary and is deliberately isolated** so a MAM import failure cannot
+take the other 27 with it. The pair should differ by 24,000 bytes. **If it does
+not, the generated pipeline does not reproduce the bench and nothing else in the
+batch can be trusted.** Its predicted bytes are 0 for both, because an `AXIS_*` tag
+makes prediction uncomputable, so it is differenced against itself.
 
-**Verify with** `python scripts/confound_check.py --family '^litop_<arm>'` per
-arm. A whole-family run walks files alphabetically and so crosses arm
-boundaries, which legitimately varies several dimensions; scope to one arm to
-check the pairs that are actually differenced. All ten differenceable arms pass.
+---
 
-**This batch found a sixth blind spot in `confound_check.py`**, which is why it
-exists: its instruction regex required an ALL-CAPS mnemonic, so every AOI call
-site's operands were invisible, and it reported the four arm-F files — whose
-call arguments genuinely differ — as IDENTICAL. A false negative is the one
-failure worse than not checking. The pattern now accepts mixed-case names, which
-is what real AOIs have (`DigitalSensor`, `AnalogSensor`, `PTimer`).
+## Reference: what earlier batches established
+
+Kept because each answers a question a future batch might otherwise re-ask.
+
+**A bare CMP cannot close a rung**, so every CMP test file carries a trailing
+`OTE`. Same reason several instructions in the original sweep are paired with a
+companion output.
+
+**A repeated identical expression scales linearly.** Spot-check files repeating one
+expression across 100 rungs confirmed that single-rung reads can be trusted
+directly — there is no dedup or background optimisation of identical expressions.
+
+**Required / Visible flags do not affect definition cost**, only call-site syntax
+validity. Confirmed across all flag combinations, with and without an InOut
+parameter in the mix.
+
+**Leaving an optional parameter unwired costs the same as wiring it.** Matches the
+real corpus pattern where a real AOI call wires only two of its four non-hidden
+inputs.
+
+**A JSR target's parameters arrive at SBR as the routine's first instruction, and
+RET can appear multiple times, conditionally, with no limit.** Confirmed against
+real examples before any of it was generated.
+
+**LBL and JMP were separable only by testing them apart** — one LBL with N JMPs
+isolates JMP's rate, and LBL-only rungs with no JMP anywhere isolate LBL's. A
+1:1-pair sweep alone cannot split the pair, however many counts it covers.
