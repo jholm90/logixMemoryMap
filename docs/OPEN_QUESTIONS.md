@@ -132,7 +132,8 @@ the matching footnote at the bottom, not inline.
      operators, every tier split), each shape at n=1 and n=100 so a per-rung
      term shows as −400 and a per-file offset stays at −4. The existing files
      vary count and composition together, which is why this was never
-     separable. Shares its answer with **OQ-CPTARRANGE**, where the same
+     separable. Shares its answer with **OQ-CPTARRANGE** (now closed and
+     archived in `docs/RESOLVED_QUESTIONS.md`), where the same
      four −4 rows are already recorded.
    - **C, `cptpow_*`** (12 files). `CPT(Dest,L0**L1+L2**L3)` is the only
      shape in the corpus that OVER-predicts (+16), and `**` is the only
@@ -2598,218 +2599,32 @@ the matching footnote at the bottom, not inline.
     difference of exactly 0 -- so the 23 is one of the seven constants being
     wrong, not an additivity failure, and each file measures one constant.
 
-25. **OQ-VERIFINSTR** —
-    **the ZERO-OPERAND half is CLOSED 2026-09-13 (capture-batch segment 8,
-    `ntag_*`).** MCR, TND, UID and UIE each land EXACTLY at all five counts from
-    10 to 5,000 rungs — 20 of 20 rows, zero residual anywhere, so those four
-    weights are confirmed at three orders of magnitude and no longer need a
-    zero-operand caveat. The 5 non-exact rows in that family are all the PAIRED
-    shape and belong to OQ-SERIESOUTPUT, which they sharpen considerably: see
-    that entry for the −12 × (outputs − 1) law now measured at 2, 3 and 4
-    outputs, and for the elimination of the repetition candidate by a one-rung
-    file that pays the full discount.
+25. **OQ-VERIFINSTR** — **everything measurable from generated files is
+    CLOSED and WIRED; see `docs/RESOLVED_QUESTIONS.md`.** The zero-operand half
+    (MCR/TND/UID/UIE, 20 of 20 rows exact), the ten weights found unreconciled
+    2026-09-12, `DTR = 40`, and the 112-per-target SBR/RET operand cost are all
+    in the engine, with the last two in MEMORY_MODEL.md's KNOWN register.
 
-    The rest of the entry, unchanged: instruction weights measured but never
-    wired, and
-    the classification of what is left. **Ten wired 2026-09-12; four
-    reclassified out of scope; one left alone on purpose; one still open.**
+    **What is left cannot be closed by a generated file, and needs one thing
+    from James: a single verified rung apiece for `EOT`, `IOT`, `SFR` and
+    `SFP`.** All four are real instructions with no entry in
+    `logic_instructions.weights`, so every occurrence is charged zero.
 
-    Found by `scripts/unreconciled.py`: ten count sweeps had been captured,
-    were clean, and had never been differenced. All ten were charged ZERO.
-    Every slope is exact at n=10/100/1000, differenced between consecutive
-    points so the shared per-file base cancels, and both intervals agree:
+    Files were written for them and WITHDRAWN rather than shipped, which is the
+    part worth remembering:
 
-        MCD 184   PID 156   MAG 124   MCS 120   UPPER 84
-        STOR 80   FBC  76   LFU  72   RTOS  72   BRK   56
+    - `lint.py` rejects all four as unrecognized — accurately, since no real
+      rung containing one has ever been verified into this project.
+    - `SFR`/`SFP` address an SFC routine by name and this project's builders
+      produce none, so the rung would name a routine that does not exist.
+      Studio would reject that rung, the rest of the file would still import,
+      and `actual_bytes` would still be filled in — the exact mechanism behind
+      OQ-AOIINTERNALLOGIC's suspect calibration, arrived at deliberately.
+    - `IOT`'s operand is a real output module reference and `EOT`'s an SFC
+      storage bit, so both invented shapes are guesses.
 
-    `PID` is the per-RUNG instruction weight, not the 180-byte PID predefined
-    structure -- a PID rung costs 156 plus whatever its control tag costs as
-    data.
-
-    **DTR: the cause is found and the fix already landed. RECAPTURE.**
-    Corrected 2026-09-12 -- an earlier note here claimed the terminating NOP
-    "is already present and always has been", which was wrong. Reading the
-    file as it stood on its capture date:
-
-        rung THEN (captured 2026-09-08)   DTR(D0,-1,D1);
-        rung NOW  (fixed    2026-09-10)   DTR(D0,-1,D1)NOP();
-
-    DTR is a comparison: it conditions the rung instead of writing to it, so a
-    rung containing only DTR has no output and every one of them fails --
-    which is exactly the observed error_count of one per rung. The NOP was
-    added two days after the capture, so the three `unweighted_dtr_*` rows
-    measured a file that no longer exists. Their capture columns are cleared
-    and the files need nothing but recapture; the "real cost 0" reading off
-    them was an artefact of the rungs being rejected, and 16 stays wired until
-    a clean capture says otherwise.
-
-
-    **THE DTR RECAPTURE LANDED, AND THE SBR/RET LADDER WITH IT. BOTH WIRED
-    2026-09-18. The `unweighted_*` family goes from 4.6865% to 0.1574% mean
-    absolute error, 18 of 22 rows inside the universal +-8.**
-
-    **DTR is 40 per rung, and 16 was wrong.** The recaptured rows are clean
-    (`error_count = 0` at all three counts, so the NOP fix worked) and they read
-    +404, +4,004 and +40,004 at 10, 100 and 1,000 rungs against a weight of
-    **zero** — DTR never made it into `logic_instructions.weights` at all, so
-    the "16 stays wired" above was describing a constant that was not there. The
-    slope is exactly 40.000 at three counts two orders of magnitude apart, with
-    the family's universal +4 per file left over. Wired as `DTR: 40`.
-
-    Correction to this entry while here: the same sweep's five siblings are NOT
-    unweighted. AND 40, OR 40, RTOS 72, LFU 72 and UPPER 84 were already in the
-    table by the time these files were captured, and all fifteen of their rows
-    read the universal +4, so this batch **confirms** those five weights at
-    three counts rather than measuring them. DTR was the only one of the six
-    still unpriced. The generator's own docstring still says all six carry no
-    weight; that was true when it was written and is not now.
-
-    **An SBR/RET pair that carries OPERANDS costs 112 per JSR target. Wired.**
-    `unweighted_sbrret_t{001,010,050,200}` put one such pair inside 1, 10, 50
-    and 200 distinct targets:
-
-        targets     1      10       50      200
-        residual  -164    +844   +5,324  +22,124
-
-    112 per target at every step — (844+164)/9, (5324−844)/40 and
-    (22124−5324)/150 are all exactly 112 — with a per-file constant of −276.
-    After wiring, all four rows sit at that flat −276.
-
-    Three things make this a law rather than one family's slope:
-
-      * **It is not the instructions.** The 12 `subrtn_*` files use
-        parameterless `SBR();` and `RET();` and measure exactly 0 at 1/5/25/100
-        rungs. They still do after this change — no leak. So
-        `logic_instructions.weights` keeps `SBR: 0` and `RET: 0`, correctly, and
-        the operands are what cost.
-      * **It is not per operand or per parameter.**
-        `jsr_paramcount_n01..n15` hold one target and sweep the parameter count
-        from 1 to 15 with a residual that is FLAT. A per-param reading needs
-        n=15 to sit 1,568 below n=1.
-      * **It collapses a discrepancy in an unrelated family.** The two JSR
-        file-level constants were 96 apart — −280 on the zero-param
-        multi-target sweep, which has no SBR at all, and −184 on the
-        param-bearing sweep, which does. Charging this 112 moves the second to
-        −296, so the two agree within 16 instead of 96. A constant derived from
-        one family closing a gap in another is the cross-check that was missing
-        when `b_base` and `per_target` were fitted against each other.
-
-    Real set: 1.6721% -> **1.6566%**, every one of the sixteen the right way.
-    Real programs carry SBR on 126 of their 128 nonzero-param JSR targets, so
-    this reaches them.
-
-    A 7-file variant batch built to hunt this cause was deleted the same day
-    rather than shipped: it was designed against the false premise and would
-    have spent seven conversion slots re-confirming a fix already in the tree.
-
-    `error_count` is EXACTLY the rung count -- 10 at n=10, 100 at n=100, 1000
-    at n=1000 -- so it is one error per rung, a per-rung shape problem rather
-    than anything file-level. DTR is a comparison and conditions the rung
-    instead of writing to it, so it needs a terminating output; that is
-    already present and always has been (`DTR(D0,-1,D1)NOP();`), so a missing
-    terminator is NOT the cause and adding one changes nothing. Three
-    differences from the ONE real DTR call site in the corpus
-    (`Sorter1_20260722r00.L5X`,
-    `DTR(...)OTE(THGHeartbeatPulse)TON(THGHeartbeatTmr,?,?)`) are each
-    candidates, and `gen_dtr_variants.py` (7 files) separates them:
-
-      - `dtrnop_n{010,100}` — the committed shape unchanged, the control that
-        reproduces the error rather than assuming it.
-      - `dtrote_n{010,100}` — OTE terminator instead of NOP, Reference still
-        shared. Isolates whether NOP is simply not acceptable after DTR.
-      - `dtruniq_n{010,100}` — OTE plus its OWN Reference element per rung.
-        DTR's third operand is its stored previous-scan value, not a plain
-        destination, so n rungs sharing one may be the same class of error as
-        two OTEs driving one bit. Leading suspect, because the error count
-        tracks the rung count exactly.
-      - `dtrreal_n010` — the real rung transplanted whole, TON and all. If even
-        this errors, the rung is not the problem and the tag pool or file shell
-        is implicated.
-
-    Two counts on the three main arms, so whichever builds clean also yields
-    DTR's per-rung weight in the same round instead of needing a second.
-
-    **ESTOP / ROUT / LC / RIN: OUT OF SCOPE (Safety), not unpriced.** All four
-    appear only inside a GuardLogix SafetyProgram, which this project does not
-    size; CROUT was reclassified the same way 2026-08-24. Identified from their
-    real call shapes, every one of which takes the `_S`-suffixed safety reset
-    tags that exist only in a safety task. Now in `coverage._SAFETY_FAMILY`.
-    Reporting them as holes overstated the gap and buried the real ones.
-
-    **SCP: a USER AOI, not a built-in.** Four real exports declare an
-    `AddOnInstructionDefinition` named SCP; a fifth calls it without declaring
-    it, and its arity varies across the corpus (3 operands in one program, 7 in
-    another). The gap is a partial export, not a missing weight. Now in
-    `coverage._KNOWN_USER_AOI`, and the coverage note for such a mnemonic says
-    CONFIRMED rather than "the name shape suggests".
-
-    **Net on the held-out programs: unpriced native instruction uses fell from
-    133 to 57 — and all 57 are EVENT.**
-
-    **STILL OPEN: EVENT.** 57 real uses, charged zero, and its per-rung cost
-    has never been measured: `eventtask_instronly` is a single point, which can
-    confirm a total but cannot separate the instruction from the file.
-    `gen_unweighted_closeout.py` (3 files, `uwclose_event_n{00010,00100,01000}`)
-    sweeps it, with the call shape transplanted VERBATIM from the real corpus
-    (`EVENT(TrackingInfeed)`, the most common of 44 real uses; all 16 distinct
-    real shapes are the same single-operand form naming an EVENT task) and a
-    real EVENT task declared for the rungs to resolve against. All three files
-    predict an identical 18,900, so the whole captured delta is the EVENT cost.
-    Awaiting capture.
-
-    **CAPTURE ERRORS: none. RECAPTURED CLEAN, verified 2026-09-18.** The rows
-    this entry used to flag as captured-with-errors now carry `error_count = 0`
-    in the manifest, so their `actual_bytes` is trustworthy and every number
-    above is drawn from clean captures. `scripts/capture_errors.py` routes no
-    errored row here any more; the old block was a warning that had outlived
-    its cause.
-
-    **Zero-operand (non-tag) instructions, reviewed 2026-09-12 on a direct
-    question — were NOP, AFI, TND, UID and UIE tested?** Two halves, very
-    different states.
-
-    **Solved:** `NOP` (16) and `AFI` (4) have five count points each
-    (n = 10 / 50 / 100 / 1,000 / 5,000) and every one reconciles at a flat
-    −8 — the universal per-file residual, not an instruction error — across
-    that whole 500× range.
-
-    **Weights right, evidence thin:** `TND` (24), `UID` (40), `UIE` (40) and
-    `MCR` (16) rest on exactly TWO points apiece, `instrfirst_<x>` (n=1) and
-    `instrfirst_<x>_x10` (n=10). Their slopes are exact there — TND 216 bytes
-    over 9 extra instructions, UID and UIE 360 over 9, MCR 144 over 9, each
-    matching its wired weight and the real bytes with no remainder — and all
-    four sit at a flat −12 rather than a growing residual, so nothing looks
-    wrong. But two points cannot separate a true per-instruction constant from
-    a first-pass offset plus a different slope, and none has been measured
-    above 10 while NOP and AFI were checked to 5,000.
-
-    **25 files built** (`src/sample_gen/gen_nontag_instruction_sweep.py`):
-
-    - `ntag_{tnd,uid,uie,mcr}_n{00010,00050,00100,01000,05000}` (20 files) —
-      the same count points NOP and AFI were confirmed at, so each instruction
-      goes from 2 points to 7 over the same range and the two halves become
-      directly comparable.
-    - `ntag_uidpair_n{00001,00010,00100,01000}` + `ntag_uidpair_withbody_n00100`
-      (5 files) — every existing UID/UIE point measures a **bare, unmatched**
-      instruction, which is not how either is used: they bracket an
-      uninterruptible region. If the matched-pair cost is not simply 40 + 40
-      then the separate sweeps have been measuring a shape real Logix never
-      contains. The body arm checks whether instructions inside a protected
-      region cost what they cost outside one.
-
-    **`EOT`, `IOT`, `SFR`, `SFP` — real instructions, no weights entry, priced
-    at zero, and deliberately NOT built.** Files were written and withdrawn:
-    `lint.py` rejects all four as unrecognized (accurate — no real rung
-    containing one has been verified into this project); `SFR`/`SFP` address an
-    SFC routine by name and this project's builders produce none, so the file
-    would name a routine that does not exist, Studio would reject the rung, and
-    the rest would still import and still fill in `actual_bytes` — the exact
-    mechanism behind OQ-AOIINTERNALLOGIC's suspect calibration; and `IOT`'s
-    operand is a real output module reference while `EOT`'s is an SFC storage
-    bit, so both invented shapes are guesses. Per CLAUDE.md's
-    transplant-never-compose rule these four need **one verified rung apiece
-    from a real export**. Recorded in `docs/INSTRUCTION_COVERAGE.md`.
-
+    Per CLAUDE.md's transplant-never-compose rule these need one real rung each,
+    not a composed one. Tracked in `docs/INSTRUCTION_COVERAGE.md`.
 
 26. **OQ-CPTREALDEST** — REAL-destination CPT: two measured constants with
     no known mechanism. 2026-09-04. **Not blocking — the path is exact on
@@ -2838,8 +2653,9 @@ the matching footnote at the bottom, not inline.
     fills the ladder either side of the anomaly, `cptrdpow_k2/k3` tests
     whether pow_extra is per-operator or per-call (every existing real-dest
     pow file has exactly ONE `**`), and `cptrdarrange_*` tests whether the
-    5-operator +4 is really the same arrangement effect OQ-CPTARRANGE
-    found on the integer path, wearing a different hat. Blocked on capture.
+    5-operator +4 is really the same arrangement effect OQ-CPTARRANGE found on
+    the integer path, wearing a different hat (that question is now closed and
+    archived in `docs/RESOLVED_QUESTIONS.md`). Blocked on capture.
 
     **IN-DEPTH REVIEW 2026-09-18 — the captures landed, and the FIRST thing
     they say is that every number in this batch had to be normalised before it
@@ -2891,7 +2707,8 @@ the matching footnote at the bottom, not inline.
     No single discriminator covers all four. Parenthesisation explains the middle
     two and fails on the last; integer operands explain the middle two and fail
     on the last; the leading-tier-1-run rule that CLOSED the integer path (see
-    OQ-CPTARRANGE) predicts 324 for the run-of-1 rows and breaks eight of them.
+    OQ-CPTARRANGE, now archived) predicts 324 for the run-of-1 rows and breaks
+    eight of them.
     **Left at 328, unchanged**, because every candidate change fixes fewer rows
     than it breaks — applying the integer path's rule here with base 324 fixes 4
     and breaks 10. Counted, not guessed at.
@@ -3013,79 +2830,13 @@ the matching footnote at the bottom, not inline.
     `cptnarrow_{int,sint}_k1` variant with the narrow operand in a non-leading
     position would say whether it is positional.
 
-28. **OQ-CPTARRANGE** — does operator ARRANGEMENT change CPT cost?
-    **ANSWERED 2026-09-12 from the 28 captured `cptarrange_*` rows, which had
-    never been reconciled. No, with one clean exception — and reading them
-    turned up a +348 nobody had seen.**
+28. **OQ-CPTTYPEMISMATCH** (the one thread OQ-CPTARRANGE left open; that
+    question itself is CLOSED and wired — see `docs/RESOLVED_QUESTIONS.md`).
 
-    **Arrangement is a non-effect.** Four arms (alternating, frontloaded,
-    grouped, split) sweep operand counts 3 to 9 with the multiplications in
-    completely different places, and 26 of the 28 rows land on the IDENTICAL
-    residual. The slopes agree exactly as well: alternating n03 -> n04 steps
-    +4,000 in both prediction and actual, n04 -> n05 steps +2,400 in both. The
-    arrangement-blind expression model is right.
-
-    **The one exception is a rule, not noise.** Five rows sit 400 bytes higher
-    in actual than the other 23, and they are exactly the five whose expression
-    begins with TWO additions before the first multiplication:
-
-        cptarrange_grouped_n03   L0+L1+L2*L3
-        cptarrange_grouped_n04   L0+L1+L2*L3*L4
-        cptarrange_split_n07     L0+L1+L2*L3*L4*L5+L6+L7
-        cptarrange_split_n08     L0+L1+L2*L3*L4*L5*L6+L7+L8
-        cptarrange_split_n09     L0+L1+L2*L3*L4*L5*L6+L7+L8+L9
-
-    `grouped_n05` at `L0+L1+L2+L3*L4*L5` (THREE leading additions) and
-    `split_n03` at `L0+L1*L2+L3` (ONE) are both in the majority, so the trigger
-    is the POSITION of the first multiplication -- the third operand
-    specifically -- and not "grouped" or "split" as a style. Two of the four
-    arms happen to produce that prefix at some counts and not others, which is
-    why it reads as arm-specific noise until the rung text is lined up.
-
-    **The +348, which is the more interesting find.** The majority residual is
-    not zero; it is **+348, identical on all 26 rows regardless of operand
-    count** -- a flat per-file over-charge, not a slope error. The neighbouring
-    `cptrd_*` families, same generator and same tag pool, sit at **+4**. Two
-    things differ and either could be the cause:
-
-        cptarrange   destination Dest (DINT)   operands L0..L9 (DINT)
-        cptrd        destination R2   (REAL)   operands R*/N* (REAL/LINT)
-
-    **Test files built 2026-09-12, `gen_cpt_arrangement_closeout.py`, 21
-    files.** The engine predicts an identical total for all nine arm-A files,
-    so every captured difference there is a pure measurement.
-
-      - `cptpos_m{1..8}_n09` + `cptpos_add_n09` (9) -- nine DINT operands, every
-        operator an addition except ONE multiplication, swept across all eight
-        positions, plus an all-addition control. Operand count, tag pool,
-        destination and rung count held identical. If the rule is "first
-        multiplication at operand 3", `cptpos_m3_n09` stands alone and the other
-        seven agree. No existing file varies position with the count fixed.
-      - `cptdest_d{dint,real}o{dint,real}_n{010,100,1000}` (12) -- destination
-        type crossed with operand type crossed with RUNG count, expression held
-        at `A+B*C+D`. Read three ways: destination type, operand type, and --
-        the part neither existing family can give -- whether 348 is per FILE or
-        per RUNG, since every captured file in both families has exactly 100
-        rungs and cannot distinguish 348 once from 3.48 each.
-
-
-    **ANSWERED 2026-09-14 (segments 20 and 22). Arrangement is free. CLOSED.**
-
-    `cptpos_m{1..8}_n09` moves a single `*` through an otherwise all-`+`
-    nine-operand expression, 100 CPT calls per file. **Seven of the eight
-    positions are byte-identical to the prediction and to each other**, which
-    extends the already-recorded parenthesization result: neither grouping nor
-    position changes the cost. `cptpos_add_n09`, the all-`+` control, is exact.
-
-    `cptpos_m3_n09` is the lone exception at +400 -- exactly +4 per call -- with
-    positions 1, 2, 4, 5, 6, 7 and 8 all at 0. There is no mechanism for position
-    3 being special that is absent at 2 and 4. **Flagged for RECAPTURE, not
-    modelled**; a one-row special case is what this project has twice been burned
-    by.
-
-    **Two type-mismatch costs found on the way, measured exactly and deliberately
-    not fitted.** `cptdest_d{dint,real}o{dint,real}_n{00010,00100,01000}` is a
-    clean 2x2 on one shape (`L0+L1*L2+L3`, three operators, four operands):
+    A CPT whose destination and operands disagree in type costs more, and
+    nothing in the model has a term for it.
+    `cptdest_d{dint,real}o{dint,real}_n{00010,00100,01000}` is a clean 2x2 on
+    one shape (`L0+L1*L2+L3`, three operators, four operands):
 
         destination   operands      residual per CPT
         DINT          4 x DINT                     0
@@ -3094,169 +2845,50 @@ the matching footnote at the bottom, not inline.
         REAL          4 x REAL                     0
 
     Exactly linear across a 100x span in all four arms, and **both matched arms
-    are byte-exact at every count** -- an independent validation of the
+    are byte-exact at every count** — an independent validation of the
     integer-tier and REAL-destination models at scale.
 
-    The two mismatched arms are real under-charges with no term in the model, and
-    neither is wired because **one operand count cannot separate a per-call cost
-    from a per-operand cost**: +48 on four REAL operands is equally 48 per call or
-    12 per operand, and +4 on four DINT operands equally 4 per call or 1 per
-    operand. Real-file exposure was measured before deciding -- **3 of the 256 CPT
-    calls in the sixteen real programs** are integer-destination with a REAL
-    operand or float literal, roughly 144 bytes across the whole real set -- so
-    there is no pressure to guess.
+    **Not wired: one operand count cannot separate a per-call cost from a
+    per-operand one.** +48 on four REAL operands is equally 48 per call or 12
+    per operand; +4 on four DINT operands equally 4 per call or 1 per operand.
 
-    **Discriminator: the same four arms at two operand counts (2 and 8), operator
-    count held at three.** Four files settle both constants outright.
+    Real exposure was measured before deciding: **3 of the 256 CPT calls in the
+    sixteen real programs** are integer-destination with a REAL operand or float
+    literal, roughly 144 bytes across the whole real set. No pressure to guess.
 
-    **THE ARRANGEMENT RULE IS SOLVED AND WIRED 2026-09-18, and it is exact on
-    every row that ever contradicted a tier-count model.**
+    **Discriminator: the same four arms at two operand counts (2 and 8),
+    operator count held at three.** Four files settle both constants outright.
 
-    The 28-file `cptarrange_*` sweep captured: four arrangements at every operator
-    count 3 through 9, tier counts held fixed, 100 rungs each. Read after
-    subtracting the batch's −352 per-file constant (see OQ-CPTREALDEST, item 0 —
-    without that subtraction these rows look like noise):
+29. **OQ-STEXPR** — **the four assumptions and the AOI-call separation are
+    CLOSED and WIRED 2026-09-18; see `docs/RESOLVED_QUESTIONS.md` for the
+    derivation and `docs/MEMORY_MODEL.md`'s KNOWN register for the constants.**
+    The ST family went 8.3291% -> 0.0091% mean absolute error, 60 of 69 rows
+    byte-exact, 67 of 69 inside the universal ±8.
 
-    | arrangement | n=3 | 4 | 5 | 6 | 7 | 8 | 9 | leading tier-1 run |
-    |---|---:|---:|---:|---:|---:|---:|---:|---|
-    | alternating | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 at every n |
-    | frontloaded | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 at every n |
-    | grouped | **+4** | **+4** | 0 | 0 | 0 | 0 | 0 | 2, 2, 3, 3, 4, 4, 5 |
-    | split | 0 | 0 | 0 | 0 | **+4** | **+4** | **+4** | 1, 1, 1, 1, 2, 2, 2 |
+    **Three single-point threads survive, and they are the only ST rows outside
+    that band:**
 
-    **The six rows that cost 4 more are exactly the six rows whose leading run of
-    tier-1 operators is 2.** Every other row has a run of 0, 1, 3, 4 or 5 and
-    costs nothing extra. One rule, 28 rows, zero residual:
-
-        + 4 bytes per call iff EXACTLY TWO tier-1 operators precede the first
-          tier-2 operator
-
-    It also retro-explains every point this question was opened for, without
-    being fitted to any of them:
-
-      * `cptmix_scaling_grouped_n05` (`L0+L1+L2*L3*L4`, run 2) costs 4 more than
-        `cptmix_scaling_alternating_n05` (run 1) at identical tier counts — the
-        original smoking gun.
-      * The same pair is IDENTICAL at 11 operators, which is what made this look
-        inconsistent: at n=11 the grouped run is 6, not 2.
-      * The three (2,1) files the two-tier refit left 4 short —
-        `cptcx_operatormix_mixedops`, `_nested` and
-        `cptcx_spotcheck_mixedops4op_n100`, all measuring 192 where the model
-        said 188 — are `L0+L1+L2*L3`, a run of 2.
-
-    Wired as `cpt_expression.leading_tier1_run_length: 2` /
-    `leading_tier1_run_bytes: 4`. All 28 `cptarrange_*` rows now sit on the
-    identical −352, so nothing arrangement-dependent is left unpriced on the
-    integer path. `tests/test_logic_sizing.py` previously pinned those four as
-    unexplained misses and now pins the rule with the real captured numbers.
-
-    Why exactly two and not "two or more" is not known, and it is stored as the
-    measurement it is rather than smoothed into a curve.
-
-    **The REAL-destination path is NOT given this rule**, and the reason is
-    counted rather than asserted: `cptrdarrange_grouped_n04` needs it (+4, run of
-    2) but the eight parenthesised n=5 rows that pin `operator_count_base[5]` at
-    328 have a run of 1, so applying the rule there together with the 324 those
-    new files measure fixes 4 rows and breaks 10. See OQ-CPTREALDEST item 2 — the
-    two questions are entangled at n=5 and have to be settled together.
-
-
-
-29. **OQ-STEXPR** — **ALL FOUR ASSUMPTIONS MEASURED AND WIRED 2026-09-18.**
-    The 21-file `stc_*` closeout captured cleanly (every row `error_count` 0,
-    every residual an exact multiple of the 1,000 statements per file) and
-    answered all four, plus the fifth item that was measured-but-unseparated.
-    The numbers and the reasoning are in **OQ-STEXPR-OPERATOR** below, which is
-    now closed rather than blocked; the headline is that the ST family went from
-    8.3291% to **0.0091%** mean absolute error, 60 of 69 rows byte-exact.
-
-    Answers, one line each:
-      1. **The one-operator premium** is not a premium. That row is a LOOKUP per
-         operator CLASS: additive 40, multiplicative 56, bitwise 124, `**` 204.
-      2. **The premium on the REAL row** does not scale up — it vanishes. And it
-         is keyed on the OPERANDS, not the destination.
-      3. **`**`** is 38 per operator in ST, not the tier table's 80. **`OR`** is
-         confirmed tier-1 at four operators.
-      4. **Conversion is per SOURCE, keyed on the source's own type**: DINT 48,
-         SINT 92, INT 104, LINT 0. `stc_conv_mixed` confirms the additivity to
-         the byte.
-      5. The AOI-call one-time IS separated and is **once per ST routine** (264),
-         not per call.
-
-    What is left on ST, unchanged and each its own single-point thread: the +228
-    on `st_jsr_param_target_n00100`, the −32 on `st_ctl_case`, and the WHILE
-    split resting on one file. The original text follows.
-
-    The ST assignment law's four remaining assumptions.
-    The expression-cost thread CLOSED 2026-09-13 (capture-batch segment 6) and
-    is in `docs/RESOLVED_QUESTIONS.md`: one law replaced the five-entry
-    count-keyed table, 42 of 48 ST corpus rows now land exactly, corpus mean
-    absolute error 1.833% → 1.545%, and an AOI called from ST — which cost
-    nothing — is `120 + 16 per parameter`, the same two constants as a call
-    from a rung. **21 files built, awaiting capture.**
-
-    What the law still assumes, each because every file that pins the constant
-    holds another variable fixed:
-
-      1. **The operator premium at exactly ONE operator.** Every file that
-         measures a premium has two operators or more, and the one-operator row
-         is a lookup (40 DINT, 56 REAL) rather than base-plus-rate.
-      2. **The premium on the REAL row.** All six `stx_opkind_*` files write to
-         a DINT destination, where the per-operator rate is 24; the REAL row's
-         is 40, so the premium could scale with it rather than staying at 16.
-      3. **`**` and `OR`.** The tier table prices `**` at a premium of 80,
-         untested in ST; `OR` is absent from that table and so falls to tier 1
-         beside AND and XOR, which *are* measured there.
-      4. **The conversion rate for integer types other than DINT.** The 48 comes
-         from DINT sources only. SINT and INT are narrower conversions, LINT a
-         wider one.
-
-    And one thing measured but unseparated: with the call law applied, all four
-    `stx_call_aoi_p*` files land at **+256, +260, +268, +268** — the same
-    one-time ~264 a routine containing AOI calls carries in RLL (see
-    `memory_model.yaml aoi_call_site`). No file in **either** language separates
-    that one-time from a per-call term, because every existing file scales the
-    two together.
-
-    Also still open on ST, one thread each, unchanged:
-    - `st_jsr_param_target_n00100` is the only non-exact ST file (+628). Every
+    - `st_jsr_param_target_n00100` is the only non-exact ST file (+228). Every
       JSR parameter constant was fitted on RLL targets and the corpus holds 63
       SBR / 42 RET inside ST, so an ST JSR target is a real shape that may be
-      charged differently.
+      charged differently. One file with the same target at a second call count
+      separates a per-call error from a per-file one.
     - `st_ctl_case` carries a −32 residual; the CASE decomposition into
       per-construct and per-selector is one data point short.
-    - `while_block` was corrected 72 → 76 on the strength of the literal-RHS
+    - `while_block` was corrected 72 -> 76 on the strength of the literal-RHS
       rate. Only one WHILE file exists, so that split rests on a substitution.
+      A WHILE-count sweep at fixed assignment content settles it outright.
 
-    **Files built 2026-09-13** — `src/sample_gen/gen_st_closeout.py`, 21 files,
-    1,000 statements each except group E, all on the same tag pool and routine
-    shape as the existing `stx_*`/`st_*` captures:
+    None of the three is worth a batch on its own; they are the natural
+    passengers on the next ST batch, whatever drives it.
 
-    - **A, `stc_prem1_{add,sub,mul,div,mod,pow,and,or,xor}`** (9 files). One
-      operator, DINT destination — reads each operator's premium at the count
-      where the law currently applies none. Against `stx_ops01_dint`'s 40.
-    - **B, `stc_premreal_{add,mul,pow}`** (3 files). Four operators, REAL
-      destination and REAL sources so no conversion term intrudes. Against
-      `stx_ops04_real`'s 284.
-    - **C, `stc_opkind_{pow,or}`** (2 files). The two entries `stx_opkind_*` left
-      out, in its identical shape, against its 196 and 260.
-    - **D, `stc_conv_{sint,int,lint,mixed}`** (4 files). One operator, REAL
-      destination, both sources of one integer type; `mixed` reads one DINT and
-      one SINT in the same statement, which says whether the rate is per source
-      or per statement.
-    - **E, `stc_callone_n{00010,00100,01000}`** (3 files). Exactly ONE AOI call
-      statement in a routine of 10, 100 and 1,000 statements, so the call count
-      is pinned at 1 while the routine grows 100x — the first separation of the
-      +264 one-time from anything per-call, in either language.
-
-    **CAPTURE ERRORS: 1 row(s)** flagged here by `scripts/capture_errors.py`
-    (step 2b). `st_instr_concat_n01000` captured WITH Studio build errors, so its
-    `actual_bytes` is SUSPECT rather than wrong -- part of the file may never
-    have reached the controller, which inflates apparent over-prediction (it
-    reads −52,000). No error text was recorded: every errored row in the manifest
-    was captured between 2026-08-23 and 2026-09-08 and the error-log reader only
-    began working 2026-09-10, so it needs RECAPTURE before its number is used.
-    It is excluded from every figure quoted above.
+    **CAPTURE ERRORS: 1 row(s)** — `st_instr_concat_n01000` captured WITH Studio
+    build errors, so its `actual_bytes` is SUSPECT rather than wrong: part of the
+    file may never have reached the controller, which reads as the model
+    over-predicting (it sits at −52,000). No error text was recorded — it was
+    captured before the error-log reader worked — so it needs RECAPTURE before
+    its number is used, and it is excluded from every ST figure quoted above,
+    including the 0.0091%.
 
 30. **OQ-REAL5069** — *amended 2026-09-14 by the strip ladder: the
     "identical content, identical residual" result holds and is not in doubt,
@@ -4199,24 +3831,6 @@ the matching footnote at the bottom, not inline.
     2026-09-10, so these need RECAPTURE before their numbers are used.
     `jsr_midchain_leaf_control`, `jsr_midchain_real_chain`
 
-39. **OQ-CAMSCALAR** — CLOSED as OQ-CAMSHAPE 2026-09-11 (see
-    RESOLVED_QUESTIONS.md: container shape is a non-effect, the CAM base was
-    corrected 8 -> 4 with 8-byte element-block alignment, CAM_PROFILE
-    promoted to KNOWN). What survives is narrower and stays open:
-
-      - `camx_scalar_cam` (-104) and `camx_scalar_prof` (-144). A SCALAR
-        CAM or CAM_PROFILE — no dimension at all. The corpus contains ZERO
-        real examples of one, and this model prices it as an array of one
-        element, which these two files say is wrong by about a hundred
-        bytes. Whether a scalar is even legal in real Logix is part of the
-        question; the files converted, so it is.
-      - `camx_mixed_d10/d20` (+4), `camx_nested_i01/i05` (+4/+20) and
-        `camx_udtarray_n05` (+28). Each carries one unknown beyond the cam
-        types themselves — two cam members in one UDT, depth, and an array
-        of a UDT containing arrays of a predefined. All four are small and
-        none is explained by the cam constants, which are now exact
-        standalone and as members.
-
 40. **OQ-AOIDEFITEMIZE** — an AOI's priced definition cost and its own
     itemized member breakdown are two different computations, and they
     disagree by a large margin on every real AOI.
@@ -4807,250 +4421,3 @@ the matching footnote at the bottom, not inline.
     the Trials full-file number was wrong; if it reads 1,147,896 again then the
     per-program batch shares a common defect and the ladder stands.
 
-47. **OQ-STEXPR-OPERATOR** — new 2026-09-17, split out of OQ-STEXPR by the
-    21-row `stc_*` closeout. **Every number below is measured and none of it may
-    be wired, because each operator has exactly two points and the fit needs
-    two parameters.**
-
-    Each file is 1,000 ST assignment statements, one operator kind, so the
-    per-statement under-charge is the file total over 1,000:
-
-    | shape | operators | dest | per statement |
-    |---|---:|---|---:|
-    | `stc_prem1_{add,sub,mul,div,mod}` | 1 | DINT | **0 — exact** |
-    | `stc_prem1_{and,or,xor}` | 1 | DINT | **+84** |
-    | `stc_prem1_pow` | 1 | DINT | **+84** |
-    | `stc_opkind_or` | 4 | DINT | **0 — exact** |
-    | `stc_opkind_pow` | 4 | DINT | **−168** |
-    | `stc_premreal_add` | 4 | REAL | **0 — exact** |
-    | `stc_premreal_mul` | 4 | REAL | **−64** |
-    | `stc_premreal_pow` | 4 | REAL | **−288** |
-    | `stc_conv_sint` | 1 | REAL ← SINT | **+88** |
-    | `stc_conv_int` | 1 | REAL ← INT | **+112** |
-    | `stc_conv_lint` | 1 | REAL ← LINT | **−96** |
-    | `stc_conv_mixed` | 1 | REAL ← mixed | **+44** |
-
-    **THE BLOCKER IS GONE, AND IT WAS NEVER A TWO-PARAMETER FIT. CLOSED AND
-    WIRED 2026-09-18.**
-
-    The framing above -- "two unknowns from two points, exactly determined and
-    therefore unfalsifiable" -- was wrong about the model it was fitting into.
-    The ST assignment law does NOT have a single first-operator-plus-rate form.
-    It already has two separate regimes, and has had since the 30-file `stx_*`
-    grid: at fewer than two operators the cost is a LOOKUP, and at two or more it
-    is base-plus-per-operator-rate. The step between them is 108 bytes on the
-    DINT row and 148 on the REAL row, large and measured.
-
-    So the 1-operator and 4-operator points do not compete for the same two
-    parameters. Each one pins a constant in its own regime, alone:
-
-      * `stc_prem1_and/or/xor` pin the DINT one-operator LOOKUP at **124** --
-        +84 over the additive 40, the same 84 on all three files, which is what
-        makes it a class effect rather than three coincidences. `stc_prem1_pow`
-        pins the same lookup for `**` at **204**.
-      * `stc_opkind_or` pins the DINT n>=2 bitwise premium at **0** -- four OR
-        operators read exactly the tier-1 196, residual 0. Nothing is fitted:
-        the 84 belongs to the one-operator compile and not to the operator.
-      * `stc_opkind_pow` pins the DINT n>=2 `**` premium at **38** per operator
-        (348 against 196 over four), less than half the 80 that ladder CPT's tier
-        table charges.
-      * `stc_premreal_mul` and `stc_premreal_pow` pin the all-floating-point
-        premiums at **0** and **8**. Assumption B is refuted in the opposite
-        direction from the one predicted: the premium does not scale with the
-        REAL row's larger per-operator rate, it VANISHES. Multiplying REALs is
-        one FPU operation like adding them; multiplying DINTs is not.
-      * `stc_conv_{sint,int,lint}` pin the conversion per source type at **92,
-        104 and 0**, and `stc_conv_mixed` is an independent additivity check that
-        lands to the byte: one DINT plus one SINT source is 56 + 48 + 92 = 196.
-        Four files, three unknowns, one exact cross-check -- over-determined
-        already.
-
-    **One genuinely new finding came out of wiring it, and it decides between two
-    readings nothing else in the corpus separates.** Keying the premium on the
-    DESTINATION type broke `st_expr_cpt_mirror_n01000` by exactly +32 per
-    statement. That file is `R0 := (D0+D1)*R1 - R2/2 + 1.5;` -- a REAL
-    destination, but it multiplies a DINT subexpression by a REAL and divides a
-    REAL by an integer literal. It pays 16 per multiplicative operator;
-    `stc_premreal_mul`, same count and same destination type but REAL sources
-    throughout, pays 0. **The premium follows the OPERANDS, not the
-    destination.** The base still follows the destination. Both files are exact
-    only under that split, and there is no other pair in the corpus that would
-    have caught it.
-
-    That fix exposed a real parser bug on the way: `_NUMBER` in
-    `sizing/structured_text.py` matched the digits INSIDE identifiers, so
-    `R0 := R0 * R1` counted five integer literals and every all-REAL statement
-    looked like it had integer operands. Harmless until the premium started
-    keying on exactly that. Now anchored with `(?<![\w.])`.
-
-    **`stc_callone` DOES separate per-call from per-routine, and this entry said
-    it does not.** The correction: the three `stc_callone_*` files carry one call
-    each, but the four `stx_call_aoi_p*` files they difference against carry
-    **one thousand**, and the residual is +268 at one call and +256 to +268 at a
-    thousand. A 1,000x change in call count moving the number by 12 bytes is the
-    separation. Wired as `st_aoi_call_routine_bytes: 264`, once per ST routine
-    containing any AOI call -- the same one-time an RLL routine with AOI calls
-    carries, which is the point: an AOI costs the same from Structured Text as
-    from a rung, one-time term included.
-
-    **Result: the ST family goes from 8.3291% to 0.0091% mean absolute error --
-    60 of 69 rows byte-exact, 67 of 69 inside the universal +-8.** The only two
-    outside are the two threads that were already their own: the +228 on
-    `st_jsr_param_target_n00100` and the -32 on `st_ctl_case`. Real set
-    1.6732% -> 1.6725%, flat as it must be: the sixteen held-out programs carry
-    26 ST routines between them.
-
-    **What the six 2-operator files are now for.** They were the enabler; they
-    are the FALSIFICATION TEST. Every constant above is pinned by one file, and
-    each rests on the law's existing assertion that the per-operator premium is
-    CONSTANT in n -- an assertion validated across ten counts for `+` and `*`
-    (`stx_ops02..12`) and now extended to the bitwise operators, `**` and the
-    all-float row on one count each. A 2-operator point for `and`, `or`, `xor`
-    and `pow` at DINT and for `mul` and `pow` at REAL would reject a premium that
-    is not constant in n. Worth building; no longer blocking. SPEC ONLY.
-
----
-
-# FULL OPEN-QUESTIONS REVIEW, 2026-09-18
-
-Every entry above was recomputed live against the current engine. Status of all
-39, with the measurement behind each. "Within 8" means inside the universal
-per-file residual this corpus carries everywhere, which is the practical
-definition of exact for a whole file.
-
-## Closed by data already in hand — no files needed
-
-| question | evidence |
-|---|---|
-| **OQ-AOIDEFSHAPE** | 54 of 54 rows within ±8, 38 byte-exact, mean 0.012%. |
-| **OQ-BRANCHDEPTH** | 17 of 17 byte-exact, mean 0.000%. |
-| **OQ-TASKOVERHEAD** | 10 of 10 byte-exact. |
-| **OQ-PREDEFINED** | 191 of 191 within ±8, 183 byte-exact, mean 0.001%. |
-| **OQ-SHELLCONST** | 9 of 9 within ±8, 6 byte-exact. |
-| **OQ-IDENTNAMELEN** | 24 of 24 byte-exact once the Task-name term was wired today. Program and routine names are `floor(len/8)` confirmed at twelve lengths; a Task name is the same step with a minimum of 8. |
-| **OQ-CAMSCALAR** | 36 rows, 29 within ±8, mean 0.066%. |
-| **OQ-AXISMARGINAL** | 13 of 13 byte-exact on every row that captured clean. Its remaining 57 errored rows are all the bus-sharing defect, which is OQ-MODULEMARGINAL's, not a sizing question. |
-
-## Wired today, from measurements with zero residual
-
-| question | what was wired |
-|---|---|
-| **OQ-EVENTTRIGGER** | EVENT instruction = **56 bytes**. It had no weight at all. 56n + 8 exactly at n = 10/100/1000. Instruction half closed; trigger-source half still open. |
-| **OQ-MODULEIO** | **1756-EN2T = 432**, off the 1672 fallback. Flat −1,240 per module, zero curvature, four counts. |
-| **OQ-MODULEMARGINAL** | Six 2198 −ERS3 catalogs: **flat per copy, no repeat discount**, 3,640 (3,376 for S130), one-time term 4,008 lower for D012/S086. 23 of 24 points byte-exact. |
-| **OQ-IDENTNAMELEN** | Task names charged, minimum 8. |
-
-## Measured exactly and DELIBERATELY NOT APPLIED
-
-**OQ-SERIESOUTPUT.** −12 per writing instruction beyond the first in a rung.
-Byte-exact on all 16 rows across eight output counts, invariant to type, tag
-uniqueness and series-versus-branch, and independently corroborated by
-`ntag_uidpair` from an unrelated family. Applying it moves the real set
-**1.7036% → 3.2167%** with every one of the sixteen going the wrong way, so it
-is wired end to end and gated `apply: false`. The confound is that every
-`srout_*` rung has exactly one condition instruction and real rungs carry
-several; 12 new files sweep that.
-
-## Files generated to close the rest — 22, all lint-clean
-
-| arm | files | question | what it decides |
-|---|---:|---|---|
-| `sroutc_c{1,2,4}_k{1,2,4,8}` | 12 | OQ-SERIESOUTPUT | whether the discount survives multiple conditions. `c01_k01` is shape-identical to `srout_ote_k01` and must read 0. |
-| `cpttri_k3_t{211,212,221}` | 3 | OQ-CMPCPTLAYOUT | completes the 8-sequence k=3 tier truth table so the +4 discriminant is read, not guessed. |
-| `cpttri_pow_p3_adjacent` | 1 | OQ-CMPCPTLAYOUT | separates `**` adjacency from operator count. |
-| `stc2_prem2_{and,or,xor,pow}` | 4 | OQ-STEXPR-OPERATOR | the missing middle count at DINT. |
-| `stc2_premreal2_{mul,pow}` | 2 | OQ-STEXPR-OPERATOR | the missing middle count at REAL. |
-
-## Ruled out today, which is progress of its own
-
-- **UDT definitions are not the real-file gap.** `pukall` carries 205,099
-  udt_definition bytes against a +9,008 residual; `emporium` carries 207,814
-  against +129,375. Scaling the category 10–15% makes the mean worse.
-- **AOI definitions are not either.** `defscale_aoidefs_n{5,10,20,40,60}` reads
-  −20/−40/−80/−160/−240 — exactly −4 per definition, five points, zero
-  residual. All 331 definitions across the sixteen real files total ~1,300
-  bytes.
-- **No single per-unit cost fits the real residual, and less well than before.**
-  Re-running the correlation with modules now exact, every feature's coefficient
-  of variation got *worse* — all ≥1.10, where the best was 0.66. The module
-  error had been flattering that analysis.
-- **`routine_logic` remains the best single correlate (k = +0.105) and must not
-  be fitted**: the strip ladder measured logic as OVER-charged on both programs.
-
-## Cannot be closed by a generated file
-
-| question | why |
-|---|---|
-| **OQ-LADDERBASE** | Two capture sessions on one real export disagree by 18–25k. Needs three existing files recaptured in one session. |
-| **OQ-REALUNDER** | Its own hypothesis is disproven; needs OQ-LADDERBASE settled and a third real ladder. |
-| **OQ-CTLSHELL** | Sized at +7,800 (1756) / +4,072 (5069), worth 1.7036% → 1.5964% alone. Three probe files specified; needs the decision to generate. |
-| **OQ-193ECMETR** | Needs the raw Studio error-log line, not a generator run. |
-| **OQ-EXPORTSCOPE** | Needs a controller at the bench. |
-| **OQ-L9BUDGET** | Needs real per-catalog user memory from an L9 controller. |
-| **OQ-MODULEMARGINAL** (bus half) | Needs a decision between a standalone-drive donor and decoding the ConfigData bus-sharing indices. |
-| **OQ-ALARMDEF** | Parked: zero ALMD/ALMA occurrences in any of the sixteen real programs. |
-
-## Still open with work specified but files not yet built
-
-`OQ-AOIARRAYLOCALTAG` (byte-count versus element-count),
-`OQ-UDTMEMBERNAME` (a UDT with no BOOL members swept by member count),
-`OQ-AOISTRUCT` (several untested packing assumptions),
-`OQ-SAFETYSCOPE-SIZING` (a code decision: whether Safety-class tags are sized at
-all), `OQ-AOIDEFITEMIZE`, `OQ-V3GENBUGS`, `OQ-BUILDFAIL-OPEN`, `OQ-AXISCOMBO`,
-`OQ-REAL5069`, `OQ-DEFSCALE`, `OQ-BASELINE-PROCFW` (contaminated only by dead
-L7x/1769 rows; 0.019% across the 55 active-platform rows).
-
----
-
-# SECOND PASS: THE IN-DEPTH REVIEW, 2026-09-18
-
-The table above was a triage — every entry recomputed, each given a status. This
-pass went through the ones it left open one at a time, re-derived each question's
-numbers from the captures on disk rather than from what the entry claimed, and
-either wired the result or said in counted terms why not. **Real set 1.6894% →
-1.6566% mean absolute error over the sixteen held-out programs, every one of them
-the right way.** Corpus mean 1.4758% → below it, with two families rebuilt:
-Structured Text 8.3291% → **0.0091%** and `unweighted_*` 4.6865% → **0.1574%**.
-
-## Closed and wired in this pass
-
-| question | what it turned out to be |
-|---|---|
-| **OQ-JSRPARAMCOST** | Every SLOPE closed. `b_multiparam_extra = 4` keyed on TOTAL operands (the row that decides it went +3,952 → −56); `per_target` 152 → 160 from an exact `8t − 280` across t = 1..50. What is left is two flat per-file constants, −184 and −280, on files of 18–256 KB. |
-| **OQ-STEXPR** | All four assumptions measured. The one-operator row is a LOOKUP per operator class, not a lookup plus a premium; the premium vanishes on all-float operands; `**` is 38 not 80; conversion is per SOURCE keyed on the source's type; the AOI-call one-time is per ROUTINE. |
-| **OQ-STEXPR-OPERATOR** | The "two unknowns from two points" blocker was a misreading of the law's own shape — it already has two regimes, so each point pins a constant alone. The six 2-operator files are now the falsification test, not the enabler. |
-| **OQ-CPTARRANGE** | Arrangement is real and the rule is exact: +4 iff EXACTLY TWO tier-1 operators precede the first tier-2 one. Six rows out of 28, and it retro-explains four points it was not fitted to. |
-| **OQ-VERIFINSTR** | `DTR = 40` (it had no weight at all, not the 16 the entry claimed) and 112 per JSR target whose SBR/RET carry operands — which also collapses OQ-JSRPARAMCOST's two file constants from 96 apart to 16. |
-| **OQ-AOIINTERNALLOGIC** | The unmeasured `_DESTINATION_ARG` exposure SIZED at 9,312 bytes (0.09%) for every classification being wrong at once, so no test batch is justified. Two real table defects fixed: five entries named the wrong operand, and five word-destination writers were missing, GSV among them at 363 real occurrences. |
-
-## Read in full and deliberately NOT wired, with the count
-
-| question | measured | why it stays unwired |
-|---|---|---|
-| **OQ-COMPOSITESCALE** | The categories ARE additive: hold logic at 0 and every D×A×M combination reads within 40 of zero. The single non-additive term is compiled logic at −24 per rung, which is −12 × (3 − 1) — the OQ-SERIESOUTPUT law at a rung width nothing else tests. | It makes `addit_*` the THIRD independent confirmation of a law all sixteen real programs reject. The `sroutc_*` grid is the decisive measurement for the whole project. |
-| **OQ-CPTREALDEST** | The ladder is exact at 7, 9 and 10 operators; `**` is +8 per extra operator, not a flat 12; the integer-destination float literal is +120 to +188 per rung and charged NOTHING. | The 5-operator base is a shape CONTRADICTION (324 all-REAL against 328 for three parenthesised/float-literal families) and every candidate fix repairs 4 rows and breaks 10. The float-literal term is not linear over three points. |
-| **OQ-CPTNARROW** | `rate_T × k − 132`, eight of ten points exact, and SINT ≠ INT, which this entry assumed. | 27 real CPT calls with a narrow operand, all in ONE program, ~1,300 bytes. |
-| **OQ-POINTIOCONN** | Optimized is FLAT across a 16x span; Enhanced −1,136 per card; Enhanced Data −852. Module names cost 8 per 8 characters with the first 8 free. | 34 of the 45 real POINT I/O cards are structurally indistinguishable between the two formats that differ by 1,136, and the sweep confounds format with adapter catalog. Two files fix that. |
-
-## The one normalisation that had to be found before anything could be read
-
-**A per-file constant of −352 runs through all 58 captured `cpt` rows from
-`gen_cpt_closeout.py`** — except the five whose logic references a LINT tag,
-which sit at 0. With that one substitution every residual in the batch is its
-baseline plus an exact multiple of 4 bytes per rung, no exceptions. Without it
-the batch looks like noise, and several readings in OQ-CPTREALDEST and
-OQ-CPTARRANGE had been contaminated by a spurious 352 from differencing against
-an older generator. The −352 itself is unexplained and has its own three-file
-probe specified.
-
-## Doc currency fixed in this pass
-
-Seven `**CAPTURE ERRORS**` blocks were stale — `scripts/capture_errors.py` only
-checks questions it routes errored rows TO, so a block whose rows have since been
-recaptured is invisible to the gate and survives as a false warning. Audited all
-19 against the gate's routing; the seven are replaced with a note recording that
-those numbers are now known to come from clean captures. Two stale claims inside
-entries were corrected: OQ-AOIINTERNALLOGIC's "11,241 instructions across 6 of
-the 16 programs" (the real figure is 38,821 across all sixteen) and
-OQ-VERIFINSTR's five siblings, which were already weighted by the time their
-files were captured, so that batch confirms them rather than measuring them.
