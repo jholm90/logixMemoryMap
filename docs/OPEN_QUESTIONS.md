@@ -4284,3 +4284,101 @@ the matching footnote at the bottom, not inline.
     statement counts — so it does not interact with routine length. But all
     three files contain exactly ONE call, so per-call and once-per-routine fit
     identically. A 2-call and a 5-call file separate them.
+
+---
+
+# FULL OPEN-QUESTIONS REVIEW, 2026-09-18
+
+Every entry above was recomputed live against the current engine. Status of all
+39, with the measurement behind each. "Within 8" means inside the universal
+per-file residual this corpus carries everywhere, which is the practical
+definition of exact for a whole file.
+
+## Closed by data already in hand — no files needed
+
+| question | evidence |
+|---|---|
+| **OQ-AOIDEFSHAPE** | 54 of 54 rows within ±8, 38 byte-exact, mean 0.012%. |
+| **OQ-BRANCHDEPTH** | 17 of 17 byte-exact, mean 0.000%. |
+| **OQ-TASKOVERHEAD** | 10 of 10 byte-exact. |
+| **OQ-PREDEFINED** | 191 of 191 within ±8, 183 byte-exact, mean 0.001%. |
+| **OQ-SHELLCONST** | 9 of 9 within ±8, 6 byte-exact. |
+| **OQ-IDENTNAMELEN** | 24 of 24 byte-exact once the Task-name term was wired today. Program and routine names are `floor(len/8)` confirmed at twelve lengths; a Task name is the same step with a minimum of 8. |
+| **OQ-CAMSCALAR** | 36 rows, 29 within ±8, mean 0.066%. |
+| **OQ-AXISMARGINAL** | 13 of 13 byte-exact on every row that captured clean. Its remaining 57 errored rows are all the bus-sharing defect, which is OQ-MODULEMARGINAL's, not a sizing question. |
+
+## Wired today, from measurements with zero residual
+
+| question | what was wired |
+|---|---|
+| **OQ-EVENTTRIGGER** | EVENT instruction = **56 bytes**. It had no weight at all. 56n + 8 exactly at n = 10/100/1000. Instruction half closed; trigger-source half still open. |
+| **OQ-MODULEIO** | **1756-EN2T = 432**, off the 1672 fallback. Flat −1,240 per module, zero curvature, four counts. |
+| **OQ-MODULEMARGINAL** | Six 2198 −ERS3 catalogs: **flat per copy, no repeat discount**, 3,640 (3,376 for S130), one-time term 4,008 lower for D012/S086. 23 of 24 points byte-exact. |
+| **OQ-IDENTNAMELEN** | Task names charged, minimum 8. |
+
+## Measured exactly and DELIBERATELY NOT APPLIED
+
+**OQ-SERIESOUTPUT.** −12 per writing instruction beyond the first in a rung.
+Byte-exact on all 16 rows across eight output counts, invariant to type, tag
+uniqueness and series-versus-branch, and independently corroborated by
+`ntag_uidpair` from an unrelated family. Applying it moves the real set
+**1.7036% → 3.2167%** with every one of the sixteen going the wrong way, so it
+is wired end to end and gated `apply: false`. The confound is that every
+`srout_*` rung has exactly one condition instruction and real rungs carry
+several; 12 new files sweep that.
+
+## Files generated to close the rest — 22, all lint-clean
+
+| arm | files | question | what it decides |
+|---|---:|---|---|
+| `sroutc_c{1,2,4}_k{1,2,4,8}` | 12 | OQ-SERIESOUTPUT | whether the discount survives multiple conditions. `c01_k01` is shape-identical to `srout_ote_k01` and must read 0. |
+| `cpttri_k3_t{211,212,221}` | 3 | OQ-CMPCPTLAYOUT | completes the 8-sequence k=3 tier truth table so the +4 discriminant is read, not guessed. |
+| `cpttri_pow_p3_adjacent` | 1 | OQ-CMPCPTLAYOUT | separates `**` adjacency from operator count. |
+| `stc2_prem2_{and,or,xor,pow}` | 4 | OQ-STEXPR-OPERATOR | the missing middle count at DINT. |
+| `stc2_premreal2_{mul,pow}` | 2 | OQ-STEXPR-OPERATOR | the missing middle count at REAL. |
+
+## Ruled out today, which is progress of its own
+
+- **UDT definitions are not the real-file gap.** `pukall` carries 205,099
+  udt_definition bytes against a +9,008 residual; `emporium` carries 207,814
+  against +129,375. Scaling the category 10–15% makes the mean worse.
+- **AOI definitions are not either.** `defscale_aoidefs_n{5,10,20,40,60}` reads
+  −20/−40/−80/−160/−240 — exactly −4 per definition, five points, zero
+  residual. All 331 definitions across the sixteen real files total ~1,300
+  bytes.
+- **No single per-unit cost fits the real residual, and less well than before.**
+  Re-running the correlation with modules now exact, every feature's coefficient
+  of variation got *worse* — all ≥1.10, where the best was 0.66. The module
+  error had been flattering that analysis.
+- **`routine_logic` remains the best single correlate (k = +0.105) and must not
+  be fitted**: the strip ladder measured logic as OVER-charged on both programs.
+
+## Cannot be closed by a generated file
+
+| question | why |
+|---|---|
+| **OQ-LADDERBASE** | Two capture sessions on one real export disagree by 18–25k. Needs three existing files recaptured in one session. |
+| **OQ-REALUNDER** | Its own hypothesis is disproven; needs OQ-LADDERBASE settled and a third real ladder. |
+| **OQ-CTLSHELL** | Sized at +7,800 (1756) / +4,072 (5069), worth 1.7036% → 1.5964% alone. Three probe files specified; needs the decision to generate. |
+| **OQ-193ECMETR** | Needs the raw Studio error-log line, not a generator run. |
+| **OQ-EXPORTSCOPE** | Needs a controller at the bench. |
+| **OQ-L9BUDGET** | Needs real per-catalog user memory from an L9 controller. |
+| **OQ-MODULEMARGINAL** (bus half) | Needs a decision between a standalone-drive donor and decoding the ConfigData bus-sharing indices. |
+| **OQ-ALARMDEF** | Parked: zero ALMD/ALMA occurrences in any of the sixteen real programs. |
+
+## Still open with work specified but files not yet built
+
+`OQ-AOIARRAYLOCALTAG` (byte-count versus element-count),
+`OQ-JSRPARAMCOST` (two distinct targets with differing parameter counts),
+`OQ-JSRSCALE` / `OQ-COMPOSITESCALE` (three points),
+`OQ-UDTMEMBERNAME` (a UDT with no BOOL members swept by member count),
+`OQ-AOISTRUCT` (several untested packing assumptions),
+`OQ-VERIFINSTR` (one instruction needs a terminating output),
+`OQ-STEXPR` (ST AOI call: per-call versus once-per-routine, needs 2-call and
+5-call files), `OQ-SAFETYSCOPE-SIZING` (a code decision: whether Safety-class
+tags are sized at all), `OQ-CPTNARROW` / `OQ-CPTARRANGE` / `OQ-CPTREALDEST`
+(the narrowing and destination-type surcharges, which the arm B truth table
+feeds into), `OQ-AOIINTERNALLOGIC`, `OQ-AOIDEFITEMIZE`, `OQ-POINTIOCONN`,
+`OQ-V3GENBUGS`, `OQ-BUILDFAIL-OPEN`, `OQ-AXISCOMBO`, `OQ-REAL5069`,
+`OQ-DEFSCALE`, `OQ-BASELINE-PROCFW` (contaminated only by dead L7x/1769 rows;
+0.019% across the 55 active-platform rows).
