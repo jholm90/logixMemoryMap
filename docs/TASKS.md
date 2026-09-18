@@ -565,6 +565,63 @@ Retired by the ladder, do not spend on these:
 - **The empty-project baseline constant.** It is byte-exact on every generated
   empty file; the real-shell gap is unpriced content, not a wrong constant.
 
+### Added 2026-09-18 (the in-depth open-questions review, second pass)
+
+The 2026-09-17 pass was triage: every entry recomputed and given a status. This
+one went through the ones it left open, one at a time, re-derived each question's
+numbers from the captures on disk rather than from what the entry claimed, and
+either wired the result or said in counted terms why not.
+
+**Real set 1.6894% -> 1.6566% mean absolute error, all sixteen the right way.**
+Two corpus families rebuilt: Structured Text **8.3291% -> 0.0091%** (60 of 69
+byte-exact) and `unweighted_*` **4.6865% -> 0.1574%**.
+
+**SEVEN CONSTANTS WIRED**, all measured, derivations in MEMORY_MODEL.md's
+changelog: the JSR multi-operand step (4, keyed on total operands, not inputs),
+`jsr_target_declaration.per_target` 152 -> 160, 112 per target whose SBR/RET
+carry operands, `DTR = 40`, ST's own operator classification, ST per-source
+conversion rates, and the CPT leading-tier-1-run arrangement term.
+
+**THREE BLOCKERS DISSOLVED, each by questioning the entry rather than the data.**
+OQ-STEXPR-OPERATOR's "two unknowns from two points" was a misreading of the law's
+own shape -- it already has two regimes, so each point pins a constant alone.
+OQ-JSRPARAMCOST's "non-linear" non-atomic surcharge was linear all along and had
+been measured against the wrong baseline. OQ-VERIFINSTR's DTR had no weight at
+all, not the 16 the entry said was wired.
+
+**TWO PARSER DEFECTS, both right-answer-wrong-reason.** `_DESTINATION_ARG` gave
+COP/CPS/FLL/BSL/BSR a destination position of -1, which inspects the LENGTH
+operand and only charged correctly because a literal length does not resolve to
+BOOL. `_NUMBER` in the ST sizer matched digits inside identifiers, so `R0 * R1`
+counted five integer literals -- harmless until the operator premium keyed on it.
+
+**ONE NORMALISATION that had to be found before anything could be read:** a
+per-file -352 runs through all 58 captured `cpt` rows from `gen_cpt_closeout.py`
+except the five whose logic references a LINT tag. With it subtracted every
+residual in the batch is an exact multiple of 4 bytes per rung. Without it the
+batch looks like noise, and several conclusions had been contaminated by a
+spurious 352 from differencing against an older generator.
+
+**NEXT, in priority order, and none of it is generated -- SPEC ONLY:**
+1. `sroutc_c{1,2,4}_k{1,2,4,8}` (12 files, already built, awaiting capture) --
+   the decisive measurement for the whole project. `addit_*` is now the THIRD
+   independent family confirming -12 per extra output, and all sixteen real
+   programs still reject it.
+2. A 1..6 float-literal sweep at an integer CPT destination. +120 to +188 per
+   rung, charged nothing, the largest unpriced CPT term in the project.
+3. Two POINT I/O files on ONE adapter catalog (Enhanced and Optimized, 8 cards
+   each). Separates format from adapter and makes the 34 unclassifiable real
+   cards classifiable. -1,136 per card would take Elmsdale from +22,862 to +142.
+4. Three files for the -352: the same rung shape with no LINT tags, with one,
+   and with four of which one is referenced.
+5. Three n=5 REAL-dest CPT discriminators: all-REAL parenthesised, all-REAL with
+   one float literal, mixed-operand unparenthesised.
+
+**Doc currency:** seven stale `**CAPTURE ERRORS**` blocks retired (the gate only
+checks questions it routes rows TO, so a block whose rows were recaptured is
+invisible to it and survives as a false warning) and two stale in-entry claims
+corrected.
+
 ### Added 2026-09-17 (212-row batch reviewed; four families closed, two blocked)
 
 Gates first: step 2 clean (3,442 ok / 3 FAILED / 9 never submitted); step 2b now
