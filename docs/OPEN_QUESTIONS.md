@@ -2643,6 +2643,61 @@ the matching footnote at the bottom, not inline.
     them was an artefact of the rungs being rejected, and 16 stays wired until
     a clean capture says otherwise.
 
+
+    **THE DTR RECAPTURE LANDED, AND THE SBR/RET LADDER WITH IT. BOTH WIRED
+    2026-09-18. The `unweighted_*` family goes from 4.6865% to 0.1574% mean
+    absolute error, 18 of 22 rows inside the universal +-8.**
+
+    **DTR is 40 per rung, and 16 was wrong.** The recaptured rows are clean
+    (`error_count = 0` at all three counts, so the NOP fix worked) and they read
+    +404, +4,004 and +40,004 at 10, 100 and 1,000 rungs against a weight of
+    **zero** — DTR never made it into `logic_instructions.weights` at all, so
+    the "16 stays wired" above was describing a constant that was not there. The
+    slope is exactly 40.000 at three counts two orders of magnitude apart, with
+    the family's universal +4 per file left over. Wired as `DTR: 40`.
+
+    Correction to this entry while here: the same sweep's five siblings are NOT
+    unweighted. AND 40, OR 40, RTOS 72, LFU 72 and UPPER 84 were already in the
+    table by the time these files were captured, and all fifteen of their rows
+    read the universal +4, so this batch **confirms** those five weights at
+    three counts rather than measuring them. DTR was the only one of the six
+    still unpriced. The generator's own docstring still says all six carry no
+    weight; that was true when it was written and is not now.
+
+    **An SBR/RET pair that carries OPERANDS costs 112 per JSR target. Wired.**
+    `unweighted_sbrret_t{001,010,050,200}` put one such pair inside 1, 10, 50
+    and 200 distinct targets:
+
+        targets     1      10       50      200
+        residual  -164    +844   +5,324  +22,124
+
+    112 per target at every step — (844+164)/9, (5324−844)/40 and
+    (22124−5324)/150 are all exactly 112 — with a per-file constant of −276.
+    After wiring, all four rows sit at that flat −276.
+
+    Three things make this a law rather than one family's slope:
+
+      * **It is not the instructions.** The 12 `subrtn_*` files use
+        parameterless `SBR();` and `RET();` and measure exactly 0 at 1/5/25/100
+        rungs. They still do after this change — no leak. So
+        `logic_instructions.weights` keeps `SBR: 0` and `RET: 0`, correctly, and
+        the operands are what cost.
+      * **It is not per operand or per parameter.**
+        `jsr_paramcount_n01..n15` hold one target and sweep the parameter count
+        from 1 to 15 with a residual that is FLAT. A per-param reading needs
+        n=15 to sit 1,568 below n=1.
+      * **It collapses a discrepancy in an unrelated family.** The two JSR
+        file-level constants were 96 apart — −280 on the zero-param
+        multi-target sweep, which has no SBR at all, and −184 on the
+        param-bearing sweep, which does. Charging this 112 moves the second to
+        −296, so the two agree within 16 instead of 96. A constant derived from
+        one family closing a gap in another is the cross-check that was missing
+        when `b_base` and `per_target` were fitted against each other.
+
+    Real set: 1.6721% -> **1.6566%**, every one of the sixteen the right way.
+    Real programs carry SBR on 126 of their 128 nonzero-param JSR targets, so
+    this reaches them.
+
     A 7-file variant batch built to hunt this cause was deleted the same day
     rather than shipped: it was designed against the false premise and would
     have spent seven conversion slots re-confirming a fix already in the tree.

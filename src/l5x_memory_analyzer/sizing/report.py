@@ -432,7 +432,8 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             # other. Name-dependent: matched namelen16/namelen32 pairs
             # differ by exactly +1 per character per target.
             a_cost += model.jsr_target_declaration.cost_for(
-                routine.routine_name, model.identifier_name_length)
+                routine.routine_name, model.identifier_name_length,
+                routine.sbr_ret_operands)
             a_basis = weakest(a_basis, model.jsr_target_declaration.confidence)
             content_bytes, content_basis = compute_routine_logic_bytes(
                 routine, model.logic_instructions, tag_types, charge_shell=False

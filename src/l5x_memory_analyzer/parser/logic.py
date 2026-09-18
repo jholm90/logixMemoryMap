@@ -277,6 +277,23 @@ def series_output_extra_count(rung_texts: list[str]) -> int:
 _ANY_CALL_START = re.compile(r"\b([A-Z][A-Z0-9_]{1,9})\(")
 
 
+def sbr_ret_operand_count(rung_texts: list[str]) -> int:
+    """How many operands this routine's SBR and RET calls carry in total.
+
+    A parameterless `SBR();`/`RET();` pair costs nothing -- 12 `subrtn_*` files
+    measure exactly 0 at 1/5/25/100 rungs. One that carries operands does cost,
+    and the cost is per TARGET rather than per operand (OQ-VERIFINSTR), so the
+    caller only needs to know whether this is nonzero.
+    """
+    total = 0
+    for text in rung_texts:
+        for match in re.finditer(r"\b(SBR|RET)\(", text):
+            args = _extract_call_args(text, match.end())
+            if args:
+                total += sum(1 for a in args if a.strip())
+    return total
+
+
 def word_destination_count(rung_texts: list[str], types: dict[str, str]) -> int:
     """How many instructions in these rungs write a destination that is NOT a
     BOOL, resolved against `types` (name -> declared data type).
@@ -510,6 +527,10 @@ class RoutineLogic:
     # 0 -- the series-output discount's multiplier. See
     # series_output_extra_count and memory_model.yaml series_output.
     series_output_extras: int = 0
+    # Total operands across this routine's SBR and RET calls. Zero for a
+    # parameterless SBR()/RET() pair, which costs nothing; nonzero marks a
+    # JSR target that pays jsr_target_declaration.sbr_ret_operand_bytes.
+    sbr_ret_operands: int = 0
     is_jsr_target: bool = False
     # 2026-09-03, OQ-SAFETYSCOPE-SIZING ("they are safety tasks and
     # safety programs therefore they need separate sizing calculations").
@@ -827,6 +848,7 @@ def parse_rll_routines(
                 jsr_calls=_jsr_calls(rung_texts),
                 branch_bracket_instruction_count=_branch_bracket_instruction_count(rung_texts),
                 series_output_extras=series_output_extra_count(rung_texts),
+                sbr_ret_operands=sbr_ret_operand_count(rung_texts),
             ))
 
     return routines

@@ -2514,6 +2514,38 @@ jsr_target_declaration:
   # onto the flat +200 the rest of the sweep sits at (that remaining +200 is
   # the separate per-target under-charge, OQ-JSRPARAMCOST, not a name term).
   per_name_char: 1
+  # A JSR TARGET WHOSE SBR/RET CARRY OPERANDS COSTS 112 MORE, ONCE.
+  # OQ-VERIFINSTR, measured 2026-09-18, and it reconciles three families that
+  # disagreed.
+  #
+  # unweighted_sbrret_t{001,010,050,200} put one SBR/RET pair with one operand
+  # each inside 1, 10, 50 and 200 distinct JSR targets:
+  #
+  #   targets     1      10       50      200
+  #   residual  -164    +844   +5,324  +22,124
+  #
+  # 112 per target at EVERY step -- (844+164)/9, (5324-844)/40, (22124-5324)/150
+  # all exactly 112 -- with a per-file constant of -276. Four points, an order of
+  # magnitude apart, zero residual.
+  #
+  # It is NOT the SBR/RET instructions themselves: the 12 `subrtn_*` files use
+  # parameterless `SBR();` and `RET();` and measure exactly 0 at 1/5/25/100
+  # rungs, which is why logic_instructions.weights still has SBR: 0 and RET: 0.
+  # The operands are what cost.
+  #
+  # It is NOT per operand or per parameter either. jsr_paramcount_n01..n15 hold
+  # one target and sweep the param count 1 to 15, and their residual is FLAT at
+  # -184 across the whole range -- a per-param reading would need n=15 to sit
+  # 1,568 below n=1.
+  #
+  # The corroboration that makes this more than one family's slope: the two
+  # JSR file-level constants were 96 apart, -280 on the zero-param
+  # multi-target sweep (no SBR at all) and -184 on the param-bearing sweep.
+  # Charging this 112 moves the second to -296, so they agree within 16 instead
+  # of 96. A constant derived from one family collapsing an unrelated
+  # discrepancy in another is the check that was missing when b_base and
+  # per_target were fitted against each other.
+  sbr_ret_operand_bytes: 112
   confidence: FITTED
 
 jsr_param_cost:
@@ -3012,6 +3044,17 @@ logic_instructions:
     SSV: 84
     STOD: 80
     DTOS: 72
+    # DTR (Data Transitional) -- 40, measured 2026-09-18 from
+    # unweighted_dtr_n{00010,00100,01000}: +404, +4,004, +40,004 against a weight
+    # of 0, i.e. exactly 40.000 per rung at three counts two orders of magnitude
+    # apart, with the family's universal +4 per file left over. It had NO weight
+    # at all, so every DTR in a real file was charged nothing. OQ-VERIFINSTR.
+    #
+    # Its five siblings in the same sweep read +4 at all three counts, so the
+    # weights they already carry are CONFIRMED by this batch rather than
+    # untested: AND 40, OR 40, RTOS 72, LFU 72, UPPER 84. DTR was the only one
+    # of the six still unpriced when the captures landed.
+    DTR: 40
     # 68, was 72. Refit 2026-09-05 across all 61 captured JSR files: the
     # single-target files pin the per-CALL error at almost exactly -4
     # (instr_jsr_n01000 -4,097 over 1,000 calls; n05000 -20,097 over 5,000;

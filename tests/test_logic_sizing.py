@@ -919,3 +919,46 @@ def test_word_destination_reads_the_destination_operand_not_the_length():
     # SSV writes the attribute and only reads the tag, so it does not.
     assert word_destination_count(["GSV(Task,MyTask,LastScanTime,WordDest);"], types) == 1
     assert word_destination_count(["SSV(Task,MyTask,Rate,Src);"], types) == 0
+
+
+def test_sbr_ret_cost_nothing_without_operands_and_112_per_target_with_them():
+    """OQ-VERIFINSTR, 2026-09-18. The 12 subrtn_* files use parameterless
+    `SBR();`/`RET();` and measure exactly 0 at 1/5/25/100 rungs, so the
+    instructions themselves are free. unweighted_sbrret_t{001,010,050,200} give
+    each of 1/10/50/200 targets an SBR/RET pair carrying one operand each and
+    measure exactly 112 more per target at every step.
+
+    The parser reports the operand count; the cost is per TARGET, not per
+    operand -- jsr_paramcount_n01..n15 sweep the param count 1 to 15 on one
+    target with a flat residual, which a per-param reading cannot produce.
+    """
+    from l5x_memory_analyzer.parser.logic import sbr_ret_operand_count
+
+    assert sbr_ret_operand_count(["SBR();NOP();", "RET();NOP();"]) == 0
+    assert sbr_ret_operand_count(["SBR(D0)NOP();", "RET(D1);"]) == 2
+    assert sbr_ret_operand_count(["SBR(A,B,C)NOP();", "RET(X,Y);"]) == 5
+    # A rung with neither is untouched.
+    assert sbr_ret_operand_count(["XIC(B0)OTE(B1);"]) == 0
+
+    decl = MODEL.jsr_target_declaration
+    name_law = MODEL.identifier_name_length
+    plain = decl.cost_for("Tgt", name_law, 0)
+    with_operands = decl.cost_for("Tgt", name_law, 2)
+    assert with_operands - plain == 112
+    # More operands do not cost more: it is a per-target step.
+    assert decl.cost_for("Tgt", name_law, 5) == with_operands
+
+
+def test_dtr_is_weighted_and_its_five_siblings_are_confirmed():
+    """unweighted_* sweep, 2026-09-18. DTR is 40 per rung, measured at 10, 100
+    and 1,000 rungs (+404 / +4,004 / +40,004 against a weight of 0) -- it was the
+    only one of the six still unpriced when those captures landed. The other five
+    read the family's universal +4 at all three counts, so the weights they
+    already carried are confirmed by real data rather than merely assumed."""
+    weights = MODEL.logic_instructions.weights
+    assert weights["DTR"] == 40
+    assert weights["AND"] == 40
+    assert weights["OR"] == 40
+    assert weights["RTOS"] == 72
+    assert weights["LFU"] == 72
+    assert weights["UPPER"] == 84

@@ -1107,12 +1107,18 @@ class JsrTargetDeclarationModel:
     per_target: int
     per_name_char: int
     confidence: str
+    # A target whose SBR/RET carry OPERANDS costs this much more, once, on top
+    # of everything else. A parameterless SBR()/RET() pair costs nothing -- see
+    # memory_model.yaml jsr_target_declaration.
+    sbr_ret_operand_bytes: int = 0
 
-    def cost_for(self, routine_name: str, name_length: "IdentifierNameLengthModel") -> int:
+    def cost_for(self, routine_name: str, name_length: "IdentifierNameLengthModel",
+                 sbr_ret_operands: int = 0) -> int:
         """per_name_char is not applied directly any more -- the shared
         identifier-name law replaces it, which adds the sub-8-character floor
         the original straight-line fit had no data to see."""
-        return self.per_target + name_length.bytes_for(routine_name)
+        return (self.per_target + name_length.bytes_for(routine_name)
+                + (self.sbr_ret_operand_bytes if sbr_ret_operands else 0))
 
 
 @dataclass(frozen=True)
@@ -1310,6 +1316,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             per_target=raw.get("jsr_target_declaration", {}).get("per_target", 0),
             per_name_char=raw.get("jsr_target_declaration", {}).get("per_name_char", 0),
             confidence=raw.get("jsr_target_declaration", {}).get("confidence", "UNKNOWN"),
+            sbr_ret_operand_bytes=raw.get("jsr_target_declaration", {}).get(
+                "sbr_ret_operand_bytes", 0),
         ),
         zero_connection_module_bytes=raw.get("zero_connection_module", {}).get("bytes", 0),
         rack_aliased_module_bytes=raw.get("rack_aliased_module", {}).get("overhead_bytes", 0),
