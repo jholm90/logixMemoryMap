@@ -2599,6 +2599,36 @@ the matching footnote at the bottom, not inline.
     2026-09-10, so these need RECAPTURE before their numbers are used.
     `cptwide_lint_k1`, `cptwide_lint_k2`, `cptwide_lint_k3`, `cptwide_lint_k4`, `cptwide_mixed_sint_lint`
 
+
+    **SOLVED 2026-09-18, and deliberately NOT wired. The law is
+    `rate_T x k - 132`**, where k is the number of narrow operands in the
+    expression and `rate_T` is per narrow type. Differenced against
+    `cptnarrow_*_k0` (the same expression with every operand REAL), 100 rungs
+    each, so the file base and the operator structure both cancel:
+
+        k          1      2      3      4      rate   intercept
+        INT      -80    -20    +36    +92        56       -132
+        SINT     -92    -44     +0    +44        44       -132
+
+    Eight of the ten points are EXACT on that form. Both types share the same
+    -132 intercept, which is what makes it a law rather than two curve fits, and
+    the two misses are a consistent **-4 at exactly k=1 in both types** -- not
+    noise, and unexplained.
+
+    **Why it is not wired: it cannot move the real set.** Across all sixteen real
+    programs there are **27 CPT calls with any SINT/INT operand, and they are all
+    in ONE file** (by narrow-operand count: 7 at k=1, 12 at k=2, 7 at k=3, 1 at
+    k=7). At these rates that is on the order of 1,300 bytes on a single program.
+    CLAUDE.md's rule applies as written -- a task that does not move real
+    prediction error toward 1% waits -- so the derivation is recorded here and
+    the wiring is not spent now.
+
+    Two things to carry forward when it is wired. The k=7 real call is outside
+    the measured range (k goes to 4 here), so the rate's linearity past 4 is an
+    extrapolation. And the -4 at k=1 should be resolved first: a single
+    `cptnarrow_{int,sint}_k1` variant with the narrow operand in a non-leading
+    position would say whether it is positional.
+
 28. **OQ-CPTARRANGE** — does operator ARRANGEMENT change CPT cost?
     **ANSWERED 2026-09-12 from the 28 captured `cptarrange_*` rows, which had
     never been reconciled. No, with one clean exception — and reading them
