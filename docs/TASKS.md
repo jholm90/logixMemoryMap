@@ -5,6 +5,88 @@ Anything non-obvious gets a footnote instead of inline prose — see bottom
 of file. Full reasoning trails live in RESOLVED_QUESTIONS.md/
 OPEN_QUESTIONS.md, not here.
 
+## THE RANKED WORK QUEUE — ordered by measured impact on the sixteen
+
+Measured 2026-09-18 against the current engine. This replaces the
+open-questions book as the work queue; an item not on this list is not being
+worked. Re-measure before reordering — every number below is reproducible
+from the engine as it stands.
+
+**Where the sixteen actually are:** mean |error| **1.5607%**, max **3.6309%**
+(`superior`), 4 of 16 inside 1%, 11 of 16 inside 2%. Total residual
+**+653,678 bytes on 47,539,368** = **+1.375%**. Nine files under-predict,
+seven over-predict — the residual is **no longer one-sided**, so any
+candidate that can only add bytes is wrong before it is tested.
+
+**Category mass across the sixteen (predicted bytes):**
+
+| category | bytes | share |
+|---|---:|---:|
+| `controller_tag` | 27,662,309 | 59.00% |
+| `routine_logic` | 8,557,848 | 18.25% |
+| `alarm_condition` | 4,488,720 | 9.57% |
+| `udt_definition` | 3,072,275 | 6.55% |
+| `module_io` | 1,408,235 | 3.00% |
+| `program_tag` | 1,216,611 | 2.59% |
+| `project_baseline` | 246,776 | 0.53% |
+| `task_program_shell` | 232,916 | 0.50% |
+
+### The order, and why
+
+| # | item | measured basis for the rank | moves headline? |
+|---:|---|---|---|
+| 1 | **Verify the top instruction weights against real operand shapes** — **WORKED 2026-09-18, see `OQ-RUNGSHAPE`** | XIC/MOV/OTE/XIO are **160,469 of 255,027** real instruction occurrences (**63%**) and **every one of the top 25 is FITTED, none KNOWN**. A 4-byte error on those four alone is **1.35 percentage points** — the entire residual. Measured: the weights were fitted on **9.4%** branched rungs and **62%** single-instruction rungs, against **68.7%** and **7%** in real programs. Deliverable is the rung-shape sweep spec in `OQ-RUNGSHAPE`, awaiting approval to generate. | **yes, largest** |
+| 2 | **Controller tags** | 59% of all predicted mass. `controller_tag` × 1.015 is the only category scale that improves **both** ends: mean 1.5607 → **1.4556**, max 3.6309 → **3.0361**, <1% 4 → 6, <2% 11 → 13. | **yes** |
+| 3 | **Gate on unreconciled clean captures** | The only real win of 2026-09-18 (0.10 pts) came from 54 rows already captured, already clean, never differenced. Recovers work already paid for. | **yes** |
+| 4 | **Rank open questions by real-bytes × uncertainty** | Directs 1–3 and retires the rest. This section is its first output. | indirect |
+| 5 | **Confound linter before generation** | Three specs in one day varied two things at once. Prevents dead batches rather than finding bytes. | indirect |
+| 6 | **Exclude dead weight from default reports** | L7x/1769 and gated rows dominate every corpus number and none can move the headline. | reporting only |
+| 7 | **`quick_eval` reports the 16-file mean only** | Corpus rows are fitted-on; printing them as progress is what sent a day into CPT. | reporting only |
+| 8 | **Write the stopping rule down** | Done = mean <1% **and** max <2% on the sixteen. Every task states the points it should move, up front. | definition |
+| 9 | **One capture roster, not five** | Scheduling. | none direct |
+| 10 | ~~Refresh the strip ladders~~ | **DEAD** — see the read-only rule in `CLAUDE.md`. A derived variant of a real export does not build. | none |
+
+### What has already been ruled out, so it is not re-tried
+
+Each of these was tested against the sixteen on 2026-09-18 and failed. The
+CV figure is the coefficient of variation of the implied per-unit cost
+across the sixteen files; anything above ~0.3 is not identifying a value.
+
+- **A constant error per instruction occurrence** — CV **1.74** over all
+  255,027 occurrences, **1.72** over the top four, **1.73** per rung. The
+  residual is not a uniform weight error, so no global logic scale.
+- **Program-tag count as the carrier** — the single strongest correlate with
+  residual *percentage* (r = **0.719**) and the best-scoring category scale
+  (×1.399 → mean 1.238). Both are **spurious**: CV **4.14**, and `k3m16`
+  carries +101,022 bytes of residual on **2** program tags, which is 50,511
+  bytes each. It correlates because program-tag count and residual both grow
+  with program size. `program_tag` × 1.399 also drives max **up** to 3.7668.
+- **Any other single-category scale** — `alarm_condition`, `module_io`,
+  `project_baseline`, `routine_logic`, `task_program_shell` and
+  `udt_definition` each leave mean above 1.53 and max above 3.38.
+- **Routine count** — r = 0.888 against residual *bytes*, retested with a
+  measured constant rather than a fitted one: moves bias +1.375% → +0.957%
+  and leaves the mean unchanged. Bias without spread is not a real term.
+
+### The bimodal split, which is still unexplained
+
+Ordered by residual per instruction occurrence, the sixteen fall into two
+groups with **nothing between +0.31 and +2.65 bytes**:
+
+- **High (8):** `emporium` 4.39, `cmu` 3.98, `superior` 5.61, `k3m16` 4.58,
+  `eastperry` 4.49, `ipc_edgerline` 5.94, `accutally` 4.73, `mrfp_edger` 2.65
+- **Low (8):** `horizon` 0.31, `griffin` −0.24, `elmsdale` −0.40,
+  `murraybros` −1.49, `pukall` −0.80, `salamanca` −2.32,
+  `flarefunction` −0.77, `emporiumedger` −2.60
+
+**No single property separates them.** Tested and rejected as discriminators:
+software revision, processor type, export year, safety class, and the counts
+of controller tags, program tags, UDTs, AOIs, modules, programs, tasks,
+routines, rungs, alarm conditions and ST routines — every one of them
+overlaps between the groups. The groups do trend larger-to-smaller, but size
+is not sufficient: `ipc_edgerline` (+3.52%) and `griffin` (−0.11%) are within
+250 KB of each other.
+
 ## Phase 0 — Setup
 - ✅ Stack decided, repo skeleton, real sample files added, manifest.csv
       created, XML load + schema sanity check

@@ -264,6 +264,30 @@ Whatever a ladder would have measured has to come from files that are built
 as valid projects from the start, or from a variant that Studio itself
 produced by exporting after a delete made in Logix Designer.
 
+## Nothing lives only in chat
+**Anything worked out in conversation is written to a file in the same turn
+it is worked out.** A plan, a ranking, a decision, a measured number, a
+rejected approach, a reason something was skipped — if it would have to be
+re-derived next session, it is not done until it is on disk and committed.
+
+Drawn 2026-09-18 after a ten-item efficiency plan was produced in chat,
+never written down, and delivered **zero of ten** items. Every one of the
+seven process items in it would have enforced the other three, and every one
+was the part that got skipped — a queue-discipline plan that is not in the
+queue does not run.
+
+Where things go:
+- A ranked work queue, and the reason for the ranking — `docs/TASKS.md`.
+- An unresolved sizing or behavior question — `docs/OPEN_QUESTIONS.md`.
+- A closed one and its reasoning trail — `docs/RESOLVED_QUESTIONS.md`.
+- A sizing constant or formula — `docs/MEMORY_MODEL.md`.
+- An approach that was tried and does not work, with the evidence that
+  killed it — the question it was serving, plus `CLAUDE.md` if it is a rule.
+
+A chat reply is a summary of what was written, never the only copy. If the
+answer is worth giving, it is worth committing; if it is not worth
+committing, do not spend the turn on it.
+
 ## Style
 - Terse answers and commits. Do not restate the plan before doing it; spend
   the effort on the estimator and on keeping the docs honestly current.

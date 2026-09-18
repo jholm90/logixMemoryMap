@@ -4873,3 +4873,78 @@ entries were corrected: OQ-AOIINTERNALLOGIC's "11,241 instructions across 6 of
 the 16 programs" (the real figure is 38,821 across all sixteen) and
 OQ-VERIFINSTR's five siblings, which were already weighted by the time their
 files were captured, so that batch confirms them rather than measuring them.
+
+49. **OQ-RUNGSHAPE** — new 2026-09-18, and it is the largest measured
+    evidence gap in the project. **The compiled-logic weights were fitted on
+    a rung shape that real ladder almost never has.**
+
+    Measured across all sixteen real programs (41,136 rungs, 255,027
+    instruction occurrences) against the 733 captured corpus files the logic
+    weights were fitted on (525,936 rungs):
+
+    | | real | fitted corpus |
+    |---|---:|---:|
+    | rungs containing a branch | **68.7%** | **9.4%** |
+    | single-instruction rungs | **7%** | **62%** |
+    | two-instruction rungs | 17% | 26% |
+    | three-or-more-instruction rungs | **70%** | **12%** |
+
+    Every instruction weight in the model is therefore calibrated on
+    essentially unbranched, one-instruction rungs and then applied to a
+    population where seven rungs in ten branch and seven in ten carry three
+    or more instructions.
+
+    **Every one of the top 25 real instructions is `FITTED`. None is
+    `KNOWN`.** XIC, MOV, OTE and XIO alone are **160,469 of 255,027**
+    occurrences (**63%**), and a 4-byte error across those four is **1.35
+    percentage points** — the whole +1.375% residual.
+
+    Per-instruction operand-shape gaps the corpus never tested, from the same
+    sweep: `TON` is 71% three-operand / **29% four-operand** in real programs
+    and **100% three-operand** in the corpus; `COP` is 97/2/2 across three,
+    four and five operands against 100% three; `MOV`, `ADD`, `LES`, `GRT`,
+    `SUB`, `XIC`, `XIO`, `OTU`, `OTL` and `CLR` each carry a small tail of
+    higher operand counts with no corpus coverage at all.
+
+    **What this does NOT yet explain.** Branch density cannot be the residual
+    carrier: it is nearly flat across the sixteen (58.6%–76.1%) and correlates
+    at only r = −0.250. The discriminating variable is the fraction of
+    instructions sitting *inside* branches, which ranges 26.1%–45.2% and
+    correlates at **r = −0.732** against residual bytes — the second-strongest
+    correlate in the file after routine count.
+
+    **A two-term fit reaches the target and MUST NOT BE WIRED.** Adding +11
+    bytes per series instruction and −15 per in-branch instruction takes the
+    sixteen from mean 1.5607 / max 3.6309 / 4 inside 1% to **mean 1.0820 /
+    max 2.8894 / 10 inside 1% / 13 inside 2%**. It is recorded here only so
+    it is not rediscovered and mistaken for a result. It is two free
+    parameters fitted to sixteen points, the per-unit costs it rests on have
+    CV **1.87** and **1.55** — neither identifies a value — and no mechanism
+    predicts a negative cost for being inside a branch. Wiring it would be
+    fitting the held-out set, which destroys the only accuracy evidence the
+    project has.
+
+    **THE MEASUREMENT THAT SETTLES IT — a spec, not files.** What is needed is
+    a rung-shape sweep at the real population's shape, holding instruction
+    inventory fixed and varying only the arrangement:
+
+    - Fix the multiset of instructions per file (same opcodes, same counts,
+      same operand types) and vary ONLY how they are arranged: all-series,
+      all-parallel, and the real 68.7%/70% mix. Differencing consecutive
+      points isolates the arrangement term with the inventory cancelled.
+    - Sweep branch leg count at fixed total instruction count, so leg count
+      and instruction count are not confounded.
+    - Sweep instructions-per-rung at fixed total instruction count (1,000
+      instructions as 1,000 rungs, 500, 200, 100), which prices the per-rung
+      term separately from the per-instruction term.
+    - Include the untested operand shapes above, one per file: four-operand
+      `TON`, four- and five-operand `COP`.
+
+    Every file must still be 1756-L81E at v35 per the platform rule, and
+    every consecutive pair must differ in exactly one dimension. **Do not
+    generate these without asking** — CLAUDE.md step 7.
+
+    **This supersedes the strip-ladder route.** Attribution by subtraction
+    from a real export is dead (see the read-only rule in `CLAUDE.md`), so a
+    built-from-scratch sweep at the real shape is now the only way to price
+    arrangement.
