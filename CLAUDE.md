@@ -33,16 +33,35 @@ A result outside 2% on a real file is a broken estimator, not an open
 question.
 
 **The stopping rule.** Done = **mean |error| < 1% AND max |error| < 2%** on the
-sixteen. It is checked, not judged: `scripts/quick_eval.py` prints
+real set. It is checked, not judged: `scripts/quick_eval.py` prints
 `STOPPING RULE ... MET / NOT MET` on every run. Every task states up front how
 many percentage points it should move; a task that cannot state that is not
-worked. As of 2026-09-18: **NOT MET — mean 1.5607%, max 3.6309%, 4/16 inside
-1%, 11/16 inside 2%.**
+worked. As of 2026-09-18: **NOT MET — mean 1.5951%, max 3.6309%, 4/17 inside
+1%, 11/17 inside 2%.**
+
+**AND IT IS NOT SHOWN TO BE REACHABLE.** Measured 2026-09-18, full reasoning
+in `docs/TASKS.md`: let all eight category scales float and fit them directly
+on the held-out real programs — cheating, an upper bound no honest procedure
+can beat — and the result is mean 1.0149% / max 2.5919%, which still fails.
+Under leave-one-out the same fit is worth **0.007 points**, with half the
+files getting worse. So no per-category correction can close this, and a task
+whose mechanism is "a cost constant is slightly wrong" is dead before it
+starts. Treat the 1% figure as an aspiration that has not been shown
+achievable, not as a pending item.
 
 ## How accuracy is measured
-On real programs only. The **sixteen** real production exports in
+On real programs only. The **seventeen** real production exports in
 `samples/local/` are the held-out set and the sole basis for any headline
 accuracy number.
+
+**One of them is a true blind test and is the best evidence the project has.**
+`Cardin_TrimSortStack_2025_02_21` arrived 2026-09-18 on a 1756-L83E at 7.89 MB
+— the largest real program in the set — and was predicted before its actual
+was used for anything: **7,722,352 against 7,891,612, +2.145%**. It lands
+inside the existing error distribution rather than outside it. Every other
+real file has been available while constants were being fitted; this one was
+not, so it is the only unambiguous demonstration that the model generalises
+to a program it was not tuned on.
 
 The generated corpus is a **measurement instrument** for isolating one
 variable at a time. It is not evidence the tool works — the model is fitted

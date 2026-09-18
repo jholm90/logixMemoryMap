@@ -170,7 +170,15 @@ def _all_entry_spans() -> tuple[dict[str, str], dict[str, str]]:
     closed_spans: dict[str, str] = {}
     if RESOLVED_QUESTIONS.exists():
         closed_text = RESOLVED_QUESTIONS.read_text(encoding="utf-8")
-        closed_spans = _entry_spans(closed_text, r"\*\*(OQ-[A-Z0-9][A-Z0-9-]*)\*\*")
+        # A HEADING, not any bold mention. The loose pattern matched a bold
+        # cross-reference inside another entry and truncated the span before
+        # its CAPTURE ERRORS line -- which surfaced the moment 35 questions
+        # were moved into this file at once. Both heading styles are in use:
+        # "## OQ-X — ..." for one closed on its own, and "12. **OQ-X**" for
+        # an entry moved over wholesale with its numbering intact.
+        closed_spans = _entry_spans(
+            closed_text,
+            r"^(?:#+ *|\d+[a-z]?\. \*\*)(OQ-[A-Z0-9][A-Z0-9-]*)")
     return open_spans, closed_spans
 
 
