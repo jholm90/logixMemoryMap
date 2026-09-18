@@ -8645,3 +8645,56 @@ better constant is not such evidence.
     subscripting a 2-D array costs 0, the declaration costs 1,688 measured
     against 1,684 predicted. That leaves no uncovered real tag shape worth a
     capture slot.
+
+## OQ-CTLSHELL — **CLOSED 2026-09-18. The gap it was opened for does not
+    exist; it was two bookkeeping errors compounding.**
+
+    The entry claimed a bare real controller shell read **21,096 against a
+    predicted 13,296** — 7,800 bytes of "unpriced controller-shell content
+    that generated files do not carry". It was the last remaining structural
+    lead in the project and the only candidate the ceiling result did not
+    bound. Both numbers were wrong.
+
+    **The engine predicts a File|New project exactly.** A fresh 1756-L81E at
+    v35 reads **18,112**; the engine predicts **18,112**. Confirmed twice
+    independently — read off a new Studio project, and back-solved from
+    captures: `emptyrungs_n00010` at 18,272 and `emptyrungs_n00100` at 19,712
+    give 16 bytes per empty rung, so the zero-rung base is 18,272 − 160 =
+    18,112.
+
+    **Error one, mine: a component compared against a whole-file total.**
+    13,296 is `empty_project_baseline_bytes`, the controller-only scaffolding.
+    The MainTask/MainProgram/MainRoutine that File|New also creates are charged
+    separately at 4,816, and 13,296 + 4,816 = 18,112. The "prediction" in the
+    table below was never the engine's prediction for that file.
+
+    **Error two, in the record: the actual was wrong.** Griffin `_Empty` is
+    **17,352**, not 21,096.
+
+    | | actual | predicted | delta |
+    |---|---:|---:|---:|
+    | as recorded | 21,096 | 13,296 | +7,800 |
+    | corrected actual only | 17,352 | 13,296 | +4,056 |
+    | **both sides corrected** | **17,352** | **18,112** | **−760** |
+
+    The sign flips: the engine **over**-charges that shell by 760, it does not
+    under-charge it by 7,800.
+
+    **Consequence, and it is the important part.** This was the only measured
+    evidence of content the engine does not count at all — the one shape the
+    ceiling experiment could not bound. There is now **no such evidence
+    anywhere**, which strengthens rather than weakens the conclusion in
+    `docs/TASKS.md`: no per-category correction reaches the stopping rule, and
+    nothing else is known to be missing.
+
+    **Kept from this reading, unwired:** a dual-IP / DLR controller
+    configuration costs **+40 bytes** (Elmsdale 17,320 → 17,360). One reading,
+    one controller, far below the noise floor — recorded so it is not
+    re-measured, not queued as work.
+
+    **Two rules this leaves behind.** Quote a whole-file prediction against a
+    whole-file capture, never a component against a total; `predict_batch` is
+    the only output comparable to a Capacity reading. And any number derived
+    from the strip ladder is suspect by default — those files were later found
+    not to import at all.
+

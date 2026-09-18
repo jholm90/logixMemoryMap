@@ -100,12 +100,31 @@ identical content at five densities produce **byte-identical residuals at every
 density**, so the platform difference is a single project-level constant rather
 than a per-feature one. See `OQ-REAL5069`.
 
-That constant is exact on generated files and is NOT exact on real exports. The
-strip ladder (2026-09-14) read a bare 1756-L81E v35 real shell at 21,096 against
-a predicted 13,296, and a 5069-L330ERM shell at 17,360 against 13,288 — 3,736
-apart where the engine has them 8 apart. The gap is unpriced controller-shell
-content that generated files do not carry, not the baseline constant, which
-remains byte-exact on every generated empty file. See `OQ-CTLSHELL`.
+**The "unpriced controller-shell content" claim is WITHDRAWN, 2026-09-18.** It
+said a bare real shell read 21,096 against a predicted 13,296 — a 7,800-byte
+hole. Both numbers were wrong.
+
+**A File|New 1756-L81E at v35 reads 18,112, and the engine predicts 18,112.**
+Exact. Confirmed twice over: read directly off a fresh Studio project, and
+back-solved from captures — `emptyrungs_n00010` at 18,272 and
+`emptyrungs_n00100` at 19,712 give 16 bytes per empty rung, so the zero-rung
+base is 18,272 − 160 = 18,112.
+
+13,296 is `empty_project_baseline_bytes`, the controller-only scaffolding
+COMPONENT. The MainTask/MainProgram/MainRoutine that File|New also creates are
+charged separately, and 13,296 + 4,816 = 18,112. Comparing a whole-file capture
+against a component constant manufactured the entire gap. The 21,096 actual was
+wrong too — the real figure is 17,352.
+
+Corrected, the sign flips: 17,352 actual against 18,112 predicted is the engine
+**over**-charging by 760, not under-charging by 7,800.
+
+Two rules follow. **Quote a whole-file prediction against a whole-file capture,
+never a component against a total** — the engine's own `predict_batch` output
+is the only figure comparable to a Capacity reading. And a measurement taken
+off the strip ladder is suspect by default: those files were later found not to
+import at all (see the read-only rule below), so every number derived from them
+needs re-deriving before it is cited.
 
 ## Working method
 This is iterative empirical work, not a one-shot build. The standing loop:

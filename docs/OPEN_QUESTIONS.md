@@ -1,6 +1,6 @@
 # Open Questions
 
-**FIVE. Down from forty on 2026-09-18, and the other thirty-five were not
+**FOUR. Down from forty on 2026-09-18, and the thirty-six that went were not
 abandoned — they were bounded.**
 
 An eight-parameter per-category fit, fitted directly on the held-out real
@@ -14,11 +14,23 @@ rationale at the top of that section.
 
 What is left is what that experiment does NOT bound:
 
-- **OQ-REALUNDER** — the residual itself. Not a sub-question of the gap -- it IS the gap.
-- **OQ-CTLSHELL** — the only measured evidence of content the engine does not count at all.
-- **OQ-RUNGSHAPE** — a per-rung term the model does not have. Still untested; 5-file spec written.
+- **OQ-REALUNDER** — the residual itself. Not a sub-question of the gap; it
+  IS the gap, and the ceiling result bounds every proposed *explanation* of
+  it without closing the gap itself.
+- **OQ-RUNGSHAPE** — a per-rung term the model does not have. Still untested:
+  the one attempt confounded it with the series-output law. 5-file spec written.
 - **OQ-EXPORTSCOPE** — a correctness requirement, not an accuracy question.
-- **OQ-BUILDFAIL-OPEN** — a defect log for files that do not build. Kept visible on purpose.
+  Needs a controller at the bench, not a generator run.
+- **OQ-BUILDFAIL-OPEN** — a defect log for files that do not build. Kept
+  visible on purpose.
+
+**OQ-CTLSHELL was the fifth and is now CLOSED** (2026-09-18): the 7,800-byte
+"unpriced controller shell" it was opened for does not exist. It was a
+component constant compared against a whole-file capture, on top of a wrong
+actual. The engine predicts a File|New project exactly — 18,112 against
+18,112. Reasoning in `RESOLVED_QUESTIONS.md`. That removes the last measured
+evidence of content the engine does not count at all, which strengthens the
+ceiling conclusion rather than weakening it.
 
 **The bar for opening a new one:** state, before any file is built, how many
 percentage points it should move on the seventeen real programs and by what
@@ -545,53 +557,7 @@ answers it and the question does not get opened.
     specified in TASKS.md, not a refit.
 
 
-4. **OQ-CTLSHELL** — new 2026-09-14, from the strip ladder. **A real export's
-    bare controller shell costs ~2,400+ bytes that the engine prices at zero,
-    and it is NOT the empty-project baseline constant.**
-
-    | | actual | predicted | under |
-    |---|---:|---:|---:|
-    | `Griffin_Empty` (1756-L81E v35) | 21,096 | 13,296 | **+7,800** |
-    | `Elmsdale_Empty` (5069-L330ERM v35) | 17,360 | 13,288 | **+4,072** |
-
-    Both are genuinely empty: one Task, zero Programs, zero Tags, zero
-    DataTypes, zero AOIs, one Module (the controller itself).
-
-    **The baseline constant is right and must not be touched.** `Griffin_Empty`
-    is 1756-L81E v35 — the exact platform every generated test file uses — yet
-    `emptyroutine_n01`, a generated file on that same platform that carries a
-    program and a routine `Griffin_Empty` does not, reads 18,884 and the engine
-    is **byte-exact** on it, as it is on `emptyrungs_n00010/00100/01000`,
-    `aoishape_control_empty` and `axis_baseline_motiongroup_only`. Raising the
-    baseline by 7,800 would break every one of those.
-
-    So the cost is in content a real export carries and a generated one does
-    not. Present in both `Empty` files and priced at zero today: the
-    controller's own `Module` element with real `EKey` / `Ports` / `Bus` /
-    `EthernetPorts` configuration, `SafetyInfo`, `RedundancyInfo`, `Security`,
-    `Trends`, `DataLogs`, `TimeSynchronize`, `CST`, `WallClockTime`, and (5069
-    only) `QuickWatchLists`.
-
-    The two platforms differ by **3,736** at empty where the engine has them 8
-    apart. That does not contradict OQ-REAL5069's finding that a 5069 and a
-    1756 carrying identical *content* have byte-identical residuals — that test
-    used generated files, which carry none of the above — but it does mean the
-    platform difference is larger on real exports than the wired constant, and
-    OQ-REAL5069's conclusion should be re-read as "no per-platform *content*
-    model is needed", not "the platform difference is fully wired".
-
-    **Next measurement:** this is the cheapest high-value item on the board and
-    it needs only two or three generated files, not a batch — a 1756-L81E v35
-    empty project with (a) nothing added, (b) the controller's real
-    `EthernetPorts`/`Bus` block copied in, (c) `Trends` + `DataLogs` +
-    `QuickWatchLists` populated. If (b) or (c) moves the number, the term is
-    identified in one capture round. This affects all sixteen real files
-    uniformly. **The "worth 0.2–0.6% of real error" that used to end this
-    sentence is withdrawn — measured 2026-09-18, charging it COSTS 0.09 points.
-    Its value is ATTRIBUTION and the 3,736-byte platform gap, not the headline.**
-
-
-5. **OQ-RUNGSHAPE** — new 2026-09-18, and it is the largest measured
+4. **OQ-RUNGSHAPE** — new 2026-09-18, and it is the largest measured
     evidence gap in the project. **The compiled-logic weights were fitted on
     a rung shape that real ladder almost never has.**
 

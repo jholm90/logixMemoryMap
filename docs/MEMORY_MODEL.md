@@ -192,17 +192,19 @@ has its own constant.
 on REAL exports, and the difference is unpriced shell content, not a wrong
 constant.** The strip ladder read a bare real 1756-L81E v35 export shell (one
 Task, zero Programs, zero Tags, zero DataTypes, zero AOIs, one Module) at
-**21,096 against 13,296 predicted**, and a 5069-L330ERM shell at **17,360
-against 13,288** -- 3,736 apart where the model has them 8 apart. The constant
-itself must not be raised: `emptyroutine_n01` is a generated 1756-L81E v35 file
-carrying a program and a routine the real shell does not, reads 18,884, and the
-engine is byte-exact on it, as it is on `emptyrungs_*`,
-`aoishape_control_empty` and `axis_baseline_motiongroup_only`. A real export
-carries controller-shell content generated files do not -- the controller's own
-`Module` element with real `EKey`/`Ports`/`Bus`/`EthernetPorts`, `SafetyInfo`,
-`RedundancyInfo`, `Security`, `Trends`, `DataLogs`, `TimeSynchronize`, `CST`,
-`WallClockTime`, `QuickWatchLists` -- all of it priced at zero today. See
-OPEN_QUESTIONS.md OQ-CTLSHELL.
+**WITHDRAWN 2026-09-18 — both numbers in this paragraph were wrong.** A
+File|New 1756-L81E v35 reads **18,112** and the engine predicts **18,112**,
+exact, confirmed both from a fresh Studio project and by back-solving the
+`emptyrungs` captures (18,272 − 10 × 16). The 13,296 quoted below is the
+controller-only COMPONENT, not a whole-file total: the MainTask/MainProgram/
+MainRoutine File|New also creates cost 4,816 more, and 13,296 + 4,816 = 18,112.
+The real Griffin `_Empty` figure is 17,352, not 21,096, so corrected the engine
+**over**-charges that shell by 760 rather than under-charging by 7,800.
+
+Also measured on the same reading: a **dual-IP / DLR** controller
+configuration costs **+40 bytes** (Elmsdale 17,320 → 17,360). Not yet wired;
+one reading, one controller.
+
 
 **CAVEAT, 2026-08-23: the empty-project baseline is not a constant.** It
 changes with processor and firmware. Confirmed true, and **partially wired 2026-08-29** -- see
