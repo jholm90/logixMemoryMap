@@ -239,6 +239,26 @@ waits.
 - **No proprietary or production L5X files are ever committed.** `samples/`
   holds synthetic and generated test files only; real program exports stay in
   the gitignored `samples/local/`.
+- **Confidential files move over chat, never through the repository.** A real
+  export, a variant of one, or anything else derived from customer content is
+  sent and received in conversation and written to the gitignored
+  `samples/local/`. It does not get committed, staged, or written anywhere
+  under `samples/generated/`, and no tool may be pointed at a path that would
+  do so.
+
+  Drawn 2026-09-18, after eight FlareFunction strip-ladder files — including
+  `l0_full`, a complete unmodified customer program — were unpacked into
+  `samples/generated/PROGRAMS/` and swept onto the PUBLIC repository by the
+  capture tooling's auto-push. They were purged from history and force-pushed,
+  which does not undo a disclosure: anything already cloned, forked or cached
+  by GitHub stays out.
+
+  The failure was not the auto-push. It was that a path outside
+  `samples/local/` was used for customer content at all, so the one gitignore
+  rule protecting it did not apply. `.gitignore` now also covers
+  `samples/generated/PROGRAMS/` and `strip_*.L5X` anywhere, but a gitignore
+  entry is the backstop, not the rule. The rule is that this content never
+  leaves `samples/local/`.
 
 ## The real exports in `samples/local/` are READ-ONLY. No exceptions.
 **Never modify a real program export and expect the result to build.** It

@@ -36,3 +36,9 @@ scripts/ahk_runtime/
 .vs/
 [Bb]in/
 [Oo]bj/
+
+# Customer content never belongs in the repo. samples/local/ is the only
+# place for it; these two are the backstop for when something lands elsewhere.
+# See the confidential-files rule in CLAUDE.md.
+samples/generated/PROGRAMS/
+strip_*.L5X
