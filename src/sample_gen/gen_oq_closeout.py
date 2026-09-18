@@ -154,12 +154,68 @@ def arm_b_cpt_tier_truth_table() -> int:
     return n + 1
 
 
+# ---------------------------------------------------------------- ARM C
+# The 2-operator midpoint for every ST operator whose 1- and 4-operator points
+# disagree. Built from gen_st_closeout's own helpers so the shape is byte-for-
+# byte the same family and differences straight against both ends.
+ST_N = 1000
+ST_DINT_OPS = {"and": "AND", "or": "OR", "xor": "XOR", "pow": "**"}
+ST_REAL_OPS = {"mul": "*", "pow": "**"}
+
+
+def arm_c_st_two_operator() -> int:
+    from sample_gen.builders import rung_xml
+    from sample_gen.gen_st_sizing import _TAGS, _st_routine, _write
+
+    n = 0
+    for label, op in ST_DINT_OPS.items():
+        lines = [f"D{i % 10} := D{i % 10} {op} D{(i + 1) % 10} {op} D{(i + 2) % 10};"
+                 for i in range(ST_N)]
+        out = f"stc2_prem2_{label}"
+        l5x = build_l5x(
+            target_name=f"Stc2Prem2{label.title()}",
+            tags_xml=_TAGS,
+            extra_rungs_xml=rung_xml(0, "JSR(StTarget,0);"),
+            extra_routines_xml=_st_routine("StTarget", lines),
+        )
+        _write(out, l5x,
+               f"{ST_N} TWO-operator ST assignments, DINT destination, operator {op}. "
+               f"Arm C of the OQ-STEXPR-OPERATOR midpoint batch. stc_prem1_{label} (one "
+               f"operator) reads +84 per statement and stc_opkind_{label} (four) reads "
+               f"0 or -168 -- two points for a fit that needs both a first-operator rate "
+               f"and an extra-operand rate, which is exactly determined and cannot be "
+               f"falsified. This third count over-determines it and turns the existing "
+               f"two into the check.", "st_closeout")
+        n += 1
+    for label, op in ST_REAL_OPS.items():
+        lines = [f"R{i % 5} := R{i % 5} {op} R{(i + 1) % 5} {op} R{(i + 2) % 5};"
+                 for i in range(ST_N)]
+        out = f"stc2_premreal2_{label}"
+        l5x = build_l5x(
+            target_name=f"Stc2Real2{label.title()}",
+            tags_xml=_TAGS,
+            extra_rungs_xml=rung_xml(0, "JSR(StTarget,0);"),
+            extra_routines_xml=_st_routine("StTarget", lines),
+        )
+        _write(out, l5x,
+               f"{ST_N} TWO-operator ST assignments, REAL destination and REAL sources, "
+               f"operator {op}. Arm C of OQ-STEXPR-OPERATOR: stc_premreal_{label} has four "
+               f"operators and reads -64 ({op} = *) or -288 ({op} = **) per statement, and "
+               f"stc_premreal_add is exact at four, so the REAL-destination premium is "
+               f"operator-specific and has only one count per operator. This is the second.",
+               "st_closeout")
+        n += 1
+    return n
+
+
 def main() -> None:
     a = arm_a_condition_by_output()
     b = arm_b_cpt_tier_truth_table()
+    c = arm_c_st_two_operator()
     print(f"Arm A (OQ-SERIESOUTPUT condition x output): {a}")
     print(f"Arm B (OQ-CMPCPTLAYOUT tier truth table):   {b}")
-    print(f"Total: {a + b}")
+    print(f"Arm C (OQ-STEXPR-OPERATOR 2-op midpoints):  {c}")
+    print(f"Total: {a + b + c}")
 
 
 if __name__ == "__main__":
