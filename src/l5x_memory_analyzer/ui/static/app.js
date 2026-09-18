@@ -791,7 +791,11 @@ function setupFileOpen() {
           return;
         }
         REPORT = data;
-        renderAll();
+        // renderAll() on a multi-megabyte export is seconds of work. Keep the
+        // bar up across it and take it down only once the treemap is painted.
+        renderWithProgress(renderAll,
+          `Building the view for ${(data.total_bytes || 0).toLocaleString()} bytes...`);
+        return;                        // the finally below must not pre-empt it
       } catch (err) {
         // Network-level failure, or the server died outright.
         info.textContent = `Failed to load ${file.name}`;
@@ -1036,14 +1040,26 @@ async function drillInto(node, ancestors = []) {
   let kids;
   try {
     kids = await ensureChildren(node);
-  } finally {
+  } catch (err) {
     if (heavy) hideProgress();
+    throw err;
   }
-  if (!kids || !kids.length) return;
+  if (!kids || !kids.length) {
+    if (heavy) hideProgress();
+    return;
+  }
   pushHistory();
   NODE_STACK.push(CURRENT_NODE, ...ancestors);
   CURRENT_NODE = node;
-  renderCurrentLevel();
+  // The fetch finishing is not the user's "done" -- drawing the level is.
+  // Laying out thousands of tiles takes visibly longer than fetching them,
+  // so the bar stays up across the render and comes down after the paint.
+  if (heavy) {
+    renderWithProgress(renderCurrentLevel,
+      `Drawing ${expected.toLocaleString()} items...`);
+  } else {
+    renderCurrentLevel();
+  }
 }
 
 // Jump to an arbitrary node identified by an ancestor chain (root first,
@@ -1250,6 +1266,42 @@ function setProgressIndeterminate(detail) {
 function hideProgress() {
   const modal = document.getElementById("progress-modal");
   if (modal) modal.classList.add("hidden");
+}
+
+// Hide only once the browser has actually PAINTED the new content.
+//
+// The bar used to be dismissed in the same synchronous block that called
+// renderAll()/renderCurrentLevel(). Those build the DOM but do not paint it --
+// the browser paints after the task yields -- so on a large export the modal
+// vanished and the window then sat frozen for seconds doing the layout the
+// user had just been told was finished. Reported as "the status bar
+// disappears way too early".
+//
+// One requestAnimationFrame fires BEFORE the paint of the frame it is
+// scheduled in, so it is not enough. Two puts us after it. The timeout is a
+// backstop for a hidden tab, where rAF never fires at all and the modal would
+// otherwise stay up forever.
+function hideProgressAfterPaint(detail) {
+  if (detail) setProgress(1, detail);
+  let done = false;
+  const finish = () => { if (!done) { done = true; hideProgress(); } };
+  requestAnimationFrame(() => requestAnimationFrame(finish));
+  setTimeout(finish, 3000);
+}
+
+// Render heavy content with the bar still up, and take it down only when the
+// result is on screen. Everything the user is waiting for goes through here.
+function renderWithProgress(render, detail) {
+  setProgressIndeterminate(detail || "Building the view...");
+  // Yield first so the detail text above actually paints before the
+  // (synchronous, and possibly multi-second) render blocks the thread.
+  requestAnimationFrame(() => {
+    try {
+      render();
+    } finally {
+      hideProgressAfterPaint("Done");
+    }
+  });
 }
 
 // Await many promises while reporting how many have settled. Used for the
