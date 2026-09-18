@@ -216,15 +216,30 @@ _TYPED_CALL_START = re.compile(
 # has no destination and must not be given a notional one, which is exactly the
 # distinction the AOI-internal surcharge below turns on (real: EQU costs nothing
 # extra inside an AOI, MOV/ADD/CLR cost 4 each).
+# Where the destination is NOT the last operand it is given explicitly. Five
+# entries used to say -1 and were wrong for that reason: COP/CPS/FLL take
+# (Source, Dest, Length) and BSL/BSR take (Array, Control, Source, Length), so
+# -1 inspected the LENGTH operand rather than the destination. It charged the
+# right total anyway, because a literal length does not resolve to BOOL and the
+# unresolved default is a word -- right answer, wrong operand, which would have
+# broken silently the first time a length was a tag. Corrected 2026-09-18.
 _DESTINATION_ARG = {
     "MOV": -1, "ADD": -1, "SUB": -1, "MUL": -1, "DIV": -1, "MOD": -1,
-    "CLR": 0, "CPT": 0, "COP": -1, "FLL": -1, "BTD": 2, "CONCAT": -1,
+    "CLR": 0, "CPT": 0, "COP": 1, "CPS": 1, "FLL": 1, "BTD": 2,
+    "BSL": 0, "BSR": 0, "CONCAT": -1,
     "SWPB": -1, "SQR": -1, "NEG": -1, "ABS": -1, "TOD": -1, "FRD": -1,
     "DEG": -1, "RAD": -1, "SIN": -1, "COS": -1, "TAN": -1, "LN": -1,
     "LOG": -1, "XPY": -1, "TRN": -1, "AND": -1, "OR": -1, "XOR": -1,
-    "NOT": -1, "BSL": -1, "BSR": -1, "STOD": -1, "STOR": -1, "DTOS": -1,
+    "NOT": -1, "STOD": -1, "STOR": -1, "DTOS": -1,
     "RTOS": -1, "INSERT": -1, "DELETE": -1, "MID": -1, "UPPER": -1,
     "LOWER": -1,
+    # Word-destination writers found missing 2026-09-18 by inventorying the
+    # real corpus's AOI-internal logic against this table. Same basis as the
+    # 39 other unmeasured entries -- documented operand order, not a capture --
+    # and 453 real instructions between them. GSV is the whole of that: it
+    # reads a controller attribute INTO a tag. SSV is deliberately absent, it
+    # writes the attribute and only reads the tag.
+    "GSV": -1, "MVM": -1, "SCP": -1, "SIZE": -1, "AVE": 1,
 }
 # Every mnemonic that WRITES something, for the series-output discount
 # (OQ-SERIESOUTPUT). _DESTINATION_ARG above is the word-destination set and

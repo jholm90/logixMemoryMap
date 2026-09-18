@@ -883,3 +883,25 @@ def test_jsr_multiparam_step_keys_on_total_operands_not_input_count():
     # A zero-operand JSR is untouched -- 1,973 of the real corpus's JSR calls
     # pass nothing, and no captured row asks for a step there.
     assert cost.b_cost(0, 0) == cost.b_base
+
+
+def test_word_destination_reads_the_destination_operand_not_the_length():
+    """OQ-AOIINTERNALLOGIC, 2026-09-18. COP/CPS/FLL are (Source, Dest, Length)
+    and BSL/BSR are (Array, Control, Source, Length), so the destination is not
+    the last operand. A BOOL destination must read as a BOOL even when the
+    length operand beside it is a word.
+    """
+    from l5x_memory_analyzer.parser.logic import word_destination_count
+
+    types = {"Src": "DINT", "WordDest": "DINT", "BoolDest": "BOOL", "Len": "DINT"}
+    # Word destination, tag-valued length: charged once, for the destination.
+    assert word_destination_count(["COP(Src,WordDest,Len);"], types) == 1
+    # BOOL destination, tag-valued length: not charged. Reading the LAST operand
+    # would charge this, which is the defect the explicit positions remove.
+    assert word_destination_count(["COP(Src,BoolDest,Len);"], types) == 0
+    assert word_destination_count(["FLL(Src,BoolDest,Len);"], types) == 0
+    assert word_destination_count(["BSL(BoolDest,Ctl,Src,Len);"], types) == 0
+    # GSV reads a controller attribute INTO a tag, so it writes a destination.
+    # SSV writes the attribute and only reads the tag, so it does not.
+    assert word_destination_count(["GSV(Task,MyTask,LastScanTime,WordDest);"], types) == 1
+    assert word_destination_count(["SSV(Task,MyTask,Rate,Src);"], types) == 0

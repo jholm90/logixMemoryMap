@@ -1273,8 +1273,76 @@ the matching footnote at the bottom, not inline.
     than an input to it. `_DESTINATION_ARG` in `parser/logic.py` covers 42
     mnemonics; MOV/ADD/CLR are measured and the rest are classified from
     documented operand order, so a mnemonic whose destination sits elsewhere
-    would be mis-charged by 4. Real AOI-internal inventory: 11,241 instructions
-    across 6 of the 16 programs, of which the measured three are 1,716.
+    would be mis-charged by 4. Real AOI-internal inventory, corrected 2026-09-18:
+    38,821 instructions across ALL sixteen programs, of which 9,291 are charged
+    and 6,963 of those are the measured three. (The "11,241 across 6 of the 16"
+    written here previously was wrong -- see the in-depth review below.)
+
+    **IN-DEPTH REVIEW 2026-09-18 — the `_DESTINATION_ARG` exposure is now
+    MEASURED instead of feared, and it is an order of magnitude smaller than
+    this entry claimed. Two real defects in the table were found and fixed.**
+
+    The open worry above was that 39 of the 42 mnemonics are classified from
+    documented operand order rather than captured, so a mis-classified one is
+    charged or spared 4 bytes on no evidence. That worry was never sized. It is
+    now, by inventorying every AOI-internal instruction in all sixteen real
+    programs against the table:
+
+    | | instructions | bytes at 4 each |
+    |---|---:|---:|
+    | total AOI-internal | 38,821 | — |
+    | charged the surcharge | 9,291 | 37,164 |
+    | of those, MEASURED (MOV/ADD/CLR) | 6,963 | 27,852 |
+    | of those, classified but NEVER measured | **2,328** | **9,312** |
+
+    So the entire unmeasured exposure across the whole held-out set is **9,312
+    bytes, about 0.09%** — and that is the figure for every one of those
+    classifications being wrong at once, in the same direction. The largest
+    single one is DIV at 538 instructions (2,152 bytes); CPT 471, SUB 372,
+    MUL 350, COP 206 and then a tail of 14 mnemonics under 110 each. **No test
+    batch for this is justified ahead of anything that moves a percent**, which
+    is the disposition this thread should have had all along, and the number is
+    recorded here so the question is not reopened on vibes.
+
+    Correcting this entry's own arithmetic while here: it said "11,241
+    instructions across 6 of the 16 programs". The real figure is **38,821
+    across all sixteen** — every real program has AOI-internal logic, from
+    1,315 (emporiumedger) to 4,124 (accutally). The old number was counting
+    something narrower and was being used to argue the exposure was larger than
+    it is.
+
+    **Defect 1, fixed: five entries named the wrong operand.** COP, CPS and FLL
+    are `(Source, Dest, Length)` and BSL/BSR are `(Array, Control, Source,
+    Length)`, so the table's `-1` inspected the LENGTH operand. It charged the
+    right total anyway — a literal length does not resolve to BOOL, and the
+    unresolved default is a word — so it was right for the wrong reason and
+    would have started charging a BOOL-destination COP the moment a length was
+    a tag. Now explicit: `COP/CPS/FLL: 1`, `BSL/BSR: 0`. 300 real instructions
+    read the correct operand; the predicted total does not move, which is the
+    expected result and the reason this was invisible.
+
+    **Defect 2, fixed: five word-destination writers were missing entirely.**
+    The same inventory lists every mnemonic charged nothing, and `GSV` is in it
+    — 363 real occurrences of an instruction whose whole purpose is to read a
+    controller attribute INTO a tag. With MVM, SCP, SIZE and AVE that is 453
+    real instructions that write a word and were charged zero. Added on the
+    same documented-operand-order basis as the other 39. `SSV` is deliberately
+    NOT added: it writes the attribute and only reads the tag.
+
+    Judged against what was already spared correctly, the table holds up: every
+    comparison (EQU 2,314, GRT 661, NEQ 644, LIM 442, LES 410, GEQ 330, LEQ
+    145, CMP 109, MEQ) writes nothing and is charged nothing, and the bit
+    outputs (OTE 2,432, OTU 1,869, OTL 990, ONS 1,514, OSR, OSF) are correctly
+    outside a set defined as NON-BOOL destinations. Timers and counters
+    (TON 732, RES 621, RTO 156, CTU 130) write a structure rather than a word
+    and stay out; that is a judgement, not a measurement, and it is 1,639
+    instructions (6,556 bytes) — the one remaining item here worth a file if
+    anything ever is.
+
+    Real set: 1.6753% -> **1.6732%**. No generated row moved at all, which is
+    itself the finding: not one file in the 2,500-row corpus puts a GSV, MVM,
+    COP or FLL inside an AOI, so this whole surface was only ever exercised by
+    the real programs.
 
     **CAPTURE ERRORS: 5 row(s)** — `aoi_logic_scale_010/050/100`,
     `aoi_multiroutine_control/real`. These were routed to OQ-AOIDEFITEMIZE and
