@@ -1,11 +1,12 @@
-"""Local Flask server for the treemap UI (Phase 2/2b).
+"""Local Flask server for the treemap UI.
 
-Can start pre-loaded with an L5X path (CLI usage) or empty, with the
-frontend's File->Open picker uploading a file to /api/load (desktop-shortcut
-usage: -- no command prompt needed for the launch version).
-Serves the flat sizing report plus a lazy /api/node endpoint for infinite-
-depth drill-down (see sizing/tree.py) -- vanilla JS/SVG frontend, no CDN
-dependency, since engineering workstations on OT networks are frequently
+Starts either pre-loaded with an L5X path, for CLI use, or empty, with the
+frontend's File -> Open picker uploading to /api/load, so a desktop shortcut needs
+no command prompt.
+
+Serves the flat sizing report plus a lazy /api/node endpoint for infinite-depth
+drill-down -- see `sizing/tree.py`. The frontend is vanilla JS and SVG with no CDN
+dependency, because engineering workstations on OT networks are frequently
 airgapped.
 """
 
@@ -395,7 +396,7 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
         # questions. `mode=definition` (the default) shows what the type
         # costs to EXIST -- a flat per-declared-member table rate, which
         # is why a BOOL, a DINT and a TIMER all show the same number and
-        # why that looks wrong until you know what it is. `mode=instance`
+        # why that reads as wrong until the mode is understood. `mode=instance`
         # shows what one instance of the type OCCUPIES, where those same
         # three members are 4, 4 and 12. Neither is more correct; showing
         # only the first made the definition view read as a broken size.
@@ -451,7 +452,7 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
                         # top-level array tag already does. Child has
                         # always carried this; the payload simply dropped
                         # it, so a UDT/AOI array member was indistinguish-
-                        # able from a scalar once you drilled into it.
+                        # able from a scalar once drilled into.
                         "dimensions": list(c.dimensions),
                         "value": c.bytes,
                         "basis": c.basis,
@@ -497,7 +498,7 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
                         # top-level array tag already does. Child has
                         # always carried this; the payload simply dropped
                         # it, so a UDT/AOI array member was indistinguish-
-                        # able from a scalar once you drilled into it.
+                        # able from a scalar once drilled into.
                         "dimensions": list(c.dimensions),
                         "value": c.bytes,
                         "basis": c.basis,

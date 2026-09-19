@@ -1,13 +1,12 @@
-"""Re-extract src/sample_gen/data/kinetix.py from the real corpus.
+"""Re-extract `src/sample_gen/data/kinetix.py` from the real corpus.
 
-Run this, never hand-edit the data module. The 2198 faults of all
-came from a payload that was transcribed by hand once and then adjusted by hand
-again -- including an "adjustment" that deleted a value to make a count match,
-in the wrong direction.
+Run this; never hand-edit the data module. Every 2198 build fault traced back to
+a payload transcribed by hand once and then adjusted by hand again -- including
+an adjustment that deleted a value to make a count match, in the wrong direction.
 
-Reads every 2198 module in samples/local/ and records, per catalog, the most
+Reads every 2198 module in `samples/local/` and records, per catalog, the most
 commonly attested (Vendor, ProductType, ProductCode, Major, Minor) and every
-distinct (ConfigSize, value_count) -> payload seen. samples/local/ is gitignored
+distinct (ConfigSize, value_count) -> payload seen. `samples/local/` is gitignored
 real program data; only these module-configuration constants are committed, the
 same way the verified module and axis XML blocks already are.
 

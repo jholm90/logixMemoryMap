@@ -1,17 +1,16 @@
 """What the sizing engine cannot price, across any set of L5X files.
 
-every calculation has to live in the engine itself rather than
-in an ad-hoc analysis run alongside it. This is the operator-facing side of
-that: `l5x_memory_analyzer.sizing.coverage.audit_coverage()` is what runs,
-the same function `build_report()` calls on every single file it sizes --
-this script only aggregates it across many files and sorts the result. No
-analysis lives here that the engine does not already do on its own.
+Every calculation lives in the engine itself rather than in an analysis run
+alongside it. This script is the operator-facing side of that: it calls
+`l5x_memory_analyzer.sizing.coverage.audit_coverage`, the same function
+`build_report` runs on every file it sizes, and only aggregates the result across
+many files and sorts it. No analysis lives here that the engine does not already
+do on its own.
 
-Run it on a batch of unseen real programs BEFORE trusting their totals: it
-names every routine language and every instruction in them that this engine
-charges 0 bytes for. A gap it lists is not an error in the file -- it is a
-hole in the model, and the total for that file is understated by whatever
-that content really costs.
+Run it on a batch of unseen real programs BEFORE trusting their totals. It names
+every routine language and every instruction the engine charges 0 bytes for. A
+gap it lists is not an error in the file -- it is a hole in the model, and that
+file's total is understated by whatever the content really costs.
 
 Run: python scripts/coverage_audit.py <path-or-glob> [...] [--per-file]
 """

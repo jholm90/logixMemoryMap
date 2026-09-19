@@ -8,8 +8,8 @@ itself with, and it is unchanged.
 question, and reporting provenance in its place misled badly. Compiled ladder
 size can never be KNOWN, because L5X does not reveal how Logix compiles rungs
 (see CLAUDE.md's ground-truth constraint), so every logic weight is tagged
-FITTED and a routine full of them reported "0% measured". That reads as "we
-have no idea". The truth is the opposite: **292 of 298 captured isolation
+FITTED and a routine full of them reported "0% measured", which reads as an
+admission of ignorance. The truth is the opposite: **292 of 298 captured isolation
 files land within 0.1% of what the controller itself reported.**
 
 So accuracy is a MEASUREMENT, taken from `instruction_accuracy` in
@@ -104,8 +104,8 @@ def rung_band(opcodes, accuracy_table: dict, series_outputs: int = 1) -> Band:
     """A rung is only as predictable as its worst instruction.
 
     One MAM in an otherwise plain rung is near-certain; twenty mixed
-    instructions are only as good as the least-known of them, which is what
-    a user means by "how sure are you about THIS rung".
+    instructions are only as good as the least-known of them, which is the
+    question a per-rung confidence figure is answering.
 
     The one shape that degrades a rung beyond its own instructions is more
     than one OUTPUT in series: OQ-SERIESOUTPUT measures a -12-byte-per-extra-

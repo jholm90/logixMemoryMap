@@ -1,64 +1,64 @@
-"""Attribute a real program's residual by SUBTRACTION, on real content.
+"""DEAD. Do not run, revive, or reimplement this.
 
-Every capture this project has is a single scalar: one number for a whole
-project. With roughly fifteen independent cost categories and one equation
-per file, the system is hopelessly under-determined at file level -- which
-is why isolation files exist, and why a +X in one category and a -X in
-another cancel invisibly inside a real program.
+Attributing a real program's residual by subtracting categories from it was the
+best idea available, and it does not work. A derived variant of a real export does
+not import. The rule and its full evidence are in `CLAUDE.md` under the read-only
+rule; in short:
 
-That is not a theory. Every candidate driver computable from the L5X has
-been tested against the error and none of them explains it. The figures
-below are and the SIGN has since flipped -- see the
-correction underneath, which does not change the conclusion:
+  * An XML round-trip destroys CDATA and Studio's schema requires it. A `<Line>`
+    inside `STContent` fails outright, and one real export carries over ten
+    thousand CDATA sections.
+  * Deleting a definition orphans everything typed by it, and the cascade is not
+    local: one failed AOI took out its own LocalTag, two controller tags and a
+    program tag.
+  * Element-for-element equality is not proof. One stripped ladder matched at
+    97,211 elements with every rung's text identical and still failed import with
+    19 errors. Only a byte-identical round trip would count, and that is not
+    achievable through any XML library.
+
+This file is kept as the record of the approach and of what it was built to
+measure. Reimplementing it with a different parser, or with text-level surgery,
+reaches the same wall.
+
+WHAT IT WOULD HAVE MEASURED, and still needs measuring some other way. Every
+capture is a single scalar: one number for a whole project. With roughly fifteen
+independent cost categories and one equation per file, the system is hopelessly
+under-determined at file level, so a +X in one category and a -X in another cancel
+invisibly inside a real program.
+
+Every candidate driver computable from the L5X has been tested against the error
+and none explains it:
 
     AOI definitions   r = -0.414      rungs             r = -0.071
     compiled logic    r = -0.185      tag count         r = -0.034
     alarms            r = +0.137      tags per MB       r = +0.028
     modules           r = +0.001      file size         r = -0.015
-    processor family  -- disproved directly: murraybros was -5.16% on a
-                         1756-L81E, worse than every 5069 file, on the
-                         family with the best median
 
-CORRECTED after seven capture-batch segments of wiring. The
-two worst files are no longer over-predicting at -5.16% and -5.03%:
-FOURTEEN OF SIXTEEN now UNDER-predict, worst +4.22% (superior), and the
-residual is one-sided. Re-differenced against the current engine, the
-picture is sharper than "belongs to nothing visible":
+Processor family is disproved directly: one 1756-L81E file was worse than every
+5069 file, on the family with the best median.
 
-  - No single per-unit cost fits. Every countable feature -- rungs,
-    instructions, operand references, distinct tags, routines, programs,
-    tasks, UDT/AOI definitions, AOI call parameters -- gives a
-    residual-per-unit ratio whose coefficient of variation across the
-    sixteen files is 0.66 or worse.
+Re-differenced against the current engine, after seven capture-batch segments of
+wiring, the picture is sharper than "belongs to nothing visible":
+
+  - No single per-unit cost fits. Every countable feature -- rungs, instructions,
+    operand references, distinct tags, routines, programs, tasks, UDT and AOI
+    definitions, AOI call parameters -- gives a residual-per-unit ratio whose
+    coefficient of variation across the real files is 0.66 or worse.
   - Scaling one CATEGORY is closer, and the category is compiled logic:
-    routine_logic x 1.128 takes mean absolute residual from 64,236 to
-    24,869 and is the only candidate whose MAXIMUM drops materially
-    (149,961 -> 42,837). Every other category leaves a 90,000-byte
-    outlier.
-  - residual / routine_logic_bytes is BIMODAL: five files between -0.023
-    and +0.029, eleven between +0.086 and +0.224, nothing between. A
-    property eleven programs have and five do not, worth 9-22% of their
-    compiled ladder. Processor, firmware, task count, program count,
-    EVENT-task count, Safety class and coverage-gap count do not split
-    them.
-  - A global logic scale-up is ruled out anyway: 545 of the 578 captured
-    logic_instr rows are within 1% and the single-shape sweeps are exact
-    from 10 to 5,000 rungs.
+    routine_logic x 1.128 takes mean absolute residual from 64,236 to 24,869 and
+    is the only candidate whose MAXIMUM drops materially (149,961 -> 42,837).
+    Every other category leaves a 90,000-byte outlier.
+  - residual over routine_logic bytes is BIMODAL: a cluster between -0.023 and
+    +0.029 and a cluster between +0.086 and +0.224, with nothing between. It is a
+    property most programs have and a few do not, worth 9-22% of their compiled
+    ladder, and processor, firmware, task count, program count, EVENT-task count,
+    Safety class and coverage-gap count do not split them.
+  - A global logic scale-up is ruled out anyway: 545 of 578 captured logic rows
+    are within 1% and the single-shape sweeps are exact from 10 to 5,000 rungs.
 
-So the target for this ladder is now specific rather than exploratory.
-L2 -- minus all rung and ST content -- is the decisive rung: if the
-missing bytes are in compiled ladder, L0 minus L2 differs between a
-high-ratio program and a low-ratio one by the predicted amount, and if it
-does not then the bimodality lives somewhere else entirely. Generate the
-ladder for one of each: superior (+0.174) or ipc_edgerline (+0.224)
-against griffin_stackerline (+0.006).
-
-So stop correlating and start subtracting. This takes a real program and
-emits a descending LADDER of variants, each removing exactly one more
-category than the last. Capture every rung of the ladder and the
-difference between consecutive rungs is that category's REAL cost inside
-real content -- not a synthetic isolation file's cost, the actual one, in
-the actual program that is mispredicting.
+THE LADDER ITSELF, for whoever builds these rungs in Logix Designer instead. Each
+rung removes exactly one more category than the last, and the difference between
+consecutive rungs is that category's real cost inside real content.
 
     L0  full program, untouched
     L1  minus alarm conditions
@@ -69,36 +69,24 @@ the actual program that is mispredicting.
     L6  minus all remaining tags
     L7  minus all UDT definitions -- the bare shell
 
-The order is not arbitrary: each strip only removes things nothing
-remaining can reference.
+The order is not arbitrary. Each strip removes only things nothing remaining can
+reference: logic is emptied BEFORE motion, modules and AOIs go, so no rung is left
+pointing at a module tag or calling a definition that is gone; motion goes BEFORE
+modules, because a CIP axis names its drive in its own MotionModule attribute;
+tags go before the UDTs that type them.
 
-  - Logic is emptied BEFORE motion, modules and AOIs go, so no rung is
-    left pointing at a module tag, driving an axis that is gone, or
-    calling a definition that no longer exists.
-  - Motion goes BEFORE the modules. A CIP axis names its drive in its own
-    MotionModule attribute, so dropping the drive first would leave an
-    axis pointing at a module that does not exist.
-  - Tags go before the UDTs that type them.
+L2 is the decisive rung. If the missing bytes are in compiled ladder, L0 minus L2
+differs between a high-ratio program and a low-ratio one by the predicted amount;
+if it does not, the bimodality lives somewhere else entirely.
 
-A ladder that does not import measures nothing.
+THE ONE PATH THAT WORKS is a variant Studio itself produced -- delete the category
+in Logix Designer, export, read Capacity. Studio's own delete maintains every
+reference this script had to guess at. That technique produced the
+literal-operand finding, the most valuable measurement in recent work, from a
+single edited rung.
 
-FIRST CUT, AND IT MAY NOT ALL IMPORT. This is XML surgery, not Studio
-5000 doing the deleting. Each rung is ordered to be self-consistent, but
-real projects carry references this script does not know about. If a rung
-is refused on import, the reliable fix is to make that one rung by hand --
-delete that category in Logix Designer and re-export -- because Studio's
-own delete maintains every reference this script has to guess at. A
-hand-made rung and a generated one difference identically; only the making
-of it differs.
-
-OUTPUT IS GITIGNORED, DELIBERATELY. These are derived from production
-exports and are production content with pieces missing, so they are
-written to samples/local/stripped/ and never committed. The SCRIPT is the
-committed artifact; the files it makes are not. See CLAUDE.md's repository
-rules.
-
-Usage:
-    python scripts/strip_ladder.py samples/local/Murraybros_...L5X [more...]
+Output, had it run, was written to `samples/local/stripped/` and never committed:
+these are production exports with pieces missing, so they are production content.
 """
 
 from __future__ import annotations

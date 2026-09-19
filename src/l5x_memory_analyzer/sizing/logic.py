@@ -1,5 +1,9 @@
-"""Estimated (not exact -- see CLAUDE.md's ground-truth constraint) compiled
-logic size, from the fitted per-instruction weight table.
+"""Compiled logic size, from the fitted per-instruction weight table.
+
+ESTIMATED, not exact, and every number this module produces must be flagged that
+way in any output. L5X does not reveal how Logix compiles a rung to its internal
+execution format, so these weights are regressed against real controller readings
+rather than derived. See CLAUDE.md's ground-truth constraint.
 """
 
 from __future__ import annotations

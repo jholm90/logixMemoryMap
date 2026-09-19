@@ -1,40 +1,34 @@
 """What this engine did NOT price on the file it was just given.
 
-handing over a batch of unseen real programs: "beware
-there is going to be stuff that you might have never seen before inside. I
-need to make sure that in the long run all of the calculations are done
-inside the python logic for the total project scripts and not just claude
-in depth testing."
+Before this module, three real classes of content were priced at exactly zero with
+no signal of any kind:
 
-That is the gap this module closes. Before it, three real classes of
-content were priced at exactly zero with NO signal of any kind:
-
-  * A routine that is not RLL. `parse_rll_routines()` and
-    `parse_aoi_internal_logic()` both `continue` past any Routine whose
-    Type isn't "RLL", so Structured Text, Function Block and SFC routines
-    did not merely size wrong -- they did not exist. The first real virgin
-    file measured (Cardin_TrimSortStack) carries 3 ST routines / 505 ST
-    lines that contributed 0 to its prediction, and nothing in the output
-    said so. Across samples/local/ it is 297 ST routines / 24,017 lines.
+  * A routine that is not RLL. `parse_rll_routines` and
+    `parse_aoi_internal_logic` both skip any Routine whose Type is not RLL, so
+    Structured Text, Function Block and SFC routines did not merely size wrong --
+    they did not exist. One real program carries 3 ST routines and 505 ST lines
+    that contributed 0 to its prediction, with nothing in the output saying so.
+    Across `samples/local/` it is 297 ST routines and 24,017 lines.
   * An instruction mnemonic with no entry in `logic_instructions.weights`.
-    `size_routine()` does `weights.get(mnemonic)` and skips a None, so an
-    unrecognised instruction costs 0 and is indistinguishable in the
-    output from one that genuinely costs 0.
-  * An AOI whose internal Logic routine is non-RLL, same reason.
+    `size_routine` looks the mnemonic up and skips a miss, so an unrecognised
+    instruction costs 0 and is indistinguishable in the output from one that
+    genuinely costs 0.
+  * An AOI whose internal Logic routine is non-RLL, for the same reason.
 
-Unsized TAGS and unmodeled MODULES already surfaced as SizeErrors, and
-that is exactly the pattern followed here: `audit_coverage()` returns the
-same shape, `build_report()` appends it to the errors list, and it
-therefore reaches the CLI, the UI and the CSV/XLSX export with no
-per-caller work. A gap is REPORTED, never guessed at with a made-up byte
-value -- an invented number would be worse than a visible hole.
+Unsized tags and unmodelled modules already surfaced as SizeErrors, and this
+follows that pattern exactly: `audit_coverage` returns the same shape,
+`build_report` appends it to the errors list, and it therefore reaches the CLI,
+the UI and the CSV/XLSX export with no per-caller work. A gap is REPORTED, never
+filled with a made-up byte value -- an invented number is worse than a visible
+hole.
 
-Deliberately NOT flagged, because each is priced somewhere other than the
-weights table and flagging it would be a false alarm:
+Deliberately NOT flagged, because each is priced elsewhere and flagging it would
+be a false alarm:
+
   * CPT -- costed per call from its own expression (`cpt_expression`).
-  * BST/NXB/BND -- costed via branch_bracket_cost_per_instruction.
-  * Any declared AddOnInstructionDefinition name -- an AOI call is priced
-    as an AOI, not as a built-in mnemonic.
+  * BST, NXB, BND -- costed through `branch_bracket_cost_per_instruction`.
+  * Any declared AddOnInstructionDefinition name -- an AOI call is priced as an
+    AOI, not as a built-in mnemonic.
 """
 
 from __future__ import annotations

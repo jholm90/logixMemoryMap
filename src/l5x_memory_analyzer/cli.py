@@ -1,19 +1,13 @@
 """CLI entry point.
 
-`dump`: load an L5X file and print its raw XML back out -- satisfies the
-Phase 0 exit criterion (docs/PROJECT_PLAN.md), proves the skeleton runs
-end to end before the sizing engine existed.
-
-`size`: run the Phase 1 tag/UDT sizing engine and print a flat byte
-breakdown -- see docs/TASKS.md Phase 1 output-contract item.
-
-`ui`: serve the Phase 2 treemap UI over a local web server. l5x_path is
-optional -- omit it to start with the File->Open picker instead (
-desktop-shortcut launch shouldn't require a command prompt).
-
-`export`: write the same flat byte breakdown as `size` to a CSV or XLSX
-file instead of stdout (docs/TASKS.md Phase 6 "Export report"). Format is
-inferred from the output path's extension.
+`dump`    load an L5X file and print its raw XML back out. The end-to-end
+          skeleton check, from before the sizing engine existed.
+`size`    run the sizing engine and print a flat byte breakdown.
+`ui`      serve the treemap UI over a local web server. The path is optional --
+          omit it to start with the File -> Open picker instead, so a desktop
+          shortcut needs no command prompt.
+`export`  write the same breakdown as `size` to CSV or XLSX instead of stdout.
+          The format is inferred from the output path's extension.
 """
 
 from __future__ import annotations

@@ -1,49 +1,37 @@
-"""Corpus-wide predicted-vs-actual accuracy report.
+"""Corpus-wide predicted-versus-actual accuracy report.
 
-Recomputes predicted_bytes LIVE against the current engine for every
-manifest.csv row that has a real capture, and reports error by category.
-Never reads the stored predicted_bytes/delta columns -- those go stale the
-moment any constant changes (CLAUDE.md standing rule).
+Recomputes every prediction LIVE against the current engine for every manifest
+row that has a real capture, and reports error by category. The stored
+predicted_bytes column is never read -- it goes stale the moment any constant
+changes.
 
-VALIDITY FILTER ("some of those results had errors and
-should not have been counted as a valid result. i am concerned that you
-are changing models with bad data - ensure it is all valid data!"). A row
-is only a valid fitting point if ALL of these hold:
+THE VALIDITY FILTER. A row is a valid fitting point only if all of these hold:
 
-  * actual_bytes is a real integer
-  * error_count is 0 or blank -- a project that BUILT WITH ERRORS did not
-    fully compile, so its Capacity reading is of an INCOMPLETE project.
-    This is not a small effect: it silently manufactures fake "we
-    over-predict" signal, because the real project is missing whatever
-    content failed to build. It cost a real wrong model change the day
-    this filter was added -- the whole 18-file axis_scale_* sweep (every
-    file error_count = drives+1) was fitted into a "multi-module marginal
-    discount" that had to be reverted.
-  * actual_bytes is at least the empty-project baseline -- see below
-  * notes carries neither WINDOW TITLE MISMATCH nor ZERO CAPACITY -- both
-    already-established bad-read markers (see docs/TESTING_PLAN.md).
+  * `actual_bytes` is a real integer.
+  * `error_count` is 0 or blank. A project that BUILT WITH ERRORS did not fully
+    compile, so its Capacity reading is of an incomplete project. This is not a
+    small effect -- it manufactures a fake over-prediction signal, because the
+    real project is missing whatever content failed to build. It cost one wrong
+    model change: an 18-file axis sweep, every file at `error_count = drives+1`,
+    was fitted into a multi-module marginal discount that had to be reverted.
+  * `actual_bytes` is at least the empty-project baseline. A capture below it is
+    physically impossible -- no project uses less memory than an empty one on
+    the same controller -- and this class of bad read passes every other check:
+    error_count 0, no warning, a matching window title. One capture run returned
+    2,976 bytes for 24 separate 1769 files against a baseline of 69,600-98,944;
+    left in, those 30 rows moved the corpus mean absolute error from 0.68% to
+    32.17%. The floor comes from the model's own `empty_project_baseline_bytes`,
+    so it tracks the model.
+  * `notes` carries neither WINDOW TITLE MISMATCH nor ZERO CAPACITY, both
+    established bad-read markers. See `docs/TESTING_PLAN.md`.
 
-A capture BELOW THE EMPTY-PROJECT BASELINE is physically impossible and is
-rejected outright (added). No Logix project can report using
-less memory than an empty project on the same controller, so a smaller
-number is a bad read, not a small project -- and this class of bad read
-passes every other check: error_count 0, no warning, a window title that
-matches the expected ACD exactly. Real case that forced this: a capture run
-returned 2,976 bytes for 24 separate 1769 fw-matrix files and 6,640 for 6
-more, against a 1769 empty-project baseline of 69,600-98,944. Left in, those
-30 rows alone moved the corpus mean |error| from 0.68% to 32.17%. The floor
-comes from the model's own empty_project_baseline_bytes, not a hardcoded
-number, so it tracks the model.
-
-A BLANK error_count is NOT the same evidence as an explicit 0 (found
-while pairing an ST test against instr_cop_n01000, which is one
-of these). 268 captured rows predate the error_count column entirely, and
-for those "no errors recorded" means "nobody recorded" -- absence of
-evidence, not evidence of a clean build. They are still counted by default,
-because reclassifying 268 rows as invalid on a hunch would be its own
-unforced error; --strict excludes them so the difference is measurable
-instead of assumed. Prefer an explicit-0 row whenever a single row is being
-used as the pair/anchor for a new measurement.
+A BLANK error_count is weaker evidence than an explicit 0: 268 captured rows
+predate the column entirely, and for those, "no errors recorded" means "nobody
+recorded" -- absence of evidence, not evidence of a clean build. They are counted
+by default, because reclassifying 268 rows as invalid on a hunch is its own
+unforced error; `--strict` excludes them so the difference is measurable rather
+than assumed. Prefer an explicit-0 row whenever a single row anchors a new
+measurement.
 
 Run: python scripts/accuracy_report.py [--json OUT] [--category CAT] [--strict]
 """

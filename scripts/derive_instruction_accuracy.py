@@ -1,35 +1,33 @@
-"""Measure how accurate the engine actually IS, per instruction, from captures.
+"""Measure how accurate the engine is, per instruction, from captures.
 
-Confidence used to be a PROVENANCE tag -- KNOWN / FITTED / ASSUMED -- which
-says where a number came from, not how likely it is to be right. That reads
-badly and it under-sells the model: every compiled-logic weight is tagged
-FITTED because ladder size cannot be derived from first principles, so a
-routine reported "0% measured" even though its instruction weights reproduce
-real captures to the byte.
+Confidence was a PROVENANCE tag -- KNOWN / FITTED / ASSUMED -- which says where a
+number came from, not how likely it is to be right. That under-sells the model:
+every compiled-logic weight is tagged FITTED because ladder size cannot be
+derived from first principles, so a routine reported "0% measured" even where its
+instruction weights reproduce real captures to the byte.
 
 This replaces the tag with a measurement. For each instruction it finds the
-captured files where that instruction is the VARIABLE UNDER TEST -- exactly
-one non-scaffold opcode, compiled logic the dominant cost, enough occurrences
-for the slope to beat the per-file base -- and records how far the engine's
-prediction actually landed from the controller's own reading.
+captured files where that instruction is the VARIABLE UNDER TEST -- exactly one
+non-scaffold opcode, compiled logic the dominant cost, enough occurrences for the
+slope to beat the per-file base -- and records how far the engine's prediction
+landed from the controller's own reading.
 
     307 of 413 qualifying rows within 0.1%. Median 0.0030%.
 
-The tail is not noise and must not be averaged away: CPT sits at 3.27% mean
-and 119.6% worst because the SINT/INT widening defect is real and unfixed, and
-that is exactly what a confidence display is for.
+The tail is not noise and must not be averaged away: CPT sits at 3.27% mean and
+119.6% worst because the SINT/INT widening defect is real and unfixed, and that
+is exactly what a confidence display is for.
 
 XIC, XIO, OTE and NOP get no isolated sweep of their own because they ARE the
-scaffolding every other test rung is built from. They are not unmeasured --
-they are the most-measured weights in the model: the `emptyrungs` sweep fixes
-NOP and the per-rung base, and the `rshape_arr_*` files hold eight
-XICs and one OTE fixed while moving only the branch arrangement and came back
-byte-exact at every leg count. `confidence.py` pins them explicitly rather
-than reporting them as unknown.
+scaffolding every other test rung is built from. They are not unmeasured -- they
+are the most-measured weights in the model: the `emptyrungs` sweep fixes NOP and
+the per-rung base, and the `rshape_arr_*` files hold eight XICs and one OTE fixed
+while moving only the branch arrangement, and came back byte-exact at every leg
+count. `confidence.py` pins them explicitly rather than reporting them as
+unknown.
 
-Output is written into memory_model.yaml as data, per CLAUDE.md: a sizing
-constant belongs in the model file, not in code. Re-run whenever a capture
-batch lands.
+Output is written into `memory_model.yaml` as data: a sizing constant belongs in
+the model file, not in code. Re-run whenever a capture batch lands.
 
 Run: python scripts/derive_instruction_accuracy.py [--write]
 """

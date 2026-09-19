@@ -1,17 +1,15 @@
-"""Predicted total + coverage gaps for a batch of L5X files, in one table.
+"""Predicted total plus coverage gaps for a batch of L5X files, in one table.
 
-"You also have a directory of samples files I uploaded
-with no sizes." These are complete real programs with no captured Capacity
-reading, so nothing in manifest.csv covers them and scripts/accuracy_report.py
-(which needs an actual_bytes to compare against) skips them entirely.
+For complete real programs that have no captured Capacity reading. Nothing in the
+manifest covers them, so `scripts/accuracy_report.py` -- which needs an
+`actual_bytes` to compare against -- skips them entirely.
 
-This runs the real engine -- the same build_report() the CLI, the UI and the
-export call -- and prints what it predicts for each file plus what it could
-NOT price in that file, so a real number can be dropped alongside it the
-moment one exists. The coverage column is the important half: a total with
-297 unpriced ST routines behind it is not the same claim as a total with
-none, and this makes that visible before anyone compares it to a real
-reading.
+This runs the real engine, the same `build_report` the CLI, the UI and the export
+call, and prints what it predicts for each file plus what it could NOT price in
+that file, so a real number can be dropped alongside the moment one exists. The
+coverage column is the important half: a total with 297 unpriced ST routines
+behind it is not the same claim as a total with none, and this makes that visible
+before anyone compares it to a real reading.
 
 Run: python scripts/predict_batch.py <path-or-glob> [...] [--csv OUT]
 """

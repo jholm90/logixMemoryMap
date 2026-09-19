@@ -1,7 +1,29 @@
-"""Loads sizing constants from memory_model.yaml (mirrors docs/MEMORY_MODEL.md).
+"""Loads every sizing constant from `memory_model.yaml`, which mirrors
+`docs/MEMORY_MODEL.md`.
 
-Parser/sizing code must pull byte sizes and packing rules from here, never
-hardcode them inline -- see CLAUDE.md working agreement.
+Parser and sizing code pulls byte sizes and packing rules from here and never
+hardcodes them inline. That file is the single source of truth and is expected to
+move as capture data lands, so a literal in the code is a value that will silently
+go stale.
+
+THE CONFIDENCE TIERS, and what each one permits:
+
+  KNOWN    Measured directly, or read straight out of the L5X. Either two
+           independent derivations agree, or a capture sits at 0.0000% residual
+           across a range of counts. A KNOWN constant is not re-derived.
+  FITTED   Regressed from real capture data. Right on average, carries residual
+           error, and can be wrong off the range it was fitted on.
+  ASSUMED  No capture behind it. Derived from documentation or inference.
+  UNKNOWN  Not modelled. Reported as a coverage gap rather than guessed.
+
+`weakest` propagates the tier upward, so one stale ASSUMED on a leaf type marks
+everything above it as assumed. `scripts/audit_confidence.py` is the check that
+the tiers match the capture data on disk; run it after every reconciliation.
+
+A CONSTANT MEASURED ALONE, AT SEVERAL COUNTS, WITH ZERO RESIDUAL IS KNOWN EVEN IF
+THE BLOCK AROUND IT READS FITTED. Those carry their own `*_confidence: KNOWN` key
+and are pinned by a test. A constant left reading FITTED gets re-derived, which
+has already cost whole sessions.
 """
 
 from __future__ import annotations

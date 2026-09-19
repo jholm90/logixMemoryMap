@@ -1,11 +1,11 @@
 """Scoped accuracy check. Use this, not a full-corpus sweep, to test a constant.
 
-WHY THIS EXISTS. The corpus is over 2,500 captured rows and a full recompute
+WHY THIS EXISTS. The corpus is over 3,500 captured rows and a full recompute
 re-parses every one of them. Most questions do not need that: when the change
 under test is one constant in one family, the rows that can possibly move are
-that family, the sixteen held-out real programs, and enough of everything else to
-catch a change that reaches further than intended. Sweeping the encyclopedia to
-check one word is the wrong instrument and it is the expensive one.
+that family, the held-out real programs, and enough of everything else to catch a
+change that reaches further than intended. Sweeping the encyclopedia to check one
+constant is the wrong instrument and it is the expensive one.
 
   python scripts/quick_eval.py --family '^asmclose_'   # the default: scoped
   python scripts/quick_eval.py                         # real + sentinels only
@@ -13,7 +13,7 @@ check one word is the wrong instrument and it is the expensive one.
 
 SCOPE, by default:
   * every row matching --family, if given
-  * all sixteen real programs -- the only accuracy number that counts
+  * all the real programs -- the only accuracy number that counts
   * one SENTINEL per manifest category, the largest captured row in it, so a
     change that leaks into an unrelated category still shows up
 

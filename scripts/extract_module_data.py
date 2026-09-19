@@ -1,38 +1,31 @@
-"""Module/IO extraction table. Built from the extracted I/O
-modules across the existing programs, with the in/out/config controller
-tags separately marked so they can be compared against the actual module
-size. Also adds
-records from the L5X module profile as a checkable item. i know you dont
-have modules yet but i want you to prep this data").
+"""Per-module I/O extraction table, built from the real corpus.
 
-Walks every real L5X in samples/local/ (gitignored, real/proprietary
-program exports -- see samples/local/README.md) and runs each one through
-parser/modules.py, writing one row per real Module found to
-samples/local/module_extraction.csv (ALSO gitignored -- this table is
-derived from real client program files, and file names/module comments
-can be client-identifying, so it stays local-only, same policy as every
-other real-corpus-derived artifact in this project; never move this into
-the tracked samples/ tree).
+Walks every real L5X in `samples/local/` through `parser/modules.py` and writes
+one row per Module found to `samples/local/module_extraction.csv`. That output is
+also gitignored: it is derived from real customer programs, and file names and
+module comments can be identifying, so it stays local-only. Never move it into
+the tracked `samples/` tree.
 
-Columns, per the ask:
-  - source_file: which real L5X this module came from (relative path
-    under samples/local/), so a row can be traced back and re-checked.
-  - module_name, catalog_number, slot: identifying info.
-  - input_profile/input_bytes, output_profile/output_bytes,
-    config_profile/config_bytes: kept SEPARATE per I/O direction, not
-    collapsed into one number -- both the real Rockwell module-profile
-    string (e.g. "AB:5000_DI16:C:0") AND the byte count L5X states
-    directly for each (see parser/modules.py's docstring: these are
-    exact, stated attributes, not fitted).
-  - stated_total_bytes: sum of the three above -- what L5X itself claims.
-  - actual_module_bytes: DELIBERATELY BLANK. This is the checkable
-    comparison column asked for -- once a real controller's
-    Capacity-tab delta for adding/removing ONE specific module is
-    captured, it goes here, and stated_total_bytes vs actual_module_bytes
-    is the real per-module/per-connection overhead question (OQ-MODULEIO)
-    this whole table exists to eventually answer. Nothing here is a
-    sizing formula yet -- this is prep data, not a wired result.
-  - notes: blank, free text for manual review.
+The in, out and config tags are kept SEPARATE per direction rather than collapsed
+into one number, so a stated size can be compared against a measured one.
+
+Columns:
+  source_file           which real L5X the module came from, relative to
+                        `samples/local/`, so a row can be traced and re-checked
+  module_name, catalog_number, slot
+  input_*, output_*, config_*   the Rockwell module-profile string (for example
+                        `AB:5000_DI16:C:0`) and the byte count L5X states for
+                        each. These are exact stated attributes, not fitted --
+                        see `parser/modules.py`.
+  stated_total_bytes    sum of the three above: what L5X itself claims
+  actual_module_bytes   DELIBERATELY BLANK. The comparison column. Once a real
+                        controller's Capacity delta for adding or removing ONE
+                        module is captured it goes here, and stated versus actual
+                        is the per-module overhead question this table exists to
+                        answer. See OQ-MODULEIO.
+  notes                 free text for manual review
+
+Nothing here is a sizing formula. This is reference data, not a wired result.
 
 Run: python scripts/extract_module_data.py
 """

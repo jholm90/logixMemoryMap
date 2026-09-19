@@ -1,12 +1,11 @@
 """Every captured row whose measurement has never been acted on.
 
-Written after three separate open questions in one session turned
-out to be "the data has been sitting in the manifest, captured and clean, for
-days". OQ-DEFSCALE (30 files), OQ-AOIARRAYLOCALTAG (27 files) and
-OQ-MODULEMARGINAL (54 files) were all in that state, and all three were
-answerable in minutes once the rows were differenced.
+Three open questions in one session turned out to be already answered by data
+sitting in the manifest, captured and clean. OQ-DEFSCALE (30 files),
+OQ-AOIARRAYLOCALTAG (27 files) and OQ-MODULEMARGINAL (54 files) were all in that
+state, and all three resolved in minutes once the rows were differenced.
 
-The failure mode is specific and it is not "we forgot to capture": a capture
+The failure mode is specific, and it is not a missed capture: a capture
 run lands, `actual_bytes` is filled in, and nothing ever recomputes the
 prediction against the CURRENT engine to see what the row now says. A stored
 `delta` goes stale the moment any constant moves, so the manifest's own delta

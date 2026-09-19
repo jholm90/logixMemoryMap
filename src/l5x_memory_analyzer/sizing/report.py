@@ -1,14 +1,24 @@
-"""Flat {path, category, bytes, pct_of_total, tier, basis} report -- the data
-contract the UI (Phase 2+) will consume.
+"""The flat report every consumer reads: {path, category, bytes, pct_of_total, tier,
+basis} rows, plus a list of errors and coverage gaps. The CLI, the UI, the CSV and
+XLSX export and every accuracy script all go through `build_report`, so no caller
+does arithmetic of its own.
 
-Two separate confidence concepts, kept deliberately distinct per CLAUDE.md's
-ground-truth constraint:
-  - tier: "exact" (tag/UDT/AOI data space) vs "estimated" (compiled logic,
-    not implemented until Phase 4+) -- the big one, never to be blurred.
-  - basis: the weakest MEMORY_MODEL.md confidence tag (KNOWN/ASSUMED/FITTED/
-    UNKNOWN) that went into this number -- fine-grained provenance within
-    the "exact" tier, for whether a given constant is still pending Phase 3
-    validation.
+TWO SEPARATE CONFIDENCE CONCEPTS, and they are never blurred.
+
+  tier    "exact" for tag, UDT and AOI data space; "estimated" for compiled
+          logic. This is the one that matters. Atomic sizes and packing rules are
+          calculable and empirically verifiable; compiled ladder size is not
+          derivable from L5X at all, and every logic number must reach the UI
+          flagged as estimated. See CLAUDE.md's ground-truth constraint.
+  basis   The weakest MEMORY_MODEL.md tier (KNOWN, FITTED, ASSUMED, UNKNOWN) that
+          went into the number -- provenance within a tier, not a substitute for
+          it. A number can be tier "exact" and basis ASSUMED at the same time,
+          and that combination is exactly what needs a capture.
+
+Scoping: the whole task, program and routine shell decomposition, the project
+baseline and the firmware, catalog and safety deltas are properties of a PROJECT.
+A partial export has no project, so `parser/export_scope.py` decides first and
+those terms are charged only on a whole-controller export.
 """
 
 from __future__ import annotations
@@ -818,15 +828,15 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # processor-integrated I/O block costs the same, so it stays fully
         # unmodeled (same treatment as a rack-aliased module below) rather
         # than guessing module_overhead applies unchanged.
-        # I thought we were excluding controlnet / "And
-        # all legacy networks" -- a ControlNet/DeviceNet/DH+/DH-485/RIO
+        # LEGACY NETWORKS ARE EXCLUDED. A ControlNet/DeviceNet/DH+/DH-485/RIO
         # bridge module gets the same unmodeled treatment as a rack-aliased
         # or processor-embedded module, not a fitted module_overhead_by_
         # catalog byte value: zero real corpus data exists for these
         # networks (see parser/modules.py's _LEGACY_NETWORK_PORT_TYPES
         # comment and OQ-LEGACYNETOVERHEAD).
         #
-        # you need to model them -- that exclusion was
+        # WITH ONE EXCEPTION, because a catalog that has been measured does
+        # not need modelling. That exclusion was
         # a blanket SHAPE-level rule, but real per-catalog data now exists
         # for several rack-aliased/legacy-network catalogs specifically
         # (memory_model.yaml module_overhead_by_catalog, see its
@@ -868,8 +878,8 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             # rack-aliased shape. That reasoning holds for the OVERHEAD and
             # does not hold for the module's own data: the L5X states
             # module_defined_bytes for these modules just as plainly as for
-            # any other, and a stated size the file gives us is not a thing to
-            # guess about. The file is the final decision on sizing.
+            # any other, and a size the file states outright is not a thing
+            # to guess about. The file is the final decision on sizing.
             #
             # So the overhead stays unmodelled and uncharged -- the SizeError
             # above is still the record of that -- while the declared data is

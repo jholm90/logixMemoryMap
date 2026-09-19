@@ -1,10 +1,10 @@
 """Fail if any sizing constant carries a weaker confidence tier than its
 own capture data supports.
 
-Written after an audit found 174 of 185 ASSUMED predefined
-structures already had error-free, exactly-0.0000% capture data on disk.
-Nothing was wrong with the model's numbers; the tiers had simply never
-been updated when the questions closed. That is not cosmetic, because
+An audit found 174 of 185 ASSUMED predefined structures already had
+error-free, exactly-0.0000% capture data on disk. Nothing was wrong with
+the model's numbers; the tiers had never been updated when the questions
+closed. That is not cosmetic, because
 `weakest()` propagates a tier upward: one stale ASSUMED on a leaf type
 marked 11.53% of all real-file bytes as assumed when the true figure was
 4.33%.

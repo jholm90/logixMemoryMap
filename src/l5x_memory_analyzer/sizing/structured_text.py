@@ -1,48 +1,42 @@
 """Structured Text routine sizing.
 
-Until ST contributed exactly ZERO to every prediction:
-`parse_rll_routines` filters to RLL, and nothing else looked at an ST
-routine. That is not a small hole -- across the 23 real files in
-samples/local/ there are 297 ST routines and 24,017 ST lines, and one real
-program (AccuTally) carries 1,894 ST lines across 10 ST routines.
+ST used to contribute exactly zero to every prediction: `parse_rll_routines`
+filters to RLL and nothing else looked at an ST routine. That is not a small hole
+-- across the real corpus there are 297 ST routines and 24,017 ST lines, and one
+real program carries 1,894 ST lines across 10 routines.
 
-The `realscale_st_*` / `st_*` capture batch settled the cost model, and the
-headline result is that ST is NOT a separate cost universe:
+THE HEADLINE RESULT: ST is not a separate cost universe. An instruction inside ST
+costs exactly what the same instruction costs in a rung. Four pairs were built
+operand-for-operand identical, ST against RLL, and every pair came back separated
+by exactly +432 -- the one-time ST routine shell -- with no per-instruction
+difference at all:
 
-  **An instruction inside ST costs exactly what the same instruction costs
-  in a rung.** Four pairs were built operand-for-operand identical, ST
-  against RLL, and every pair came back separated by exactly +432 -- the
-  one-time ST routine shell -- with no per-instruction difference at all:
+    st_instr_cop_n01000       135,376   instr_cop_n01000     134,944   +432
+    st_instr_dtos_n01000       95,376   instr_dtos_n01000     94,944   +432
+    st_instr_size_n01000      151,376   instr_size_n01000    150,944   +432
+    st_expr_cpt_mirror_n01000 475,376   instr_cpt_n01000     474,944   +432
 
-      st_instr_cop_n01000       135,376   instr_cop_n01000     134,944   +432
-      st_instr_dtos_n01000       95,376   instr_dtos_n01000     94,944   +432
-      st_instr_size_n01000      151,376   instr_size_n01000    150,944   +432
-      st_expr_cpt_mirror_n01000 475,376   instr_cpt_n01000     474,944   +432
-
-  The last pair matters most: it means the tier-aware CPT expression model
-  transfers to an ST arithmetic assignment unchanged, rather than needing a
-  parallel ST expression parser.
+The last pair matters most: the tier-aware CPT expression model transfers to an ST
+arithmetic assignment unchanged, rather than needing a parallel ST expression
+parser.
 
 So this module deliberately does NOT re-price instructions. It charges the
-ST-specific part only -- routine shell, per statement, per control-flow
-construct -- and hands any instruction-style call found in the text back to
-the SAME weight table the rung sizer uses.
+ST-specific part only -- routine shell, per statement, per control-flow construct
+-- and hands any instruction-style call found in the text back to the SAME weight
+table the rung sizer uses.
 
-Comments and blank lines are FREE, which was the explicit question
-(*"one thing not modelled is st comments and if a comment line
-or block takes up data memory or is like tag and rung comments and does not
-count towards data usage"*). Answer: they do not count, and it was worth
-testing rather than assuming -- an RLL rung comment is a separate <Comment>
-element beside the logic, whereas an ST comment lives inside the routine's
-own compiled source CDATA, so the RLL result genuinely did not transfer.
-Five variants against the same 100 executable statements all landed
-byte-identical on 27,376, equal to the no-comment control:
+COMMENTS AND BLANK LINES ARE FREE, and this was worth measuring rather than
+assuming. An RLL rung comment is a separate `<Comment>` element beside the logic,
+whereas an ST comment lives inside the routine's own compiled source CDATA, so the
+RLL result genuinely did not transfer. Five variants against the same 100
+executable statements all landed byte-identical on 27,376, equal to the no-comment
+control:
 
     100 short leading //     100 long leading // (110 chars)
-    400 short leading //     100 trailing //  (zero added lines)
+    400 short leading //     100 trailing // (zero added lines)
     400 genuinely blank lines
 
-Comment COUNT, comment LENGTH, leading vs trailing, and blank lines are all
+Comment count, comment length, leading against trailing, and blank lines are all
 free.
 """
 
@@ -205,7 +199,7 @@ def parse_st_routines(root: ET.Element) -> list[StructuredTextRoutine]:
 
 
 def size_st_assignments(routine: StructuredTextRoutine, model, tag_types=None):
-    """Cost of every assignment in the routine, plus the shapes we cannot price.
+    """Cost of every assignment in the routine, plus the shapes it cannot price.
 
     Returns (bytes, unmeasured_shapes, unpriced_operators). unmeasured_shapes lists
     "<n_operators>|<dest_is_real>" keys this routine used that the measured

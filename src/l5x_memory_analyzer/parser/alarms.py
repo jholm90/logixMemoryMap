@@ -1,37 +1,28 @@
-"""Tag-based alarm conditions (Logix "alarm definitions" on a tag).
+"""Tag-based alarm conditions -- Logix alarm definitions attached to a tag.
 
-*"Another thing to look at is Controller Alarms that we
-use... see the alarms prefixed by 'Alarm1_' as they could be holding back
-some of your calculations from being accurate."*
+Not a small corner. Across every real L5X in `samples/local/` there are 3,463
+AlarmCondition elements, 200-600 in every real program. Before this module they
+were priced at exactly zero, and the leftover residual on the programs fitted at
+the time correlated +0.583 with alarm count -- the strongest identified driver in
+the set (AOI-internal instructions -0.236, JSR-target -0.094).
 
-He was right, and it is not a small corner. Measured across every real L5X
-in samples/local/: **3,463 real AlarmCondition elements**, and the sizing
-engine charges every one of them **zero bytes**. All 8 of the real programs
-whose Capacity readings were fitted carry 200-600 of them.
-After the composite surcharge was refitted, the leftover residual on those
-8 correlates **+0.583 with alarm count** -- the strongest remaining
-identified driver (AOI-internal instructions -0.236, JSR-target -0.094).
-
-WHERE THEY LIVE
----------------
-Not in a top-level container: `<AlarmConditions>` is a child of the `<Tag>`
-element being alarmed, so a parser that walks Controller/Tags/Tag and reads
-only the Tag's own attributes misses them completely, which is exactly what
-happened here.
+WHERE THEY LIVE. Not in a top-level container. `<AlarmConditions>` is a child of
+the `<Tag>` being alarmed, so a parser that walks Controller/Tags/Tag and reads
+only the Tag's own attributes misses them completely.
 
     <Tag Name="AlarmBoolArray" DataType="BOOL" Dimensions="128" ...>
       <AlarmConditions>
         <AlarmCondition Name="..." Input="[1]" ConditionType="TRIP"
                         Severity="500" ... Expression="= 1"
                         AssocTag1="..." AssocTag2="..." AssocTag3="...">
-          <AlarmConfig><HMIGroup><![CDATA[Edger1]]></HMIGroup></AlarmConfig>
+          <AlarmConfig><HMIGroup><![CDATA[Group1]]></HMIGroup></AlarmConfig>
         </AlarmCondition>
       </AlarmConditions>
       <Data .../>
     </Tag>
 
-REAL USAGE PROFILE (all 3,463, measured not assumed)
-----------------------------------------------------
+REAL USAGE PROFILE, all 3,463, measured:
+
     host tag        BOOL[224] 3,400 | BOOL[256] 55 | UDT scalar 8
     assoc tags      exactly 3 on 3,455 | 0 on 8
     AlarmConfig     HMIGroup on 3,455 | empty on 8
@@ -41,17 +32,14 @@ REAL USAGE PROFILE (all 3,463, measured not assumed)
     OnDelay         1000 on 3,449 | 0 on 14
     name length     10-17, mean 13.9
 
-So real usage is essentially ONE shape, which is good news for modelling it
-and bad news for fitting it from real files alone -- assoc-tag count never
-varies independently of alarm count in any real program on file (every one
-is exactly 3 per alarm), so the two cannot be separated from real data. That
-is precisely what the four `Alarm1_*` probe files vary, and what the
-generated `alarmcond_*` batch extends.
+Real usage is essentially ONE shape. That is good for modelling it and bad for
+fitting it from real files: associated-tag count never varies independently of
+alarm count in any real program on file, so the two cannot be separated from real
+data. The probe files and the generated `alarmcond_*` batch vary exactly that.
 
-NOTHING IS PRICED HERE. This module parses and reports; there is no byte
-value for an alarm condition yet because no capture data exists. Inventing
-one would be worse than a visible hole -- see sizing/coverage.py, which
-surfaces the count so no total can quietly omit 600 alarms again.
+NOTHING IS PRICED HERE. This module parses and reports. The byte model lives in
+`sizing/alarms.py`; a gap is surfaced through `sizing/coverage.py` rather than
+filled with an invented number, so no total can quietly omit 600 alarms.
 """
 
 from __future__ import annotations

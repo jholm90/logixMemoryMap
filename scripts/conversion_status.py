@@ -15,12 +15,12 @@ Three outcomes, and they need different handling:
   NO RECORD     never submitted. Usually just generated after the last conversion
                 run, not a defect.
   STALE CAPTURE a file whose last status is FAILED but whose manifest row still
-                carries actual_bytes. That capture came from content the repo no
-                longer holds and must not be used -- the same failure class as
-                asmclose_1756_ob32_rackaliased, where a note said "cleared" and
-                the values were still sitting there.
+                carries actual_bytes. That capture came from content the repo
+                no longer holds and must not be used. One row sat in exactly
+                this state with a note claiming it had been cleared while the
+                values were still present.
 
-This existed as a written step with no tool, which is why it went unrun.
+This was a written step with no tool behind it, which is why it went unrun.
 
   python scripts/conversion_status.py            # summary
   python scripts/conversion_status.py --list     # every filename

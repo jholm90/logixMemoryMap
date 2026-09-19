@@ -1,41 +1,35 @@
-"""Parses Controller/Modules out of an L5X document (first pass
--- the Phase 1 "Module/IO parsing is still open" gap, never started
-before now).
+"""Parses Controller/Modules out of an L5X document.
 
-** real gap found and fixed same day (a real-capture
-data forced the correction):** the original version of this parser assumed
-`InputSize`/`OutputSize`/`ConfigSize` attributes tell the whole story, and
-that InputTag/OutputTag sit as direct `<Communications>` children. Both
-assumptions were wrong for the dominant real shape: most real modules state
-NO InputSize/OutputSize attribute at all (their I/O lives in a nested
-`<Connection><InputTag>` element instead, or gets aliased into a parent
-bridge's own Slot array via `<RackConnection><InAliasTag/></RackConnection>`
-with no connection-level size of its own), and InputTag/OutputTag are
-nested INSIDE their owning `<Connection>`, not a `<Communications>` sibling.
-Fixed both: `module_defined_bytes` now computes the REAL raw size by
-summing every atomic member of each InputTag/OutputTag/ConfigTag's own
-`<Data Format="Decorated"><Structure>` content (the same member-sum logic
-`compute_udt_size` already uses for an ordinary UDT) -- this is exactly the
-"Module-Defined" data type Logix Designer auto-generates under
-Data Types -> Module-Defined for every added module. Each
-added module produces a new UDT under Module-Defined; the question is the
-percentage difference between those combined UDTs and the actual space the
-modules take up.
+THE SHAPE IS NOT WHAT THE ATTRIBUTES SUGGEST. An early version assumed
+`InputSize`/`OutputSize`/`ConfigSize` tell the whole story and that
+InputTag/OutputTag sit as direct `<Communications>` children. Both are wrong for
+the dominant real shape:
 
-**That % difference is real, large, and already computed from 2 real
-captures:** `module_defined_bytes` for a 1756-IB16 is 28
-bytes; its real captured cost is 1,712 bytes -- **98.4% of the real cost
-is NOT the I/O data itself.** A 1734-AENTR/C: 36 bytes computed vs 1,696
-real -- **97.9% overhead.** Two very different module types landing on
-almost the SAME overhead (1,684 / 1,660, within noise of each other)
-strongly suggests a large, close-to-flat per-module cost dominates,
-similar in spirit to how AOI/UDT definition cost turned out to be
-dominated by a flat base term, not the member list. See
-`memory_model.yaml` `module_overhead` for the current (FITTED, n=2, real
-but low-confidence) estimate and `docs/OPEN_QUESTIONS.md` OQ-MODULEIO for
-the full derivation -- more real per-module deltas are needed to confirm
-this holds as a genuine flat constant vs. something that scales with
-connection count/module family.
+  * Most real modules state NO InputSize or OutputSize attribute at all. Their I/O
+    lives in a nested `<Connection><InputTag>` element, or is aliased into a
+    parent bridge's own Slot array through
+    `<RackConnection><InAliasTag/></RackConnection>` with no connection-level size
+    of its own.
+  * InputTag and OutputTag are nested INSIDE their owning `<Connection>`, not
+    beside it.
+
+So `module_defined_bytes` computes the real raw size by summing every atomic
+member of each InputTag, OutputTag and ConfigTag's own
+`<Data Format="Decorated"><Structure>` content -- the same member-sum logic
+`compute_udt_size` uses for an ordinary UDT. That is exactly the Module-Defined
+data type Logix Designer auto-generates under Data Types for every added module.
+
+THE I/O DATA IS ALMOST NONE OF THE COST. Against real captures, a 1756-IB16
+computes to 28 bytes and costs 1,712 -- 98.4% of the real cost is not the I/O
+data. A 1734-AENTR/C computes to 36 bytes and costs 1,696, 97.9% overhead. Two
+very different module types landing within noise of the same overhead (1,684
+against 1,660) says a large, near-flat per-module cost dominates, the same way AOI
+and UDT definition cost turned out to be dominated by a flat base term rather than
+the member list.
+
+See `memory_model.yaml` `module_overhead` for the current per-catalog table and
+OQ-MODULEIO for the derivation. Whether the flat term generalises to an unseen
+catalog is still open -- it is a lookup with a fallback, not a structural model.
 """
 
 from __future__ import annotations
@@ -72,8 +66,7 @@ def _atomic_bytes() -> dict[str, int]:
     sizes["BOOL"] = model.bool.standalone_tag_bytes
     return sizes
 
-# I thought we were excluding controlnet / "And all
-# legacy networks" -- a bridge module onto a pre-EtherNet/IP network
+# LEGACY NETWORKS ARE EXCLUDED. A bridge module onto a pre-EtherNet/IP network
 # (ControlNet, DeviceNet, DH+/DH-485, Remote I/O) gets the same treatment
 # as a rack-aliased or processor-embedded module in report.py: zero real
 # capture data exists for this shape's overhead cost (the one real point,
@@ -102,8 +95,8 @@ class ModuleInfo:
     # a checkable item"). Kept separately per I/O direction rather than
     # collapsed into one field -- a module's Input and Config profiles are
     # DIFFERENT strings (same base type, different :I:/:O:/:C: suffix),
-    # not one shared identifier, and asked for in/out/config kept
-    # separately marked throughout, not just for the byte counts.
+    # not one shared identifier. In, out and config stay separately
+    # marked throughout, not just for the byte counts.
     input_profile: str | None
     output_profile: str | None
     config_profile: str | None
@@ -111,8 +104,8 @@ class ModuleInfo:
     # "Module-Defined" data type -- computed from the actual
     # Structure content under InputTag/OutputTag/ConfigTag, NOT the
     # (frequently absent) InputSize/OutputSize attribute. This is the
-    # number the methodology starts from: what you'd see if you sized
-    # that Module-Defined UDT the normal way.
+    # number the method starts from: what sizing that Module-Defined UDT
+    # the ordinary way reports.
     module_defined_bytes: int = 0
     unknown_member_types: tuple[str, ...] = field(default_factory=tuple)
     # A VFD's real parameter-database blob (PowerFlex 525/755

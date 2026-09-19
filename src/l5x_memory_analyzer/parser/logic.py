@@ -1,9 +1,9 @@
 """Parses RLL rung text out of Controller/Programs/Program/Routines.
 
-Only RLL (ladder) routines are handled -- 22% of real routines in the
-corpus are Structured Text (OQ, see docs/TASKS.md Phase 4 note), which uses
-a completely different syntax and has its own unmeasured compiled-size
-characteristics. ST routines are skipped here, not guessed at.
+RLL only. Structured Text is 22% of real routines in the corpus and uses a
+different syntax entirely; it is parsed and sized by `sizing/structured_text.py`,
+not guessed at here. Any routine whose Type is not RLL is skipped, and
+`sizing/coverage.py` reports what was skipped so a total cannot silently omit it.
 """
 
 from __future__ import annotations

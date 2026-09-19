@@ -1,13 +1,14 @@
 """Lazy, one-level-at-a-time recursive drill-down for the UI treemap.
 
-requirement: infinite depth, no masking a large array just because
-it's nested inside something else -- every level, down to individual BOOL
-bits, must be drillable. Materializing that whole tree eagerly for a 40k-tag
-project with 10k-element arrays would be enormous, so this computes exactly
-one level of children at a time, on demand (`ui/server.py`'s /api/node),
-mirroring the same recursion `sizing/udt.py` already does for totals -- this
-module must never disagree with udt.py's numbers, so it delegates every byte
-calculation back to udt.py rather than recomputing independently.
+The requirement is infinite depth with no masking: a large array is drillable even
+when nested inside something else, all the way down to individual BOOL bits.
+Materialising that tree eagerly for a 40,000-tag project with 10,000-element
+arrays would be enormous, so this computes exactly one level of children at a
+time, on demand, for `ui/server.py`'s /api/node.
+
+It mirrors the recursion `sizing/udt.py` already does for totals, and it must
+never disagree with those numbers, so every byte calculation is delegated back to
+`udt.py` rather than recomputed here.
 """
 
 from __future__ import annotations

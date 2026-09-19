@@ -1,10 +1,10 @@
-"""Loads per-processor memory budgets from controller_budgets.yaml.
+"""Loads per-processor memory budgets from `controller_budgets.yaml`.
 
-the UI's budget denominator was hardcoded to a flat
-4MB regardless of ProcessorType -- wrong, capacity is genuinely part-number
-specific and, per Rockwell's own docs, some controller generations divide
-memory into separate I/O vs. Data/Logic pools rather than one number. See
-controller_budgets.yaml for full sourcing notes and confidence tagging.
+Capacity is part-number specific, and per Rockwell's documentation some controller
+generations divide memory into separate I/O and Data/Logic pools rather than
+reporting one number. A flat denominator is therefore wrong for every processor
+but the one it happened to match. See `controller_budgets.yaml` for per-entry
+sourcing and confidence tags.
 """
 
 from __future__ import annotations

@@ -1,12 +1,12 @@
-"""Every capture that errored, routed to the open question that asked for it.
+"""Every capture that errored, routed to the open question it was built for.
 
-Step 2b of CLAUDE.md's capture sequence. Exists because a 31-row family with a
-+10.5% systematic error sat unexamined for eight days: every one of its files
-carried `error_count = n+1`, nobody could tell whether the rows were
-trustworthy, and there was no place where that fact was written down against
-the question the files were built to answer.
+Step 3 of CLAUDE.md's capture sequence. Exists because a 31-row family with a
++10.5% systematic error sat unexamined: every one of its files carried
+`error_count = n+1`, nothing recorded whether the rows were trustworthy, and
+nowhere was that fact written down against the question the files were built to
+answer.
 
-Two failure classes, both silent until now:
+Two failure classes, both otherwise silent:
 
   BUILD ERRORS    the L5X imported and the project built, but Studio reported
                   errors. `actual_bytes` still gets filled in, so the row
@@ -17,8 +17,8 @@ Two failure classes, both silent until now:
                   suspect rows must be labelled, not skipped.
 
   CONVERSION FAILURES   a committed generated file with no `ok` on record in
-                  convert_log.csv. Step 2 already reports these; this step
-                  additionally routes each one to its owning question.
+                  convert_log.csv. Step 2 reports these; this step also
+                  routes each one to its owning question.
 
 The routing is by the `OQ-` identifier in the sample's own manifest
 description, which is why every generator must name its question there. A row

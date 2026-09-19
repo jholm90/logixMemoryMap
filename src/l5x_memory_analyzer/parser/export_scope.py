@@ -1,21 +1,12 @@
-"""Whole-controller export, or a partial one? And which parts are real?
+"""Whole-controller export, or a partial one -- and which parts are real?
 
-the estimation path has to handle controller, UDT, AOI,
-program, routine and rung-logic exports. Anything that is not a controller
-export cannot use the base load, but rungs, routines and programs can still
-reference controller tags.
+Studio 5000 exports at six granularities, and every one of them used to be sized
+as though it were a whole project. That is not a rounding error: a single exported
+RUNG came back at 15,080 bytes, of which 13,296 was `empty_project_baseline`, a
+controller's fixed scaffolding charged to one rung. The same 13,296 was being
+added to every AOI, routine, program and UDT export.
 
-Studio 5000 exports at six granularities, and until this module every one of
-them was sized as though it were a whole project. That is not a rounding
-error. A single exported RUNG came back at 15,080 bytes, of which 13,296 was
-`empty_project_baseline` -- a controller's fixed scaffolding cost, charged
-to a rung. The same 13,296 was being added to every AOI, routine, program
-and UDT export too.
-
-HOW A PARTIAL EXPORT IS SHAPED
-------------------------------
-The root element states it directly (real values, read off the files in
-samples/local/Template/):
+HOW A PARTIAL EXPORT IS SHAPED. The root element states it directly:
 
     TargetType="Controller"                  ContainsContext="false"
     TargetType="Program"                     ContainsContext="true"
@@ -24,38 +15,35 @@ samples/local/Template/):
     TargetType="AddOnInstructionDefinition"  ContainsContext="true"
     TargetType="DataType"                    ContainsContext="true"
 
-A partial export still carries a full-looking `<Controller>` element, which
-is exactly why this went unnoticed -- but it is marked `Use="Context"`, and
-so is every declaration hanging off it that the target merely REFERENCES.
-The thing actually being exported is marked `Use="Target"`.
+A partial export still carries a full-looking `<Controller>` element, which is why
+this went unnoticed -- but it is marked `Use="Context"`, and so is every
+declaration hanging off it that the target merely REFERENCES. The thing actually
+being exported is marked `Use="Target"`.
 
-The rule that falls out, and the one this module implements: an element is
-TARGET-scope if it or any ancestor carries `Use="Target"`; everything else
-in a `ContainsContext="true"` file is CONTEXT. Note the nesting is not what
-you would guess -- in a Rung export the chain is
+The rule this module implements: an element is TARGET-scope if it or any ancestor
+carries `Use="Target"`; everything else in a `ContainsContext="true"` file is
+CONTEXT. The nesting is not intuitive -- in a Rung export the chain is
 
     Program Use="Context" > Routines Use="Context" > Routine Use="Context"
       > RLLContent Use="Context" > Rung Use="TARGET"
 
-so "is it inside a Context container" is the WRONG test; only the nearest
-Use attribute up the chain decides.
+so "is it inside a Context container" is the WRONG test. Only the nearest Use
+attribute up the chain decides.
 
-WHAT THAT MEANS FOR SIZING
---------------------------
-* No base load on anything but a Controller export. `empty_project_baseline`,
-  the firmware/catalog/safety baseline deltas and the whole task/program
-  shell decomposition are properties of a PROJECT. A program, routine, rung,
-  AOI or UDT export has no project.
-* Context declarations are still real, and the point about them is the
-  reason this module reports them rather than dropping them: "rungs,
-  routines and programs might contain controller tags". A rung that
-  references `CurrentTimeSTR` carries that controller tag along in its
-  context, and importing the rung into a controller that does not already
-  have it creates it. So the honest answer is two numbers, not one: what the
-  target itself costs, and what its context would additionally cost IF those
-  declarations are not already in the destination controller. Summing them
-  blindly over-states an import into a controller that already has them;
-  dropping the context under-states a fresh import. Both get reported.
+WHAT THAT MEANS FOR SIZING.
+
+* No base load on anything but a Controller export. `empty_project_baseline`, the
+  firmware, catalog and safety baseline deltas and the whole task/program shell
+  decomposition are properties of a PROJECT. A program, routine, rung, AOI or UDT
+  export has no project.
+* Context declarations are still real, which is why they are reported rather than
+  dropped. A rung that references a controller tag carries that tag along in its
+  context, and importing the rung into a controller that does not already have it
+  creates it. So the honest answer is two numbers: what the target itself costs,
+  and what its context would additionally cost IF those declarations are not
+  already in the destination controller. Summing them blindly over-states an
+  import into a controller that already has them; dropping the context
+  under-states a fresh import. Both are reported.
 """
 
 from __future__ import annotations

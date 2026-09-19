@@ -199,8 +199,8 @@ def build_hierarchy(
     # here instead, keyed by that program's own group_name -- each
     # program's Routines get their own "Routines" subgroup rather than
     # sitting as flat siblings next to that program's tags, so a program
-    # with both tags and logic doesn't visually conflate "data I own" with
-    # "logic that runs in me". Task-level grouping (Task -> Program) is
+    # with both tags and logic does not visually conflate the data it owns
+    # with the logic that runs in it. Task-level grouping (Task -> Program) is
     # NOT done here -- the parser has zero awareness of Controller/Tasks
     # (see docs/OPEN_QUESTIONS.md's per-Task-overhead item), so there is
     # no real task->program mapping to group by yet, not an oversight.
@@ -308,8 +308,8 @@ def build_hierarchy(
                 group_name = AOI_GROUP_NAME
         elif e.path.startswith("aoi_definitions/"):
             # AOI-internal logic. It belongs UNDER its own AOI rather than
-            # loose in the definitions pool -- a routine called "Logic" tells
-            # you nothing without the AOI it came from.
+            # loose in the definitions pool -- a routine called "Logic" means
+            # nothing without the AOI it came from.
             group_name = AOI_GROUP_NAME
             parts = e.path.split("/")
             name = f"{parts[1]}/{parts[2]}" if len(parts) > 2 else parts[-1]
