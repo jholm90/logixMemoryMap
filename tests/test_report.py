@@ -419,9 +419,9 @@ def _root_with_legacy_network_module(port_type: str, catalog: str = "9999-NO-REA
 
 
 def test_legacy_network_module_excluded_from_sizing():
-    # OQ-LEGACYNETOVERHEAD, CLOSED as a deliberate scope
-    # exclusion (I thought we were excluding controlnet / "And
-    # all legacy networks") -- a ControlNet/DeviceNet/DH+/DH-485/RIO
+    # OQ-LEGACYNETOVERHEAD, CLOSED as a deliberate scope exclusion: ControlNet
+    # and every other legacy network is out of scope. A
+    # ControlNet/DeviceNet/DH+/DH-485/RIO
     # bridge module gets no module_overhead charged, same treatment as a
     # rack-aliased or processor-embedded module, flagged via SizeError
     # instead -- UNLESS its specific catalog has real per-catalog data
@@ -450,8 +450,8 @@ def test_legacy_network_module_excluded_from_sizing():
 
 
 def test_legacy_network_module_with_real_catalog_data_gets_charged():
-    # you need to model them -- real per-catalog data
-    # now exists for several legacy-network/rack-aliased catalogs (see
+    # A measured catalog needs no modelling: real per-catalog data
+    # now exists for several legacy-network and rack-aliased catalogs (see
     # memory_model.yaml module_overhead_by_catalog's comment).
     # 1756-CNB/D (a real ControlNet bridge) has a confirmed real entry
     # (448 bytes) and should get module_io charged normally despite being

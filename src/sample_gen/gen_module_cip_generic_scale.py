@@ -1,6 +1,7 @@
-"""CIP-MODULE (generic CIP device) declared-I/O-size scaling
- -- a direct follow-up to the
-real TitusvilleTrimmer file, whose 3 real "CIP-MODULE" instances (all
+"""CIP-MODULE (generic CIP device) declared-I/O-size scaling.
+
+A direct follow-up to a
+real export whose 3 real "CIP-MODULE" instances (all
 496/496-byte connections) flagged this project's flat ~1,672-byte
 module_overhead default as a real risk: `ETHERNET-MODULE`/`ETHERNET-
 PANELVIEW` are already documented as "overhead scales with declared I/O

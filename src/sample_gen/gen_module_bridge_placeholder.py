@@ -1,8 +1,9 @@
 """Ethernet-bridge PLACEHOLDER modules -- no Connections, no PLC logic tie,
-just an IP-address bookkeeping entry (reviewing a real
-production file's memory estimate: "the bridge with no modules i used as a
-placeholder for IP addresses with no PLC logic connections. I suggest you
-generate a sample test file for those").
+just an IP-address bookkeeping entry.
+
+A real production file uses a bridge with no modules under it purely to
+reserve IP addresses, with no logic connections at all, so it needs its own
+test file.
 
 Real shape confirmed against that same production file: a plain
 CatalogNumber="ETHERNET-BRIDGE" module with a CIPBus Port (Bus Size="100")

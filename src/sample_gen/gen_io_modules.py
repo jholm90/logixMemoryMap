@@ -1,9 +1,10 @@
-"""I/O Module sizing sweep, first batch: "let's go back
-and play with some of the AB Io blocks, the balluff Io link block, local
-1756 modules to start. You'll have to swap to a 5069 processor to test the
-5069 modules (non safety stuff to start)... same catalog Phoenix rack with
-2 input card or 30 input cards, you need to be careful looking at the data
-sizes in the l5x module properties."
+"""I/O Module sizing sweep, first batch.
+
+AB I/O blocks, the Balluff IO-Link block and local 1756 modules, non-safety
+only. A 5069 processor is required to test the 5069 modules. The same
+catalog rack appears at 2 input cards and at 30, because the module
+properties in the L5X state sizes that have to be read carefully rather
+than assumed.
 
 See docs/IO_MODULES.md for the full inventory and the three real module-
 shape patterns this batch is built around (catalog-fixed, Point I/O

@@ -19,10 +19,9 @@ Two instructions from that export are deliberately NOT generated, as specified
            all; it appears in the scratch file but never built as one.
   MCLM  -- coordinated linear move, deliberately excluded.
 
-Axis choice: "note i used virtual axis and not the
-hardware, but any AXIS_** type tag should work. i dont know if you are
-aware of the difference between them." AXIS_VIRTUAL has no drive or module
-binding, so a file built on it measures the instruction and nothing else --
+AXIS CHOICE: AXIS_VIRTUAL, not hardware. Any AXIS_* type tag works, and
+AXIS_VIRTUAL has no drive or module binding, so a file built on it measures
+the instruction and nothing else --
 there is no module connection overhead to subtract back out. That is
 strictly better for cost isolation than AXIS_CIP_DRIVE, which is what
 gen_motion_instructions.py uses and why those files always needed the

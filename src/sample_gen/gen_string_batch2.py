@@ -1,6 +1,5 @@
-"""STRING accuracy batch 2: "Sounds like you still
-don't know what is going on with strings. Make another 20 tests to figure
-this out. You need 100% accuracy for strings and custom length strings."
+"""STRING accuracy batch 2 -- 20 files to reach exactness on strings and on
+custom-length strings.
 
 Targets real gaps left after the first STRING sweep (gen_string_
 tagoverhead.py, OQ-STRINGTAGOVERHEAD): built-in STRING is fully resolved,

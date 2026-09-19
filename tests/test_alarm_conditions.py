@@ -1,10 +1,8 @@
 """Tag-based alarm conditions must be found and reported, not silently zeroed.
 
-*"see the alarms prefixed by 'Alarm1_' as they could be
-holding back some of your calcuations from being accurate."* They were:
-3,463 real AlarmCondition elements across samples/local/, every one priced
-at zero, 200-600 in each of the 8 real programs whose Capacity readings the
-composite surcharge was just fitted against.
+They were being zeroed: 3,463 real AlarmCondition elements across
+samples/local/, every one priced at zero, 200-600 in each of the 8 real
+programs whose Capacity readings the composite surcharge was fitted against.
 
 Nothing here asserts a BYTE COST -- there is no capture data yet and
 inventing a number would be worse than a visible hole. These pin that the

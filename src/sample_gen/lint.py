@@ -52,17 +52,15 @@ Checks:
      project's own generators can actually resolve a type for (see
      _resolve_operand_type); an unresolvable operand is silently skipped,
      not flagged.
-  6. rung_missing_output_instruction --: real: "you also
-     have conditional instructions like EQU with no operand at the end of
-     the rung or a NOP() instruction. this is basic ladder logic." A rung
-     whose every instruction is a pure condition/test
+  6. rung_missing_output_instruction -- a conditional instruction such as EQU
+     needs an output or a NOP() at the end of the rung. Basic ladder logic. A
+     rung whose every instruction is a pure condition or test
      (_PURE_CONDITION_INSTRUCTIONS) with no real output instruction has no
      effect and real Studio 5000 rejects it.
-  7. non_sequential_module_slots --: "lots of racks did
-     not have the slot numbers used in sequence and that was supposed to
-     be a check you were adding for validation." See
-     _slot_sequence_findings for the real generator bug this caught.
-  8. chassis_size_mismatch --: real issue found
+  7. non_sequential_module_slots -- a rack whose slot numbers are not used in
+     sequence. See _slot_sequence_findings for the real generator bug this
+     caught.
+  8. chassis_size_mismatch -- a real issue found
      reviewing the v4 Studio 5000 I/O tree: a PointIO/Flex adapter's
      declared Bus Size can be stale even when its child IS at a
      sequential, in-bounds slot number (chassis_size_exceeded above only
@@ -301,11 +299,11 @@ def _all_rung_texts(root: ET.Element) -> list[str]:
     return texts
 
 
-# real, caught TWICE this same session on the
-# re-conversion after I'd already fixed the first occurrence: "SINT/INT/
-# DINT cannot be used for bit level instructions like XIO,XIC,OTE,OTU,OTL,
-# ONS only bools and .Bits of SINT/INT/DINT" and "conditional instructions
-# like EQU with no operand at the end of the rung or a NOP() instruction."
+# Two real rules, each caught twice -- the second time on the re-conversion
+# after the first occurrence had been fixed. SINT, INT and DINT cannot be used
+# for bit-level instructions (XIO, XIC, OTE, OTU, OTL, ONS): only BOOLs and the
+# .Bit members of SINT/INT/DINT. And a conditional instruction such as EQU needs
+# an output or a NOP() at the end of its rung.
 # Both fixed by hand in the specific generators that hit them (3 files),
 # but hand-fixing individual generators is exactly what already failed
 # once -- a FUTURE generator can make the identical mistake and nothing
@@ -331,9 +329,9 @@ _PURE_CONDITION_INSTRUCTIONS = {
     # got the NOP right by convention and the 9th silently did not. That is
     # why it belongs HERE rather than as another comment in one generator.
     "SBR",
-    # DTR added, same story a second time: "DTR is a comparison
-    # and is not an instruction, you will need a NOP after for
-    # testing/generating". DTR (data transitional) compares a source against
+    # DTR added, the same story a second time: DTR is a comparison rather than
+    # an output, so it needs a NOP after it.
+    # DTR (data transitional) compares a source against
     # a reference bit pattern and conditions the rung on the result -- it
     # writes nothing, so a rung of nothing but DTR() has no terminating
     # output and Studio 5000 rejects it, exactly like a bare EQU or SBR.
@@ -595,10 +593,10 @@ def _module_slot_findings(root: ET.Element) -> list[LintFinding]:
        a real error on both fwmatrix_v31_1769_l30erm (RESOLVED_
        QUESTIONS.md) and eventtask_instronly (bare 5069-L306ER, OPEN_
        QUESTIONS.md OQ item 10). This only catches an INTERNALLY
-       inconsistent file (we declared Bus Size=9 but also plugged
-       something into slot 12) -- it can't independently verify that our
-       own declared Bus Size is Rockwell's real per-catalog limit, which
-       still needs real corpus/capture confirmation same as always.
+       inconsistent file -- a declared Bus Size of 9 with something plugged
+       into slot 12. It cannot independently verify that a declared Bus Size
+       is Rockwell's real per-catalog limit, which still needs real corpus or
+       capture confirmation.
     """
     findings: list[LintFinding] = []
     modules_by_name: dict[str, ET.Element] = {}
@@ -713,9 +711,9 @@ def _module_slot_findings(root: ET.Element) -> list[LintFinding]:
 def _slot_sequence_findings(
     slot_claims: dict[tuple[str, str, str], list[str]],
 ) -> list[LintFinding]:
-    """: "lots of racks did not have the slot numbers
-    used in sequence and that was supposed to be a check you were adding
-    for validation." Real bug this caught in gen_composite_realistic.py's
+    """Racks whose slot numbers are not used in sequence.
+
+    Real bug this caught in gen_composite_realistic.py's
     _modules_xml_unique_ips: it keyed the assigned backplane slot off a
     catalog's raw index in the file's module list, so an Ethernet-only
     catalog (no real ICP-backplane root module) between two ICP-backplane
@@ -1025,10 +1023,12 @@ def _invalid_logix_name_findings(root: ET.Element) -> list[LintFinding]:
 
 
 def _safety_module_findings(root: ET.Element) -> list[LintFinding]:
-    """: real Studio 5000 error caught combining several
-    real 5069 Compact I/O catalogs into a scratch sample: "Failed to set
-    the 'SafetyEnabled' property (The Controller is not a Safety
-    Controller.)" on 2 of the 6 -- 5069-IB8S/A and 5069-OBV8S/A are real
+    """A safety module on a non-safety controller.
+
+    Real Studio 5000 error, caught combining several real 5069 Compact I/O
+    catalogs into a scratch sample: "Failed to set the 'SafetyEnabled'
+    property (The Controller is not a Safety Controller.)" on 2 of the 6 --
+    5069-IB8S/A and 5069-OBV8S/A are real
     safety modules (SafetyEnabled="true"), and this project's own
     build_l5x defaults to a plain non-safety controller unless
     safety_level is explicitly passed. This exact combination (this

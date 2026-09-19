@@ -3,8 +3,8 @@
 The old UI printed a provenance tier as if it were a confidence, so every
 routine read "0% measured" -- because compiled ladder size can never be
 KNOWN, by CLAUDE.md's ground-truth constraint. That says something about
-Rockwell's file format, not about this model's error, and it read as "we have
-no idea" about numbers that reproduce captures to the byte.
+Rockwell's file format, not about this model's error, and it read as an
+admission of ignorance about numbers that reproduce captures to the byte.
 """
 
 import sys

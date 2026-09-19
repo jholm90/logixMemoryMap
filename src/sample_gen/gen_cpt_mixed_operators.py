@@ -492,8 +492,8 @@ def group_real_float_position_probe() -> int:
 
 
 # ---------------------------------------------------------------------------
-# I. 2-REAL-operand adjacency probe ("are you sure you
-# only need 4 tests for cpt?" -- correct, 4 wasn't enough. The position
+# I. 2-REAL-operand adjacency probe. Four CPT tests were not enough.
+# The position
 # probe above only ever varies ONE lone operand's position at fixed
 # count=1; it can't touch the actual documented anomaly this whole thread
 # exists to explain -- 2 REAL operands costing LESS than 1 (non-monotonic
@@ -517,8 +517,8 @@ def group_real_pair_adjacency_probe() -> int:
          "2 REAL operands SPREAD to opposite ends (slots 1 and 6 of 6) -- same total REAL-operand "
          "count as real2_adjacent, more promotion-point crossings if the layout matters; companion "
          "to real2_adjacent"),
-        # have you got enough tests to fully close this?
-        # -- no, the adjacent/spread pair only disambiguates 1-vs-2 REAL
+        # Not enough on its own to close the question: the
+        # adjacent/spread pair only disambiguates 1-vs-2 REAL
         # operands; it can't say whether the non-monotonic dip continues,
         # reverses, or was a one-time artifact of exactly 2. Extends the
         # count sequence (1 via real1_pos_first, 2 via real2_adjacent) to 3,

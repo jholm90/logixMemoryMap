@@ -1,6 +1,5 @@
-""": "If you were to take that udt and stand alone
-generate it in a new program I wonder if you would get a different
-result." Direct empirical answer to that question.
+"""Does a real UDT, generated standalone in a new project, size differently
+than it does inside the program it came from?
 
 The UDT and array size below are copied VERBATIM (member names, types,
 declared order, array dimension) from the real, confidential AccuTally

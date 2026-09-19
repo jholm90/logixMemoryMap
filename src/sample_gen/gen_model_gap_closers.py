@@ -1,10 +1,8 @@
-"""Targeted test batch to close the specific gaps blocking model fixes
-("can you generate a dozen or more tests that will help
-you fix your models and answer some questions that you want explored?").
+"""Targeted test batch to close the specific gaps blocking model fixes.
 
 Every file here answers ONE named, currently-blocking question. Nothing is
 filler -- see docs/FUTURE_TESTS.md for the full ordered list this is drawn
-from, and CLAUDE.md's "don't just fill up the minimum roster" rule.
+from. There is no roster size to pad toward.
 
 Deliberately NOT included, because the data already exists: the
 structural-module point-count/class ladders (OQ-MODULESTRUCTURAL). Every

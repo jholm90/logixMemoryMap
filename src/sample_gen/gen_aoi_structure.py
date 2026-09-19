@@ -1,13 +1,9 @@
-"""AOI STRUCTURAL cost space -- the batch that has to work on other
-people's AOIs, not the.
+"""AOI STRUCTURAL cost space -- the batch that has to work on other people's
+AOIs, not the ones already in the corpus.
 
-*"Like I said previously Murray AOIs are the same on
-other projects. What new tests are you going to generate now for
-improving?"* and, the same day: *"Keep in mind that I plan on sharing this
-for people outside my company and their code will be very different and
-use different aois."*
-
-Those two together rule out the obvious move. MurrayBros' residual
+Two constraints together rule out the obvious move. The same AOI definitions
+recur across the projects already on file, and the tool has to work for
+someone outside this codebase whose AOIs are entirely different. MurrayBros' residual
 correlates hardest with AOI structure (aoiaxisparam +0.889, aoirungs
 +0.848, aoidefs +0.838, aoilocals +0.835), and the tempting fix is to fit
 per-AOI corrections against the shared definitions that appear across the

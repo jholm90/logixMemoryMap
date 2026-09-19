@@ -1,9 +1,7 @@
-"""Small, targeted AOI additions (after the 64-file
-generalization batch: "If there are additional testing you think of for
-the AOI -- paired with the rule not to fill up the
-minimum 60 test roster with filler work" instruction from the same
-session, so this stays small and answers real, currently-open questions
-only, not padded to any target count.
+"""Small, targeted AOI additions, after the 64-file generalisation batch.
+
+There is no roster size to pad toward. This stays small and answers real,
+currently-open questions only.
 
   A. group_boolpack_nonatomic_type -- the confirmed BOOL-packing formula
      (124 - 4*bool_count, see AOI_KNOWLEDGE_MAP.md) was derived entirely

@@ -1,7 +1,7 @@
-"""Regression coverage for gen_composite_realistic.py's real generator bugs
---: "make sure this rule is hard coded correctly for
-your generator" (the IP-address-out-of-range fix). Locks in the fix so a
-future change to _modules_xml_unique_ips can't silently reintroduce an
+"""Regression coverage for gen_composite_realistic.py's real generator bugs.
+
+The IP-address-out-of-range rule is hardcoded deliberately. This locks in the
+fix so a future change to _modules_xml_unique_ips cannot silently reintroduce an
 invalid IPv4 octet the way the original `base = 60 + (i+1)*10` formula did
 once a file combined more than ~19 module catalogs (v1/v2 never did; v3
 routinely combines 15-34)."""

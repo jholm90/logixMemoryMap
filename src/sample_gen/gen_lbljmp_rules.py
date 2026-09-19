@@ -25,10 +25,9 @@ ratios that the 1:1 sweep can't distinguish:
      per-routine (no collision), which matters for realistic multi-
      subroutine programs that reuse common label names like "Start"/"End".
 
-Deliberately does NOT attempt a JMP with no matching LBL anywhere in the
-same routine (you cannot have a jmp with no lbl) -- that's not a
-real, buildable program, so there's nothing to generate; noted here for
-completeness rather than as a test case.
+Deliberately does NOT attempt a JMP with no matching LBL anywhere in the same
+routine. A JMP without an LBL is not a buildable program, so there is nothing
+to generate; noted here for completeness rather than as a test case.
 
 Run: python -m sample_gen.gen_lbljmp_rules
 """

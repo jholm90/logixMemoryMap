@@ -16,7 +16,7 @@ Every one of those falls through `AoiDefinitionModel.bytes_for`'s
 20-bytes-per-declared-item rate, and that rate was fitted entirely on
 atomic members. A TIMER is 12 bytes of real storage and five named
 members; there is no reason to assume it declares for the same 20 bytes a
-DINT does, and until now nothing in the corpus could tell us.
+DINT does, and nothing in the corpus could distinguish the two.
 
 The DefaultData blocks below are copied VERBATIM from the real corpus
 rather than synthesized, because the encoding is not derivable: a real

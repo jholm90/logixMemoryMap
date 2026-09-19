@@ -1,15 +1,11 @@
 """Tag-based alarm conditions: the unpriced cost sitting in every real file.
 
-*"Another thing to look at is Controller Alarms that we
-use. Ive split them out a bit here and you can generate up some code to test
-for them and generate them. Keep in mind that there are controller tags:
+Real programs carry Controller Alarms whose host controller tags --
 AlarmBoolArray BOOL[128], AlarmNumberArray DINT[128], AlarmDescArray
-STRING[128], AlarmMoreInfoArray STRING[128] ... the controller tags are
-placeholders and could be any tags so you should mute them in your
-calculations. see the alarms prefixed by "Alarm1_" as they could be holding
-back some of your calcuations from being accurate."*
+STRING[128], AlarmMoreInfoArray STRING[128] -- are placeholders that could be
+any tags, so the alarm cost has to be separated from the tags it hangs off.
 
-He is right, measurably. **3,463 real AlarmCondition elements across
+The effect is measurable. **3,463 real AlarmCondition elements across
 samples/local/, every one priced at zero.** All 8 real programs fitted on
 carry 200-600 each, and after the composite surcharge was
 refitted their leftover residual correlates **+0.583 with alarm count** --

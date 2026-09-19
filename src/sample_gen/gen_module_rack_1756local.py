@@ -1,6 +1,7 @@
 """1756 LOCAL RACK test -- multiple real ControlLogix I/O modules mounted
-together in the CPU's OWN local chassis. gen_module_sweep.py
-already covers each 1756 catalog individually (one module + real parent
+together in the CPU's OWN local chassis.
+
+gen_module_sweep.py already covers each 1756 catalog individually (one module + real parent
 chain per file); this is the missing "many real local modules sharing one
 rack" shape, matching how an actual ControlLogix panel looks.
 

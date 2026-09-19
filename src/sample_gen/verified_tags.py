@@ -9,13 +9,12 @@ documentation (the alarm ConditionTypes, the MAM/MAJ bare-2-operand rungs, the
 Kinetix `:SI` safety tags) every single invented variant was rejected by the
 real toolchain.
 
-"note i used virtual axis and not the hardware, but any
-AXIS_** type tag should work. i dont know if you are aware of the difference
-between them" -- AXIS_VIRTUAL carries no drive/module binding at all
-(MotionGroupInstance="<NA>", no associated module), where AXIS_CIP_DRIVE
-pulls in a real drive module and its connection overhead. For isolating the
-cost of a motion INSTRUCTION that is exactly what we want: no module
-overhead to subtract back out afterwards.
+Any AXIS_* type tag works for a motion instruction, and the choice matters for
+isolation. AXIS_VIRTUAL carries no drive or module binding at all
+(MotionGroupInstance="<NA>", no associated module), where AXIS_CIP_DRIVE pulls
+in a real drive module and its connection overhead. For isolating the cost of a
+motion INSTRUCTION, AXIS_VIRTUAL is the right choice: no module overhead to
+subtract back out afterwards.
 
 Regenerate with: python -m sample_gen.extract_verified_tags
 """

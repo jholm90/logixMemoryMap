@@ -1,8 +1,6 @@
-""": "You made many working l71 filed before this failed
-test, why did you generate this failed ethernet port? These should be
-caught with your validation scripts better."
+"""Why a 1756-L71 Ethernet port passed in many files and failed in one.
 
-Real answer: this project has TWO independent XML-building
+This project has TWO independent XML-building
 implementations that both know how to shape a 1756-L71 project --
 wrapper.py's build_l5x() (shared default path, used by gen_blockbyte_l71.py
 and most other generators) and gen_fw_catalog_matrix.py's own _build_xml()/

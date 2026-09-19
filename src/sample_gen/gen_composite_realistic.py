@@ -1,13 +1,9 @@
-"""50 large, realistic-scope composite test programs --:
-"How many claude generated programs are you going to generate for testing
-processor capacity and where your calculations are wrong? I expect at
-least 50 large programs with io and logic to test your generation
-knowledge and test aois and udts. You need to do this to validate your
-processing capabilities that are more than 20% error based on the last
-test." Direct response to the real ~20%+ gap found reviewing a
-confidential customer project: every prior calibration file in this
-project isolated ONE feature at a time ("onesy twosy"), never combined
-enough real-world complexity at once to catch interaction effects or
+"""50 large, realistic-scope composite test programs, with I/O, logic, AOIs
+and UDTs together.
+
+Built in response to a real error over 20% on a customer project. Every prior
+calibration file isolated ONE feature at a time and never combined enough
+real-world complexity at once to catch interaction effects or
 structural gaps like OQ-AOIORPHAN (orphaned AOI definitions) that only
 show up in a big real project.
 
@@ -433,7 +429,9 @@ def _resize_slot_structure(block: str, new_n: int) -> str:
 
 
 def _normalize_chain_bus_sizes(xml: str) -> str:
-    """: real issue caught reviewing the v4 Studio 5000
+    """Normalise a chain's declared Bus Size to what it actually holds.
+
+    Real issue caught reviewing the v4 Studio 5000
     I/O tree: every PointIO/Flex adapter+child pair in _MODULE_CHAINS
     carries the real "Bus Size" (chassis slot count) and child slot
     Address it happened to have in whatever real, larger rack it was

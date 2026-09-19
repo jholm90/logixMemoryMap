@@ -1,8 +1,7 @@
-"""OQ-MIXEDUDT (self-initiated per CLAUDE.md step 5: open items
-belong in the next round of tests automatically, without being asked for).
-The one item
-from the open-questions list with ZERO test coverage: a "realistic messy/
-nested UDT, arbitrary member mix," as opposed to a homogeneous array or
+"""OQ-MIXEDUDT -- the one open question with ZERO test coverage.
+
+A realistic messy, nested UDT with an arbitrary member mix, as opposed to a
+homogeneous array or
 the axis-specific composite shape gen_axis_composite.py already covers
 (that one resolved OQ-AXISDEEP's composite case specifically, per its own
 docstring, but explicitly left the BROADER arbitrary-mix question open).

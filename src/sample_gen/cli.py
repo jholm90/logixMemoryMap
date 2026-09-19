@@ -1,6 +1,7 @@
-"""L5X sample generator CLI ("the l5x generator
-application where you make up the l5x files based on things you want to
-test -- UDT size, comment length for bits or rungs etc.").
+"""L5X sample generator CLI.
+
+Builds L5X files for whatever needs testing: UDT size, comment length for
+bits or rungs, and so on.
 
 Every subcommand writes a full L5X to samples/generated/<category>/ and
 logs a manifest.csv row with predicted_bytes already filled in (from this
@@ -135,7 +136,7 @@ def _cmd_rungs(args: argparse.Namespace) -> int:
     # the original xic_ote_1000_* samples referenced
     # 2000 tags (In0..In999/Out0..Out999) inside --instr but this command
     # always passed tags_xml="" -- nothing declared them, so Studio 5000
-    # rejected the file ("you decided not to generate those tags"). --decl-tag
+    # rejected the file: the tags were never generated. --decl-tag
     # closes that gap: each NAME_PATTERN gets the same {i} substitution as
     # --instr, for every i in range(--count), deduped by name.
     decl_tags: dict[str, str] = {}

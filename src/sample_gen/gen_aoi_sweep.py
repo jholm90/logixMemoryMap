@@ -1,7 +1,6 @@
-"""Big AOI data-sizing sweep ("based on all of this extra
-stuff with the AOIs i expect another 10+ tests... totally nail off the data
-sizer estimation process"). Extends the confirmed UDT-definition-cost
-findings (168 + 16*member_count, type-independent except BOOL) to AOI
+"""Big AOI data-sizing sweep, to settle the data sizer outright.
+
+Extends the confirmed UDT-definition-cost findings (168 + 16*member_count, type-independent except BOOL) to AOI
 definitions, and directly targets OQ-AOIBOOLPACK (do AOI BOOL Parameters
 pack the way UDT BOOL members do, despite the flat un-hidden-SINT XML
 shape?).

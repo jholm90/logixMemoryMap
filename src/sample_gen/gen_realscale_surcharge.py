@@ -41,8 +41,8 @@ deliberate, not convenience:
     at it, it routes around it by using shapes already proven at 5,000
     rungs. If these files ALSO error, that is itself the diagnostic: it
     would mean JSR-target/AOI-internal PLACEMENT is what Studio 5000
-    objects to, not the instruction shapes, which is something no existing
-    row can tell us apart.
+    objects to, not the instruction shapes -- something no existing row can
+    distinguish.
 
 GROUPS
 ------

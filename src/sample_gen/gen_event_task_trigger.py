@@ -39,10 +39,9 @@ OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "logi
 # Real AXIS_CIP_DRIVE + companion MOTION_GROUP tag pair (see
 # gen_axis_composite.py's _AXIS_TAG_XML docstring for provenance), renamed
 # from "Axis_Cip_Drive" to "WatchedAxis" so the EventTag reference below
-# resolves. REAL BUG FOUND (live testing: "Line 33:
-# Invalid display style" + "Line 70: Tag being used for event task does
-# not exist" -- then, pointedly: "if you set it for axis watch then you
-# should have generated an axis - does this not sound very obvious?"):
+# resolves. REAL BUG FOUND in live testing -- "Line 33: Invalid display
+# style" and "Line 70: Tag being used for event task does not exist". An
+# axis-watch event task needs an actual axis, and
 # this file previously built WatchedAxis with the generic tag_xml() scalar
 # helper (a bare Format="Decorated"/<DataValue DataType="AXIS_CIP_DRIVE"
 # Value="0"/>), which is not how AXIS_CIP_DRIVE is ever really represented

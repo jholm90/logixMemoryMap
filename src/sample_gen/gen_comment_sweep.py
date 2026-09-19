@@ -1,7 +1,7 @@
-"""Comment/description-length sweep ("comment length in
-the tag vs comment length in the udt element vs udt description vs udt tag
-description"). Four distinct places a human-readable comment can live in
-real L5X, tested independently with everything else held constant:
+"""Comment and description-length sweep.
+
+Four distinct places a human-readable comment can live in real L5X, tested
+independently with everything else held constant:
 
   G. Tag-level Description on a plain atomic (DINT) tag.
   H. Member-level Description on one DataType Member ("udt element").

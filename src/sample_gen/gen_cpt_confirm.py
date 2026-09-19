@@ -1,6 +1,5 @@
-"""CPT operator-tier linearity confirmation: "whats
-your CPT confidence? why is it not 100% yet? you need to generate tests
-to satisfy this."
+"""CPT operator-tier linearity confirmation -- the second count point that
+CPT confidence was missing.
 
 Mining the already-captured `cmpcpt_*` real data (gen_cmpcpt_layout.py,
 27 real rows, all at n=1000) found real, clean-looking per-operator-tier

@@ -25,8 +25,8 @@ from datetime import datetime
 
 from sample_gen.builders import validate_logix_name
 
-# v35 / ControlLogix 5580-class -- switched ("why didnt
-# you use 1756-L81? lets use that as default") from 5069-L306ER, which was
+# v35 / ControlLogix 5580-class -- 1756-L81E as the default, switched
+# from 5069-L306ER, which was
 # only ever chosen because it is the one physical unit available for real
 # hardware spot-checks (OQ-EMULATE). 1756-L81E matches the actual primary
 # target per OQ-L5XVERSION (v35/L8-class) and is what the real production
@@ -51,11 +51,10 @@ _ICP_BUS_SIZE = "17"
 # shape, confirmed against samples/local/DnR_Personal/
 # BT1XX_FFC_20240325.L5X (5069-L330ERMS2): local bus Port Type="5069" (not
 # "ICP"), vs 1756's 17-slot-chassis convention, and TWO Ethernet ports
-# (dual embedded switch) rather than 1756's one.:
-# "You'll have to swap to a 5069 processor to test the 5069 modules" -- a
-# naive processor_type string swap on the old ICP/single-Ethernet template
-# would still be structurally wrong, so this is a real separate shape, not
-# just a catalog-string substitution.
+# (dual embedded switch) rather than 1756's one. Testing 5069 modules needs a
+# 5069 processor, and a naive processor_type string swap on the old
+# ICP/single-Ethernet template would still be structurally wrong -- this is a
+# genuinely separate shape, not a catalog-string substitution.
 #
 # BUG FOUND (real Studio 5000 error on
 # modulesweep_5069_ib16_a.L5X): "Failed to set the 'Size' property

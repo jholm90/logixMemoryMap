@@ -505,8 +505,8 @@ FORMATS = {
 #
 # Every 1734-IB8/C card in all three real exports carries NO Name attribute
 # at all -- catalog and slot only. That is the unusual shape, not the
-# normal one: a module you name in the I/O tree gets module-defined tags of
-# its own, and this project already knows that a tag's NAME LENGTH costs
+# normal one: a module named in the I/O tree gets module-defined tags of
+# its own, and a tag's NAME LENGTH is already known to cost
 # real bytes (memory_model.yaml alias_tag, and the AOI/UDT type-name-length
 # buckets). So naming a card plausibly costs something, plausibly scales
 # with the name, and plausibly differs by connection format -- a

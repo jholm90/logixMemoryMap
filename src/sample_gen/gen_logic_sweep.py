@@ -1,8 +1,7 @@
-"""Per-instruction logic-sizing sweep: "examine the
-difference between XIC/OTE and MVM/MEQ/CPT/MAM all the big juicy ones...
-hammer each individual instruction and make sure you can compile it
-properly. we have 30% of the instructions in the sample code so i'd just
-work with those."
+"""Per-instruction logic-sizing sweep.
+
+One instruction per file, each compiled and captured, scoped to the
+instructions that actually appear in the real corpus.
 
 Instruction list and every operand shape below is taken directly from real
 usage in samples/local/ (47 real production files, 115 distinct mnemonics

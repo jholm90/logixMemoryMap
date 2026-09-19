@@ -85,12 +85,12 @@ def group_typename_length() -> int:
 # B. Constant="true", builtin + custom -- single processor (1756-L81E, the
 #    same default every other file in this project uses).
 #
-#    CORRECTION (direct field knowledge): the original
+#    CORRECTION, from field knowledge: the original
 #    version of this group crossed Constant with processor family (L8 vs
-#    5069), which was unnecessary and actively broke the capture batch --
-#    "5069 and l8/l9 processors use the same calculations for constant
-#    strings ... don't know why you would change that all of a sudden."
-#    Real fact, logged for the record: L8/L9/5069 can MOV a STRING tag
+#    5069), which was unnecessary and broke the capture batch. 5069 and
+#    L8/L9 processors use the same calculations for constant strings, so
+#    there was nothing to cross.
+#    Related real fact, logged for the record: L8/L9/5069 can MOV a STRING tag
 #    directly; older L7/1769 processors required COP instead. Not a
 #    sizing question, and not something that needed a processor-varying
 #    test here -- dropped back to the same single default processor every

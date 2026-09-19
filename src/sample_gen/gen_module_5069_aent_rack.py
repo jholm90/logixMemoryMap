@@ -3898,11 +3898,12 @@ def _write(out_name: str, children: list[str], renumber: bool = False) -> None:
 
 
 def _write_combined(out_name: str, plans: dict[str, list[str]]) -> None:
-    """: confirmed clean in real Studio 5000: "no errors,
-    valid ok. add to your arsenal for the next mass generation." Writes
+    """Several independent 5069-AENTR racks in one project.
+
+    Confirmed clean in real Studio 5000. Writes
     N independent 5069-AENTR racks (see _combined_racks_xml) into ONE
     project -- reusable for any future plans dict, not just _RANDOM_PLANS
-    (e.g. a future "mass generation" combining many rack compositions
+    (for example a mass generation combining many rack compositions
     into one bigger multi-adapter file)."""
     modules_xml = _combined_racks_xml(plans)
     l5x = build_l5x(target_name=f"Rack5069_{out_name}", tags_xml="", extra_modules_xml=modules_xml)

@@ -1,6 +1,6 @@
-"""Random-combination logic validation harness: "You got
-sample instruction sizing already, now you need to generate random
-combinations, estimate and test."
+"""Random-combination logic validation harness.
+
+Per-instruction sizing is measured; this tests random combinations of it.
 
 The 244-file per-instruction sweep isolated one instruction type per file --
 real routines mix dozens of types together. This generates files that DO

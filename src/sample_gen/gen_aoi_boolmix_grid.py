@@ -12,9 +12,9 @@ one and families where it cost nothing extra, and the split tracked BOOL/atomic
 composition closely enough to look causal: `mc10` gave -4 at b00, 0 at b01/b05/
 b09, -4 at b10 -- both PURE shapes carrying the term and the mixed ones not.
 That reading died on `mc20`, which carries it at b00, b02, b10, b18 AND b20. The
-conclusion drawn at that point was "a two-variable surface in (bool_count,
-atomic_count), sampled far too sparsely", and this grid is what that conclusion
-asked for.
+conclusion drawn at that point was a two-variable surface in (bool_count,
+atomic_count) sampled far too sparsely, and this grid is what that conclusion
+called for.
 
 It is not a two-variable surface. It is one constant. The whole instance-array
 block is padded up to an 8-byte boundary, so the extra 4 bytes appear exactly

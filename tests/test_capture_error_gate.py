@@ -81,6 +81,6 @@ def test_gate_line_is_matched_with_its_count() -> None:
 
 def test_live_repository_passes_the_gate() -> None:
     """The real check, against the real manifest: every errored capture in the
-    repository is flagged against the question that asked for it."""
+    repository is flagged against the question it was built for."""
     ce = _module()
     assert ce.main([]) == 0

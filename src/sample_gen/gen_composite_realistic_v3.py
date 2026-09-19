@@ -1,9 +1,9 @@
-"""50 MORE large, realistic-scope composite test programs -- v3
-the explicit spec after reviewing a real production file's accuracy:
-"generate another 50 unique files (v3) with these requirements:
-1. 1.5-2.5MB target size (you making 10kb files makes the error much less
-   noticeable) [clarified: 1,500,000-2,500,000 bytes of predicted CPU
-   memory, not L5X file size]
+"""50 MORE large, realistic-scope composite test programs -- v3, to an
+explicit spec drawn after reviewing a real production file's accuracy.
+
+1. 1.5-2.5MB target size. A 10 kB file makes an error far less visible.
+   This is 1,500,000-2,500,000 bytes of predicted CPU memory, not L5X file
+   size.
 2. 15+ ethernet nodes minimum
 3. 2 servo axis minimum (sample per the titusville file with MotionGroup,
    one power supply with DCBUS axis, Motion Axis and logic using the axis

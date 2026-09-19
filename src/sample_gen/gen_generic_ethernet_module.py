@@ -46,8 +46,8 @@ one number here rather than set independently.
          input of 4. Separates the two directions, which no real instance can
          do because real devices vary both at once.
   ARM C  `genem_n{K}` -- K identical instances at In 10 / Out 4, K = 1/2/4/8.
-         The per-module marginal question from OQ-MODULEMARGINAL, asked for the
-         one catalog where it matters most on a real file.
+         The per-module marginal question from OQ-MODULEMARGINAL, on the one
+         catalog where it matters most on a real file.
   ARM D  `genem_noconn` -- one instance with NO connections, the shape 4 real
          instances actually have. `zero_connection_module_bytes` (2,344) claims
          to cover this; nothing has ever tested it for this profile.

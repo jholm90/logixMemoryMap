@@ -1,8 +1,8 @@
-"""Large sweep batch ("why are you only doing batches of
-2? i want the next sample to be >50 ... you need to get a large sample size
-of data to ensure that tag structures are 100% confirmed"). One coherent
-drop covering every remaining gap in OQ-TAGOVERHEAD's model instead of one
-isolating pair at a time:
+"""Large sweep batch -- over 50 files in one drop, because a pair at a time
+cannot confirm a tag-structure model.
+
+One coherent batch covering every remaining gap in OQ-TAGOVERHEAD's model
+instead of one isolating pair at a time:
 
   A. Tag-name length, finer granularity (4..40 in steps of ~3) -- the
      earlier 2-point fit (4 vs 40 chars) had no coverage in between.

@@ -1,12 +1,12 @@
-"""MAM/MAJ/MAS/MRP keyword-combination validation. Method:
-one L5X file per instruction with a single instruction each; once those
-results validate, a 10-pass run confirms them. The question is whether
-keyword choice costs memory -- whether a merged MAM move takes more space
-than a disabled merge, and similarly for MAS using existing values compared
-to using new values. you need to do investigations on syntax for these
-instructions and make sure you can handle ANY combination."
+"""MAM/MAJ/MAS/MRP keyword-combination validation.
 
-Per the explicit sequencing, this is a single-rung (n=1) validation
+One L5X file per instruction with a single instruction each; once those
+results validate, a 10-pass run confirms them. The question is whether keyword
+choice costs memory -- whether a merged MAM move takes more space than a
+disabled merge, and the same for MAS using existing values against new ones.
+Every combination of these instructions' syntax has to be handled.
+
+This is a single-rung (n=1) validation
 pass, deliberately BEFORE another rung-count sweep -- gen_motion_
 instructions.py's existing n=10/n=100 files (built from ONE fixed real-
 corpus-transplanted template per instruction) stay as-is, unconfirmed

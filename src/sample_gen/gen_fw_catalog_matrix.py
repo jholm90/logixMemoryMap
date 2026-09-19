@@ -20,9 +20,8 @@ nothing:
     source.
   - CompactLogix 5370 (1769-Lxx): 9 catalogs, real ProductCodes already in
     wrapper.py's `_PRODUCT_CODES` (the fw_baseline exports).
-    RE-ADDED ("I got the L7 ahk stuff working and it's
-    the same for the 1769 processors, please re-add the 1769 processors
-    to the l5x test generation list") -- previously left out of this
+    RE-ADDED once the capture pipeline read a 1769 Capacity value the same
+    way it reads an L7 one. Previously left out of this
     automated multi-firmware matrix entirely (only ever built as 9
     single-firmware/v35 `fw_baseline` files) because the AHK capture
     pipeline couldn't read a 1769's Capacity value without a manual
@@ -84,7 +83,7 @@ table and the 5069-vs-1756 local-port shape logic.
 File naming: `fwmatrix_v{major}_{catalog_slug}.L5X` -- firmware version is
 the FIRST sort key, so a plain alphabetical directory listing (what
 batch_l5x_to_acd.ps1/batch_memory_capture.ps1 both iterate over) groups
-all of v31 together, then all of v32, etc., exactly as requested. v30
+all of v31 together, then all of v32, and so on. v30 is
 skipped entirely (SDK confirmed unable to build v30 projects at all, see
 OPEN_QUESTIONS.md OQ-BASELINE-PROCFW).
 
@@ -111,9 +110,8 @@ FIRMWARE_TABLE: list[tuple[str, str, str, bool]] = [
     ("33", "33.01", ' AutoDiagsEnabled="false" WebServerEnabled="false"', False),
     ("34", "34.01", ' AutoDiagsEnabled="false" WebServerEnabled="false"', False),
     ("35", "35.05", ' AutoDiagsEnabled="false" WebServerEnabled="false"', False),
-    # v36/v37 deliberately excluded (not asked for, told
-    # to leave out) -- they were ASSUMED/unconfirmed firmware attributes
-    # anyway (no real v36/v37 L5X sample ever existed in this project).
+    # v36 and v37 deliberately excluded: their firmware attributes are
+    # ASSUMED, because no real v36 or v37 L5X sample exists here.
     # DataExchangeId filled in per-file at generation time (real attribute,
     # but the GUID itself is per-export, not a firmware constant).
     ("38", "38.02", ' AutoDiagsEnabled="false" WebServerEnabled="false" DataExchangeId="{DATAEXCHANGEID}"', False),
