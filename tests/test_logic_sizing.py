@@ -494,7 +494,7 @@ def test_cpt_uniform_chain_matches_confirmed_real_formula():
 
 
 def test_cpt_t1_t2_mix_is_priced_per_tier_not_per_operator():
-    """A T1+T2 mix costs 100 + 24*tier1 + 40*tier2, refit .
+    """A T1+T2 mix costs 100 + 24*tier1 + 40*tier2, refit.
 
     The old form here was a flat 100 + 32*operators, which could only be
     right where the two tiers balanced. Splitting the rate by tier takes the

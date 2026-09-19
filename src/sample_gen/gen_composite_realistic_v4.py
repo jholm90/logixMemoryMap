@@ -134,7 +134,7 @@ def _modules_xml_unique_ips_v4(catalogs: list[str]) -> str:
                 escaped = re.escape(name)
                 xml = re.sub(
                     rf'(<Module\b[^>]*?\bName=)"{escaped}"', rf'\1"{new_name}"', xml,
-                )
+)
                 xml = xml.replace(f'ParentModule="{name}"', f'ParentModule="{new_name}"')
         real_ips = sorted(set(re.findall(r"192\.168\.1\.\d+", xml)))
         block_num, pos_in_block = divmod(i, _CATALOGS_PER_THIRD_OCTET)
@@ -213,7 +213,7 @@ def _profile_for_index(i: int) -> ProfileV4:
     return ProfileV4(
         i, udt_count, aoi_count, array_sizes, module_catalogs, rung_count, udt_array_len,
         program_count, subs_per_program, string_count, n_drives, target_total,
-    )
+)
 
 
 def _udt_specs(profile: ProfileV4) -> tuple[str, list[tuple[str, list[MemberSpec]]]]:
@@ -224,7 +224,7 @@ def _udt_specs(profile: ProfileV4) -> tuple[str, list[tuple[str, list[MemberSpec
             [MemberSpec(f"D{k}", "DINT") for k in range(3 + (u % 3))]
             + [MemberSpec(f"I{k}", "INT") for k in range(2)]
             + [MemberSpec(f"B{k}", "BOOL") for k in range(4)]
-        )
+)
     types_parts = []
     specs: list[tuple[str, list[MemberSpec]]] = [None] * profile.udt_count  # type: ignore[list-item]
     for u in range(1, profile.udt_count):
@@ -236,7 +236,7 @@ def _udt_specs(profile: ProfileV4) -> tuple[str, list[tuple[str, list[MemberSpec
                                 f'        <Member Name="{m.name}" DataType="{m.data_type}" Dimension="0" '
                                 f'Radix="Decimal" Hidden="false" ExternalAccess="Read/Write"/>\n'
                                 for m in members
-                            ) + "      </Members>\n    </DataType>")
+) + "      </Members>\n    </DataType>")
         specs[u] = (name, members)
     nested_name = specs[1][0] if profile.udt_count >= 2 else None
     name0 = f"Comp4Udt{profile.index:03d}_0"
@@ -270,7 +270,7 @@ def _aoi_specs(profile: ProfileV4, axis_tag_name: str) -> list[tuple[str, str, l
         def_xml, storage = aoi_xml(
             name, input_params=input_params, output_params=output_params,
             local_tags=local_tags, logic_rungs_xml=logic_rungs,
-        )
+)
         out.append((name, def_xml, storage, False))
     return out
 
@@ -297,7 +297,7 @@ def _rich_program_xml(prog_name: str, n_subs: int, index: int, prog_idx: int) ->
         f'<Routine Name="MainRoutine" Type="RLL"><RLLContent>\n{main_rungs}\n</RLLContent></Routine>\n'
         + "\n".join(sub_routines)
         + "\n</Routines>\n</Program>"
-    )
+)
     return prog_xml, total_instr
 
 
@@ -363,7 +363,7 @@ def _build(profile: ProfileV4) -> tuple[str, str, int]:
     array_udt_name, array_udt_members = udts[0]
     tags_parts.append(tag_xml(
         "UdtArr", array_udt_name, dimensions=(profile.udt_array_len,), udt_members=array_udt_members,
-    ))
+))
     tags_parts.append(timer_tag_xml("MainTmr", preset=1000 + profile.index * 10))
     tags_parts.append(counter_tag_xml("MainCtr", preset=100 + profile.index))
 
@@ -439,7 +439,7 @@ def _build(profile: ProfileV4) -> tuple[str, str, int]:
         extra_modules_xml=modules_xml,
         extra_programs_xml="\n".join(programs_xml_parts),
         extra_scheduled_programs_xml="\n".join(scheduled_xml_parts),
-    )
+)
 
     # Size ONE filler DINT array tag to close the gap to profile.target_total
     # exactly -- same computed (not guessed) technique as v3.
@@ -459,13 +459,13 @@ def _build(profile: ProfileV4) -> tuple[str, str, int]:
         extra_modules_xml=modules_xml,
         extra_programs_xml="\n".join(programs_xml_parts),
         extra_scheduled_programs_xml="\n".join(scheduled_xml_parts),
-    )
+)
     final_total = _floor_bytes(l5x_final)
 
     n_dual = sum(1 for _n, _c, is_dual in _drive_specs_for_profile(profile) if is_dual)
     n_single = profile.n_drives - n_dual
     description = (
-        f"Composite realistic-scope test v4 #{profile.index}/100 (2026-09-03, the explicit spec: "
+        f"Composite realistic-scope test v4 #{profile.index}/100 (the explicit spec: "
         f"\"4 drives minimum and 50 ethernet nodes minimum, file size between 2-3MB\" -- confirmed 4 "
         f"drives means 4 separate drive MODULES, not axes): {profile.udt_count} UDTs (1 nested), "
         f"{profile.aoi_count} unique AOIs (1 with a real InOut AXIS_CIP_DRIVE param, the rest with real "
@@ -483,7 +483,7 @@ def _build(profile: ProfileV4) -> tuple[str, str, int]:
         f"1756-L81E/fw35.05 default. Real floor total {final_total} (target {profile.target_total}) -- "
         f"Axis/MotionGroup content is unmodeled (OQ-AXISSTRUCT), so real Capacity will run somewhat "
         f"higher than this floor."
-    )
+)
     return l5x_final, description, final_total
 
 

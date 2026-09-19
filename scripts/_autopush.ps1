@@ -1,5 +1,5 @@
 # Shared by batch_l5x_to_acd.ps1 and batch_memory_capture.ps1. Results
-# should never need copy/pasting out of PowerShell by hand (2026-08-20), so
+# should never need copy/pasting out of PowerShell by hand, so
 # both scripts push straight to the repo instead. Dot-source this file, then
 # call Push-RepoFile.
 #
@@ -7,7 +7,7 @@
 # they're safe in a commit, not sitting as uncommitted changes), then
 # rebases that commit onto origin/main (linear history, no merge commit)
 # before pushing. Committing before syncing matters: if a commit lands on
-# origin/main while a long batch run is in progress (2026-08-20, real
+# origin/main while a long batch run is in progress (real
 # case: a doc/sample push arrived mid-53-file-run), the file being pushed
 # is uncommitted right up until this point, and syncing against a dirty
 # working tree fails every time. Committing first avoids that.
@@ -19,7 +19,7 @@ function Push-RepoFile {
         [Parameter(Mandatory = $true)][string]$RepoRoot,
         [Parameter(Mandatory = $true)][string]$FilePath,
         [Parameter(Mandatory = $true)][string]$CommitMessage
-    )
+)
 
     $fileFull = (Resolve-Path $FilePath).Path
     Push-Location $RepoRoot
@@ -52,7 +52,7 @@ function Push-RepoFile {
     }
 }
 
-# 2026-08-30: the push must cover ALL files in the project directory,
+# the push must cover ALL files in the project directory,
 # broader than Push-RepoFile's one-file-at-a-time scope.
 # Stages and pushes EVERYTHING dirty in the working tree (git add -A,
 # not just tracked files -- new/untracked files get swept in too), one
@@ -69,7 +69,7 @@ function Push-AllChanges {
     param(
         [Parameter(Mandatory = $true)][string]$RepoRoot,
         [Parameter(Mandatory = $true)][string]$CommitMessage
-    )
+)
 
     Push-Location $RepoRoot
     try {

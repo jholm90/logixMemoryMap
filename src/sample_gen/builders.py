@@ -57,7 +57,7 @@ def validate_logix_name(name: str, what: str) -> str:
     raise InvalidLogixNameError(
         f"{what}: {name!r} is not a valid Logix identifier -- it {reason}. "
         f"Real Studio 5000 rejects the whole import with \"Invalid name.\""
-    )
+)
 
 
 @dataclass(frozen=True)
@@ -163,7 +163,7 @@ def _array2d_body_xml(data_type: str, rows: int, cols: int,
     elements = "".join(
         f'<Element Index="[{r},{c}]" Value="{_default_value(data_type)}" />'
         for r in range(rows) for c in range(cols)
-    )
+)
     radix_attr = f' Radix="{radix}"' if radix else ""
     return (f'<Array DataType="{data_type}" Dimensions="{rows},{cols}"'
             f'{radix_attr}>{elements}</Array>')
@@ -175,7 +175,7 @@ def _string_structure_member_xml(name: str) -> str:
         f'<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0" />'
         f'<DataValueMember Name="DATA" DataType="STRING" Radix="ASCII"></DataValueMember>'
         f"</StructureMember>"
-    )
+)
 
 
 def _udt_structure_body_xml(members: list["MemberSpec"]) -> str:
@@ -198,7 +198,7 @@ def _udt_structure_body_xml(members: list["MemberSpec"]) -> str:
                 elements = "".join(
                     f'<Element Index="[{i}]"><Structure DataType="{m.data_type}">{inner}</Structure></Element>'
                     for i in range(m.dimension)
-                )
+)
                 parts.append(f'<ArrayMember Name="{m.name}" DataType="{m.data_type}" '
                              f'Dimensions="{m.dimension}">{elements}</ArrayMember>')
             else:
@@ -257,7 +257,7 @@ def _string_tag_data_xml(max_len: int) -> str:
     return (
         f'<Data Format="L5K">\n<![CDATA[[0,\'{l5k_padding}\'\n\t\t]]]>\n</Data>\n'
         f'        <Data Format="String" Length="0">\n<![CDATA[\'\']]>\n</Data>'
-    )
+)
 
 
 def string_array_tag_xml(name: str, count: int, max_len: int = 82, data_type: str = "STRING") -> str:
@@ -287,7 +287,7 @@ def string_array_tag_xml(name: str, count: int, max_len: int = 82, data_type: st
         f'<DataValueMember Name="DATA" DataType="{data_type}" Radix="ASCII"><![CDATA[]]></DataValueMember>'
         f"</Structure></Element>"
         for i in range(count)
-    )
+)
     return (
         f'      <Tag Name="{name}" TagType="Base" DataType="{data_type}" Dimensions="{count}"'
         f' Constant="false" ExternalAccess="Read/Write">\n'
@@ -295,7 +295,7 @@ def string_array_tag_xml(name: str, count: int, max_len: int = 82, data_type: st
         f'        <Data Format="Decorated"><Array DataType="{data_type}" Dimensions="{count}">'
         f"{decorated_elements}</Array></Data>\n"
         f"      </Tag>"
-    )
+)
 
 
 # Types whose storage is a single value with a display radix. Anything else
@@ -363,7 +363,7 @@ def tag_xml(
             f'      <Tag Name="{name}" TagType="Base" DataType="{data_type}"{dims_attr}'
             f' Constant="{constant_attr}" ExternalAccess="Read/Write">{desc_xml}\n'
             f"      </Tag>"
-        )
+)
 
     if string_max_len is not None:
         return (
@@ -371,14 +371,14 @@ def tag_xml(
             f' Constant="{constant_attr}" ExternalAccess="Read/Write">{desc_xml}\n'
             f'        {_string_tag_data_xml(string_max_len)}\n'
             f"      </Tag>"
-        )
+)
 
     if udt_members is not None:
         structure_body = f'<Structure DataType="{data_type}">{_udt_structure_body_xml(udt_members)}</Structure>'
         data_body = (
             _array_body_xml(data_type, dimensions[0], radix=None, element_fn=lambda i: structure_body)
             if dimensions else structure_body
-        )
+)
     elif len(dimensions) == 2:
         data_body = _array2d_body_xml(data_type, dimensions[0], dimensions[1], radix)
     elif dimensions:
@@ -391,7 +391,7 @@ def tag_xml(
         f'{radix_attr} Constant="{constant_attr}" ExternalAccess="Read/Write">{desc_xml}\n'
         f'        <Data Format="Decorated">{data_body}</Data>\n'
         f"      </Tag>"
-    )
+)
 
 
 # Backplane port types with no physical chassis behind them -- the bus is
@@ -483,7 +483,7 @@ def _udt_members_xml(members: list[MemberSpec]) -> str:
                     if desc else
                     f'      <Member Name="{bool_member.name}" DataType="BIT" Dimension="0" '
                     f'Hidden="false" Target="{hidden_name}" BitNumber="{bit_num}"/>'
-                )
+)
                 parts.append(tag)
     return "\n".join(parts)
 
@@ -500,7 +500,7 @@ def udt_xml(name: str, members: list[MemberSpec], family: str = "NoFamily",
         f'    <DataType Name="{name}" Family="{family}" Class="User">\n'
         f"      {desc_xml}<Members>\n{members_xml}\n      </Members>\n"
         f"    </DataType>"
-    )
+)
 
 
 def custom_string_type_xml(name: str, max_len: int) -> str:
@@ -514,7 +514,7 @@ def custom_string_type_xml(name: str, max_len: int) -> str:
         f'        <Member Name="DATA" DataType="SINT" Dimension="{max_len}" Radix="ASCII" Hidden="false" ExternalAccess="Read/Write"/>\n'
         f"      </Members>\n"
         f"    </DataType>"
-    )
+)
 
 
 def _aoi_default_data_xml(m: "MemberSpec") -> str:
@@ -526,7 +526,7 @@ def _aoi_default_data_xml(m: "MemberSpec") -> str:
     return (
         f'<DefaultData Format="L5K"><![CDATA[{val}]]></DefaultData>'
         f'<DefaultData Format="Decorated">{_data_value_xml(m.data_type, radix)}</DefaultData>'
-    )
+)
 
 
 def _aoi_array_default_data_xml(m: "MemberSpec") -> str:
@@ -558,7 +558,7 @@ def _aoi_array_default_data_xml(m: "MemberSpec") -> str:
     return (
         f'<DefaultData Format="L5K"><![CDATA[[{l5k_vals}]]]></DefaultData>'
         f'<DefaultData Format="Decorated">{array_body}</DefaultData>'
-    )
+)
 
 
 def _aoi_nested_default_data_xml(m: "MemberSpec") -> str:
@@ -573,7 +573,7 @@ def _aoi_nested_default_data_xml(m: "MemberSpec") -> str:
     return (
         f'<DefaultData Format="L5K"><![CDATA[[0,{l5k_vals}]]]></DefaultData>'
         f'<DefaultData Format="Decorated"><Structure DataType="{m.data_type}">{inner}</Structure></DefaultData>'
-    )
+)
 
 
 def _aoi_description_xml(m: "MemberSpec") -> str:
@@ -604,7 +604,7 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
         return (
             f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{radix_attr} Usage="{usage}" '
             f'Required="false" Visible="false" ExternalAccess="Read Only"/>'
-        )
+)
 
     if usage == "InOut":
         # Real shape confirmed (aoi_inOut_OneDint.L5X,
@@ -643,7 +643,7 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
         head = (
             f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{dim_attr}{radix_attr} Usage="InOut" '
             f'Required="true" Visible="true"{constant_attr}'
-        )
+)
         # Real corpus (311DGeneratedProgram.L5X MsgModuleReset,
         # BaillieLeitchField MESSAGE_Fault): a described InOut Parameter is
         # NOT self-closing -- it wraps a <Description> child.
@@ -680,14 +680,14 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
             f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}" Usage="{usage}" '
             f'Required="{required_attr}" Visible="{visible_attr}" '
             f'ExternalAccess="{external_access}">{_aoi_description_xml(m)}{m.raw_default_data}</Parameter>'
-        )
+)
     if m.dimension and usage != "InOut":
         raise ValueError(
             f"AOI Parameter {m.name!r}: array-dimensioned (Dimensions={m.dimension}) "
             f"atomic Parameters must be Usage=\"InOut\" -- Logix does not allow an array "
-            f"Input/Output Parameter (real bug found 2026-09-03, the controller "
+            f"Input/Output Parameter (real bug found, the controller "
             f"testing). Use inout_params=, not input_params=/output_params=, for this member."
-        )
+)
     if m.data_type not in _ATOMIC_TYPES and usage != "InOut":
         # Same class of rule as the array guard above, found the same way.
         # An Input/Output Parameter is passed BY VALUE and Logix only
@@ -704,7 +704,7 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
             f"Parameter must be Usage=\"InOut\" -- an Input/Output Parameter is passed by "
             f"value and Logix allows only atomic types there. Use inout_params= for this "
             f"member."
-        )
+)
     radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
     external_access = "Read Only" if usage == "Output" else "Read/Write"
     default = _aoi_default_data_xml(m)
@@ -714,7 +714,7 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
         f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}" Usage="{usage}"'
         f'{radix_attr} Required="{required_attr}" Visible="{visible_attr}" '
         f'ExternalAccess="{external_access}">{_aoi_description_xml(m)}{default}</Parameter>'
-    )
+)
 
 
 def _aoi_local_tag_xml(m: "MemberSpec") -> str:
@@ -726,7 +726,7 @@ def _aoi_local_tag_xml(m: "MemberSpec") -> str:
         return (
             f'<LocalTag Name="{m.name}" DataType="{m.data_type}"{dim_attr} '
             f'ExternalAccess="None">{_aoi_description_xml(m)}{m.raw_default_data}</LocalTag>'
-        )
+)
     if m.nested_members is not None:
         # Real shape confirmed: a nested-UDT/nested-AOI LocalTag has no
         # Radix attribute at all (matches the same UDT-typed-tag rule).
@@ -737,7 +737,7 @@ def _aoi_local_tag_xml(m: "MemberSpec") -> str:
     return (
         f'<LocalTag Name="{m.name}" DataType="{m.data_type}"{dim_attr}{radix_attr} '
         f'ExternalAccess="None">{_aoi_description_xml(m)}{default}</LocalTag>'
-    )
+)
 
 
 # Static but well-formed, matches the shape of a real AOI exports
@@ -839,17 +839,17 @@ def aoi_xml(
     eif_routine_xml = (
         f'        <Routine Name="EnableInFalse" Type="RLL"><RLLContent>{enable_in_false_rungs_xml}</RLLContent></Routine>\n'
         if enable_in_false_rungs_xml else ""
-    )
+)
     prescan_routine_xml = (
         f'        <Routine Name="Prescan" Type="RLL"><RLLContent>{prescan_rungs_xml}</RLLContent></Routine>\n'
         if prescan_rungs_xml else ""
-    )
+)
 
     logic_routine_xml = (
         f'        <Routine Name="Logic" Type="RLL"><RLLContent>{logic_rungs_xml}</RLLContent></Routine>\n'
         if logic_rungs_xml else
         '        <Routine Name="Logic" Type="RLL"/>\n'
-    )
+)
     extra_routines_block = f"{extra_routines_xml}\n" if extra_routines_xml else ""
 
     definition = (
@@ -866,7 +866,7 @@ def aoi_xml(
         f'{extra_routines_block}'
         f'      </Routines>\n'
         f"    </AddOnInstructionDefinition>"
-    )
+)
     storage_members = [enable_in, enable_out, *input_params, *output_params, *local_tags]
     return definition, storage_members
 
@@ -885,13 +885,13 @@ def program_xml(name: str, tags_xml: str = "", rungs_xml_body: str = "") -> str:
     validate_logix_name(name, "AOI")
     rungs = rungs_xml_body if rungs_xml_body.strip() else (
         '<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>'
-    )
+)
     return (
         f'<Program Name="{name}" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">\n'
         f"<Tags>\n{tags_xml}\n</Tags>\n"
         f"<Routines>\n<Routine Name=\"MainRoutine\" Type=\"RLL\">\n<RLLContent>\n{rungs}\n</RLLContent>\n</Routine>\n</Routines>\n"
         f"</Program>"
-    )
+)
 
 
 def rung_xml(number: int, instructions: str, comment: str | None = None) -> str:
@@ -905,7 +905,7 @@ def rung_xml(number: int, instructions: str, comment: str | None = None) -> str:
         f'              <Rung Number="{number}" Type="N">\n'
         f"                {comment_xml}<Text><![CDATA[{instructions}]]></Text>\n"
         f"              </Rung>"
-    )
+)
 
 
 def rungs_xml(count: int, instructions_fn, comment_fn=None) -> str:
@@ -935,7 +935,7 @@ def timer_tag_xml(name: str, preset: int = 1000) -> str:
         f'<DataValueMember Name="TT" DataType="BOOL" Value="0" />'
         f'<DataValueMember Name="DN" DataType="BOOL" Value="0" /></Structure></Data>\n'
         f"      </Tag>"
-    )
+)
 
 
 def counter_tag_xml(name: str, preset: int = 100) -> str:
@@ -954,7 +954,7 @@ def counter_tag_xml(name: str, preset: int = 100) -> str:
         f'<DataValueMember Name="OV" DataType="BOOL" Value="0" />'
         f'<DataValueMember Name="UN" DataType="BOOL" Value="0" /></Structure></Data>\n'
         f"      </Tag>"
-    )
+)
 
 
 def control_tag_xml(name: str, length: int = 10, position: int = 9) -> str:
@@ -981,7 +981,7 @@ def control_tag_xml(name: str, length: int = 10, position: int = 9) -> str:
         f'<DataValueMember Name="FD" DataType="BOOL" Value="0"/>'
         f'</Structure></Data>\n'
         f"      </Tag>"
-    )
+)
 
 
 def message_tag_xml(name: str, local_element: str, destination_tag: str) -> str:
@@ -1004,7 +1004,7 @@ def message_tag_xml(name: str, local_element: str, destination_tag: str) -> str:
         f'DestinationTag="{destination_tag}" LargePacketUsage="false"/>\n'
         f'        </Data>\n'
         f"      </Tag>"
-    )
+)
 
 
 # Real CAM element rows -- distinct from CAM_PROFILE (see
@@ -1027,7 +1027,7 @@ def cam_tag_xml(name: str, count: int) -> str:
             f'<DataValueMember Name="Slave" DataType="REAL" Radix="Float" Value="{slave}"/>'
             f'<DataValueMember Name="SegmentType" DataType="DINT" Radix="Decimal" Value="{seg}"/>'
             f"</Structure></Element>"
-        )
+)
     return (
         f'      <Tag Name="{name}" TagType="Base" DataType="CAM" Dimensions="{count}" '
         f'Constant="false" ExternalAccess="Read/Write">\n'
@@ -1036,7 +1036,7 @@ def cam_tag_xml(name: str, count: int) -> str:
         + "".join(elements) +
         f"</Array></Data>\n"
         f"      </Tag>"
-    )
+)
 
 
 def program_tag_xml(name: str, data_type: str, usage: str | None = None) -> str:
@@ -1059,7 +1059,7 @@ def program_tag_xml(name: str, data_type: str, usage: str | None = None) -> str:
         f'        <Data Format="L5K"><![CDATA[{val}]]></Data>\n'
         f'        <Data Format="Decorated">{_data_value_xml(data_type, radix)}</Data>\n'
         f"      </Tag>"
-    )
+)
 
 
 def alias_tag_xml(name: str, alias_for: str, radix: str = "Decimal") -> str:
@@ -1105,7 +1105,7 @@ def motion_instruction_tag_xml(name: str) -> str:
         f'<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>'
         f'</Structure></Data>\n'
         f"      </Tag>"
-    )
+)
 
 
 # Real CAM_PROFILE element rows, captured verbatim from
@@ -1141,7 +1141,7 @@ def cam_profile_tag_xml(name: str, count: int) -> str:
             f'<Element Index="[{i}]"><Structure DataType="CAM_PROFILE">'
             f'<DataValueMember Name="Status" DataType="DINT" Radix="Decimal" Value="{status}"/>'
             f"</Structure></Element>"
-        )
+)
     return (
         f'      <Tag Name="{name}" TagType="Base" DataType="CAM_PROFILE" Dimensions="{count}" '
         f'Constant="false" ExternalAccess="Read/Write">\n'
@@ -1150,7 +1150,7 @@ def cam_profile_tag_xml(name: str, count: int) -> str:
         + "".join(elements) +
         f"</Array></Data>\n"
         f"      </Tag>"
-    )
+)
 
 
 # ---------------------------------------------------------------------------
@@ -1217,7 +1217,7 @@ def module_1756_digital_input_xml(name: str, slot: int = 1, parent_port_id: int 
         f'</Connection></Connections>\n'
         f'</Communications>\n'
         f"</Module>"
-    )
+)
 
 
 def module_generic_ethernet_xml(name: str, ip_address: str, input_bytes: int, output_bytes: int) -> str:
@@ -1261,7 +1261,7 @@ def module_generic_ethernet_xml(name: str, ip_address: str, input_bytes: int, ou
         f'</Connection></Connections>\n'
         f'</Communications>\n'
         f"</Module>"
-    )
+)
 
 
 
@@ -1294,18 +1294,18 @@ def task_xml(task_name: str, program_name: str, task_type: str = "CONTINUOUS",
     if task_type not in ("CONTINUOUS", "PERIODIC", "EVENT"):
         raise ValueError(
             f"task_type {task_type!r} is not one of CONTINUOUS/PERIODIC/EVENT"
-        )
+)
     rate_attr = ' Rate="10"' if task_type in ("PERIODIC", "EVENT") else ""
     disable_outputs = "true" if task_type == "EVENT" else "false"
     event_tag_attr = f' EventTag="{event_tag}"' if event_tag else ""
     event_info_xml = (
         f'<EventInfo EventTrigger="{event_trigger}"{event_tag_attr} EnableTimeout="false"/>\n'
         if event_trigger else ""
-    )
+)
     return (
         f'<Task Name="{task_name}" Type="{task_type}"{rate_attr} Priority="{priority}" '
         f'Watchdog="{watchdog}" DisableUpdateOutputs="{disable_outputs}" InhibitTask="false">\n'
         f'{event_info_xml}'
         f'<ScheduledPrograms>\n<ScheduledProgram Name="{program_name}"/>\n</ScheduledPrograms>\n'
         f"</Task>"
-    )
+)

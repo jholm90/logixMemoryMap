@@ -199,7 +199,7 @@ def group_axis_aoi_inout() -> None:
     l5x = build_l5x(target_name="AxisAoiInout", tags_xml=tags, extra_aoi_xml=definition, extra_rungs_xml=rung)
     _write_unmodeled(l5x, "axis_aoi_inout_1_instance",
            "Real AXIS_CIP_DRIVE tag + AOI with BOOL Input + InOut AXIS_CIP_DRIVE param, called from a rung, "
-           "1 instance -- FIXED 2026-08-25 (FaultReset now Required=True/Visible=True so the call-site "
+           "1 instance -- FIXED (FaultReset now Required=True/Visible=True so the call-site "
            "FaultResetVal arg has somewhere to go; the previous version's 2 build errors were exactly this)")
 
 
@@ -228,7 +228,7 @@ def group_axis_aoi_inout_reqvis_sweep() -> None:
                          extra_aoi_xml=definition)
         _write_unmodeled(l5x, f"axis_aoi_inout_reqvis_{label}_def_only",
                f"AOI with BOOL Input (FaultReset, Required={required}/Visible={visible}) + InOut "
-               f"AXIS_CIP_DRIVE param, 0 instances -- reqvis-vs-InOut interaction sweep, 2026-08-25: ")
+               f"AXIS_CIP_DRIVE param, 0 instances -- reqvis-vs-InOut interaction sweep: ")
 
 
 # ---------------------------------------------------------------------------
@@ -260,7 +260,7 @@ def group_full_combo() -> None:
                      extra_aoi_xml=definition, extra_rungs_xml=rung)
     _write_unmodeled(l5x, "axis_full_combo",
            "Real AXIS_CIP_DRIVE tag + ts_CIPAxis-shaped composite UDT (1 instance) + AOI-with-InOut-axis call, "
-           "all together -- additivity check against the individually-confirmed constants -- FIXED 2026-08-25 "
+           "all together -- additivity check against the individually-confirmed constants -- FIXED "
            "(same FaultReset Required/Visible fix as axis_aoi_inout_1_instance)")
 
 

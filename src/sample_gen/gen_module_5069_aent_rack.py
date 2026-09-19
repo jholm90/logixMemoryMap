@@ -3829,7 +3829,7 @@ def _rack_xml(children: list[str], renumber: bool = False) -> str:
             block = re.sub(
                 r'(<Port Id="1" Address=")\d+("\s*Type="5069"\s*Upstream="true"\s*/>)',
                 rf"\g<1>{slot}\g<2>", block, count=1,
-            )
+)
         parts.append(block)
     return "\n".join(parts)
 
@@ -3874,7 +3874,7 @@ def _floor_bytes(l5x_text: str) -> int:
 def _write(out_name: str, children: list[str], renumber: bool = False) -> None:
     l5x = build_l5x(
         target_name=f"Rack5069_{out_name}", tags_xml="", extra_modules_xml=_rack_xml(children, renumber=renumber),
-    )
+)
     out_path = OUT_ROOT / f"rack_5069_{out_name}.L5X"
     write_sample_unmodeled(l5x, out_path)
     total = _floor_bytes(l5x)
@@ -3882,17 +3882,17 @@ def _write(out_name: str, children: list[str], renumber: bool = False) -> None:
         " Slot Addresses renumbered sequentially from 1 (real captured values would leave gaps for "
         "this non-contiguous a random subset -- see _rack_xml's docstring); everything else, "
         "including each module's own I/O Connection/ConfigTag content, is untouched." if renumber else ""
-    )
+)
     description = (
-        f"5069-AENTR remote rack (2026-09-02, real reference upload; random-composition batch "
-        f"added 2026-09-03: 10 Ethernet racks with random cards and random sizes, "
+        f"5069-AENTR remote rack (real reference upload; random-composition batch "
+        f"added: 10 Ethernet racks with random cards and random sizes, "
         f"for validation): one real 5069-AENTR EtherNet/IP adapter hosting {len(children)} real 5069-family "
         f"child modules on its own local bus ({', '.join(children)}), genericized structurally "
         f"verbatim from that reference.{renumber_note} Real floor total {total} (AENTR itself and "
         f"5069-SERIAL/A are unmodeled zero-connection/unresolved shapes -- real Capacity will run "
         f"somewhat higher). See OQ-MODULEIO for the per-catalog/rack-scale module_overhead question "
         f"this feeds."
-    )
+)
     append_manifest_row(f"rack_5069_{out_name}", description, "modules", out_path, total)
     print(f"Wrote {out_path} (floor {total} bytes)")
 
@@ -3912,13 +3912,13 @@ def _write_combined(out_name: str, plans: dict[str, list[str]]) -> None:
     total = _floor_bytes(l5x)
     catalogs_summary = "; ".join(f"{i}:[{', '.join(c)}]" for i, c in enumerate(plans.values(), start=1))
     description = (
-        f"5069-AENTR combined multi-rack (2026-09-03, all 10 racks in one file -- "
+        f"5069-AENTR combined multi-rack (all 10 racks in one file -- "
         f"confirmed real Studio 5000 clean, then kept for the next mass "
         f"generation): {len(plans)} independent real 5069-AENTR EtherNet/IP adapters in one "
         f"project (AENT1..AENT{len(plans)}, each its own unique IP 192.168.N.1), each hosting its "
         f"own real 5069-family child modules -- {catalogs_summary}. Real floor total {total}. "
         f"See OQ-MODULEIO."
-    )
+)
     append_manifest_row(f"rack_5069_{out_name}", description, "modules", out_path, total)
     print(f"Wrote {out_path} (floor {total} bytes)")
 

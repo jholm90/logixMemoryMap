@@ -79,7 +79,7 @@ C. group_aoi_internal_ladder (6 files)
    AOI term is isolated from the JSR term for the first time. n=6000
    (12,000 AOI instructions) brackets the real file's 6,255.
 
-D. Structured Text -- MOVED OUT to gen_st_sizing.py .
+D. Structured Text -- MOVED OUT to gen_st_sizing.py.
    The first draft of this batch carried a naive ST ladder written from
    general knowledge with only its FOR shape copied from a real file.
    ST has to be written from measured corpus idiom rather than plausible-

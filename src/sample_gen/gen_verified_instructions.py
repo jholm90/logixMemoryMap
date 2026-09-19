@@ -1,4 +1,4 @@
-"""Instructions whose call shape verified by hand .
+"""Instructions whose call shape was verified by hand.
 
 A project containing every one of these instructions was built by hand,
 verified BUILD CLEAN in Studio 5000, and exported
@@ -105,7 +105,7 @@ def main() -> None:
                 target_name=f"{mnemonic}N{n}",
                 tags_xml=tags_xml,
                 extra_rungs_xml=rungs,
-            )
+)
             out_name = f"verifinstr_{mnemonic.lower()}_n{n:05d}"
             out_path = OUT_ROOT / f"{out_name}.L5X"
             lint_or_raise(l5x, context=str(out_path))
@@ -113,11 +113,11 @@ def main() -> None:
             append_manifest_row(
                 out_name,
                 f"{n} rungs of {rung_text[:-1]} -- call shape VERBATIM from the "
-                f"2026-09-04 verified build-clean export (virtual axis, no module binding)",
+                f" verified build-clean export (virtual axis, no module binding)",
                 "verified_instr",
                 out_path,
                 0,
-            )
+)
             written += 1
             print(f"Wrote {out_path}")
     print(f"\nDone. {written} files ({len(_VERIFIED)} instructions x {len(COUNTS)} counts).")

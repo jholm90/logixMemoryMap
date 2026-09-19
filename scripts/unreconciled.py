@@ -34,7 +34,7 @@ from sample_gen.manifest_store import load_manifest  # noqa: E402
 
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from l5x_memory_analyzer.parser.export_scope import (  # noqa: E402
+from l5x_memory_analyzer.parser.export_scope import (# noqa: E402
     context_names,
     detect_export_scope,
     split_totals,
@@ -118,7 +118,7 @@ def main() -> int:
 
     print("\nA family with many rows, one sign, and a median far from zero is an\n"
           "unreconciled measurement, not noise -- that is the shape all three of\n"
-          "2026-09-11's answered questions had before they were differenced.")
+          " 's answered questions had before they were differenced.")
     return 0
 
 

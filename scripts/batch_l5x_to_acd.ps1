@@ -4,14 +4,14 @@
   CLI (from RockwellAutomation/ra-logix-designer-vcs-custom-tools), so
   hundreds of samples can be compiled without opening Logix Designer by hand.
 
-  Resumable (2026-08-20): re-running with the same -OutputDir picks
+  Resumable: re-running with the same -OutputDir picks
   up where it left off -- already-converted files (status "ok" in
   convert_log.csv) are skipped, so stopping partway through doesn't lose
   progress. Press any key at any point to stop cleanly after the file
   currently converting finishes; nothing is lost, just re-run the same
   command later to continue.
 
-  Staleness-aware, content-hash-based (2026-08-23, third version same
+  Staleness-aware, content-hash-based (third version same
   week -- see git history on this file for the two that didn't work).
   v1 tracked convert_log.csv rows with no time info at all -> real Build
   errors against pre-fix .ACD binaries that never got reconverted. v2
@@ -50,7 +50,7 @@
     (dotnet build against .NET 10 SDK) and either on PATH or passed via -L5xGitPath
 
 .NOTES
-  samples/known_conversion_failures.csv (2026-08-30): files listed there are
+  samples/known_conversion_failures.csv: files listed there are
   skipped unconditionally by filename, regardless of content hash -- every
   sample regeneration stamps a fresh ExportDate even when nothing about the
   actual import-blocking bug changed, so the hash-gated skip below can't be
@@ -112,7 +112,7 @@ foreach ($f in $allFiles) {
     $currentPaths[$f.FullName] = $true
 }
 
-# 2026-08-23: keeping a separate CSV outside the git repository caused
+# keeping a separate CSV outside the git repository caused
 # this problem. $logPath lives outside
 # the repo by design (it sits next to the .ACD binaries, which genuinely
 # shouldn't be in git), but that means any cleanup done on the repo's
@@ -140,7 +140,7 @@ if ($prunedCount -gt 0) {
 $recordedHash = @{}
 $prunedRows | Where-Object { $_.status -eq "ok" -and $_.l5x_hash } | ForEach-Object { $recordedHash[$_.l5x_path] = $_.l5x_hash }
 
-# 2026-08-27: a file the SDK refuses outright must not be re-asked every
+# a file the SDK refuses outright must not be re-asked every
 # pass. A FAILED row never gets a $recordedHash entry (the
 # filter above only populates it for status "ok"), so a file that ALWAYS
 # fails to convert -- not a transient/flaky failure, a permanent one, e.g.
@@ -157,7 +157,7 @@ $permanentlyFailedHash = @{}
 $prunedRows | Where-Object { $_.status -eq "FAILED" -and $_.message -match $UNSUPPORTED_SDK_VERSION_PATTERN -and $_.l5x_hash } |
     ForEach-Object { $permanentlyFailedHash[$_.l5x_path] = $_.l5x_hash }
 
-# 2026-08-30: failed tests must not be re-run over and over.
+# failed tests must not be re-run over and over.
 # Every generated-sample generator run stamps a fresh ExportDate
 # on every file it touches (wrapper.py's build_l5x), so a file's content
 # hash changes even when nothing about its actual import-blocking bug was
@@ -216,7 +216,7 @@ if ($AdoptExisting) {
 $upToDateCount = $allFiles.Count - $files.Count - $adopted.Count - $skippedKnownBad.Count - $skippedKnownBrokenFile.Count
 Write-Host "Found $($allFiles.Count) L5X file(s) under $InputDir; $upToDateCount already converted and up to date; $($adopted.Count) adopted as-is (no reconversion); $($skippedKnownBad.Count) skipped (known permanent SDK-unsupported failure); $($skippedKnownBrokenFile.Count) skipped (known-broken/undiagnosed, see samples/known_conversion_failures.csv); $($files.Count) to convert this pass."
 
-# 2026-08-30: list every file before starting, not just the count --
+# list every file before starting, not just the count --
 # a batch review before committing to a long run, especially after a
 # regenerated batch (a real bug fix touching dozens/hundreds of files at
 # once shouldn't run unattended without a chance to eyeball the list first).
@@ -255,7 +255,7 @@ foreach ($f in $files) {
     Write-Host "[$i/$total] $($f.Name) -> $acdPath"
     $fileSw = [System.Diagnostics.Stopwatch]::StartNew()
 
-    # 2026-08-22: regenerated ACD files need a V2 suffix, because the old
+    # regenerated ACD files need a V2 suffix, because the old
     # ones are probably not being overwritten. The staleness check above correctly decides a file needs reconverting,
     # but that's worthless if l5xgit itself silently refuses to overwrite
     # an existing .ACD at the destination path (unverified either way
@@ -274,7 +274,7 @@ foreach ($f in $files) {
     $hash = $currentHash[$f.FullName]
 
     if ($exitCode -eq 0) {
-        "$($f.FullName),$acdPath,ok,,$hash" | Out-File -FilePath $logPath -Append -Encoding utf8
+        "$($f.FullName),$acdPath,ok,$hash" | Out-File -FilePath $logPath -Append -Encoding utf8
         Write-Host "  ok (${fileSeconds}s)"
     } else {
         $msg = ($result -join " ") -replace ",", ";"
@@ -303,7 +303,7 @@ if (-not $stopRequested) {
     Write-Host "Stopped early. Log: $logPath"
 }
 
-# Copy the log into the repo and push it (2026-08-20; results should never
+# Copy the log into the repo and push it (results should never
 # need copy/pasting out of PowerShell by hand). $OutputDir/convert_log.csv
 # lives outside the repo, next to the .ACD binaries, so without this step
 # conversion failures are never visible unless pasted in by hand.
@@ -320,7 +320,7 @@ $logText = $logText -replace 'C:\\Users\\[^\\",]+\\', 'C:\Users\<user>\'
 Set-Content -LiteralPath $repoLogPath -Value $logText -NoNewline
 . (Join-Path $PSScriptRoot "_autopush.ps1")
 
-# 2026-08-30: the push must cover ALL files in the project directory --
+# the push must cover ALL files in the project directory --
 # widened from just convert_log.csv (and the earlier
 # ahk-specific addition) to everything dirty in the working tree, so
 # nothing (the ahk script, a stray edit, a new file) is ever left

@@ -169,7 +169,7 @@ def _profile_for_index(i: int) -> ProfileV3:
     return ProfileV3(
         i, udt_count, aoi_count, array_sizes, module_catalogs, rung_count, udt_array_len,
         program_count, subs_per_program, string_count, target_total,
-    )
+)
 
 
 def _udt_specs(profile: ProfileV3) -> tuple[str, list[tuple[str, list[MemberSpec]]]]:
@@ -182,7 +182,7 @@ def _udt_specs(profile: ProfileV3) -> tuple[str, list[tuple[str, list[MemberSpec
             [MemberSpec(f"D{k}", "DINT") for k in range(3 + (u % 3))]
             + [MemberSpec(f"I{k}", "INT") for k in range(2)]
             + [MemberSpec(f"B{k}", "BOOL") for k in range(4)]
-        )
+)
     types_parts = []
     specs: list[tuple[str, list[MemberSpec]]] = [None] * profile.udt_count  # type: ignore[list-item]
     for u in range(1, profile.udt_count):
@@ -194,7 +194,7 @@ def _udt_specs(profile: ProfileV3) -> tuple[str, list[tuple[str, list[MemberSpec
                                 f'        <Member Name="{m.name}" DataType="{m.data_type}" Dimension="0" '
                                 f'Radix="Decimal" Hidden="false" ExternalAccess="Read/Write"/>\n'
                                 for m in members
-                            ) + "      </Members>\n    </DataType>")
+) + "      </Members>\n    </DataType>")
         specs[u] = (name, members)
     nested_name = specs[1][0] if profile.udt_count >= 2 else None
     name0 = f"Comp3Udt{profile.index:02d}_0"
@@ -230,7 +230,7 @@ def _aoi_specs(profile: ProfileV3, axis_tag_name: str) -> list[tuple[str, str, l
         def_xml, storage = aoi_xml(
             name, input_params=input_params, output_params=output_params,
             local_tags=local_tags, logic_rungs_xml=logic_rungs,
-        )
+)
         out.append((name, def_xml, storage, False))
     return out
 
@@ -259,7 +259,7 @@ def _rich_program_xml(prog_name: str, n_subs: int, index: int, prog_idx: int) ->
         f'<Routine Name="MainRoutine" Type="RLL"><RLLContent>\n{main_rungs}\n</RLLContent></Routine>\n'
         + "\n".join(sub_routines)
         + "\n</Routines>\n</Program>"
-    )
+)
     return prog_xml, total_instr
 
 
@@ -271,7 +271,7 @@ def _build(profile: ProfileV3) -> tuple[str, str, int]:
     # module, matching gen_module_motion.py's confirmed real shape).
     motion_module_xml = _P208_MODULE_XML + "\n" + _drive_module_xml(
         f"D012_{profile.index:02d}", "2198-D012-ERS3", "false", address="192.168.5.2",
-    )
+)
     servo_axis_1 = f"Servo{profile.index:02d}A"
     servo_axis_2 = f"Servo{profile.index:02d}B"
     motion_tags_xml = "\n".join([
@@ -297,11 +297,11 @@ def _build(profile: ProfileV3) -> tuple[str, str, int]:
     array_udt_name, array_udt_members = udts[0]
     tags_parts.append(tag_xml(
         "UdtArr", array_udt_name, dimensions=(profile.udt_array_len,), udt_members=array_udt_members,
-    ))
+))
     tags_parts.append(timer_tag_xml("MainTmr", preset=1000 + profile.index * 10))
     tags_parts.append(counter_tag_xml("MainCtr", preset=100 + profile.index))
 
-    # 5+ custom STRING types , each declared as its own DataType +
+    # 5+ custom STRING types, each declared as its own DataType +
     # one Controller-scope tag of that type.
     string_types_xml = []
     for s in range(profile.string_count):
@@ -381,7 +381,7 @@ def _build(profile: ProfileV3) -> tuple[str, str, int]:
         extra_modules_xml=modules_xml,
         extra_programs_xml="\n".join(programs_xml_parts),
         extra_scheduled_programs_xml="\n".join(scheduled_xml_parts),
-    )
+)
 
     # Size ONE filler DINT array tag to close the gap to profile.target_total
     # exactly -- DINT array sizing is zero-packing-ambiguity KNOWN (4 bytes/
@@ -403,11 +403,11 @@ def _build(profile: ProfileV3) -> tuple[str, str, int]:
         extra_modules_xml=modules_xml,
         extra_programs_xml="\n".join(programs_xml_parts),
         extra_scheduled_programs_xml="\n".join(scheduled_xml_parts),
-    )
+)
     final_total = _floor_bytes(l5x_final)
 
     description = (
-        f"Composite realistic-scope test v3 #{profile.index}/50 (2026-09-02, the explicit spec "
+        f"Composite realistic-scope test v3 #{profile.index}/50 (the explicit spec "
         f"after the real TitusvilleTrimmer accuracy test found the composite-scale JSR/AOI surcharge "
         f"badly over-generalizes at real scale -- see OPEN_QUESTIONS.md OQ-COMPOSITESCALE): "
         f"{profile.udt_count} UDTs (1 nested), {profile.aoi_count} unique AOIs (1 with a real InOut "
@@ -421,7 +421,7 @@ def _build(profile: ProfileV3) -> tuple[str, str, int]:
         f"instructions), {profile.rung_count} MainRoutine rungs. 1756-L81E/fw35.05 default. Real floor "
         f"total {final_total} (target {profile.target_total}) -- Axis/MotionGroup content is unmodeled "
         f"(OQ-AXISSTRUCT), so real Capacity will run somewhat higher than this floor."
-    )
+)
     return l5x_final, description, final_total
 
 

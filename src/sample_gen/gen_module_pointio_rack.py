@@ -61,7 +61,7 @@ def _extract_child(catalog: str, new_slot: int) -> str:
     child = re.sub(
         r'(<Port Id="1" Address=")\d+(" Type="PointIO" Upstream="true" ?/>)',
         rf"\g<1>{new_slot}\g<2>", child, count=1,
-    )
+)
     return child
 
 
@@ -91,7 +91,7 @@ def _rack_xml(children: list[str]) -> str:
         # on the composite generator's rack samples).
         adapter = adapter.replace(
             f'<Bus Size="{_ADAPTER_REAL_BUS_SIZE}" />', f'<Bus Size="{new_bus_size}" />', 1,
-        )
+)
         adapter = _resize_slot_structure(adapter, new_bus_size)
     parts = [adapter]
     parts.extend(_extract_child(cat, slot) for slot, cat in enumerate(children, start=1))
@@ -105,7 +105,7 @@ def _write(out_name: str, children: list[str]) -> None:
     write_sample_unmodeled(l5x, out_path)
     total = _floor_bytes(l5x)
     description = (
-        f"PointIO rack (2026-09-02, 14+ racks added 2026-09-03): one real 1734-AENT/B "
+        f"PointIO rack (14+ racks added): one real 1734-AENT/B "
         f"adapter ({_ADAPTER_SOURCE}, real captured Bus Size=8) hosting {len(children)} real "
         f"1734-family child cards on its own PointIO bus ({', '.join(children)}) -- each child's "
         f"real Module content reused verbatim from its own existing gen_module_sweep.py chain, "
@@ -114,7 +114,7 @@ def _write(out_name: str, children: list[str]) -> None:
         f"capture, its Connection I/O structure is also resized (DataType slot-number/Dimensions/"
         f"Element count) via _resize_slot_structure -- see that function's docstring. Real floor "
         f"total {total}. See OQ-MODULEIO."
-    )
+)
     append_manifest_row(f"rack_pointio_{out_name}", description, "modules", out_path, total)
     print(f"Wrote {out_path} (floor {total} bytes)")
 

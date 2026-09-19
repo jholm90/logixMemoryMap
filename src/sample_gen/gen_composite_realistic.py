@@ -245,7 +245,7 @@ def _aoi_specs(profile: Profile) -> list[tuple[str, str, list[MemberSpec]]]:
             input_params=[MemberSpec(f"In{k}", "DINT", required=True) for k in range(1 + a % 3)],
             output_params=[MemberSpec(f"Out{k}", "BOOL", required=True) for k in range(1 + a % 2)],
             local_tags=[MemberSpec(f"Wrk{k}", "DINT") for k in range(2 + a % 3)],
-        )
+)
         out.append((name, def_xml, storage))
     return out
 
@@ -603,7 +603,7 @@ def _build(profile: Profile) -> tuple[str, str]:
     array_udt_name, array_udt_members = udts[0]
     tags_parts.append(tag_xml(
         f"UdtArr", array_udt_name, dimensions=(profile.udt_array_len,), udt_members=array_udt_members,
-    ))
+))
 
     # TIMER/COUNTER tags
     tags_parts.append(timer_tag_xml("MainTmr", preset=1000 + profile.index * 10))
@@ -663,10 +663,10 @@ def _build(profile: Profile) -> tuple[str, str]:
         extra_aoi_xml=aoi_def_xml,
         extra_rungs_xml=logic_rungs,
         extra_modules_xml=modules_xml,
-    )
+)
 
     description = (
-        f"Composite realistic-scope test #{profile.index}/50 (2026-08-30, response to real "
+        f"Composite realistic-scope test #{profile.index}/50 (response to real "
         f"~20%+ gap found on a real customer project -- at least 50 large programs with I/O and "
         f"logic, exercising AOIs and UDTs): {profile.udt_count} UDTs "
         f"(1 nested), {profile.aoi_referenced_count} AOIs instantiated+called, "
@@ -675,9 +675,9 @@ def _build(profile: Profile) -> tuple[str, str]:
         f"(sizes {profile.array_sizes}) + 1 UDT array ({profile.udt_array_len} elements), TIMER+COUNTER, "
         f"{len(profile.module_catalogs)} real I/O modules ({', '.join(profile.module_catalogs)}), "
         f"{profile.rung_count} rungs mixed XIC/OTE/MOV/ADD/CPT/TON/CTU/AOI-call. 1756-L81E/fw35.05 "
-        f"(default processor, corrected 2026-08-31 -- see this file's module docstring; the "
+        f"(default processor, corrected -- see this file's module docstring; the "
         f"processor-family question is isolated separately, OQ-BLOCKBYTE)."
-    )
+)
     return l5x, description
 
 

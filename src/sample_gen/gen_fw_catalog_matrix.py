@@ -391,7 +391,7 @@ def _local_ports_xml(catalog: str, is_safety: bool = False) -> str:
             f'</Port>\n'
             f'<Port Id="2" Type="Ethernet" Upstream="false" '
             f'SafetyNetwork="16#0000_1005_0002_0002">\n<Bus/>\n</Port>'
-        )
+)
     if catalog.startswith("5069"):
         return (
             f'<Port Id="1" Address="0" Type="5069" Upstream="false">\n'
@@ -399,7 +399,7 @@ def _local_ports_xml(catalog: str, is_safety: bool = False) -> str:
             f'</Port>\n'
             f'<Port Id="3" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>\n'
             f'<Port Id="4" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
-        )
+)
     if catalog in _L7X_PRODUCT_CODES:
         # REAL BUG FOUND (sent a fresh real Studio 5000
         # export of 1756-L71 for comparison; the exact same shape was
@@ -428,7 +428,7 @@ def _local_ports_xml(catalog: str, is_safety: bool = False) -> str:
             f'</Port>\n'
             f'<Port Id="3" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>\n'
             f'<Port Id="4" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
-        )
+)
     if catalog.startswith("1769"):
         # CompactLogix 5370 real shape, same source/derivation as wrapper.
         # py's _1769_bus_size (samples/local/DnR_Personal/TOYOTA_135453_
@@ -443,13 +443,13 @@ def _local_ports_xml(catalog: str, is_safety: bool = False) -> str:
             f'<Bus Size="{_1769_bus_size(catalog)}"/>\n'
             f'</Port>\n'
             f'<Port Id="2" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
-        )
+)
     return (
         f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n'
         f'<Bus Size="{_ICP_BUS_SIZE}"/>\n'
         f'</Port>\n'
         f'<Port Id="2" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
-    )
+)
 
 
 def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs: str,
@@ -499,12 +499,12 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
         '<Routine Name="MainRoutine" Type="RLL">\n<RLLContent>\n'
         '<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>\n'
         '</RLLContent>\n</Routine>\n</Routines>\n</Program>\n'
-    ) if is_safety else ""
+) if is_safety else ""
     safety_task_xml = (
         '<Task Name="SafetyTask" Type="PERIODIC" Rate="20" Priority="10" Watchdog="20" '
         'DisableUpdateOutputs="false" InhibitTask="false" Class="Safety">\n<ScheduledPrograms>\n'
         '<ScheduledProgram Name="SafetyProgram"/>\n</ScheduledPrograms>\n</Task>\n'
-    ) if is_safety else ""
+) if is_safety else ""
     # Real attributes confirmed -- were sitting unused in
     # samples/local/L7_v21_Sample.L5X AND a fresh export supplied for
     # direct comparison, both showing the exact same shape. Added for
@@ -531,7 +531,7 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
             '<EthernetPort Port="1" Label="A1" PortEnabled="true"/>\n'
             '<EthernetPort Port="2" Label="A2" PortEnabled="true"/>\n'
             '</EthernetPorts>\n'
-        )
+)
     else:
         ethernet_ports_xml = '<EthernetPorts>\n<EthernetPort Port="1" Label="1" PortEnabled="true"/>\n</EthernetPorts>\n'
     # REAL BUG FOUND on the 5069-LxxERMSx catalogs. EtherNetIPMode="A1/A2: Dual-IP" is a real
@@ -562,7 +562,7 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
             f'</Ports>\n'
             f'</Module>\n'
             f'</Modules>'
-        )
+)
     # The real L9 exports carry <OpcUaInfo> and carry NO <DataLogs>. This
     # family has zero conversion history in this project, so its element
     # set is reproduced exactly as exported rather than assuming Studio
@@ -641,7 +641,7 @@ def main() -> None:
                 continue
             if catalog in _SIL3_CATALOGS and major_rev < _SIL3_MIN_FIRMWARE_MAJOR:
                 print(f"Skipping fwmatrix_v{major_rev}_{catalog.lower().replace('-', '_')} "
-                      f"-- SIL3 requires firmware v{_SIL3_MIN_FIRMWARE_MAJOR}+ (2026-08-31, real).")
+                      f"-- SIL3 requires firmware v{_SIL3_MIN_FIRMWARE_MAJOR}+ (real).")
                 continue
             is_safety = catalog in SAFETY_CATALOGS
             slug = catalog.lower().replace("-", "_")
@@ -650,24 +650,24 @@ def main() -> None:
                 f" ASSUMED firmware-attribute shape (no real v{major_rev} sample exists yet -- "
                 f"interpolated from the confirmed v35/v38 bracket, correct from real capture)."
                 if assumed else ""
-            )
+)
             inferred_note = (
                 f" ProductCode {_product_code(catalog)} is INFERRED (same-tier sequential pattern "
                 f"from confirmed neighbors), not independently confirmed for this exact catalog."
                 if catalog in ALL_INFERRED else ""
-            )
+)
             safety_note = (
                 " GuardLogix safety-rated (SIL2/PLd, single primary, no partner) -- real Task/"
                 "Program Class=\"Safety\" shape confirmed against Gormley/Bender real corpus."
                 if is_safety else ""
-            )
+)
             l5x = _build_xml(catalog, major_rev, software_revision, extra_attrs, is_safety=is_safety)
             _write(
                 l5x, out_name,
                 f"Blank baseline, {catalog} at firmware {major_rev} (SoftwareRevision "
                 f"{software_revision}) -- OQ-BASELINE-PROCFW full catalog x firmware matrix."
                 f"{assumed_note}{inferred_note}{safety_note}",
-            )
+)
             written += 1
     print(f"Done. {written} files ({len(FIRMWARE_TABLE)} firmware versions x {len(all_catalogs)} catalogs).")
 

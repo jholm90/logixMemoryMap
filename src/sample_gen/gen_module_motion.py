@@ -175,7 +175,7 @@ def _drive_module_xml(name: str, catalog: str, safety_enabled: str, address: str
             f"sample_gen/data/kinetix.py from a real export -- do NOT fall back to "
             f"another catalog's identity or ConfigData, which is the bug this "
             f"lookup exists to prevent."
-        ) from None
+) from None
     config_size, config_values = payload_for(catalog)
 
     return f"""\
@@ -339,7 +339,7 @@ def group_motion_power_supply() -> None:
         "2198-P208 motion power supply module alone, no axis -- genericized from real corpus "
         "(samples/local/motion_p208/p208_Node.L5X), isolates the module's own baseline cost with "
         "zero axes. See OQ-MODULEIO.",
-    )
+)
 
 
 def group_motion_power_supply_axis() -> None:
@@ -352,7 +352,7 @@ def group_motion_power_supply_axis() -> None:
         "2198-P208 motion power supply + its own on-board AXIS_CIP_DRIVE axis + MOTION_GROUP -- "
         "genericized from real corpus (p208_Node_axis.L5X), isolates the power supply's own axis "
         "cost on top of the bare-module baseline. See OQ-MODULEIO.",
-    )
+)
 
 
 def group_motion_single_axis_drive() -> None:
@@ -364,7 +364,7 @@ def group_motion_single_axis_drive() -> None:
         f"{_MOTION_GROUP_TAG_XML}\n"
         f"{_dcbus_axis_tag('P208', 'P208:Ch1')}\n"
         f"{_axis_tag('D012_Axis', 'D012_1:Ch1')}"
-    )
+)
     l5x = build_l5x(target_name="ModuleMotion3D012", tags_xml=tags_xml, extra_modules_xml=module_xml)
     _write_unmodeled(
         l5x, "modulemotion_d012_single_axis",
@@ -372,7 +372,7 @@ def group_motion_single_axis_drive() -> None:
         "module + its own axis -- genericized from real corpus (p208_D012_NodeAndAxis.L5X), "
         "isolates the cost of a whole separate single-axis drive module + axis on top of the "
         "P208-with-axis baseline. See OQ-MODULEIO.",
-    )
+)
 
 
 def group_motion_dual_axis_drive() -> None:
@@ -386,18 +386,18 @@ def group_motion_dual_axis_drive() -> None:
         f"{_dcbus_axis_tag('P208', 'P208:Ch1')}\n"
         f"{_axis_tag('D012_Axis', 'D012_1:Ch1')}\n"
         f"{_axis_tag('D012_Axis1', 'D012_1:Ch3')}"
-    )
+)
     l5x = build_l5x(target_name="ModuleMotion4D012Dual", tags_xml=tags_xml, extra_modules_xml=module_xml)
     _write_unmodeled(
         l5x, "modulemotion_d012_dual_axis",
         "SAME single 2198-D012-ERS3 module as modulemotion_d012_single_axis, but with a SECOND "
         "AXIS_CIP_DRIVE tag riding on it (real dual-axis-capable drive, confirmed: one Module "
         "element, two Axis tags, not two modules) -- genericized from real corpus "
-        "(p208_D012_NodeAndAxisDual.L5X, real channels Ch1/Ch3 -- fixed 2026-09-03, a real bug "
+        "(p208_D012_NodeAndAxisDual.L5X, real channels Ch1/Ch3 -- fixed, a real bug "
         "had this as Ch1/Ch2, see OPEN_QUESTIONS.md OQ-193ECMETR), isolates the cost of a 2nd "
         "axis on an already-present "
         "drive module vs a whole fresh module. See OQ-MODULEIO.",
-    )
+)
 
 
 def group_motion_safety_axis_drive() -> None:
@@ -410,7 +410,7 @@ def group_motion_safety_axis_drive() -> None:
         f"{_MOTION_GROUP_TAG_XML}\n"
         f"{_dcbus_axis_tag('P208', 'P208:Ch1')}\n"
         f"{_axis_tag('S086_Axis', 'S086:Ch1')}"
-    )
+)
     l5x = build_l5x(target_name="ModuleMotion5S086", tags_xml=tags_xml, extra_modules_xml=module_xml)
     _write_unmodeled(
         l5x, "modulemotion_s086_safety_axis",
@@ -421,7 +421,7 @@ def group_motion_safety_axis_drive() -> None:
         "standard motion channel) and its AXIS_CIP_DRIVE tag is the same plain shape as a "
         "non-safety drive's -- isolates whether a safety-rated drive costs anything beyond a "
         "plain one. See OQ-MODULEIO.",
-    )
+)
 
 
 def main() -> None:

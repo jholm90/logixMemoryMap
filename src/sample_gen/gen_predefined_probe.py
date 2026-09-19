@@ -115,7 +115,7 @@ def _probe_tag_xml(data_type: str) -> str:
         f'Constant="false" ExternalAccess="Read/Write">\n'
         f'        <Data Format="Decorated"><Structure DataType="{data_type}"/></Data>\n'
         f"      </Tag>"
-    )
+)
 
 
 def _write(out_name: str, l5x: str, description: str) -> None:
@@ -133,9 +133,9 @@ def main() -> None:
             f"predefprobe_{slug}", l5x,
             f'Bare Controller tag "Probe1" DataType="{data_type}", no logic, empty placeholder '
             f"Structure body (real member layout unknown) -- discovery probe for Studio 5000 "
-            f"import/conversion, 2026-08-27: every missing predefined data type as "
+            f"import/conversion: every missing predefined data type as "
             f"a plain controller tag with no logic",
-        )
+)
         print(f"Wrote predefprobe_{slug}.L5X")
     print(f"\nDone. {len(MISSING_TYPES)} files.")
 

@@ -134,11 +134,11 @@ def main() -> None:
         "modulesweep_150_smc_flex_e",
         "150 SMC Flex-E -- real corpus module (standalone), genericized from "
         "L5X_Samples/K3M16_Edgers_20220808r00.L5X, structurally verbatim. Closes the "
-        "last real catalog-coverage gap found in the 2026-08-27 full audit -- "
+        "last real catalog-coverage gap found in the full audit -- "
         "individual per-catalog coverage is 119/119 real catalogs with this file. "
         "See OQ-MODULEIO.",
         "modules", out_path, 0,
-    )
+)
     print("Done. 1 gap-closing module file written.")
 
 

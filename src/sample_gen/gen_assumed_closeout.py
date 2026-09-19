@@ -187,7 +187,7 @@ def _module_file(catalog: str, label: str, xml: str, count: int, safety: bool,
         f"single point can only confirm a total, never separate per-module cost from the one-time "
         f"cost of the first.",
         "modules", out, 0,
-    )
+)
 
 
 def group_a_ers3_drives() -> int:
@@ -231,7 +231,7 @@ def group_a_ers3_drives() -> int:
                 + [_drive_module_xml(f"Drv{i + 1}", catalog, "false",
                                      address=f"192.168.1.{20 + i}")
                    for i in range(count)]
-            )
+)
             target = ("AsmDrv" + "".join(c for c in catalog if c.isalnum())[:14])[:24]
             l5x = build_l5x(target_name=target, tags_xml="", extra_modules_xml=blocks)
             name = f"asmclose_{_slug(catalog)}_n{count:02d}"
@@ -243,12 +243,12 @@ def group_a_ers3_drives() -> int:
                 f"_drive_module_xml() whose output captured at zero errors across "
                 f"composite_realistic_v4_001..031. A -ERS3 drive does NOT require a safety "
                 f"controller -- the earlier import failures were a missing <ExtendedProperties> "
-                f"block, fixed 2026-09-03 in gen_module_motion.py but never propagated to "
+                f"block, fixed in gen_module_motion.py but never propagated to "
                 f"gen_module_sweep_variants.py's own hardcoded copy. n=1/2/4 so the marginal "
                 f"cost of the Nth identical drive is read directly; a single point can only "
                 f"confirm a total, never separate per-module cost from the cost of the first.",
                 "modules", out, 0,
-            )
+)
             n += 1
     return n
 
@@ -275,8 +275,8 @@ def group_b_unpriced_catalogs() -> int:
                     "module_overhead_by_catalog carries an ASSUMED entry for this catalog, so it "
                     "falls back to the flat default rate. It appears in the real programs, so that "
                     "fallback is real exposure rather than a theoretical one."
-                ),
-            )
+),
+)
             n += 1
     return n
 
@@ -288,7 +288,7 @@ def group_c_fbd_sfc_probes() -> int:
         l5x = build_l5x(
             target_name=f"Probe{type_name.title().replace('_', '')}"[:24],
             tags_xml=tag_xml("Probe1", type_name),
-        )
+)
         name = f"predefprobe_{type_name.lower()}"
         out = OUT_PREDEF / f"{name}.L5X"
         write_sample_unmodeled(l5x, out)
@@ -300,7 +300,7 @@ def group_c_fbd_sfc_probes() -> int:
             f"the real structure size. Same shape as the 174 predefprobe_* files that closed every "
             f"other predefined type at exactly 0.0000% residual.",
             "predefined", out, 0,
-        )
+)
         n += 1
     return n
 

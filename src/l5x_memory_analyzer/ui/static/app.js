@@ -1,7 +1,7 @@
 // Vanilla JS/SVG squarified treemap -- no external deps by design, since this
 // runs on engineering workstations that are frequently airgapped OT networks.
 //
-// Infinite-depth lazy drill-down (2026-08-20): a node's .children is
+// Infinite-depth lazy drill-down: a node's .children is
 // only populated when the user actually drills into it, via /api/node --
 // never masks a large array or deep UDT nesting just because materializing
 // the whole tree up front would be enormous. Color is reserved for data
@@ -13,7 +13,7 @@ let SHOW_EMPTY = false;  // "Show Empty Space": free controller memory as a tile
 let CURRENT_NODE = null; // node currently shown as the treemap root
 let NODE_STACK = [];     // ancestors of CURRENT_NODE, for the breadcrumb
 let SORT_STATE = { key: "bytes", dir: -1 };
-let SPLIT_OPEN = false;  // 2026-08-27: List/Type Summary docked
+let SPLIT_OPEN = false;  //: List/Type Summary docked
                          // alongside the treemap, always-available toggle
 let NEST_DEPTH = 2;      // how many levels to nest inside each tile (1..10).
                          // Replaced the old two-state "2 levels deep"
@@ -49,8 +49,8 @@ async function loadReport() {
 function renderAll() {
   const loaded = !!(REPORT && REPORT.loaded !== false);
   document.getElementById("empty-state").classList.toggle("hidden", loaded);
-  document.querySelector("main").style.display = loaded ? "" : "none";
-  document.getElementById("tabs").style.display = loaded ? "" : "none";
+  document.querySelector("main").style.display = loaded ? "": "none";
+  document.getElementById("tabs").style.display = loaded ? "": "none";
   if (!loaded) {
     document.getElementById("file-info").textContent = "No file loaded";
     document.getElementById("export-warning").classList.add("hidden");
@@ -94,7 +94,7 @@ function renderAll() {
     const pct = (REPORT.total_bytes / REPORT.budget_bytes) * 100;
     fill.style.width = `${Math.min(pct, 100)}%`;
     fill.classList.toggle("over", pct > 100);
-    const archNote = REPORT.budget_architecture === "divided" ? " (I/O + Data/Logic pools summed)" : "";
+    const archNote = REPORT.budget_architecture === "divided" ? " (I/O + Data/Logic pools summed)": "";
     // Show the exact block counts as well as the rounded MB. "1.00 MB /
     // 2.00 MB" hides the number the controller actually reports on its
     // Capacity tab, which is what a user cross-checks against.
@@ -102,7 +102,7 @@ function renderAll() {
       `${fmtBytes(REPORT.total_bytes)} / ${fmtBytes(REPORT.budget_bytes)} (${pct.toFixed(2)}%)${archNote}` +
       `  ·  ${fmtBlocks(REPORT.total_bytes)} / ${fmtBlocks(REPORT.budget_bytes)} blocks`;
   } else {
-    // (2026-08-20): capacity is part-number specific, don't fake a
+    // Capacity is part-number specific, don't fake a
     // number for a processor type we don't have real data for.
     fill.style.width = "0%";
     fill.classList.remove("over");
@@ -158,7 +158,7 @@ function renderCurrentLevel(recordHistory = true) {
 // freshly created child nodes itself. Applies uniformly to every group,
 // not just the tag-scope ones -- a "Type Definitions" leaf's `path` is
 // already "udt_definitions/<Name>" (see hierarchy.py), which /api/node's
-// dedicated branch resolves the same way (2026-08-26, defs-pool drill-down).
+// dedicated branch resolves the same way (defs-pool drill-down).
 function annotateTagPaths(root) {
   // Walks the WHOLE initial tree, not a fixed two levels. The hierarchy is
   // not always 3 deep: _nest_programs_under_tasks inserts a "Task: Y" level
@@ -191,7 +191,7 @@ function renderErrors() {
   const tabBtn = document.getElementById("errors-tab-btn");
   const detail = document.getElementById("errors-detail");
 
-  tabBtn.textContent = `${errors.length} Error${errors.length === 1 ? "" : "s"}`;
+  tabBtn.textContent = `${errors.length} Error${errors.length === 1 ? "": "s"}`;
   tabBtn.classList.toggle("has-errors", errors.length > 0);
 
   if (!errors.length) {
@@ -203,7 +203,7 @@ function renderErrors() {
   // Banner stays short on purpose -- a count and an invitation, not detail.
   banner.classList.remove("hidden");
   banner.textContent =
-    `${errors.length} item${errors.length === 1 ? "" : "s"} could not be priced — click for detail`;
+    `${errors.length} item${errors.length === 1 ? "": "s"} could not be priced — click for detail`;
 
   // Grouped by the leading path segment, so 40 variations of one underlying
   // gap read as one heading rather than 40 unrelated lines.
@@ -220,13 +220,13 @@ function renderErrors() {
       `<table class="error-table"><tbody>` +
       items.map(e =>
         `<tr><td class="error-path">${e.path}</td><td class="error-msg">${e.message}</td></tr>`
-      ).join("") +
+).join("") +
       `</tbody></table></section>`
-    ).join("");
+).join("");
 }
 
 function fmtBlocks(n) {
-  return n == null ? "-" : Math.round(n).toLocaleString();
+  return n == null ? "-": Math.round(n).toLocaleString();
 }
 
 // ---- confidence as a measured PERCENTAGE (#confidence bar) ----
@@ -262,7 +262,7 @@ function confidenceBreakdown(node) {
   const acc = { KNOWN: 0, FITTED: 0, ASSUMED: 0, UNKNOWN: 0 };
   const add = (key, bytes) => {
     const k = (key || "UNKNOWN").toUpperCase();
-    acc[k in acc ? k : "UNKNOWN"] += bytes;
+    acc[k in acc ? k: "UNKNOWN"] += bytes;
   };
   const visit = n => {
     const kids = n.children;
@@ -300,7 +300,7 @@ function confidenceBreakdown(node) {
   // read as measured fact.
   return {
     ...acc, total, unresolved,
-    knownPct: total ? (acc.KNOWN / total) * 100 : null,
+    knownPct: total ? (acc.KNOWN / total) * 100: null,
   };
 }
 
@@ -315,7 +315,7 @@ function definitionLinkHtml(node) {
   if (path.startsWith("udt_definitions/") || path.startsWith("aoi_definitions/")) return "";
   const isAoi = (REPORT.aoi_names || []).includes(node.data_type);
   return `<span class="def-link" data-def-type="${escapeHtml(node.data_type)}">` +
-    `${isAoi ? "AOI DEFINITION" : "UDT DEFINITION"}: ${escapeHtml(node.data_type)}</span>`;
+    `${isAoi ? "AOI DEFINITION": "UDT DEFINITION"}: ${escapeHtml(node.data_type)}</span>`;
 }
 
 function wireDefinitionLinks(scope) {
@@ -396,17 +396,17 @@ function confidenceBarHtml(node) {
     return node.alias_of
       ? `<div class="conf-label">no storage of its own &mdash; alias of ` +
         `${escapeHtml(node.alias_of)}` +
-        (node.alias_bit != null ? `, bit ${node.alias_bit}` : "") + `</div>`
+        (node.alias_bit != null ? `, bit ${node.alias_bit}`: "") + `</div>`
       : `<div class="conf-label">no storage &mdash; nothing to measure</div>`;
   }
   const seg = (v, cls) => v > 0
-    ? `<span class="conf-seg ${cls}" style="width:${(v / c.total) * 100}%"></span>` : "";
+    ? `<span class="conf-seg ${cls}" style="width:${(v / c.total) * 100}%"></span>`: "";
   return `<div class="conf-bar">${seg(c.KNOWN, "conf-known")}${seg(c.FITTED, "conf-fitted")}` +
     `${seg(c.ASSUMED, "conf-assumed")}${seg(c.UNKNOWN, "conf-unknown")}</div>` +
     `<div class="conf-label">${bandChipHtml(node)}` +
     (c.knownPct < 100
       ? ` <span class="text-dim">${c.knownPct.toFixed(1)}% of these bytes are ` +
-        `exactly calculable</span>` : "") +
+        `exactly calculable</span>`: "") +
     `</div>`;
 }
 
@@ -442,7 +442,7 @@ function programTagCountFor(node) {
   // task schedules; the count is keyed by the bare program name.
   const bare = node.name.slice("Program: ".length).replace(/\s*\(unscheduled\)$/, "");
   const n = REPORT.program_tag_counts[bare];
-  return n == null ? null : n;
+  return n == null ? null: n;
 }
 
 // An array tag should say so in its own label -- "Motors" and "Motors[64]"
@@ -451,7 +451,7 @@ function programTagCountFor(node) {
 // content rather than anything this app controls, and several of these
 // labels are built with innerHTML. Escape before interpolating.
 function escapeHtml(value) {
-  return String(value == null ? "" : value)
+  return String(value == null ? "": value)
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
@@ -474,7 +474,7 @@ function arrayDims(node) {
 function displayType(node, fallback) {
   const base = node.data_type || fallback || "";
   const dims = arrayDims(node);
-  return dims ? `${base}[${dims}]` : base;
+  return dims ? `${base}[${dims}]`: base;
 }
 
 function fmtBytes(n) {
@@ -498,7 +498,7 @@ function isDrillable(node) {
   // backend hierarchy marks it as a leaf.
   if (node.data_type === "RLL" && node.path) {
     const rc = rungCountFor(node);
-    return rc == null ? true : rc > 0;
+    return rc == null ? true: rc > 0;
   }
   return !!(node.children || node.has_children);
 }
@@ -510,9 +510,9 @@ function isGroup(node) {
 
 // Real rung count for a routine_logic leaf, keyed by the exact same
 // routine.path every such leaf's own node.path already carries
-// (2026-08-27: a routine needs to show how many rungs it holds).
+// (a routine needs to show how many rungs it holds).
 function rungCountFor(node) {
-  return REPORT && REPORT.rung_counts ? REPORT.rung_counts[node.path] : null;
+  return REPORT && REPORT.rung_counts ? REPORT.rung_counts[node.path]: null;
 }
 
 // A "Program: X" group's routine count, read off its own nested "Routines"
@@ -522,7 +522,7 @@ function rungCountFor(node) {
 function routineCountFor(groupNode) {
   if (!isGroup(groupNode) || !groupNode.children) return null;
   const routines = groupNode.children.find(c => c.name === "Routines");
-  return routines && routines.children ? routines.children.length : null;
+  return routines && routines.children ? routines.children.length: null;
 }
 
 // ---- free controller space as a block (root level only) ----
@@ -617,7 +617,7 @@ function setupTabs() {
   syncTreemapOnlyControls("treemap");
 }
 
-// 2026-08-27: "Type/list should be always visible but hidden. if
+// "Type/list should be always visible but hidden. if
 // clicked the treeview should resize to fit half size and share with the
 // type/list." A single always-visible toggle button splits the Treemap
 // panel in half, docking a mini List/Type-Summary pane (its own small
@@ -665,7 +665,7 @@ function setupSplitDock() {
   });
 }
 
-// 2026-08-27: "the treeview shows a nice map on stuff that level, i
+// "the treeview shows a nice map on stuff that level, i
 // think we need the option/checkbox to see two levels deep with there
 // being some obvious difference between parent/children." See
 // renderTreemap's nested-squarify block for the paint side; nested tiles
@@ -841,7 +841,7 @@ function renderBreadcrumb() {
       el.appendChild(sep);
     }
     const crumb = document.createElement("span");
-    crumb.textContent = node.name === "root" ? "All" : node.name;
+    crumb.textContent = node.name === "root" ? "All": node.name;
     crumb.addEventListener("click", () => {
       if (node === CURRENT_NODE) return;
       pushHistory();
@@ -851,7 +851,7 @@ function renderBreadcrumb() {
     });
 
     // Sibling browser: hover a crumb to jump sideways without backing all
-    // the way up and re-drilling down (2026-08-20). The parent's
+    // the way up and re-drilling down. The parent's
     // children are already sitting in memory -- every ancestor here got
     // onto the breadcrumb by having its children enumerated already.
     if (i > 0) {
@@ -877,10 +877,10 @@ function showSiblingPreview(anchorEl, parentNode, siblings, stackForJump) {
   popup.id = "sibling-popup";
   const preview = siblings.slice(0, 10);
   popup.innerHTML =
-    `<div class="sibling-popup-header">${preview.length} of ${siblings.length} siblings under "${parentNode.name === "root" ? "All" : parentNode.name}"</div>` +
+    `<div class="sibling-popup-header">${preview.length} of ${siblings.length} siblings under "${parentNode.name === "root" ? "All": parentNode.name}"</div>` +
     preview.map((s, idx) =>
       `<div class="sibling-item" data-idx="${idx}">${s.name} <span class="sibling-bytes">${fmtBytes(nodeValue(s))}</span></div>`
-    ).join("");
+).join("");
 
   popup.addEventListener("mouseenter", () => clearTimeout(_siblingHideTimer));
   popup.addEventListener("mouseleave", scheduleHideSiblingPreview);
@@ -1073,7 +1073,7 @@ async function navigateToChain(chain) {
   // A node with children becomes the view; a true leaf cannot be a
   // treemap root, so the view lands on its parent with the leaf visible
   // inside it.
-  const depthShown = kids && kids.length ? chain.length : chain.length - 1;
+  const depthShown = kids && kids.length ? chain.length: chain.length - 1;
   if (depthShown < 1) return;
   pushHistory();
   NODE_STACK = chain.slice(0, depthShown - 1);
@@ -1096,7 +1096,7 @@ function findChain(root, matches) {
     }
     return null;
   };
-  return root ? walk(root, []) : null;
+  return root ? walk(root, []): null;
 }
 
 // ---- squarified treemap ----
@@ -1124,11 +1124,11 @@ function layoutArea(items, x, y, w, h, scale) {
 
 function worstRatio(rowSum, row, scale, shortSide) {
   const rowArea = rowSum * scale;
-  const thickness = shortSide > 0 ? rowArea / shortSide : 0;
+  const thickness = shortSide > 0 ? rowArea / shortSide: 0;
   let worst = 1;
   for (const item of row) {
     const itemArea = item.v * scale;
-    const length = thickness > 0 ? itemArea / thickness : 0;
+    const length = thickness > 0 ? itemArea / thickness: 0;
     if (length <= 0) continue;
     const ratio = Math.max(thickness / length, length / thickness);
     if (isFinite(ratio)) worst = Math.max(worst, ratio);
@@ -1151,20 +1151,20 @@ function squarify(nodes, x, y, w, h, out) {
     const { row, rowSum, consumed } = layoutArea(items, rx, ry, rw, rh, scale);
     const rowArea = rowSum * scale;
     if (rw >= rh) {
-      const colW = rh > 0 ? rowArea / rh : 0;
+      const colW = rh > 0 ? rowArea / rh: 0;
       let cy = ry;
       for (const item of row) {
-        const itemH = rowSum > 0 ? (item.v / rowSum) * rh : 0;
+        const itemH = rowSum > 0 ? (item.v / rowSum) * rh: 0;
         out.push({ node: item.node, x: rx, y: cy, w: colW, h: itemH });
         cy += itemH;
       }
       rx += colW;
       rw -= colW;
     } else {
-      const rowH = rw > 0 ? rowArea / rw : 0;
+      const rowH = rw > 0 ? rowArea / rw: 0;
       let cx = rx;
       for (const item of row) {
-        const itemW = rowSum > 0 ? (item.v / rowSum) * rw : 0;
+        const itemW = rowSum > 0 ? (item.v / rowSum) * rw: 0;
         out.push({ node: item.node, x: cx, y: ry, w: itemW, h: rowH });
         cx += itemW;
       }
@@ -1182,7 +1182,7 @@ const HATCH_PATTERN_SVG =
 
 // Second line of a tile's label -- rung count for a routine, routine count
 // for a Program group, [DataType] for an ordinary tag/member leaf
-// (2026-08-27: every tag needs [DataType] as a second line, a routine needs
+// (every tag needs [DataType] as a second line, a routine needs
 // to show how many rungs it holds, and a program needs to show how many
 // routines"). Returns [] when there's nothing extra to say.
 // Up to two description lines under a tile's name. Every tile ends with its
@@ -1202,15 +1202,15 @@ function subLabelFor(node) {
       const r = routineCountFor(node);
       const t = programTagCountFor(node);
       const bits = [];
-      if (r != null) bits.push(`${r} routine${r === 1 ? "" : "s"}`);
-      if (t != null) bits.push(`${t} program tag${t === 1 ? "" : "s"}`);
+      if (r != null) bits.push(`${r} routine${r === 1 ? "": "s"}`);
+      if (t != null) bits.push(`${t} program tag${t === 1 ? "": "s"}`);
       if (bits.length) lines.push(bits.join("; "));
     } else if (node.children) {
-      lines.push(`${node.children.length} item${node.children.length === 1 ? "" : "s"}`);
+      lines.push(`${node.children.length} item${node.children.length === 1 ? "": "s"}`);
     }
   } else if (node.data_type === "RLL") {
     const rc = rungCountFor(node);
-    if (rc != null) lines.push(`${rc} rung${rc === 1 ? "" : "s"}`);
+    if (rc != null) lines.push(`${rc} rung${rc === 1 ? "": "s"}`);
   } else if (node.alarm_detail) {
     // What the alarm actually watches is the useful line; the condition
     // type is already the [type] line every other leaf gets.
@@ -1343,7 +1343,7 @@ async function renderTreemap() {
             showProgress(
               `Expanding ${displayName(CURRENT_NODE)}`,
               "This level has more than a hundred items to open.",
-            );
+);
             shownModal = true;
           }
           await awaitWithProgress(pending.map(ensureChildren), "Opened");
@@ -1449,7 +1449,7 @@ function paintTreemap(svg, children) {
       });
     }
 
-    // Depth-2 nesting (2026-08-27): paint this tile's own children
+    // Depth-2 nesting: paint this tile's own children
     // inset inside it, visually distinct (dashed stroke, reduced opacity,
     // smaller label) so a grandchild is never mistaken for a same-level
     // sibling. Reserves the header strip the label above already used.
@@ -1506,10 +1506,10 @@ function paintNested(svg, g, node, r, headerH, depth, ancestors) {
 
 function truncateLabel(name, widthPx) {
   const maxChars = Math.max(3, Math.floor(widthPx / 6.5));
-  return name.length > maxChars ? name.slice(0, maxChars - 1) + "…" : name;
+  return name.length > maxChars ? name.slice(0, maxChars - 1) + "…": name;
 }
 
-// Color is reserved for data type (2026-08-20) -- confidence is
+// Color is reserved for data type -- confidence is
 // shown via the hatch overlay instead, never by recoloring.
 const TYPE_COLORS = {
   SINT: "#5b8dd6", INT: "#4f7fc4", DINT: "#3d6bb0", LINT: "#2c5590",
@@ -1538,7 +1538,7 @@ function colorForType(dataType) {
   return `hsl(${hue}, 50%, 42%)`;
 }
 
-// JSR call-tree note (Phase 5, 2026-08-27): a routine's own byte total
+// JSR call-tree note (Phase 5): a routine's own byte total
 // already correctly folds in its JSR targets' cost (no double-counting --
 // see parser/logic.py's is_jsr_target/jsr_target_names docstrings), but a
 // called subroutine never appears as its own treemap/list node at all, so
@@ -1554,18 +1554,18 @@ function jsrCallsNote(node) {
 
 // % of the CURRENT treemap root's total this node represents -- a half-
 // full bar means this element is half of its parent's usage
-// (2026-08-27). Uses CURRENT_NODE (the treemap's current drill root), not
+// Uses CURRENT_NODE (the treemap's current drill root), not
 // the node's structural parent, since that's what the visible tiles are
 // actually being sized relative to.
 function tooltipParentBar(node) {
   const parentTotal = nodeValue(CURRENT_NODE);
-  const val = isGroup(node) ? nodeValue(node) : node.value;
-  const pct = parentTotal ? (val / parentTotal) * 100 : 0;
-  const parentName = CURRENT_NODE.name === "root" ? "All" : CURRENT_NODE.name;
+  const val = isGroup(node) ? nodeValue(node): node.value;
+  const pct = parentTotal ? (val / parentTotal) * 100: 0;
+  const parentName = CURRENT_NODE.name === "root" ? "All": CURRENT_NODE.name;
   return (
     `<div class="tooltip-bar-wrap"><div class="tooltip-bar" style="width:${Math.min(pct, 100).toFixed(1)}%"></div></div>` +
     `<div class="tooltip-bar-label">${pct.toFixed(1)}% of ${parentName}</div>`
-  );
+);
 }
 
 // Second bar: this node's share of the WHOLE controller, not just of its
@@ -1589,29 +1589,29 @@ function showTooltip(ev, node) {
     tooltip.innerHTML = `<strong>${displayName(node)}</strong><br>` +
       `<span class="text-dim-on-dark">${groupKind(node)}</span><br>` +
       `${fmtBytes(nodeValue(node))} (${fmtBlocks(nodeValue(node))} blocks)` +
-      (task ? `<br>${task.type}${task.type === "PERIODIC" && task.rate ? ` @ ${task.rate} ms` : ""}` +
-        `${task.priority ? `, priority ${task.priority}` : ""}` : "") +
-      (routines != null ? `<br>${routines} routine${routines === 1 ? "" : "s"}` : "") +
+      (task ? `<br>${task.type}${task.type === "PERIODIC" && task.rate ? ` @ ${task.rate} ms`: ""}` +
+        `${task.priority ? `, priority ${task.priority}`: ""}`: "") +
+      (routines != null ? `<br>${routines} routine${routines === 1 ? "": "s"}`: "") +
       tooltipParentBar(node) +
       tooltipControllerBar(node) +
       confidenceBarHtml(node) +
-      (isDrillable(node) ? " (click to drill in)" : "");
+      (isDrillable(node) ? " (click to drill in)": "");
   } else {
-    const rc = node.data_type === "RLL" ? rungCountFor(node) : null;
+    const rc = node.data_type === "RLL" ? rungCountFor(node): null;
     tooltip.innerHTML =
       `<strong>${displayName(node)}</strong><br>` +
       (node.rung_text
         ? `<div class="rung-text">${node.rung_text.replace(/[&<>]/g, ch =>
             ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[ch]))}</div>`
         : `${escapeHtml(displayType(node))}<br>`) +
-      (rc != null ? `${rc} rung${rc === 1 ? "" : "s"}<br>` : "") +
+      (rc != null ? `${rc} rung${rc === 1 ? "": "s"}<br>`: "") +
       `${fmtBytes(node.value)} (${fmtBlocks(node.value)} blocks)<br>` +
       bandChipHtml(node) +
       jsrCallsNote(node) +
       tooltipParentBar(node) +
       tooltipControllerBar(node) +
       confidenceBarHtml(node) +
-      (isDrillable(node) ? " (click to drill in)" : "");
+      (isDrillable(node) ? " (click to drill in)": "");
   }
 
   positionTooltip(tooltip, ev);
@@ -1630,8 +1630,8 @@ function positionTooltip(tooltip, ev) {
   const flipX = ev.clientX > window.innerWidth * 0.75 || ev.clientX + GAP + tw > window.innerWidth;
   const flipY = ev.clientY > window.innerHeight * 0.75 || ev.clientY + GAP + th > window.innerHeight;
 
-  let left = flipX ? ev.clientX - GAP - tw : ev.clientX + GAP;
-  let top = flipY ? ev.clientY - GAP - th : ev.clientY + GAP;
+  let left = flipX ? ev.clientX - GAP - tw: ev.clientX + GAP;
+  let top = flipY ? ev.clientY - GAP - th: ev.clientY + GAP;
 
   // Never push it off the opposite edge either.
   left = Math.max(4, Math.min(left, window.innerWidth - tw - 4));
@@ -1646,7 +1646,7 @@ function hideTooltip() {
 }
 
 // ---- list view ----
-// Scoped to CURRENT_NODE's direct children (2026-08-20, "if im down
+// Scoped to CURRENT_NODE's direct children ("if im down
 // branches then those should represent the current level") -- not the
 // whole file. Re-rendered on every navigation via renderCurrentLevel so it
 // stays in sync even when this tab isn't the active one. Rendered into
@@ -1666,13 +1666,13 @@ function currentLevelRows() {
       // array subscript here rather than on the name -- see displayType.
       data_type: displayType(c, groupKind(c)),
       bytes,
-      pct_of_total: total ? (bytes / total) * 100 : 0,
-      pct_of_controller: (REPORT && REPORT.total_bytes) ? (bytes / REPORT.total_bytes) * 100 : 0,
+      pct_of_total: total ? (bytes / total) * 100: 0,
+      pct_of_controller: (REPORT && REPORT.total_bytes) ? (bytes / REPORT.total_bytes) * 100: 0,
       known_pct: confidenceBreakdown(c).knownPct,
       basis: c.basis || "",
       tier: c.tier || "",
       jsr_targets: (REPORT && REPORT.jsr_calls && REPORT.jsr_calls[c.path]) || null,
-      rung_count: c.data_type === "RLL" ? rungCountFor(c) : null,
+      rung_count: c.data_type === "RLL" ? rungCountFor(c): null,
       routine_count: routineCountFor(c),
     };
   });
@@ -1684,7 +1684,7 @@ function renderList() {
   for (const id of LIST_TABLE_IDS) renderListInto(id);
 }
 
-// 2026-08-27: rows are now click-to-drill (same target a treemap
+// rows are now click-to-drill (same target a treemap
 // tile click would drill into), matching "List should be browsable to see
 // inside each element name or type."
 
@@ -1710,10 +1710,10 @@ function renderNodeActions() {
     // selector exists to undo.
     const defName = path.slice(path.indexOf("/") + 1);
     const kind = (REPORT && (REPORT.aoi_names || []).includes(defName))
-      || path.startsWith("aoi_definitions/") ? "AOI" : "UDT";
+      || path.startsWith("aoi_definitions/") ? "AOI": "UDT";
     const opt = (value, label) =>
       `<label class="defmode-opt"><input type="radio" name="defmode" value="${value}"` +
-      `${DEF_MODE === value ? " checked" : ""}><span>${label}</span></label>`;
+      `${DEF_MODE === value ? " checked": ""}><span>${label}</span></label>`;
     html +=
       `<span class="defmode-toggle" title="Definition cost is a flat per-declared-member rate, ` +
       `so a BOOL, a DINT and a TIMER all cost the same. Instance size is what one copy occupies.">` +
@@ -1748,23 +1748,23 @@ function renderLevelStats() {
   if (!node) { host.innerHTML = ""; return; }
 
   const bytes = nodeValue(node);
-  const parent = NODE_STACK.length ? NODE_STACK[NODE_STACK.length - 1] : null;
-  const parentBytes = parent ? nodeValue(parent) : 0;
+  const parent = NODE_STACK.length ? NODE_STACK[NODE_STACK.length - 1]: null;
+  const parentBytes = parent ? nodeValue(parent): 0;
   const controllerBytes = (REPORT && REPORT.total_bytes) || 0;
 
   const stat = (label, value) =>
     `<span><span class="stat-label">${label}</span>` +
     `<span class="stat-value">${value}</span></span>`;
-  const pct = (part, whole) => whole ? `${((part / whole) * 100).toFixed(2)}%` : "-";
+  const pct = (part, whole) => whole ? `${((part / whole) * 100).toFixed(2)}%`: "-";
 
   host.innerHTML =
     `<span><span class="stat-label">Size</span>` +
     `<span class="stat-value stat-size">${fmtBytes(bytes)}</span></span>` +
-    stat("of parent", parent ? pct(bytes, parentBytes) : "-- (root)") +
+    stat("of parent", parent ? pct(bytes, parentBytes): "-- (root)") +
     stat("of controller", pct(bytes, controllerBytes));
   host.title =
     `${displayName(node)}: ${Math.round(bytes).toLocaleString()} bytes` +
-    (parent ? `, ${pct(bytes, parentBytes)} of ${displayName(parent)}` : "") +
+    (parent ? `, ${pct(bytes, parentBytes)} of ${displayName(parent)}`: "") +
     `, ${pct(bytes, controllerBytes)} of the controller total`;
 }
 
@@ -1776,7 +1776,7 @@ async function reloadDefinitionChildren() {
   const path = node.path || node._tagPath || "";
   if (!path.startsWith("udt_definitions/") && !path.startsWith("aoi_definitions/")) return;
   const url = `/api/node?tag=${encodeURIComponent(path)}` +
-    (DEF_MODE === "instance" ? "&mode=instance" : "");
+    (DEF_MODE === "instance" ? "&mode=instance": "");
   try {
     const res = await fetch(url);
     const data = await res.json();
@@ -1802,7 +1802,7 @@ function xrefTypeForNode(node) {
   if (path.startsWith("aoi_definitions/")) return path.slice("aoi_definitions/".length);
   // A plain instance node: cross-reference its declared type.
   const dt = node.data_type;
-  return REPORT && REPORT.type_names && REPORT.type_names.includes(dt) ? dt : null;
+  return REPORT && REPORT.type_names && REPORT.type_names.includes(dt) ? dt: null;
 }
 
 function resetXref() {
@@ -1821,7 +1821,7 @@ function syncXrefTab() {
   const wasActive = btn.classList.contains("active");
   btn.hidden = !type;
   btn.disabled = !type;
-  btn.title = type ? `Where ${type} is used` : "Select a UDT or AOI to cross-reference";
+  btn.title = type ? `Where ${type} is used`: "Select a UDT or AOI to cross-reference";
   if (!type && wasActive) {
     const treemapBtn = document.querySelector('.tab-btn[data-tab="treemap"]');
     if (treemapBtn) treemapBtn.click();
@@ -1867,10 +1867,10 @@ function renderXrefTable(el, data) {
   const rows = data.usages.map(u =>
     `<tr><td class="xref-path" data-path="${escapeHtml(u.path)}">${escapeHtml(u.path)}</td>` +
     `<td>${escapeHtml(u.scope)}</td>` +
-    `<td>${u.direct ? "tag" : "member of " + escapeHtml(u.via)}</td></tr>`).join("");
+    `<td>${u.direct ? "tag": "member of " + escapeHtml(u.via)}</td></tr>`).join("");
   el.innerHTML =
     `<p><strong>${escapeHtml(data.type)}</strong> &mdash; ${data.count} usage` +
-    `${data.count === 1 ? "" : "s"}. An array shows its [0] element; the path is navigable either way.</p>` +
+    `${data.count === 1 ? "": "s"}. An array shows its [0] element; the path is navigable either way.</p>` +
     `<table><thead><tr><th>Path</th><th>Scope</th><th>Reached via</th></tr></thead><tbody>${rows}</tbody></table>`;
   el.querySelectorAll(".xref-path").forEach(td => {
     td.onclick = () => navigateToPath(td.dataset.path);
@@ -1948,7 +1948,7 @@ function setupFilterButtons(table) {
       pop.className = "filter-popup";
       pop.innerHTML =
         `<input type="text" value="${escapeHtml(LIST_FILTERS[key])}" ` +
-        `placeholder="${key === "name" ? "e.g. hoist or *Timer*Dn" : "e.g. DINT or *STRING*"}">` +
+        `placeholder="${key === "name" ? "e.g. hoist or *Timer*Dn": "e.g. DINT or *STRING*"}">` +
         `<div class="filter-hint">Partial match. * matches anything.</div>` +
         `<div class="filter-actions"><button type="button" data-act="clear">Clear</button></div>`;
       pop.addEventListener("click", e => e.stopPropagation());
@@ -2009,9 +2009,9 @@ function renderListInto(tableId) {
     const subNote = e.jsr_targets
       ? `<br><span class="text-dim">Calls via JSR: ${e.jsr_targets.join(", ")}</span>`
       : e.rung_count != null
-      ? `<br><span class="text-dim">${e.rung_count} rung${e.rung_count === 1 ? "" : "s"}</span>`
+      ? `<br><span class="text-dim">${e.rung_count} rung${e.rung_count === 1 ? "": "s"}</span>`
       : e.routine_count != null
-      ? `<br><span class="text-dim">${e.routine_count} routine${e.routine_count === 1 ? "" : "s"}</span>`
+      ? `<br><span class="text-dim">${e.routine_count} routine${e.routine_count === 1 ? "": "s"}</span>`
       : "";
     // Confidence as a measured share of bytes, not a single badge -- see
     // confidenceBreakdown for why a badge misleads on any aggregate.
@@ -2046,16 +2046,16 @@ function renderListInto(tableId) {
     th.classList.toggle("sorted-asc", active && SORT_STATE.dir === 1);
     th.classList.toggle("sorted-desc", active && SORT_STATE.dir === -1);
     th.setAttribute("aria-sort", active
-      ? (SORT_STATE.dir === 1 ? "ascending" : "descending") : "none");
+      ? (SORT_STATE.dir === 1 ? "ascending": "descending"): "none");
     let caret = th.querySelector(".sort-caret");
     if (!caret) {
       caret = document.createElement("span");
       caret.className = "sort-caret";
       th.appendChild(caret);
     }
-    caret.textContent = active ? (SORT_STATE.dir === 1 ? " \u25B2" : " \u25BC") : "";
+    caret.textContent = active ? (SORT_STATE.dir === 1 ? " \u25B2": " \u25BC"): "";
     th.onclick = () => {
-      SORT_STATE.dir = SORT_STATE.key === key ? -SORT_STATE.dir : -1;
+      SORT_STATE.dir = SORT_STATE.key === key ? -SORT_STATE.dir: -1;
       SORT_STATE.key = key;
       renderList();
     };
@@ -2091,12 +2091,12 @@ function renderTypeSummaryInto(elId) {
   // controller says whether that matters at all against the whole file.
   // Showing only the first makes a 200-byte type look like 90% of
   // something.
-  const controllerTotal = (REPORT && REPORT.hierarchy ? nodeValue(REPORT.hierarchy) : 0) || grandTotal;
+  const controllerTotal = (REPORT && REPORT.hierarchy ? nodeValue(REPORT.hierarchy): 0) || grandTotal;
   const rows = Object.entries(totals)
     .map(([data_type, bytes]) => ({
       data_type, bytes,
-      pct_of_total: grandTotal ? (bytes / grandTotal) * 100 : 0,
-      pct_of_controller: controllerTotal ? (bytes / controllerTotal) * 100 : 0,
+      pct_of_total: grandTotal ? (bytes / grandTotal) * 100: 0,
+      pct_of_controller: controllerTotal ? (bytes / controllerTotal) * 100: 0,
     }))
     .sort((a, b) => b.bytes - a.bytes);
 
@@ -2105,7 +2105,7 @@ function renderTypeSummaryInto(elId) {
     const row = document.createElement("div");
     row.className = "type-row";
     // type-name is a bounded, ellipsis-truncated flex item now
-    // (2026-08-27: the type summary has to stay readable with very long tag
+    // (the type summary has to stay readable with very long tag
     // and UDT names) -- the full name is always
     // available via the title attribute on hover.
     row.innerHTML =

@@ -133,7 +133,7 @@ def main() -> None:
             # deliberately do NOT get the extra tag pool.
             tags = base_tags
         elif instr in _MOTION_RUNGS:
-            confirmed_note = "FIXED 2026-08-25 -- full real parameter list, not the bare 2-operand call that " \
+            confirmed_note = "FIXED -- full real parameter list, not the bare 2-operand call that " \
                               "built as MAH/MSO's shape instead of this instruction's own and failed every rung"
             rung_text = _MOTION_RUNGS[instr]
             tags = "\n".join([base_tags, _MOTION_EXTRA_TAGS_XML])

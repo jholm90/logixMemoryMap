@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Fully unattended (2026-08-22 rewrite #2). File|Open inside an already-
+  Fully unattended (rewrite #2). File|Open inside an already-
   running Logix Designer takes under 5s; closing and reopening Designer for
   each file takes about 65s. Across 500+ files that difference is the whole
   ballgame. PowerShell no longer launches a
@@ -24,7 +24,7 @@
                        a mismatch is logged loudly and flagged in the
                        row's own notes rather than trusted quietly. A
                        literal "0" ocd_value is treated the same way
-                       (2026-08-27) -- a real Capacity reading is never
+ -- a real Capacity reading is never
                        actually 0, so a 0 read is a bad-read symptom, not
                        real data; flagged ZERO CAPACITY and auto-retried
                        next run, never silently counted.
@@ -76,7 +76,7 @@
   contradicted their own XML -- a whole corpus labelled "5069-L306ER" when
   2,149 of the files were really 1756-L81E. Every per-platform comparison
   built on that column was therefore meaningless until it was rebuilt from
-  the files (2026-09-05). The L5X is authoritative and free to read; a
+  the files. The L5X is authoritative and free to read; a
   human typing it in can only ever be a second, worse source of truth.
 
 .EXAMPLE
@@ -99,7 +99,7 @@ param(
 New-Item -ItemType Directory -Force -Path (Split-Path $HandoffPath -Parent) | Out-Null
 New-Item -ItemType Directory -Force -Path (Split-Path $OpenRequestPath -Parent) | Out-Null
 
-# 2026-09-03: AHK occasionally lags up and needs restarting -- a
+# AHK occasionally lags up and needs restarting -- a
 # fresh AHK instance has no memory of which file it was mid-open on.
 # REAL BUG FOUND same day ("pressing the spacebar does not pass
 # the same thing to AHK as the push thing that happens when the file
@@ -145,7 +145,7 @@ function Test-SpaceBarPressed {
 }
 
 function Wait-WithSpaceBarClipboardRefresh([int]$Seconds, [string]$AcdPath, [string]$Label, [string]$OpenRequestPath) {
-    $checkIntervalMs = 50   # 2026-09-05: 
+    $checkIntervalMs = 50   #:
     $ticks = [math]::Ceiling(($Seconds * 1000) / $checkIntervalMs)
     for ($i = 0; $i -lt $ticks; $i++) {
         if (Test-SpaceBarPressed) {
@@ -205,9 +205,9 @@ if (-not (Test-Path $CapturesPath)) {
 $manifest = @(Import-Csv $ManifestPath)
 $captures = @(Import-Csv $CapturesPath)
 $alreadyLogged = @{}
-# 2026-08-25: "any test that fails for window title mismatch should
+# "any test that fails for window title mismatch should
 # be rerun... make sure you can rerun those tests next time without me
-# prompting you." A row flagged WINDOW TITLE MISMATCH or (2026-08-27)
+# prompting you." A row flagged WINDOW TITLE MISMATCH or
 # ZERO CAPACITY in notes still has actual_bytes populated (with data that
 # may belong to a different file, or may just be a bad "0" read -- see
 # the checks below), so without this exclusion it would silently count as
@@ -233,7 +233,7 @@ if ($Limit -gt 0) { $remaining = $remaining | Select-Object -First $Limit }
 $retryCount = @($remaining | Where-Object { $mismatchFlagged.ContainsKey((Get-RelPath $_.l5x_path)) }).Count
 Write-Host "$($rows.Count) converted sample(s) in log; $($alreadyLogged.Count) already logged; $($remaining.Count) remaining this pass ($retryCount of those are window-title-mismatch/zero-capacity retries)."
 
-# 2026-08-30: list every file before starting, not just the count --
+# list every file before starting, not just the count --
 # a batch review before committing to a long capture run, same reasoning as
 # batch_l5x_to_acd.ps1's equivalent listing.
 if ($remaining.Count -gt 0) {
@@ -272,7 +272,7 @@ foreach ($row in $remaining) {
     $fileSw = [System.Diagnostics.Stopwatch]::StartNew()
 
     Write-Host ""
-    Write-Host "=== [$idx/$total] $($meta.Id) : $($meta.Desc) [$category] ==="
+    Write-Host "=== [$idx/$total] $($meta.Id): $($meta.Desc) [$category] ==="
     Write-Host "Requesting AHK open: $($row.acd_path)"
     Set-Clipboard -Value $row.acd_path  # AHK pastes this into the Open dialog (^v) instead of typing it
     $row.acd_path | Out-File -FilePath $OpenRequestPath -Encoding utf8 -NoNewline  # existence = "go" signal; content is a fallback if you'd rather FileRead than paste
@@ -331,10 +331,10 @@ foreach ($row in $remaining) {
     $errorLog = if ($result.PSObject.Properties.Name -contains 'error_log') { $result.error_log } else { "" }
     Remove-Item $HandoffPath -Force  # consumed -- next file must produce a fresh one
 
-    # Independent cross-check (2026-08-22, "window title is valid
+    # Independent cross-check ("window title is valid
     # there with the filename.acd present inside") -- the title AHK
     # captured at read-time should contain the file PowerShell requested.
-    # Real title format confirmed 2026-08-22 doesn't include the .ACD
+    # Real title format confirmed doesn't include the .ACD
     # extension ("Logix Designer - array_dint_00001 [1756-L81E 35.11]*"),
     # so match on the base name only -- checking for the extension too
     # was producing false-positive mismatches. A real mismatch means the
@@ -349,7 +349,7 @@ foreach ($row in $remaining) {
         Write-Warning "Window title mismatch for $($meta.Id): expected '$expectedFileName' in `"$windowTitle`" -- may have captured the wrong file's data."
         $notes = "WINDOW TITLE MISMATCH: expected '$expectedFileName', got `"$windowTitle`""
     }
-    # 2026-08-27: "if memory size is 0 it needs to be flagged and
+    # "if memory size is 0 it needs to be flagged and
     # not counted." A real controller's Capacity-tab reading is never
     # actually 0 (every project carries the empty_project_baseline floor
     # at minimum) -- a "0" read is a bad-read symptom (wrong dialog/field
@@ -362,7 +362,7 @@ foreach ($row in $remaining) {
         Write-Warning "Capacity read as 0 for $($meta.Id) -- almost certainly a bad read, not a real value. Flagging, not counting."
         $notes = if ($notes) { "$notes; ZERO CAPACITY: read as 0, not a real value, not counted" } else { "ZERO CAPACITY: read as 0, not a real value, not counted" }
     }
-    # 2026-09-05: "flag the file if Error or Warning is not a number
+    # "flag the file if Error or Warning is not a number
     # then i want to flag it just like the window title to be able to be run
     # again." The AHK side returns "" (never "0") when its button scan can't
     # read the counters cleanly -- no build ran, the popup was missed, or the
@@ -395,14 +395,14 @@ foreach ($row in $remaining) {
     }
 
     # controller_model / firmware_rev come from the L5X ITSELF, not from the
-    # -ControllerModel/-FirmwareRev switches. Fixed 2026-09-05: those switches
+    # -ControllerModel/-FirmwareRev switches. Fixed: those switches
     # default to "5069-L306ER"/"35.11" and were being stamped onto every row
     # regardless of what the file actually declared, so 1,926 of 1,959
     # captured rows carried a processor that contradicted their own XML
     # (2,149 files really declare 1756-L81E). That is operator metadata
     # masquerading as measurement, and it silently poisons any per-platform
     # analysis -- which is exactly what it did until the mismatch was
-    # spotted. The switches were REMOVED outright 2026-09-06 ("the
+    # spotted. The switches were REMOVED outright ("the
     # ps1 script asking for firmware and processor is garbage and should
     # never have been there it should be determined bu the l5x file
     # anyways") -- not demoted to a fallback, because a fallback is exactly
@@ -426,7 +426,7 @@ foreach ($row in $remaining) {
         $notes = ($notes + " PROCTYPE-UNREAD").Trim()
     }
 
-    # 2026-09-10: a non-zero error count, or an error-log read that failed its
+    # a non-zero error count, or an error-log read that failed its
     # own validation, gets a RED line. Everything above this point flags into
     # the notes column, which is only seen later -- this is the signal for the
     # operator watching the run, so a bad build is noticed while the batch is
@@ -435,7 +435,7 @@ foreach ($row in $remaining) {
     $logSuspect   = ($errorLog -like "(*")
     if ($buildUnclean -or $logSuspect) {
         $why = if ($buildUnclean) { "BUILD REPORTED $errorCount ERROR(S)" } else { "ERROR-LOG READ SUSPECT" }
-        Write-Host ("  !! {0} : {1}" -f $why, $meta.Id) -ForegroundColor Red
+        Write-Host ("  !! {0}: {1}" -f $why, $meta.Id) -ForegroundColor Red
         if ($errorLog) { Write-Host ("     {0}" -f $errorLog) -ForegroundColor Red }
     }
 
@@ -480,11 +480,11 @@ if ($fileTimes.Count -gt 0) {
 }
 Write-Host "Done for now."
 
-# Auto-push (2026-08-20: so i dont have to ask).
+# Auto-push (so i dont have to ask).
 . (Join-Path $PSScriptRoot "_autopush.ps1")
 $repoRoot = Split-Path $PSScriptRoot -Parent
 
-# 2026-08-30: the push must cover ALL files in the project directory --
+# the push must cover ALL files in the project directory --
 # same widening as batch_l5x_to_acd.ps1's equivalent
 # change. See Push-AllChanges in _autopush.ps1 for what this does and
 # does not protect against.

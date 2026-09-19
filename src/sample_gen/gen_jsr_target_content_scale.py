@@ -98,28 +98,28 @@ def main() -> None:
             f'<Routine Name="{target_name}" Type="RLL">'
             f"<RLLContent>" + "\n".join(pieces) + "</RLLContent>"
             "</Routine>"
-        )
+)
 
         tc_tags = "\n".join(tag_xml(f"TC{i}", "DINT") for i in range(10))
         call_rung = rung_xml(0, f"JSR({target_name},0);")
         l5x = build_l5x(
             target_name=f"JsrTargetContentScale{instr_count:03d}", tags_xml=tc_tags,
             extra_rungs_xml=call_rung, extra_routines_xml=target_xml,
-        )
+)
         _write(
             f"jsr_target_content_scale_{instr_count:03d}",
             l5x,
             f"JSR to a single target routine containing ~{instr_count} real instructions "
             f"(realistic MOV/XIC/OTE/CLR/ADD/EQU mix matching AccuTally's real JSR-target "
             f"composition), single call site, 0 params, NO SBR/RET (the real, representative "
-            f"shape for a 0-param target, 2026-08-31: -- confirmed against the real corpus "
+            f"shape for a 0-param target: -- confirmed against the real corpus "
             f"in samples/local/, 99.96% of real 0-param targets have no SBR) -- OQ-JSRPARAMCOST "
             f"target-content-scale isolation: does the target's own logic content really stay "
             f"folded into the flat jsr_fixed_base_per_routine cost at real scale, or does "
             f"Capacity actually grow with target size (a real, currently-unmodeled cost this "
-            f"project has silently zeroed out since 2026-08-22, confirmed only against trivial "
+            f"project has silently zeroed out, confirmed only against trivial "
             f"SBR/NOP/RET stub targets with nonzero params)?",
-        )
+)
 
 
 if __name__ == "__main__":

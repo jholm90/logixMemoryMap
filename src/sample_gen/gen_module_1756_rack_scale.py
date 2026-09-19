@@ -60,8 +60,8 @@ def _write(out_name: str, catalogs: list[str]) -> None:
         f"CPU ({', '.join(catalogs)}), each module's own real XML from gen_module_sweep.py/"
         f"gen_module_sweep_variants.py re-slotted to unique sequential addresses. Real floor total "
         f"{total}. Rack-size scaling point for OQ-MODULEIO's multi-module marginal-cost question "
-        f"(2026-09-02)."
-    )
+        f"."
+)
     append_manifest_row(f"rack_1756_{out_name}", description, "modules", out_path, total)
     print(f"Wrote {out_path} (floor {total} bytes)")
 

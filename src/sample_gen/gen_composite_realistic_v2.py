@@ -117,7 +117,7 @@ def _aoi_specs_with_logic(profile: Profile) -> list[tuple[str, str, list[MemberS
         def_xml, storage = aoi_xml(
             name, input_params=input_params, output_params=output_params,
             local_tags=local_tags, logic_rungs_xml=logic_rungs,
-        )
+)
         out.append((name, def_xml, storage))
     return out
 
@@ -152,7 +152,7 @@ def _build(profile: Profile) -> tuple[str, str]:
     array_udt_name, array_udt_members = udts[0]
     tags_parts.append(tag_xml(
         "UdtArr", array_udt_name, dimensions=(profile.udt_array_len,), udt_members=array_udt_members,
-    ))
+))
 
     tags_parts.append(timer_tag_xml("MainTmr", preset=1000 + profile.index * 10))
     tags_parts.append(counter_tag_xml("MainCtr", preset=100 + profile.index))
@@ -197,10 +197,10 @@ def _build(profile: Profile) -> tuple[str, str]:
         extra_rungs_xml=logic_rungs,
         extra_routines_xml=jsr_routine_xml,
         extra_modules_xml=modules_xml,
-    )
+)
 
     description = (
-        f"Composite realistic-scope test v2 #{profile.index}/50 (2026-08-31 follow-up to "
+        f"Composite realistic-scope test v2 #{profile.index}/50 (follow-up to "
         f"gen_composite_realistic.py -- direct test of whether the newly-wired JSR-target-content "
         f"and AOI-internal-logic formulas close v1's unexplained ~3% residual): same UDT/array/module/"
         f"AOI-declaration shape as v1 file #{profile.index}, but every referenced AOI now has real "
@@ -212,7 +212,7 @@ def _build(profile: Profile) -> tuple[str, str]:
         f"still show $0 real cost for these per the already-confirmed rule), {len(profile.array_sizes)} "
         f"atomic arrays + 1 UDT array, TIMER+COUNTER, {len(profile.module_catalogs)} real I/O modules "
         f"({', '.join(profile.module_catalogs)}), {profile.rung_count} rungs. 1756-L81E/fw35.05 default."
-    )
+)
     return l5x, description
 
 

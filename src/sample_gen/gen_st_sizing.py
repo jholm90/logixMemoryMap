@@ -86,7 +86,7 @@ from sample_gen.wrapper import build_l5x
 LOGIC_OUT = Path(__file__).parent.parent.parent / "samples" / "generated" / "logic"
 
 # One extra DINT for loop indices -- real ST loop counters are ordinary
-# controller tags (RobbinsGrn: "for i := 0 to 7 by 1 do"), not implicit.
+# controller tags (RobbinsGrn: "for i:= 0 to 7 by 1 do"), not implicit.
 _TAGS = _POOL_TAGS_XML + "\n" + tag_xml("StIdx", "DINT")
 
 
@@ -98,7 +98,7 @@ def _st_routine(name: str, lines: list[str]) -> str:
     body = "".join(
         f'<Line Number="{i}">\n<![CDATA[{text}]]>\n</Line>\n'
         for i, text in enumerate(lines)
-    )
+)
     return f'<Routine Name="{name}" Type="ST">\n<STContent>\n{body}</STContent>\n</Routine>'
 
 
@@ -115,14 +115,14 @@ def _file(out_name: str, target: str, lines: list[str], description: str,
         target_name=target, tags_xml=_TAGS + extra_tags,
         extra_rungs_xml=rung_xml(0, f"JSR({routine_name},0);"),
         extra_routines_xml=_st_routine(routine_name, lines),
-    )
+)
     _write(out_name, l5x, description)
 
 
 def _assigns(n: int, start: int = 0) -> list[str]:
     """The corpus's most common statement by a wide margin (8,688 of 24,017
-    lines carry a :=). Plain, no comment, no blank."""
-    return [f"D{(start + i) % 10} := D{(start + i + 1) % 10} + 1;" for i in range(n)]
+    lines carry a:=). Plain, no comment, no blank."""
+    return [f"D{(start + i) % 10}:= D{(start + i + 1) % 10} + 1;" for i in range(n)]
 
 
 # --- A. Executable-only line ladder -----------------------------------------
@@ -134,14 +134,14 @@ def group_line_ladder() -> None:
     for n in _A_COUNTS:
         _file(
             f"realscale_st_n{n:05d}", f"RsSt{n:05d}", _assigns(n),
-            f"{n} plain ST assignment lines (Di := Dj + 1;), no comments, no blank lines, "
+            f"{n} plain ST assignment lines (Di:= Dj + 1;), no comments, no blank lines, "
             f"called by one JSR, everything else held identical across the ladder. Structured "
             f"Text is completely unmodeled today -- parse_rll_routines is RLL-only, so the "
             f"engine predicts the SAME number for every file here and whatever Capacity "
             f"movement comes back is the raw per-ST-statement cost with nothing to subtract. "
             f"Assignment is the right base statement to measure: 8,688 of the 24,017 real ST "
-            f"lines in samples/local/ carry a :=.",
-        )
+            f"lines in samples/local/ carry a:=.",
+)
 
 
 # --- B. Comments and blank lines --------------------------------------------
@@ -238,7 +238,7 @@ def group_constructs() -> None:
 
     case_lines = [f"CASE D0 OF"]
     case_lines += [f"{i}: {stmts[i]}" for i in range(_C_STMTS)]
-    case_lines += ["ELSE", "D1 := -1;", "END_CASE;"]
+    case_lines += ["ELSE", "D1:= -1;", "END_CASE;"]
     _file("st_ctl_case", "RsStCtlCase", case_lines,
           f"The same {_C_STMTS} assignment statements as a single CASE OF with {_C_STMTS} "
           f"numbered branches plus an ELSE. Same statement count as st_ctl_elsif but a jump "
@@ -248,23 +248,23 @@ def group_constructs() -> None:
 
     for_lines = []
     for blk in range(10):
-        for_lines.append("FOR StIdx := 0 TO 9 DO")
-        for_lines.append(f"D{blk % 10} := D{(blk + 1) % 10} + StIdx;")
+        for_lines.append("FOR StIdx:= 0 TO 9 DO")
+        for_lines.append(f"D{blk % 10}:= D{(blk + 1) % 10} + StIdx;")
         for_lines.append("END_FOR;")
     _file("st_ctl_for", "RsStCtlFor", for_lines,
-          f"10 FOR StIdx := 0 TO 9 DO / assignment / END_FOR blocks -- 10 statements of loop "
+          f"10 FOR StIdx:= 0 TO 9 DO / assignment / END_FOR blocks -- 10 statements of loop "
           f"body against {_C_STMTS} loop ITERATIONS, so this also says whether ST is priced on "
           f"source text or on executed work (it should be source text; this is the file that "
           f"proves it rather than assuming it). FOR is the corpus's second construct, 600 "
           f"occurrences, and the loop counter is an ordinary controller tag exactly as in "
-          f"RobbinsGrn_2026_05_13r00's real 'for i := 0 to 7 by 1 do'.")
+          f"RobbinsGrn_2026_05_13r00's real 'for i:= 0 to 7 by 1 do'.")
 
     while_lines = []
     for blk in range(10):
-        while_lines.append("StIdx := 0;")
+        while_lines.append("StIdx:= 0;")
         while_lines.append("WHILE StIdx < 10 DO")
-        while_lines.append(f"D{blk % 10} := D{(blk + 1) % 10} + StIdx;")
-        while_lines.append("StIdx := StIdx + 1;")
+        while_lines.append(f"D{blk % 10}:= D{(blk + 1) % 10} + StIdx;")
+        while_lines.append("StIdx:= StIdx + 1;")
         while_lines.append("END_WHILE;")
     _file("st_ctl_while", "RsStCtlWhile", while_lines,
           f"10 WHILE cond DO ... END_WHILE blocks with an explicit counter increment, the same "
@@ -300,7 +300,7 @@ def group_instruction_calls() -> None:
             tmpl.format(
                 a=f"ARR{i % 2}", b=f"ARR{(i + 1) % 2}",
                 i=i % 10, j=(i + 1) % 5, k=(i + 2) % 5, i5=i % 5,
-            )
+)
             for i in range(_D_N)
         ]
         _file(
@@ -313,17 +313,17 @@ def group_instruction_calls() -> None:
             f"unchanged and ST needs only per-statement and control-flow terms on top -- by "
             f"far the cheapest possible way to close this coverage hole. {mnemonic} appears "
             f"{corpus_n} times inside real ST routines in samples/local/.",
-        )
+)
 
     _file(
         f"st_assign_literal_n{_D_N:05d}", "RsStAssignLit",
-        [f"D{i % 10} := {i % 1000};" for i in range(_D_N)],
-        f"{_D_N} plain literal assignments (Di := <literal>;) -- the ST spelling of "
+        [f"D{i % 10}:= {i % 1000};" for i in range(_D_N)],
+        f"{_D_N} plain literal assignments (Di:= <literal>;) -- the ST spelling of "
         f"gen_logic_sweep's MOV rung text, MOV({{i%1000}},D{{i%10}}), operand for operand. "
         f"Pairs with the valid instr_mov_n{_D_N:05d} capture (58,944). MOV has no ST function "
-        f"form; := IS how a real ST routine moves a value, so this is the honest pairing and "
+        f"form;:= IS how a real ST routine moves a value, so this is the honest pairing and "
         f"it prices the single most common statement in the whole real ST corpus.",
-    )
+)
 
 
 # --- E. ST assignment vs the CPT expression model ---------------------------
@@ -334,41 +334,41 @@ def group_expression() -> None:
     #   CPT(R{i}, (D{i}+D{i+1}) * R{i+1} - R{i+2}/2 + 1.5)
     # transcribed here operand for operand into ST assignment form.
     mirror = [
-        f"R{i % 10} := (D{i % 10} + D{(i + 1) % 10}) * R{(i + 1) % 10} "
+        f"R{i % 10}:= (D{i % 10} + D{(i + 1) % 10}) * R{(i + 1) % 10} "
         f"- R{(i + 2) % 10} / 2 + 1.5;"
         for i in range(_D_N)
     ]
     _file(
         f"st_expr_cpt_mirror_n{_D_N:05d}", "RsStExprMirror", mirror,
         f"{_D_N} ST assignments transcribing instr_cpt_n{_D_N:05d}'s CPT expression operand "
-        f"for operand: R := (D+D) * R - R/2 + 1.5. An ST assignment with an arithmetic "
+        f"for operand: R:= (D+D) * R - R/2 + 1.5. An ST assignment with an arithmetic "
         f"right-hand side IS structurally a CPT expression, and this project already has a "
-        f"tier-aware CPT model (including the REAL-destination float model wired 2026-09-04, "
+        f"tier-aware CPT model (including the REAL-destination float model wired, "
         f"exact on 29/29 real rows). If this file lands on instr_cpt_n{_D_N:05d}'s 474,944, "
         f"that whole model can be reused for ST assignments as-is instead of fitting a second "
         f"one from scratch. This is the highest-leverage single file in the ST batch.",
-    )
+)
 
     _file(
         f"st_expr_ops1_n{_D_N:05d}", "RsStExprOps1",
-        [f"R{i % 10} := D{i % 10} + D{(i + 1) % 10};" for i in range(_D_N)],
+        [f"R{i % 10}:= D{i % 10} + D{(i + 1) % 10};" for i in range(_D_N)],
         f"{_D_N} single-operator ST assignments with a REAL destination and two DINT operands. "
         f"Brackets st_expr_cpt_mirror_n{_D_N:05d} from below: the CPT model charges a "
         f"first_operator term, per-operator extras, and an int->float conversion per non-float "
         f"operand, so a 1-operator/2-int-operand case is the cleanest possible test of whether "
         f"those same terms apply to ST.",
-    )
+)
 
     _file(
         f"st_expr_ops2_dint_n{_D_N:05d}", "RsStExprOps2Dint",
-        [f"D{i % 10} := D{(i + 1) % 10} + D{(i + 2) % 10} * 2;" for i in range(_D_N)],
+        [f"D{i % 10}:= D{(i + 1) % 10} + D{(i + 2) % 10} * 2;" for i in range(_D_N)],
         f"{_D_N} two-operator ST assignments with a DINT (integer) destination and no float "
         f"anywhere. The CPT model prices integer and REAL destinations by completely different "
         f"rules -- in float, operator TIER differences vanish and every non-float operand "
         f"carries a conversion charge, neither of which applies to an all-integer expression. "
         f"Read against st_expr_ops1_n{_D_N:05d} (REAL destination, same operand count), this "
         f"says whether that destination-type split is real in ST too.",
-    )
+)
 
 
 # --- F. ST routine as a real JSR target with parameters ---------------------
@@ -381,11 +381,11 @@ def group_st_jsr_target() -> None:
     routine = _st_routine("StParamTarget", lines)
     calls = "\n".join(
         rung_xml(i, "JSR(StParamTarget,5,D0,D1,D2,D3,D4,D5);") for i in range(100)
-    )
+)
     l5x = build_l5x(
         target_name="RsStJsrParam", tags_xml=_TAGS,
         extra_rungs_xml=calls, extra_routines_xml=routine,
-    )
+)
     _write(
         "st_jsr_param_target_n00100", l5x,
         "An ST routine used as a real JSR target with parameter passing -- SBR(5 inputs) at "
@@ -397,7 +397,7 @@ def group_st_jsr_target() -> None:
         "target is charged the same way. It also carries the JSR-target composite surcharge, "
         "which has likewise never seen an ST target.",
         category="jsr_sbr_ret",
-    )
+)
 
 
 def main() -> None:

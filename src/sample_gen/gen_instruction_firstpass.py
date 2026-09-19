@@ -383,7 +383,7 @@ def group_mapc_v2(count: int = 1) -> None:
     _one_rung_file_unmodeled(mapc_instr, "InstrMapcV2", "instrfirst_mapc_v2",
                               "MAPC(Axis_Cip_Drive,Axis_Virtual,MotionInstr1,0,CamProfile1[0],1,1,Once,Forward "
                               "Only,Cam1[0].Master,Cam1[0].Master,New Cam,Command,Bi-Directional) -- CORRECTED "
-                              "2026-08-25 reproduction of the real Griffin_StackerLine_1Mar25_r00.L5X call "
+                              " reproduction of the real Griffin_StackerLine_1Mar25_r00.L5X call "
                               "MAPC(EM304_ForksUpDn,VM305_StackerVirtual,Stacker.ForksUpDn.MAPC,0,Stacker."
                               "ForksUpDn.CAMPROFILE[0],1,1,Once,Forward Only,Stacker.ForksUpDn.CAM[2].Master,"
                               "Stacker.ForksUpDn.CAM[2].Master,New Cam,Command,Bi-Directional) -- fixes the "

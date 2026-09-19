@@ -204,13 +204,13 @@ def group_error_reproduction() -> int:
     inputs, outputs, locals_ = _shape_members()
     for label, instr_count, second_routine in (
         ("mix050", 50, False), ("mix100", 100, False), ("tworoutine", 50, True),
-    ):
+):
         aoi_name = "AoiErr" + label[0].upper() + label[1:]
         definition, _storage = aoi_xml(
             aoi_name, inputs, outputs, [], locals_,
             logic_rungs_xml=_mix_rungs(instr_count),
             extra_routines_xml=(_ENABLE_IN_FALSE_ROUTINE_XML if second_routine else ""),
-        )
+)
         l5x = build_l5x(target_name=aoi_name, tags_xml="", extra_aoi_xml=definition)
         second = (", PLUS a second EnableInFalse routine of one rung -- the real "
                   "HomeToTorque shape" if second_routine else "")
@@ -219,8 +219,8 @@ def group_error_reproduction() -> int:
             f"AOI definition (3 In / 1 Out / 2 Local), internal Logic routine carrying "
             f"{instr_count} instructions of the same five-shape mix aoi_logic_scale_* uses"
             f"{second}, 0 instances -- OQ-AOIINTERNALLOGIC error reproduction. The five errored "
-            f"calibration rows were captured 2026-08-31 against content deleted and rebuilt "
-            f"2026-09-12 on a changed builder, so the step-2b gate reports all five STALE and "
+            f"calibration rows were captured against content deleted and rebuilt "
+            f" on a changed builder, so the step-2b gate reports all five STALE and "
             f"their error counts cannot be used. This re-emits the shape under a NEW id so the "
             f"count measures content the repo actually holds. Segment 15 captured all five shapes "
             f"individually, and the 13-rung mix, at ZERO errors -- so a clean result here means "

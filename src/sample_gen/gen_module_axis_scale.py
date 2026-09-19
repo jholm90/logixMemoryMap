@@ -115,7 +115,7 @@ def _build(n_axes: int, shape: str, with_regen: bool, file_idx: int) -> tuple[st
         target_name=f"AxisScale{file_idx}",
         tags_xml="\n".join(tags),
         extra_modules_xml="\n".join(modules),
-    )
+)
     return l5x, "\n".join(modules), axis_names
 
 
@@ -154,14 +154,14 @@ def main() -> None:
         regen_tag = "_regen" if with_regen else ""
         out_name = f"axis_scale_n{n_axes:02d}_{shape}{regen_tag}"
         description = (
-            f"Servo-axis count scaling (2026-09-02): {n_axes} total real servo axes built from "
+            f"Servo-axis count scaling: {n_axes} total real servo axes built from "
             f"{'single-axis 2198-S086-ERS3 drives (1 axis/module)' if shape == 'single' else 'dual-axis 2198-Dxxx-ERS3 drives (2 axes/module, one module hosting two real AXIS_CIP_DRIVE tags)'}, "
             f"one 2198-P208 power supply (its own on-board axis = the real 'DC BUS axis'), "
             f"{'plus one 2198-RP200 regen module (no axis of its own)' if with_regen else 'no regen module'}, "
             f"one shared MOTION_GROUP. Compare against the matched-axis-count "
             f"{'dual' if shape == 'single' else 'single'}-shape file to isolate whether N axes cost the "
             f"same regardless of module count. Axis/MotionGroup content is unmodeled (OQ-AXISSTRUCT)."
-        )
+)
         _write(out_name, l5x, description)
     print(f"\nDone. {len(_PLAN)} files.")
 

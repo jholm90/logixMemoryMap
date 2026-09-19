@@ -92,7 +92,7 @@ def _almd_tag_xml(name: str, message_text: str, alarm_class: str) -> str:
         f"          </AlarmConfig>\n"
         f"        </Data>\n"
         f"      </Tag>"
-    )
+)
 
 
 def _write(out_name: str, l5x: str, description: str) -> None:
@@ -132,8 +132,8 @@ def main() -> None:
     _write(
         "almd_minimal", l5x_minimal,
         "ALMD(Alm1), minimal 1-char AlarmClass/message text -- isolates ALARM_DIGITAL structure's "
-        "own byte cost (OQ-PREDEFINED sibling gap, RM018A pages 53-64 member list wired 2026-08-27)",
-    )
+        "own byte cost (OQ-PREDEFINED sibling gap, RM018A pages 53-64 member list wired)",
+)
 
     real_message = "Kinetix Bus 1 Communications Fault"
     real_class = "Edger"
@@ -145,7 +145,7 @@ def main() -> None:
         "ALMD(Alm1), real-length AlarmClass/message text copied verbatim from samples/local/ "
         "Comms_Bus1_ALMD -- tests whether AlarmConfig message/class text adds to the tag's real "
         "byte cost vs. almd_minimal",
-    )
+)
 
     print("\nDone. 2 files.")
 

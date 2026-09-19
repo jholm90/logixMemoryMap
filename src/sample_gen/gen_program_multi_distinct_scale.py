@@ -81,7 +81,7 @@ def _build(prog_names: list[str]) -> str:
     return build_l5x(
         target_name=f"ProgScale{len(prog_names):02d}", tags_xml="",
         extra_programs_xml=programs_xml, extra_scheduled_programs_xml=scheduled_xml,
-    )
+)
 
 
 def group_quantity_scale() -> None:
@@ -94,11 +94,11 @@ def group_quantity_scale() -> None:
             f"{n} extra Programs (1 + {n} = {n + 1} total), all scheduled under the same "
             f"MainTask (real one-task-many-programs shape), each a trivial single-NOP-rung "
             f"MainRoutine/no tags, fixed 16-char Program name length across every file in this "
-            f"group -- OQ-TASKOVERHEAD Program-COUNT scale isolation, 2026-08-31: 'worth "
+            f"group -- OQ-TASKOVERHEAD Program-COUNT scale isolation: 'worth "
             f"doing something similar with programs as well' (following the JSR distinct-target-"
             f"count gap). task_program_overhead.program_extra=484 was derived from only 5 real "
             f"plain-routine files -- never validated at this scale.",
-        )
+)
 
 
 def group_name_length() -> None:
@@ -113,11 +113,11 @@ def group_name_length() -> None:
             f"A FIXED {FIXED_COUNT_FOR_NAMELEN} extra Programs (count held constant, unlike "
             f"group_quantity_scale), Program name length held at exactly {length} chars across "
             f"every file in this group -- OQ-TASKOVERHEAD Program-NAME-LENGTH isolation, "
-            f"2026-08-31: different name lengths as a separate test set, validating data "
+            f": different name lengths as a separate test set, validating data "
             f"that was missed (same axis, applied to Programs). report.py's "
             f"task_program_shell program_extra term has no name-length component today, unlike "
             f"tags/UDTs/AOI definitions (all confirmed real name-length bucket costs).",
-        )
+)
 
 
 def main() -> None:

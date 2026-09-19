@@ -68,7 +68,7 @@ def group_typename_length() -> int:
         n += _write(TAGS_OUT, def_l5x, f"stringoverhead_typenamelen_{label}_def_only",
                     f"Custom string type maxlen=100, type name '{type_name}' ({len(type_name)} chars), "
                     f"0 instances -- isolates whether custom_definition_cost depends on the TYPE's own "
-                    f"name length (real residual found 2026-08-25 on a long type name, unexplained by "
+                    f"name length (real residual found on a long type name, unexplained by "
                     f"the confirmed maxlen-only formula)",
                     "string_tagoverhead")
 

@@ -222,7 +222,7 @@ _TYPED_CALL_START = re.compile(
 # -1 inspected the LENGTH operand rather than the destination. It charged the
 # right total anyway, because a literal length does not resolve to BOOL and the
 # unresolved default is a word -- right answer, wrong operand, which would have
-# broken silently the first time a length was a tag. Corrected .
+# broken silently the first time a length was a tag. Corrected.
 _DESTINATION_ARG = {
     "MOV": -1, "ADD": -1, "SUB": -1, "MUL": -1, "DIV": -1, "MOD": -1,
     "CLR": 0, "CPT": 0, "COP": 1, "CPS": 1, "FLL": 1, "BTD": 2,

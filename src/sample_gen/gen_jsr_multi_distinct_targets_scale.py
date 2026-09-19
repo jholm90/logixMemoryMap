@@ -88,7 +88,7 @@ def _target_xml(name: str) -> str:
         f'<Routine Name="{name}" Type="RLL">'
         f"<RLLContent>{rung_xml(0, 'NOP();')}</RLLContent>"
         "</Routine>"
-    )
+)
 
 
 def _write(out_name: str, l5x: str, description: str) -> None:
@@ -106,18 +106,18 @@ def group_quantity_scale() -> None:
         l5x = build_l5x(
             target_name=f"JsrScaleN{n:02d}", tags_xml="",
             extra_rungs_xml=call_rungs, extra_routines_xml=targets_xml,
-        )
+)
         _write(
             f"jsr_multi_distinct_targets_n{n:02d}",
             l5x,
             f"MainRoutine calls {n} genuinely DISTINCT 0-param leaf subroutines, fixed 16-char "
             f"target name length across every file in this group -- OQ-JSRPARAMCOST distinct-"
             f"target-COUNT scale isolation (extends jsr_multi_distinct_targets_{{01,03,05}} out "
-            f"to real-project scale, 2026-08-31: 'test quantity ... in another test set "
+            f"to real-project scale: 'test quantity ... in another test set "
             f"for validation of that data that was missed'). Straight-line check: does the "
             f"already-confirmed +180 bytes/target from N=1/3/5 keep holding at N={n}, or does "
             f"real Capacity diverge from linear at scale?",
-        )
+)
 
 
 def group_name_length() -> None:
@@ -130,7 +130,7 @@ def group_name_length() -> None:
         l5x = build_l5x(
             target_name=f"JsrNameLen{length:02d}", tags_xml="",
             extra_rungs_xml=call_rungs, extra_routines_xml=targets_xml,
-        )
+)
         _write(
             f"jsr_multi_distinct_targets_namelen{length:02d}",
             l5x,
@@ -138,12 +138,12 @@ def group_name_length() -> None:
             f"leaf subroutines, target routine name length held at exactly {length} chars across "
             f"every file in this group (count is the only thing held constant here, unlike "
             f"group_quantity_scale) -- OQ-JSRPARAMCOST target-NAME-LENGTH isolation, "
-            f"2026-08-31: different routine name lengths, as a separate test set "
+            f": different routine name lengths, as a separate test set "
             f"validating data that was missed. report.py's jsr_target_param_counts A(n) charge has no "
             f"name-length term today, unlike tags/UDTs/AOI definitions (all confirmed real "
             f"name-length bucket costs) -- tests whether that's a real, currently-unmodeled gap "
             f"or genuinely free the way routine logic content itself is not.",
-        )
+)
 
 
 def main() -> None:
