@@ -88,7 +88,7 @@ OUT_ROOT.mkdir(parents=True, exist_ok=True)
 # _SIL2_CATALOGS on the theory that its real error_count=2 meant it also
 # needed a safety-capable controller (matching a clean 7/7 signal across
 # every "-ERS3" Kinetix catalog in this corpus) -- DISPROVEN within the
-# hour by a real TitusvilleTrimmer production file, which runs
+# hour by export 24 production file, which runs
 # a real 2198-D057-ERS3 module on a plain non-safety 1756-L82E
 # (SafetyEnabled="false", no SafetyNetwork, no SafetyTask anywhere) --
 # an "-ERS3" catalog genuinely CAN run on a non-safety controller for
@@ -287,7 +287,7 @@ def _remap_local_icp_slot(xml: str, slot: int) -> str:
     (Requested item could not be found.)" for the chain's downstream
     modules. Root cause: all three of those catalogs' _MODULE_CHAINS
     blocks were extracted from the SAME real reference export
-    (RobbinsGrn_2026_05_13r00.L5X) and each one's own root module (a
+    (a real export) and each one's own root module (a
     1756-CNB/D ControlNet bridge, ParentModule="Local") independently
     claims the identical real physical backplane slot that one customer's
     rack actually used (Address="3" on its ICP Port) -- correct for a

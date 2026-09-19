@@ -26,9 +26,9 @@ that encoding would produce a file that lints clean here and then fails
 Studio 5000 import, costing a whole capture run to discover.
 
 Sources (all samples/local, gitignored, never committed):
-  TIMER, COUNTER, STRING, MOTION_INSTRUCTION  SJ_Gormley_20251112_r02.L5X
-  MESSAGE (InOut Parameter, bare)             311DGeneratedProgram.L5X,
-                                              BaillieLeitchField_Edger_*.L5X
+  TIMER, COUNTER, STRING, MOTION_INSTRUCTION  a real export
+  MESSAGE (InOut Parameter, bare)             a real export,
+                                              export 04
 """
 
 from __future__ import annotations
@@ -119,7 +119,7 @@ def predef_member(name: str, data_type: str, description: str | None = None) -> 
 def predef_array_member(name: str, data_type: str, dimension: int,
                         description: str | None = None) -> MemberSpec:
     """An array-dimensioned predefined-structure AOI LocalTag -- the real
-    `Motion` shape (MOTION_INSTRUCTION Dimensions="7") from SJ_Gormley.
+    `Motion` shape (MOTION_INSTRUCTION Dimensions="7") from export 21.
 
     LocalTag only: Logix rejects an array-dimensioned Input/Output
     Parameter outright (see _aoi_parameter_xml), and an InOut Parameter

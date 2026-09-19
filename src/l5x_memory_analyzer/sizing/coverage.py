@@ -68,8 +68,8 @@ _SAFETY_FAMILY = frozenset({"ESTOP", "ROUT", "CROUT", "LC", "RIN"})
 # and must not be reported as one.
 #
 # SCP: declared as an AddOnInstructionDefinition in four real
-# exports (Fisher_Synergy_Bead, BT1XX_FFC, Fisher_P800Sub, PWO_134190) and
-# CALLED BUT NOT DECLARED in MRFP_Edger_2026_06_01_r00. Its call shapes vary in
+# exports (export 12, export 03, export 11, export 19) and
+# CALLED BUT NOT DECLARED in export 17. Its call shapes vary in
 # arity across the corpus (3 operands in one program, 7 in another), which is
 # itself the signature of a user AOI rather than a built-in. The generic
 # name-shape heuristic below cannot catch it: "SCP" is short and has no

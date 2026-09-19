@@ -2,7 +2,7 @@
 
 A project containing every one of these instructions was built by hand,
 verified BUILD CLEAN in Studio 5000, and exported
-(samples/local/instr_probes/instruction_shapes_20260904.L5X). Every rung
+(a real export). Every rung
 template below is copied operand-for-operand from that export. Nothing here
 is composed from a manual.
 

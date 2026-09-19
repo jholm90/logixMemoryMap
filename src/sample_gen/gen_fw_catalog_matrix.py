@@ -154,8 +154,8 @@ _SIL3_MIN_FIRMWARE_MAJOR = "32"
 
 # ControlLogix 5570 (L7 is good all the way).
 # Real confirmed ProductCodes for L71/L72/L75 (92/93/96, from
-# samples/local/L7_v21_Sample.L5X, L5X_Samples/Sorter1_20260722r00.L5X,
-# DnR_Personal/FlareFunction_311D_240731.L5X) are PERFECTLY sequential --
+# samples/local/L7_v21_Sample.L5X, L5X_Samples/a real export,
+# DnR_Personal/a real export) are PERFECTLY sequential --
 # L73/L74 are inferred as 94/95 from that pattern (unlike the 5069 family,
 # where sequential-tier codes turned out NOT to hold -- flagged as
 # INFERRED in their own manifest notes, not presented as equally
@@ -188,8 +188,8 @@ _L7X_CATALOGS = list(_L7X_PRODUCT_CODES)
 # from a plausible-looking-but-unverified source is still a guess, and
 # it was wrong (proven wrong for L24ER-QB1B by the real chassis-size
 # error above). The ONLY real, independently-confirmed 1769 Compact-bus
-# Bus Size in the whole corpus is L33ERMS=17 (samples/local/DnR_Personal/
-# TOYOTA_135453_20221024.L5X, a genuine customer file -- see
+# Bus Size in the whole corpus is L33ERMS=17 (samples/local/
+# a real export, a genuine customer file -- see
 # wrapper.py's _1769_BUS_SIZE_BY_MODEL) -- and even that catalog is
 # included in the "L24..L27 and the L3 series fail" report, so its
 # failure has some OTHER unconfirmed cause even though its Bus Size
@@ -271,11 +271,11 @@ def _1769_module_xml(catalog: str, major_rev: str) -> str:
 # proof, not a code-review catch): the "L81ES uses the SAME ProductCode as
 # plain L81E" assumption below was never actually checked against a real
 # L81ES corpus file -- it was a same-hardware plausibility argument, not
-# data. Real corpus grep (5 independent real files: SJ_Gormley_20251112_r02,
-# Bender134053_201104 x2 copies, RobbinsGrn_2026_05_13r00,
-# FlareFunction_311D_240731) shows GuardLogix 5580 ProductCodes live in a
+# data. Real corpus grep (5 independent real files: export 21,
+# export 05 (two copies), export 20,
+# export 13) shows GuardLogix 5580 ProductCodes live in a
 # COMPLETELY SEPARATE numbering space from the non-safety L8x: L81ES=211
-# (4 real files agree) and L84ES=214 (1 real file, FlareFunction_311D --
+# (4 real files agree) and L84ES=214 (1 real file, export 13 --
 # never found by this project until now). 211->214 across L81ES->L84ES is
 # exactly +1 per catalog step, the same sequential pattern this project
 # already uses elsewhere for an unconfirmed run -- L82ES(212)/L83ES(213)
@@ -371,7 +371,7 @@ def _local_ports_xml(catalog: str, is_safety: bool = False) -> str:
         # A Safety-capable CPU's own Local module Ports need a
         # SafetyNetwork attribute on EVERY port, not just the Task/Program
         # Class="Safety" markers this generator already had. Confirmed
-        # against samples/local/SJ_Gormley_20251112_r02.L5X, whose
+        # against a real export, whose
         # Controller CatalogNumber is literally "1756-L81ES" -- the exact
         # family reported failing -- real Local module: both Port 1 (ICP)
         # and Port 2 (Ethernet) carry SafetyNetwork. This generator never
@@ -431,7 +431,7 @@ def _local_ports_xml(catalog: str, is_safety: bool = False) -> str:
 )
     if catalog.startswith("1769"):
         # CompactLogix 5370 real shape, same source/derivation as wrapper.
-        # py's _1769_bus_size (samples/local/DnR_Personal/TOYOTA_135453_
+        # py's _1769_bus_size (export 23
         # 20221024.L5X, ProcessorType="1769-L33ERMS"): Port Type="Compact"
         # (distinct from both 1756's "ICP" and 5069's "5069"), single
         # Ethernet port -- same single-Ethernet shape as 1756/L7x, unlike
@@ -461,8 +461,8 @@ def _build_xml(catalog: str, major_rev: str, software_revision: str, extra_attrs
         extra_attrs = extra_attrs.replace("{DATAEXCHANGEID}", guid)
     product_code = _product_code(catalog)
     local_ports_xml = _local_ports_xml(catalog, is_safety=is_safety)
-    # Real shape confirmed against samples/local/SJ_Gormley_
-    # 20251112_r02.L5X and DnR_Personal/Bender134053_201104.L5X. A safety
+    # Real shape confirmed against export 21
+    # 20251112_r02.L5X and DnR_Personal/a real export. A safety
     # processor needs a safety task, though not necessarily a safety
     # program; both files above are the real reference. The real
     # marker isn't the NAME "SafetyTask" -- it's Class="Safety" on BOTH
@@ -658,7 +658,7 @@ def main() -> None:
 )
             safety_note = (
                 " GuardLogix safety-rated (SIL2/PLd, single primary, no partner) -- real Task/"
-                "Program Class=\"Safety\" shape confirmed against Gormley/Bender real corpus."
+                "Program Class=\"Safety\" shape confirmed against export 21/Bender real corpus."
                 if is_safety else ""
 )
             l5x = _build_xml(catalog, major_rev, software_revision, extra_attrs, is_safety=is_safety)

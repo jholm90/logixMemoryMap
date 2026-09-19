@@ -7,7 +7,7 @@ Real, code-level finding this isolates: report.py's per-routine loop
 checks `if routine.is_jsr_target: ... continue` FIRST -- a routine that is
 BOTH a JSR target (something else calls it) AND itself a JSR caller (it
 calls something else) takes the is_jsr_target branch and `continue`s
-before its own outbound JSR call(s) are ever priced. Real AccuTally data
+before its own outbound JSR call(s) are ever priced. Real export 01 data
 (confidential, not committed) has 29 such mid-chain routines -- one
 (`_C_00_GetProduct_D`) makes 10 real JSR calls of its own, all currently
 contributing $0 beyond its own one-time A(n) declaration cost.
@@ -86,7 +86,7 @@ def group_midchain() -> None:
         l5x,
         "3-level real JSR chain: MainRoutine -> RoutineA (JSR target of Main, ALSO itself a JSR "
         "caller of RoutineB) -> RoutineB (leaf target). RoutineA is the mid-chain shape found in "
-        "real AccuTally data (confidential, not committed) -- 29 real routines are both a JSR "
+        "real export 01 data (confidential, not committed) -- 29 real routines are both a JSR "
         "target and a JSR caller, and report.py's is_jsr_target branch currently drops a "
         "mid-chain routine's own outbound JSR call cost entirely. Predicted total here (18,972) "
         "minus jsr_midchain_leaf_control's predicted total (18,828) = 144, exactly RoutineB's own "

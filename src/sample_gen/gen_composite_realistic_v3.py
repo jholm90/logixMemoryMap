@@ -5,7 +5,7 @@ explicit spec drawn after reviewing a real production file's accuracy.
    This is 1,500,000-2,500,000 bytes of predicted CPU memory, not L5X file
    size.
 2. 15+ ethernet nodes minimum
-3. 2 servo axis minimum (sample per the titusville file with MotionGroup,
+3. 2 servo axis minimum (sample per the export 24 file with MotionGroup,
    one power supply with DCBUS axis, Motion Axis and logic using the axis
    tags)
 4. 5+ logic programs with MAIN/Main routine and subroutine calls
@@ -26,7 +26,7 @@ already answered for module_overhead's non-additive multi-module marginal
 cost.
 
 Real motion content added for the first time at composite scale ("2
-servo axis minimum...sample per the titusville file"): one 2198-P208 power
+servo axis minimum...sample per the export 24 file"): one 2198-P208 power
 supply with its own on-board axis (the real "DC BUS axis" pattern -- the
 power supply's own AXIS_CIP_DRIVE tag) + one 2198-D012-ERS3 dual-axis drive
 module (real "Motion Axis" x2, satisfying "2 servo axis minimum" off ONE
@@ -92,7 +92,7 @@ _TAG_FLAT_OVERHEAD_BASE = 84  # KNOWN, docs/MEMORY_MODEL.md "Per-tag flat overhe
 # this project's own chassis_size_exceeded lint check). Real ControlLogix
 # plants don't put 15+ modules on one local rack either -- they distribute
 # I/O across remote/networked adapters, which is exactly what most of
-# a real TitusvilleTrimmer file does (its own local ICP-backplane
+# export 24 file does (its own local ICP-backplane
 # module count was small; almost everything else was Ethernet/rack-
 # aliased). Partitioning the pool and capping the ICP share to a safe
 # number below the real 17-slot limit is the structurally-realistic fix,
@@ -408,7 +408,7 @@ def _build(profile: ProfileV3) -> tuple[str, str, int]:
 
     description = (
         f"Composite realistic-scope test v3 #{profile.index}/50 (the explicit spec "
-        f"after the real TitusvilleTrimmer accuracy test found the composite-scale JSR/AOI surcharge "
+        f"after the real export 24 accuracy test found the composite-scale JSR/AOI surcharge "
         f"badly over-generalizes at real scale -- see OPEN_QUESTIONS.md OQ-COMPOSITESCALE): "
         f"{profile.udt_count} UDTs (1 nested), {profile.aoi_count} unique AOIs (1 with a real InOut "
         f"AXIS_CIP_DRIVE param, the rest with real internal Logic-routine content), {len(profile.array_sizes)} "

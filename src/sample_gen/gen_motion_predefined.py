@@ -6,7 +6,7 @@ real corpus instead --
 which turned out to have everything needed:
 
   - MOTION_INSTRUCTION: real full shape found in
-    samples/local/BAI10048_TrimmerTally_20250704.L5X (AxisMotionControlMAG)
+    a real export (AxisMotionControlMAG)
     -- a genuine 16-member Decorated Structure (FLAGS DINT, 10 status
     BOOLs, ERR INT, STATUS/STATE/EXERR SINT, SEGMENT DINT), dual L5K/
     Decorated format like TIMER/COUNTER. It is the common tag type for most
@@ -14,7 +14,7 @@ which turned out to have everything needed:
     Motion_Instruction alongside the Axis -- confirmed structurally, one tag per
     motion-instruction call site, alongside the Axis tag.
   - CAM_PROFILE: real 20-element array found in
-    samples/local/L5X_Samples/CMU_2025_10_14r00.L5X (HoldCamProfile) --
+    a real export (HoldCamProfile) --
     confirms exactly what flagged ("some voodoo behind the scenes...
     hides stuff not visible in the tag browser"): the Decorated view shows
     only ONE member (Status, DINT) per element, but the real L5K row per

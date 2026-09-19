@@ -152,29 +152,39 @@ something. **They are the part that gets skipped, so they are listed as work.**
 | `confound_check.py` gates a generator before files are built | done |
 | `unreconciled.py` run after every batch | **run it** |
 | One capture roster, not five | one outstanding: item 1 |
-| Comments carry facts, not conversation or dates | done: every `.py` comment and docstring |
-| No customer-identifying name in a committed file | **undecided -- see below** |
+| Comments carry facts, not conversation or dates | done: every comment and docstring |
+| No date in source | done: Python, YAML, JavaScript, PowerShell, AutoHotkey, docs |
+| No customer program name in source | done: replaced by export numbers |
+| No customer program name in git HISTORY | **not done -- see below** |
 
-### Customer project names are committed in comments
+### Real exports are referred to by number
 
-Real export filenames appear in comments and docstrings across **39 Python files
-and 3 docs**, and this is a public repository. The most frequent are
-`RobbinsGrn_2026_05_13r00` (28), `Bender134053_201104` (22), `MurrayBros` (20),
-`AccuTally` (18) and `BaillieLeitchField_Edger_20260812_r00` (11).
+Every real export is `export NN` throughout the source, the docs and
+`memory_model.yaml`. The numbering is stable and the names are gone.
 
-No proprietary file is committed and `samples/local/` is gitignored, so this is
-not the disclosure the read-only rule was drawn against. It is a smaller thing
-and a real one: the name of a customer project, in a public repo, in the same
-breath as its memory profile.
+A comparative claim needs the files told apart -- "one declares STRING[200],
+another STRING[255]" is only checkable if both can be identified -- so the names
+became numbers rather than vanishing into "a real export". Where a citation
+pointed at a file only to say where a shape came from, it now reads "a real
+export" and keeps the tag or member name, which is the part that makes it
+checkable.
 
-**Both options cost something, which is why this is a decision rather than a
-cleanup.** The citation is load-bearing -- "confirmed against
-`samples/local/<file>`" is what lets a finding be re-checked years later, and a
-generic label cannot be traced back to anything. Replacing 39 files' citations
-with `samples/local/real_07.L5X` style aliases needs a mapping table kept in
-`samples/local/`, gitignored, or the traceability is simply gone.
+**`samples/manifest.csv` is the exception, and it is deliberate.** Its
+`l5x_path` column is a real filesystem path into the gitignored
+`samples/local/`. Rewriting it breaks prediction on all seventeen real programs
+until the files on disk are renamed to match. `sample_id` and the row
+descriptions are renamed to `realprog_NN`; `l5x_path` is not.
 
-Nothing has been changed here. The names were left exactly as they were.
+### Removing a name from the working tree does not remove it from history
+
+The names are still in every earlier commit. `git log -p` recovers all of them,
+and so does any existing clone, fork or cache. **A working-tree cleanup is not a
+disclosure remedy.** If the requirement is that a public reader cannot find
+them, the history has to be rewritten or the repository re-initialised from the
+current tree, and even then anything already cloned stays out.
+
+The mapping from export number back to the real filename is recoverable from
+that same history and is not written anywhere in the tree on purpose.
 
 ---
 

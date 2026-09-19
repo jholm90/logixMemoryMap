@@ -15,7 +15,7 @@ generator does, using the same non-motion, plain-atomic-type AOI shapes
 gen_aoi_sweep.py already established.
 
 Real call-site argument syntax confirmed from
-samples/local/SJ_Gormley_20251112_r02.L5X (multiple AOI calls, e.g.
+a real export (multiple AOI calls, e.g.
 `PTimer(NE_OverWidthPTMR,AxisPosition,100)`): `AoiName(InstanceTag,arg1,
 arg2,...)`, positional args in Parameter declaration order, tags and
 literal constants both appear directly as args. Cross-referencing that

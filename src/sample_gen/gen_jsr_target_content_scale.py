@@ -21,12 +21,12 @@ have NO SBR at all, and 2,218/2,315 (95.8%) have no RET either. This
 file's first draft called its target with 0 params but still forced
 SBR()/RET() into it -- a real generator bug, not representative of any
 real 0-param subroutine, now fixed by omitting both. This matters more
-than it might look: AccuTally's real JSR calls are 77% zero-param
+than it might look: export 01's real JSR calls are 77% zero-param
 (117/152), and every one of its real 0-param targets has zero SBR/RET,
 matching the corpus norm exactly.
 
 4 files, target-routine instruction count as the only variable (10/50/
-100/150 real instructions, a realistic mix matching AccuTally's own top
+100/150 real instructions, a realistic mix matching export 01's own top
 mnemonics: MOV/XIC/OTE/CLR/ADD/EQU), single call site, 0 params, no SBR/
 RET (the representative real shape for a 0-param target), single distinct
 target, everything else held fixed and minimal so any Capacity change is
@@ -36,7 +36,7 @@ correctly-shaped case, current behavior is right and Capacity should stay
 FLAT across this sweep; if it isn't free, Capacity should scale with the
 target's own instruction count -- a real, currently-unmodeled cost this
 project has silently zeroed out on every real project,
-a plausible major piece of the 18% AccuTally gap since 10,488 real
+a plausible major piece of the 18% export 01 gap since 10,488 real
 unweighted instructions dwarfs every other open residual bucket combined.
 
 Run: python -m sample_gen.gen_jsr_target_content_scale
@@ -54,7 +54,7 @@ LOGIC_OUT = Path(__file__).parent.parent.parent / "samples" / "generated" / "log
 
 TARGET_INSTR_COUNTS = (10, 50, 100, 150)
 
-# Realistic mix matching AccuTally's own real top mnemonics (MOV/XIC/OTE/
+# Realistic mix matching export 01's own real top mnemonics (MOV/XIC/OTE/
 # CLR/ADD/EQU dominate its 123 real JSR-target routines) -- cycled to hit
 # the requested instruction count exactly.
 #
@@ -110,7 +110,7 @@ def main() -> None:
             f"jsr_target_content_scale_{instr_count:03d}",
             l5x,
             f"JSR to a single target routine containing ~{instr_count} real instructions "
-            f"(realistic MOV/XIC/OTE/CLR/ADD/EQU mix matching AccuTally's real JSR-target "
+            f"(realistic MOV/XIC/OTE/CLR/ADD/EQU mix matching export 01's real JSR-target "
             f"composition), single call site, 0 params, NO SBR/RET (the real, representative "
             f"shape for a 0-param target: -- confirmed against the real corpus "
             f"in samples/local/, 99.96% of real 0-param targets have no SBR) -- OQ-JSRPARAMCOST "

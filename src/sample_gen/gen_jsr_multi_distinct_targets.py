@@ -13,7 +13,7 @@ A(n) declaration cost is simply additive across a file (a dict keyed by
 target name, summed independently) -- a real, reasonable, but NEVER
 empirically confirmed assumption.
 
-Real AccuTally data (confidential, not committed) has real examples of
+Real export 01 data (confidential, not committed) has real examples of
 one caller routine invoking several different subroutines --
 `DataToDataBase_K` alone makes 5 distinct JSR calls in the same routine.
 

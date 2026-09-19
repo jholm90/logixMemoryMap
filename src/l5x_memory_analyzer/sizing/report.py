@@ -777,7 +777,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             continue
         label = _module_labels[_module_index]
         if module.module_defined_bytes == 0 and module.stated_total_bytes == 0:
-            # real, found reviewing the TitusvilleTrimmer
+            # real, found reviewing the export 24
             # production file: a bridge/gateway module with NO connections
             # of its own (e.g. a plain Ethernet-only "ETHERNET-BRIDGE" node
             # fanning out to a remote PC/HMI/server -- 10 real instances in

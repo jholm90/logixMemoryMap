@@ -3,10 +3,10 @@
 OQ-REAL5069 said the 5069 platform had zero real-file validation. That is
 now out of date -- four of the sixteen real captured programs are 5069:
 
-    elmsdale       5069-L330ERM     fw35.05   -5.03%
+    export 08       5069-L330ERM     fw35.05   -5.03%
     superior       5069-L330ERM     fw32.04   -4.00%
-    salamanca      5069-L330ERM     fw35.05   +1.08%
-    flarefunction  5069-L320ERMS3   fw35.05   -2.07%
+    export 29      5069-L330ERM     fw35.05   +1.08%
+    export 13  5069-L320ERMS3   fw35.05   -2.07%
 
 and the platform breakdown is not flattering:
 

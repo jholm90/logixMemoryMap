@@ -124,7 +124,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/Bender134053_201104.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     '1732E-IB16M12R/A': ("""\
 <Module Name="TestMod1_1732EIB16M12RA" CatalogNumber="1732E-IB16M12R/A" Vendor="1" ProductType="7" ProductCode="369" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -157,7 +157,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/TOYOTA_135453_20221024.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     '1732E-OB16M12R/A': ("""\
 <Module Name="TestMod1_1732EOB16M12RA" CatalogNumber="1732E-OB16M12R/A" Vendor="1" ProductType="7" ProductCode="370" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -201,7 +201,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/Bender134053_201104.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     '1734-232ASC/C': ("""\
 <Module Name="TestMod1_1734232ASCC" CatalogNumber="1734-AENT/C" Vendor="1" ProductType="12" ProductCode="108" Major="7" Minor="11" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -470,7 +470,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 2),
+""", 'a real export', 2),
     '1734-485ASC/C': ("""\
 <Module Name="TestMod1_1734485ASCC" CatalogNumber="1734-AENT/B" Vendor="1" ProductType="12" ProductCode="108" Major="5" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="Disabled" />
@@ -668,7 +668,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/CMU_2025_10_14r00.L5X', 2),
+""", 'L5X_Samples/a real export', 2),
     '1734-8CFG/C': ("""\
 <Module Name="TestMod1_17348CFGC" CatalogNumber="1734-AENT/B" Vendor="1" ProductType="12" ProductCode="108" Major="4" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -744,7 +744,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/Sorter1_20260722r00.L5X', 2),
+""", 'L5X_Samples/a real export', 2),
     '1734-AENT/B': ("""\
 <Module Name="TestMod1_1734AENTB" CatalogNumber="1734-AENT/B" Vendor="1" ProductType="12" ProductCode="108" Major="4" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -798,7 +798,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 1),
+""", 'a real export', 1),
     '1734-AENT/C': ("""\
 <Module Name="TestMod1_1734AENTC" CatalogNumber="1734-AENT/C" Vendor="1" ProductType="12" ProductCode="108" Major="7" Minor="11" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -840,7 +840,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 1),
+""", 'a real export', 1),
     '1734-AENTR/B': ("""\
 <Module Name="TestMod1_1734AENTRB" CatalogNumber="1734-AENTR/B" Vendor="1" ProductType="12" ProductCode="196" Major="4" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -880,7 +880,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'SJ_Gormley_20251112_r02.L5X', 1),
+""", 'a real export', 1),
     '1734-AENTR/C': ("""\
 <Module Name="TestMod1_1734AENTRC" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="7" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -920,7 +920,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'SJ_Gormley_20251112_r02.L5X', 1),
+""", 'a real export', 1),
     '1734-IB8/C': ("""\
 <Module Name="TestMod1_1734IB8C" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="7" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -1021,7 +1021,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'SJ_Gormley_20251112_r02.L5X', 2),
+""", 'a real export', 2),
     '1734-IE2C/C': ("""\
 <Module Name="TestMod1_1734IE2CC" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -1158,7 +1158,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/Bender134053_201104.L5X', 2),
+""", 'DnR_Personal/a real export', 2),
     '1734-IE2V/C': ("""\
 <Module Name="TestMod1_1734IE2VC" CatalogNumber="1734-AENT/C" Vendor="1" ProductType="12" ProductCode="108" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -1279,7 +1279,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/Sorter1_20260722r00.L5X', 2),
+""", 'L5X_Samples/a real export', 2),
     '1734-IE4C/C': ("""\
 <Module Name="TestMod1_1734IE4CC" CatalogNumber="1734-AENTR/B" Vendor="1" ProductType="12" ProductCode="196" Major="4" Minor="3" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -1453,7 +1453,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/Sorter1_20260722r00.L5X', 2),
+""", 'L5X_Samples/a real export', 2),
     '1734-IJ/C': ("""\
 <Module Name="TestMod1_1734IJC" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="7" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -1600,7 +1600,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/FlareFunction_311D_240731.L5X', 2),
+""", 'DnR_Personal/a real export', 2),
     '1734-IK/C': ("""\
 <Module Name="TestMod1_1734IKC" CatalogNumber="1734-AENTR/B" Vendor="1" ProductType="12" ProductCode="196" Major="4" Minor="3" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -1745,7 +1745,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/Gutchess_GreenLine_2026_06_04r00.L5X', 2),
+""", 'L5X_Samples/a real export', 2),
     '1734-IR2/C': ("""\
 <Module Name="TestMod1_1734IR2C" CatalogNumber="1734-AENT/C" Vendor="1" ProductType="12" ProductCode="108" Major="6" Minor="12" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -1859,7 +1859,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/K3M16_Edgers_20220808r00.L5X', 2),
+""", 'L5X_Samples/a real export', 2),
     '1734-OA4/C': ("""\
 <Module Name="TestMod1_1734OA4C" CatalogNumber="1734-AENT/C" Vendor="1" ProductType="12" ProductCode="108" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -1956,7 +1956,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/Sorter1_20260722r00.L5X', 2),
+""", 'L5X_Samples/a real export', 2),
     '1734-OB2EP/C': ("""\
 <Module Name="TestMod1_1734OB2EPC" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -2059,7 +2059,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/Bender134053_201104.L5X', 2),
+""", 'DnR_Personal/a real export', 2),
     '1734-OB8/C': ("""\
 <Module Name="TestMod1_1734OB8C" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="7" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -2181,7 +2181,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'SJ_Gormley_20251112_r02.L5X', 2),
+""", 'a real export', 2),
     '1734-OB8E/C': ("""\
 <Module Name="TestMod1_1734OB8EC" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -2334,7 +2334,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/Bender134053_201104.L5X', 2),
+""", 'DnR_Personal/a real export', 2),
     '1734-OB8S/A': ("""\
 <Module Name="TestMod1_1734OB8SA" CatalogNumber="1734-AENT/C" Vendor="1" ProductType="12" ProductCode="108" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -2461,7 +2461,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/TOYOTA_135453_20221024.L5X', 2),
+""", 'DnR_Personal/a real export', 2),
     '1734-OB8S/B': ("""\
 <Module Name="TestMod1_1734OB8SB" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -2580,7 +2580,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/Bender134053_201104.L5X', 2),
+""", 'DnR_Personal/a real export', 2),
     '1734-OE2C/C': ("""\
 <Module Name="TestMod1_1734OE2CC" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -2718,7 +2718,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/Bender134053_201104.L5X', 2),
+""", 'DnR_Personal/a real export', 2),
     '1756-CNB/D': ("""\
 <Module Name="TestMod1_1756CNBD" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="50" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" ControlNetSignature="16#bb2b_890b">
 <EKey State="CompatibleModule" />
@@ -2729,7 +2729,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Port>
 </Ports>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     '1756-DHRIO/E': ("""\
 <Module Name="TestMod1_1756DHRIOE" CatalogNumber="1756-DHRIO/E" Vendor="1" ProductType="12" ProductCode="18" Major="7" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -2757,7 +2757,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/Gutchess_GreenLine_2026_06_04r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     '1756-DNB': ("""\
 <Module Name="TestMod1_1756DNB" CatalogNumber="1756-DNB" Vendor="1" ProductType="12" ProductCode="14" Major="6" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -3184,7 +3184,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     '1756-EN4TR': ("""\
 <Module Name="TestMod1_1756EN4TR" CatalogNumber="1756-EN4TR" Vendor="1" ProductType="12" ProductCode="258" Major="4" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
@@ -3205,7 +3205,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     '1756-HSC/A': ("""\
 <Module Name="TestMod1_1756HSCA" CatalogNumber="1756-HSC/A" Vendor="1" ProductType="109" ProductCode="10" Major="1" Minor="6" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -3358,7 +3358,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     '1756-HSC/B': ("""\
 <Module Name="TestMod1_1756HSCB" CatalogNumber="1756-HSC/B" Vendor="1" ProductType="109" ProductCode="10" Major="3" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -3511,7 +3511,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/Gutchess_GreenLine_2026_06_04r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     '1756-HYD02': ("""\
 <Module Name="TestMod1_1756HYD02" CatalogNumber="1756-HYD02" Vendor="1" ProductType="16" ProductCode="17" Major="33" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="Disabled" />
@@ -3531,7 +3531,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     '1756-IA32/A': ("""\
 <Module Name="TestMod1_1756IA32A" CatalogNumber="1756-IA32/A" Vendor="1" ProductType="7" ProductCode="10" Major="3" Minor="4" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -3572,7 +3572,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 1),
+""", 'a real export', 1),
     '1756-IB16': ("""\
 <Module Name="TestMod1_1756IB16" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -3614,7 +3614,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     '1756-IB16IF/A': ("""\
 <Module Name="TestMod1_1756IB16IFA" CatalogNumber="1756-IB16IF/A" Vendor="1" ProductType="7" ProductCode="386" Major="1" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
@@ -4267,7 +4267,7 @@ _MODULE_CHAINS: dict[str, tuple[str, str, int]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/CMU_2025_10_14r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     '1756-IF8/A': ("""\
 <Module Name="TestMod1_1756IF8A" CatalogNumber="1756-IF8/A" Vendor="1" ProductType="10" ProductCode="7" Major="1" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
@@ -4441,7 +4441,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 1),
+""", 'a real export', 1),
     '1756-OA16': ("""\
 <Module Name="TestMod1_1756OA16" CatalogNumber="1756-OA16" Vendor="1" ProductType="7" ProductCode="13" Major="2" Minor="3" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
@@ -4492,7 +4492,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     '1756-OA16I': ("""\
 <Module Name="TestMod1_1756OA16I" CatalogNumber="1756-OA16I" Vendor="1" ProductType="7" ProductCode="7" Major="3" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -4538,7 +4538,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 1),
+""", 'a real export', 1),
     '1756-OF4/A': ("""\
 <Module Name="TestMod1_1756OF4A" CatalogNumber="1756-OF4/A" Vendor="1" ProductType="10" ProductCode="8" Major="1" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
@@ -4721,7 +4721,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     '1756-OF8/B': ("""\
 <Module CatalogNumber="1756-OF8/B" Vendor="1" ProductType="10" ProductCode="9" Major="2" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
@@ -5070,7 +5070,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 1),
+""", 'a real export', 1),
     '1756-OW16I': ("""\
 <Module Name="TestMod1_1756OW16I" CatalogNumber="1756-EN2T" Vendor="1" ProductType="12" ProductCode="166" Major="11" Minor="2" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -5279,7 +5279,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 2),
+""", 'a real export', 2),
     '1783-NATR': ("""\
 <Module Name="TestMod1_1783NATR" CatalogNumber="1783-NATR" Vendor="1" ProductType="12" ProductCode="309" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false">
 <EKey State="CompatibleModule" />
@@ -5287,7 +5287,7 @@ mPo
 <Port Id="2" Address="192.168.1.63" Type="Ethernet" Upstream="true" />
 </Ports>
 </Module>
-""", 'DnR_Personal/FlareFunction_311D_240731.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     '1794-ACN15/C': ("""\
 <Module Name="TestMod1_1794ACN15C" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="50" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" ControlNetSignature="16#bb2b_890b">
 <EKey State="CompatibleModule" />
@@ -5350,7 +5350,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 2),
+""", 'L5X_Samples/a real export', 2),
     '1794-AENT': ("""\
 <Module Name="TestMod1_1794AENT" CatalogNumber="1794-AENT" Vendor="1" ProductType="12" ProductCode="90" Major="4" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -5403,7 +5403,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/EmporiumEdger_20250905r1.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     '1794-IA16/A': ("""\
 <Module Name="TestMod1_1794IA16A" CatalogNumber="1794-AENT" Vendor="1" ProductType="12" ProductCode="90" Major="4" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -5487,7 +5487,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/EmporiumEdger_20250905r1.L5X', 2),
+""", 'L5X_Samples/a real export', 2),
     '1794-IB16/A': ("""\
 <Module Name="TestMod1_1794IB16A" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="50" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" ControlNetSignature="16#bb2b_890b">
 <EKey State="CompatibleModule" />
@@ -5582,7 +5582,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 3),
+""", 'L5X_Samples/a real export', 3),
     '1794-IB16XOB16P/A': ("""\
 <Module Name="TestMod1_1794IB16XOB16PA" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="50" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" ControlNetSignature="16#bb2b_890b">
 <EKey State="CompatibleModule" />
@@ -5673,7 +5673,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 3),
+""", 'L5X_Samples/a real export', 3),
     '1794-IB32/A': ("""\
 <Module Name="TestMod1_1794IB32A" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="50" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" ControlNetSignature="16#bb2b_890b">
 <EKey State="CompatibleModule" />
@@ -5770,7 +5770,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 3),
+""", 'L5X_Samples/a real export', 3),
     '1794-IR8/A': ("""\
 <Module Name="TestMod1_1794IR8A" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="50" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" ControlNetSignature="16#bb2b_890b">
 <EKey State="CompatibleModule" />
@@ -5946,7 +5946,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 3),
+""", 'L5X_Samples/a real export', 3),
     '1794-OA8/A': ("""\
 <Module Name="TestMod1_1794OA8A" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="50" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" ControlNetSignature="16#bb2b_890b">
 <EKey State="CompatibleModule" />
@@ -6033,7 +6033,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 3),
+""", 'L5X_Samples/a real export', 3),
     '1794-OE4/B': ("""\
 <Module Name="TestMod1_1794OE4B" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="50" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" ControlNetSignature="16#bb2b_890b">
 <EKey State="CompatibleModule" />
@@ -6162,7 +6162,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 3),
+""", 'L5X_Samples/a real export', 3),
     '1794-OW8/A': ("""\
 <Module Name="TestMod1_1794OW8A" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="50" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" ControlNetSignature="16#bb2b_890b">
 <EKey State="CompatibleModule" />
@@ -6249,7 +6249,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 3),
+""", 'L5X_Samples/a real export', 3),
     '1794-VHSC/A': ("""\
 <Module Name="TestMod1_1794VHSCA" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="50" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" ControlNetSignature="16#bb2b_890b">
 <EKey State="CompatibleModule" />
@@ -6493,7 +6493,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 3),
+""", 'L5X_Samples/a real export', 3),
     '2097-V34PR5-LM': ("""\
 <Module Name="TestMod1_2097V34PR5LM" CatalogNumber="2097-V34PR5-LM" Vendor="1" ProductType="37" ProductCode="37" Major="2" Minor="4" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -6539,7 +6539,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 1),
+""", 'a real export', 1),
     '2198-C4004-ERS': ("""\
 <Module Name="TestMod1_2198C4004ERS" CatalogNumber="2198-C4004-ERS" Vendor="1" ProductType="37" ProductCode="78" Major="13" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -6587,7 +6587,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/Fisher_Synergy_Bead_20240725.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     '2198-H008-ERS': ("""\
 <Module Name="TestMod1_2198H008ERS" CatalogNumber="2198-H008-ERS" Vendor="1" ProductType="37" ProductCode="47" Major="7" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -6634,7 +6634,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/FlareFunction_311D_240731.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     '2198-P031': ("""\
 <Module Name="TestMod1_2198P031" CatalogNumber="2198-P031" Vendor="1" ProductType="48" ProductCode="1" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -6680,7 +6680,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/Bender134053_201104.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     '2198-P070': ("""\
 <Module Name="TestMod1_2198P070" CatalogNumber="2198-P070" Vendor="1" ProductType="48" ProductCode="2" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -6726,7 +6726,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/Bender134053_201104.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     '2198-P141': ("""\
 <Module Name="TestMod1_2198P141" CatalogNumber="2198-P141" Vendor="1" ProductType="48" ProductCode="3" Major="14" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -6772,7 +6772,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/CMU_2025_10_14r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     '2198-P208': ("""\
 <Module Name="TestMod1_2198P208" CatalogNumber="2198-P208" Vendor="1" ProductType="48" ProductCode="4" Major="14" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -6818,7 +6818,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'SJ_Gormley_20251112_r02.L5X', 1),
+""", 'a real export', 1),
     '2198-RP200': ("""\
 <Module Name="TestMod1_2198RP200" CatalogNumber="2198-RP200" Vendor="1" ProductType="48" ProductCode="9" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -6865,7 +6865,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/Emporium_2025_05_28r01.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     '2198-S130-ERS3': ("""\
 <Module Name="TestMod1_2198S130ERS3" CatalogNumber="2198-S130-ERS3" Vendor="1" ProductType="45" ProductCode="8" Major="11" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false">
 <EKey State="Disabled" />
@@ -6912,7 +6912,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/Emporium_2025_05_28r01.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     '2702782': ("""\
 <Module Name="TestMod1_2702782" CatalogNumber="2702782" Vendor="562" ProductType="12" ProductCode="8169" Major="1" Minor="2" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false">
 <EKey State="CompatibleModule" />
@@ -6952,7 +6952,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'BaillieLeitchField_Edger_20260812_r00.L5X', 1),
+""", 'a real export', 1),
     '440C-CR30-22BBB/A': ("""\
 <Module Name="TestMod1_440CCR3022BBBA" CatalogNumber="440C-CR30-22BBB/A" Vendor="1" ProductType="154" ProductCode="1" Major="10" Minor="11" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -7122,7 +7122,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/K3M16_Edgers_20220808r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     '442G-MABLB-UR-E0JP4679/A': ("""\
 <Module Name="TestMod1_442GMABLBURE0JP4679A" CatalogNumber="442G-MABLB-UR-E0JP4679/A" Vendor="1" ProductType="157" ProductCode="10" Major="1" Minor="6" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_4abf_0367_fe7c">
 <EKey State="ExactMatch" />
@@ -7184,7 +7184,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/FlareFunction_311D_240731.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     '5069-IB16/A': ("""\
 <Module Name="TestMod1_5069IB16A" CatalogNumber="5069-IB16/A" Vendor="1" ProductType="7" ProductCode="390" Major="2" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" SafetyEnabled="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
@@ -7315,7 +7315,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/Fisher_Synergy_Bead_20240725.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     '5069-IB8S/A': ("""\
 <Module CatalogNumber="5069-IB8S/A" Vendor="1" ProductType="35" ProductCode="23" Major="2" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_49d6_03bc_cbd4" SafetyEnabled="true">
 <EKey State="CompatibleModule" />
@@ -7434,7 +7434,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/BT1XX_FFC_20240325.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     '5069-IY4/A': ("""\
 <Module CatalogNumber="5069-IY4/A" Vendor="1" ProductType="115" ProductCode="314" Major="2" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" SafetyEnabled="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
@@ -7750,7 +7750,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/BT1XX_FFC_20240325.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     '5069-OB16/A': ("""\
 <Module Name="TestMod1_5069OB16A" CatalogNumber="5069-OB16/A" Vendor="1" ProductType="7" ProductCode="392" Major="2" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" SafetyEnabled="false">
 <EKey State="CompatibleModule" />
@@ -8001,7 +8001,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/PWO_134190.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     '5069-OB16/B': ("""\
 <Module Name="TestMod1_5069OB16B" CatalogNumber="5069-OB16/B" Vendor="1" ProductType="7" ProductCode="392" Major="3" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" SafetyEnabled="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
@@ -8252,7 +8252,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/Fisher_Synergy_Bead_20240725.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     '5069-OBV8S/A': ("""\
 <Module CatalogNumber="5069-OBV8S/A" Vendor="1" ProductType="35" ProductCode="24" Major="3" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_49d6_03bc_cbd4" SafetyEnabled="true">
 <EKey State="CompatibleModule" />
@@ -8389,7 +8389,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/BT1XX_FFC_20240325.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     '842E-CM-M': ("""\
 <Module Name="TestMod1_842ECMM" CatalogNumber="842E-CM-M" Vendor="1" ProductType="37" ProductCode="53" Major="1" Minor="2" ParentModule="Local" ParentModPortId="2" Inhibited="true" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -8435,7 +8435,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/Sorter1_20260722r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     '843E-MIPxxBAx/A': ("""\
 <Module Name="TestMod1_843EMIPxxBAxA" CatalogNumber="843E-MIPxxBAx/A" Vendor="1" ProductType="34" ProductCode="4" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
@@ -8495,7 +8495,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 1),
+""", 'a real export', 1),
     'AL1122': ("""\
 <Module Name="TestMod1_AL1122" CatalogNumber="AL1122" Vendor="322" ProductType="12" ProductCode="1122" Major="1" Minor="5" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false">
 <EKey State="CompatibleModule" />
@@ -8979,7 +8979,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'SJ_Gormley_20251112_r02.L5X', 1),
+""", 'a real export', 1),
     'AL1222': ("""\
 <Module Name="TestMod1_AL1222" CatalogNumber="AL1222" Vendor="322" ProductType="12" ProductCode="1222" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false">
 <EKey State="CompatibleModule" />
@@ -9839,7 +9839,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/IPC_EdgerLine_20251217r1.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     'DSI-DRIVE-PERIPHERAL-MODULE': ("""\
 <Module Name="TestMod1_DSIDRIVEPERIPHERALMO" CatalogNumber="PowerFlex 525-EENET" Vendor="1" ProductType="150" ProductCode="9" Major="3" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" DrivesADCMode="true" DrivesADCEnabled="false" SafetyEnabled="false">
 <EKey State="CompatibleModule" />
@@ -10096,7 +10096,7 @@ mPo
 <Connections />
 </Communications>
 </Module>
-""", 'L5X_Samples/Sorter1_20260722r00.L5X', 2),
+""", 'L5X_Samples/a real export', 2),
     'EX260-SEN1/A': ("""\
 <Module Name="TestMod1_EX260SEN1A" CatalogNumber="EX260-SEN1/A" Vendor="7" ProductType="27" ProductCode="156" Major="2" Minor="3" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -10136,7 +10136,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/Fisher_Synergy_Bead_20240725.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     'EX260-SEN3/A': ("""\
 <Module Name="TestMod1_EX260SEN3A" CatalogNumber="EX260-SEN3/A" Vendor="7" ProductType="27" ProductCode="158" Major="2" Minor="3" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -10173,7 +10173,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/Fisher_P800Sub_20240531.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     'FANUC Robot R30iB Plus/A': ("""\
 <Module Name="TestMod1_FANUCRobotR30iBPlusA" CatalogNumber="FANUC Robot R30iB Plus/A" Vendor="356" ProductType="12" ProductCode="4" Major="3" Minor="1" UserDefinedVendor="356" UserDefinedProductType="140" UserDefinedProductCode="40" UserDefinedMajor="3" UserDefinedMinor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_44c9_02ec_6f66" SafetyEnabled="true">
 <EKey State="CompatibleModule" />
@@ -10289,7 +10289,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/Bender134053_201104.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     'PowerFlex 525-EENET': ("""\
 <Module Name="TestMod1_PowerFlex525EENET" CatalogNumber="PowerFlex 525-EENET" Vendor="1" ProductType="150" ProductCode="9" Major="7" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" DrivesADCMode="true" DrivesADCEnabled="true" SafetyEnabled="false" AutoDiagsEnabled="true">
 <EKey State="CompatibleModule" />
@@ -10539,7 +10539,7 @@ mPo
 <public><Vendor>Rockwell Automation/Allen-Bradley</Vendor><CatNum>PowerFlex 525-EENET</CatNum><LgxVersion>35</LgxVersion><ConnectedCommModule>0</ConnectedCommModule><PrimaryModulePort>0</PrimaryModulePort><ConfigCode>220</ConfigCode><PortName>PF525_A</PortName><PortDescription/><ConfigID>115</ConfigID><ADDAVersion>1</ADDAVersion><InputDataTag>&lt;DataTypes&gt;&lt;DataType Name="AB:PowerFlex525V_E_F6518AFA:I:0" Class="IO"&gt;&lt;Members&gt;&lt;Member Name="pad" DataType="DINT" Hidden="1" /&gt;&lt;Member Name="DriveStatus" DataType="INT" Radix="Binary" /&gt;&lt;Member Name="Ready" DataType="BIT" BitNumber="0" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="Active" DataType="BIT" BitNumber="1" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="CommandDir" DataType="BIT" BitNumber="2" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="ActualDir" DataType="BIT" BitNumber="3" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="Accelerating" DataType="BIT" BitNumber="4" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="Decelerating" DataType="BIT" BitNumber="5" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="Faulted" DataType="BIT" BitNumber="7" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="AtReference" DataType="BIT" BitNumber="8" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="CommFreqCnt" DataType="BIT" BitNumber="9" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="CommLogicCnt" DataType="BIT" BitNumber="10" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="ParmsLocked" DataType="BIT" BitNumber="11" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="DigIn1Active" DataType="BIT" BitNumber="12" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="DigIn2Active" DataType="BIT" BitNumber="13" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="DigIn3Active" DataType="BIT" BitNumber="14" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="DigIn4Active" DataType="BIT" BitNumber="15" Target="DriveStatus"&gt;&lt;/Member&gt;&lt;Member Name="OutputFreq" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="OutputCurrent" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="OutputVoltage" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="CommandedFreq" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="MaximumFreq" DataType="INT" Radix="Decimal" /&gt;&lt;/Members&gt;&lt;/DataType&gt;&lt;/DataTypes&gt;</InputDataTag><OutputDataTag>&lt;DataTypes&gt;&lt;DataType Name="AB:PowerFlex525V_E_34F78343:O:0" Class="IO"&gt;&lt;Members&gt;&lt;Member Name="LogicCommand" DataType="INT" Radix="Binary" /&gt;&lt;Member Name="Stop" DataType="BIT" BitNumber="0" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="Start" DataType="BIT" BitNumber="1" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="Jog" DataType="BIT" BitNumber="2" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="ClearFaults" DataType="BIT" BitNumber="3" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="Forward" DataType="BIT" BitNumber="4" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="Reverse" DataType="BIT" BitNumber="5" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="ForceKeypadCtrl" DataType="BIT" BitNumber="6" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="MOPIncrement" DataType="BIT" BitNumber="7" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="AccelRate1" DataType="BIT" BitNumber="8" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="AccelRate2" DataType="BIT" BitNumber="9" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="DecelRate1" DataType="BIT" BitNumber="10" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="DecelRate2" DataType="BIT" BitNumber="11" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="FreqSel01" DataType="BIT" BitNumber="12" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="FreqSel02" DataType="BIT" BitNumber="13" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="FreqSel03" DataType="BIT" BitNumber="14" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="MOPDecrement" DataType="BIT" BitNumber="15" Target="LogicCommand"&gt;&lt;/Member&gt;&lt;Member Name="FreqCommand" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="AccelTime1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="DecelTime1" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="JogFrequency" DataType="INT" Radix="Decimal" /&gt;&lt;Member Name="JogAccelDecel" DataType="INT" Radix="Decimal" /&gt;&lt;/Members&gt;&lt;/DataType&gt;&lt;/DataTypes&gt;</OutputDataTag><UdcAopVersion>16.3.1.10350</UdcAopVersion></public>
 </ExtendedProperties>
 </Module>
-""", 'SJ_Gormley_20251112_r02.L5X', 1),
+""", 'a real export', 1),
     'PowerFlex 527-STO CIP Safety': ("""\
 <Module Name="TestMod1_PowerFlex527STOCIPSa" CatalogNumber="PowerFlex 527-STO CIP Safety" Vendor="1" ProductType="45" ProductCode="15" Major="2" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyNetwork="16#0000_44c9_02ec_6f66" SafetyEnabled="true">
 <EKey State="CompatibleModule" />
@@ -10620,7 +10620,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/Bender134053_201104.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     'PowerFlex 755-EENET': ("""\
 <Module Name="TestMod1_PowerFlex755EENET" CatalogNumber="PowerFlex 755-EENET" Vendor="1" ProductType="143" ProductCode="2192" Major="14" Minor="5" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" DrivesADCMode="true" DrivesADCEnabled="false" SafetyEnabled="false">
 <EKey State="Disabled" />
@@ -10753,7 +10753,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/Sorter1_20260722r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     'PowerFlex 755-EENET-CM': ("""\
 <Module Name="TestMod1_PowerFlex755EENETCM" CatalogNumber="PowerFlex 755-EENET-CM" Vendor="1" ProductType="37" ProductCode="21" Major="12" Minor="2" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="Disabled" />
@@ -10801,7 +10801,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/Sorter1_20260722r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     'PowerFlex 755-EENET-CM-S': ("""\
 <Module Name="TestMod1_PowerFlex755EENETCMS" CatalogNumber="PowerFlex 755-EENET-CM-S" Vendor="1" ProductType="37" ProductCode="22" Major="20" Minor="3" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -10849,7 +10849,7 @@ mPo
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/MurrayBros_20260122r1.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     'RHINOBP-DRIVE-PERIPHERAL-MODULE': ("""\
 <Module Name="TestMod1_RHINOBPDRIVEPERIPHER" CatalogNumber="PowerFlex 755-EENET" Vendor="1" ProductType="143" ProductCode="2192" Major="14" Minor="5" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" DrivesADCMode="true" DrivesADCEnabled="false" SafetyEnabled="false">
 <EKey State="Disabled" />
@@ -11011,7 +11011,7 @@ mPo
 <Connections />
 </Communications>
 </Module>
-""", 'L5X_Samples/Sorter1_20260722r00.L5X', 2),
+""", 'L5X_Samples/a real export', 2),
 }
 
 
@@ -11057,7 +11057,7 @@ _SAFETY_PROCESSOR_TYPE = "1756-L81ES"
 # safety-capable controller (matching modulesweep_2198_s130_ers3's own real
 # error_count=2, and a clean 7/7 signal across every "-ERS3" catalog in
 # this corpus vs 0/7 for non-"-ERS3" siblings). DISPROVEN within the hour
-# by real evidence: a real production file (TitusvilleTrimmer)
+# by real evidence: a real production file (export 24)
 # runs a real `2198-D057-ERS3` module (`EM113_TrimmerLC_EM109_TrimInfdLC`)
 # on a plain non-safety 1756-L82E (`<SafetyInfo/>` empty, no SafetyTask) --
 # `SafetyEnabled="false"`, no `SafetyNetwork` anywhere, structurally the
@@ -11076,7 +11076,7 @@ _SAFETY_PROCESSOR_TYPE = "1756-L81ES"
 # MOTION_GROUP + 2 real AXIS_CIP_DRIVE tags) hits the identical
 # "Tag '...:SI': Invalid data type for safety tag" error on all 50
 # files. Every "-ERS3" catalog this project has ever generated fails
-# this way; only a real Titusville production file has shown
+# this way; only export 24 production file has shown
 # it working. See OPEN_QUESTIONS.md for the full comparison -- still
 # genuinely unresolved, needs the raw Designer error-log line.
 

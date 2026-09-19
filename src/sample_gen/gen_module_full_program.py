@@ -1,5 +1,5 @@
 """Full REAL PROGRAM replica -- every importable module from a real
-DnR_Personal/Bender134053_201104.L5X, genericized but structurally
+DnR_Personal/a real export, genericized but structurally
 verbatim: all of the I/O from the Bender program in one file,
 as the test for full-program module accuracy.
 
@@ -88,7 +88,7 @@ Sanity-checked before writing: 0 duplicate Names, 0 dangling
 ParentModule references, 0 lint findings, 0 sizing crashes.
 
 **Cross-checked against the "stripped" export**
-(samples/local/bender_stripped/Bender134053_stripper.L5X -- the real
+(a real export -- the real
 program with logic/UDTs/most Controller Tags removed but the Modules
 section left intact, gitignored real corpus): module catalog inventory
 matches this file's extraction exactly, module-for-module (the Safety
@@ -113,7 +113,7 @@ synthesizes it; processor_type="1756-L81ES" is passed through to match
 the real program's exact processor exactly rather than the project
 default (1756-L81E).
 
-Run: python -m sample_gen.gen_module_bender_full
+Run: python -m sample_gen.gen_module_full_program
 """
 
 from __future__ import annotations
@@ -5383,7 +5383,7 @@ def main() -> None:
         _axis_tag("Bus2_Drive020_Chuck_Axis", "Bus2_Drive_D020:Ch1"),
         _axis_tag("Bus2_Drive020_Sf_Axis", "Bus2_Drive_D020:Ch3"),
     ])
-    target_name = "BenderFullProgram"
+    target_name = "export 05"
     modules_xml = _ALL_MODULES_XML + "\n" + safety_partner_module_xml(target_name)
     l5x = build_l5x(
         target_name=target_name, tags_xml=tags_xml,
@@ -5399,12 +5399,12 @@ def main() -> None:
     # -- regenerated unchanged, suffixed as instructed so
     # the re-test run doesn't collide with the still-present old failing
     # file.
-    out_path = OUT_ROOT / "modulerack_bender_full_program_r2.L5X"
+    out_path = OUT_ROOT / "modulerack_full_program_r2.L5X"
     write_sample_unmodeled(l5x, out_path)
     append_manifest_row(
-        "modulerack_bender_full_program_r2",
+        "modulerack_full_program_r2",
         "Full real-program replica: all 69 non-CPU modules in a real "
-        "DnR_Personal/Bender134053_201104.L5X now represented (5 Point I/O adapters with "
+        "DnR_Personal/a real export now represented (5 Point I/O adapters with "
         "all 44 real children, 5 ArmorBlock I/O, 2 PowerFlex 527-STO safety drives, 2 "
         "EX260 valve manifolds, RMC150E, full 2-bus/5-module Kinetix 5700 subgraph with 8 "
         "real axis tags, the real FANUC robot controller with its 2 real CIP Safety "

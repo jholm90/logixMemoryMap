@@ -17,23 +17,23 @@ under-predict, seven over-predict.
 
 | program | actual | error |
 |---|---:|---:|
-| `superior` | 3,129,275 | −3.63% |
-| `ipc_edgerline` | 2,255,773 | −3.52% |
-| `k3m16_edgers` | 4,044,994 | −2.50% |
-| `cmu` | 5,217,440 | −2.31% |
-| `cardin_trimsortstack` | 7,891,612 | −2.15% |
-| `eastperry` | 4,634,308 | −2.04% |
-| `emporiumedger` | 1,703,932 | +1.79% |
-| `emporium` | 7,136,625 | −1.76% |
-| `mrfp_edger` | 2,281,316 | −1.48% |
-| `flarefunction` | 1,074,245 | +1.42% |
-| `accutally` | 5,999,972 | −1.20% |
-| `murraybros` | 923,320 | +1.17% |
-| `salamanca` | 1,362,000 | +1.05% |
-| `pukall_gang` | 2,502,336 | +0.55% |
-| `elmsdale` | 1,147,896 | +0.24% |
-| `horizon_edger` | 1,763,760 | −0.19% |
-| `griffin_stackerline` | 2,362,176 | +0.11% |
+| `export 30` | 3,129,275 | −3.63% |
+| `export 27` | 2,255,773 | −3.52% |
+| `export 16` | 4,044,994 | −2.50% |
+| `export 06` | 5,217,440 | −2.31% |
+| `export 07` | 7,891,612 | −2.15% |
+| `export 25` | 4,634,308 | −2.04% |
+| `export 10` | 1,703,932 | +1.79% |
+| `export 09` | 7,136,625 | −1.76% |
+| `export 17` | 2,281,316 | −1.48% |
+| `export 13` | 1,074,245 | +1.42% |
+| `export 01` | 5,999,972 | −1.20% |
+| `export 18` | 923,320 | +1.17% |
+| `export 29` | 1,362,000 | +1.05% |
+| `export 28` | 2,502,336 | +0.55% |
+| `export 08` | 1,147,896 | +0.24% |
+| `export 26` | 1,763,760 | −0.19% |
+| `export 14` | 2,362,176 | +0.11% |
 
 **The residual is no longer one-sided.** It used to be: every file under-predicted
 and the work was to find missing bytes. Seven files now over-predict, which means
@@ -50,7 +50,7 @@ carries both figures or it misleads.
 **The blind test is the only externally meaningful evidence.** The seventeen are
 gitignored customer exports that nobody outside the project can audit, so the
 mean over them cannot be verified by anyone else — and the model was tuned while
-sixteen of them were available. One was not: `cardin_trimsortstack`, a 7.89 MB
+sixteen of them were available. One was not: `export 07`, a 7.89 MB
 program on a 1756-L83E, was **predicted at 7,722,352 against an actual of
 7,891,612, +2.15%**, before its actual was used for anything. It lands inside the
 existing error distribution rather than outside it. **Lead with that, not with the

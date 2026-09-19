@@ -10,7 +10,7 @@ the input-param COUNT -- it never looks at `tag_types` for a JSR call the
 way it does for CPT/CMP operands (OQ-OPERANDTYPE), so as it stands the model
 is silently assuming every param costs the same regardless of type. That
 assumption was never tested, and the ORIGINAL real-corpus example that
-motivated OQ-JSRPARAMCOST in the first place (SJ_Gormley_20251112_r02.L5X,
+motivated OQ-JSRPARAMCOST in the first place (a real export,
 `_525_InputMapping_TS`/`_525_OutputMapping_TS`, see gen_jsr_sbr_ret.py's
 docstring) passes `EM203_IncisorTop:I`, `PF525_Generic_Dummy:I`,
 `IncisorTop_AxisInput`, `VFD_AOIAxisInput` -- all UDT/AOI-instance-typed

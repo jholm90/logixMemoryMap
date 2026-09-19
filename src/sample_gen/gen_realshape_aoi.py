@@ -1,5 +1,5 @@
 """Real-shaped AOI population tests, built from what actually correlates
-with the MurrayBros under-estimate.
+with the export 18 under-estimate.
 
 the generated projects exist to test things seen in the real
 projects whose significance was not understood -- not to restack shapes
@@ -13,16 +13,16 @@ diff exposed.
 
 WHY THESE FEATURES. The residual on all nine real programs was regressed
 against structure (feat2). Everything at the top is AOI
-internals -- not file size, which is what MurrayBros was being blamed on:
+internals -- not file size, which is what export 18 was being blamed on:
 
     AOI params typed AXIS_*   r=+0.889   ~21,356/unit
     rungs INSIDE AOI defs     r=+0.848   ~242/unit
     AOI definitions           r=+0.838   ~4,023/unit
     AOI local tags            r=+0.835   ~260/unit
 
-MurrayBros is not out to lunch because it is small. It is **AOI-dense**:
+Export 18 is not out to lunch because it is small. It is **AOI-dense**:
 453 AOI parameters, 280 local tags and 349 internal rungs inside 923 KB.
-MRFP carries comparable AOI counts in a file 2.5x larger and lands at
+Export 17 carries comparable AOI counts in a file 2.5x larger and lands at
 -0.51%. Same processor, same firmware.
 
 WHY THE EXISTING TESTS COULD NOT FIND THIS. The AOI-internal ladder that
@@ -39,7 +39,7 @@ more of all of them), so fitting any one of them from the real files would
 be the same mistake that produced three wrong surcharge fits and the
 reversed shell hypothesis. These files break that collinearity instead.
 
-  mbshape_asbuilt          19 definitions reproducing MurrayBros's real
+  mbshape_asbuilt          19 definitions reproducing export 18's real
                            (params, locals, rungs) profile per AOI. The
                            control: if this under-predicts by roughly the
                            same ~7%, the cause is confirmed to live in the
@@ -69,7 +69,7 @@ Every AOI here is storage-shaped (parameters hidden, not Required/Visible),
 which is how most real AOI parameters are declared and which keeps the call
 site a plain `Aoi(Instance);` rather than a 50-argument line.
 
-Run: python -m sample_gen.gen_murraybros_shape
+Run: python -m sample_gen.gen_realshape_aoi
 """
 
 from __future__ import annotations
@@ -84,7 +84,7 @@ from sample_gen.wrapper import build_l5x
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "mbshape"
 
-# MurrayBros's real AOI population, read straight out of the file:
+# Export 18's real AOI population, read straight out of the file:
 # (params, locals, rungs) per definition. Median 16/13/12, max 51/60/54.
 REAL_PROFILE = [
     (20, 60, 53), (50, 25, 54), (50, 21, 28), (37, 30, 36), (47, 17, 25),
@@ -163,16 +163,16 @@ def main() -> None:
     OUT_ROOT.mkdir(parents=True, exist_ok=True)
 
     _build("mbshape_asbuilt", REAL_PROFILE, description=(
-        f"19 AOI definitions reproducing MurrayBros's REAL per-AOI profile "
+        f"19 AOI definitions reproducing export 18's REAL per-AOI profile "
         f"({TOTAL_P} params / {TOTAL_L} locals / {TOTAL_R} internal rungs). Control "
-        f"file: if this under-predicts by roughly MurrayBros's ~7%, the missing "
+        f"file: if this under-predicts by roughly export 18's ~7%, the missing "
         f"cost is confirmed to live in the AOI population"))
 
     for label, which, tot in (("params", 0, TOTAL_P), ("locals", 1, TOTAL_L), ("rungs", 2, TOTAL_R)):
         for tag, factor in (("05", 0.5), ("10", 1.0), ("20", 2.0)):
             _build(f"mbshape_{label}_{tag}", _scaled(REAL_PROFILE, which, factor),
                    description=(
-                       f"MurrayBros AOI profile with total AOI {label} scaled x{factor} "
+                       f"export 18 AOI profile with total AOI {label} scaled x{factor} "
                        f"(~{int(tot*factor)}), definition count and the other two member "
                        f"kinds held FIXED -- separates the per-{label[:-1]} rate from the "
                        f"other collinear AOI correlates"))
@@ -186,8 +186,8 @@ def main() -> None:
 
     for tag, idx in (("k0", ()), ("k3", (0, 8, 10))):
         _build(f"mbshape_axis_{tag}", REAL_PROFILE, axis_indices=idx, description=(
-            f"MurrayBros AOI profile with {len(idx)} AXIS_CIP_DRIVE parameter(s) "
-            f"(MurrayBros has 3). Isolates the strongest single residual correlate "
+            f"export 18 AOI profile with {len(idx)} AXIS_CIP_DRIVE parameter(s) "
+            f"(export 18 has 3). Isolates the strongest single residual correlate "
             f"(r=+0.889); the model charges 22,656 bytes per axis parameter today"))
 
     print("\nDone.")

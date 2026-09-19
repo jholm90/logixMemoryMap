@@ -3,7 +3,7 @@ AOIs, not the ones already in the corpus.
 
 Two constraints together rule out the obvious move. The same AOI definitions
 recur across the projects already on file, and the tool has to work for
-someone outside this codebase whose AOIs are entirely different. MurrayBros' residual
+someone outside this codebase whose AOIs are entirely different. Export 18's residual
 correlates hardest with AOI structure (aoiaxisparam +0.889, aoirungs
 +0.848, aoidefs +0.838, aoilocals +0.835), and the tempting fix is to fit
 per-AOI corrections against the shared definitions that appear across the
@@ -73,7 +73,7 @@ Everything is definition-only except the two composites: an instance tag
 would add its own tag_overhead + member storage on top and blur the exact
 quantity being measured. Platform is the wrapper default 1756-L81E
 fw35.05, chosen deliberately -- it is the same processor and firmware as
-MurrayBros and MRFP_Edger, so nothing here is confounded by the baseline
+Export 18 and export 17, so nothing here is confounded by the baseline
 question in OQ-BASELINE-PROCFW.
 
 Run: python -m sample_gen.gen_aoi_structure
@@ -334,7 +334,7 @@ def _group_dimensions() -> None:
             f"plus 3 scalar DINT LocalTags. Crosses the two unpriced properties "
             f"(predefined structure AND dimension) to check they compose rather "
             f"than interact -- the real `Motion` MOTION_INSTRUCTION[7] LocalTag in "
-            f"SJ_Gormley is exactly this shape.",
+            f"export 21 is exactly this shape.",
         )
 
     for d in (8, 64, 512):

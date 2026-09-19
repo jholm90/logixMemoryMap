@@ -5,8 +5,8 @@ garbled" custom UDT, used everywhere in the real programs at 0.01%-tolerance
 stakes (OQ-AXISDEEP, OQ-MIXEDUDT).
 
 Modeled directly on a real UDT found in the corpus: `ts_CIPAxis`
-(samples/local/BaillieLeitchField_Edger_20260812_r00.L5X and
-SJ_Gormley_20251112_r02.L5X). Real ts_CIPAxis members: AxisName(STRING),
+(a real export and
+a real export). Real ts_CIPAxis members: AxisName(STRING),
 AutoSpeeds(nested UDT), Servo(nested UDT "udtServo"), AOI(nested AOI
 "DriveAxis" -- a real CIP Motion AOI with a REQUIRED InOut AXIS_CIP_DRIVE
 parameter), a hidden-bit BOOL (Enabled), and 4 DINT members (ONS/Test/
@@ -98,7 +98,7 @@ _AXIS_TAG_XML = (
 )
 
 # Real AXIS_VIRTUAL tag shape (near-verbatim from samples/local/L5X_Samples/
-# Griffin_StackerLine_1Mar25_r00.L5X's VM305_StackerVirtual/VM308_PeelersVirtual,
+# a real export's VM305_StackerVirtual/VM308_PeelersVirtual,
 # only the tag name changed) -- confirmed while investigating
 # OQ-CROUT-MAPC-BUILDFAIL: real MAPC calls in that corpus ALWAYS use two
 # DISTINCT axis tags for the slave/master operand positions, and in every

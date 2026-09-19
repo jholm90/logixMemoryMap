@@ -2,11 +2,11 @@
 PowerFlex 700-series sample.
 
 Real corpus: PowerFlex 525-EENET (43 corpus rows, samples/local/
-SJ_Gormley_20251112_r02.L5X) and PowerFlex 755-EENET (the modern successor
+a real export) and PowerFlex 755-EENET (the modern successor
 to the discontinued PowerFlex 700 line -- no literal "PowerFlex 700" catalog
 number exists anywhere in the real corpus, 700-series' real modern
 equivalent is the 753/755 family, confirmed present: samples/local/
-L5X_Samples/Sorter1_20260722r00.L5X). Both genericized (Name/IP changed)
+L5X_Samples/a real export). Both genericized (Name/IP changed)
 but structurally verbatim otherwise.
 
 **Fixed real Studio 5000 import bug found: "Data

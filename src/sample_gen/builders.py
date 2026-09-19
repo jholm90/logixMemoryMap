@@ -88,7 +88,7 @@ class MemberSpec:
     # calling rung MUST have a tag wired to that parameter; Required="false"
     # + Visible="true" means the calling rung must have SOME value present
     # (tag or literal) but it's optional whether to wire one at all (real
-    # corpus evidence, SJ_Gormley_20251112_r02.L5X's PTimer call omits 2 of
+    # corpus evidence, a real export's PTimer call omits 2 of
     # its 4 non-hidden Input params entirely); Required="false" +
     # Visible="false" means the parameter has nowhere to appear on the
     # calling rung at all -- storage-only, tag-browser-visible only. Only
@@ -138,7 +138,7 @@ def _data_value_xml(data_type: str, radix: str = "Decimal") -> str:
 def _array_body_xml(data_type: str, count: int, radix: str | None = "Decimal", element_fn=None) -> str:
     """element_fn(i) -> inner XML for one <Element>, defaults to a plain Value attr
     (atomic element type). Real shape confirmed against a real export
-    (BaillieLeitchField_Edger, Alarms_Edger array) -- including
+    (export 04, Alarms_Edger array) -- including
     that an array-of-UDT has no Radix attribute at all (radix=None), unlike
     an array-of-atomic which does."""
     if element_fn is None:
@@ -153,7 +153,7 @@ def _array2d_body_xml(data_type: str, rows: int, cols: int,
                       radix: str | None = "Decimal") -> str:
     """A two-dimensional array's decorated data.
 
-    Shape taken verbatim from a real export (FlareFunction_311D, tag
+    Shape taken verbatim from a real export (export 13, tag
     `Cell_Fault_TMR`, TIMER[5,32]) rather than extrapolated from the 1-D
     writer, because the two attributes disagree in a way that is easy to get
     wrong: the TAG's own Dimensions attribute is SPACE separated ("5 32")
@@ -247,7 +247,7 @@ def collect_nested_datatypes(name: str, members: list["MemberSpec"], family: str
 def _string_tag_data_xml(max_len: int) -> str:
     """Standalone STRING-typed (built-in or custom-length) tag body --
     confirmed against real corpus (multiple files e.g.
-    RobbinsGrn_2026_05_13r00.L5X szInstruction): a top-level STRING tag
+    a real export szInstruction): a top-level STRING tag
     exports as a *pair* of <Data> elements (Format="L5K" and Format="String"),
     NOT the <Data Format="Decorated"> every other tag type uses. A STRING
     *member inside a UDT* is different again (Decorated StructureMember,
@@ -264,9 +264,9 @@ def string_array_tag_xml(name: str, count: int, max_len: int = 82, data_type: st
     """An ARRAY of STRING-typed elements (built-in, `data_type="STRING"`,
     or a custom string type by name) -- a genuinely different real shape
     from a scalar STRING tag, confirmed against two independent
-    real corpus examples: samples/local/L5X_Samples/CMU_2025_10_14r00.L5X's
+    real corpus examples: a real export's
     CMU_PackNames tag (built-in, `DataType="STRING" Dimensions="5"`) and
-    Gutchess_GreenLine_2026_06_04r00.L5X's PrintStrings tag (custom type,
+    a real export's PrintStrings tag (custom type,
     `DataType="SortString" Dimensions="160"`) -- both follow the identical
     shape, only the DataType name differs. Unlike a scalar STRING tag's
     L5K+String Data pair (`_string_tag_data_xml`), a STRING ARRAY exports
@@ -492,7 +492,7 @@ def udt_xml(name: str, members: list[MemberSpec], family: str = "NoFamily",
             description: str | None = None) -> str:
     validate_logix_name(name, "UDT")
     members_xml = _udt_members_xml(members)
-    # Real exports (samples/local/SJ_Gormley_20251112_r02.L5X):
+    # Real exports (a real export):
     # a DataType-level Description sits right after the opening tag, before
     # Members -- same CDATA shape as a Tag's Description.
     desc_xml = f"<Description><![CDATA[{description}]]></Description>\n      " if description else ""
@@ -505,7 +505,7 @@ def udt_xml(name: str, members: list[MemberSpec], family: str = "NoFamily",
 
 def custom_string_type_xml(name: str, max_len: int) -> str:
     validate_logix_name(name, "string type")
-    # Real shape confirmed, samples/local/SJ_Gormley_20251112_r02.L5X
+    # Real shape confirmed, a real export
     # (DataType Name="Long_String", DATA Dimension="128").
     return (
         f'    <DataType Name="{name}" Family="StringFamily" Class="User">\n'
@@ -534,7 +534,7 @@ def _aoi_array_default_data_xml(m: "MemberSpec") -> str:
     Input/Output param, or a non-InOut array LocalTag) -- real bug found
     (aoi_array_param_def_only.L5X fails to import with
     XMLSrv_E_IMPORT_ABORTED_NO_CHANGES, even after the earlier Required/
-    Visible fix). Real corpus check (SJ_Gormley_20251112_r02.L5X,
+    Visible fix). Real corpus check (a real export,
     TS_TrackSts AOI): every non-InOut Parameter that carries ExternalAccess
     ALSO carries <DefaultData> (WindowStart/WindowEnd/ConsecTest/ER/EM/
     StartBit/EndBit, all scalar) -- InOut params (BitArray, PkgSts) are the
@@ -547,7 +547,7 @@ def _aoi_array_default_data_xml(m: "MemberSpec") -> str:
     exists to confirm the array DefaultData's own internal shape, so this
     follows the same <Array>/<Element> convention this project's own
     _array_body_xml already uses for an ordinary array Tag's Data body
-    (real shape, confirmed against BaillieLeitchField_Edger), and the same
+    (real shape, confirmed against export 04), and the same
     bracketed-list L5K convention _aoi_nested_default_data_xml already
     uses for a nested-UDT LocalTag's default -- both ASSUMED to generalize
     here, not independently confirmed for this exact combination."""
@@ -644,8 +644,8 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
             f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{dim_attr}{radix_attr} Usage="InOut" '
             f'Required="true" Visible="true"{constant_attr}'
 )
-        # Real corpus (311DGeneratedProgram.L5X MsgModuleReset,
-        # BaillieLeitchField MESSAGE_Fault): a described InOut Parameter is
+        # Real corpus (a real export MsgModuleReset,
+        # Export 04 MESSAGE_Fault): a described InOut Parameter is
         # NOT self-closing -- it wraps a <Description> child.
         return f"{head}>{desc}</Parameter>" if desc else f"{head}/>"
 
@@ -919,7 +919,7 @@ def rungs_xml(count: int, instructions_fn, comment_fn=None) -> str:
 
 
 def timer_tag_xml(name: str, preset: int = 1000) -> str:
-    """Real shape confirmed (samples/local/SJ_Gormley_20251112_r02.L5X,
+    """Real shape confirmed (a real export,
     IncisorOtfdBeltJogDwell): a TIMER tag, like STRING, uses the dual
     Format="L5K"/Format="Decorated" pair at the top level -- NOT the single
     Format="Decorated" every UDT/atomic tag gets. 5 real members (PRE/ACC
@@ -939,7 +939,7 @@ def timer_tag_xml(name: str, preset: int = 1000) -> str:
 
 
 def counter_tag_xml(name: str, preset: int = 100) -> str:
-    """Real shape confirmed (samples/local/SJ_Gormley_20251112_r02.L5X,
+    """Real shape confirmed (a real export,
     LL_BlowoffCTR_PkgIFLL): same dual-format shape as TIMER, 7 real members
     (PRE/ACC DINT, CU/CD/DN/OV/UN BOOL)."""
     return (
@@ -959,7 +959,7 @@ def counter_tag_xml(name: str, preset: int = 100) -> str:
 
 def control_tag_xml(name: str, length: int = 10, position: int = 9) -> str:
     """CONTROL tag -- real shape confirmed
-    (samples/local/BAI10048_TrimmerTally_20250704.L5X, srtControl): same
+    (a real export, srtControl): same
     dual-format shape as TIMER/COUNTER, 10 real members (LEN/POS DINT,
     EN/EU/DN/EM/ER/UL/IN/FD BOOL) -- matches the already-confirmed 12-byte
     CONTROL predefined-structure constant. Needed for the file/array
@@ -986,7 +986,7 @@ def control_tag_xml(name: str, length: int = 10, position: int = 9) -> str:
 
 def message_tag_xml(name: str, local_element: str, destination_tag: str) -> str:
     """MESSAGE tag -- real shape confirmed
-    (samples/local/BaillieLeitchField_Edger_20260812_r00.L5X,
+    (a real export,
     MESSAGE_Alarms): a single self-closed <MessageParameters> element, no
     Structure/DataValueMember body at all (much simpler than TIMER/COUNTER/
     CONTROL) -- a "CIP Generic" get-attribute-list message, real attribute
@@ -1009,7 +1009,7 @@ def message_tag_xml(name: str, local_element: str, destination_tag: str) -> str:
 
 # Real CAM element rows -- distinct from CAM_PROFILE (see
 # _CAM_PROFILE_L5K_ROWS above). Confirmed
-# (samples/local/L5X_Samples/RobbinsGrn_2026_05_13r00.L5X, NewCI2Cam): a
+# (a real export, NewCI2Cam): a
 # CAM array tag's Decorated shape is fully visible (no hidden fields the
 # way CAM_PROFILE has) -- just Master(REAL)/Slave(REAL)/SegmentType(DINT)
 # per element, matching every L5K row exactly. Genuinely unmodeled in
@@ -1041,7 +1041,7 @@ def cam_tag_xml(name: str, count: int) -> str:
 
 def program_tag_xml(name: str, data_type: str, usage: str | None = None) -> str:
     """Program-scoped (Program/Tags, not Controller/Tags) atomic tag. Real
-    shape confirmed (samples/local/SJ_Gormley_20251112_r02.L5X,
+    shape confirmed (a real export,
     PC366_BitPos/DLugNum): a Program-scoped tag -- Local (no Usage attribute)
     or Public (Usage="Public") alike -- uses the dual Format="L5K"/
     Format="Decorated" pair, unlike a Controller-scoped atomic tag which
@@ -1064,7 +1064,7 @@ def program_tag_xml(name: str, data_type: str, usage: str | None = None) -> str:
 
 def alias_tag_xml(name: str, alias_for: str, radix: str = "Decimal") -> str:
     """Alias tag -- real shape confirmed (multiple real corpus
-    files, e.g. samples/local/BAI10048_TrimmerTally_20250704.L5X): self-
+    files, e.g. a real export): self-
     closed, no Data element at all, just AliasFor pointing at the real
     target tag's path. OQ-ALIASSIZE."""
     validate_logix_name(name, "alias tag")
@@ -1073,7 +1073,7 @@ def alias_tag_xml(name: str, alias_for: str, radix: str = "Decimal") -> str:
 
 def motion_instruction_tag_xml(name: str) -> str:
     """MOTION_INSTRUCTION tag -- real shape confirmed
-    (samples/local/BAI10048_TrimmerTally_20250704.L5X, AxisMotionControlMAG,
+    (a real export, AxisMotionControlMAG,
     a real MAG/MAH-style motion instruction backing tag). Same dual
     Format="L5K"/Format="Decorated" convention as TIMER/COUNTER. Unlike
     those, this one's 16 named Decorated members (FLAGS DINT, 10 status
@@ -1109,7 +1109,7 @@ def motion_instruction_tag_xml(name: str) -> str:
 
 
 # Real CAM_PROFILE element rows, captured verbatim from
-# samples/local/L5X_Samples/CMU_2025_10_14r00.L5X (HoldCamProfile, a real
+# a real export (HoldCamProfile, a real
 # 20-element array). Deliberately NOT synthesized: the visible Decorated
 # shape exposes only one named member (Status, DINT) per element, but the
 # real L5K row for each element carries 14 numeric fields -- confirming
@@ -1183,7 +1183,7 @@ def cam_profile_tag_xml(name: str, count: int) -> str:
 
 def module_1756_digital_input_xml(name: str, slot: int = 1, parent_port_id: int = 1) -> str:
     """Real shape confirmed (samples/local/L5X_Samples/
-    RobbinsGrn_2026_05_13r00.L5X, DC_Input): 1756-IB16, catalog-fixed AOP
+    a real export, DC_Input): 1756-IB16, catalog-fixed AOP
     structure, ConfigSize=24 (10 named filter/COS members), Input
     Connection with a Fault+Data DINT pair (8 bytes). Pattern 1 above."""
     return (
@@ -1222,7 +1222,7 @@ def module_1756_digital_input_xml(name: str, slot: int = 1, parent_port_id: int 
 
 def module_generic_ethernet_xml(name: str, ip_address: str, input_bytes: int, output_bytes: int) -> str:
     """Real shape confirmed (samples/local/L5X_Samples/
-    Emporium_2025_05_28r01.L5X, IFM_LugLoader1 -- a Balluff/IFM IO-Link
+    a real export, IFM_LugLoader1 -- a Balluff/IFM IO-Link
     master added as a generic module, no vendor-specific EDS). Pattern 3
     above: CatalogNumber="ETHERNET-MODULE" is shared by every such device
     regardless of what it physically is -- real per-instance size comes
@@ -1279,12 +1279,12 @@ def task_xml(task_name: str, program_name: str, task_type: str = "CONTINUOUS",
     for that reason rather than defaulting silently.
 
     Type="EVENT" (event_trigger set) mirrors the real corpus shape found in
-    SJ_Gormley_20251112_r02.L5X/Sorter1_20260722r00.L5X: a Rate attribute
+    a real export/a real export: a Rate attribute
     (same as Periodic), DisableUpdateOutputs="true" (real EVENT tasks always
     carry this, unlike Periodic/Continuous's "false"), and a child
     <EventInfo EventTrigger="..."/> element -- either "EVENT Instruction
     Only" (no EventTag) or "Axis Watch" (EventTag pointing at a real
-    AXIS_CIP_DRIVE/AXIS_VIRTUAL tag, confirmed real in the Gormley corpus)."""
+    AXIS_CIP_DRIVE/AXIS_VIRTUAL tag, confirmed real in the export 21 corpus)."""
     # Case-normalised BEFORE the membership test.: a caller passed
     # task_type="Periodic" and this test, being case-sensitive, matched neither
     # branch -- so the Task went out with no Rate at all AND a mixed-case Type.

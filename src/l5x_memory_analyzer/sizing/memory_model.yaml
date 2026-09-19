@@ -119,15 +119,15 @@ predefined_structures:
   #
   # This mislabel was expensive out of all proportion to 12 bytes.
   # weakest() propagates upward, so a single MOTION_INSTRUCTION member
-  # marked the whole containing UDT: in MurrayBros the 32,497-byte
+  # marked the whole containing UDT: in export 18 the 32,497-byte
   # Stacker tag (126 members) reported FITTED solely because three of its
   # members are MOTION_INSTRUCTION, and every nested sub-UDT under it
   # inherited the same downgrade.
   MOTION_INSTRUCTION: { bytes: 12, confidence: KNOWN }
   # SFC/FBD-family native structures. Not derived from a
   # documentation citation -- read directly off REAL Decorated-XML L5K
-  # data in the corpus (SJ_Gormley_20251112_r02.L5X, Bender134053_
-  # 201104.L5X, BAI10048_TrimmerTally_20250704.L5X, BT1XX_FFC_20240325.L5X)
+  # data in the corpus (a real export, export 05
+  # 201104.L5X, a real export, a real export)
   # the same way TIMER's own real shape would be read: each real instance's
   # <Data Format="L5K"> raw value array length x 4 bytes IS the real total
   # (one DINT per raw L5K scalar -- exactly how TIMER's 3-element/12-byte
@@ -164,7 +164,7 @@ predefined_structures:
   # Decorated members: Status(DINT)+X(BOOL)+Reset(BOOL)+Count(DINT), but
   # the real L5K array has 5 raw values -- [8193,0,0,0,0], zero variance
   # across all 4 real instances (Stop_014/Stop_046/Seq_Stop_015/Seq_
-  # Stop_069, Bender134053_201104.L5X). L5K[0]=8193=16#2001 matches the
+  # Stop_069, a real export). L5K[0]=8193=16#2001 matches the
   # real Status value exactly. One more raw value than named Decorated
   # members -- a hidden field not shown in the Decorated view, same
   # "voodoo" pattern already documented for CAM_PROFILE (only 1 of 14 real
@@ -176,7 +176,7 @@ predefined_structures:
   # list (AND/OR: EnableIn+In1..In8+EnableOut+Out = 11 BOOL; NOT:
   # EnableIn+In+EnableOut+Out = 4 BOOL), but unlike SFC_STEP the real L5K
   # array does NOT scale 1-value-per-field -- all 3 real corpus instances
-  # (BAND_01/BNOT_02/BOR_01, Bender134053_201104.L5X) show exactly 3 raw
+  # (BAND_01/BNOT_02/BOR_01, a real export) show exactly 3 raw
   # L5K values regardless of member count. Bit-level decode against the
   # real Decorated-XML values on the SAME instances confirms the packing
   # exactly (not guessed): L5K[0] = input word, bit0=EnableIn, bit(n)=InN
@@ -2713,7 +2713,7 @@ jsr_param_cost:
 #
 # Real-corpus effect: 3,918 call sites x 168 = 658,224 bytes, which is 37% of
 # the total 1,779,559-byte under-prediction across the sixteen real programs,
-# and 97% of it on griffin_stackerline, 126% on salamanca, 83% on horizon_edger.
+# and 97% of it on export 14, 126% on export 29, 83% on horizon_edger.
 # See OQ-REALUNDER.
 #
 # SPLIT INTO A BASE PLUS A PER-PARAMETER RATE (capture-batch segment
@@ -2847,7 +2847,7 @@ logic_instructions:
   # it explains why they were wrong, not because they are current.
   #
   # supplied real Capacity readings for 8 whole real customer
-  # programs, joining Cardin_TrimSortStack for 9 real
+  # programs, joining export 07 for 9 real
   # points. Under the old 20/47 + 12,000-cap model, ALL NINE
   # under-predicted, by +8.35% to +30.63%, aggregate +12.62%, mean
   # |error| 14.95%. That is the North Star number and it was nowhere near
@@ -2861,7 +2861,7 @@ logic_instructions:
   #     unweighted instructions  +0.524     AOI-internal instrs +0.203
   #     ST source lines          -0.396     unsized modules     -0.255
   # ST content and unmodeled modules are NOT the cause (both negative);
-  # JSR-target logic content is. Same conclusion the single Cardin file
+  # JSR-target logic content is. Same conclusion the single export 07 file
   # gave, now confirmed on 8 more independent real programs.
   #
   # Fit is ordinary least squares of (actual - prediction-with-no-
@@ -3237,7 +3237,7 @@ logic_instructions:
     MSO: 60
     # Wired. All eight had captured count sweeps sitting
     # unreconciled and were being charged ZERO, which is not a small
-    # error on a real file: AccuTally alone calls MCSV 4 times, MSF
+    # error on a real file: export 01 alone calls MCSV 4 times, MSF
     # twice, MAW once and the bitwise AND seven times.
     #
     # Every slope is exact -- differenced between consecutive count

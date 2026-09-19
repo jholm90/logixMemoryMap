@@ -26,7 +26,7 @@ this project has never captured.
 
 Size sweep: 64/128/256/496 (real, anchoring point)/1024/2048 bytes, one
 instance per file, isolating I/O size as the only variable. Plus one
-3-instance file (matching Titusville's own real usage of 3 same-catalog
+3-instance file (matching export 24's own real usage of 3 same-catalog
 CIP-MODULE nodes) at the confirmed 496-byte size, to test whether multiple
 same-size instances also show the already-documented non-additive
 multi-module marginal cost.
@@ -153,7 +153,7 @@ def main() -> None:
         "0496b_x3",
         bridge + "\n" + triple,
         "Three real CIP-MODULE instances at the confirmed real 496-byte size (matching "
-        "TitusvilleTrimmer's own real usage of 3 same-catalog CIP-MODULE nodes on one bridge) -- "
+        "export 24's own real usage of 3 same-catalog CIP-MODULE nodes on one bridge) -- "
         "tests whether the multi-module non-additive marginal cost already documented for other "
         "catalogs (OQ-MODULEIO) also applies here.",
     )

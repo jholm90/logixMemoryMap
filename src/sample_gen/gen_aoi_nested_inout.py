@@ -2,7 +2,7 @@
 a UDT member. Previously declined in gen_axis_composite.py as an unconfirmed
 Studio 5000 construct -- resolved by checking a REAL working
 instance, not just the AOI/UDT *definitions*: `BedRolls` (DataType=
-"ts_CIPAxis") in samples/local/BaillieLeitchField_Edger_20260812_r00.L5X
+"ts_CIPAxis") in a real export
 has a real `StructureMember Name="AOI" DataType="DriveAxis"` member, and its
 InOut parameters (Drive_Axis: AXIS_CIP_DRIVE, Udt_Servo) are completely
 absent from that member's body -- exactly matching the already-confirmed

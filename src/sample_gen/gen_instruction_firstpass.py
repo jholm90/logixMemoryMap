@@ -180,7 +180,7 @@ def group_simple_atomic(count: int = 1) -> None:
     cases = [
         # (instruction text, out_name, description, real citation)
         ("NOT(D0,D1);", "instrfirst_not",
-         "NOT(D0,D1) -- CORPUS_CONFIRMED shape (StnSys.EtherNet.CommsOK,StnSys.Fault.DB[1] in SJ_Gormley..., "
+         "NOT(D0,D1) -- CORPUS_CONFIRMED shape (StnSys.EtherNet.CommsOK,StnSys.Fault.DB[1] in export 21..., "
          "substituted with plain DINT tags)"),
         ("TRN(R0,D0);", "instrfirst_trn",
          "TRN(R0,D0) -- CORPUS_CONFIRMED shape (DOW_Temp00,DOW_Century), REAL source truncated to DINT dest"),
@@ -310,7 +310,7 @@ def group_crout(count: int = 1) -> None:
     zone_tag = tag_xml("Zone1", "ZoneStatus", udt_members=_ZONE_MEMBERS)
     _one_rung_file(instr, "InstrCrout", "instrfirst_crout",
                     "CROUT(Zone1,NEGATIVE,250,Zone1.Actuate,...,Zone1.Reset) -- NEAR_VERBATIM clone of a real "
-                    "corpus call (SJ_Gormley_20251112_r02.L5X, Zone1/Zone2 examples), using a synthetic "
+                    "corpus call (a real export, Zone1/Zone2 examples), using a synthetic "
                     "6-DINT-member ZoneStatus UDT in place of the real file's own Zone1 tag shape (unconfirmed "
                     "exactly, but structurally identical: 1 identifying tag + 2 literals + 6 member refs)",
                     extra_tags_xml=zone_tag, extra_datatypes_xml=_ZONE_UDT_XML, count=count)
@@ -344,7 +344,7 @@ def group_cam_family(count: int = 1) -> None:
     #      -- an undeclared-tag reference, real and sufficient on its own
     #      to explain every rung erroring.
     #   2. Even if declared, real corpus MAPC calls (8 independent examples
-    #      found in Griffin_StackerLine_1Mar25_r00.L5X) ALWAYS use two
+    #      found in a real export) ALWAYS use two
     #      DISTINCT axis tags for the slave/master positions, never the
     #      same tag twice -- and in the specific ForksUpDn example this
     #      was transplanted from, of two DIFFERENT DataTypes:
@@ -356,7 +356,7 @@ def group_cam_family(count: int = 1) -> None:
     mapc_instr = ("MAPC(Axis_Cip_Drive,Axis_Cip_Drive,MotionInstr1,0,CamProfile1[0],1,1,Once,Forward Only,"
                   "Cam1[0].Master,Cam1[0].Master,New Cam,Command,Bi-Directional);")
     _one_rung_file_unmodeled(mapc_instr, "InstrMapc", "instrfirst_mapc",
-                              "MAPC(...) -- NEAR_VERBATIM clone of a real corpus call (Griffin_StackerLine_"
+                              "MAPC(...) -- NEAR_VERBATIM clone of a real corpus call (export 14"
                               "1Mar25_r00.L5X, MAPC(EM304_ForksUpDn,VM305_StackerVirtual,Stacker.ForksUpDn."
                               "MAPC,0,Stacker.ForksUpDn.CAMPROFILE[0],1,1,Once,Forward Only,Stacker.ForksUpDn."
                               "CAM[2].Master,Stacker.ForksUpDn.CAM[2].Master,New Cam,Command,Bi-Directional)) "
@@ -383,7 +383,7 @@ def group_mapc_v2(count: int = 1) -> None:
     _one_rung_file_unmodeled(mapc_instr, "InstrMapcV2", "instrfirst_mapc_v2",
                               "MAPC(Axis_Cip_Drive,Axis_Virtual,MotionInstr1,0,CamProfile1[0],1,1,Once,Forward "
                               "Only,Cam1[0].Master,Cam1[0].Master,New Cam,Command,Bi-Directional) -- CORRECTED "
-                              " reproduction of the real Griffin_StackerLine_1Mar25_r00.L5X call "
+                              " reproduction of the real a real export call "
                               "MAPC(EM304_ForksUpDn,VM305_StackerVirtual,Stacker.ForksUpDn.MAPC,0,Stacker."
                               "ForksUpDn.CAMPROFILE[0],1,1,Once,Forward Only,Stacker.ForksUpDn.CAM[2].Master,"
                               "Stacker.ForksUpDn.CAM[2].Master,New Cam,Command,Bi-Directional) -- fixes the "
@@ -404,7 +404,7 @@ def group_msg(count: int = 1) -> None:
     _one_rung_file_unmodeled(instr, "InstrMsg", "instrfirst_msg",
                               "MSG(Msg1) -- CORPUS_CONFIRMED shape (MSG(MESSAGE_Fault)), MessageParameters "
                               "attribute set copied verbatim from a real CIP Generic get-attribute message "
-                              "(BaillieLeitchField_Edger_20260812_r00.L5X, MESSAGE_Alarms) except "
+                              "(a real export, MESSAGE_Alarms) except "
                               "LocalElement/DestinationTag, which point at this file's own Arr0/Arr1 tags "
                               "instead of the real file's array tags",
                               extra_tags_xml=msg_tag, count=count)

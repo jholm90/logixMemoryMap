@@ -4,7 +4,7 @@ OQ-PREDEFINED item 8 as the one remaining concrete next step).
 
 Mechanistic research (see OPEN_QUESTIONS.md) already confirmed
 CAM's real field shape by reading `samples/local/L5X_Samples/
-RobbinsGrn_2026_05_13r00.L5X` directly: 3 fields per array element
+a real export` directly: 3 fields per array element
 (Master:REAL, Slave:REAL, SegmentType:DINT), and -- unlike CAM_PROFILE,
 which hides 14 real L5K values behind 1 visible Decorated field -- CAM's
 own L5K format shows the SAME 3 numbers per element as Decorated. No

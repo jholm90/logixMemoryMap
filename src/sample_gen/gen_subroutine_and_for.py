@@ -1,7 +1,7 @@
 """Weights for the last three unpriced instructions a real file reaches.
 
 SBR, RET and FOR are charged ZERO, which is an absence of data
-rather than a measurement. AccuTally alone calls RET 27 times and SBR 20,
+rather than a measurement. Export 01 alone calls RET 27 times and SBR 20,
 so this is not a corner case: it is a silent under-charge on every real
 program that uses subroutines, which is most of them.
 

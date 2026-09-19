@@ -17,7 +17,7 @@ a real finding not modeled anywhere else in this project: a Kinetix power
 supply module gets its OWN AXIS_CIP_DRIVE tag too (a "bus power" axis,
 e.g. real tag `Bus1_GNT_Power`, MotionModule="<power supply name>:Ch1"),
 not just the drive modules. Confirmed real, corpus-verbatim, from
-DnR_Personal/Bender134053_201104.L5X: same exact
+DnR_Personal/a real export: same exact
 `<Data Format="Axis"><AxisParameters .../></Data>` shape already validated
 by gen_axis_composite.py/OQ-AXISDEEP for a normal drive axis -- a bus
 power tag is not a different or smaller shape, it's the SAME AXIS_CIP_DRIVE
@@ -105,7 +105,7 @@ def main() -> None:
     # config data captured from a real non-safety module, which this
     # project does not have". That was false when it was written. The
     # 2conn variant used here was donated by
-    # BaillieLeitchField_Edger_20260812_r00.L5X -- a 1756-L83E, a plain
+    # a real export -- a 1756-L83E, a plain
     # non-safety controller -- and every block carries SafetyEnabled=
     # "false" already. The real non-safety config was in the corpus the
     # whole time.
@@ -126,7 +126,7 @@ def main() -> None:
         "dual-axis on bus 1, 2198-P070+2198-D057-ERS3+2198-D020-ERS3 dual-axis on bus 2), "
         "5 real module catalogs + 8 real AXIS_CIP_DRIVE tags (6 drive axes + 2 'bus power' "
         "axes, one per power supply) in one real Motion Group, verbatim topology from "
-        "DnR_Personal/Bender134053_201104.L5X. Module XML reused from gen_module_sweep.py/"
+        "DnR_Personal/a real export. Module XML reused from gen_module_sweep.py/"
         "gen_module_sweep_variants.py, axis tags reused from gen_module_motion.py's "
         "validated _axis_tag helper. See OQ-MODULEIO.",
         "modules", out_path, 0,

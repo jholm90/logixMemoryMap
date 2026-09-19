@@ -188,7 +188,7 @@ def test_does_not_flag_aoi_call_with_required_params_correctly_wired():
 
 
 def test_does_not_flag_aoi_call_omitting_trailing_visible_optional_param():
-    # Real corpus precedent (PTimer, samples/local/SJ_Gormley_20251112_
+    # Real corpus precedent (PTimer, export 21
     # r02.L5X): a Required=false/Visible=true param CAN be omitted from
     # the end of the call entirely.
     definition, storage = aoi_xml(

@@ -156,7 +156,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'SJ_Gormley_20251112_r02.L5X', 2),
+""", 'a real export', 2),
         ('1conn', """\
 <Module Name="TestMod1_1734IB8SB" CatalogNumber="1734-AENT/C" Vendor="1" ProductType="12" ProductCode="108" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -265,7 +265,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/TOYOTA_135453_20221024.L5X', 2),
+""", 'DnR_Personal/a real export', 2),
     ],
     '1756-EN2T': [
         ('1conn', """\
@@ -288,7 +288,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 1),
+""", 'a real export', 1),
         ('1conn2', """\
 <Module Name="TestMod1_1756EN2T" CatalogNumber="1756-EN2T" Vendor="1" ProductType="12" ProductCode="166" Major="11" Minor="2" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -468,7 +468,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 1),
+""", 'a real export', 1),
         ('noconn', """\
 <Module Name="TestMod1_1756EN2T" CatalogNumber="1756-EN2T" Vendor="1" ProductType="12" ProductCode="166" Major="10" Minor="3" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -482,7 +482,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 <Connections />
 </Communications>
 </Module>
-""", 'L5X_Samples/Sorter1_20260722r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     ],
     '1756-ENBT/A': [
         ('noconn', """\
@@ -498,7 +498,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 <Connections />
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
         ('1conn', """\
 <Module Name="TestMod1_1756ENBTA" CatalogNumber="1756-ENBT/A" Vendor="1" ProductType="12" ProductCode="58" Major="6" Minor="6" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -678,7 +678,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/Sorter1_20260722r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     ],
     '1756-IA16': [
         ('rackaliased', """\
@@ -893,7 +893,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 2),
+""", 'a real export', 2),
         ('1conn', """\
 <Module Name="TestMod1_1756IA16" CatalogNumber="1756-IA16" Vendor="1" ProductType="7" ProductCode="9" Major="2" Minor="5" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -935,7 +935,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/RobbinsGrn_2026_05_13r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     ],
     '1756-IB32/B': [
         ('1conn', """\
@@ -978,7 +978,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 1),
+""", 'a real export', 1),
         ('rackaliased', """\
 <Module Name="TestMod1_1756IB32B" CatalogNumber="1756-EN2T" Vendor="1" ProductType="12" ProductCode="166" Major="11" Minor="2" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -1192,7 +1192,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 2),
+""", 'a real export', 2),
     ],
     '1756-OB16E': [
         ('1conn', """\
@@ -1245,7 +1245,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 1),
+""", 'a real export', 1),
         ('rackaliased', """\
 <Module Name="TestMod1_1756OB16E" CatalogNumber="1756-EN2T" Vendor="1" ProductType="12" ProductCode="166" Major="11" Minor="2" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -1454,7 +1454,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 2),
+""", 'a real export', 2),
     ],
     '1756-OB32': [
         ('rackaliased', """\
@@ -1665,7 +1665,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'BAI10048_TrimmerTally_20250704.L5X', 2),
+""", 'a real export', 2),
         ('1conn', """\
 <Module Name="TestMod1_1756OB32" CatalogNumber="1756-OB32" Vendor="1" ProductType="7" ProductCode="17" Major="3" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -1711,7 +1711,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/Sorter1_20260722r00.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     ],
     '2198-D012-ERS3': [
         ('4conn', """\
@@ -1935,7 +1935,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'SJ_Gormley_20251112_r02.L5X', 1),
+""", 'a real export', 1),
         ('2conn', """\
 <Module Name="TestMod1_2198D012ERS3" CatalogNumber="2198-D012-ERS3" Vendor="1" ProductType="45" ProductCode="11" Major="14" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false">
 <EKey State="CompatibleModule" />
@@ -2207,7 +2207,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'SJ_Gormley_20251112_r02.L5X', 1),
+""", 'a real export', 1),
         ('2conn', """\
 <Module Name="TestMod1_2198D020ERS3" CatalogNumber="2198-D020-ERS3" Vendor="1" ProductType="45" ProductCode="12" Major="14" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false">
 <EKey State="CompatibleModule" />
@@ -2255,7 +2255,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'BaillieLeitchField_Edger_20260812_r00.L5X', 1),
+""", 'a real export', 1),
     ],
     '2198-D032-ERS3': [
         ('4conn', """\
@@ -2479,7 +2479,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'SJ_Gormley_20251112_r02.L5X', 1),
+""", 'a real export', 1),
         ('2conn', """\
 <Module Name="TestMod1_2198D032ERS3" CatalogNumber="2198-D032-ERS3" Vendor="1" ProductType="45" ProductCode="13" Major="14" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false">
 <EKey State="CompatibleModule" />
@@ -2527,7 +2527,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'BaillieLeitchField_Edger_20260812_r00.L5X', 1),
+""", 'a real export', 1),
     ],
     '2198-D057-ERS3': [
         ('4conn', """\
@@ -2751,7 +2751,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'SJ_Gormley_20251112_r02.L5X', 1),
+""", 'a real export', 1),
         ('2conn', """\
 <Module Name="TestMod1_2198D057ERS3" CatalogNumber="2198-D057-ERS3" Vendor="1" ProductType="45" ProductCode="14" Major="14" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false">
 <EKey State="CompatibleModule" />
@@ -2799,7 +2799,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'BaillieLeitchField_Edger_20260812_r00.L5X', 1),
+""", 'a real export', 1),
     ],
     '2198-S086-ERS3': [
         ('4conn', """\
@@ -2950,7 +2950,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'SJ_Gormley_20251112_r02.L5X', 1),
+""", 'a real export', 1),
         ('2conn', """\
 <Module Name="TestMod1_2198S086ERS3" CatalogNumber="2198-S086-ERS3" Vendor="1" ProductType="45" ProductCode="7" Major="13" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false" SafetyEnabled="false">
 <EKey State="CompatibleModule" />
@@ -2998,7 +2998,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'BaillieLeitchField_Edger_20260812_r00.L5X', 1),
+""", 'a real export', 1),
     ],
     'ETHERNET-MODULE': [
         ('1conn', """\
@@ -3906,7 +3906,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'BaillieLeitchField_Edger_20260812_r00.L5X', 1),
+""", 'a real export', 1),
         ('noconn', """\
 <Module Name="TestMod1_ETHERNETMODULE" CatalogNumber="ETHERNET-MODULE" Vendor="1" ProductType="0" ProductCode="18" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="true" MajorFault="false">
 <EKey State="Disabled" />
@@ -3917,7 +3917,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 <Connections />
 </Communications>
 </Module>
-""", 'DnR_Personal/Fisher_Synergy_Bead_20240725.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
     ],
     'ETHERNET-PANELVIEW': [
         ('1conn', """\
@@ -3952,7 +3952,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'DnR_Personal/BT1XX_FFC_20240325.L5X', 1),
+""", 'DnR_Personal/a real export', 1),
         ('1conn2', """\
 <Module Name="TestMod1_ETHERNETPANELVIEW" CatalogNumber="ETHERNET-PANELVIEW" Vendor="1" ProductType="24" ProductCode="11" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="true" MajorFault="false">
 <EKey State="CompatibleModule" />
@@ -4198,7 +4198,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 </Connections>
 </Communications>
 </Module>
-""", 'L5X_Samples/MurrayBros_20260122r1.L5X', 1),
+""", 'L5X_Samples/a real export', 1),
     ],
 }
 

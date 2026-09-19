@@ -35,7 +35,7 @@ Checks:
      arguments for instruction" on every AOI call rung): a declared AOI's
      Input/Output Parameters with Required="false" Visible="false" are
      HIDDEN from its own instruction call signature entirely (real Logix
-     semantics, confirmed against samples/local/SJ_Gormley_20251112_r02.L5X's
+     semantics, confirmed against a real export's
      real PTimer calls -- see gen_aoi_required_visible.py's docstring) --
      only Required and/or Visible params are real call-argument slots.
      Checks the actual argument count at each call site against
@@ -139,7 +139,7 @@ _KNOWN_NATIVE_INSTRUCTIONS = {
     "SWPB", "XOR", "FIND", "INSERT", "BSL", "BSR", "FFL", "FFU", "SRT",
     "AVE", "FAL", "FSC", "MDW", "MASD", "MGSD", "MGSR", "CROUT",
     # Added from the hand-built, BUILD-CLEAN export
-    # (samples/local/instr_probes/instruction_shapes_20260904.L5X). These are
+    # (a real export). These are
     # the strongest possible provenance in this repo: not corpus-inferred,
     # not documented-family-guessed -- the rungs were written by hand,
     # Studio 5000 accepted them, and the verified call shapes now live in
@@ -899,7 +899,7 @@ STANDARD_MAJOR_REV = "35"
 #     supplies do not fit a 1756-L81E's 3 MB; Studio rejects the import
 #     for capacity before it reads anything else. 1756-L83E is the
 #     smallest standard catalog with the headroom, and is what the real
-#     donor file this rack was built from (BaillieLeitchField_Edger)
+#     donor file this rack was built from (export 04)
 #     actually runs. Non-safety, matching that donor.
 _PLATFORM_EXEMPT_NAME_PREFIXES = (
     "FwMatrix", "FwBaseline", "KinetixFullBus",
@@ -1151,8 +1151,8 @@ def _kinetix_converter_axis_findings(root: ET.Element) -> list[LintFinding]:
     AxisConfiguration="Non-Regenerative AC/DC Converter" with
     MotionModule="<the supply>:Ch1", alongside the servo axes at
     AxisConfiguration="Position Loop" -- two of them in
-    BaillieLeitchField_Edger (25 Position Loop, 2 converters) and two in
-    SJ_Gormley (27 Position Loop, 2 converters).
+    Export 04 (25 Position Loop, 2 converters) and two in
+    Export 21 (27 Position Loop, 2 converters).
 
     Without one, Studio converts the file and then fails Build with:
 
@@ -1210,7 +1210,7 @@ def _kinetix_converter_axis_findings(root: ET.Element) -> list[LintFinding]:
     their servo axes with a converter axis whose AxisParameters read
     AxisConfiguration="Non-Regenerative AC/DC Converter" and
     MotionModule="<the supply>:Ch1" -- 25 servo axes and 2 converters in
-    BaillieLeitchField_Edger, 27 and 2 in SJ_Gormley.
+    Export 04, 27 and 2 in export 21.
 
     Without one Studio converts the file and then fails Build once PER DRIVE
     MODULE with "Primary Bus Sharing Group 1 contains a module configured as

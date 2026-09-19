@@ -13,7 +13,7 @@ node_modules/
 # Rockwell sample slipped past `git add`'s gitignore check while the other
 # 63 in the same batch were correctly skipped. .gitignore only guards local
 # `git add`/`git status` though -- it does nothing against a direct commit
-# via GitHub's web upload UI, which is how the 2026-08-20 proprietary-file
+# via GitHub's web upload UI, which is how the proprietary-file
 # exposure actually happened; see git history)
 samples/local/
 *.L5X
@@ -26,7 +26,7 @@ samples/local/
 !scripts/l5x_validator/negative_control_fixtures/**/*.l5x
 
 # Transient IPC handoff files between batch_memory_capture.ps1 and
-# logix_build_capture.ahk (2026-08-22) -- rewritten every few seconds
+# logix_build_capture.ahk -- rewritten every few seconds
 # during a run, never meant to be tracked or committed.
 scripts/ahk_runtime/
 

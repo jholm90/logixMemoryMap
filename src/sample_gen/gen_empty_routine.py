@@ -6,7 +6,7 @@ parse_rll_routines -- charged 0 bytes, as if it doesn't exist. l81_v35
 gap exactly equal to fixed_base_per_routine) is the first real evidence
 this might be wrong -- but it's only 1 data point, and real corpus
 inspection found this exact shape in 15 of the production files
-(up to 10 such routines in one file, samples/local/SJ_Gormley...), so
+(up to 10 such routines in one file, export 21), so
 getting this right matters for real prediction accuracy, not just a
 synthetic edge case.
 

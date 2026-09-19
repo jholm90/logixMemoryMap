@@ -4,7 +4,7 @@ emulate something like the DriveAxis AOI -- an axis input plus
 a nested AOI instance -- where there is likely room for improvement.
 
 He is right that there is room, and the corpus shows why. `DriveAxis` is
-the single largest AOI definition charge in MurrayBros at **18,080 bytes**
+the single largest AOI definition charge in export 18 at **18,080 bytes**
 -- more than the whole task/program shell of that file -- and NOTHING in
 the generated corpus resembles it. Two structural features it has that no
 synthetic file covers:
@@ -14,9 +14,9 @@ synthetic file covers:
      different thing: an InOut/reference-shaped parameter to a predefined
      motion structure. Whether it costs the axis's full structure size,
      a reference, or nothing is completely unmeasured. Real usage is not
-     rare -- MurrayBros alone has three (DriveAxis, HomeToTorque,
+     rare -- export 18 alone has three (DriveAxis, HomeToTorque,
      VirtualAxis).
-  2. **A nested AOI instance as a LocalTag.** MurrayBros has 14 of these
+  2. **A nested AOI instance as a LocalTag.** Export 18 has 14 of these
      (TS_PF525 holds a TS_VFD, T_DST holds three T_ADDs, TierPinchAOI
      holds a Debounce). The engine resolves them -- `Stacker` sizes
      through PTimer/Debounce fine -- but resolving is not the same as
@@ -24,7 +24,7 @@ synthetic file covers:
      instance costs what the model says.
 
 Also covered because the same real file forced the question: a **UDT with
-an AOI-typed member**. MurrayBros has **125** of them. That path is
+an AOI-typed member**. Export 18 has **125** of them. That path is
 exercised by real files constantly and by zero synthetic ones.
 
 The design is a ladder, not a single replica. A replica would confirm one
@@ -189,7 +189,7 @@ def main() -> None:
                       extra_aoi_xml="\n".join([inner_xml, outer])),
             f"daxis_nest_k{k}",
             f"{k} nested {_INNER_NAME} AOI instance(s) as LocalTags of the outer AOI "
-            f"-- the real MurrayBros pattern (14 real occurrences). Inner AOI is "
+            f"-- the real export 18 pattern (14 real occurrences). Inner AOI is "
             f"byte-identical in every file so only the nesting varies",
         )
 
@@ -203,7 +203,7 @@ def main() -> None:
                       extra_datatypes_xml=udt_xml("UdtWithAoi", mems),
                       extra_aoi_xml=inner_xml),
             f"daxis_udtaoi_k{k}",
-            f"UDT with {k} AOI-typed member(s) -- MurrayBros has 125 of these and "
+            f"UDT with {k} AOI-typed member(s) -- export 18 has 125 of these and "
             f"the generated corpus has none. Engine resolves the path today; this "
             f"proves whether it resolves to the RIGHT number",
         )

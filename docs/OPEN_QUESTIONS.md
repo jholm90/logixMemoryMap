@@ -210,8 +210,8 @@ is large enough that calling it closed understates it.
 
 | program | conditions | actual step | predicted step | actual per condition | predicted |
 |---|---:|---:|---:|---:|---:|
-| `griffin_stackerline` | 400 | 443,128 | 442,400 | 1,107.8 | 1,106.0 |
-| `elmsdale` | 200 | 243,040 | 221,600 | **1,215.2** | 1,108.0 |
+| `export 14` | 400 | 443,128 | 442,400 | 1,107.8 | 1,106.0 |
+| `export 08` | 200 | 243,040 | 221,600 | **1,215.2** | 1,108.0 |
 
 **Within 0.16% on one file and 8.8% short on the other** — and that is **19% and 21%
 of total controller memory** respectively, the second-largest category in both.

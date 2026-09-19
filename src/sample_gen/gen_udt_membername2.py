@@ -8,7 +8,7 @@ whether the same term is also charged per tag of that type.
 
 That distinction is the whole of the real-file exposure. Real programs carry
 509-2,284 declared UDT members at 8-12 characters each, and tens of thousands
-of tags of those types -- AccuTally alone has 33,574 UDT tags against 174 UDT
+of tags of those types -- export 01 alone has 33,574 UDT tags against 174 UDT
 definitions, 193 tags per definition. A per-definition name term and a
 per-tag name term differ by more than two orders of magnitude on that file.
 
@@ -122,7 +122,7 @@ def arm_a_b_tag_counts() -> int:
                     f"cannot hide inside it. Differences against udtmn_{kind}_len{length:02d}_"
                     f"{count_key}{MEMBER_COUNT:02d} (the same file at t=0). If the name term is "
                     f"per definition the length effect is identical at every t; if it is per tag "
-                    f"it grows with t. On AccuTally (33,574 UDT tags against 174 definitions) "
+                    f"it grows with t. On export 01 (33,574 UDT tags against 174 definitions) "
                     f"those two readings are two orders of magnitude apart.",
                 )
                 n += 1

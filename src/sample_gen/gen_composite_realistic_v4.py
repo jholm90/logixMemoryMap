@@ -12,7 +12,7 @@ than one real drive module in a single file (v3 only ever had one).
 
 Real motion content, extended from gen_composite_realistic_v3.py's
 single-drive pattern: ONE shared 2198-P208 power supply (its own on-board
-"DC BUS" axis, the real Titusville pattern) + N real drive modules (N in
+"DC BUS" axis, the real export 24 pattern) + N real drive modules (N in
 [4, 8], mixing dual-axis 2198-Dxxx-ERS3 (2 real axes/module, Ch1/Ch3 --
 see OPEN_QUESTIONS.md OQ-193ECMETR for the real channel-numbering fix
 this depends on) and single-axis 2198-S086-ERS3 (1 real axis, Ch1) --

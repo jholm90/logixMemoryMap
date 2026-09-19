@@ -2,12 +2,12 @@
 than it does inside the program it came from?
 
 The UDT and array size below are copied VERBATIM (member names, types,
-declared order, array dimension) from the real, confidential AccuTally
+declared order, array dimension) from the real, confidential export 01
 project's `srt_SmallBoard` type and its `SmBoardQ` tag (samples/local/
 _confidential_tmp/, not committed, never named beyond this generic
 description in a public file) -- the single largest contributor to that
 file's predicted total (1,040,092 of 5,167,778 bytes, 20.1%). Deliberately
-the SIMPLEST of AccuTally's large real structures to isolate first: 22
+the SIMPLEST of export 01's large real structures to isolate first: 22
 flat atomic-scalar members (5 DINT + 13 INT + 4 SINT, in that declared
 order), no BOOL, no nesting, no STRING -- if this doesn't reproduce
 identically, alignment/padding math itself is wrong even at the simplest
@@ -18,7 +18,7 @@ the full real file, per OQ-COMPOSITESCALE).
 
 Single file: one controller tag, array of 20,000 real-shape instances,
 nothing else in the project -- isolates this one structure completely
-from every other real AccuTally content that could be confounding it.
+from every other real export 01 content that could be confounding it.
 
 Run: python -m sample_gen.gen_udt_realworld_isolation
 """

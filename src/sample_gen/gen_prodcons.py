@@ -14,7 +14,7 @@ these are two files rather than a session of their own, and "the corpus
 covers every real tag shape" is a claim worth being able to make without an
 asterisk.
 
-SHAPE TAKEN FROM A REAL EXPORT, not invented -- Elmsdale's `TiltHoistToPlaner`
+SHAPE TAKEN FROM A REAL EXPORT, not invented -- export 08's `TiltHoistToPlaner`
 (Produced) and `PlanerToTiltHoist` (Consumed). Both are UDT-typed and neither
 carries a `<Data>` element at all, which is the part most likely to be got
 wrong by extrapolating from an ordinary Base tag. A Produced tag carries

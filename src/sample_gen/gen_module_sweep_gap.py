@@ -6,7 +6,7 @@ CatalogNumber across the full 63-file corpus against gen_module_sweep.py +
 gen_module_sweep_variants.py -- 118 of 119 real, non-legacy, non-
 processor, non-placeholder catalogs already covered. The one gap: "150 SMC
 Flex-E" (a 150-series SMC-Flex soft starter, DPI port type, not a
-processor/IO-card catalog at all) from L5X_Samples/K3M16_Edgers_
+processor/IO-card catalog at all) from export 16
 20220808r00.L5X -- missed by the original sweep because that pass never
 walked drive/starter peripherals, only backplane/PointIO/Ethernet I/O and
 2198-series motion. No parser change needed: its real shape (ConfigScript
@@ -133,7 +133,7 @@ def main() -> None:
     append_manifest_row(
         "modulesweep_150_smc_flex_e",
         "150 SMC Flex-E -- real corpus module (standalone), genericized from "
-        "L5X_Samples/K3M16_Edgers_20220808r00.L5X, structurally verbatim. Closes the "
+        "L5X_Samples/a real export, structurally verbatim. Closes the "
         "last real catalog-coverage gap found in the full audit -- "
         "individual per-catalog coverage is 119/119 real catalogs with this file. "
         "See OQ-MODULEIO.",

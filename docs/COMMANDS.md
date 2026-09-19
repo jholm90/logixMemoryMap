@@ -340,7 +340,7 @@ Grouped by area:
 `module_kinetix_bus`, `module_marginal`, `module_bridge_placeholder`,
 `module_cip_generic_scale`, `module_rack_pointio`, `module_pointio_rack`,
 `pointio_conn_sweep`, `module_rack_1756local`, `module_rack_1756remote`,
-`module_1756_rack_scale`, `module_5069_aent_rack`, `module_bender_full`,
+`module_1756_rack_scale`, `module_5069_aent_rack`, `module_full_program`,
 `generic_ethernet_module`, `prodcons`
 
 **Alarms** — `alarm_conditions`, `alarm_definitions`, `alarm_bitbacking`,
@@ -351,7 +351,7 @@ Grouped by area:
 
 **Composite and realistic** — `composite_realistic`, `composite_realistic_v2`,
 `composite_realistic_v3`, `composite_realistic_v4`, `realscale_surcharge`,
-`murraybros_shape`, `v3_error_ablation`
+`realshape_aoi`, `v3_error_ablation`
 
 > **Test files are supplied, not invented.** Ask before generating a batch, every
 > time; no prior batch authorises the next. The deliverable at the design step is a

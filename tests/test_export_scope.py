@@ -29,7 +29,7 @@ from l5x_memory_analyzer.sizing.report import build_report
 
 TEMPLATE = Path(__file__).resolve().parent.parent / "samples" / "local" / "Template"
 WHOLE = (Path(__file__).resolve().parent.parent / "samples" / "local" / "L5X_Samples"
-         / "MurrayBros_20260122r1.L5X")
+         / "a real export")
 MODEL = load_memory_model()
 
 _real = pytest.mark.skipif(not TEMPLATE.is_dir(), reason="real sample exports not present")

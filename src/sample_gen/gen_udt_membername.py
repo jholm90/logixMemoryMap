@@ -23,11 +23,11 @@ generator this model was ever fitted against used two- or three-character
 member names. Real programs do not:
 
     311DGeneratedProgram          689 members, avg  8.2 chars
-    BaillieLeitchField_Edger      619 members, avg 10.2 chars
-    Elmsdale                      877 members, avg 10.7 chars
-    SJ_Gormley                    509 members, avg  9.8 chars
-    FlareFunction_311D          2,284 members, avg  9.7 chars
-    BAI10048_TrimmerTally       1,861 members, avg 12.3 chars
+    Export 04      619 members, avg 10.2 chars
+    Export 08                      877 members, avg 10.7 chars
+    Export 21                    509 members, avg  9.8 chars
+    Export 13          2,284 members, avg  9.7 chars
+    Export 02       1,861 members, avg 12.3 chars
 
 If a member name costs anything, every real file is systematically
 under-charged in proportion to how many members it declares, and the whole

@@ -14,7 +14,7 @@ seperate files and then another test with multiple ret conditionally
 placed"
 
 Real syntax confirmed against the corpus (not guessed), from
-samples/local/SJ_Gormley_20251112_r02.L5X, routines `_525_InputMapping_TS`
+a real export, routines `_525_InputMapping_TS`
 /`_525_OutputMapping_TS` (both RLL -- SBR/RET in ST routines exist too but
 this project only ever needed the RLL shape) and their real call sites in
 `_203_IncisorTop_EM203`:
@@ -133,7 +133,7 @@ def group_mixed_io() -> None:
     out_name = f"jsr_mixedio_{n_in}in_{n_out}out_r{RUNG_COUNT:05d}"
     _write(l5x, out_name,
            f"{RUNG_COUNT} rungs of JSR to a subroutine with {n_in} input + {n_out} return params "
-           f"-- realistic mixed shape matching real corpus (SJ_Gormley _525_InputMapping_TS/_525_OutputMapping_TS)")
+           f"-- realistic mixed shape matching real corpus (export 21 _525_InputMapping_TS/_525_OutputMapping_TS)")
 
 
 def group_multiple_ret() -> None:

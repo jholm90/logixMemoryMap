@@ -67,7 +67,7 @@ GROUP E -- csarrmaxlen_mNNNN_n010 (11 files)
 GROUP F -- strarrcount_nNNNN (7 files)
     Array-of-BUILT-IN-STRING at large n. This constant is currently
     stamped KNOWN off six points that stop at n=100, while real programs
-    run past it -- Elmsdale declares STRING[200], MurrayBros STRING[255].
+    run past it -- export 08 declares STRING[200], export 18 STRING[255].
     Applying a formula 2.5x beyond its evidence and calling it certain is
     the same mistake as the one above, and this is where it is most
     likely to be costing real accuracy: in those two files the predicted
@@ -259,7 +259,7 @@ def group_f_builtin_string_array_large_n() -> int:
             l5x, f"strarrcount_n{count:04d}",
             f"ONE {count}-element array of built-in STRING -- the array-of-STRING constant is "
             f"stamped KNOWN off six points that stop at n=100, and real programs run past it "
-            f"(Elmsdale declares STRING[200], MurrayBros STRING[255]). In those two files the "
+            f"(export 08 declares STRING[200], export 18 STRING[255]). In those two files the "
             f"predicted STRING bytes are 88% and 121% of the entire under-prediction, so this "
             f"is where the extrapolation is most likely to be costing real accuracy",
         )

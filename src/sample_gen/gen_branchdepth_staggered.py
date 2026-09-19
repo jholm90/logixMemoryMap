@@ -10,7 +10,7 @@ of nested brackets, not a wide flat branch.
 Real syntax confirmed by grepping the full samples/local/
 corpus for genuine nested brackets (a `[` opening before its enclosing
 `]` closes) -- 624 real rungs found using this pattern, e.g.
-311DGeneratedProgram.L5X: `[XIC(RequestEnterMem) [XIC(ClearEntry)
+a real export: `[XIC(RequestEnterMem) [XIC(ClearEntry)
 ,XIC(UnlockSV) ],XIC(ForceEnterMem) ]OTE(UnlockSV);` -- exactly the
 depth=2 shape this generator builds (root 2 legs, leg 1 itself contains a
 nested 2-leg branch). Depth=3+ is the same real rule applied recursively

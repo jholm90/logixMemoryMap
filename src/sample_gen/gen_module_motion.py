@@ -149,7 +149,7 @@ def _drive_module_xml(name: str, catalog: str, safety_enabled: str, address: str
     ExtendedProperties/ConfigID=33554537 confirmed real across
     THREE independent real captures: this project's own original
     p208_D012_NodeAndAxisDual.L5X (2198-D012-ERS3), a real
-    TitusvilleTrimmer (2198-D057-ERS3), and the fresh from-scratch
+    Export 24 (2198-D057-ERS3), and the fresh from-scratch
     SampleAxis.L5X (2198-D057-ERS3 again) -- same ConfigID on 2 different
     catalogs, so it's a shared per-family AOP config identifier, not
     catalog-specific; safe to reuse across D012/D020/D032/D057/S086.
@@ -313,8 +313,8 @@ def bus_supply_with_converter(
         Non-CIP Converter.
 
     That is the shape of every real Kinetix export in the corpus:
-    BaillieLeitchField_Edger carries 25 "Position Loop" axes and 2 converters
-    (MotionModule="BUS_601A:Ch1" and "BUS_601B:Ch1"), SJ_Gormley 27 and 2. It is
+    Export 04 carries 25 "Position Loop" axes and 2 converters
+    (MotionModule="BUS_601A:Ch1" and "BUS_601B:Ch1"), export 21 27 and 2. It is
     also why the failure stayed invisible: the file still CAPTURES, so
     actual_bytes gets filled in from a project whose drives never got bus power,
     and every such row then reads as the model over-predicting.

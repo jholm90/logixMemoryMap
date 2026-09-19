@@ -24,7 +24,7 @@ the Status word, same aliasing pattern as TIMER's .EN/.TT/.DN and MESSAGE's
 .FLAGS bits -- NOT separate storage), InAlarmTime/AckTime/RetToNormalTime/
 AlarmCountResetTime/ShelveTime/UnshelveTime = 6 LINT) is sourced directly
 from RM018A pages 53-64 and cross-validated exactly against the real
-`Comms_Bus1_ALMD` tag in `samples/local/L5X_Samples/MRFP_Edger_2026_06_01_
+`Comms_Bus1_ALMD` tag in export 17
 r00.L5X` (every Input-Parameter attribute name matches verbatim). Whether the
 31 scalar BOOL members bit-pack (8-per-hidden-SINT, the confirmed convention
 for consecutive BOOL members in ordinary UDTs) or take a full byte/word each
@@ -55,7 +55,7 @@ from sample_gen.wrapper import build_l5x
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "logic"
 
 # Real AlarmDigitalParameters attribute list, copied verbatim (attribute
-# names/order) from samples/local/L5X_Samples/MRFP_Edger_2026_06_01_r00.L5X
+# names/order) from a real export
 # Comms_Bus1_ALMD -- only the boolean/DINT VALUES are irrelevant to byte
 # size and left at the same real defaults.
 _ALMD_PARAMS_ATTRS = (

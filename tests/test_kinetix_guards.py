@@ -165,7 +165,7 @@ def test_s086_second_axis_on_ch3_is_rejected():
 
 
 def test_s086_second_axis_on_ch2_is_accepted():
-    """Ch2 is real on S086 -- EmporiumEdger DRV01_BedRolls. The old global
+    """Ch2 is real on S086 -- export 10 DRV01_BedRolls. The old global
     {Ch1, Ch3} rule would have flagged this correct file."""
     assert "drive_axis_unreal_channel" not in _kinds(
         _axis_file("2198-S086-ERS3", ("Ch1", "Ch2"))

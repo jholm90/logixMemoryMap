@@ -4,7 +4,7 @@ one a SEPARATE standalone node -- e.g. 1734-AENTR/C's own real Bus Size is
 exactly 1, a genuine 1-slot adapter product). That's a different real shape
 from a true multi-card PointIO rack, which this project has never built.
 
-Real fix: '1734-AENT/B' (source: BAI10048_TrimmerTally_20250704.L5X) is
+Real fix: '1734-AENT/B' (source: a real export) is
 ALSO already in this project's own corpus with a real Bus Size="8" -- an
 8-slot PointIO adapter. Reusing it as the shared rack host, this generator
 takes ONLY the real CHILD module (the 2nd Module in each existing 1734

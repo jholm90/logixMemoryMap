@@ -1,6 +1,6 @@
 """Verbatim tag XML transplanted from the verified sample export.
 
-Source: samples/local/instr_probes/instruction_shapes_20260904.L5X, exported
+Source: a real export, exported
 from a project built by hand and verified BUILD CLEAN in Studio 5000.
 Every <Tag> block below is byte-for-byte what Studio wrote -- nothing here is
 composed from a manual, and nothing is edited. That is the entire point: the

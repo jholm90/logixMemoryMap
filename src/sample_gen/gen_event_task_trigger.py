@@ -1,11 +1,11 @@
 """EVENT task trigger-source cost: does an event task
 triggered by MAW cost more than one triggered by the EVENT instruction?
 
-Real corpus shape confirmed (SJ_Gormley_20251112_r02.L5X,
-Sorter1_20260722r00.L5X, 12 real Task elements grepped): the two real
+Real corpus shape confirmed (a real export,
+a real export, 12 real Task elements grepped): the two real
 EventTrigger values are "EVENT Instruction Only" (no EventTag) and
 "Axis Watch" (EventTag pointing at a real AXIS_CIP_DRIVE tag -- confirmed
-against Gormley's own EM108_GradingLC axis). "Axis Watch" is a task-level
+against export 21's own EM108_GradingLC axis). "Axis Watch" is a task-level
 config, not the MAW *instruction* itself -- the "MAW" almost certainly
 means this, since Axis Watch is exactly the task-scheduling trigger the
 MAW (Motion Axis Watch) instruction/concept maps to; there is no separate
@@ -101,7 +101,7 @@ def _write_unmodeled(l5x: str, out_name: str, description: str) -> None:
 
 def main() -> None:
     # EventTrigger="EVENT Instruction Only" -- no EventTag needed, matches
-    # BoardAndLugID in the Gormley corpus exactly.
+    # BoardAndLugID in the export 21 corpus exactly.
     extra_program = program_xml("EventProgram0")
     extra_task = task_xml("EventTask0", "EventProgram0", task_type="EVENT",
                            event_trigger="EVENT Instruction Only")
@@ -112,7 +112,7 @@ def main() -> None:
     _write(
         l5x, "eventtask_instronly",
         "1 Continuous + 1 EVENT Task (EventTrigger=\"EVENT Instruction Only\", real corpus shape "
-        "confirmed against SJ_Gormley's BoardAndLugID task) -- direct mirror of taskoverhead_n02tasks "
+        "confirmed against export 21's BoardAndLugID task) -- direct mirror of taskoverhead_n02tasks "
         "(1 Continuous + 1 Periodic), same default 1756-L81E/fw35.11 processor (see the bare-"
         "\"5069-L306ER\" chassis-size bug note above -- that catalog is untested/broken, this file "
         "now matches taskoverhead_n02tasks's REAL processor instead of a claimed-but-wrong one), "
@@ -121,7 +121,7 @@ def main() -> None:
 
     # EventTrigger="Axis Watch" -- needs a real controller-scope
     # AXIS_CIP_DRIVE tag as the EventTag target (confirmed real shape:
-    # Gormley's EM108_GradingLC). the "MAW" question maps to this --
+    # Export 21's EM108_GradingLC). the "MAW" question maps to this --
     # Axis Watch is the real task-level trigger MAW (Motion Axis Watch)
     # corresponds to; there's no other real EVENT-trigger shape in the
     # corpus to test against.
@@ -135,7 +135,7 @@ def main() -> None:
     _write_unmodeled(
         l5x2, "eventtask_axiswatch",
         "1 Continuous + 1 EVENT Task (EventTrigger=\"Axis Watch\", EventTag pointing at a real "
-        "AXIS_CIP_DRIVE controller-scope tag, real corpus shape confirmed against SJ_Gormley's "
+        "AXIS_CIP_DRIVE controller-scope tag, real corpus shape confirmed against export 21's "
         "DataMove_GradingLC task/EM108_GradingLC axis) -- identical to eventtask_instronly except "
         "trigger source, isolating whether Axis-Watch-triggered EVENT tasks (what the \"MAW\" "
         "question maps to) cost differently from EVENT()-instruction-triggered ones. The extra "

@@ -86,7 +86,7 @@ from sample_gen.wrapper import build_l5x
 LOGIC_OUT = Path(__file__).parent.parent.parent / "samples" / "generated" / "logic"
 
 # One extra DINT for loop indices -- real ST loop counters are ordinary
-# controller tags (RobbinsGrn: "for i:= 0 to 7 by 1 do"), not implicit.
+# controller tags (export 20: "for i:= 0 to 7 by 1 do"), not implicit.
 _TAGS = _POOL_TAGS_XML + "\n" + tag_xml("StIdx", "DINT")
 
 
@@ -148,7 +148,7 @@ def group_line_ladder() -> None:
 
 _B_EXEC = 100  # identical to realscale_st_n00100, so that file is the control
 _SHORT_CMT = "// step complete"
-# 110 characters, matching the real header-block width in Bender134053's
+# 110 characters, matching the real header-block width in export 05's
 # T_ADD routine -- not an invented length.
 _LONG_CMT = ("// " + "normalized Gregorian date/time carry handling, see routine header "
              "for the full algorithm note").ljust(110, ".")
@@ -184,7 +184,7 @@ def group_comments() -> None:
     _file("st_cmt_lead100_long", "RsStCmtLeadLong", interleave(_LONG_CMT, 100),
           f"Same {_B_EXEC} ST assignment lines and same COUNT of 100 leading // comment lines "
           f"as st_cmt_lead100_short, but each comment is {len(_LONG_CMT)} characters instead of "
-          f"{len(_SHORT_CMT)} (the real header-block width used in Bender134053_201104's T_ADD "
+          f"{len(_SHORT_CMT)} (the real header-block width used in export 05's T_ADD "
           f"routine). If ST comments cost anything, this pair says whether the cost is per "
           f"comment LINE or per comment CHARACTER -- a distinction that matters a lot on real "
           f"files, where 5,931 of 24,017 corpus ST lines are leading // comments.")
@@ -230,7 +230,7 @@ def group_constructs() -> None:
     elsif_lines.append("END_IF;")
     _file("st_ctl_elsif", "RsStCtlElsif", elsif_lines,
           f"The same {_C_STMTS} assignment statements as ONE IF / {_C_STMTS - 1}x ELSIF chain "
-          f"closed by a single END_IF -- verbatim the shape of Bender134053_201104's real "
+          f"closed by a single END_IF -- verbatim the shape of export 05's real "
           f"D00_ActiveStep routine (if Seq_Step_000.X then StepID:=0; elsif Seq_Step_001.X "
           f"then StepID:=1; ...). Read against st_ctl_if, which has the identical statement "
           f"count but {_C_STMTS} separate IF/END_IF pairs: separates the cost of a BRANCH from "
@@ -257,7 +257,7 @@ def group_constructs() -> None:
           f"source text or on executed work (it should be source text; this is the file that "
           f"proves it rather than assuming it). FOR is the corpus's second construct, 600 "
           f"occurrences, and the loop counter is an ordinary controller tag exactly as in "
-          f"RobbinsGrn_2026_05_13r00's real 'for i:= 0 to 7 by 1 do'.")
+          f"export 20's real 'for i:= 0 to 7 by 1 do'.")
 
     while_lines = []
     for blk in range(10):
@@ -268,7 +268,7 @@ def group_constructs() -> None:
         while_lines.append("END_WHILE;")
     _file("st_ctl_while", "RsStCtlWhile", while_lines,
           f"10 WHILE cond DO ... END_WHILE blocks with an explicit counter increment, the same "
-          f"shape RobbinsGrn_2026_05_13r00 uses for its real string-padding loop "
+          f"shape export 20 uses for its real string-padding loop "
           f"(While(szString.LEN < dEnd_Size) do Concat(...); end_while;). The only unbounded "
           f"construct in ST, and the rarest in the corpus (38 WHILE) -- included because a "
           f"model that silently prices it at zero would be wrong on every file that has one.")

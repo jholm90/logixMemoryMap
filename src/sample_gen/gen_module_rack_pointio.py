@@ -30,11 +30,11 @@ is now assigned sequentially (1, 2, 3, ...) at generation time instead
 -- see _reslot_children below, same mechanism already real-Studio-5000-
 confirmed safe in gen_module_rack_1756local.py/gen_composite_realistic.py.
 
-  - PtIORackA: DnR_Personal/Bender134053_201104.L5X, adapter "JB"
+  - PtIORackA: DnR_Personal/a real export, adapter "JB"
     (1734-AENTR/C) -- 5 distinct real child catalogs (IB8S/B safety input,
     IE2C/C analog input, IB8/C digital input via RackConnection, OE2C/C
     analog output, OB8E/C digital output via RackConnection).
-  - PtIORackB: DnR_Personal/FlareFunction_311D_240731.L5X, adapter
+  - PtIORackB: DnR_Personal/a real export, adapter
     "Point_IO" (1734-AENTR/C) -- 6 distinct real child catalogs (adds
     IJ/C high-speed counter and OB8S/B safety output vs Rack A, drops
     OE2C/C) -- a genuinely different real module mix, not a relabeled
@@ -948,7 +948,7 @@ def main() -> None:
         "Point I/O rack test A: real 1734-AENTR/C adapter + 5 distinct real child module "
         "catalogs (IB8S/B safety input, IE2C/C analog input, IB8/C digital input via "
         "RackConnection, OE2C/C analog output, OB8E/C digital output via RackConnection), "
-        "genericized from DnR_Personal/Bender134053_201104.L5X adapter 'JB', deduplicated "
+        "genericized from DnR_Personal/a real export adapter 'JB', deduplicated "
         "to one representative module per real catalog. See OQ-MODULEIO.",
     )
     l5x_b = build_l5x(target_name="PtIORackB", tags_xml="", extra_modules_xml=_reslot_children(_RACK_B_XML))
@@ -956,7 +956,7 @@ def main() -> None:
         l5x_b, "modulerack_pointio_b",
         "Point I/O rack test B: a SECOND, different real 1734-AENTR/C adapter + 6 distinct "
         "real child module catalogs (adds IJ/C high-speed counter and OB8S/B safety output "
-        "vs rack A, no OE2C/C), genericized from DnR_Personal/FlareFunction_311D_240731.L5X "
+        "vs rack A, no OE2C/C), genericized from DnR_Personal/a real export "
         "adapter 'Point_IO', deduplicated to one representative module per real catalog. "
         "See OQ-MODULEIO.",
     )

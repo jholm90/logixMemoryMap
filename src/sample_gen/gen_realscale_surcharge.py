@@ -4,7 +4,7 @@ tests to fix this 12% error?").
 
 Why this batch exists
 ---------------------
-`Cardin_TrimSortStack_20260624r00` (1756-L83E, fw 35.13, never seen by this
+`export 07` (1756-L83E, fw 35.13, never seen by this
 project) predicted 7,162,455 against a real 8,178,556 -- 12.4% UNDER, the
 honest North Star number. The measured cause is not a mystery: the file-wide
 `logic_instructions.composite_surcharge_cap` (12,000 bytes) suppresses
@@ -14,7 +14,7 @@ lives in:
 
 | file                       | aoi_instr | jsr_instr | uncapped surcharge | vs cap |
 |----------------------------|----------:|----------:|-------------------:|-------:|
-| REAL Cardin_TrimSortStack  |     6,255 |    30,595 |          1,563,065 | 130.3x |
+| REAL export 07  |     6,255 |    30,595 |          1,563,065 | 130.3x |
 | synthetic v4_074           |       450 |     1,899 |             98,253 |   8.2x |
 | synthetic v2_25            |       111 |       120 |              7,860 |   0.7x |
 
@@ -147,7 +147,7 @@ def group_jsr_placement_ladder() -> None:
             f"capture measures the real JSR-target content cost directly, with no model in "
             f"between. Uncapped composite surcharge here is {2 * n * 47:,} bytes vs the "
             f"12,000 file-wide cap ({2 * n * 47 / 12000:.2f}x) -- the ladder spans from below "
-            f"the cap to well past the real Cardin_TrimSortStack file's 30,595 JSR-target "
+            f"the cap to well past the real export 07 file's 30,595 JSR-target "
             f"instructions, the regime that produced this project's -12.4% real-file miss.",
         )
 
@@ -224,7 +224,7 @@ def group_aoi_internal_ladder() -> None:
             f"NO JSR target anywhere in the file, so this isolates "
             f"aoi_logic_composite_surcharge_per_instr (20/instr, uncapped "
             f"{2 * n * 20:,} bytes = {2 * n * 20 / 12000:.2f}x the 12,000 file-wide cap) from "
-            f"the JSR half for the first time. n=6000 brackets the real Cardin_TrimSortStack "
+            f"the JSR half for the first time. n=6000 brackets the real export 07 "
             f"file's 6,255 AOI-internal instructions; the existing aoi_logic_scale_* ladder "
             f"stopped at 100 instructions AND built with errors at every nonzero point, so "
             f"no valid AOI-content data point above zero exists today.",

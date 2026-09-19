@@ -38,7 +38,7 @@ effects, not operand type (already covered by gen_logic_typesweep.py).
      programs for examples instead of reengineering the wheel." Pulled
      every real CMP/CPT call from samples/local/ (docs/CMP_CPT_REFERENCE.md)
      -- while compound conditions ARE rare (12/421 real CMP calls, one
-     file), they do exist, and not with `&`/`|`: EmporiumEdger_20250905r1.
+     file), they do exist, and not with `&`/`|`: export 10.
      L5X uses `A>=(B-10)&&(A<=(B+10))` -- `&&`, first clause bare, second
      wrapped in its own parens. Fixed to match. `or_compound` uses `||`
      by symmetry, NOT corpus-confirmed (zero real `||` instances found).

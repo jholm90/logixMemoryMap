@@ -23,7 +23,7 @@ Two groups:
      template) so any Capacity change across this sweep is attributable
      to COUNT alone, continuing the straight-line check from N=1/3/5
      (18572/18932/19292, +180/target) out to real-project scale --
-     AccuTally's busiest caller routines invoke well into double digits
+     Export 01's busiest caller routines invoke well into double digits
      of distinct subroutines.
 
   B. group_name_length -- distinct-target COUNT held fixed at 10, target

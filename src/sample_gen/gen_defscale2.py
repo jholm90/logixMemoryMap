@@ -33,7 +33,7 @@ megabyte.
   tag" and "3 extra for a UDT that has any tag" fit the eight points
   identically.
 
-On the real programs those readings are nowhere near each other. AccuTally
+On the real programs those readings are nowhere near each other. Export 01
 carries 902 AOI instances across 39 definitions and 33,574 UDT tags across
 174 UDT definitions:
 
@@ -159,7 +159,7 @@ def group_a_aoi_instances() -> int:
             f"from its own rung. Definition count is PINNED AT 1, so any slope across this sweep "
             f"is per-instance and cannot be per-definition -- which is exactly what "
             f"defscale_aoiinst_n* could not say, because there n = definitions = instance tags = "
-            f"calls all at once. Its measured -160/unit is worth 238 KB on AccuTally under the "
+            f"calls all at once. Its measured -160/unit is worth 238 KB on export 01 under the "
             f"per-instance reading and 6 KB under the per-definition reading.",
         )
         n_files += 1
@@ -270,7 +270,7 @@ def group_c_udt_tags() -> int:
             f"ONE UDT definition and ONE tag that is an array of {n} elements of it. Per-element "
             f"or per-tag for the 3-byte term, the same question group B asks for AOI instances. "
             f"Real programs are full of array-of-UDT tags, and the per-element reading is worth "
-            f"100 KB on AccuTally's 33,574 UDT tags while the per-tag reading is worth a few "
+            f"100 KB on export 01's 33,574 UDT tags while the per-tag reading is worth a few "
             f"hundred bytes.",
         )
         n_files += 1

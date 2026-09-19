@@ -13,7 +13,7 @@ shape is an array MEMBER INSIDE A UDT -- never a standalone tag:
                   CAM_PROFILE[10] x6   CAM_PROFILE[30] x3   CAM[30] x2
     tags          dimensions 2, 5, 10, 11, 20, 30, 50, 100
 
-Elmsdale's CamArray is the canonical shape and nothing like it has ever
+Export 08's CamArray is the canonical shape and nothing like it has ever
 been tested: one UDT carrying CAM[10] and CAM_PROFILE[10] side by side,
 wrapped by an outer UDT, reached from a tag two levels down.
 
@@ -34,7 +34,7 @@ GROUP B -- camx_member_{cam,prof}_d{04,10,20,30} (8 files)
     any container-specific cost falls out.
 
 GROUP C -- camx_mixed_d{10,20} (2 files)
-    CAM and CAM_PROFILE together in one UDT, which is exactly Elmsdale's
+    CAM and CAM_PROFILE together in one UDT, which is exactly export 08's
     CamArray. Tests whether the two compose additively or whether sharing
     a UDT changes either one.
 
@@ -137,7 +137,7 @@ def group_b_udt_member() -> int:
 
 
 def _mixed_members(dim: int) -> list[MemberSpec]:
-    """Elmsdale's CamArray, member for member."""
+    """Export 08's CamArray, member for member."""
     return [MemberSpec("CAM", "CAM", dimension=dim),
             MemberSpec("CAMPROFILE", "CAM_PROFILE", dimension=dim)]
 

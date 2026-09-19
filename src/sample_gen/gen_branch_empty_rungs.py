@@ -5,7 +5,7 @@ already -- but two checklist items had literally never been generated:
 branch depth variations, and empty rungs at scale. This batch closes both.
 
 Branch (parallel-leg) syntax confirmed real, not guessed, from
-samples/local/311DGeneratedProgram.L5X's own rung Text:
+a real export's own rung Text:
 `[XIC(CmdReset),XIC(Inhibit) ... ]XIO(...)OTE(...);` -- square brackets,
 comma-separated legs, each leg itself a plain instruction chain. This is
 inline rung TEXT, not a separate XML construct -- rung_xml/rungs_xml

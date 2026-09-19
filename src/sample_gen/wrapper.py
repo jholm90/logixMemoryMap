@@ -30,7 +30,7 @@ from sample_gen.builders import validate_logix_name
 # only ever chosen because it is the one physical unit available for real
 # hardware spot-checks (OQ-EMULATE). 1756-L81E matches the actual primary
 # target per OQ-L5XVERSION (v35/L8-class) and is what the real production
-# files (BaillieLeitchField_Edger etc.) actually run on -- makes more sense
+# files (export 04 etc.) actually run on -- makes more sense
 # as the generator default. Using the exact string already confirmed twice
 # over: it's in controller_budgets.yaml (sourced, 3MB) and it's the literal
 # ProcessorType value seen in a real L5X files -- not a repeat of
@@ -48,8 +48,8 @@ _PRODUCT_CODE = "164"
 _ICP_BUS_SIZE = "17"
 
 # Real 5069-family (Compact 5000, no separate chassis) Local-module Ports
-# shape, confirmed against samples/local/DnR_Personal/
-# BT1XX_FFC_20240325.L5X (5069-L330ERMS2): local bus Port Type="5069" (not
+# shape, confirmed against samples/local/
+# a real export (5069-L330ERMS2): local bus Port Type="5069" (not
 # "ICP"), vs 1756's 17-slot-chassis convention, and TWO Ethernet ports
 # (dual embedded switch) rather than 1756's one. Testing 5069 modules needs a
 # 5069 processor, and a naive processor_type string swap on the old
@@ -68,11 +68,11 @@ _ICP_BUS_SIZE = "17"
 # 5069 I/O module actually got attached. Real per-catalog values pulled
 # directly from 5 separate real corpus files (never guessed):
 # samples/local/L306ERS2_Sample.L5X (5069-L306ERS2, 9),
-# samples/local/DnR_Personal/PWO_134190.L5X (5069-L310ERS2, 9),
-# samples/local/DnR_Personal/Fisher_Synergy_Bead_20240725.L5X
-# (5069-L320ERMS2, 17), FlareFunction_311D_240731.L5X (5069-L320ERMS3, 17),
-# BT1XX_FFC_20240325.L5X (5069-L330ERMS2, 32),
-# Fisher_P800Sub_20240531.L5X (5069-L340ERS2, 32). The M/MS2/MS3/S2/ER
+# a real export (5069-L310ERS2, 9),
+# a real export
+# (5069-L320ERMS2, 17), a real export (5069-L320ERMS3, 17),
+# a real export (5069-L330ERMS2, 32),
+# a real export (5069-L340ERS2, 32). The M/MS2/MS3/S2/ER
 # suffix doesn't change the physical backplane capacity within the same
 # base model number (e.g. L306ER and L306ERS2 are the same tier, only the
 # safety/motion feature suffix differs), so this keys off the base model
@@ -96,8 +96,8 @@ def _5069_bus_size(processor_type: str) -> str:
 # ordered"): there was no is_1769 branch at all before this, so every
 # 1769 processor silently fell through to the generic ICP-chassis else
 # branch (Port Type="ICP", single Ethernet port) -- wrong PORT TYPE, not
-# just a wrong number. Real corpus evidence (samples/local/DnR_Personal/
-# TOYOTA_135453_20221024.L5X, ProcessorType="1769-L33ERMS"): Port
+# just a wrong number. Real corpus evidence (samples/local/
+# a real export, ProcessorType="1769-L33ERMS"): Port
 # Type="Compact" (a third distinct value, neither 1756's "ICP" nor
 # 5069's "5069"), single Ethernet port -- same single-Ethernet shape as
 # 1756, unlike 5069's dual-Ethernet. Only ONE real per-catalog bus-size
@@ -115,7 +115,7 @@ def _5069_bus_size(processor_type: str) -> str:
 # _1769_MODULES_XML for the real, verbatim per-catalog data. build_l5x()
 # raises for those catalogs rather than silently building a wrong file.
 _1769_BUS_SIZE_BY_MODEL = {
-    "L33": "17",  # confirmed, TOYOTA_135453_20221024.L5X (1769-L33ERMS)
+    "L33": "17",  # confirmed, a real export (1769-L33ERMS)
 }
 _1769_BUS_SIZE_DEFAULT = "17"  # unconfirmed for any model not in the table above
 
@@ -182,8 +182,8 @@ def safety_partner_module_xml(
     partner at all: one safety partner sits beside the CPU on
     the right for a SIL3 program; SIL2 has none.
 
-    Confirmed real shape from samples/local/DnR_Personal/
-    Bender134053_201104.L5X (a real SIL3/PLe program, Controller/
+    Confirmed real shape from samples/local/
+    a real export (a real SIL3/PLe program, Controller/
     SafetyInfo SafetyLevel="SIL3/PLe"): `EKey State="ExactMatch"` (not
     the usual "CompatibleModule" -- a tight redundant pairing needs an
     exact rev match, not just compatibility), `Width="0"` on its own
@@ -310,7 +310,7 @@ def build_l5x(
         # See _1769_bus_size's docstring above for the real corpus source.
         # SafetyNetwork handling mirrors the SIL2/is_5069 fix (same real
         # orphaned-reference risk applies to any family) even though no
-        # real 1769 Safety corpus example has been checked yet -- TOYOTA_
+        # real 1769 Safety corpus example has been checked yet -- export 23
         # 135453_20221024.L5X's own Local module DOES carry a real
         # SafetyNetwork on its Ethernet port, so the family supports it,
         # just not independently confirmed as required in every safety
@@ -391,7 +391,7 @@ def build_l5x(
         # 5069-IB8S/A, 5069-OBV8S/A) had a downstream module correctly
         # declaring SafetyNetwork, but the Local module's own ICP/
         # Ethernet ports never established that network -- an orphaned
-        # reference. Confirmed against real corpus (SJ_Gormley_
+        # reference. Confirmed against real corpus (export 21
         # 20251112_r02.L5X): its Local module's ICP port carries
         # SafetyNetwork="...cbbc" and its Ethernet port carries "...cbbd",
         # the exact value every downstream Kinetix ERS3 safety module in

@@ -40,8 +40,8 @@ from __future__ import annotations
 #     supplies (P*)         376/96 at every Major observed (3, 11, 13, 14)
 #     2198-RP200            452/115 at Major 11
 #
-# Griffin carries D012/D020/D032/D057/S086 all at Major 11 with 448/114;
-# Baillie and SJ_Gormley carry the same catalogs at Major 13/14 with 468/119.
+# Export 14 carries D012/D020/D032/D057/S086 all at Major 11 with 448/114;
+# export 04 and export 21 carry the same catalogs at Major 13/14 with 468/119.
 # So a (catalog, Major) pair fixes the payload and a catalog alone does not.
 #
 # This table previously listed D020/D032/D057 at Major 11 and S130 at Major 11
@@ -73,7 +73,7 @@ from __future__ import annotations
 # a rule written from the D-series alone passes S086-on-Ch3, which is exactly
 # the shape Studio refuses.
 #
-# The single Ch2 reference is EmporiumEdger DRV01_BedRolls at Major 13, and the
+# The single Ch2 reference is export 10 DRV01_BedRolls at Major 13, and the
 # four Ch4 references are one 2198-D057-ERS3 carrying three axes. Both are real
 # and both are rare; neither is a licence to invent a channel for a catalog that
 # has never been seen using it.

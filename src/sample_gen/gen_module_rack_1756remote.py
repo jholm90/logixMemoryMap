@@ -6,7 +6,7 @@ specific topology is a SYNTHESIS of two independently real, corpus-
 confirmed pieces, not one literal real chain extracted whole (the usual
 "never invent" bar for this project). Checked first, not guessed:
   1. The bridge-to-bridge linkage syntax IS real and literal, pulled
-     verbatim from samples/local/L5X_Samples/RobbinsGrn_2026_05_13r00.L5X
+     verbatim from a real export
      ("Control_Ethernet" 1756-ENBT/A at ParentModule="Local", "MoCo_Stacker"
      1756-ENBT/A at ParentModule="Control_Ethernet" ParentModPortId="2" --
      a second bridge networked off the first one's Ethernet port, with its
@@ -59,7 +59,7 @@ _PARENT_RE = re.compile(r'(ParentModule=")[^"]+(")')
 _LOCAL_IO_CATALOGS = ["1756-IB16", "1756-IF8/A"]
 _REMOTE_IO_CATALOGS = ["1756-OA16", "1756-OF4/A", "1756-IA32/A", "1756-HSC/A"]
 
-# Real, literal -- RobbinsGrn's own "Control_Ethernet" (local bridge).
+# Real, literal -- export 20's own "Control_Ethernet" (local bridge).
 _LOCAL_BRIDGE_XML = """\
 <Module Name="RemoteTest_LocalBridge" CatalogNumber="1756-ENBT/A" Vendor="1" ProductType="12" ProductCode="58" Major="3" Minor="9" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false">
 <EKey State="Disabled" />
@@ -72,7 +72,7 @@ _LOCAL_BRIDGE_XML = """\
 </Module>
 """
 
-# Real, literal -- RobbinsGrn's own "MoCo_Stacker" (remote bridge, networked
+# Real, literal -- export 20's own "MoCo_Stacker" (remote bridge, networked
 # off the local bridge's port 2, its own real 13-slot backplane Bus).
 _REMOTE_BRIDGE_XML = """\
 <Module Name="RemoteTest_RemoteBridge" CatalogNumber="1756-ENBT/A" Vendor="1" ProductType="12" ProductCode="58" Major="1" Minor="1" ParentModule="RemoteTest_LocalBridge" ParentModPortId="2" Inhibited="true" MajorFault="false">
@@ -128,7 +128,7 @@ def main() -> None:
         "modulerack_1756_remote",
         "1756-Ethernet local rack (2 real local I/O modules + real ENBT/A local bridge) "
         "talking over Ethernet to a REMOTE 1756-Ethernet rack (real ENBT/A remote bridge "
-        "shape, verbatim from RobbinsGrn's Control_Ethernet/MoCo_Stacker linkage) carrying "
+        "shape, verbatim from export 20's Control_Ethernet/MoCo_Stacker linkage) carrying "
         "4 real remote 1756 I/O modules on its own 13-slot backplane. SYNTHESIZED from two "
         "independently real, corpus-confirmed pieces -- no single real file in the corpus "
         "shows a remote bridge with real I/O children (only peer-controller cases found). "
