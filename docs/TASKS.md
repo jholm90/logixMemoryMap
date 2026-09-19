@@ -152,6 +152,29 @@ something. **They are the part that gets skipped, so they are listed as work.**
 | `confound_check.py` gates a generator before files are built | done |
 | `unreconciled.py` run after every batch | **run it** |
 | One capture roster, not five | one outstanding: item 1 |
+| Comments carry facts, not conversation or dates | done: every `.py` comment and docstring |
+| No customer-identifying name in a committed file | **undecided -- see below** |
+
+### Customer project names are committed in comments
+
+Real export filenames appear in comments and docstrings across **39 Python files
+and 3 docs**, and this is a public repository. The most frequent are
+`RobbinsGrn_2026_05_13r00` (28), `Bender134053_201104` (22), `MurrayBros` (20),
+`AccuTally` (18) and `BaillieLeitchField_Edger_20260812_r00` (11).
+
+No proprietary file is committed and `samples/local/` is gitignored, so this is
+not the disclosure the read-only rule was drawn against. It is a smaller thing
+and a real one: the name of a customer project, in a public repo, in the same
+breath as its memory profile.
+
+**Both options cost something, which is why this is a decision rather than a
+cleanup.** The citation is load-bearing -- "confirmed against
+`samples/local/<file>`" is what lets a finding be re-checked years later, and a
+generic label cannot be traced back to anything. Replacing 39 files' citations
+with `samples/local/real_07.L5X` style aliases needs a mapping table kept in
+`samples/local/`, gitignored, or the traceability is simply gone.
+
+Nothing has been changed here. The names were left exactly as they were.
 
 ---
 
