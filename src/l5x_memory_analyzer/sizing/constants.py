@@ -436,7 +436,7 @@ class CptExpressionModel:
 
     def unpriced_operators(self, operators) -> list[str]:
         """Operators the ST/RLL tokenizer recognises but this model has never
-        measured a cost for -- AND/OR/XOR today.
+        measured a cost for: AND, OR and XOR.
 
         These used to raise KeyError straight out of cost_for, which aborted
         the whole report and made the UI fail to load the file at all (real

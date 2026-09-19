@@ -128,7 +128,7 @@ def _1769_bus_size(processor_type: str) -> str:
 # exports, samples/local/fw_versions/) -- found while investigating why
 # every stringconst_*_l8 file (Constant-flag x processor batch) failed to
 # convert. ProductCode is NOT just "164 for 1756, 223 for 5069" as this
-# file assumed before today -- it's a distinct per-catalog identifier, and
+# file once assumed -- it's a distinct per-catalog identifier, and
 # the DEFAULT 5069 processor this whole project has used throughout
 # (5069-L306ER) was carrying the WRONG code (223, which is really
 # 5069-L330ERMS2's -- see the comment above) instead of its own real 196.

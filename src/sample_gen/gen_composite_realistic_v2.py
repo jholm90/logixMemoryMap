@@ -56,7 +56,7 @@ OUT_ROOT.mkdir(parents=True, exist_ok=True)
 # SINT/INT/DINT" and "conditional instructions like EQU with no operand
 # at the end of the rung or a NOP() instruction." Both real, both fixed
 # here -- unlike gen_jsr_target_content_scale.py/gen_aoi_internal_logic_
-# isolation.py (same bug class, fixed the same day), this generator's two
+# isolation.py (same bug class, fixed in the same pass), this generator's two
 # call sites (AOI-internal-logic, JSR-target-content) pass DIFFERENT real
 # operand types for the condition/output slot (Out0 is BOOL in the AOI
 # case, Arr1[...] is INT in the JSR case) -- a single hardcoded ".0"

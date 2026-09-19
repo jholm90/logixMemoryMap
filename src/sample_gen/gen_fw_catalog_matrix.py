@@ -317,7 +317,7 @@ def _1769_module_xml(catalog: str, major_rev: str) -> str:
 #   - new v38 elements: <OpcUaInfo EnabledPorts=""/>, and <AlarmDefinitions>
 #     carrying DatatypeAlarmDefinition/MemberAlarmDefinition -- a
 #     datatype-level alarm template distinct from the tag-level
-#     AlarmCondition this project already prices. Unmodelled today; see
+#     AlarmCondition this project already prices. Unmodelled; see
 #     OQ-ALARMDEF.
 _L9X_PRODUCT_CODES = {
     "1756-L902TS": 316,

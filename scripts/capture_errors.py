@@ -119,7 +119,7 @@ def _conversion_failures(rows: list[dict]) -> list[dict]:
     Last row per filename wins -- a later success supersedes an earlier
     failure. A file with no convert_log row at all is NOT a failure: it has
     simply never been submitted, which is the normal state of a batch built
-    today. Conflating the two made every freshly generated file read as broken,
+    yet. Conflating the two made every freshly generated file read as broken,
     which is exactly the kind of noise that trains people to ignore a report.
     """
     if not CONVERT_LOG.exists():

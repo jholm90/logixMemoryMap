@@ -46,7 +46,7 @@ marked NOT BUILT ON PURPOSE below, which is the more useful half of the answer.
      charged differently for being protected.
 
   C. EOT, SFR, SFP and IOT: real instructions, no weights entry, priced at
-     zero today -- and NOT built here. See the NOT BUILT ON PURPOSE section in
+     zero -- and NOT built here. See the NOT BUILT ON PURPOSE section in
      the code for why inventing their rung shapes would have shipped files
      that error.
 
@@ -164,7 +164,7 @@ def group_uid_uie_paired() -> int:
 # C. NOT BUILT ON PURPOSE: EOT, IOT, SFR, SFP
 #
 # These four are real Logix instructions, they have NO weights-table entry, and
-# no sample in the corpus isolates any of them -- so every use costs zero today
+# no sample in the corpus isolates any of them -- so every use costs zero
 # and that is a genuine gap. Files for them were written and then deliberately
 # withdrawn, for a reason worth recording rather than rediscovering:
 #

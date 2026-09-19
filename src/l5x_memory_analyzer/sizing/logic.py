@@ -178,7 +178,7 @@ def compute_routine_logic_bytes(
     total += routine.branch_bracket_instruction_count * model.branch_bracket_cost_per_instruction
 
     # Every AOI call site (OQ-DEFSCALE). These cost nothing before
-    # today: the instruction-count regex is all-caps-only and real AOI names are
+    # The instruction-count regex is all-caps-only and real AOI names are
     # mixed-case, so 3,918 real call sites were invisible. See memory_model.yaml
     # aoi_call_site -- 168 bytes, from a 1/5/20/60-call sweep whose four files
     # agree on one intercept, cross-checked against a second sweep over instance

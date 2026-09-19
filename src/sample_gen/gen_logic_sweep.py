@@ -34,8 +34,8 @@ instruction sweep. The 5 already-generated `instr_t_add_n*` files and
 their manifest rows are removed, not just flagged for re-capture --
 there's no fix that makes the original test meaningful.
 
-Also confirmed the same day ("Curious if the SDK had L5X->ACD with
-controller validation/program checking"): `samples/convert_log.csv` shows
+DOES THE SDK VALIDATE THE PROGRAM DURING L5X->ACD CONVERSION? No.
+`samples/convert_log.csv` shows
 every T_ADD/CPS/COP/FLL/BTD/SIZE file (including the ones with the
 array-subscript bug fixed nearby) converted with `l5x2acd` status "ok" --
 the SDK's L5X->ACD conversion does NOT perform ladder-logic verification,

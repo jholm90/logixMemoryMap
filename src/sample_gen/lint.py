@@ -3,7 +3,7 @@ The original question was whether the SDK's L5X->ACD conversion performs
 controller validation or program checking that would catch a bad program
 before real capture time is spent on it.
 
-Checked: `samples/convert_log.csv` shows every file from today's two real
+Checked: `samples/convert_log.csv` shows every file from the two real
 bugs (the missing `[0]` array subscript on CPS/COP/FLL/BTD/SIZE, and T_ADD
 called with no AOI definition at all) converted via `l5xgit l5x2acd` with
 status "ok". The SDK's L5X->ACD conversion only opens/parses the project
@@ -84,7 +84,7 @@ Checks:
       generation time; this check is the defense-in-depth net -- see
       _aoi_array_param_usage_findings.
 
-These last five were added the same day their bug class was found TWICE --
+These last five were added in the same pass their bug class was found TWICE --
 once fixed by hand in the one generator that hit it, then reintroduced
 fresh in 3 more files written the same session. Hand-fixing a generator
 when a real bug is found is not enough; the check has to be enforced here

@@ -66,7 +66,7 @@ def test_an_unowned_errored_row_has_no_question() -> None:
 
 
 def test_never_attempted_file_is_not_a_conversion_failure() -> None:
-    """A batch built today has no convert_log row at all. Counting that as a
+    """A freshly built batch has no convert_log row at all. Counting that as a
     failure floods the report with noise and trains people to ignore it."""
     ce = _module()
     rows = [{"sample_id": "brand_new", "l5x_path": "samples/generated/x/never_submitted.L5X"}]

@@ -6,7 +6,7 @@ program_extra*(n_programs-1) + routine_extra*(n_plain_routines-1)) has
 program_extra=484 derived from only 5 real plain-routine files
 (memory_model.yaml task_program_overhead comment) -- never validated at
 real-project program COUNTS (5/10/15/20/50), and Program names carry no
-name-length term at all today, exactly the same untested-name-length gap
+name-length term at all, exactly the same untested-name-length gap
 just found for JSR target routines.
 
 Two groups, same shape as gen_jsr_multi_distinct_targets_scale.py:

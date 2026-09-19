@@ -10,7 +10,7 @@ SAME single dimension (100) and type (DINT) -- not enough to tell whether
 the gap is a flat per-array-LocalTag declaration cost or actually scales
 with dimension/element size. The current aoi_definition formula
 (memory_model.yaml) charges `per_declared_item` once per declared
-Parameter/LocalTag regardless of its `dimension` -- i.e. today's model
+Parameter/LocalTag regardless of its `dimension` -- the current model
 predicts ZERO effect from array size, so if the real gap DOES scale with
 dimension this is a genuine missing term, not just a fixed offset.
 

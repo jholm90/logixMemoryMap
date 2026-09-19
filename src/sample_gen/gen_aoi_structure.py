@@ -21,7 +21,7 @@ WHAT THE MODEL CURRENTLY PRICES, read straight out of
   + AOI TYPE-name length buckets
 
 and that is all. Everything below is therefore priced at exactly ZERO
-today, which is a hypothesis nothing has ever tested:
+in the current model, which is a hypothesis nothing has ever tested:
 
   1. **Member name length.** The AOI's own type name is priced; its
      members' names are not. Real corpus: 2,120 AOI Parameters/LocalTags,
@@ -44,7 +44,7 @@ today, which is a hypothesis nothing has ever tested:
   4. **Predefined-structure members.** TIMER (557 real member uses),
      DateTime (120), COUNTER (66), STRING (58), MOTION_INSTRUCTION (36),
      MESSAGE (15) -- every one falls off the end of the per-type table
-     onto the flat atomic rate. Never generated once before today; see
+     onto the flat atomic rate. Never generated once before; see
      predefined_members.py.
   5. **Array dimensions.** An AOI member is counted once whether it is
      scalar or `Dimensions="1024"`. 46 real dimensioned AOI members.
@@ -62,7 +62,7 @@ GROUPS (56 files, every one answering a live question --:
 
   aoistr_namelen_c{04..40}        7  member NAME length, 20 DINT params
   aoistr_desc_l{000..256} + 4     8  member/AOI-level DESCRIPTION text
-  aoistr_inout_n{00,04,16,48}     4  InOut param count (priced 0 today)
+  aoistr_inout_n{00,04,16,48}     4  InOut param count (priced 0)
   aoistr_predef_*                11  TIMER/COUNTER/MOTION/STRING/MESSAGE
   aoistr_dim_*                    9  array-dimensioned members
   aoistr_scale_*                 12  params/locals/rungs to the real p90
@@ -255,7 +255,7 @@ def _group_inout() -> None:
 
 
 def _group_predefined() -> None:
-    """Predefined-structure members: never generated before today."""
+    """Predefined-structure members: never generated before."""
     definition, _ = aoi_xml(AOI_TYPE, local_tags=_dint_locals(8))
     _write(
         _def_only(definition, "AoiPredefBase"),

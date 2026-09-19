@@ -257,7 +257,7 @@ def _axis_tag(name: str, motion_module: str) -> str:
 # AXIS_CIP_DRIVE shape than a real motor/servo axis: AxisConfiguration=
 # "Non-Regenerative AC/DC Converter", FeedbackConfiguration="No Feedback",
 # no MotorDataSource/tuning/servo-loop-bandwidth parameters at all. Real
-# bug found the same day: every P208 axis this project ever generated
+# bug found in the same pass: every P208 axis this project ever generated
 # used `_axis_tag` (the full Position-Loop servo template) instead --
 # genuinely malformed for this axis type, the leading suspect for the
 # real Studio 5000 "opening the module profile page crashes" report on

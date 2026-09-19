@@ -13,7 +13,7 @@ padding fix (see memory_model.yaml's string: block for the full derivation
      confirmed formula doesn't explain, even though the SAME maxlen=100
      under a DIFFERENT, shorter type name ("CStrB3_100") fits with zero
      residual. memory_model.yaml already flagged this exact risk before
-     today ("Not yet tested for type-NAME-length sensitivity"). Isolates
+     yet: not tested for type-NAME-length sensitivity. Isolates
      it directly: same maxlen (100), same tag-name shape, THREE type-name
      lengths (short/medium/long) at both def_only and 1-instance shapes.
 

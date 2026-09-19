@@ -129,7 +129,7 @@ def _emit(sample_id: str, type_stem: str, data_type: str, count: int,
 
 def main() -> None:
     # A: control -- BOOL count at the 2-character names every earlier
-    # generator used. Predicts exactly today; any deviation would mean the
+    # generator used. Predicts exactly; any deviation would mean the
     # contradiction is not about names at all.
     for b in BOOL_COUNTS:
         _emit(

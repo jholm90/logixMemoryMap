@@ -7,7 +7,7 @@ Real gap found while checking that: EVERY jsr_sbr_ret file ever built
 DINT for every single JSR/SBR param, with zero exceptions. The sizing engine
 itself (sizing/logic.py) charges `jsr_param_cost.b_cost(n_in)` purely off
 the input-param COUNT -- it never looks at `tag_types` for a JSR call the
-way it does for CPT/CMP operands (OQ-OPERANDTYPE), so right now the model
+way it does for CPT/CMP operands (OQ-OPERANDTYPE), so as it stands the model
 is silently assuming every param costs the same regardless of type. That
 assumption was never tested, and the ORIGINAL real-corpus example that
 motivated OQ-JSRPARAMCOST in the first place (SJ_Gormley_20251112_r02.L5X,

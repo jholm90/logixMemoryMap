@@ -5,7 +5,7 @@ there a real, currently-unmodeled marginal cost for having more than one?
 been tested -- they had not.)
 
 Every JSR calibration file this project has ever built (old corpus and
-today's target-content-scale/mid-chain files alike) calls exactly ONE
+the target-content-scale and mid-chain files alike) calls exactly ONE
 distinct target routine -- varied by param count, rung count, RET-point
 count, or content size, but always a single target name. report.py's
 `jsr_target_param_counts` mechanism assumes each distinct target's own

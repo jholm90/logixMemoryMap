@@ -18,7 +18,7 @@ It is not a new constant. `memory_model.yaml`
 `cpt_expression.real_dest.per_float_literal` is already 4, fitted across 12
 files. The same 4 now appears in MAM, an unrelated instruction priced by an
 unrelated code path, which is what a general law looks like rather than a
-per-instruction quirk. Today literals are priced ONLY inside CPT expressions,
+per-instruction quirk. Literals are priced ONLY inside CPT expressions,
 CMP operands and ST statements.
 
 WHY THE BENCH NUMBER DOES NOT SETTLE IT. Across the seventeen real programs

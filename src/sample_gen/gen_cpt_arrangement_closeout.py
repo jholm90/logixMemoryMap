@@ -33,7 +33,7 @@ operator an addition except ONE multiplication, swept across all eight possible
 positions, plus an all-addition control. Everything else is held identical:
 same operand count, same tag pool, same destination, same rung count. If the
 rule is "first multiplication at operand 3", `cptpos_m3_n09` stands alone and
-the other seven agree. Nothing in the corpus can say that today because no
+the other seven agree. Nothing in the corpus can say that, because no
 existing file varies position with the count held fixed.
 
 THE +348. The majority residual is not zero, it is +348, identical on all 26

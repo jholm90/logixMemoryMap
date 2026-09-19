@@ -3863,7 +3863,7 @@ def _floor_bytes(l5x_text: str) -> int:
     itself (no Connections of its own, a pure fan-out bridge) and
     5069-SERIAL/A both fall to the unmodeled/$0 SizeError path, but every
     other real child module here has real Connection/ConfigTag content
-    fully computable today, so a real nonzero floor is worth logging, not
+    fully computable, so a real nonzero floor is worth logging, not
     predicted_bytes=0 (same reasoning as gen_composite_realistic_v3.py's
     _floor_bytes)."""
     root = ET.fromstring(l5x_text)

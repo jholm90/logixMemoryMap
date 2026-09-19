@@ -6,7 +6,7 @@ separate test set varying routine name length, validating data that was
 missed.
 
 report.py's jsr_target_param_counts mechanism (dict keyed by target name,
-each charged A(n) once) has no name-length term at all today -- unlike
+each charged A(n) once) has no name-length term at all -- unlike
 tags/UDTs/AOI definitions, which all have a real, empirically-confirmed
 name-length bucket cost (see memory_model.yaml aoi_definition.name_length_
 bucket_bytes etc.). Whether JSR-target routine names carry the same kind

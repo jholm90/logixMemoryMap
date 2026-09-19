@@ -5,7 +5,7 @@ via follow-up: "4 drives" means 4 SEPARATE drive modules, not 4 axes --
 could be satisfied by 2 dual-axis modules alone, so drive modules are
 mixed dual/single-axis and always counted by module, not by axis].
 
-Direct follow-up to today's composite_surcharge_cap fix (see
+Direct follow-up to the composite_surcharge_cap fix (see
 memory_model.yaml) -- this batch is the first real test of that fix at an
 even larger scale (2-3MB vs v3's 1.5-2.5MB) and, for the first time, more
 than one real drive module in a single file (v3 only ever had one).
