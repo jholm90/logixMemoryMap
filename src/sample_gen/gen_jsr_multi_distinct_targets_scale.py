@@ -139,7 +139,7 @@ def group_name_length() -> None:
             f"every file in this group (count is the only thing held constant here, unlike "
             f"group_quantity_scale) -- OQ-JSRPARAMCOST target-NAME-LENGTH isolation, "
             f"2026-08-31: different routine name lengths, as a separate test set "
-            f"validating data that was missed." report.py's jsr_target_param_counts A(n) charge has no "
+            f"validating data that was missed. report.py's jsr_target_param_counts A(n) charge has no "
             f"name-length term today, unlike tags/UDTs/AOI definitions (all confirmed real "
             f"name-length bucket costs) -- tests whether that's a real, currently-unmodeled gap "
             f"or genuinely free the way routine logic content itself is not.",
