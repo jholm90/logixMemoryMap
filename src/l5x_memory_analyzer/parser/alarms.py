@@ -1,13 +1,13 @@
 """Tag-based alarm conditions (Logix "alarm definitions" on a tag).
 
-2026-09-04: *"Another thing to look at is Controller Alarms that we
+*"Another thing to look at is Controller Alarms that we
 use... see the alarms prefixed by 'Alarm1_' as they could be holding back
 some of your calculations from being accurate."*
 
 He was right, and it is not a small corner. Measured across every real L5X
 in samples/local/: **3,463 real AlarmCondition elements**, and the sizing
 engine charges every one of them **zero bytes**. All 8 of the real programs
-whose Capacity readings were fitted on 2026-09-04 carry 200-600 of them.
+whose Capacity readings were fitted carry 200-600 of them.
 After the composite surcharge was refitted, the leftover residual on those
 8 correlates **+0.583 with alarm count** -- the strongest remaining
 identified driver (AOI-internal instructions -0.236, JSR-target -0.094).

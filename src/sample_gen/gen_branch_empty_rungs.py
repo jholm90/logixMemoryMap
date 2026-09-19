@@ -1,4 +1,4 @@
-"""Phase 4 (bit logic round 1) closeout (2026-08-26), built to finish the
+"""Phase 4 (bit logic round 1) closeout, built to finish the
 phase outright rather than leave it partly done. Audit found XIC/OTE/XIO/OTL/OTU
 and comment-cost (OQ-COMMENTS, comments = 0 blocks) all genuinely CONFIRMED
 already -- but two checklist items had literally never been generated:
@@ -6,7 +6,7 @@ branch depth variations, and empty rungs at scale. This batch closes both.
 
 Branch (parallel-leg) syntax confirmed real, not guessed, from
 samples/local/311DGeneratedProgram.L5X's own rung Text:
-`[XIC(CmdReset) ,XIC(Inhibit) ... ]XIO(...)OTE(...);` -- square brackets,
+`[XIC(CmdReset),XIC(Inhibit) ... ]XIO(...)OTE(...);` -- square brackets,
 comma-separated legs, each leg itself a plain instruction chain. This is
 inline rung TEXT, not a separate XML construct -- rung_xml/rungs_xml
 already support arbitrary text, no builders.py change needed.

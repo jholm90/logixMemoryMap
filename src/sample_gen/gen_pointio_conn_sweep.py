@@ -1,6 +1,6 @@
 """POINT I/O connection-format cost sweep (OQ-POINTIOCONN).
 
-Three real captures on 2026-09-11 -- one adapter and sixteen 1734-IB8/C
+Three real captures -- one adapter and sixteen 1734-IB8/C
 cards, in each of the three connection formats -- showed the model over-
 predicting by 45% and 27% on two of them and under-predicting by 30% on
 the third, and gave one clean single-variable result: a card's own
@@ -16,7 +16,7 @@ Differencing consecutive counts within one format gives the per-card cost
 as the slope and that adapter's own cost as the intercept, each
 independent of the other.
 
-Every module block below is VERBATIM from the real 2026-09-11 exports --
+Every module block below is VERBATIM from the real exports --
 the same donor convention gen_fw_catalog_matrix.py uses. Only what genuinely
 depends on the card count is rewritten, and the three formats need
 different rewrites because they carry the rack differently:

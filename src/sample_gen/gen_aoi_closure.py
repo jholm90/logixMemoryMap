@@ -1,4 +1,4 @@
-"""Small, targeted AOI additions (2026-08-25, after the 64-file
+"""Small, targeted AOI additions (after the 64-file
 generalization batch: "If there are additional testing you think of for
 the AOI -- paired with the rule not to fill up the
 minimum 60 test roster with filler work" instruction from the same

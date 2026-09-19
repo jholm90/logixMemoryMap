@@ -1,4 +1,4 @@
-"""Phase 3 literal-checklist closeout (2026-08-24), generating every file
+"""Phase 3 literal-checklist closeout, generating every file
 needed to close the phase outright. Fills the 4 remaining docs/TASKS.md Phase 3 checklist items
 that genuinely had no matching generated file yet (the rest were
 superseded by later, more rigorous family sweeps -- see docs/TASKS.md's

@@ -1,6 +1,6 @@
 """Separates the three things the captured defscale sweeps confounded.
 
-Written 2026-09-11 after reconciling the 30 `defscale_*` captures. All four
+Written after reconciling the 30 `defscale_*` captures. All four
 sweeps came back PERFECTLY linear with zero residual, which is the good news
 and the problem at once:
 

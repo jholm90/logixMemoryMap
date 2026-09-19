@@ -1,4 +1,4 @@
-"""Retest batch for the 6 rows flagged by the 2026-08-25 manifest audit as
+"""Retest batch for the 6 rows flagged by the manifest audit as
 capture-race casualties (docs/OPEN_QUESTIONS.md OQ-CAPTURERACE) -- the
 own AHK/PowerShell capture tooling self-flagged these via a "WINDOW TITLE
 MISMATCH" note, meaning the Capacity value logged for each was very likely

@@ -1,6 +1,6 @@
 """Closes every remaining ASSUMED item that fires on a real file.
 
-Written 2026-09-06 after a confidence audit found that 174 of the model's
+Written after a confidence audit found that 174 of the model's
 185 ASSUMED predefined structures already had error-free, exactly-0.0000%
 capture data behind them -- the tier had simply never been upgraded. That
 left a short, precise list of things that are genuinely unmeasured, and
@@ -15,7 +15,7 @@ real production programs:
 
 Nothing else in the model is ASSUMED and reachable from a real file.
 
-GROUP A -- the 2198 -ERS3 root cause, found 2026-09-06.
+GROUP A -- the 2198 -ERS3 root cause, found.
 
 The docs recorded these as "undiagnosed". They are not. The evidence was
 already in the manifest:
@@ -193,14 +193,14 @@ def _module_file(catalog: str, label: str, xml: str, count: int, safety: bool,
 def group_a_ers3_drives() -> int:
     """Every -ERS3 catalog on a PLAIN NON-SAFETY controller, count-swept.
 
-    CORRECTED 2026-09-06, second pass. The first pass of this file asserted
+    CORRECTED second pass. The first pass of this file asserted
     that a -ERS3 drive needs a safety controller. That was wrong, and the
     disproof was already in the repo: `composite_realistic_v4_001` through
     `_031` carry -ERS3 drives on a plain 1756-L81E with no SafetyLevel and
     captured at ZERO errors.
 
     The real cause of the -ERS3 import failures is the one already
-    diagnosed on 2026-09-03 and recorded in `_drive_module_xml`'s own
+    diagnosed and recorded in `_drive_module_xml`'s own
     docstring: the drive module was missing its `<ExtendedProperties>`
     block (Vendor/CatNum/FeedbackDevice1-4/ConfigID), found by a
     byte-for-byte diff against a real SampleAxis export. That fix landed in
@@ -217,7 +217,7 @@ def group_a_ers3_drives() -> int:
     n = 0
     for catalog in sorted(_ERS3_CATALOGS):
         for count in COUNTS:
-            # FIXED 2026-09-14: a 2198 drive needs its 2198-P bus supply in the
+            # FIXED: a 2198 drive needs its 2198-P bus supply in the
             # project or Studio converts the file and then fails Build on bus
             # power. These files had none, which is what lint's
             # kinetix_drive_without_bus_supply was written for, and it explains

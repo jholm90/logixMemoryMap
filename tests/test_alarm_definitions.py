@@ -1,6 +1,6 @@
 """Datatype-level alarm definitions must be surfaced, not silently zeroed.
 
-Found 2026-09-08 in the real 1756-L9xTS v38 exports: a stock P_PID
+Found in the real 1756-L9xTS v38 exports: a stock P_PID
 `<DatatypeAlarmDefinition>` with six member alarms was priced at zero and
 reported nothing at all. Nothing here asserts a BYTE COST -- there is no
 capture data yet and inventing a number would be worse than a visible hole.

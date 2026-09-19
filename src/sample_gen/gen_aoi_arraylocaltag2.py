@@ -1,6 +1,6 @@
 """What the array-LocalTag sweep left open, after wiring what it settled.
 
-Written 2026-09-11. The 27-file `aoi_arraylocal_*` sweep (built 2026-09-03)
+Written . The 27-file `aoi_arraylocal_*` sweep (built)
 had been captured and never reconciled. Reconciled now, it says an AOI's
 array-dimensioned declared member costs its own DATA SPACE on top of the flat
 per-declared-item rate, which counts it once regardless of dimension:

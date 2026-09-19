@@ -2,7 +2,7 @@
 
 Can start pre-loaded with an L5X path (CLI usage) or empty, with the
 frontend's File->Open picker uploading a file to /api/load (desktop-shortcut
-usage, 2026-08-20: -- no command prompt needed for the launch version).
+usage: -- no command prompt needed for the launch version).
 Serves the flat sizing report plus a lazy /api/node endpoint for infinite-
 depth drill-down (see sizing/tree.py) -- vanilla JS/SVG frontend, no CDN
 dependency, since engineering workstations on OT networks are frequently
@@ -76,9 +76,9 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
 
     budget = _BUDGET_TABLE.lookup(doc.processor_type)
 
-    # JSR call-tree info (2026-08-27, Phase 5). Byte totals already avoid
+    # JSR call-tree info (Phase 5). Byte totals already avoid
     # double-counting a JSR target's cost (RoutineLogic.is_jsr_target --
-    # confirmed 2026-08-22) by simply never emitting that target routine
+    # confirmed) by simply never emitting that target routine
     # as its own SizeEntry -- correct for bytes, but it means a called
     # subroutine is otherwise INVISIBLE in the treemap, with no way to see
     # its cost is folded into the caller. This surfaces the real caller ->
@@ -92,7 +92,7 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         if r.jsr_target_names
     }
 
-    # Rung counts per routine (2026-08-27, "routines need to have
+    # Rung counts per routine ("routines need to have
     # indication how many rungs"). Same side-channel-dict shape as jsr_calls
     # above, keyed by the identical routine.path every routine_logic leaf
     # node's own path already carries, purely for display -- no sizing
@@ -265,7 +265,7 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
             # traceback page, which the browser cannot parse as JSON, so the
             # fetch handler threw before it could report anything and the UI
             # sat on "Loading <file>..." forever with no error shown (real
-            # report 2026-09-09, a KeyError out of the ST operator table).
+            # report a KeyError out of the ST operator table).
             # The traceback still goes to the server log for diagnosis; the
             # user gets a message naming the failure instead of a hang.
             app.logger.exception("Failed to size %s", f.filename)
@@ -389,7 +389,7 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
 
         # A "Type Definitions" pool node (path "udt_definitions/<Name>") is
         # not a tag instance -- drill into its own cost breakdown instead
-        # (2026-08-26, locals+params breakdown for a defs-pool node).
+        # (locals+params breakdown for a defs-pool node).
         # Always exactly one level deep, no further subpath to resolve.
         # The definition drill has two readings and they answer different
         # questions. `mode=definition` (the default) shows what the type
@@ -559,7 +559,7 @@ def run(l5x_path: str | Path | None, host: str = "127.0.0.1", port: int = 8765, 
 
         threading.Timer(0.75, lambda: webbrowser.open(f"http://{host}:{port}")).start()
 
-    # threaded=True: the "2 levels deep" treemap toggle (2026-08-27)
+    # threaded=True: the "2 levels deep" treemap toggle
     # fires one /api/node fetch per visible drillable tile CONCURRENTLY
     # from the browser -- against Flask's default single-threaded dev
     # server those just queue up serially, which is fine for a handful of

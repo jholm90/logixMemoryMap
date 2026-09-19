@@ -1,7 +1,8 @@
-"""OQ-JSRPARAMCOST STRING/UDT per-param surcharge isolation (2026-08-31,
-built after JSR errors persisted. Standing method: when a test result does
-not match the prediction, re-check the existing work and devise new tests
-to fix it).
+"""OQ-JSRPARAMCOST STRING/UDT per-param surcharge isolation.
+
+Built after the JSR residual persisted. The standing method applies: when a
+result does not match the prediction, re-check the existing work and build
+tests that separate the candidates.
 
 gen_jsr_paramtype_isolation.py's n=5 fixed-count probes found a real gap:
 STRING and UDT-typed JSR params are both off by ~9.8% (~4,050-4,100 bytes

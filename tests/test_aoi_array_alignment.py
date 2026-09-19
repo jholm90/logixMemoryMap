@@ -1,6 +1,6 @@
 """The AOI instance-array block is padded to an 8-byte boundary.
 
-OQ-AOIBOOLPACK-PAIRING, derived 2026-09-12 from 48 captured sweep families
+OQ-AOIBOOLPACK-PAIRING, derived from 48 captured sweep families
 with zero exceptions. These lock the shape of the rule rather than a single
 byte count: that padding is applied to the WHOLE block and not per instance
 (per-instance padding would make the residual grow with instance count, and

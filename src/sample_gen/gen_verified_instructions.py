@@ -1,4 +1,4 @@
-"""Instructions whose call shape verified by hand, 2026-09-04.
+"""Instructions whose call shape verified by hand .
 
 A project containing every one of these instructions was built by hand,
 verified BUILD CLEAN in Studio 5000, and exported
@@ -14,12 +14,12 @@ here is transplant, never compose: the rung strings and the backing tag XML
 (sample_gen/verified_tags.py) both come out of the file verbatim.
 
 Two instructions from that export are deliberately NOT generated, as specified
-2026-09-04:
+
   NXT   -- "NXT not valid instruction". It is not a Logix RLL mnemonic at
            all; it appears in the scratch file but never built as one.
   MCLM  -- coordinated linear move, deliberately excluded.
 
-Axis choice, 2026-09-04: "note i used virtual axis and not the
+Axis choice: "note i used virtual axis and not the
 hardware, but any AXIS_** type tag should work. i dont know if you are
 aware of the difference between them." AXIS_VIRTUAL has no drive or module
 binding, so a file built on it measures the instruction and nothing else --

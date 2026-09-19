@@ -1,4 +1,4 @@
-"""Batch 3 follow-up sweep (2026-08-25) -- targeted extensions to close the
+"""Batch 3 follow-up sweep -- targeted extensions to close the
 specific gaps flagged while mining the previous real-data batch, per the
 standing procedure in CLAUDE.md ("group tests into a batch of at least 60
 items, don't want short runs"). Six independent fronts, each answering one
@@ -11,7 +11,7 @@ open question from docs/OPEN_QUESTIONS.md rather than broad re-testing:
      32-element boundary. n=16/31/32/33/48/64/65/96 does.
   B. AOI array-packing, BOOL:non-BOOL ratio sweep (same OQ). The mixed
      shape's clean 64-bytes/instance was only tested at one ratio (15
-     BOOL : 15 non-BOOL, i.e. 50%). 6 more ratios (1:29 through 29:1) at
+     BOOL: 15 non-BOOL, i.e. 50%). 6 more ratios (1:29 through 29:1) at
      4 count points each, to see whether 64 is a genuine half-of-128
      relationship or an artifact of the 50% ratio specifically.
   C. Custom-string maxlen extension (OQ-STRINGTAGOVERHEAD). Only 3 maxlen
@@ -185,7 +185,7 @@ def group_e_jsr_paramcounts() -> int:
         # SBR's own param names and the JSR's input-arg names are unrelated,
         # positionally-mapped tags (gen_jsr_sbr_ret.py's module docstring) --
         # BOTH sides need a real tag declaration. Missing the callee side
-        # was a real bug (2026-08-25 fix, found via real capture data
+        # was a real bug (fix, found via real capture data
         # showing error_count == param_count on every file in this sweep):
         # every callee local was an undeclared-tag reference.
         caller_tags = "\n".join(tag_xml(t, "DINT") for t in caller_args + callee_locals)

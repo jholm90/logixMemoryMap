@@ -1,9 +1,9 @@
-"""OQ item 14 (roadmap 2026-08-22): indirect addressing overhead -- direct
+"""OQ item 14 (roadmap): indirect addressing overhead -- direct
 (literal) array index vs indirect (tag-driven) array index, same instruction
 and rung count, only the index expression differs. Fixed at RUNG_COUNT=1000
 (comparable scale to the confirmed MOV weight: 36 blocks/rung direct).
 
-Extended 2026-08-22 ("Does tag[idx+1] take up the same space as
+Extended ("Does tag[idx+1] take up the same space as
 tag[Idx]?") with a third variant: an indirect index PLUS an arithmetic
 offset (`Arr[Idx+1]`), not just a bare index tag. Standard, well-documented
 Logix indirect-addressing capability (expressions are allowed inside an

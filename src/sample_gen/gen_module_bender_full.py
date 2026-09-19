@@ -1,6 +1,6 @@
 """Full REAL PROGRAM replica -- every importable module from a real
 DnR_Personal/Bender134053_201104.L5X, genericized but structurally
-verbatim (2026-08-27): all of the I/O from the Bender program in one file,
+verbatim: all of the I/O from the Bender program in one file,
 as the test for full-program module accuracy.
 
 Unlike every other generator in this sweep -- which extracts ONE
@@ -17,8 +17,8 @@ Robot R30iB Plus/A controller (`RobotController1` -- all 3 real
 connections including its 2 real CIP Safety connections, see below), and
 a real GuardLogix Safety Partner (see below).
 
-**GuardLogix Safety Partner -- WRONG in an earlier pass, corrected
-2026-08-27.** The large full program has a safety partner, temporarily
+**GuardLogix Safety Partner -- WRONG in an earlier pass, since
+corrected.** The large full program has a safety partner, temporarily
 removed from earlier exports to isolate the field I/O. The safety partner
 has to be handled: one sits beside the CPU on the right if the
 program is sil3. Sil2 has no safety partner. You need to handle this."
@@ -87,7 +87,7 @@ ExtendedProperties/Description/Comments stripped throughout.
 Sanity-checked before writing: 0 duplicate Names, 0 dangling
 ParentModule references, 0 lint findings, 0 sizing crashes.
 
-**Cross-checked 2026-08-27 against the "stripped" export**
+**Cross-checked against the "stripped" export**
 (samples/local/bender_stripped/Bender134053_stripper.L5X -- the real
 program with logic/UDTs/most Controller Tags removed but the Modules
 section left intact, gitignored real corpus): module catalog inventory
@@ -5390,7 +5390,7 @@ def main() -> None:
         extra_modules_xml=modules_xml, processor_type="1756-L81ES",
         safety_level="SIL3",
     )
-    # Real l5x2acd conversion failure in the 2026-08-27 push
+    # Real l5x2acd conversion failure in the push
     # (samples/convert_log.csv) -- this file contains the same PowerFlex
     # 527-STO / FANUC robot / safety-drive module shapes that also fail
     # standalone in gen_module_sweep.py/gen_module_sweep_variants.py

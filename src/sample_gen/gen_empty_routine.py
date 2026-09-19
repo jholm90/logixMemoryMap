@@ -1,4 +1,4 @@
-"""OQ-EMPTYROUTINE (2026-08-24, found while investigating the manual
+"""OQ-EMPTYROUTINE (found while investigating the manual
 l81_v35 fw_baseline entry). A self-closing `<Routine Name="X" Type="RLL"/>`
 (no RLLContent child at all) is currently silently skipped by
 parse_rll_routines -- charged 0 bytes, as if it doesn't exist. l81_v35

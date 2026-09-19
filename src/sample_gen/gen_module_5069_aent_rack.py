@@ -1,5 +1,5 @@
 """Real 5069-AENTR remote-rack module blocks, genericized from the
-uploaded reference (Remote5069.L5X, 2026-09-02: "see attached for 5069 AENT
+uploaded reference (Remote5069.L5X: "see attached for 5069 AENT
 bus module to put 5069 cards remotely") -- structurally verbatim, only the
 Controller/processor wrapper stripped. One 5069-AENTR EtherNet/IP adapter
 (Bus Size=32, real) hosting 12 real 5069-family child I/O modules already
@@ -3835,7 +3835,7 @@ def _rack_xml(children: list[str], renumber: bool = False) -> str:
 
 
 def _combined_racks_xml(plans: dict[str, list[str]]) -> str:
-    """2026-09-03: after the 10 random racks imported clean as separate
+    """: after the 10 random racks imported clean as separate
     files, the same 10 go into ONE file -- 10 independent 5069-AENTR
     adapters in one project. Each _5069_AENT_CHAIN_BLOCKS
     adapter block carries the SAME real captured Name ("AENT") and IP
@@ -3898,7 +3898,7 @@ def _write(out_name: str, children: list[str], renumber: bool = False) -> None:
 
 
 def _write_combined(out_name: str, plans: dict[str, list[str]]) -> None:
-    """2026-09-03: confirmed clean in real Studio 5000: "no errors,
+    """: confirmed clean in real Studio 5000: "no errors,
     valid ok. add to your arsenal for the next mass generation." Writes
     N independent 5069-AENTR racks (see _combined_racks_xml) into ONE
     project -- reusable for any future plans dict, not just _RANDOM_PLANS
@@ -3939,7 +3939,7 @@ _PLANS: dict[str, list[str]] = {
     "n12_full": _ALL_CHILDREN[0:12],
 }
 
-# 2026-09-03: after confirming n12_full imports clean, it turned out to be
+# after confirming n12_full imports clean, it turned out to be
 # little more than a copy of the reference file. What was needed was 10
 # Ethernet racks with random cards and random sizes. Fair: n12_full uses
 # all 12 children in the
@@ -3961,7 +3961,7 @@ def _catalog_slug(catalog: str) -> str:
 
 
 # One file per real 5069 child catalog, each holding the AENTR adapter and
-# exactly ONE child (2026-09-04). Reason: a full-corpus recompute found the
+# exactly ONE child. Reason: a full-corpus recompute found the
 # rack_5069_* family to be the single worst category error left (+28% to
 # +35%, always under-predicting) because NO 5069 catalog had its own real
 # per-catalog module_overhead point -- every one fell back to the flat

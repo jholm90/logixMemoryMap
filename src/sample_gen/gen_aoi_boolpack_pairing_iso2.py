@@ -1,7 +1,9 @@
-"""OQ-AOIBOOLPACK-PAIRING per-boundary-crossing term isolation (2026-08-31,
-built because the previous pass produced a new AOI data point with no way
-to resolve it. Standing method: when a test result does not match the
-prediction, re-check the existing work and devise new tests to fix it).
+"""OQ-AOIBOOLPACK-PAIRING per-boundary-crossing term isolation.
+
+Built because the previous pass produced a new AOI data point with no way
+to resolve it. The standing method applies: when a result does not match
+the prediction, re-check the existing work and build tests that separate
+the candidates.
 
 gen_aoi_boolpack_pairing.py's group_dense_membercount() found each
 bool_count family (bc=10/20/60) carries its own FIXED offset B that's

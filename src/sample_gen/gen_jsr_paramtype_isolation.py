@@ -1,4 +1,4 @@
-"""OQ-JSRPARAMCOST param-TYPE isolation (2026-08-30). Does the JSR param
+"""OQ-JSRPARAMCOST param-TYPE isolation. Does the JSR param
 cost accommodate UDT parameters as well as base types like DINT and REAL?
 
 Real gap found while checking that: EVERY jsr_sbr_ret file ever built

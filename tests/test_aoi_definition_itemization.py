@@ -1,6 +1,6 @@
 """The itemised AOI-definition formula, and the four terms it replaced.
 
-Derived 2026-09-13 (capture-batch segment 4) from 124 captured def-only files:
+Derived (capture-batch segment 4) from 124 captured def-only files:
 an AOI definition with no instance tag anywhere and no internal rungs, so the
 definition is the only AOI cost in the file and its true value reads straight
 off the capture. 70 of the 124 land exactly, 122 within the project's +-8

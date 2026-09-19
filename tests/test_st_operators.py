@@ -1,6 +1,6 @@
 """ST boolean operators must not crash the report.
 
-Real traceback, 2026-09-09: loading a file in the UI died with
+Real traceback: loading a file in the UI died with
 KeyError: 'AND' out of CptExpression.cost_for. The ST tokenizer recognises
 AND/OR/XOR as operators, but operator_tier_costs only prices + - * / MOD **,
 so any ST assignment containing a boolean operator aborted the entire
@@ -45,7 +45,7 @@ def test_an_all_unpriced_expression_falls_back_to_the_read_cost():
     assert EXPR.cost_for(["AND", "OR"]) == EXPR.base_read
 
 
-# --- ST's own operator classification, measured 2026-09-18 by gen_st_closeout --
+# --- ST's own operator classification, measured by gen_st_closeout --
 # These assert the MEASURED per-statement totals, so each one names the file it
 # came from. 1,000 statements per file, every residual an exact multiple of 1,000.
 

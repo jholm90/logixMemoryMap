@@ -1,6 +1,6 @@
 """The L5X's own stated size is the final decision on module sizing.
 
-2026-09-12 rule: a module's cost is its overhead plus the size the FILE states,
+rule: a module's cost is its overhead plus the size the FILE states,
 and every module gets sized -- there is no shape whose declared data is free.
 Some catalogs (ETHERNET-MODULE, ETHERNET-PANELVIEW, generic devices) have their
 connection sizes typed in by hand, so the catalog cannot know the size and only

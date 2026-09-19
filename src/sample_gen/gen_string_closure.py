@@ -1,4 +1,4 @@
-"""STRING closure batch (2026-08-25): strings closed as a whole, with no
+"""STRING closure batch: strings closed as a whole, with no
 open questions or unknowns left. Two specifics to cover: a STRING's SINT
 array and LEN element are both valid copy-instruction operands, and moving
 constants into strings and custom strings on L8 and 5069 processors.
@@ -85,7 +85,7 @@ def group_typename_length() -> int:
 # B. Constant="true", builtin + custom -- single processor (1756-L81E, the
 #    same default every other file in this project uses).
 #
-#    2026-08-26 CORRECTION (direct field knowledge): the original
+#    CORRECTION (direct field knowledge): the original
 #    version of this group crossed Constant with processor family (L8 vs
 #    5069), which was unnecessary and actively broke the capture batch --
 #    "5069 and l8/l9 processors use the same calculations for constant
@@ -158,7 +158,7 @@ def group_cop_string_members() -> int:
 # ---------------------------------------------------------------------------
 # D. Array-of-STRING count sweep -- the existing 2-point data (n=5/50) for
 #    BOTH builtin and custom string arrays shows a real residual the
-#    scalar-tag padding fix (group A-C above / the 2026-08-25 udt.py fix)
+#    scalar-tag padding fix (group A-C above / the udt.py fix)
 #    does NOT explain -- builtin shows a growing per-element gap (+2/
 #    element), custom100 shows an even bigger, ALSO-growing gap once the
 #    scalar padding fix is applied to its per-element size (was flat +6

@@ -1,4 +1,4 @@
-"""OQ-CMPCPTLAYOUT closeout (2026-09-12).
+"""OQ-CMPCPTLAYOUT closeout.
 
 The question's stated remaining thread -- "only the REAL-operand/float-literal
 interaction remains open, and it's genuinely NOT monotonic in operand count" --
@@ -8,7 +8,7 @@ within 0.7-1.3%, 188-272 bytes" was measured before later wiring landed and had
 gone stale.
 
 What the same reconciliation DID find is a different gap, and a structural one:
-CPT has had an expression-complexity model since 2026-08-23 and CMP never did.
+CPT has had an expression-complexity model and CMP never did.
 A CMP whose operands are themselves arithmetic expressions was priced as though
 they were bare tags, so `CMP(L0+L1>L2)` was under-charged the entire cost of
 the `+`. Every bare-tag and bare-literal CMP shape measured exact; every

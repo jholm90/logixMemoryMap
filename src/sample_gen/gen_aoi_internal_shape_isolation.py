@@ -1,5 +1,4 @@
-"""Which AOI-internal rung shape is Studio rejecting? (OQ-AOIINTERNALLOGIC,
-2026-09-12.)
+"""Which AOI-internal rung shape is Studio rejecting? (OQ-AOIINTERNALLOGIC)
 
 The AOI-internal-logic weighting is wired and was reported as "essentially
 exact at every point tested, max error cut from 12.02% to 0.55%". It was fitted
@@ -185,9 +184,9 @@ def group_error_reproduction() -> int:
     """Re-emit what the five errored calibration rows carry, under NEW ids.
 
     Those rows -- aoi_logic_scale_{010,050,100} at 1/8/16 errors and
-    aoi_multiroutine_{control,real} at 8 -- were captured 2026-08-31 against
+    aoi_multiroutine_{control,real} at 8 -- were captured against
     content the repo no longer holds: the files were deleted, then rebuilt
-    2026-09-12 on a builder that had moved, and the step-2b gate reports all five
+    on a builder that had moved, and the step-2b gate reports all five
     STALE. Nothing can be concluded from those numbers; the shapes have to be
     re-captured, not re-read.
 

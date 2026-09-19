@@ -1,8 +1,8 @@
-"""OQ-AOIDEF closeout batch 2 (2026-08-25): enough new samples to close
+"""OQ-AOIDEF closeout batch 2: enough new samples to close
 the question outright.
 Two of the three remaining OQ-AOIDEF threads get new generated files here;
 the third (Required/Visible/Hidden flag combos) turned out to already have
-real captured data on hand (`reqvis_*_n4_def_only`, captured 2026-08-23)
+real captured data on hand (`reqvis_*_n4_def_only`, captured)
 that was never reconciled into a conclusion -- see docs/AOI_KNOWLEDGE_MAP.md,
 no new files needed for that one.
 

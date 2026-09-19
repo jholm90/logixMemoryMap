@@ -60,7 +60,7 @@ def test_load_l5x_rejects_wrong_root():
 
 
 # ---------------------------------------------------------------------------
-# OQ-SAFETY -- 2026-08-25, warn (don't attempt a combined total) on a
+# OQ-SAFETY -- warn (don't attempt a combined total) on a
 # safety-rated project. Real shape (sample_gen/wrapper.py): a non-safety
 # project's <SafetyInfo/> is empty (no SafetyLevel); SIL2/SIL3 always
 # carry a real SafetyLevel value.

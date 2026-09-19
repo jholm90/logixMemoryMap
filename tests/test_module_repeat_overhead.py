@@ -1,15 +1,15 @@
 """The repeat-instance module discount: applied, with two families left out.
 
-OQ-MODULEIO. Measured 2026-09-12 from the asmclose_* count sweeps -- 16
+OQ-MODULEIO. Measured from the asmclose_* count sweeps -- 16
 catalogs at 1 / 2 / 4 / 8 modules each, so three independent marginal points
 per catalog, all agreeing exactly. The discount is real in every one but is
 neither a constant nor a fixed ratio (432..3,768 bytes, extra/first
 0.24..0.79), which is why it has to be a second per-catalog number.
 
-It was gated off on 2026-09-12 because applying it project-wide moved all
+It was gated off because applying it project-wide moved all
 sixteen held-out real programs further under-predicted, with the recorded
 hypothesis that the shared thing is shared per rack rather than per project.
-2026-09-13 measured both halves of that:
+measured both halves of that:
 
   - repeat_scope (project | parent) produces byte-identical totals on all
     sixteen real programs, because in every one of them no catalog carrying a
@@ -39,7 +39,7 @@ from l5x_memory_analyzer.sizing.report import build_report
 
 # Left out of repeat_by_catalog on shape grounds, not because of which way they
 # moved the number. See memory_model.yaml module_overhead_repeat_discount.
-# The 2198 -ERS3 drives left this list on 2026-09-17: they were held out because
+# The 2198 -ERS3 drives left this list: they were held out because
 # their rate came from files that failed Build on bus power, and all 24 rows have
 # since been recaptured clean. ETHERNET-MODULE stays -- its repeat rate describes
 # a cloned connection shape no real program contains.
@@ -122,7 +122,7 @@ def test_exactly_the_ten_measured_applicable_catalogs_are_wired(model):
         if "repeat_bytes" in v
     }
     # 10 measured repeat DISCOUNTS, plus the 6 2198 -ERS3 drives wired
-    # 2026-09-17, which are not discounts at all -- see
+    # which are not discounts at all -- see
     # test_2198_drives_are_flat_per_copy_with_a_one_time_catalog_offset.
     ERS3 = {"2198-D012-ERS3", "2198-D020-ERS3", "2198-D032-ERS3",
             "2198-D057-ERS3", "2198-S086-ERS3", "2198-S130-ERS3"}
@@ -143,7 +143,7 @@ def test_an_excluded_family_keeps_paying_the_first_instance_rate(model):
     """ETHERNET-MODULE costs the same every time: its measured repeat rate
     describes a cloned connection shape no real program contains.
 
-    2198 drives were in this test until 2026-09-17 on the grounds that their
+    2198 drives were in this test on the grounds that their
     rate came from files that failed Build on bus power. Those 24 rows have now
     been recaptured clean and the per-copy rate is real, so the family moved out
     of here and into the test below."""
@@ -218,7 +218,7 @@ def test_2198_drives_are_flat_per_copy_with_a_one_time_catalog_offset(model):
     discount on any of them.
 
     They were guessed at 10,497 / 7,377 / 7,341, then corrected to a single flat
-    4,113 ASSUMED on 2026-09-14 -- but that capture came from ACDs built before
+    4,113 ASSUMED -- but that capture came from ACDs built before
     the Major/ConfigSize fix, where the drive never imported, so all six read
     identically and the per-catalog difference was invisible. Correcting the
     guesses is what unmasked OQ-REALUNDER; correcting the correction is this.

@@ -1,6 +1,6 @@
 """Every captured row whose measurement has never been acted on.
 
-Written 2026-09-11 after three separate open questions in one session turned
+Written after three separate open questions in one session turned
 out to be "the data has been sitting in the manifest, captured and clean, for
 days". OQ-DEFSCALE (30 files), OQ-AOIARRAYLOCALTAG (27 files) and
 OQ-MODULEMARGINAL (54 files) were all in that state, and all three were

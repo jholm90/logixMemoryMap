@@ -1,4 +1,4 @@
-"""OQ item 12 (roadmap 2026-08-22): motion instructions themselves (MAM/MAJ/
+"""OQ item 12 (roadmap): motion instructions themselves (MAM/MAJ/
 MAH/MAS/MSO/MRP), the real 2-operand call pattern confirmed against the
 corpus: `MSO(Axis_BND1_Chuck_Drive,Axis_BND1_Chuck.MSO);`,
 `MAH(EM48_Multichain1,MC1.Homing.MAH_Immediate);` -- (Axis, MotionInstruction
@@ -34,7 +34,7 @@ COUNTS = [10, 100]
 # MAFR/MASR in the corpus.
 CORPUS_CONFIRMED = {"MAH", "MSO"}
 
-# MAM/MAJ/MAS/MRP -- FIXED 2026-08-25. Motion instructions need all of
+# MAM/MAJ/MAS/MRP -- FIXED . Motion instructions need all of
 # their parameters populated (the bare 2-operand call these 4 previously
 # used built the
 # rung shape MAH/MSO actually use, not theirs -- that mismatch, not a
@@ -64,7 +64,7 @@ _MOTION_RUNGS = {
            "Units per sec2,Trapezoidal,AccelJerk,DecelJerk,% of Maximum,Disabled,Programmed,0,None);",
     "MAS": "MAS(Axis_Cip_Drive,MotionInstr1,All,No,DecelRate,Units per sec2,No,DecelJerk,% of Time);",
     "MRP": "MRP(Axis_Cip_Drive,MotionInstr1,Absolute,Actual,0);",
-    # Added 2026-09-05, covering the unweighted instructions. MCSV is a
+    # Added covering the unweighted instructions. MCSV is a
     # motion instruction and needs an axis, the same as MAJ, MSF and the
     # rest. Every shape below is copied
     # from a REAL call site in samples/local/, not composed from the manual

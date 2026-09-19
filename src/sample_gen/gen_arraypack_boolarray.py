@@ -58,7 +58,7 @@ def group_udtarrayalign() -> None:
 def group_arraypack() -> None:
     members = [MemberSpec("A", "SINT"), MemberSpec("B", "SINT"), MemberSpec("C", "SINT")]  # 3 bytes, not 4-aligned
     datatype = udt_xml("Odd3B", members)
-    # n=1000/5000 added 2026-08-24 for Phase 3 closeout -- the existing
+    # n=1000/5000 added for Phase 3 closeout -- the existing
     # 1/10/100 points show a
     # gap that grows slightly with count (13305/13310/13400, not a clean
     # linear fit, see docs/OPEN_QUESTIONS.md OQ-ARRAYPACK), still genuinely

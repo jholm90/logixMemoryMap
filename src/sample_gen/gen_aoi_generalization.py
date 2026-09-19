@@ -1,4 +1,4 @@
-"""AOI generalization batch (2026-08-25): confirms whether the two new
+"""AOI generalization batch: confirms whether the two new
 formulas found in that batch hold beyond the single AOI shape each was
 derived from, per docs/AOI_KNOWLEDGE_MAP.md's own next-step call-outs.
 

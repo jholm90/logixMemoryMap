@@ -1,6 +1,6 @@
 """Partial exports must not be sized as whole projects.
 
-2026-09-04: "Anything that's not a controller export can not use the
+"Anything that's not a controller export can not use the
 prices sir base load, but rungs, routines and programs might contain
 controller tags."
 

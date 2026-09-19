@@ -49,7 +49,7 @@ def _split_operands(s: str) -> list[str]:
 
     A naive split counts `COP(Hist[0,0],Tmp[0,0],800)` as five operands
     because of the subscript commas. That mistake was made and briefly
-    believed on 2026-09-18 -- it manufactured a "COP takes four and five
+    believed -- it manufactured a "COP takes four and five
     operands in real programs, and the corpus only builds three" finding that
     does not exist. With bracket-aware splitting, 19 of the top 20 real
     instructions have operand counts the corpus already covers exactly.

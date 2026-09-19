@@ -1,6 +1,6 @@
 """The 2 bytes per tag left over once the alarm terms are removed.
 
-Written 2026-09-12, reconciling the 68 `alarmdef_*` and 33 `alarmsep_*` rows
+Written reconciling the 68 `alarmdef_*` and 33 `alarmsep_*` rows
 that had been captured and never read together. Read together they collapse to
 ONE law that fits 64 of the 68 and all 33 with zero residual:
 

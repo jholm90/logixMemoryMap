@@ -32,7 +32,7 @@ mechanically against the pairs below, so this class cannot ship again.
 from __future__ import annotations
 
 # catalog -> (Vendor, ProductType, ProductCode, Major, Minor)
-# THE MAJOR REVISION DECIDES ConfigSize, NOT THE CATALOG. Verified 2026-09-14
+# THE MAJOR REVISION DECIDES ConfigSize, NOT THE CATALOG. Verified
 # against every 2198 module in the real corpus:
 #
 #     drives (D*/S*-ERS3)   Major 7 -> 376/96   Major 9 or 11 -> 448/114
@@ -52,7 +52,7 @@ from __future__ import annotations
 # stored payload was read from; lint.py enforces the pairing.
 # catalog -> (channels its axes may use, max axes on one module).
 #
-# READ OUT OF EVERY 2198 MODULE IN THE REAL CORPUS 2026-09-14, with the
+# READ OUT OF EVERY 2198 MODULE IN THE REAL CORPUS with the
 # reference count behind each channel. This is per CATALOG: there is no global
 # "a 2198 drive uses Ch1 and Ch3" rule, and believing there was is what shipped
 # six broken axmarg_* files. Studio rejects a wrong channel with "Invalid

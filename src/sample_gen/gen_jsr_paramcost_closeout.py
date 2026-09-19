@@ -1,4 +1,4 @@
-"""OQ-JSRPARAMCOST closeout batch (2026-08-30). Recomputing live against the
+"""OQ-JSRPARAMCOST closeout batch. Recomputing live against the
 current engine (per the "review open questions... full depth" standing rule,
 CLAUDE.md) surfaced two real, previously-invisible threads -- the manifest's
 stored predicted_bytes/delta columns predate the b_cost/output_param wiring
@@ -31,7 +31,7 @@ and were badly stale, masking both:
    demonstrated by the existing n=5/8/10 dual-rung-count points.
 
 Five files, each isolating exactly one open thread -- not padded to any
-floor (2026-08-25: The 60-file floor is not a quota to pad toward):
+floor (The 60-file floor is not a quota to pad toward):
 
   A. jsr_paramcount_n01_r00100 -- n=1 cross-check at a different rung count.
      If the anomaly is truly ~4/call, delta here should be ~400 (not ~8,

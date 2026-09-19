@@ -1,4 +1,4 @@
-"""Instruction operand-TYPE sweep (2026-08-21): "lots of these
+"""Instruction operand-TYPE sweep: "lots of these
 instructions accept multiple data types as inputs and outputs... EQU(string1,
 string2) will occupy different memory possibly from EQU(dint1,dint2). Of
 course it would be more exaggerated for instructions with multiple data

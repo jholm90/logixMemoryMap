@@ -4,7 +4,7 @@
 for tag, UDT and AOI-definition names. Shared by Program names, JSR target
 routine names and ordinary routine names.
 
-CORRECTED 2026-09-14 (segment 9) from a three-regime ramp (0 below 5 characters,
+CORRECTED (segment 9) from a three-regime ramp (0 below 5 characters,
 2/char to 8, then 1 x len). That ramp was anchored at 1/4/8/16/32/40 and this law
 agrees with it at every one of those anchors; it was wrong only across the
 interval it had to interpolate, which its own entry called "an interpolation
@@ -125,7 +125,7 @@ def _one_program(routine_names: list[str]) -> ET.Element:
 
 
 def test_a_routine_name_costs_the_same_as_a_program_name(model):
-    """Ordinary routines were charged NOTHING before 2026-09-14 -- only JSR
+    """Ordinary routines were charged NOTHING before -- only JSR
     targets were, via jsr_target_declaration. identnamelen_rtn_* holds 10
     non-JSR routines and reads 8 bytes per routine per 8-character bucket."""
     nl = model.identifier_name_length

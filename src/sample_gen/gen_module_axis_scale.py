@@ -1,5 +1,5 @@
 """Servo-axis COUNT scaling, single-axis vs dual-axis drive modules
-(2026-09-02, "generate 10+ tests to validate this. compare the
+("generate 10+ tests to validate this. compare the
 difference between s/d modules that are dual/single axis. Overall requires
 a power supply, optional regen module and 1..20 axis per rack").
 
@@ -102,7 +102,7 @@ def _build(n_axes: int, shape: str, with_regen: bool, file_idx: int) -> tuple[st
             ip += 1
             axis_a = f"Ax{file_idx}_{k}A"
             axis_b = f"Ax{file_idx}_{k}B"
-            # Ch1/Ch3, not Ch1/Ch2 -- corrected 2026-09-14. A real dual-axis
+            # Ch1/Ch3, not Ch1/Ch2 -- corrected. A real dual-axis
             # 2198 drive's second axis is on Ch3: across the three real Kinetix
             # exports there are 33 Ch1 and 25 Ch3 references and ZERO Ch2.
             tags.append(_axis_tag(axis_a, f"{mod_name}:Ch1"))
@@ -129,7 +129,7 @@ def _write(out_name: str, l5x: str, description: str) -> None:
 # (n_axes, shape, with_regen) -- comparison pairs at matched n_axes wherever
 # both shapes divide evenly; n=1 is single-only (a dual module can't produce
 # an odd axis count on its own).
-# TRIMMED 2026-09-14, 18 files to 7. The measurement is a per-axis and a
+# TRIMMED 18 files to 7. The measurement is a per-axis and a
 # per-module marginal, and every one of these files has to be recaptured anyway
 # because the dual shape's second axis was on Ch2 instead of Ch3. Nine count
 # points per shape buys nothing a four-point geometric ladder does not: the

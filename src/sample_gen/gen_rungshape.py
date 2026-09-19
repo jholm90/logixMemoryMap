@@ -1,6 +1,6 @@
 """Price rung ARRANGEMENT at the shape real ladder actually has -- OQ-RUNGSHAPE.
 
-Measured 2026-09-18 across all sixteen real programs (41,136 rungs, 255,027
+Measured across all sixteen real programs (41,136 rungs, 255,027
 instruction occurrences) against the 733 captured corpus files the logic
 weights were fitted on (525,936 rungs):
 

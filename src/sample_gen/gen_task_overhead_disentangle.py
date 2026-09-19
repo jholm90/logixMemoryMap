@@ -1,4 +1,4 @@
-"""Per-Task overhead disentangling, missing axis (2026-08-26, "touch
+"""Per-Task overhead disentangling, missing axis ("touch
 these and finalize them now").
 
 docs/OPEN_QUESTIONS.md's per-Task overhead item needed a way to separate
@@ -9,7 +9,7 @@ Routine, so the three were indistinguishable. `taskoverhead_n0Xtasks`
 `programoverhead_n02progs_1task` (1 task, 2 programs, 2 routines) together
 cleanly isolate the per-Task marginal cost (+700, holding program/routine
 count fixed via direct comparison of those two files) -- a real result,
-verified 2026-08-26.
+verified.
 
 But program count and routine count still move together in EVERY existing
 file (each extra program always brings exactly one extra routine with it)

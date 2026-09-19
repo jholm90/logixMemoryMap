@@ -52,7 +52,7 @@ class StringModel:
 
     def custom_definition_cost_for(self, type_name_length: int) -> int:
         """Custom StringFamily type's own one-time definition cost --
-        OQ-CUSTOMSTRINGTYPENAME, SOLVED 2026-08-26. A clean step function
+        OQ-CUSTOMSTRINGTYPENAME, SOLVED . A clean step function
         of the type's own name length, confirmed exact against 22 real
         dense-sweep points (every length 1-16 plus 20/24/28/32/36/40) and
         3 more confirming it's identical whether the type is used
@@ -161,7 +161,7 @@ class AoiDefinitionModel:
         return self.bool_word_bytes * -(-bits // self.bool_word_bits)
 
     def name_length_bytes(self, name: str) -> int:
-        # OQ-AOIDEF closeout, wired 2026-08-29 -- real data
+        # OQ-AOIDEF closeout, wired -- real data
         # (aoiname_len08/09/13/16/20/25/30) confirmed 7/7 exact against
         # `8*max(0,(len-8)//4) - 8`. Unlike UDT-definition's own
         # 8*ceil(len/8) step, an AOI type name's cost isn't purely
@@ -173,7 +173,7 @@ class AoiDefinitionModel:
         # data there), but the bucket floors at the same -8 rather than
         # extrapolating further negative for very short names.
         #
-        # Bucket boundary fixed 2026-08-30: the original `(len-7)//4`
+        # Bucket boundary fixed: the original `(len-7)//4`
         # divisor (chosen to fit only the 7 tested lengths, which happen
         # to skip every len==3 (mod 4)) put len=19 one bucket too high.
         # Cross-checked against real captures of two same-shape (10 BOOL
@@ -209,7 +209,7 @@ class UdtDefinitionModel:
     confidence: str
     # The declared MEMBERS' own names, pooled the same way an AOI definition's
     # are -- see memory_model.yaml udt_definition. Charged zero until
-    # 2026-09-13, when the udtmn_* length sweep measured it at eight lengths.
+    # when the udtmn_* length sweep measured it at eight lengths.
     member_name_pool_alignment_bytes: int = 0
     member_name_pool_per_name_bytes: int = 1
 
@@ -253,7 +253,7 @@ class UdtDefinitionModel:
 
 @dataclass(frozen=True)
 class CptRealDestModel:
-    """REAL-destination CPT cost (OQ-CMPCPTLAYOUT, wired 2026-09-04) -- see
+    """REAL-destination CPT cost (OQ-CMPCPTLAYOUT, wired) -- see
     memory_model.yaml cpt_expression.real_dest for the full derivation and
     the flagged coverage gaps."""
 
@@ -287,7 +287,7 @@ class CptRealDestModel:
         base_read: int,
         has_narrow_operand: bool = False,
     ) -> int:
-        """REFIT 2026-09-04 -- exact on all 47 captured REAL-dest CPT calls.
+        """REFIT -- exact on all 47 captured REAL-dest CPT calls.
 
         The operator ladder is `124 + 40*n` and the operator's TIER does not
         matter here (unlike the integer path, where * and / cost more than
@@ -320,7 +320,7 @@ class CptRealDestModel:
                             with only the operand type swapped, and the
                             LINT file lands byte-identical to the all-REAL
                             control at 244/rung.
-          narrow_widening_block  2026-09-04: "ints will use a behind
+          narrow_widening_block: "ints will use a behind
                             the scenes conversion to dint". SINT/INT are
                             widened first; LINT, already 64-bit, is not.
                             ONE-POINT FIT and the per-operand/per-call
@@ -360,7 +360,7 @@ class CptExpressionModel:
     per_extra_same_tier_by_tier_cost: dict = field(default_factory=dict)
     # ARRANGEMENT: a two-tier mix whose leading run of tier-1 operators is
     # exactly this long, before the first tier-2 operator, costs extra.
-    # OQ-CPTARRANGE, measured 2026-09-18 -- see memory_model.yaml.
+    # OQ-CPTARRANGE, measured -- see memory_model.yaml.
     leading_tier1_run_length: int = 0
     leading_tier1_run_bytes: int = 0
 
@@ -418,7 +418,7 @@ class CptExpressionModel:
 
         These used to raise KeyError straight out of cost_for, which aborted
         the whole report and made the UI fail to load the file at all (real
-        traceback, 2026-09-09, on an ST assignment containing AND). A missing
+        traceback on an ST assignment containing AND). A missing
         measurement is a coverage gap, not a crash: the expression is charged
         for the operators that ARE measured and the rest are reported, the
         same discipline every other unpriced construct in this engine follows.
@@ -433,7 +433,7 @@ class CptExpressionModel:
 
     def cost_for(self, operators: list[str]) -> int:
         """Real per-call CPT cost from its expression's operator tokens
-        (OQ-CMPCPTLAYOUT, wired 2026-08-26) -- see memory_model.yaml
+        (OQ-CMPCPTLAYOUT, wired) -- see memory_model.yaml
         cpt_expression for the full derivation. A UNIFORM expression (every
         operator the same tier -- covers plain chains like A+B+C+D, the
         dominant real usage pattern) is exact: confirmed 0 residual across
@@ -441,7 +441,7 @@ class CptExpressionModel:
         chain-length sweep (3/4/5/6/8/10 operands), independently.
 
         A MIXED expression using EXACTLY the ADD/SUB and MUL/DIV/MOD tiers
-        together (no POW) is ALSO exact now, 2026-08-26: `two_tier_mix_base
+        together (no POW) is ALSO exact now: `two_tier_mix_base
         + two_tier_mix_per_operator * operator_count`, confirmed at 4 of 5
         real operand-count points (3/5/11/15 operands exact, 8 operands off
         by the same small universal noise seen throughout this project) --
@@ -449,9 +449,9 @@ class CptExpressionModel:
         the same result).
 
         A MIXED expression using POW alongside EXACTLY ONE other tier (T1T3
-        or T2T3) is ALSO exact now, 2026-08-25: `pow_tier_mix_base +
+        or T2T3) is ALSO exact now: `pow_tier_mix_base +
         pow_tier_mix_per_operator * operator_count`, wired from real capture
-        data that already existed in manifest.csv (2026-08-24) but had never
+        data that already existed in manifest.csv but had never
         been reconciled into a formula. T1T3 and T2T3 give IDENTICAL real
         bytes at every one of 5 tested operator counts (2/4/7/10/14) --
         once POW is present, the OTHER tier (T1 vs T2) makes no measurable
@@ -462,7 +462,7 @@ class CptExpressionModel:
         cpt_expression for the full derivation.
 
         A mix using ALL 3 tiers together (ADD/SUB + MUL/DIV/MOD + POW) is
-        ALSO exact now, 2026-08-29 (OQ-CMPCPTLAYOUT closeout): a real
+        ALSO exact now (OQ-CMPCPTLAYOUT closeout): a real
         correction on top of the plain per-operator-tier sum,
         `three_tier_mix_base_by_remainder[operator_count % 3] +
         three_tier_mix_per_pow_operand * pow_operand_count`. Confirmed 0
@@ -496,7 +496,7 @@ class CptExpressionModel:
         mul_tier = self.operator_tier_costs["*"]
         pow_tier = self.operator_tier_costs["**"]
         if set(tiers) == {add_tier, mul_tier}:
-            # REFIT 2026-09-04. The old form charged the same
+            # REFIT . The old form charged the same
             # two_tier_mix_per_operator regardless of WHICH tier each
             # operator was, so it could only be right where the two tiers
             # happened to balance -- 15 of 23 real points, and it missed
@@ -579,14 +579,14 @@ class TaskProgramOverheadModel:
 
 @dataclass(frozen=True)
 class JsrParamCostModel:
-    """Real per-param JSR cost (OQ-JSRPARAMCOST, wired 2026-08-25):
+    """Real per-param JSR cost (OQ-JSRPARAMCOST, wired):
     `delta(n,R) = A(n) + B(n)*R`, `A(n) = a_base + a_per_param*n` (a
     one-time cost of the callee's own Parameters-block declaration, paid
     once per distinct target routine regardless of call-site count) and
     `B(n) = b_base + b_per_param*n` (the true per-call-site marginal
     rate). Confirmed exact at 3 real (n,B) points (n=5,8,10) -- see
     memory_model.yaml jsr_param_cost for the derivation. output_param_cost
-    (wired 2026-08-29): the per-call cost of each trailing RETURN-value
+    (wired): the per-call cost of each trailing RETURN-value
     argument a JSR passes back, charged once per output arg per call site
     -- a real, previously completely unmodeled cost (see
     memory_model.yaml jsr_param_cost for the 2-file derivation)."""
@@ -657,7 +657,7 @@ class LogicInstructionModel:
 @dataclass(frozen=True)
 class ProcessorFirmwareCorrectionModel:
     """Per-processor-family firmware correction on top of the single global
-    firmware ladder (OQ-BASELINE-PROCFW, 2026-09-12).
+    firmware ladder (OQ-BASELINE-PROCFW).
 
     The 72 active-platform `fwmatrix_*` captures each hold one processor at one
     firmware with NO content, so their residual is the baseline error by
@@ -686,7 +686,7 @@ class ProcessorFirmwareCorrectionModel:
 @dataclass(frozen=True)
 class FirmwareBaselineDeltaModel:
     """Real per-firmware-major-version delta over the confirmed v34/v35
-    baseline (OQ-BASELINE-PROCFW, wired 2026-08-29) -- see memory_model.yaml
+    baseline (OQ-BASELINE-PROCFW, wired) -- see memory_model.yaml
     firmware_baseline_delta for the full derivation and which manifest.csv
     rows it's fitted from. Keyed by the integer major version parsed out of
     the L5X root's own SoftwareRevision attribute (e.g. "31.02" -> "31");
@@ -707,8 +707,8 @@ class FirmwareBaselineDeltaModel:
 @dataclass(frozen=True)
 class SafetyCapableBaselineDeltaModel:
     """Real 5069 safety-CAPABLE processor baseline overhead, independent of
-    actual SafetyInfo/SafetyTask content (OQ-BASELINE-PROCFW, wired
-    2026-08-29) -- see memory_model.yaml safety_capable_baseline_delta for
+    actual SafetyInfo/SafetyTask content (OQ-BASELINE-PROCFW, wired) --
+    see memory_model.yaml safety_capable_baseline_delta for
     the full derivation (n=2 real catalogs, extended to the whole
     safety-suffix family the same way this project already extends L71's
     confirmed shape to L72-L75). catalog_suffix_pattern is matched against
@@ -759,7 +759,7 @@ class ModuleConnectionDataModel:
 
 @dataclass(frozen=True)
 class ModuleOverheadModel:
-    """Real per-catalog module overhead (OQ-MODULEIO, wired 2026-08-29) --
+    """Real per-catalog module overhead (OQ-MODULEIO, wired) --
     see memory_model.yaml module_overhead_by_catalog for the full
     derivation and which catalogs were deliberately left off (adapter/
     bridge catalogs that may be absorbing a rack of aliased children,
@@ -813,7 +813,7 @@ class ModuleOverheadModel:
         confirms module_overhead does NOT apply the same way to those
         shapes in general) still charge a catalog that DOES have its own
         confirmed real value despite being one of those shapes -- see
-        memory_model.yaml's 2026-08-31 comment for the derivation."""
+        memory_model.yaml's comment for the derivation."""
         return bool(catalog_number) and catalog_number in self.by_catalog
 
 
@@ -821,8 +821,8 @@ class ModuleOverheadModel:
 class CatalogBaselineDeltaModel:
     """Real per-catalog baseline delta for processor families whose real
     empty-project baseline diverges enormously from the flat
-    empty_project_baseline (OQ-BASELINE-PROCFW, 1769-series thread, wired
-    2026-08-29) -- see memory_model.yaml catalog_baseline_delta for the
+    empty_project_baseline (OQ-BASELINE-PROCFW, 1769-series thread,
+    wired) -- see memory_model.yaml catalog_baseline_delta for the
     full derivation. Exact ProcessorType string match only, deliberately
     NOT prefix/suffix-pattern-matched like safety_capable_baseline_delta
     -- real data shows a single expansion-module suffix character (e.g.
@@ -831,7 +831,7 @@ class CatalogBaselineDeltaModel:
     guess, not a real value."""
     by_processor_type: dict[str, tuple[int, str]]
     # Catalogs whose real baseline is an ABSOLUTE floor rather than a delta
-    # on top of the firmware ladder (2026-09-04, the 1756-L7x thread). An
+    # on top of the firmware ladder (the 1756-L7x thread). An
     # additive delta cannot express "this family ignores the firmware
     # ladder": the L7x actual is a flat 30,152 across v31/v32/v34/v35/v38
     # while the L8x baseline underneath it moves 29,368 -> 32,376 -> 18,128,
@@ -920,11 +920,11 @@ class StructuredTextModel:
     real_dest_integer_source_bytes: int
     assignment_expression_confidence: str
     # An AOI called as a bare statement from ST -- charged nothing until
-    # 2026-09-13, and 2,094 of the real corpus's 6,586 ST lines are these.
+    # and 2,094 of the real corpus's 6,586 ST lines are these.
     st_aoi_call_bytes: int = 0
     st_aoi_call_per_param_bytes: int = 0
     st_aoi_call_confidence: str = "FITTED"
-    # ST's OWN operator classification, measured 2026-09-18 -- it is not the CPT
+    # ST's OWN operator classification, measured -- it is not the CPT
     # tier table. See memory_model.yaml structured_text for the 21-file
     # derivation and for the three places the two tables disagree.
     assignment_one_operator_class_bytes: dict[str, dict[str, int]] = field(
@@ -1038,7 +1038,7 @@ class IdentifierNameLengthModel:
     for tag, UDT and AOI-definition names, so there is now ONE name law rather
     than two.
 
-    Corrected 2026-09-14 by the `identnamelen_*` sweep, which is the file set
+    Corrected by the `identnamelen_*` sweep, which is the file set
     that measures the interval the earlier three-regime fit had to interpolate
     across. That fit was anchored at 1, 4, 8, 16, 32 and 40 characters and this
     law agrees with it at every one of those anchors -- the disagreement is only
@@ -1196,7 +1196,7 @@ class MemoryModel:
     module_connection_data: ModuleConnectionDataModel
     zero_connection_module_confidence: str
     module_overhead_by_catalog: ModuleOverheadModel
-    # OQ-DEFSCALE 2026-09-13, see memory_model.yaml definition_scale_correction.
+    # OQ-DEFSCALE see memory_model.yaml definition_scale_correction.
     udt_definition_extra: int
     udt_tag_extra: int
     aoi_instance_extra: int

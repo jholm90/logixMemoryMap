@@ -1,7 +1,7 @@
 """OQ-AOIDEF: does an AOI's internal Logic-routine CONTENT cost anything
 beyond the already-confirmed Parameter/LocalTag declaration formula, and
 does a second internal routine (real shape, not just Logic) cost its own
-overhead? (2026-08-31.) AOIs had been closed out without any logic inside
+overhead? AOIs had been closed out without any logic inside
 one. Every AOI has one internal subroutine and can have more --
 HomeToTorque is the real example.
 
@@ -49,7 +49,7 @@ from sample_gen.wrapper import build_l5x
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "aoi"
 
-# 2026-08-31: real, caught on re-conversion: "conditional
+# real, caught on re-conversion: "conditional
 # instructions like EQU with no operand at the end of the rung or a
 # NOP() instruction. this is basic ladder logic." The original bare
 # "EQU(In0,In1)" had no output instruction -- fixed to end in a real

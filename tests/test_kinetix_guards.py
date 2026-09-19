@@ -1,4 +1,4 @@
-"""Guards for the 2198 Kinetix faults found 2026-09-13.
+"""Guards for the 2198 Kinetix faults found.
 
 Three coupled defects shipped in 654 drive module instances across ~550 files:
 ProductCode hardcoded to D012's for every catalog, D012's ConfigData payload for
@@ -128,7 +128,7 @@ def test_configsize_payload_mismatch_is_a_finding():
     assert "module_configdata_size_mismatch" in kinds
 
 
-# --- Channels are per catalog, 2026-09-14 ------------------------------------
+# --- Channels are per catalog ------------------------------------
 # The rule these replace was catalog-blind: it checked the channel against one
 # global {Ch1, Ch3} set, so it PASSED the S086-on-Ch3 shape that Studio actually
 # rejects, and would have FLAGGED the one real Ch2 in the corpus. Both

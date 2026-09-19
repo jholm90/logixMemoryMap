@@ -1,11 +1,11 @@
 """OQ-JSRPARAMCOST: does JSR-target CONTENT cost actually stay folded into
-jsr_fixed_base_per_routine at real scale? (2026-08-31, from a real review
+jsr_fixed_base_per_routine at real scale? (from a real review
 still out by 18%.) Standing method: when a test result does not match the
 prediction, re-check the existing work and devise new tests to fix it.
 
 The "a JSR target routine's own CONTENT cost is already folded into the
 caller's jsr_fixed_base_per_routine constant" finding (report.py,
-confirmed 2026-08-22) is real, but EVERY JSR-target test file this project
+confirmed) is real, but EVERY JSR-target test file this project
 has ever built (gen_jsr_sbr_ret.py, gen_jsr_decompose.py, gen_jsr_
 paramcost_closeout.py, gen_jsr_paramtype_isolation*.py) calls its target
 with a NONZERO param count (1/5/7/8/9/10/15) and always includes SBR/RET.
@@ -14,7 +14,7 @@ against every real L5X already in samples/local/ (2,534 unique real JSR
 targets across 8 genuine customer files), 126/128 nonzero-param targets
 DO have a real SBR instruction.
 
-2026-08-31: real, caught in review: "if there was no jsr parameters
+real, caught in review: "if there was no jsr parameters
 then there is no sbr/ret instructions inside the called subroutine." Also
 confirmed against the same real corpus: 2,314/2,315 ZERO-param targets
 have NO SBR at all, and 2,218/2,315 (95.8%) have no RET either. This
@@ -35,7 +35,7 @@ content really is free beyond jsr_fixed_base_per_routine even in this
 correctly-shaped case, current behavior is right and Capacity should stay
 FLAT across this sweep; if it isn't free, Capacity should scale with the
 target's own instruction count -- a real, currently-unmodeled cost this
-project has silently zeroed out on every real project since 2026-08-22,
+project has silently zeroed out on every real project,
 a plausible major piece of the 18% AccuTally gap since 10,488 real
 unweighted instructions dwarfs every other open residual bucket combined.
 
@@ -58,7 +58,7 @@ TARGET_INSTR_COUNTS = (10, 50, 100, 150)
 # CLR/ADD/EQU dominate its 123 real JSR-target routines) -- cycled to hit
 # the requested instruction count exactly.
 #
-# 2026-08-31: real, caught on re-conversion: "SINT/INT/DINT
+# real, caught on re-conversion: "SINT/INT/DINT
 # cannot be used for bit level instructions like XIO,XIC,OTE,OTU,OTL,ONS
 # only bools and .Bits of SINT/INT/DINT" -- TC0-9 are all DINT (see
 # tc_tags below), so the original "XIC({t}2)OTE({t}3)" referenced whole
@@ -81,8 +81,8 @@ def main() -> None:
     for instr_count in TARGET_INSTR_COUNTS:
         target_name = f"JsrTargetContentScale{instr_count:03d}Target"
         # No SBR, no RET -- the real, representative shape for a 0-param
-        # JSR target (2026-08-31, ; confirmed 99.96%/95.8% against
-        # the real corpus in samples/local/). The target routine is just
+        # JSR target, confirmed 99.96%/95.8% against the real corpus
+        # in samples/local/. The target routine is just
         # ordinary logic rungs, same as any plain routine.
         pieces = []
         rung_idx = 0

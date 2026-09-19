@@ -1,6 +1,6 @@
 """The -23 on 263 captured files, and which tag it belongs to.
 
-Written 2026-09-12 from a residual census over every clean generated capture.
+Written from a residual census over every clean generated capture.
 Of 2,563 such files, 844 (32.9%) predict EXACTLY right and **263 (10.3%) sit at
 exactly -23** -- by far the largest non-zero bucket, and 23 is an odd number,
 which a memory allocation essentially never is.

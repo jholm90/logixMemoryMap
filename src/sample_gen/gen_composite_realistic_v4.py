@@ -1,4 +1,4 @@
-"""100 MORE large, realistic-scope composite test programs -- v4, 2026-09-03,
+"""100 MORE large, realistic-scope composite test programs -- v4
 the explicit spec: "generate qty100 v4 unique files with 4 drives
 minimum and 50 ethernet nodes minimum. file size between 2-3MB" [confirmed
 via follow-up: "4 drives" means 4 SEPARATE drive modules, not 4 axes --
@@ -20,7 +20,7 @@ real Rockwell practice: multiple drives commonly share one DC bus power
 supply rather than each getting its own, so this is the more realistic
 shape for a multi-drive file, not an arbitrary simplification. Every
 drive module now also carries the real ExtendedProperties/ConfigID block
-(2026-09-03 fix) and uses the corrected DC-bus axis template for P208's
+(fix) and uses the corrected DC-bus axis template for P208's
 own axis -- this batch is the first real multi-drive test of both fixes.
 
 Real generator bug fixed building this batch: v3's own
@@ -96,7 +96,7 @@ def _modules_xml_unique_ips_v4(catalogs: list[str]) -> str:
     v3's own established output byte-for-byte); only the 2nd+ occurrence
     gets its Name/ParentModule references suffixed.
 
-    2026-09-03, real Studio 5000 import bug found (every single
+    real Studio 5000 import bug found (every single
     v4 file rejected on import, XMLSrv_E_IMPORT_ABORTED_NO_CHANGES): the
     original version of this function used a blanket `Name="([^"]+)"`
     regex to find "the module's own names" to rename, which also matched
@@ -488,7 +488,7 @@ def _build(profile: ProfileV4) -> tuple[str, str, int]:
 
 
 def main() -> None:
-    # Capped at 74, not 100 (2026-09-04). Files 075-100 were generated and
+    # Capped at 74, not 100. Files 075-100 were generated and
     # every one of them FAILED to convert: 18 died with RxE_OBJECT_NOT_LOADED
     # and 8 with "Server execution failed", the two signatures interleaved at
     # random across the block. 001-074 all converted "ok".

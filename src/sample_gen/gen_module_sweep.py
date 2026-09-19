@@ -1,6 +1,7 @@
-"""Full I/O module sweep -- one L5X per real catalog number in the corpus
-(2026-08-27): one L5X for every I/O module, so the coverage table is
-complete and every field in it is real.
+"""Full I/O module sweep -- one L5X per real catalog number in the corpus.
+
+One L5X for every I/O module, so the coverage table is complete and every
+field in it is real.
 
 Every module block below is a REAL module chain (the target module PLUS its
 real parent chain up to the CPU's own port, e.g. a Point I/O module's real
@@ -13,7 +14,7 @@ structurally VERBATIM otherwise. Nothing here is invented -- every
 Port/Connection/ConfigTag/ConfigData/ConfigScript shape is copied straight
 from a real file that successfully compiled in Studio 5000.
 
-**Fixed 2026-08-27, real Studio 5000 import bug found:** 9 of
+**Fixed real Studio 5000 import bug found:** 9 of
 these chains had their adapter/bridge module's `ParentModPortId="4"` left
 over VERBATIM from the real source file's own local processor (which
 genuinely had 4 embedded Ethernet ports on that real hardware) --
@@ -11017,7 +11018,7 @@ mPo
 # Real 5069-family (Compact 5000, no separate chassis) catalogs -- these
 # real modules' own Port Type="5069" only matches a 5069- processor's own
 # local bus shape, never the project default 1756-L81E's Type="ICP" bus.
-# Real Studio 5000 import bug found 2026-08-27: "Child module
+# Real Studio 5000 import bug found: "Child module
 # incompatible with parent module" -- these were parented onto the wrong
 # chassis family entirely, not a minor attribute mismatch. "5069-L306ER"
 # is this project's own already-confirmed-real plain 5069 test processor
@@ -11032,7 +11033,7 @@ _5069_CATALOGS = {"5069-IB16/A", "5069-IB8S/A", "5069-IY4/A", "5069-OB16/A", "50
 # Real modules whose own SafetyEnabled="true" needs a safety-capable
 # controller (SIL2, no redundant partner -- see wrapper.py's
 # build_l5x docstring) -- real Studio 5000 error,
-# 2026-08-27: "Failed to set the 'SafetyEnabled' property (The Controller
+# "Failed to set the 'SafetyEnabled' property (The Controller
 # is not a Safety Controller.)". Kinetix 4conn safety-drive variants live
 # in gen_module_sweep_variants.py, handled there.
 #
@@ -11040,7 +11041,7 @@ _5069_CATALOGS = {"5069-IB16/A", "5069-IB8S/A", "5069-IY4/A", "5069-OB16/A", "50
 # SafetyEnabled="true" on the module tag at all -- but their Connections
 # use Type="SafetyInput"/"SafetyOutput", which CIP Safety requires a
 # safety-capable controller to actually establish on either end.
-# 2026-08-25: in every OB8S file the input module was absent -- the safety
+# in every OB8S file the input module was absent -- the safety
 # connection silently failed against a standard
 # controller, so the module showed as absent in the I/O tree even though
 # the L5X imported "ok". Needs the same safety-capable controller as the
@@ -11051,7 +11052,7 @@ _SIL2_CATALOGS = {
 }
 _SAFETY_PROCESSOR_TYPE = "1756-L81ES"
 
-# CORRECTION, 2026-09-02: '2198-S130-ERS3' was briefly added here the same
+# CORRECTION: '2198-S130-ERS3' was briefly added here the same
 # day on the theory that "-ERS3" Kinetix 5700 catalogs inherently require a
 # safety-capable controller (matching modulesweep_2198_s130_ers3's own real
 # error_count=2, and a clean 7/7 signal across every "-ERS3" catalog in
@@ -11069,7 +11070,7 @@ _SAFETY_PROCESSOR_TYPE = "1756-L81ES"
 # framing. Not re-adding a guessed replacement theory here; needs the
 # actual Studio 5000 error-log line, same as 193-ECM-ETR.
 #
-# UPDATE, 2026-09-03: the "missing Motion/Axis association" follow-up
+# UPDATE: the "missing Motion/Axis association" follow-up
 # lead (docs/OPEN_QUESTIONS.md OQ-193ECMETR) is now disproven too --
 # composite_realistic_v3's dual-axis-bound 2198-D012-ERS3 (real
 # MOTION_GROUP + 2 real AXIS_CIP_DRIVE tags) hits the identical
@@ -11079,7 +11080,7 @@ _SAFETY_PROCESSOR_TYPE = "1756-L81ES"
 # it working. See OPEN_QUESTIONS.md for the full comparison -- still
 # genuinely unresolved, needs the raw Designer error-log line.
 
-# Real l5x2acd conversion failures in the 2026-08-27 push
+# Real l5x2acd conversion failures in the push
 # (samples/convert_log.csv): every one of these still failed even with the
 # safety-controller fix above already applied (confirmed by direct
 # inspection -- ProcessorType/SafetyEnabled were already correct on the

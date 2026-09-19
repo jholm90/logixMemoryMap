@@ -1,9 +1,10 @@
-"""Composable L5X fragment builders for the sample generator
-(2026-08-20). The generator builds L5X files for whatever needs testing:
-UDT size, comment length for bits or rungs, and so on.
+"""Composable L5X fragment builders for the sample generator.
+
+The generator builds L5X files for whatever needs testing: UDT size,
+comment length for bits or rungs, and so on.
 
 BOOL-run handling in udt_xml() matches the packing rule confirmed against
-real Logix Designer behavior 2026-08-20 (see docs/OPEN_QUESTIONS.md
+real Logix Designer behavior (see docs/OPEN_QUESTIONS.md
 OQ-ALIGN, docs/MEMORY_MODEL.md UDT packing): consecutive BOOL members share
 one hidden backing SINT (wrapping to a new one every 8 bits), but a
 non-BOOL member breaks the run and the next BOOL(s) get a fresh backing
@@ -65,7 +66,7 @@ class MemberSpec:
     data_type: str
     dimension: int = 0
     description: str | None = None
-    # Nested UDT support (2026-08-20, "nested UDTs need to be
+    # Nested UDT support ("nested UDTs need to be
     # tested"). When set, `data_type` names another UDT and this is that
     # UDT's own member list -- both the definition side (_udt_members_xml,
     # a plain type-name reference, no recursion needed) and the
@@ -74,7 +75,7 @@ class MemberSpec:
     # with `dimension` for "array of nested UDT" (a member that's an array
     # of another UDT's instances -- OQ-TAGOVERHEAD "nested array udts").
     nested_members: tuple["MemberSpec", ...] | None = None
-    # An AOI instance nested as a UDT member (2026-08-23, real
+    # An AOI instance nested as a UDT member (real
     # hand-built trial files after this was one of 5 real bugs behind a
     # batch of Build failures): renders differently from an ordinary
     # nested UDT member -- needs Radix="NullType" ExternalAccess=
@@ -82,7 +83,7 @@ class MemberSpec:
     # member does NOT carry (confirmed: axis_composite_udt_* already
     # passed real Build without them). See _udt_members_xml.
     is_aoi_member: bool = False
-    # AOI Parameter Required/Visible flags (2026-08-23, real calling-
+    # AOI Parameter Required/Visible flags (real calling-
     # instance semantics, not just cosmetic -- Required="true" means the
     # calling rung MUST have a tag wired to that parameter; Required="false"
     # + Visible="true" means the calling rung must have SOME value present
@@ -100,7 +101,7 @@ class MemberSpec:
     visible: bool = False
     # Verbatim <DefaultData> block for an AOI Parameter/LocalTag whose type
     # is a PREDEFINED STRUCTURE (TIMER/COUNTER/STRING/MOTION_INSTRUCTION/...).
-    # 2026-09-06: these types appear all over real AOIs (557 TIMER, 66
+    # these types appear all over real AOIs (557 TIMER, 66
     # COUNTER, 58 STRING, 36 MOTION_INSTRUCTION member uses across the nine
     # real programs) and had NEVER been generated once -- the ordinary
     # atomic path emits a bare Radix + scalar DataValue, which is wrong for
@@ -137,7 +138,7 @@ def _data_value_xml(data_type: str, radix: str = "Decimal") -> str:
 def _array_body_xml(data_type: str, count: int, radix: str | None = "Decimal", element_fn=None) -> str:
     """element_fn(i) -> inner XML for one <Element>, defaults to a plain Value attr
     (atomic element type). Real shape confirmed against a real export
-    (BaillieLeitchField_Edger, Alarms_Edger array) 2026-08-20 -- including
+    (BaillieLeitchField_Edger, Alarms_Edger array) -- including
     that an array-of-UDT has no Radix attribute at all (radix=None), unlike
     an array-of-atomic which does."""
     if element_fn is None:
@@ -179,7 +180,7 @@ def _string_structure_member_xml(name: str) -> str:
 
 def _udt_structure_body_xml(members: list["MemberSpec"]) -> str:
     """Tag-instance <Structure> body for a UDT -- confirmed against a real
-    export (Alarms_SE) 2026-08-20: members appear under their LOGICAL
+    export (Alarms_SE): members appear under their LOGICAL
     name/type (e.g. a BOOL member as a plain DataValueMember), with no trace
     of the hidden-SINT/BIT-alias representation that's purely a <DataType>
     Members-list authoring detail. Much simpler than the definition side.
@@ -223,7 +224,7 @@ def collect_nested_datatypes(name: str, members: list["MemberSpec"], family: str
     <DataType> definition alongside the top one -- returns all of them,
     innermost-first, ready to concatenate into <DataTypes>.
 
-    2026-08-23 fix (real Studio 5000 error after a generated AOI-
+    fix (real Studio 5000 error after a generated AOI-
     nested-in-UDT file failed import): "Unable to create AOI definition
     'DriveAxisNestTest' because it collides with a UDT of the same name."
     An AOI member sets nested_members too (so the *instance/Structure*
@@ -245,7 +246,7 @@ def collect_nested_datatypes(name: str, members: list["MemberSpec"], family: str
 
 def _string_tag_data_xml(max_len: int) -> str:
     """Standalone STRING-typed (built-in or custom-length) tag body --
-    confirmed against real corpus (2026-08-20, multiple files e.g.
+    confirmed against real corpus (multiple files e.g.
     RobbinsGrn_2026_05_13r00.L5X szInstruction): a top-level STRING tag
     exports as a *pair* of <Data> elements (Format="L5K" and Format="String"),
     NOT the <Data Format="Decorated"> every other tag type uses. A STRING
@@ -262,7 +263,7 @@ def _string_tag_data_xml(max_len: int) -> str:
 def string_array_tag_xml(name: str, count: int, max_len: int = 82, data_type: str = "STRING") -> str:
     """An ARRAY of STRING-typed elements (built-in, `data_type="STRING"`,
     or a custom string type by name) -- a genuinely different real shape
-    from a scalar STRING tag, confirmed 2026-08-25 against two independent
+    from a scalar STRING tag, confirmed against two independent
     real corpus examples: samples/local/L5X_Samples/CMU_2025_10_14r00.L5X's
     CMU_PackNames tag (built-in, `DataType="STRING" Dimensions="5"`) and
     Gutchess_GreenLine_2026_06_04r00.L5X's PrintStrings tag (custom type,
@@ -312,7 +313,7 @@ def tag_xml(
     string_max_len: int | None = None, constant: bool = False,
 ) -> str:
     validate_logix_name(name, "tag")
-    # REAL BUG FOUND 2026-08-31 (real Studio 5000 warning on
+    # REAL BUG FOUND (real Studio 5000 warning on
     # composite_realistic_07.L5X): "A warning occurred while setting
     # 'Radix' property (Invalid display style.)" on a REAL-typed array tag
     # (Arr2). This function defaulted radix="Decimal" for every atomic
@@ -328,7 +329,7 @@ def tag_xml(
     # tag via the plain tag_xml(name, "REAL") call (no radix override) was
     # silently hitting this same warning. Fixed by defaulting per-type
     # instead of one universal literal -- explicit caller radix still wins.
-    # REAL BUG FOUND 2026-09-10. This function decided "is this a structure?"
+    # REAL BUG FOUND . This function decided "is this a structure?"
     # purely from whether the CALLER passed udt_members -- it never looked at
     # the type. Hand it a UDT or predefined-structure type name without
     # members and it silently emitted BOTH of the things Studio 5000 rejects
@@ -350,7 +351,7 @@ def tag_xml(
     desc_xml = f"\n        <Description><![CDATA[{description}]]></Description>" if description else ""
     constant_attr = "true" if constant else "false"
 
-    # Real exports (2026-08-20): a UDT-typed Tag element carries no Radix
+    # Real exports: a UDT-typed Tag element carries no Radix
     # attribute at all -- only atomic-rooted tags (scalar or array) do.
     radix_attr = "" if (is_structure or string_max_len is not None) else f' Radix="{radix}"'
 
@@ -491,7 +492,7 @@ def udt_xml(name: str, members: list[MemberSpec], family: str = "NoFamily",
             description: str | None = None) -> str:
     validate_logix_name(name, "UDT")
     members_xml = _udt_members_xml(members)
-    # Real exports (2026-08-20, samples/local/SJ_Gormley_20251112_r02.L5X):
+    # Real exports (samples/local/SJ_Gormley_20251112_r02.L5X):
     # a DataType-level Description sits right after the opening tag, before
     # Members -- same CDATA shape as a Tag's Description.
     desc_xml = f"<Description><![CDATA[{description}]]></Description>\n      " if description else ""
@@ -504,7 +505,7 @@ def udt_xml(name: str, members: list[MemberSpec], family: str = "NoFamily",
 
 def custom_string_type_xml(name: str, max_len: int) -> str:
     validate_logix_name(name, "string type")
-    # Real shape confirmed 2026-08-20, samples/local/SJ_Gormley_20251112_r02.L5X
+    # Real shape confirmed, samples/local/SJ_Gormley_20251112_r02.L5X
     # (DataType Name="Long_String", DATA Dimension="128").
     return (
         f'    <DataType Name="{name}" Family="StringFamily" Class="User">\n'
@@ -531,7 +532,7 @@ def _aoi_default_data_xml(m: "MemberSpec") -> str:
 def _aoi_array_default_data_xml(m: "MemberSpec") -> str:
     """DefaultData for a DIMENSIONED atomic Parameter/LocalTag (an array
     Input/Output param, or a non-InOut array LocalTag) -- real bug found
-    2026-08-30 (aoi_array_param_def_only.L5X fails to import with
+    (aoi_array_param_def_only.L5X fails to import with
     XMLSrv_E_IMPORT_ABORTED_NO_CHANGES, even after the earlier Required/
     Visible fix). Real corpus check (SJ_Gormley_20251112_r02.L5X,
     TS_TrackSts AOI): every non-InOut Parameter that carries ExternalAccess
@@ -562,7 +563,7 @@ def _aoi_array_default_data_xml(m: "MemberSpec") -> str:
 
 def _aoi_nested_default_data_xml(m: "MemberSpec") -> str:
     """DefaultData for a LocalTag whose type is a nested UDT/AOI -- real
-    shape confirmed 2026-08-20 (the Aoi_Nested.L5X, LocalTag
+    shape confirmed (the Aoi_Nested.L5X, LocalTag
     "InReal_OutReal" of type InReal_OutReal): L5K is a positional value
     list `[1,val,val,...]` (leading 1 = EnableIn's real captured value, not
     modeled precisely here since it doesn't affect byte size -- 0 is fine),
@@ -576,7 +577,7 @@ def _aoi_nested_default_data_xml(m: "MemberSpec") -> str:
 
 
 def _aoi_description_xml(m: "MemberSpec") -> str:
-    """<Description> on an AOI Parameter/LocalTag. 2026-09-06: 803 of the
+    """<Description> on an AOI Parameter/LocalTag.: 803 of the
     2,120 real AOI Parameters/LocalTags on file carry one and no generated
     file had ever emitted a single one, so the model's implicit "member
     descriptions are free" assumption was untested. Real shape: first
@@ -587,7 +588,7 @@ def _aoi_description_xml(m: "MemberSpec") -> str:
 
 
 def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
-    # Real shape confirmed 2026-08-20 against the AOI templates
+    # Real shape confirmed against the AOI templates
     # (AOI_Definition.L5X, AOI_Definition2.L5X, Aoi_Nested*.L5X, and the
     # InOut examples aoi_inOut_OneDint.L5X/aoi_inOut_OneString.L5X) --
     # superseded an earlier guess built off one different real AOI that
@@ -606,7 +607,7 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
         )
 
     if usage == "InOut":
-        # Real shape confirmed 2026-08-20 (aoi_inOut_OneDint.L5X,
+        # Real shape confirmed (aoi_inOut_OneDint.L5X,
         # aoi_inOut_OneString.L5X): self-closed, no DefaultData, no
         # ExternalAccess at all, Required="true" Visible="true"
         # Constant="false" (not the false/false used for Input/Output).
@@ -618,7 +619,7 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
         # completely absent -- so aoi_xml() already excludes inout_params
         # from the returned storage_members list, unchanged by this fix.
         #
-        # 2026-08-23 fix (a real hand-built trial files, after 5
+        # fix (a real hand-built trial files, after 5
         # AXIS_CIP_DRIVE-InOut files all failed Build): STRING wasn't the
         # only non-atomic case -- AXIS_CIP_DRIVE is a predefined
         # STRUCTURE type too, and a real, Studio-5000-confirmed
@@ -626,7 +627,7 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
         # Visible="true"/>` -- no Radix, no Constant at all. The STRING
         # special case generalizes to "no atomic type, no Radix/Constant,"
         # not "no STRING specifically."
-        # 2026-09-03, real gap found writing a test for the array-Parameter
+        # real gap found writing a test for the array-Parameter
         # Usage rule above: this branch never rendered a Dimensions
         # attribute at all, even though the project's own real corpus
         # evidence for an array InOut Parameter (LOG_HMIDisplay
@@ -648,7 +649,7 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
         # NOT self-closing -- it wraps a <Description> child.
         return f"{head}>{desc}</Parameter>" if desc else f"{head}/>"
 
-    # Real bug fix, 2026-08-27: <Parameter>/<LocalTag> array size is a
+    # Real bug fix: <Parameter>/<LocalTag> array size is a
     # "Dimensions" (PLURAL) attribute in real Rockwell exports -- was
     # "Dimension" (singular, correct only for a plain UDT <Member>, see
     # datatypes.py), which self-consistently matched the SAME bug in
@@ -656,7 +657,7 @@ def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
     # <LocalTag Dimensions="N"> elements in the corpus, zero
     # counter-examples.
     #
-    # ROOT CAUSE FOUND 2026-09-03 ("the issue is BOOL/SINT/INT/DINT
+    # ROOT CAUSE FOUND ("the issue is BOOL/SINT/INT/DINT
     # cannot be arrays for Inputs. Arrays require InOut"): the real
     # `aoi_array_param_def_only.L5X` import failure that OQ-AOIARRAYDIMENSION
     # spent two prior "fixes" chasing (Required/Visible, then DefaultData
@@ -759,7 +760,7 @@ def aoi_xml(
     prescan_rungs_xml: str = "",
 ) -> tuple[str, list["MemberSpec"]]:
     """AddOnInstructionDefinition + the "storage member list" for generating
-    an instance tag of it. Real shape confirmed 2026-08-20 against the
+    an instance tag of it. Real shape confirmed against the
     own real AOI export templates (AOI_Definition.L5X, AOI_Definition2.L5X,
     Aoi_Nested*.L5X) after an earlier version of this function (built off a
     different real AOI) failed Studio 5000 import -- fixed several real
@@ -770,13 +771,13 @@ def aoi_xml(
     Structure-shaped DefaultData, not the atomic DataValue every Parameter/
     LocalTag got before (this was silently wrong, not just cosmetically
     off). AOI-instance tags render exactly like UDT instances (confirmed
-    2026-08-20 against 4 real production files, see PROJECT_PLAN.md Phase
+    against 4 real production files, see PROJECT_PLAN.md Phase
     4c) -- InOut params carry no storage of their own (reference-only), so
     the returned storage list is EnableIn/EnableOut + input/output params +
     local tags, usable directly with tag_xml(udt_members=...) the same way
     a UDT instance is.
 
-    logic_rungs_xml/extra_routines_xml (2026-08-31). AOIs had been closed
+    logic_rungs_xml/extra_routines_xml. AOIs had been closed
     out without any logic ever being put inside one -- a real, corpus-wide
     gap: every AOI
     test file this project has ever generated used the hardcoded
@@ -790,7 +791,7 @@ def aoi_xml(
     `<Rung>...</Rung>` content for the Logic routine.
 
     Every AOI has one internal subroutine and can have more (HomeToTorque
-    is the real example) -- confirmed 2026-08-31
+    is the real example) -- confirmed
     against a real confidential project (not committed, never named
     beyond this generic description): 8 of 39 real AOI definitions there
     have 2 internal RLL routines (Logic + a second, e.g. HomeToTorque's
@@ -817,7 +818,7 @@ def aoi_xml(
     locals_xml = ("<LocalTags>\n" + "\n".join(local_parts) + "\n      </LocalTags>") if local_parts else "<LocalTags/>"
 
     # AOI-level <Description>/<RevisionNote> and the real EnableInFalse/
-    # Prescan routines (2026-09-06). Real shape confirmed against the
+    # Prescan routines. Real shape confirmed against the
     # corpus: Description then RevisionNote, both CDATA-wrapped, sitting
     # between the element's attributes and <Parameters>; the extra
     # routines are emitted in the real alphabetical order EnableInFalse,
@@ -873,7 +874,7 @@ def aoi_xml(
 def program_xml(name: str, tags_xml: str = "", rungs_xml_body: str = "") -> str:
     """A second/extra <Program> block, for build_l5x(extra_programs_xml=...).
     Same MainRoutine/RLL shape as the wrapper's own MainProgram. OQ-XPROGREF
-    -- 2026-08-22: add it to the next batch (cross-program tag
+    --: add it to the next batch (cross-program tag
     reference). Real Logix has no direct cross-program addressing syntax in
     logic (confirmed: no such pattern found anywhere in the real corpus,
     despite 47 real files including some with Public program tags) -- the
@@ -894,7 +895,7 @@ def program_xml(name: str, tags_xml: str = "", rungs_xml_body: str = "") -> str:
 
 
 def rung_xml(number: int, instructions: str, comment: str | None = None) -> str:
-    # Real exports always wrap rung Text in CDATA (2026-08-21: caught while
+    # Real exports always wrap rung Text in CDATA (caught while
     # building the instruction sweep -- this was missing here, harmless so
     # far only because no rung text generated to date needed a literal '<',
     # but CMP's real syntax does e.g. CMP(A>B), and a future '<' would have
@@ -918,7 +919,7 @@ def rungs_xml(count: int, instructions_fn, comment_fn=None) -> str:
 
 
 def timer_tag_xml(name: str, preset: int = 1000) -> str:
-    """Real shape confirmed 2026-08-21 (samples/local/SJ_Gormley_20251112_r02.L5X,
+    """Real shape confirmed (samples/local/SJ_Gormley_20251112_r02.L5X,
     IncisorOtfdBeltJogDwell): a TIMER tag, like STRING, uses the dual
     Format="L5K"/Format="Decorated" pair at the top level -- NOT the single
     Format="Decorated" every UDT/atomic tag gets. 5 real members (PRE/ACC
@@ -938,7 +939,7 @@ def timer_tag_xml(name: str, preset: int = 1000) -> str:
 
 
 def counter_tag_xml(name: str, preset: int = 100) -> str:
-    """Real shape confirmed 2026-08-21 (samples/local/SJ_Gormley_20251112_r02.L5X,
+    """Real shape confirmed (samples/local/SJ_Gormley_20251112_r02.L5X,
     LL_BlowoffCTR_PkgIFLL): same dual-format shape as TIMER, 7 real members
     (PRE/ACC DINT, CU/CD/DN/OV/UN BOOL)."""
     return (
@@ -957,7 +958,7 @@ def counter_tag_xml(name: str, preset: int = 100) -> str:
 
 
 def control_tag_xml(name: str, length: int = 10, position: int = 9) -> str:
-    """CONTROL tag -- real shape confirmed 2026-08-24
+    """CONTROL tag -- real shape confirmed
     (samples/local/BAI10048_TrimmerTally_20250704.L5X, srtControl): same
     dual-format shape as TIMER/COUNTER, 10 real members (LEN/POS DINT,
     EN/EU/DN/EM/ER/UL/IN/FD BOOL) -- matches the already-confirmed 12-byte
@@ -984,7 +985,7 @@ def control_tag_xml(name: str, length: int = 10, position: int = 9) -> str:
 
 
 def message_tag_xml(name: str, local_element: str, destination_tag: str) -> str:
-    """MESSAGE tag -- real shape confirmed 2026-08-24
+    """MESSAGE tag -- real shape confirmed
     (samples/local/BaillieLeitchField_Edger_20260812_r00.L5X,
     MESSAGE_Alarms): a single self-closed <MessageParameters> element, no
     Structure/DataValueMember body at all (much simpler than TIMER/COUNTER/
@@ -1007,7 +1008,7 @@ def message_tag_xml(name: str, local_element: str, destination_tag: str) -> str:
 
 
 # Real CAM element rows -- distinct from CAM_PROFILE (see
-# _CAM_PROFILE_L5K_ROWS above). Confirmed 2026-08-24
+# _CAM_PROFILE_L5K_ROWS above). Confirmed
 # (samples/local/L5X_Samples/RobbinsGrn_2026_05_13r00.L5X, NewCI2Cam): a
 # CAM array tag's Decorated shape is fully visible (no hidden fields the
 # way CAM_PROFILE has) -- just Master(REAL)/Slave(REAL)/SegmentType(DINT)
@@ -1040,7 +1041,7 @@ def cam_tag_xml(name: str, count: int) -> str:
 
 def program_tag_xml(name: str, data_type: str, usage: str | None = None) -> str:
     """Program-scoped (Program/Tags, not Controller/Tags) atomic tag. Real
-    shape confirmed 2026-08-22 (samples/local/SJ_Gormley_20251112_r02.L5X,
+    shape confirmed (samples/local/SJ_Gormley_20251112_r02.L5X,
     PC366_BitPos/DLugNum): a Program-scoped tag -- Local (no Usage attribute)
     or Public (Usage="Public") alike -- uses the dual Format="L5K"/
     Format="Decorated" pair, unlike a Controller-scoped atomic tag which
@@ -1062,7 +1063,7 @@ def program_tag_xml(name: str, data_type: str, usage: str | None = None) -> str:
 
 
 def alias_tag_xml(name: str, alias_for: str, radix: str = "Decimal") -> str:
-    """Alias tag -- real shape confirmed 2026-08-20 (multiple real corpus
+    """Alias tag -- real shape confirmed (multiple real corpus
     files, e.g. samples/local/BAI10048_TrimmerTally_20250704.L5X): self-
     closed, no Data element at all, just AliasFor pointing at the real
     target tag's path. OQ-ALIASSIZE."""
@@ -1071,7 +1072,7 @@ def alias_tag_xml(name: str, alias_for: str, radix: str = "Decimal") -> str:
 
 
 def motion_instruction_tag_xml(name: str) -> str:
-    """MOTION_INSTRUCTION tag -- real shape confirmed 2026-08-22
+    """MOTION_INSTRUCTION tag -- real shape confirmed
     (samples/local/BAI10048_TrimmerTally_20250704.L5X, AxisMotionControlMAG,
     a real MAG/MAH-style motion instruction backing tag). Same dual
     Format="L5K"/Format="Decorated" convention as TIMER/COUNTER. Unlike
@@ -1107,12 +1108,12 @@ def motion_instruction_tag_xml(name: str) -> str:
     )
 
 
-# Real CAM_PROFILE element rows, captured verbatim 2026-08-22 from
+# Real CAM_PROFILE element rows, captured verbatim from
 # samples/local/L5X_Samples/CMU_2025_10_14r00.L5X (HoldCamProfile, a real
 # 20-element array). Deliberately NOT synthesized: the visible Decorated
 # shape exposes only one named member (Status, DINT) per element, but the
 # real L5K row for each element carries 14 numeric fields -- confirming
-# the "voodoo... hides stuff not visible in the tag browser" (2026-08-22).
+# the "voodoo... hides stuff not visible in the tag browser".
 # There's no way to reconstruct the meaning of the other 13 fields from the
 # L5X alone, so rather than invent plausible-looking values (risking a
 # subtly-invalid encoding that fails import), every generated CAM_PROFILE
@@ -1154,7 +1155,7 @@ def cam_profile_tag_xml(name: str, count: int) -> str:
 
 # ---------------------------------------------------------------------------
 # I/O Module builders (OQ series pending, docs/IO_MODULES.md). Three real,
-# structurally distinct patterns confirmed against the corpus 2026-08-22 --
+# structurally distinct patterns confirmed against the corpus --
 # module sizing is NOT one-size-fits-all, exactly the caution ("same
 # catalog Phoenix rack with 2 input cards or 30... be careful looking at the
 # data sizes in the l5x module properties"):
@@ -1170,7 +1171,7 @@ def cam_profile_tag_xml(name: str, count: int) -> str:
 #      not module-by-module.
 #   3. Generic/no-EDS Ethernet module (CatalogNumber="ETHERNET-MODULE" --
 #      real corpus examples include Balluff/IFM IO-Link masters and
-#      Phoenix bus couplers, confirmed 2026-08-22): size is NOT
+#      Phoenix bus couplers, confirmed): size is NOT
 #      catalog-derived at all, it's the explicit PrimCxnInputSize/
 #      PrimCxnOutputSize attributes on <Communications>, chosen per-
 #      instance when the module was added in Studio 5000 -- the same
@@ -1181,7 +1182,7 @@ def cam_profile_tag_xml(name: str, count: int) -> str:
 
 
 def module_1756_digital_input_xml(name: str, slot: int = 1, parent_port_id: int = 1) -> str:
-    """Real shape confirmed 2026-08-22 (samples/local/L5X_Samples/
+    """Real shape confirmed (samples/local/L5X_Samples/
     RobbinsGrn_2026_05_13r00.L5X, DC_Input): 1756-IB16, catalog-fixed AOP
     structure, ConfigSize=24 (10 named filter/COS members), Input
     Connection with a Fault+Data DINT pair (8 bytes). Pattern 1 above."""
@@ -1220,7 +1221,7 @@ def module_1756_digital_input_xml(name: str, slot: int = 1, parent_port_id: int 
 
 
 def module_generic_ethernet_xml(name: str, ip_address: str, input_bytes: int, output_bytes: int) -> str:
-    """Real shape confirmed 2026-08-22 (samples/local/L5X_Samples/
+    """Real shape confirmed (samples/local/L5X_Samples/
     Emporium_2025_05_28r01.L5X, IFM_LugLoader1 -- a Balluff/IFM IO-Link
     master added as a generic module, no vendor-specific EDS). Pattern 3
     above: CatalogNumber="ETHERNET-MODULE" is shared by every such device
@@ -1284,7 +1285,7 @@ def task_xml(task_name: str, program_name: str, task_type: str = "CONTINUOUS",
     <EventInfo EventTrigger="..."/> element -- either "EVENT Instruction
     Only" (no EventTag) or "Axis Watch" (EventTag pointing at a real
     AXIS_CIP_DRIVE/AXIS_VIRTUAL tag, confirmed real in the Gormley corpus)."""
-    # Case-normalised BEFORE the membership test. 2026-09-14: a caller passed
+    # Case-normalised BEFORE the membership test.: a caller passed
     # task_type="Periodic" and this test, being case-sensitive, matched neither
     # branch -- so the Task went out with no Rate at all AND a mixed-case Type.
     # Studio rejected all five identnamelen_task_* files with "Required property

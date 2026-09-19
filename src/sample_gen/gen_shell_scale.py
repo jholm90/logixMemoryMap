@@ -1,6 +1,6 @@
 """Per-PROGRAM and per-ROUTINE structural cost at real scale (OQ-SHELLSCALE).
 
-Why this batch exists, 2026-09-05. Three separate fits of the "composite
+Why this batch exists . Three separate fits of the "composite
 AOI/JSR surcharge" (20/47 -> 52/21 -> 22/3) were all chasing the same
 residual, and the isolating ladders built for the last batch have now
 DISPROVED the per-instruction explanation outright:

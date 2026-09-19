@@ -1,6 +1,6 @@
 """The four things the ST assignment law assumes rather than measures.
 
-Written 2026-09-13 (capture-batch segment 6), after the 30-file `stx_*` grid
+Written (capture-batch segment 6), after the 30-file `stx_*` grid
 replaced `structured_text.assignment_expression_cost` -- a five-entry table keyed
 on operator COUNT, confidence MEASURED_SPARSE -- with one law:
 
@@ -21,7 +21,7 @@ happens to hold another variable fixed:
   A. The operator premium at exactly ONE operator. Every file that measures a
      premium (stx_opkind_*, st_expr_ops2_dint) has two operators or more, and the
      one-operator row is a lookup (40 for DINT, 56 for REAL) rather than
-     base-plus-rate. A single `D0 := D0 * D1;` may or may not pay the 16.
+     base-plus-rate. A single `D0:= D0 * D1;` may or may not pay the 16.
   B. The premium on the REAL row. All six opkind files write to a DINT
      destination, so a multiplicative operator's premium has never been measured
      against a REAL destination -- where the per-operator rate is already 40
@@ -30,7 +30,7 @@ happens to hold another variable fixed:
      nothing in ST has tested; `OR` is absent from the table entirely and so
      falls to tier 1 alongside AND and XOR, which ARE measured there.
   D. The conversion rate for integer types other than DINT. 48 comes from DINT
-     sources only (`R0 := D0 + D1;` and the cpt_mirror). A SINT or an INT source
+     sources only (`R0:= D0 + D1;` and the cpt_mirror). A SINT or an INT source
      is a narrower conversion and a LINT a wider one.
 
 A FIFTH item is measured and deliberately left alone: all four `stx_call_aoi_p*`
@@ -42,7 +42,7 @@ it, which no existing file does in either language.
 AND A CORRECTION, because it justified one of the arms above and was wrong.
 `gen_st_expression_grid.py` states that the real corpus holds "128 ST routines,
 6,586 ST lines" of which "call statements 2,094 -- the single largest shape, and
-the table says nothing about it at all". Re-counted 2026-09-13 against the
+the table says nothing about it at all". Re-counted against the
 current parser:
 
     the 16 held-out programs    26 ST routines   3,994 lines   2,499 assignments
@@ -75,7 +75,7 @@ GROUP C -- `stc_opkind_{pow,or}`, 2 files. Four operators, DINT destination --
 
 GROUP D -- `stc_conv_{sint,int,lint,mixed}`, 4 files. One operator, REAL
     destination, both sources of one integer type, so the conversion rate is read
-    per type: `R0 := S0 + S1;` against the DINT-source 152 that fixed the 48. The
+    per type: `R0:= S0 + S1;` against the DINT-source 152 that fixed the 48. The
     `mixed` file reads one DINT and one SINT source in the same statement, which
     says whether the rate is per source or per statement.
 

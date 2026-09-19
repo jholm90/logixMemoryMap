@@ -1,11 +1,11 @@
-"""Corpus-wide predicted-vs-actual accuracy report (2026-09-04).
+"""Corpus-wide predicted-vs-actual accuracy report.
 
 Recomputes predicted_bytes LIVE against the current engine for every
 manifest.csv row that has a real capture, and reports error by category.
 Never reads the stored predicted_bytes/delta columns -- those go stale the
 moment any constant changes (CLAUDE.md standing rule).
 
-VALIDITY FILTER (2026-09-04, "some of those results had errors and
+VALIDITY FILTER ("some of those results had errors and
 should not have been counted as a valid result. i am concerned that you
 are changing models with bad data - ensure it is all valid data!"). A row
 is only a valid fitting point if ALL of these hold:
@@ -24,7 +24,7 @@ is only a valid fitting point if ALL of these hold:
     already-established bad-read markers (see docs/TESTING_PLAN.md).
 
 A capture BELOW THE EMPTY-PROJECT BASELINE is physically impossible and is
-rejected outright (added 2026-09-04). No Logix project can report using
+rejected outright (added). No Logix project can report using
 less memory than an empty project on the same controller, so a smaller
 number is a bad read, not a small project -- and this class of bad read
 passes every other check: error_count 0, no warning, a window title that
@@ -36,7 +36,7 @@ comes from the model's own empty_project_baseline_bytes, not a hardcoded
 number, so it tracks the model.
 
 A BLANK error_count is NOT the same evidence as an explicit 0 (found
-2026-09-04 while pairing an ST test against instr_cop_n01000, which is one
+while pairing an ST test against instr_cop_n01000, which is one
 of these). 268 captured rows predate the error_count column entirely, and
 for those "no errors recorded" means "nobody recorded" -- absence of
 evidence, not evidence of a clean build. They are still counted by default,

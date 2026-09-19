@@ -1,6 +1,6 @@
 """ETHERNET-MODULE: a quarter of all real modules, priced by one constant.
 
-Written 2026-09-12. Counting every non-CPU module across the sixteen real
+Written . Counting every non-CPU module across the sixteen real
 programs gives 438, and the largest single catalog by a wide margin is the
 GENERIC `ETHERNET-MODULE` profile at **109 instances -- 25% of them**. It has no
 entry in `module_overhead_by_catalog` at all, so every one of those 109 falls
@@ -82,10 +82,10 @@ INPUT_SIZES = (2, 4, 10, 32, 64, 128, 256, 450)
 ELEMENT_BYTES = {"SINT": 1, "INT": 2, "DINT": 4, "REAL": 4}
 
 # CommMethod ENCODES THE COMM FORMAT, so it must agree with the connection's
-# element type. Corrected 2026-09-13 (capture-batch segment 7): every file in
+# element type. Corrected (capture-batch segment 7): every file in
 # this batch previously hardcoded 536870915, which is the INT format, whatever
 # the declared element type said. The three SINT files FAILED conversion outright
-# (XMLSrv_E_IMPORT_ABORTED_NO_CHANGES, samples/convert_log.csv 2026-09-12), and
+# (XMLSrv_E_IMPORT_ABORTED_NO_CHANGES, samples/convert_log.csv), and
 # the DINT and REAL files imported and captured -- which is worse, because Studio
 # resolved the contradiction from CommMethod and built them as INT connections.
 # They read byte-identical to genem_dtint_064, which was briefly taken as

@@ -1,6 +1,7 @@
-"""OQ-AOIARRAYDIMENSION array-LocalTag isolation sweep (2026-09-03, 
-"the two localTag needs more generated tests - generate more than enough
-tests to validate this").
+"""OQ-AOIARRAYDIMENSION array-LocalTag isolation sweep.
+
+Enough files to settle the two-LocalTag case outright, rather than the
+minimum that would leave it arguable.
 
 Both real data points on file for an AOI array LocalTag
 (aoi_array_localtag_def_only: +404/2.05%, aoi_array_localtag_1_instance:

@@ -1,4 +1,4 @@
-"""OQ-BRANCHDEPTH staggered/nested-branch sweep (2026-08-25):
+"""OQ-BRANCHDEPTH staggered/nested-branch sweep:
 "factor in staggered branches where root has two elements, 1st branch has
 two elements over the root 1st, 2nd branch has 2 elements over 1st branch
 1st item etc.." -- a genuinely different axis from the existing flat
@@ -7,11 +7,11 @@ This is DEPTH: always exactly 2 legs per level, but each level's first leg
 recurses into another 2-leg branch, cascading down one side -- a staircase
 of nested brackets, not a wide flat branch.
 
-Real syntax confirmed 2026-08-25 by grepping the full samples/local/
+Real syntax confirmed by grepping the full samples/local/
 corpus for genuine nested brackets (a `[` opening before its enclosing
 `]` closes) -- 624 real rungs found using this pattern, e.g.
 311DGeneratedProgram.L5X: `[XIC(RequestEnterMem) [XIC(ClearEntry)
-,XIC(UnlockSV) ] ,XIC(ForceEnterMem) ]OTE(UnlockSV);` -- exactly the
+,XIC(UnlockSV) ],XIC(ForceEnterMem) ]OTE(UnlockSV);` -- exactly the
 depth=2 shape this generator builds (root 2 legs, leg 1 itself contains a
 nested 2-leg branch). Depth=3+ is the same real rule applied recursively
 (a nested branch's own first leg containing a further nested branch) --

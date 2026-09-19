@@ -1,6 +1,6 @@
 """EVENT: the last in-scope instruction on a real file with no weight.
 
-Written 2026-09-12, after wiring ten measured weights off sweeps that had been
+Written after wiring ten measured weights off sweeps that had been
 captured and never differenced (MCD 184, PID 156, MAG 124, MCS 120, UPPER 84,
 STOR 80, FBC 76, LFU 72, RTOS 72, BRK 56). That took the real files' unpriced
 instruction uses from 133 to 72, and then classifying the remainder took it to
@@ -8,7 +8,7 @@ instruction uses from 133 to 72, and then classifying the remainder took it to
 
   ESTOP / ROUT / LC / RIN   OUT OF SCOPE, not unpriced. All four only appear
         inside a GuardLogix SafetyProgram, which this project does not size at
-        all -- the same reclassification CROUT got 2026-08-24. Identified from
+        all -- the same reclassification CROUT got . Identified from
         their real call shapes, every one of which takes the `_S`-suffixed
         safety reset tags that exist only in a safety task. Now in
         `coverage._SAFETY_FAMILY` rather than reported as a hole.
@@ -91,7 +91,7 @@ def main() -> None:
             tags_xml=tag_xml("Dummy", "DINT"),
             extra_rungs_xml=rungs,
             extra_tasks_xml=_EVENT_TASK_XML,
-            # 2026-09-14: this was extra_scheduled_programs_xml=, which injects
+            # this was extra_scheduled_programs_xml=, which injects
             # into MainTask's <ScheduledPrograms> list. A whole <Program> element
             # landed there instead of in <Programs>, so EvtProgram was never
             # declared and Studio rejected all three files with "Error creating

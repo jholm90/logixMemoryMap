@@ -1,6 +1,6 @@
 """The BOOL/atomic mix at fixed member total, swept densely.
 
-Written 2026-09-12 from a full reconciliation of the 178 captured
+Written from a full reconciliation of the 178 captured
 `aoibp_*`/`aoipack_*` rows, then REWRITTEN the same day when the reconciliation
 that motivated it turned out to have a simpler answer than the one this batch
 was built to chase. Both readings are kept below, because the wrong one is the

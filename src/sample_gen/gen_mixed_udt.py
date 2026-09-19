@@ -1,4 +1,4 @@
-"""OQ-MIXEDUDT (2026-08-26, self-initiated per CLAUDE.md step 5: open items
+"""OQ-MIXEDUDT (self-initiated per CLAUDE.md step 5: open items
 belong in the next round of tests automatically, without being asked for).
 The one item
 from the open-questions list with ZERO test coverage: a "realistic messy/

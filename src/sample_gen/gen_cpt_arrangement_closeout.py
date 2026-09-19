@@ -1,6 +1,6 @@
 """CPT arrangement: a non-effect, one exception, and a +348 nobody had seen.
 
-Written 2026-09-12. The 28 captured `cptarrange_*` rows had never been
+Written . The 28 captured `cptarrange_*` rows had never been
 reconciled. Read against the current engine they answer the question the family
 was built for, and turn up something else.
 

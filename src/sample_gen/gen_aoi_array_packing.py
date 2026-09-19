@@ -1,8 +1,8 @@
-"""AOI-instance-array packing resolution sweep (2026-08-25). Strings and
+"""AOI-instance-array packing resolution sweep. Strings and
 AOIs both needed more work; this generates as many L5X files as it takes to
 resolve every remaining scenario.
 
-Follows up the 2026-08-24 OQ-AOIDEF finding: a BOOL-heavy AOI shape ("
+Follows up the OQ-AOIDEF finding: a BOOL-heavy AOI shape ("
 RealisticAOI"/"RealisticAOI50", 5 DINT+5 BOOL In / 5 DINT+5 BOOL Out /
 5 REAL+5 BOOL Local) showed real per-element cost inside an ARRAY of
 instances (~64 bytes/element, solved from 2 real count points: n=10 and

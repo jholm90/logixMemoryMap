@@ -1,4 +1,4 @@
-"""UDT MEMBER NAME LENGTH -- an unmodelled variable, found 2026-09-11.
+"""UDT MEMBER NAME LENGTH -- an unmodelled variable, found.
 
 The `alarmsep` batch came back short by a law that fits its own 15 points
 with zero residual:

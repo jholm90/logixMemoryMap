@@ -1,7 +1,7 @@
 """Fail if any sizing constant carries a weaker confidence tier than its
 own capture data supports.
 
-Written 2026-09-06 after an audit found 174 of 185 ASSUMED predefined
+Written after an audit found 174 of 185 ASSUMED predefined
 structures already had error-free, exactly-0.0000% capture data on disk.
 Nothing was wrong with the model's numbers; the tiers had simply never
 been updated when the questions closed. That is not cosmetic, because

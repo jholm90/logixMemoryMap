@@ -1,4 +1,4 @@
-"""Per-instruction logic-sizing sweep (2026-08-21): "examine the
+"""Per-instruction logic-sizing sweep: "examine the
 difference between XIC/OTE and MVM/MEQ/CPT/MAM all the big juicy ones...
 hammer each individual instruction and make sure you can compile it
 properly. we have 30% of the instructions in the sample code so i'd just
@@ -21,8 +21,8 @@ declared pool, tag-data cost is constant across every file in this sweep,
 so any Capacity movement across the count sweep is attributable to the
 instruction/rung text itself.
 
-**T_ADD removed 2026-08-22 (spot-check):** T_ADD is a real, common
-Rockwell-authored AddOnInstructionDefinition ("DateTime := DateTime +
+**T_ADD removed (spot-check):** T_ADD is a real, common
+Rockwell-authored AddOnInstructionDefinition ("DateTime:= DateTime +
 Time", found in 18+ of a real corpus files), not a native
 instruction -- a real research failure earlier in this project mis-
 classified it during the corpus mnemonic scan. The removed test called
@@ -133,7 +133,7 @@ INSTRUCTIONS: dict[str, "callable"] = {
     "LEQ": lambda i: f"LEQ({_d(i)},{i % 10})OTE({_b(i)});",
     "LIM": lambda i: f"LIM({_d(i)},{_d((i+1)%10)},{_d((i+2)%10)})OTE({_b(i)});",
     "CPT": lambda i: f"CPT({_r(i)},({_d(i)}+{_d((i+1)%10)})*{_r((i+1)%10)}-{_r((i+2)%10)}/2+1.5);",
-    # Real corpus (2026-08-22 re-check, the spot-check catch): an
+    # Real corpus (re-check, the spot-check catch): an
     # ARRAY-typed tag reference always needs an explicit [index] subscript
     # -- bare "ARR0" (no bracket) is only valid Rockwell syntax when the
     # tag itself is a scalar UDT/AOI instance (real examples:
@@ -150,7 +150,7 @@ INSTRUCTIONS: dict[str, "callable"] = {
     "CONCAT": lambda i: f"CONCAT({_sd(i)},{_sd((i+1)%5)},{_sd((i+2)%5)});",
     "MID": lambda i: f"MID({_sd(i)},2,1,{_sd((i+1)%5)});",
     "DELETE": lambda i: f"DELETE({_sd(i)},1,1,{_sd((i+1)%5)});",
-    # the Studio-5000-verified sample (COP_Samples.L5X, 2026-08-22)
+    # the Studio-5000-verified sample (COP_Samples.L5X)
     # compiles SIZE(COP_Source,0,COP_Size); against a plain DINT[10] array
     # -- bare tag name, NO [index] subscript and no .DATA reach-in. That
     # directly contradicts the bracketed/`.DATA[0]` version this used to
@@ -213,7 +213,7 @@ def group_lbl_jmp() -> None:
     # LBL/JMP as a pair -- each "count" unit is one LBL rung + one JMP rung
     # jumping to it, so labels stay locally satisfied.
     #
-    # 2026-08-22: (confirmed the OQ-LBLJMP-STALE batch failure was a
+    # (confirmed the OQ-LBLJMP-STALE batch failure was a
     # real bug, not just the stale-ACD-cache artifact): "lbl needs
     # something after it, LBL(thisLabel); will fail - LBL(thisLabel)NOP();
     # will pass." A bare LBL with nothing following it on the same rung

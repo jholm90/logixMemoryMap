@@ -1,8 +1,8 @@
-"""Parses Controller/Modules out of an L5X document (2026-08-27, first pass
+"""Parses Controller/Modules out of an L5X document (first pass
 -- the Phase 1 "Module/IO parsing is still open" gap, never started
 before now).
 
-**2026-08-27, real gap found and fixed same day (a real-capture
+** real gap found and fixed same day (a real-capture
 data forced the correction):** the original version of this parser assumed
 `InputSize`/`OutputSize`/`ConfigSize` attributes tell the whole story, and
 that InputTag/OutputTag sit as direct `<Communications>` children. Both
@@ -17,13 +17,13 @@ summing every atomic member of each InputTag/OutputTag/ConfigTag's own
 `<Data Format="Decorated"><Structure>` content (the same member-sum logic
 `compute_udt_size` already uses for an ordinary UDT) -- this is exactly the
 "Module-Defined" data type Logix Designer auto-generates under
-Data Types -> Module-Defined for every added module (2026-08-27). Each
+Data Types -> Module-Defined for every added module. Each
 added module produces a new UDT under Module-Defined; the question is the
 percentage difference between those combined UDTs and the actual space the
 modules take up.
 
 **That % difference is real, large, and already computed from 2 real
-captures (2026-08-27):** `module_defined_bytes` for a 1756-IB16 is 28
+captures:** `module_defined_bytes` for a 1756-IB16 is 28
 bytes; its real captured cost is 1,712 bytes -- **98.4% of the real cost
 is NOT the I/O data itself.** A 1734-AENTR/C: 36 bytes computed vs 1,696
 real -- **97.9% overhead.** Two very different module types landing on
@@ -49,11 +49,11 @@ from dataclasses import dataclass, field
 # Same atomic-size convention as sizing/udt.py's compute_udt_size -- a
 # module's own auto-generated Structure members are plain DataValueMember/
 # ArrayMember entries, never bit-aliased BOOL runs (confirmed real,
-# 2026-08-27: a module's BOOL members show up as plain DataType="BOOL",
+# a module's BOOL members show up as plain DataType="BOOL",
 # same as an AOI's Parameters/LocalTags, not a UDT's hidden-SINT/BIT-alias
 # shape) -- so BOOL sizes as the standalone/unpacked 4 bytes, not packed.
 #
-# 2026-09-12: the sizes are no longer written out here. This table was a
+# The atomic sizes are no longer written out here. This table was a
 # hardcoded literal, which CLAUDE.md forbids for exactly the reason that bit
 # this: it listed only the SIGNED atomics, so every module member declared
 # USINT / UINT / UDINT / ULINT fell through to unknown_member_types and the
@@ -72,7 +72,7 @@ def _atomic_bytes() -> dict[str, int]:
     sizes["BOOL"] = model.bool.standalone_tag_bytes
     return sizes
 
-# 2026-08-30: I thought we were excluding controlnet / "And all
+# I thought we were excluding controlnet / "And all
 # legacy networks" -- a bridge module onto a pre-EtherNet/IP network
 # (ControlNet, DeviceNet, DH+/DH-485, Remote I/O) gets the same treatment
 # as a rack-aliased or processor-embedded module in report.py: zero real
@@ -98,7 +98,7 @@ class ModuleInfo:
     # Rockwell's own internal module-profile identifier, e.g.
     # "AB:5000_DI16:I:0" / "AB:5000_DI16:C:0" -- the Structure DataType on
     # each of InputTag/OutputTag/ConfigTag's own <Data Format="Decorated">
-    # body (2026-08-27: add records from the L5X module profile as
+    # body (add records from the L5X module profile as
     # a checkable item"). Kept separately per I/O direction rather than
     # collapsed into one field -- a module's Input and Config profiles are
     # DIFFERENT strings (same base type, different :I:/:O:/:C: suffix),
@@ -108,14 +108,14 @@ class ModuleInfo:
     output_profile: str | None
     config_profile: str | None
     # Real raw member-sum size of this module's own auto-generated
-    # "Module-Defined" data type (2026-08-27) -- computed from the actual
+    # "Module-Defined" data type -- computed from the actual
     # Structure content under InputTag/OutputTag/ConfigTag, NOT the
     # (frequently absent) InputSize/OutputSize attribute. This is the
     # number the methodology starts from: what you'd see if you sized
     # that Module-Defined UDT the normal way.
     module_defined_bytes: int = 0
     unknown_member_types: tuple[str, ...] = field(default_factory=tuple)
-    # A VFD's real parameter-database blob (2026-08-27, PowerFlex 525/755
+    # A VFD's real parameter-database blob (PowerFlex 525/755
     # corpus) -- L5K only, its own stated Size attribute, already folded
     # into module_defined_bytes above but kept visible separately too
     # since it's the single biggest real contributor for a drive module.
@@ -176,7 +176,7 @@ def _structure_el(tag_el: ET.Element | None) -> ET.Element | None:
 def _structure_datatype(tag_el: ET.Element | None) -> str | None:
     """The module-profile string off a <ConfigTag>/<InputTag>/<OutputTag>'s
     own <Data Format="Decorated"><Structure DataType="..."> body, if
-    present. Real shape confirmed 2026-08-27 against samples/local/
+    present. Real shape confirmed against samples/local/
     DnR_Personal/*.L5X -- e.g. ConfigTag's own Structure carries
     "AB:5000_DI16:C:0", InputTag's carries "AB:5000_SDI8:I:0" (same base
     module type, different suffix per I/O direction)."""
@@ -267,7 +267,7 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
                     # InputTag/OutputTag live INSIDE their owning Connection
                     # in every real shape found in that pass, not as a
                     # Communications sibling -- see module docstring.
-                    # THE FILE IS THE FINAL DECISION, 2026-09-12. When the
+                    # THE FILE IS THE FINAL DECISION . When the
                     # member walk cannot resolve a connection's own type, the
                     # L5X's stated InputSize/OutputSize attribute for that
                     # connection is used instead of dropping the connection to
@@ -306,7 +306,7 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
                         unknown_types.extend(unk)
 
             # ConfigTag (Decorated Structure content available -- e.g. every
-            # I/O module found in that pass) vs ConfigData (2026-08-27,
+            # I/O module found in that pass) vs ConfigData, which is
             # found in the real motion/drive corpus -- P208/D012/S086 all
             # use this instead: an L5K-only blob, NO Decorated structure at
             # all, just a real stated ConfigSize). Both carry a real
@@ -333,7 +333,7 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
                     config_bytes = _int_attr(config_data_el, "ConfigSize")
                     module_defined_bytes += config_bytes
 
-            # ConfigScript (2026-08-27, found in real VFD corpus -- PowerFlex
+            # ConfigScript (found in real VFD corpus -- PowerFlex
             # 525/755 both carry one ALONGSIDE their own ConfigData, not
             # instead of it): a real, stated `Size` attribute (not
             # `ConfigSize`) on the drive's full parameter-database blob, L5K
@@ -360,7 +360,7 @@ def label_modules(modules: list[ModuleInfo]) -> dict[int, str]:
     """Index in `modules` -> the display/path label for that module.
 
     A real POINT I/O child module carries NO Name attribute at all --
-    confirmed 2026-09-11 on three real 1734-AENTR/AENT rack exports, where
+    confirmed on three real 1734-AENTR/AENT rack exports, where
     all 16 1734-IB8/C cards are identified only by catalog number and Port
     Address (their slot). Falling back to the catalog alone gave every one
     of them the same label AND the same path, so sixteen distinct modules

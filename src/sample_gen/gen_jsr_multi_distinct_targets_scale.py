@@ -1,7 +1,7 @@
 """OQ-JSRPARAMCOST: extends gen_jsr_multi_distinct_targets.py (which only
 covered N=1/3/5) to real-scale distinct-target COUNTS, and separately
 isolates target-routine NAME LENGTH as its own variable -- both flagged as
-missing by 2026-08-31: 5/10/15/20/50 subroutines to test quantity, plus a
+missing: 5/10/15/20/50 subroutines to test quantity, plus a
 separate test set varying routine name length, validating data that was
 missed.
 
@@ -48,7 +48,7 @@ OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "logi
 N_TARGETS_SCALE = (5, 10, 15, 20, 50)
 # 40 is Rockwell's real Logix identifier length cap (tag/routine/program/AOI
 # names all share it) -- NOT a round-number choice. Originally 48 here;
-# a real l5x2acd run (2026-08-31) failed to import both namelen48
+# a real l5x2acd run failed to import both namelen48
 # files (this one and gen_program_multi_distinct_scale.py's) with the
 # generic XMLSrv_E_IMPORT_ABORTED_NO_CHANGES wrapper, no per-file detail,
 # while every other length (4/8/16/32, all <=40) converted clean --
@@ -83,7 +83,7 @@ def _padded_name(prefix: str, i: int, total_length: int, index_width: int) -> st
 
 def _target_xml(name: str) -> str:
     # 0-param leaf target, no SBR/RET -- real corpus norm for 0-param
-    # targets (2026-08-31, ; confirmed against samples/local/).
+    # targets, confirmed against samples/local/.
     return (
         f'<Routine Name="{name}" Type="RLL">'
         f"<RLLContent>{rung_xml(0, 'NOP();')}</RLLContent>"

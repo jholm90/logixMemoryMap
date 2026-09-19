@@ -1,5 +1,5 @@
 """Discriminating files for the open questions whose data is measured but
-ambiguous. Written 2026-09-18 during the full open-questions review.
+ambiguous. Written during the full open-questions review.
 
 Every arm here exists because a law was measured EXACTLY and could not be
 applied, not because coverage was thin. Each arm names the reading it rejects.

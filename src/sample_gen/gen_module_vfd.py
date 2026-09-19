@@ -1,4 +1,4 @@
-"""VFD (PowerFlex) module batch (2026-08-27): a PowerFlex 525 and a
+"""VFD (PowerFlex) module batch: a PowerFlex 525 and a
 PowerFlex 700-series sample.
 
 Real corpus: PowerFlex 525-EENET (43 corpus rows, samples/local/
@@ -9,7 +9,7 @@ equivalent is the 753/755 family, confirmed present: samples/local/
 L5X_Samples/Sorter1_20260722r00.L5X). Both genericized (Name/IP changed)
 but structurally verbatim otherwise.
 
-**Fixed 2026-08-27, real Studio 5000 import bug found: "Data
+**Fixed real Studio 5000 import bug found: "Data
 type mismatch."** PowerFlex 525-EENET's I/O payload is a
 User-Defined-Catalog (UDC) type (`UdcAopVersion` present) -- same real
 class of bug as `gen_module_sweep_gap.py`'s 150 SMC Flex-E fix: its
@@ -25,7 +25,7 @@ PowerFlex 755-EENET does NOT have this bug (confirmed: its real
 DataType names are fixed/non-hashed, no UdcAopVersion) -- only 525
 needed the fix.
 
-**2026-08-27: real and NOT yet addressed: "keep in mind PF525 can
+**: real and NOT yet addressed: "keep in mind PF525 can
 have many different data payloads. there is many different UDT's
 available for 525's."** This file represents ONE of several real,
 user-selectable I/O Comm Format configurations for the 525 (this

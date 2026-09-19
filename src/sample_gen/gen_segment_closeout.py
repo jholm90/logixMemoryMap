@@ -1,5 +1,5 @@
 """Three closeout probes, each splitting a term this corpus measured but could
-not attribute. Written 2026-09-14 out of the segment 14/17/20 reviews.
+not attribute. Written out of the segment 14/17/20 reviews.
 
 Every one of the three exists because a measured number is currently fitted
 against one point in the variable that would separate a per-call cost from a

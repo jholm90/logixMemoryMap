@@ -1,4 +1,4 @@
-"""OQ-IDENTNAMELEN closeout (2026-09-12).
+"""OQ-IDENTNAMELEN closeout.
 
 The law is derived and WIRED. Two independent sweeps -- JSR target routine
 names and Program names, 10 identifiers per file at name lengths 4/8/16/32/40

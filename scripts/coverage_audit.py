@@ -1,6 +1,6 @@
 """What the sizing engine cannot price, across any set of L5X files.
 
-2026-09-04: every calculation has to live in the engine itself rather than
+every calculation has to live in the engine itself rather than
 in an ad-hoc analysis run alongside it. This is the operator-facing side of
 that: `l5x_memory_analyzer.sizing.coverage.audit_coverage()` is what runs,
 the same function `build_report()` calls on every single file it sizes --

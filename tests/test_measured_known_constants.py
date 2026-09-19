@@ -151,7 +151,7 @@ def test_the_five_confirmed_instruction_weights_keep_their_tier():
         assert tiers[mnemonic] == "KNOWN"
 
 
-# Per-constant KNOWN tiers that predate this register (2026-09-18). Every one is
+# Per-constant KNOWN tiers that predate this register. Every one is
 # derived and justified in a comment at its own definition site in
 # memory_model.yaml, and most are the exactly-calculable data-space side CLAUDE.md
 # distinguishes from fitted logic sizing -- BOOL packing, STRING layout, UDT

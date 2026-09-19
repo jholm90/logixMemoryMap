@@ -1,7 +1,7 @@
 """Real-shaped AOI population tests, built from what actually correlates
 with the MurrayBros under-estimate.
 
-2026-09-05: the generated projects exist to test things seen in the real
+the generated projects exist to test things seen in the real
 projects whose significance was not understood -- not to restack shapes
 whose answer was already known before the file was built.
 
@@ -12,7 +12,7 @@ generated**, and the AOI-population shape below is one of the things that
 diff exposed.
 
 WHY THESE FEATURES. The residual on all nine real programs was regressed
-against structure (feat2, 2026-09-05). Everything at the top is AOI
+against structure (feat2). Everything at the top is AOI
 internals -- not file size, which is what MurrayBros was being blamed on:
 
     AOI params typed AXIS_*   r=+0.889   ~21,356/unit

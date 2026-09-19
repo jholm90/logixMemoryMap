@@ -114,11 +114,11 @@ def test_has_children_true_for_udt_typed_tag():
 
 
 def test_routine_logic_nests_under_a_routines_subgroup_not_flat_with_tags():
-    # Phase 5 (2026-08-27): a program's routine_logic entries must NOT sit
+    # Phase 5: a program's routine_logic entries must NOT sit
     # as flat siblings next to that program's tags -- they get their own
     # "Routines" subgroup within the program's group.
     #
-    # Extended 2026-09-10: the tags get a "Program Tags" container of their
+    # Extended: the tags get a "Program Tags" container of their
     # own for the same reason. With only one side contained, the single
     # "Routines" tile sat among dozens of loose tag tiles and was easy to
     # lose; a program now reads as exactly two parts.
@@ -147,7 +147,7 @@ def test_routine_logic_nests_under_a_routines_subgroup_not_flat_with_tags():
 
 
 def test_programs_nest_under_task_when_mapping_supplied():
-    # Phase 5 Task-level grouping (2026-08-27): real L5X-stated
+    # Phase 5 Task-level grouping: real L5X-stated
     # Controller/Tasks/ScheduledProgram relationship, not a fitted byte
     # formula -- a Task's total is just the sum of its Programs' bytes.
     tree = build_hierarchy(ENTRIES, program_to_task={"MainProgram": "MainTask"})
@@ -161,12 +161,12 @@ def test_programs_nest_under_task_when_mapping_supplied():
 
 def test_program_with_no_known_task_is_kept_and_marked_unscheduled():
     """A program with no owning Task must never be dropped or hidden -- and
-    since 2026-09-05 it is also LABELLED, because in real Logix that means
+ it is also LABELLED, because in real Logix that means
     it is unscheduled (the controller fault handler and power-up handler
     live here, as do programs parked out of the scan). It still consumes
     controller memory while never executing, which is precisely what this
     tool exists to surface, so rendering it indistinguishable from a
-    scheduled program was hiding something real. 2026-09-05: "be
+    scheduled program was hiding something real.: "be
     sure this is visible in the web gui."
     """
     tree = build_hierarchy(ENTRIES, program_to_task={"SomeOtherProgram": "SomeTask"})

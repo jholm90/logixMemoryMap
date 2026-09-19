@@ -1,8 +1,8 @@
 """An AOI call site costs 168 bytes, and the parser can actually see one.
 
-OQ-DEFSCALE, 2026-09-13. The largest single unmodelled item found in this
+OQ-DEFSCALE . The largest single unmodelled item found in this
 project: until today an AOI call cost NOTHING, because parser/logic.py matched
-instruction calls with [A-Z][A-Z0-9_]*\\( under a comment claiming it "also
+instruction calls with [A-Z][A-Z0-9_]*\\(under a comment claiming it "also
 matches AOI/UDT instance calls". It does not -- real AOI names are mixed-case,
 288 of the 331 AOI definitions in the real corpus are mixed-case, and 3,918 real
 call sites were invisible.

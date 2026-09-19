@@ -1,8 +1,8 @@
-"""CAM structure byte-size count sweep (2026-08-26, "touch these and
+"""CAM structure byte-size count sweep ("touch these and
 finalize them now" -- includes the CAM sweep flagged in OPEN_QUESTIONS.md
 OQ-PREDEFINED item 8 as the one remaining concrete next step).
 
-Mechanistic research (2026-08-25, see OPEN_QUESTIONS.md) already confirmed
+Mechanistic research (see OPEN_QUESTIONS.md) already confirmed
 CAM's real field shape by reading `samples/local/L5X_Samples/
 RobbinsGrn_2026_05_13r00.L5X` directly: 3 fields per array element
 (Master:REAL, Slave:REAL, SegmentType:DINT), and -- unlike CAM_PROFILE,
@@ -22,7 +22,7 @@ write_sample_unmodeled (predicted_bytes=0, not a guess) -- same convention
 already used for the AXIS_*/MOTION_GROUP predefined-structure files before
 those got their own formula wired.
 
-`cam_tag_xml()` (builders.py, already built 2026-08-25 from the same real
+`cam_tag_xml()` (builders.py, already built from the same real
 corpus file) reproduces the confirmed real shape exactly.
 
 Run: python -m sample_gen.gen_cam_sweep

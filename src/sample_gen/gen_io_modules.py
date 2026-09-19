@@ -1,4 +1,4 @@
-"""I/O Module sizing sweep, first batch (2026-08-22): "let's go back
+"""I/O Module sizing sweep, first batch: "let's go back
 and play with some of the AB Io blocks, the balluff Io link block, local
 1756 modules to start. You'll have to swap to a 5069 processor to test the
 5069 modules (non safety stuff to start)... same catalog Phoenix rack with
@@ -19,7 +19,7 @@ real shape found in the corpus (builders.py has the file/tag citations).
      size really is config-driven and not catalog-driven, these must NOT
      come back at the same real byte cost.
 
-**2026-08-23, purge the old shit... new stuff only* Dropped two
+** purge the old shit... new stuff only* Dropped two
 groups and one config-variance point that never once converted
 successfully (every attempt in convert_log.csv failed, going back days) --
 group_point_io (1734-AENT/1734-IB8, both n=2 and n=8) and group_5069_local
@@ -71,7 +71,7 @@ def group_1756_local() -> None:
 def group_generic_ethernet_configvariance() -> None:
     # (input_bytes, output_bytes) -- 450/8 matches the real IFM_LugLoader1
     # example found in the corpus, the rest span the range described.
-    # 1000/1000 dropped 2026-08-23 -- never converted successfully, see
+    # 1000/1000 dropped -- never converted successfully, see
     # module docstring.
     configs = [(2, 2), (8, 8), (32, 16), (450, 8)]
     for in_b, out_b in configs:

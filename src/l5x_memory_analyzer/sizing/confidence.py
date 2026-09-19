@@ -70,7 +70,7 @@ _BY_KEY = {b.key: b for b in BANDS}
 # most-tested weights in the model, not the least. NOP and the per-rung base
 # come from the `emptyrungs` sweep; XIC/OTE are held fixed across the
 # `rshape_arr_*` arrangement files, which captured byte-exact at every leg
-# count on 2026-09-18.
+# count.
 SCAFFOLD_BAND = {"XIC": "MEASURED", "XIO": "MEASURED",
                  "OTE": "MEASURED", "NOP": "MEASURED"}
 

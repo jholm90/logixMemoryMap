@@ -1,4 +1,4 @@
-"""Axis + composite-UDT sweep (2026-08-22): "the axis compost udt
+"""Axis + composite-UDT sweep: "the axis compost udt
 test" -- direct response to the feedback that real axis usage is never the
 bare AXIS_CIP_DRIVE predefined type alone, it's wrapped in a "mixed and
 garbled" custom UDT, used everywhere in the real programs at 0.01%-tolerance
@@ -99,7 +99,7 @@ _AXIS_TAG_XML = (
 
 # Real AXIS_VIRTUAL tag shape (near-verbatim from samples/local/L5X_Samples/
 # Griffin_StackerLine_1Mar25_r00.L5X's VM305_StackerVirtual/VM308_PeelersVirtual,
-# only the tag name changed) -- confirmed 2026-08-25 while investigating
+# only the tag name changed) -- confirmed while investigating
 # OQ-CROUT-MAPC-BUILDFAIL: real MAPC calls in that corpus ALWAYS use two
 # DISTINCT axis tags for the slave/master operand positions, and in every
 # example found, of two DIFFERENT DataTypes (AXIS_CIP_DRIVE for the real
@@ -177,7 +177,7 @@ def group_composite_udt() -> None:
 # ---------------------------------------------------------------------------
 
 def group_axis_aoi_inout() -> None:
-    # required=True: 2026-08-25: real bug -- FaultReset defaulted to
+    # required=True:: real bug -- FaultReset defaulted to
     # Required=False/Visible=False (hidden, "nowhere to go on the calling
     # rung"), but the rung text below wires FaultResetVal into it anyway.
     # Real AOI semantics need as many call-site tags as there are Required/
@@ -204,7 +204,7 @@ def group_axis_aoi_inout() -> None:
 
 
 # ---------------------------------------------------------------------------
-# 2b. 2026-08-25: "check if size is different when marking them as
+# 2b.: "check if size is different when marking them as
 #     not visible vs visible vs required" -- a def_only (0 instances)
 #     Required/Visible sweep on the SAME BOOL Input + InOut AXIS_CIP_DRIVE
 #     shape as group_axis_aoi_inout, isolating the reqvis effect on
@@ -241,7 +241,7 @@ def group_full_combo() -> None:
     datatypes = collect_nested_datatypes("ts_CIPAxis_Test", members)
     udt_tag = tag_xml("CompositeInst", "ts_CIPAxis_Test", udt_members=members)
 
-    # required=True: 2026-08-25: real bug -- FaultReset defaulted to
+    # required=True:: real bug -- FaultReset defaulted to
     # Required=False/Visible=False (hidden, "nowhere to go on the calling
     # rung"), but the rung text below wires FaultResetVal into it anyway.
     # Real AOI semantics need as many call-site tags as there are Required/

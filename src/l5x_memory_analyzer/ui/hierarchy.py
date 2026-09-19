@@ -194,7 +194,7 @@ def build_hierarchy(
     """
     groups: dict[str, list[dict]] = {}
     group_order: list[str] = []
-    # routine_logic entries (2026-08-27, Phase 5 "Program -> Routine"
+    # routine_logic entries (Phase 5 "Program -> Routine"
     # nesting) are kept OUT of a program's flat tag list and collected
     # here instead, keyed by that program's own group_name -- each
     # program's Routines get their own "Routines" subgroup rather than
@@ -212,7 +212,7 @@ def build_hierarchy(
     # (path "project_baseline", no "/" at all) don't fit the <scope>/<name>
     # tag-path convention every other category follows -- routing them
     # through the Controller-Tags/Program-scope split below crashed with an
-    # IndexError (2026-08-23 fix: found while wiring in the new
+    # IndexError (fix: found while wiring in the new
     # project_baseline entry, but udt_definition had the exact same latent
     # bug already -- any real file with a UDT definition would have crashed
     # the live UI). Both get their own dedicated top-level group instead,
@@ -221,17 +221,17 @@ def build_hierarchy(
     NON_TAG_GROUPS = {
         "udt_definition": UDT_GROUP_NAME,
         "project_baseline": "Project Overhead",
-        # task_program_shell (2026-08-27, OQ-TASKOVERHEAD wiring): a single
+        # task_program_shell (OQ-TASKOVERHEAD wiring): a single
         # once-per-file entry, path "task_program_shell" with no "/" --
         # same non-tag-path shape as project_baseline above, same fix.
         "task_program_shell": "Project Overhead",
-        # module_io (2026-08-27, OQ-MODULEIO wiring): path is "modules/
+        # module_io (OQ-MODULEIO wiring): path is "modules/
         # <name>", which DOES contain "/" -- but "modules" isn't a real
         # Program/Controller-Tags scope, so the split below would still
         # try scope.split(':', 1)[1] and crash the same way. Own top-level
         # group instead, same fix shape as the others above.
         "module_io": MODULE_GROUP_NAME,
-        # alarm_condition (2026-09-04): alarms get their own tree section,
+        # alarm_condition: alarms get their own tree section,
         # the same way axes do. Path is
         # "alarms/<host tag>", which contains "/" but whose first segment
         # is not a Program/Controller scope -- so without this entry the
@@ -246,7 +246,7 @@ def build_hierarchy(
         "alarm_condition": "Alarm Conditions",
     }
 
-    # Axis/motion tags (2026-08-28, "the UI treeview needs to have
+    # Axis/motion tags ("the UI treeview needs to have
     # the Axis (CIP_Drive, Virtual, etc) broken out at the root level").
     # These are ordinary Controller/Program-scoped tags in the L5X (same
     # category/path shape as any other tag), just typed as one of the
@@ -288,7 +288,7 @@ def build_hierarchy(
                 if e.category in ("alarm_condition", "module_io")
                 else e.data_type
             )
-            # udt_definition entries ARE drillable now (2026-08-26, /api/node's
+            # udt_definition entries ARE drillable now (/api/node's
             # "udt_definitions/<Name>" branch) -- locals+params/members
             # breakdown of the definition's own cost, see sizing/tree.py's
             # expand_definition_children. project_baseline has no breakdown
@@ -455,7 +455,7 @@ def _nest_programs_under_tasks(children: list[dict], program_to_task: dict[str, 
             # No owning Task. In real Logix that means the program is
             # UNSCHEDULED -- the controller fault handler / power-up
             # handler live here, as do programs a developer has parked out
-            # of the scan. 2026-09-05: the controller error-handling
+            # of the scan.: the controller error-handling
             # task/program must be included in the size calculation and
             # visible in the web UI.
             #

@@ -1,6 +1,6 @@
 """Whether a series output instruction after the first is cheaper -- OQ-SERIESOUTPUT.
 
-Written 2026-09-13 (capture-batch segment 5). Two captured single-shape sweeps
+Written (capture-batch segment 5). Two captured single-shape sweeps
 say the engine over-charges a rung that holds more than one OUTPUT instruction in
 series, by exactly 12 bytes per output beyond the first:
 

@@ -1,4 +1,4 @@
-"""OQ-AOIBOOLPACK-PAIRING closeout (2026-09-12).
+"""OQ-AOIBOOLPACK-PAIRING closeout.
 
 The per-instance law is now derived and wired: an array-of-AOI-instances
 block is padded up to an 8-byte boundary

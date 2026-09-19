@@ -1,4 +1,4 @@
-"""OQ-BRANCHDEPTH closeout (2026-08-25). The question: do BST/BND ([,])
+"""OQ-BRANCHDEPTH closeout. The question: do BST/BND ([,])
 branches cost memory of their own? A 30-deep OR condition in ladder ought
 to cost more than 30 bare XIOs.
 

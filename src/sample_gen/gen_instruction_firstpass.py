@@ -1,4 +1,4 @@
-"""First-pass single-instruction coverage sweep (2026-08-24). Everything
+"""First-pass single-instruction coverage sweep. Everything
 with more than one usage needs testing, starting with a first pass of one
 copy of each outstanding instruction, one per file, each compiling cleanly.
 No multiple-instructions-per-file tests at this stage: building dozens of
@@ -20,7 +20,7 @@ each instruction's own comment for the exact real citation. A short list
 of instructions were deliberately SKIPPED rather than guessed at (SCP,
 FBC, PID) -- see the bottom of this docstring.
 
-**2026-08-24, all 36 n=1 files captured clean (converted "ok," real
+** all 36 n=1 files captured clean (converted "ok," real
 actual_bytes, 0 errors) -- let's to a 10-count test for each*
 `main()` now also generates a parallel `_x10` file per instruction (same
 tag pool/operand shape, 10 identical rungs instead of 1) -- a basic
@@ -60,7 +60,7 @@ docs/OPEN_QUESTIONS.md.
     operand position isn't independently verified, just the shape.
 
 **Skipped, not guessed (docs/OPEN_QUESTIONS.md has the detail):**
-  - SCP: RESOLVED 2026-09-10, and the resolution is that it does not
+  - SCP: RESOLVED and the resolution is that it does not
     belong in this list at all. The unexplained "3 arguments in the corpus
     vs 6 in Rockwell's documentation" mismatch had a simple cause: the
     corpus calls are not the built-in instruction. They are calls to
@@ -337,7 +337,7 @@ def group_cam_family(count: int = 1) -> None:
     # not called): "MAPC(Axis_Cip_Drive,Axis_Cip_Drive,MotionInstr1,0,
     # CamProfile1[0],1,1,Once,Forward Only,Cam1[0].Master,Cam1[0].Master,
     # New Cam,Command,Bi-Directional);" -- TWO real bugs found investigating
-    # the resulting build failure (2026-08-25, "review existing
+    # the resulting build failure ("review existing
     # programs to get accurate logic programming"):
     #   1. Axis_Cip_Drive was never declared as a tag in this file at all
     #      (only `cam_tag` was passed as extra_tags_xml, not _AXIS_TAG_XML)
@@ -422,7 +422,7 @@ def _run_all(count: int) -> int:
 
 
 def main() -> None:
-    # 2026-08-24: after all 36 n=1 files built and captured clean:
+    # after all 36 n=1 files built and captured clean:
     # "let's to a 10-count test for each." Generates a second, parallel
     # x10 file per instruction (same tag pool/operand shape, 10 identical
     # rungs) alongside the original n=1 files -- a basic linearity check

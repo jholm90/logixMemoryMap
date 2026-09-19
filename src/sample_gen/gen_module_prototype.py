@@ -1,4 +1,4 @@
-"""Module/IO prototype batch (2026-08-27). Three shapes: a 1756-IB16 in the
+"""Module/IO prototype batch. Three shapes: a 1756-IB16 in the
 local rack at slot 1; a known Ethernet module off the local L81 Ethernet
 port; and a local Ethernet card with an Ethernet device located on that
 port. I
@@ -7,7 +7,7 @@ on your own. i will test your generated files. dont spam me with all the
 io module files right away youll need to validate your builder engines.").
 
 First 3 files (groups 1-3) validated clean against real Studio 5000 import.
-**2026-08-27:** one L5X per module from the sample database, with rack and
+**:** one L5X per module from the sample database, with rack and
 slot sizing accounted for. Extended using `samples/local/module_
 extraction.csv` (1,212 real module rows, 130 distinct catalog numbers,
 built earlier in the same pass) to pick real high-frequency catalog numbers,

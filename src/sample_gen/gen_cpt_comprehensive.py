@@ -1,4 +1,4 @@
-"""CPT comprehensive batch (2026-08-25). CPT is a high-priority
+"""CPT comprehensive batch. CPT is a high-priority
 instruction and this batch is meant to solve it outright, with no gaps
 left for a later pass.
 
@@ -142,7 +142,7 @@ def group_literal_linearity() -> None:
 
 
 def group_floatliteral_operator_independence() -> None:
-    """2026-09-03: full-depth open-questions review: group_
+    """: full-depth open-questions review: group_
     literal_linearity above only ever tested the float-literal effect for
     ADD at n=10/100 (its own comment already flagged this as an
     "operator-independence question" but never actually tested the other

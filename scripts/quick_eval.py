@@ -61,7 +61,7 @@ STOP_MAX_PCT = 2.0
 
 # Dead architecture -- 1756-L7x and 1769. CLAUDE.md keeps the existing rows but
 # forbids new investment, and they dominate every corpus average while being
-# unable to move the headline. Measured 2026-09-18: 64 captured rows, and the
+# unable to move the headline. Measured: 64 captured rows, and the
 # worst sentinel in the whole corpus was one of them (fwmatrix_v33_1756_l71 at
 # 65.69%). Excluded from the
 # non-real reports by default so a corpus number is not quietly contaminated;
@@ -81,7 +81,7 @@ def _rows() -> list[dict]:
 def _usable(row: dict, lenient: bool = False) -> bool:
     """STRICT by default, which also rejects a row whose error_count is blank.
 
-    271 rows were captured 2026-08-22..08-30, before the capture tooling recorded
+    271 rows were captured..08-30, before the capture tooling recorded
     error_count at all, so a blank there means the build status was never recorded
     -- not that the build was clean. Counting them as clean is how a real error
     hides. None of the sixteen real programs is affected (0 of 16 blank), so the

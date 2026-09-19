@@ -1,6 +1,6 @@
 """Tag-based alarm conditions must be found and reported, not silently zeroed.
 
-2026-09-04: *"see the alarms prefixed by 'Alarm1_' as they could be
+*"see the alarms prefixed by 'Alarm1_' as they could be
 holding back some of your calcuations from being accurate."* They were:
 3,463 real AlarmCondition elements across samples/local/, every one priced
 at zero, 200-600 in each of the 8 real programs whose Capacity readings the
@@ -60,7 +60,7 @@ def test_associated_tag_count_is_read_exactly(k):
 
 @_gen
 def test_alarms_are_priced_and_no_longer_reported_as_a_gap():
-    """Solved exactly 2026-09-05. From 2026-09-04 until then these were
+    """Solved exactly . From until then these were
     reported as an unpriced coverage gap; now they are a real sized entry,
     and flagging them would be a false alarm -- the gap list has to shrink
     when a hole is actually closed or it stops meaning anything."""

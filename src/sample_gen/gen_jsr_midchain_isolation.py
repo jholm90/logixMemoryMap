@@ -1,6 +1,6 @@
 """OQ-JSRPARAMCOST: does a mid-chain routine's own OUTBOUND JSR call(s)
 cost anything, or does report.py's `is_jsr_target` branch silently drop
-them? (2026-08-31.) A program points at a main routine that calls
+them? A program points at a main routine that calls
 subroutines, and those subroutines can call further subroutines in turn.
 
 Real, code-level finding this isolates: report.py's per-routine loop

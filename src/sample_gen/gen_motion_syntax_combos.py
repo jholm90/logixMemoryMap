@@ -1,4 +1,4 @@
-"""MAM/MAJ/MAS/MRP keyword-combination validation (2026-08-25). Method:
+"""MAM/MAJ/MAS/MRP keyword-combination validation. Method:
 one L5X file per instruction with a single instruction each; once those
 results validate, a 10-pass run confirms them. The question is whether
 keyword choice costs memory -- whether a merged MAM move takes more space

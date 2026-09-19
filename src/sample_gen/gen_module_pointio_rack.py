@@ -1,4 +1,4 @@
-"""Real multi-child PointIO racks (2026-09-02, 10+ racks). Every 1734-family catalog already in gen_module_sweep.py
+"""Real multi-child PointIO racks (10+ racks). Every 1734-family catalog already in gen_module_sweep.py
 was extracted with its OWN independent single-slot adapter (real, but each
 one a SEPARATE standalone node -- e.g. 1734-AENTR/C's own real Bus Size is
 exactly 1, a genuine 1-slot adapter product). That's a different real shape
@@ -11,7 +11,7 @@ takes ONLY the real CHILD module (the 2nd Module in each existing 1734
 catalog's own chain -- structurally verbatim, untouched) from up to 7 other
 1734-family catalogs, re-points its ParentModule to the shared adapter's
 own Name, and assigns it a real sequential PointIO bus slot (1-7 -- slot 0
-is the adapter's OWN root Port, confirmed real 2026-09-03 via the actual
+is the adapter's OWN root Port, confirmed real via the actual
 "Slot number in use by another module" error, same off-by-one already fixed
 for the 1756 local backplane's CPU-at-slot-0 convention) -- the same real
 per-file uniqueness convention already used elsewhere in this project
@@ -73,7 +73,7 @@ def _floor_bytes(l5x_text: str) -> int:
 
 def _rack_xml(children: list[str]) -> str:
     # Slot 0 is the adapter's OWN root Port ("<Port Id="1" Address="0"...")
-    # -- real, confirmed 2026-09-03 (the actual Studio 5000 "Slot number
+    # -- real, confirmed (the actual Studio 5000 "Slot number
     # in use by another module" on this exact generator's first child, which
     # this generator had put at slot 0). Same off-by-one already fixed for
     # the 1756 local backplane (CPU's own ICP port sits at Address="0", so
@@ -82,7 +82,7 @@ def _rack_xml(children: list[str]) -> str:
     new_bus_size = len(children) + 1
     adapter = _ADAPTER_XML
     if new_bus_size != _ADAPTER_REAL_BUS_SIZE:
-        # 2026-09-03: I want to see some 14+ racks now -- more real
+        # I want to see some 14+ racks now -- more real
         # children than this adapter's own real 8-slot capture happened to
         # have. Bus Size and the adapter's own Connection I/O structure
         # (DataType slot-number, Dimensions, Element count) have to move
@@ -131,7 +131,7 @@ _PLANS: dict[str, list[str]] = {
     "n06_alt": _CHILD_CATALOGS[3:9],
     "n07_full": _CHILD_CATALOGS[0:7],
     "n07_full_alt": _CHILD_CATALOGS[8:15],
-    # 2026-09-03: I want to see some 14+ racks now -- every real
+    # I want to see some 14+ racks now -- every real
     # distinct 1734-family child catalog in the pool, one adapter (real Bus
     # Size grown from its own captured 8 up to 16 -- see _rack_xml).
     "n15_full": _CHILD_CATALOGS,

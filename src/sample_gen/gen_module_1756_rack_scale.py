@@ -1,4 +1,4 @@
-"""1756 local-rack SIZE scaling (2026-09-02, 10+ rack tests). gen_module_rack_1756local.py already built ONE
+"""1756 local-rack SIZE scaling (10+ rack tests). gen_module_rack_1756local.py already built ONE
 16-module full-chassis rack; this generator varies rack SIZE (2/4/6/8/10/
 12/14/16 real modules) and composition (alternate subsets at a few sizes)
 using the SAME real catalog pool and re-slot mechanism, so the marginal

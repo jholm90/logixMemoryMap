@@ -1,10 +1,10 @@
-"""50 MORE large, realistic-scope composite test programs -- v2, 2026-08-31.
+"""50 MORE large, realistic-scope composite test programs -- v2 .
 
 Direct follow-up to gen_composite_realistic.py's 50-file batch. That batch's
 own ~3% real residual was checked directly against the two fixes just wired
 in that pass (JSR-target-content weighing, AOI-internal-logic weighing) and
 found to be UNMOVED by either (see OPEN_QUESTIONS.md OQ-COMPOSITESCALE,
-2026-08-31 correction) -- root cause: v1's AOIs all use the old hardcoded
+correction) -- root cause: v1's AOIs all use the old hardcoded
 empty `<Routine Name="Logic" Type="RLL"/>` shape (zero internal content) and
 v1 never declares a JSR-target routine with real content, so neither newly-
 wired formula is exercised at composite scale at all.
@@ -50,7 +50,7 @@ from sample_gen.wrapper import build_l5x
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "composite"
 OUT_ROOT.mkdir(parents=True, exist_ok=True)
 
-# 2026-08-31: real, caught on re-conversion (of the FIRST
+# real, caught on re-conversion (of the FIRST
 # v2 batch, before this fix): "SINT/INT/DINT cannot be used for bit level
 # instructions like XIO,XIC,OTE,OTU,OTL,ONS only bools and .Bits of
 # SINT/INT/DINT" and "conditional instructions like EQU with no operand
@@ -100,7 +100,7 @@ def _content_rungs(instr_count: int, a: str, b: str, cond: str, out: str) -> str
 
 def _aoi_specs_with_logic(profile: Profile) -> list[tuple[str, str, list[MemberSpec]]]:
     """Same shape/param mix as v1's _aoi_specs, but every AOI also gets real
-    internal Logic-routine content (OQ-AOIINTERNALLOGIC, wired 2026-08-31) --
+    internal Logic-routine content (OQ-AOIINTERNALLOGIC, wired) --
     instruction count scales with the AOI's own index (5..45) so the batch
     covers a real range, not one fixed size."""
     total = profile.aoi_referenced_count + profile.aoi_orphaned_count

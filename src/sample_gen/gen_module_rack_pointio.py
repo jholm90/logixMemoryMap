@@ -1,6 +1,6 @@
 """Point I/O RACK tests -- multiple real modules mounted together on ONE
 adapter, not the one-module-at-a-time shape gen_module_sweep.py already
-covers (2026-08-27): a Point I/O rack with one of each module type, plus a
+covers: a Point I/O rack with one of each module type, plus a
 second test with multiple varied modules sharing one rack.
 
 Two real racks, each extracted directly from samples/local/ (gitignored)
@@ -12,7 +12,7 @@ as everywhere else in this project). Genericized the same way as
 gen_module_sweep.py: Name -> RackId_<Catalog>, Ethernet Address ->
 placeholder, ExtendedProperties/Description/Comments stripped.
 
-CORRECTED 2026-08-31, after isolated cards and large gaps were noticed in
+CORRECTED after isolated cards and large gaps were noticed in
 the two racks. A card's slot number is always assigned dynamically during
 project creation: the slot is a variable set when the module is created,
 not a property of the card itself like firmware or I/O count. This file
@@ -910,7 +910,7 @@ _CHILD_PORT_RE = re.compile(r'(<Port Id="1" Address=")\d+("\s*Type="PointIO"\s*U
 
 
 def _reslot_children(xml: str) -> str:
-    """2026-08-31, after a review found a lone I/O card sitting in slot 6.
+    """ after a review found a lone I/O card sitting in slot 6.
     A card's slot number is always assigned dynamically during project
     creation: the slot is a variable set when the module is created, not a
     property of the card itself like firmware or I/O count. Real

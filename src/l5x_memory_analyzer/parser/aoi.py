@@ -4,7 +4,7 @@ An AOI instance's data structure is, for sizing purposes, exactly a UDT: its
 Input/Output Parameters plus its LocalTags are storage members, recursed and
 summed the same way DataTypeDef/Member already work for Controller/DataTypes
 -- so this module reuses those same dataclasses rather than inventing a
-parallel shape. Confirmed against real production L5X data (2026-08-20):
+parallel shape. Confirmed against real production L5X data:
 every AOI-typed tag found there is a plain named Tag with DataType=<AOIName>,
 sized identically to any UDT-typed tag with no logic/call-site parsing
 needed. That's a different (and much smaller) problem than OQ-AOIINSTANCE's
@@ -25,7 +25,7 @@ _STORAGE_USAGES = {"Input", "Output"}
 
 
 def _member_from_element(el: ET.Element) -> Member:
-    # Real bug, found 2026-08-27 auditing the corpus: <Parameter>
+    # Real bug, found auditing the corpus: <Parameter>
     # and <LocalTag> elements carry their array size on a "Dimensions"
     # (PLURAL) attribute -- confirmed against 80 real <Parameter
     # Dimensions="N"> and 191 real <LocalTag Dimensions="N"> elements

@@ -1,6 +1,6 @@
 """An AOI-internal instruction writing a non-BOOL destination costs 4 more.
 
-OQ-AOIINTERNALLOGIC, derived 2026-09-14 (capture-batch segment 15). The same
+OQ-AOIINTERNALLOGIC, derived (capture-batch segment 15). The same
 instruction in an ordinary Program routine costs nothing extra: `instr_*` sits
 at the universal +8 per-file residual for MOV, CLR, ADD, EQU, XIC and OTE alike
 at every count from 10 to 5,000 instructions. Only the AOI-internal path

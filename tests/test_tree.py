@@ -140,7 +140,7 @@ def test_resolve_path_bit_alias_member_is_a_leaf():
 
 
 # ---------------------------------------------------------------------------
-# expand_definition_children -- 2026-08-26, the Phase 2/2b "defs pool
+# expand_definition_children -- the Phase 2/2b "defs pool
 # drill-down" fix. Breaks a definition's own one-time cost into its
 # contributing pieces; must always sum back exactly to what udt.py's own
 # compute_*_definition_cost would report for the same type, or the treemap
@@ -174,7 +174,7 @@ def test_expand_udt_definition_sums_to_compute_udt_definition_cost():
     assert sum(c.bytes for c in children) == expected_total
     # One row per declared member (Speed, Readings, ZZZZZZZZZZBoolMember01,
     # Running, Nested -- all 5 are not `hidden`, Motor has no bool run of
-    # its own), plus a "Base + type name" row and, since 2026-09-13, a
+    # its own), plus a "Base + type name" row and, a
     # "Member name pool" row: the pool is rounded up once over the whole member
     # set, so it cannot be attributed to individual members.
     assert len(children) == 7

@@ -1,6 +1,6 @@
 """A DriveAxis-shaped AOI: AXIS parameter + nested AOI instance.
 
-2026-09-05: emulate something like the DriveAxis AOI -- an axis input plus
+emulate something like the DriveAxis AOI -- an axis input plus
 a nested AOI instance -- where there is likely room for improvement.
 
 He is right that there is room, and the corpus shows why. `DriveAxis` is

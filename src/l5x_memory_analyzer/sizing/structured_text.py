@@ -1,6 +1,6 @@
 """Structured Text routine sizing.
 
-Until 2026-09-04 ST contributed exactly ZERO to every prediction:
+Until ST contributed exactly ZERO to every prediction:
 `parse_rll_routines` filters to RLL, and nothing else looked at an ST
 routine. That is not a small hole -- across the 23 real files in
 samples/local/ there are 297 ST routines and 24,017 ST lines, and one real
@@ -29,7 +29,7 @@ construct -- and hands any instruction-style call found in the text back to
 the SAME weight table the rung sizer uses.
 
 Comments and blank lines are FREE, which was the explicit question
-(2026-09-04: *"one thing not modelled is st comments and if a comment line
+(*"one thing not modelled is st comments and if a comment line
 or block takes up data memory or is like tag and rung comments and does not
 count towards data usage"*). Answer: they do not count, and it was worth
 testing rather than assuming -- an RLL rung comment is a separate <Comment>
@@ -83,7 +83,7 @@ _OPERATOR_TOKEN = re.compile(r"\*\*|[+\-*/]|\bMOD\b|\bAND\b|\bOR\b|\bXOR\b", re.
 _IDENT = re.compile(r"[A-Za-z_][\w.]*")
 # A numeric LITERAL, not the digits inside an identifier: `R0 * R1` has no
 # literals in it, and reading its "0" and "1" as integer literals made every
-# all-REAL statement look like it had integer operands (found 2026-09-18 when
+# all-REAL statement look like it had integer operands (found when
 # the operator premium started keying on exactly that).
 _NUMBER = re.compile(r"(?<![\w.])\d+(?:\.\d+)?")
 # Named sources of these types pay an implicit conversion when read into a REAL
@@ -118,7 +118,7 @@ class StructuredTextRoutine:
     # shared instruction/CPT sizer -- ST does not re-price instructions.
     code_text: str = ""
     # AOI call STATEMENTS in this routine, and the parameters they pass (the
-    # instance tag is not a parameter). Charged nothing until 2026-09-13, and
+    # instance tag is not a parameter). These were charged nothing, and
     # 2,094 of the real corpus's 6,586 ST lines are these -- the same
     # mixed-case invisibility that hid RLL call sites until segment 3.
     aoi_call_count: int = 0
@@ -138,7 +138,7 @@ def strip_comments(text: str) -> str:
 def parse_st_routines(root: ET.Element) -> list[StructuredTextRoutine]:
     """Every ST routine in the file -- inside Programs AND inside AOIs.
 
-    The AOI half was missed in the first wiring (2026-09-04): most real ST
+    The AOI half was missed in the first wiring: most real ST
     code is inside AOIs. Measured
     across the real corpus, 1,513 of 4,103 real ST lines -- **37%** -- live
     inside an AddOnInstructionDefinition rather than a Program, and all of
@@ -225,7 +225,7 @@ def size_st_assignments(routine: StructuredTextRoutine, model, tag_types=None):
         # multiplicative operator costs over an additive one IS that step. An
         # operator the tier table does not know (AND, OR, XOR) pays no premium,
         # which stx_opkind_and/xor measured directly at tier 1.
-        # ST has its OWN operator classification since 2026-09-18, measured by
+        # ST has its OWN operator classification, measured by
         # the 21-file stc_* closeout. Borrowing the CPT tier premium was right
         # only for the multiplicative operators on a DINT destination: ** is 38
         # per operator here against tier 3's 80, the premium is 0 (not 16) on a
@@ -251,7 +251,7 @@ def size_st_assignments(routine: StructuredTextRoutine, model, tag_types=None):
             unmeasured.append(gap)
         # Still reported: an operator with no measured tier is unpriced either
         # way, and it is exactly what used to abort the whole report. AND, OR and
-        # XOR are the exception AS OF 2026-09-13 and only in ST: stx_opkind_and
+        # XOR are the exception AS OF and only in ST: stx_opkind_and
         # and stx_opkind_xor measure them at exactly the tier-1 rate (196 per
         # statement at four operators, identical to `+`), so they are priced here
         # and reporting them as a gap is a stale warning -- it was firing four

@@ -1,4 +1,4 @@
-"""JSR/SBR/RET parameter-passing sweep (2026-08-23): "the jsr/sbr/ret
+"""JSR/SBR/RET parameter-passing sweep: "the jsr/sbr/ret
 pair of subroutine calls. We normally use JSR with no parameters other
 than the subroutine it's calling. We can have parameters of tags for the
 jsr that get passed to the sbr (always one instance as the first
@@ -98,7 +98,7 @@ def group_param_count() -> None:
         # SBR's own param names and the JSR's input-arg names are unrelated,
         # positionally-mapped tags (see module docstring) -- BOTH sides need
         # a real tag declaration, not just the caller side. Missing this
-        # was a real bug (2026-08-25 fix): every callee local was an
+        # was a real bug (fix): every callee local was an
         # undeclared-tag reference, one build error per param.
         caller_tags = "\n".join(tag_xml(t, "DINT") for t in caller_args + callee_locals)
         sub_xml = _sub_routine_xml("JsrParamTarget", callee_locals, [])

@@ -227,10 +227,10 @@ def _staleness(rows: list[dict]) -> tuple[list[str], list[str]]:
     A capture describes the file as it was on the day it ran. If the
     generator has been fixed since, that row is measuring a file that no
     longer exists and its numbers are not evidence about anything -- and the
-    error it recorded may already be fixed. Found 2026-09-12: of 144 errored
+    error it recorded may already be fixed. Found: of 144 errored
     rows, 14 were in exactly that state, including every cptwide LINT row
-    (undeclared operand tags, fixed 2026-09-10) and every unweighted_dtr row
-    (missing terminating NOP, added 2026-09-10).
+    (undeclared operand tags, fixed) and every unweighted_dtr row
+    (missing terminating NOP, added).
     """
     stale: list[str] = []
     missing: list[str] = []

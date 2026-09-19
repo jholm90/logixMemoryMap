@@ -10,7 +10,7 @@ Its confidence is literally MEASURED_SPARSE, and everything outside those
 five falls back to the CPT model, which was fitted for ladder CPT and
 over-predicts a 1-operator ST assignment by roughly 3x.
 
-CORRECTED 2026-09-13 (capture-batch segment 6). This docstring asserted
+CORRECTED (capture-batch segment 6). This docstring asserted
 "Scanned across the 10 real exports in samples/local: 128 ST routines, 6,586 ST
 lines" with "call statements 2,094 -- the single largest shape, and the table says
 nothing about it at all". Re-counted against the current parser, that is wrong,

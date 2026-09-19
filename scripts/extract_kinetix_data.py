@@ -1,6 +1,6 @@
 """Re-extract src/sample_gen/data/kinetix.py from the real corpus.
 
-Run this, never hand-edit the data module. The 2198 faults of 2026-09-13 all
+Run this, never hand-edit the data module. The 2198 faults of all
 came from a payload that was transcribed by hand once and then adjusted by hand
 again -- including an "adjustment" that deleted a value to make a count match,
 in the wrong direction.

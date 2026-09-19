@@ -1,4 +1,4 @@
-"""2026-08-31: "If you were to take that udt and stand alone
+""": "If you were to take that udt and stand alone
 generate it in a new program I wonder if you would get a different
 result." Direct empirical answer to that question.
 

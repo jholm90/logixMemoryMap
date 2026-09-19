@@ -1,5 +1,5 @@
 """1756-Ethernet LOCAL rack talking to a REMOTE 1756-Ethernet rack that
-carries its own remote 1756 I/O modules (2026-08-27).
+carries its own remote 1756 I/O modules.
 
 **Honesty note, unlike every other file in the module sweep:** this
 specific topology is a SYNTHESIS of two independently real, corpus-

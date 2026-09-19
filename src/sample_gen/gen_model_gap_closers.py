@@ -1,5 +1,5 @@
 """Targeted test batch to close the specific gaps blocking model fixes
-(2026-09-04, "can you generate a dozen or more tests that will help
+("can you generate a dozen or more tests that will help
 you fix your models and answer some questions that you want explored?").
 
 Every file here answers ONE named, currently-blocking question. Nothing is
@@ -17,7 +17,7 @@ time.
 GROUPS
 ------
 A. group_cpt_realdest_operator_counts (4 files)
-   cpt_expression.real_dest was wired 2026-09-04 exact on 29/29 real rows,
+   cpt_expression.real_dest was wired exact on 29/29 real rows,
    but ONLY at operator counts 1, 2 and 5. `extra_operator` (40) is
    confirmed between n=1 and n=2 and reproduces n=5 only via a separate
    +4 `five_plus_operator_extra` that currently rests on n=5 ALONE. These
@@ -258,8 +258,9 @@ def group_jsr_paramtype_count() -> None:
             # SBR(args)NOP(); -- NOT a bare SBR. SBR only receives the
             # caller's parameters and has no output of its own, so a rung
             # containing only SBR has nothing terminating it and real
-            # Studio 5000 rejects it exactly like a bare EQU (2026-09-04:
-            # SBR behaves like a comparison and needs an output after it). sample_gen/lint.py now enforces this.
+            # Studio 5000 rejects it exactly like a bare EQU (SBR behaves
+            # like a comparison and needs an output after it).
+            # sample_gen/lint.py now enforces this.
             + rung_xml(0, f"SBR({sbr_args})NOP();")
             + rung_xml(1, "RET();")
             + "</RLLContent></Routine>"

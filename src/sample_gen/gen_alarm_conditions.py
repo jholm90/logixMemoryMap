@@ -1,6 +1,6 @@
 """Tag-based alarm conditions: the unpriced cost sitting in every real file.
 
-2026-09-04: *"Another thing to look at is Controller Alarms that we
+*"Another thing to look at is Controller Alarms that we
 use. Ive split them out a bit here and you can generate up some code to test
 for them and generate them. Keep in mind that there are controller tags:
 AlarmBoolArray BOOL[128], AlarmNumberArray DINT[128], AlarmDescArray
@@ -11,7 +11,7 @@ back some of your calcuations from being accurate."*
 
 He is right, measurably. **3,463 real AlarmCondition elements across
 samples/local/, every one priced at zero.** All 8 real programs fitted on
-2026-09-04 carry 200-600 each, and after the composite surcharge was
+carry 200-600 each, and after the composite surcharge was
 refitted their leftover residual correlates **+0.583 with alarm count** --
 the strongest remaining identified driver (AOI-internal instructions -0.236,
 JSR-target -0.094). This is the most likely single explanation for why those
@@ -248,7 +248,7 @@ def group_name_length() -> None:
                f"length is a real, measured cost everywhere else in this model. " + _MUTED)
 
 
-# group_condition_type REMOVED 2026-09-04 -- real Studio 5000 rejected all
+# group_condition_type REMOVED -- real Studio 5000 rejected all
 # four files. TRIP_HIGH / TRIP_LOW / DEVIATION: "Failed to set the
 # 'ConditionType' property (Invalid condition type.)"; and plain TRIP on a
 # REAL host: "Failed to set the 'Expression' property (Condition expression

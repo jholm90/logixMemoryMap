@@ -1,5 +1,5 @@
 """Dense count sweeps for the ZERO-OPERAND (non-tag) ladder instructions.
-2026-09-12, OQ-VERIFINSTR.
+OQ-VERIFINSTR.
 
 Asked directly: were NOP, AFI, TND, UID and UIE tested? Partly, and the two
 halves are in very different states.

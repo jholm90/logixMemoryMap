@@ -1,4 +1,4 @@
-"""OQ-XPROGREF round 2 (2026-08-26, self-initiated per CLAUDE.md step 5 --
+"""OQ-XPROGREF round 2 (self-initiated per CLAUDE.md step 5 --
 this project's standing rule is to decide and generate the next batch of
 tests automatically once an open item is identified, not wait to be asked).
 
@@ -20,7 +20,7 @@ Original round 1 docs below, unchanged.
 
 ---
 
-OQ-XPROGREF (2026-08-22: add it to the next batch). Real Logix
+OQ-XPROGREF (add it to the next batch). Real Logix
 has no direct cross-program tag-addressing syntax in ladder logic --
 confirmed by searching the entire real corpus (47 files, including several
 with real `Usage="Public"` program tags) for any `Program:Tag`-style

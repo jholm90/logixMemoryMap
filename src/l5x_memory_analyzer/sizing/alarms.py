@@ -1,6 +1,6 @@
 """Cost of tag-based alarm conditions. Exact, not fitted.
 
-Solved 2026-09-05 from the 37-file `alarmcond_*` batch, which reproduces
+Solved from the 37-file `alarmcond_*` batch, which reproduces
 with ZERO residual on every captured point:
 
     total = file_base                      (800, once, if any alarm exists)

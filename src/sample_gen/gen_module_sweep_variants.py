@@ -1,5 +1,5 @@
 """I/O module sweep, part 2 -- real catalogs that show 2+ DIFFERENT real
-shapes across the corpus (2026-08-27, follow-up to gen_module_sweep.py's
+shapes across the corpus (follow-up to gen_module_sweep.py's
 86-catalog single-shape sweep, under the same every-module, fully-populated
 requirement). gen_module_sweep.py deliberately skipped these 14 catalogs
 since picking one shape arbitrarily would misrepresent the other real
@@ -4203,14 +4203,14 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 }
 
 
-# CORRECTED 2026-09-06. The "2conn" blocks below for the 2198 -ERS3 catalogs
+# CORRECTED . The "2conn" blocks below for the 2198 -ERS3 catalogs
 # were the cause of every -ERS3 import failure, and the cause was neither
 # safety-related nor undiagnosed. Two real defects, both confirmed by diffing
 # against composite_realistic_v4_001, which carries the same catalogs on a
 # plain non-safety 1756-L81E and captured at ZERO errors:
 #
 #   1. No <ExtendedProperties> block (Vendor/CatNum/FeedbackDevice1-4/
-#      ConfigID). That omission was already found and fixed on 2026-09-03 in
+#      ConfigID). That omission was already found and fixed in
 #      gen_module_motion.py's _drive_module_xml() -- see its docstring -- but
 #      this file keeps its own hardcoded copy of the module XML and never
 #      received the fix.
@@ -4223,7 +4223,7 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 
 # Real 4-Connection Kinetix variants add SafetyInputDataDriven/
 # SafetyOutputDataDriven connections with SafetyEnabled="true" -- real
-# Studio 5000 error found 2026-08-27: "Failed to set the
+# Studio 5000 error found: "Failed to set the
 # 'SafetyEnabled' property (The Controller is not a Safety Controller.)".
 # Needs a safety-capable controller (SIL2, no redundant partner -- see
 # wrapper.py's build_l5x docstring), not the project's default standard
@@ -4233,7 +4233,7 @@ _SIL2_VARIANT_LABELS = {("2198-D012-ERS3", "4conn"), ("2198-D020-ERS3", "4conn")
                          ("2198-S086-ERS3", "4conn")}
 _SAFETY_PROCESSOR_TYPE = "1756-L81ES"
 
-# Real l5x2acd conversion failures in the 2026-08-27 push
+# Real l5x2acd conversion failures in the push
 # (samples/convert_log.csv): all 5 "4conn" (motion + Safety) variants still
 # failed even with the safety-controller fix above already applied
 # (confirmed correct on-disk). A real, useful datapoint ruling out one

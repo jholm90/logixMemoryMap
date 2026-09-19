@@ -1,6 +1,6 @@
 """Is a standalone UDT tag's data slot padded to 8 bytes? -- OQ-UDTTAGSLOT.
 
-Written 2026-09-13 (capture-batch segment 5). Two captured families disagreed
+Written (capture-batch segment 5). Two captured families disagreed
 about what one UDT-typed tag costs, and they disagreed only because they sit on
 opposite sides of an 8-byte boundary:
 

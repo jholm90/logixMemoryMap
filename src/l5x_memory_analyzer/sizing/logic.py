@@ -21,13 +21,13 @@ _BARE_TAG = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 # CPT expression exists to confirm it converts the same way, so it falls
 # through uncharged rather than being guessed at.
 # Integer operand types that cost a conversion in a REAL-destination CPT.
-# LINT is deliberately ABSENT (2026-09-04): cptrd_operand_lint, which is the
+# LINT is deliberately ABSENT: cptrd_operand_lint, which is the
 # all-REAL control with only the operand type swapped, measures 244/rung --
 # byte-identical to that control. A LINT operand costs nothing extra, and
 # charging it per_int_operand over-predicted that file by 26.79%.
 _CPT_INTEGER_OPERAND_TYPES = frozenset({"SINT", "INT", "DINT"})
 
-# Narrow integers, widened to DINT before evaluation -- 2026-09-04: 
+# Narrow integers, widened to DINT before evaluation --:
 # "ints will use a behind the scenes conversion to dint". This is what makes
 # SINT cost +256/rung against that same control while LINT costs nothing.
 _CPT_NARROW_OPERAND_TYPES = frozenset({"SINT", "INT"})
@@ -65,7 +65,7 @@ def compute_routine_logic_bytes(
     it -- resolution just silently finds nothing and no surcharge applies,
     same as before this feature existed.
 
-    charge_shell=False (2026-08-27, Task/Program/Routine shell decomposition,
+    charge_shell=False (Task/Program/Routine shell decomposition,
     see memory_model.yaml task_program_overhead): a PLAIN routine (no JSR
     involvement) no longer pays its own fixed_base_per_routine here --
     report.py charges that shell exactly once per file instead, plus the
@@ -90,7 +90,7 @@ def compute_routine_logic_bytes(
     # `weights` now, so the loop above never double-counts it.
     #
     # A CPT writing to a REAL destination is evaluated in floating point and
-    # priced by a separate real_dest model (wired 2026-09-04) -- the integer
+    # priced by a separate real_dest model (wired) -- the integer
     # operator-tier costs above don't apply, and every non-float operand
     # carries a real conversion cost. Needs the file's tag types to tell a
     # REAL destination from an integer one, so a file whose types can't be
@@ -134,7 +134,7 @@ def compute_routine_logic_bytes(
     # the base CMP:76 weight already summed via instruction_counts above.
     # See memory_model.yaml cmp_surcharge for the derivation.
     #
-    # 2026-09-12: a CMP whose operands are themselves ARITHMETIC expressions
+    # a CMP whose operands are themselves ARITHMETIC expressions
     # is charged the same operator-tier cost CPT uses, minus CPT's own
     # base_read (CMP already carries its own 76-byte base weight). CMP and
     # CPT share one expression law -- the tier table that was fitted on CPT
@@ -155,10 +155,10 @@ def compute_routine_logic_bytes(
     # Parameters-block declaration) is charged separately, once per
     # distinct target routine, by report.py -- not here, since it isn't a
     # property of any one calling routine or call site. output_param_cost
-    # (wired 2026-08-29): the trailing return-value args a JSR call passes
+    # (wired): the trailing return-value args a JSR call passes
     # back (`JSR(name, N_in, in_1..in_N, out_1..out_M)`) were completely
     # unmodeled until real jsr_mixedio_5in_2out/jsr_multiret_n04 capture
-    # data (2026-08-23, sat unreconciled) showed ~40/call for m=2 output
+    # data (sat unreconciled) showed ~40/call for m=2 output
     # args, matching the SAME per-param rate as input args -- see
     # memory_model.yaml jsr_param_cost.
     for _target, n_in, m_out in routine.jsr_calls:
@@ -173,7 +173,7 @@ def compute_routine_logic_bytes(
     # for the derivation.
     total += routine.branch_bracket_instruction_count * model.branch_bracket_cost_per_instruction
 
-    # Every AOI call site (OQ-DEFSCALE, 2026-09-13). These cost nothing before
+    # Every AOI call site (OQ-DEFSCALE). These cost nothing before
     # today: the instruction-count regex is all-caps-only and real AOI names are
     # mixed-case, so 3,918 real call sites were invisible. See memory_model.yaml
     # aoi_call_site -- 168 bytes, from a 1/5/20/60-call sweep whose four files
@@ -182,7 +182,7 @@ def compute_routine_logic_bytes(
     total += (routine.aoi_call_count * model.aoi_call_site_bytes
               + routine.aoi_call_param_count * model.aoi_call_site_per_param_bytes)
 
-    # OQ-SERIESOUTPUT, wired 2026-09-18: every writing instruction beyond the
+    # OQ-SERIESOUTPUT, wired: every writing instruction beyond the
     # first in a rung costs 12 LESS than the sum of its own weights. Subtracted
     # once here rather than folded into any weight, because the weights are
     # correct for a one-output rung and it is the second output onward that is

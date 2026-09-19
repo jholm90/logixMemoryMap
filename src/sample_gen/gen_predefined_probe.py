@@ -1,11 +1,11 @@
 """Blank-tag probe batch for every remaining unmodeled predefined data type,
-2026-08-27: every missing predefined data type gets a file, declared as a
+every missing predefined data type gets a file, declared as a
 plain controller tag with no logic. Following the earlier plan of taking
 the remaining types one tag at a time, with no need for multiple copies of
 each -- one file, one Controller-scoped tag, no rung logic, per type.
 
 Source of the full type list: the real Rockwell "Pre-defined data types"
-list supplied directly (2026-08-27), cross-checked type-by-type against
+list supplied directly, cross-checked type-by-type against
 this project's own memory_model.yaml (`predefined_structures` +
 `predefined_array_structures` + CAM) to find what's still missing. Plain
 atomic types (BOOL/SINT/INT/DINT/LINT/REAL/LREAL/UDINT/UINT/ULINT/USINT/
@@ -44,7 +44,7 @@ from sample_gen.wrapper import build_l5x
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "predefined"
 
-# Full real Rockwell "Pre-defined data types" list (2026-08-27, paste),
+# Full real Rockwell "Pre-defined data types" list (paste),
 # minus plain atomics, minus what's already wired in memory_model.yaml
 # (predefined_structures / predefined_array_structures / CAM), minus MODULE
 # (not a normal declarable Tag DataType -- see docstring).

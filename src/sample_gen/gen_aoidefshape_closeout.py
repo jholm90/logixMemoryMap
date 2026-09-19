@@ -1,6 +1,6 @@
 """Breaks the last confound in the itemised AOI-definition formula.
 
-Written 2026-09-13 (capture-batch segment 4) after the `aoimix_*` grid and 124
+Written (capture-batch segment 4) after the `aoimix_*` grid and 124
 captured def-only files replaced four fitted AOI-definition terms with one
 itemised form (memory_model.yaml aoi_definition):
 

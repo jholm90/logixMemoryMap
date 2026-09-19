@@ -1,6 +1,6 @@
 """Marginal module cost: does the per-module discount repeat per catalog?
 
-Written 2026-09-11 against the 54 captured `asmclose_*` files, all of which
+Written against the 54 captured `asmclose_*` files, all of which
 are now reconciled. Those 54 points say something exact and unexpected:
 
     over-prediction(n) = discount x (n - 1)
@@ -375,7 +375,7 @@ def arm_c_drive_with_axis() -> int:
     n = 0
     for catalog, counts in (("2198-D012-ERS3", (1, 2, 4, 8)), ("2198-S086-ERS3", (1, 2))):
         for copies in counts:
-            # FIXED 2026-09-14: every one of this arm's six captures carried a
+            # FIXED: every one of this arm's six captures carried a
             # Studio build error, one per drive module, because the file had no
             # 2198 bus supply and no converter axis. A drive with no bus power in
             # its sharing group fails Build while the file still converts, so

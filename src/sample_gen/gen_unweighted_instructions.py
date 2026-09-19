@@ -1,6 +1,6 @@
 """Instructions this engine charges ZERO bytes for, but that appear in real files.
 
-2026-09-05, covering the unweighted instructions. MCSV is a motion
+covering the unweighted instructions. MCSV is a motion
 instruction and needs an axis, the same as MAJ, MSF and the rest.
 
 The coverage audit (sizing/coverage.py) found 38 distinct mnemonics used in

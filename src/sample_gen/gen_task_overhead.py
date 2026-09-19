@@ -1,4 +1,4 @@
-"""OQ item 13 (roadmap 2026-08-22): per-Task overhead, isolated from logic
+"""OQ item 13 (roadmap): per-Task overhead, isolated from logic
 content. Each extra Task gets its own trivial Program (single NOP rung, no
 tags) so any Capacity delta is attributable to the Task/Program/Routine
 scaffolding itself, not the logic inside it -- distinct from JSR call-site

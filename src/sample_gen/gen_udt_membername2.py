@@ -1,6 +1,6 @@
 """Is a member NAME charged once per definition, or once per tag?
 
-Written 2026-09-11, the same day as `gen_udt_membername.py`, to close a hole
+Written the same day as `gen_udt_membername.py`, to close a hole
 in that batch found while reviewing it: all 24 `udtmn_*` files carry
 `tags_xml=""`. Zero tags, in every arm. So whatever they measure, they
 measure it PER DEFINITION, and they are structurally incapable of saying

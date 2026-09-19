@@ -1,8 +1,8 @@
-"""STRING/custom-string tag_overhead resolution sweep (2026-08-25).
+"""STRING/custom-string tag_overhead resolution sweep.
 Strings and AOIs both needed more work; this generates as many L5X files
 as it takes to resolve every remaining scenario.
 
-Follows up OQ-STRINGTAGOVERHEAD (2026-08-24): `string_builtin_x1000` and
+Follows up OQ-STRINGTAGOVERHEAD: `string_builtin_x1000` and
 `customstring_250char_x1000` both showed the engine over-predicting by
 almost exactly -2 bytes/tag at n=1000 -- real and consistent across two
 independent STRING families, but only ONE count point each, so it wasn't
@@ -81,7 +81,7 @@ def group_namelen() -> None:
             base = f"S{suffix}"
             pad_needed = max(0, length - len(base))
             filler = ("_LONGNAME" * (pad_needed // 9 + 1))[:pad_needed]
-            # Real Rockwell tag-naming rule (2026-08-25): double
+            # Real Rockwell tag-naming rule: double
             # underscores are forbidden. filler can end in "_" depending on
             # pad_needed's remainder mod 9, which then abuts suffix's
             # leading "_" -- this is exactly what broke length=32's real

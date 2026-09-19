@@ -1,4 +1,4 @@
-"""Module/IO extraction table (2026-08-27). Built from the extracted I/O
+"""Module/IO extraction table. Built from the extracted I/O
 modules across the existing programs, with the in/out/config controller
 tags separately marked so they can be compared against the actual module
 size. Also adds

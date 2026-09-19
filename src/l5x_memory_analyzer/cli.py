@@ -9,7 +9,7 @@ breakdown -- see docs/TASKS.md Phase 1 output-contract item.
 
 `ui`: serve the Phase 2 treemap UI over a local web server. l5x_path is
 optional -- omit it to start with the File->Open picker instead (
-2026-08-20: desktop-shortcut launch shouldn't require a command prompt).
+desktop-shortcut launch shouldn't require a command prompt).
 
 `export`: write the same flat byte breakdown as `size` to a CSV or XLSX
 file instead of stdout (docs/TASKS.md Phase 6 "Export report"). Format is
@@ -68,7 +68,7 @@ def _cmd_size(args: argparse.Namespace) -> int:
     entries, errors = build_report(doc.root, model)
     entries = sorted(entries, key=lambda e: e.bytes, reverse=True)
 
-    # Export scope up front, before any number (2026-09-04). A partial
+    # Export scope up front, before any number. A partial
     # export's total is not comparable to a controller Capacity reading,
     # and the three-way split is the only honest way to state it: what the
     # exported thing costs, versus what it drags along that the destination

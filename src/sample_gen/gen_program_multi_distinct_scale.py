@@ -1,5 +1,5 @@
 """OQ-TASKOVERHEAD (task_program_overhead, memory_model.yaml). Built
-2026-08-31, right after the JSR distinct-target-count finding, applying the
+right after the JSR distinct-target-count finding, applying the
 same treatment to Programs. report.py's task_program_
 shell formula (fixed_base_per_routine + task_extra*(n_tasks-1) +
 program_extra*(n_programs-1) + routine_extra*(n_plain_routines-1)) has
@@ -44,7 +44,7 @@ OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "logi
 N_PROGRAMS_SCALE = (5, 10, 15, 20, 50)
 # 40 is Rockwell's real Logix identifier length cap (tag/routine/program/AOI
 # names all share it) -- NOT a round-number choice. Originally 48 here;
-# a real l5x2acd run (2026-08-31) failed to import both namelen48
+# a real l5x2acd run failed to import both namelen48
 # files (this one and gen_jsr_multi_distinct_targets_scale.py's) with the
 # generic XMLSrv_E_IMPORT_ABORTED_NO_CHANGES wrapper, no per-file detail,
 # while every other length (4/8/16/32, all <=40) converted clean --

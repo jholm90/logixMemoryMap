@@ -1,11 +1,11 @@
-"""MESSAGE-structure MessageType sweep (OQ-PREDEFINED, 2026-08-25). This
+"""MESSAGE-structure MessageType sweep (OQ-PREDEFINED). This
 reverses the earlier deprioritization of MESSAGE size as acceptable at the
 90% tier. MESSAGE instructions behave like axis tags: lots of
 config but always the same data size."
 
 The only MessageType tested so far is CIP Generic (`instrfirst_msg.L5X`,
 `gen_instruction_firstpass.py`), a 12-attribute get-attribute-list message.
-Real corpus grep across every `samples/local/` file (2026-08-25) turned up
+Real corpus grep across every `samples/local/` file turned up
 8 distinct real MessageTypes in use, each with its own attribute SET
 (never guessed -- every attribute name/value pair below is copied verbatim
 from a real `<MessageParameters>` element, only RemoteElement/LocalElement/

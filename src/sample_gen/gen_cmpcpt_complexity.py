@@ -1,4 +1,4 @@
-"""CPT/CMP expression-COMPLEXITY sweep (2026-08-23). Method: 10-20 files
+"""CPT/CMP expression-COMPLEXITY sweep. Method: 10-20 files
 with a single CPT instruction each, varying expression complexity to see
 how size responds, then the same for CMP. After that analysis, a couple of
 spot checks in files with multiple rungs carrying the same expression, and
@@ -6,11 +6,11 @@ a couple with combinations of
 random rungs/expressions to validate. Be sure to put constants as well as
 tags."
 
-Directly targets the MAJOR finding from the 2026-08-23 rebase (see
+Directly targets the MAJOR finding from the rebase (see
 docs/OPEN_QUESTIONS.md OQ-CMPCPTLAYOUT): the existing "CPT=452/rung, 0.00%
 residual" constant is confirmed WRONG as a general number -- it was fit
 against one specific complex expression, and real per-rung CPT cost is
-expression-complexity-dependent. `gen_cmpcpt_layout.py` (2026-08-22)
+expression-complexity-dependent. `gen_cmpcpt_layout.py`
 already swept OPERATOR type and a few structural variants at a FIXED
 2-operand complexity, 1000 rungs each -- this sweeps operand COUNT itself
 (the actual complexity axis the CPT finding says matters), one CPT/CMP

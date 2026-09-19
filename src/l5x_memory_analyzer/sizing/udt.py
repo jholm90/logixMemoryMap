@@ -73,7 +73,7 @@ def compute_array_size(
         # structures for the derivation.
         #
         # The ELEMENT BLOCK is padded to an 8-byte boundary; the base sits
-        # outside it. Confirmed 2026-09-11 across every captured CAM and
+        # outside it. Confirmed across every captured CAM and
         # CAM_PROFILE point, 15 of 15 at zero residual. It only shows up on
         # CAM, whose 12-byte element leaves 12*N off an 8-byte boundary at
         # odd N -- CAM_PROFILE's 56-byte element is always 8-aligned
@@ -88,7 +88,7 @@ def compute_array_size(
 
     if data_type == "STRING":
         # Array-of-builtin-STRING: a DIFFERENT real mechanism from a
-        # scalar STRING tag (OQ-STRINGARRAYPAD, confirmed 2026-08-26) --
+        # scalar STRING tag (OQ-STRINGARRAYPAD, confirmed) --
         # array elements do NOT get the scalar tag's -2/tag benefit, and
         # instead carry their own flat one-time array_base PLUS a real
         # per-element surcharge on top of the ordinary N x (LEN+DATA)
@@ -117,7 +117,7 @@ def compute_array_size(
         return total, weakest(element_confidence, base_confidence)
     if data_type in data_types and data_types[data_type].is_aoi:
         # Array-of-AOI-instances: a real, DIFFERENT formula from plain
-        # array-of-UDT below -- confirmed 2026-08-26, see memory_model.yaml
+        # array-of-UDT below -- confirmed, see memory_model.yaml
         # aoi_array for the full derivation. Per-instance cost is the
         # scalar instance size minus a flat discount, minus 4 bytes per
         # declared BOOL member (EnableIn/EnableOut excluded -- they aren't
@@ -152,7 +152,7 @@ def compute_array_size(
         return block, weakest(element_confidence, model.aoi_array.confidence)
     if data_type in data_types:
         # Array-of-UDT: each element rounds up to a 4-byte boundary --
-        # confirmed 2026-08-24 (OQ-ARRAYPACK/OQ-UDTARRAYALIGN resolved,
+        # confirmed (OQ-ARRAYPACK/OQ-UDTARRAYALIGN resolved,
         # see RESOLVED_QUESTIONS.md) against real data for a 3-byte-tight
         # UDT array (arraypack_odd3b_n*, n=10/100/1000/5000 all landed on
         # exactly the same residual as the universal small-baseline noise
@@ -193,7 +193,7 @@ def compute_udt_size(
     udt = data_types[name]
 
     if udt.is_string_family:
-        # Custom string type: LEN + DATA[N]. Real-bug fix 2026-08-25: the
+        # Custom string type: LEN + DATA[N]. Real-bug fix: the
         # DATA member (SINT[N]) does NOT round up to a plain 4-byte
         # boundary -- it rounds to the NEAREST multiple of 8, rounding
         # DOWN at the exact tie (remainder 4). Confirmed exact (0 residual)
@@ -239,12 +239,12 @@ def compute_udt_definition_cost(
     N+1) -- excludes only the HIDDEN backing SINT, not the visible BIT-alias
     members it backs, each of which is one real declared BOOL member.
     Getting this backwards (excluding bit-aliases instead of hidden
-    members) was a real bug caught 2026-08-22: an all-BOOL UDT computed
+    members) was a real bug caught: an all-BOOL UDT computed
     declared_member_count=0 (its only non-bit-alias member IS the hidden
     one), silently undercounting every UDT with any BOOL members.
 
     bool_run_bonus applies ONCE PER hidden backing SINT, not once per UDT
-    regardless of count -- also caught 2026-08-22: a BOOL,DINT,BOOL shape
+    regardless of count -- also caught: a BOOL,DINT,BOOL shape
     (a non-BOOL member breaking the run, per OQ-ALIGN, needs two separate
     hidden SINTs) real-measured at base+2*bonus, not base+1*bonus."""
     udt = data_types[name]
@@ -266,7 +266,7 @@ def compute_aoi_definition_cost(
     instance's own tag_overhead + member size, the same relationship
     compute_udt_definition_cost has to a plain UDT.
 
-    One itemised form, derived 2026-09-13 from 124 captured def-only files:
+    One itemised form, derived from 124 captured def-only files:
 
         base
         + per_member_descriptor_bytes per declared member
@@ -297,7 +297,7 @@ def compute_aoi_definition_cost(
             bool_count += 1
             continue
         # Every other declared member costs its own data space on top of the
-        # descriptor. Measured for arrays 2026-09-11 from the 27-file
+        # descriptor. Measured for arrays from the 27-file
         # aoi_arraylocal_* sweep (DINT dim 10/50/100/250/500/1000 reading
         # 41/201/401/1001/2001/4001, i.e. 4 bytes per element with the
         # project-wide +1 residual; SINT 1.0, REAL 4.0 per element at dim 50;

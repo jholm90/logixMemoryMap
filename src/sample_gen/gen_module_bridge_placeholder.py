@@ -1,5 +1,5 @@
 """Ethernet-bridge PLACEHOLDER modules -- no Connections, no PLC logic tie,
-just an IP-address bookkeeping entry (2026-09-02, reviewing a real
+just an IP-address bookkeeping entry (reviewing a real
 production file's memory estimate: "the bridge with no modules i used as a
 placeholder for IP addresses with no PLC logic connections. I suggest you
 generate a sample test file for those").
@@ -9,7 +9,7 @@ CatalogNumber="ETHERNET-BRIDGE" module with a CIPBus Port (Bus Size="100")
 and an Ethernet Port carrying only its own IP Address -- no <Communications>
 element at all, so module_defined_bytes/stated_total_bytes are both 0.
 report.py's build_report() already treats this as unmodeled (flagged via
-SizeError, 2026-09-02 fix -- see that commit) rather than guessing an
+SizeError fix -- see that commit) rather than guessing an
 overhead value; the message confirms the real-world intent behind the
 shape (a network-topology placeholder, not a real I/O device) but doesn't
 by itself confirm what real Capacity cost, if any, it carries. This file

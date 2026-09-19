@@ -1,13 +1,13 @@
 """The two things standing between CPT and 100%, isolated.
 
-2026-09-04: "close cpt and get 100% accuracy. Keep in mind that ints
+"close cpt and get 100% accuracy. Keep in mind that ints
 will use a behind the scenes conversion to dint." That hint closed the
 REAL-destination path -- 47/47 captured calls exact -- but it also exposed
 exactly what the existing corpus cannot answer. Both gaps below are
 ONE-VARIABLE questions that the current files happen to hold constant, which
 is why no amount of re-fitting the existing data resolves them.
 
-GROUP A -- cptnarrow_* : how does the SINT/INT widening scale?
+GROUP A -- cptnarrow_*: how does the SINT/INT widening scale?
     There is exactly ONE file in the whole corpus with narrow operands in a
     REAL-destination CPT (cptrd_operand_sint: 3 SINT operands, +256/rung
     over the all-REAL control). 256/3 is not an integer, so a pure
@@ -25,7 +25,7 @@ GROUP A -- cptnarrow_* : how does the SINT/INT widening scale?
     assuming two types in a set behave the same (LINT was in the int-operand
     set for exactly that reason and turned out to cost nothing).
 
-GROUP B -- cptarrange_* : does operator ARRANGEMENT change the cost?
+GROUP B -- cptarrange_*: does operator ARRANGEMENT change the cost?
     Four integer-destination points sit exactly -4 from the refit two-tier
     model, and no linear model in (tier1_count, tier2_count) can reach them
     -- the system is over-determined and inconsistent. The smoking gun:

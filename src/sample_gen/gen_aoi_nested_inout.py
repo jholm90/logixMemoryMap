@@ -1,6 +1,6 @@
-"""OQ item 15 (roadmap 2026-08-22): nested AOI-with-required-InOut-param as
+"""OQ item 15 (roadmap): nested AOI-with-required-InOut-param as
 a UDT member. Previously declined in gen_axis_composite.py as an unconfirmed
-Studio 5000 construct -- resolved 2026-08-22 by checking a REAL working
+Studio 5000 construct -- resolved by checking a REAL working
 instance, not just the AOI/UDT *definitions*: `BedRolls` (DataType=
 "ts_CIPAxis") in samples/local/BaillieLeitchField_Edger_20260812_r00.L5X
 has a real `StructureMember Name="AOI" DataType="DriveAxis"` member, and its
@@ -14,7 +14,7 @@ into a UDT via MemberSpec(nested_members=...), same machinery
 gen_axis_composite.py's ts_CIPAxis-style test already uses for ordinary
 nested UDTs -- this just does it with an InOut-having AOI specifically.
 
-**2026-08-23 fix, after all 3 files here failed Build:** three hand-built,
+** fix, after all 3 files here failed Build:** three hand-built,
 Studio-5000-verified trial files exposed the real gaps -- not guessed,
 diffed byte-for-byte against what this generator was producing:
   1. The wrapper UDT's "AOI" member needs `Radix="NullType"
@@ -67,7 +67,7 @@ def _write(l5x: str, out_name: str, description: str) -> None:
 
 
 def main() -> None:
-    # REAL BUG FOUND 2026-08-31 (a real Studio 5000 verify errors +
+    # REAL BUG FOUND (a real Studio 5000 verify errors +
     # lint.py's new aoi_call_arg_count_mismatch check, same root cause as
     # gen_aoi_orphaned_def.py/gen_composite_realistic.py): required=False/
     # visible=False (the MemberSpec default) makes a param HIDDEN from

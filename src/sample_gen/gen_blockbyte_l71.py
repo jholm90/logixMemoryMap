@@ -1,5 +1,5 @@
 """1756-L71 counterpart of blockbytetest_dint120000.L5X (samples/generated/
-tags/, built via `sample_gen.cli tags`) -- 2026-08-30: "Youll also
+tags/, built via `sample_gen.cli tags`) --: "Youll also
 have to make that test for the l71 on the same firmware to get the
 comparison." That earlier file tests the "blocks" side of the question
 (1756-L81E, an L8x-family processor -- Studio 5000 labels its Capacity

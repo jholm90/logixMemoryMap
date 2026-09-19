@@ -1,4 +1,4 @@
-"""STRING closing batch, round 2 (2026-08-26), building whatever tests are
+"""STRING closing batch, round 2, building whatever tests are
 needed to close strings outright.
 
 Array-of-STRING is now RESOLVED and wired (OQ-STRINGARRAYPAD, see
@@ -195,7 +195,7 @@ def group_builtin_udtmember_scaling() -> int:
 
 
 # ---------------------------------------------------------------------------
-# E. Builtin-STRING-as-UDT-member disentangle, round 2 (2026-08-26).
+# E. Builtin-STRING-as-UDT-member disentangle, round 2.
 #
 # Group D's own results came back with a 2-D surface, not a 1-D one:
 #   correction(m, n=1) = 2m - 4  (m=1:-2, m=2:0, m=3:+2)

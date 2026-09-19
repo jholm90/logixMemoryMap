@@ -1,4 +1,4 @@
-"""Targeted 2-file follow-up (2026-08-26) to close OQ-JSRPARAMCOST's
+"""Targeted 2-file follow-up to close OQ-JSRPARAMCOST's
 fixed-vs-per-rung decomposition gap.
 
 The clean rung_count=100 param-count sweep (n=2/3/4/6/8/12,
@@ -69,7 +69,7 @@ def group_jsr_rungcount_overlap() -> int:
 
 
 def group_jsr_third_disentangle_point() -> int:
-    """2026-08-26: n=5/n=10 now have BOTH rung counts (100 and 1000) --
+    """: n=5/n=10 now have BOTH rung counts (100 and 1000) --
     real data resolves the fixed-vs-per-rung split cleanly: A(5)=204,
     B(5)=104/rung; A(10)=304, B(10)=204/rung. Both fit A(n)=104+20n,
     B(n)=4+20n exactly -- but from only 2 solved (n) points, a linear

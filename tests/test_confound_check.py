@@ -2,7 +2,7 @@
 
 A false clean is worse than no check: it certifies a family as differenceable
 when a capture on it will measure a sum. Three real blind spots were found
-and fixed on 2026-09-18 -- expressions inside a rung operand, ST bodies in
+and fixed -- expressions inside a rung operand, ST bodies in
 <Line>, and definition member order -- each of which made genuinely different
 files read as byte-identical. These lock all three, and the confound case.
 """

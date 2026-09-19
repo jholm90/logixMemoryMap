@@ -1,4 +1,4 @@
-"""AOI Parameter Required/Visible flag sweep (2026-08-23), on non-motion
+"""AOI Parameter Required/Visible flag sweep, on non-motion
 AOIs. Real semantics: the reference samples set the required flag on
 non-InOut parameters, which forces a tag to be entered for that parameter
 on the calling instance. If required is not set but visible is, the call
@@ -76,7 +76,7 @@ def _instance_with_call(
     """1 instance tag + an actual rung calling the AOI instruction (a new
     test surface -- every prior AOI generator only ever created a backing
     tag, never an actual instruction call in logic, per the confirmed
-    2026-08-20 finding that AOI-typed tags size identically to UDT
+    finding that AOI-typed tags size identically to UDT
     instances with no logic parsing needed for THAT question. This
     specifically targets the calling-instance/Required/Visible question
     instead, which does need a real call.)."""

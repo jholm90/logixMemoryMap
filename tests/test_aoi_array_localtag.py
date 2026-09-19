@@ -1,6 +1,6 @@
 """Array-dimensioned AOI declared members cost their own data space.
 
-OQ-AOIARRAYLOCALTAG, wired 2026-09-11 off the 27-file aoi_arraylocal_* sweep.
+OQ-AOIARRAYLOCALTAG, wired off the 27-file aoi_arraylocal_* sweep.
 """
 
 from __future__ import annotations

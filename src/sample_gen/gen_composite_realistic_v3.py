@@ -1,4 +1,4 @@
-"""50 MORE large, realistic-scope composite test programs -- v3, 2026-09-02,
+"""50 MORE large, realistic-scope composite test programs -- v3
 the explicit spec after reviewing a real production file's accuracy:
 "generate another 50 unique files (v3) with these requirements:
 1. 1.5-2.5MB target size (you making 10kb files makes the error much less
@@ -14,7 +14,7 @@ the explicit spec after reviewing a real production file's accuracy:
 
 Direct follow-up to the real accuracy test on that production file: predicted
 3,959,604 vs real 3,676,072 (+7.71%, outside the <2% target). Root-caused to
-the 2026-09-02 composite-scale JSR/AOI surcharge (fit from v1/v2's 22 files,
+the composite-scale JSR/AOI surcharge (fit from v1/v2's 22 files,
 each with exactly ONE JSR target) badly over-generalizing to a real file with
 179 distinct JSR targets -- see OPEN_QUESTIONS.md OQ-COMPOSITESCALE. This
 batch is designed to close that gap for real: EVERY file declares 5-12 extra
@@ -83,7 +83,7 @@ OUT_ROOT.mkdir(parents=True, exist_ok=True)
 _MODEL = load_memory_model()
 _TAG_FLAT_OVERHEAD_BASE = 84  # KNOWN, docs/MEMORY_MODEL.md "Per-tag flat overhead"
 
-# 2026-09-02, real bug found generating this batch: v1/v2 only ever put 2-4
+# real bug found generating this batch: v1/v2 only ever put 2-4
 # module catalogs in one file, so nobody had hit this before -- the CPU's
 # own default Local backplane only has 17 real ICP slots (_ICP_BUS_SIZE,
 # wrapper.py), so a file whose full 15-24-module pool leans too heavily on

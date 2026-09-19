@@ -1,4 +1,4 @@
-"""Big AOI data-sizing sweep (2026-08-20, "based on all of this extra
+"""Big AOI data-sizing sweep ("based on all of this extra
 stuff with the AOIs i expect another 10+ tests... totally nail off the data
 sizer estimation process"). Extends the confirmed UDT-definition-cost
 findings (168 + 16*member_count, type-independent except BOOL) to AOI

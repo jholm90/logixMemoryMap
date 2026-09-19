@@ -1,7 +1,7 @@
 """AOI STRUCTURAL cost space -- the batch that has to work on other
 people's AOIs, not the.
 
-2026-09-05: *"Like I said previously Murray AOIs are the same on
+*"Like I said previously Murray AOIs are the same on
 other projects. What new tests are you going to generate now for
 improving?"* and, the same day: *"Keep in mind that I plan on sharing this
 for people outside my company and their code will be very different and
@@ -61,7 +61,7 @@ today, which is a hypothesis nothing has ever tested:
   7. **Extra internal routines.** 7 of 81 real AOI definitions carry an
      EnableInFalse and/or Prescan routine besides Logic.
 
-GROUPS (56 files, every one answering a live question -- 2026-08-25: 
+GROUPS (56 files, every one answering a live question --:
 *"Don't just fill up the minimum 60 test roster with filler work"*):
 
   aoistr_namelen_c{04..40}        7  member NAME length, 20 DINT params

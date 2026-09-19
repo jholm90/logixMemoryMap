@@ -73,8 +73,7 @@ def test_aoi_instance_sizes_like_a_udt():
     assert bytes_ == 28
     # Every component of this instance is now KNOWN: UDT alignment (OQ-ALIGN)
     # and standalone BOOL sizing (OQ-BOOLPACK) were both closed by real
-    # capture, and the BOOL tier was corrected from a stale ASSUMED on
-    # 2026-09-06.
+    # capture, and the BOOL tier was corrected from a stale ASSUMED.
     assert confidence == "KNOWN"
 
 
@@ -95,7 +94,7 @@ def test_self_referential_aoi_raises():
 
 
 def test_parameter_and_localtag_dimensions_attribute_is_plural():
-    # Real bug, found 2026-08-27: real <Parameter>/<LocalTag> elements
+    # Real bug, found: real <Parameter>/<LocalTag> elements
     # carry their array size on "Dimensions" (PLURAL) -- confirmed against
     # 271 real corpus instances, zero counter-examples for the singular
     # form a plain UDT <Member> uses instead. This previously read

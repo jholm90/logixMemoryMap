@@ -14,7 +14,7 @@ def test_unified_processor_exact_match():
 
 
 def test_prefix_match_ignores_safety_suffix():
-    # Real L5X data (2026-08-20): "1756-L81ES" -- the S is a safety-capable
+    # Real L5X data: "1756-L81ES" -- the S is a safety-capable
     # base, not a different memory tier.
     b = TABLE.lookup("1756-L81ES")
     assert b is not None

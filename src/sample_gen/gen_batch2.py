@@ -1,4 +1,4 @@
-"""Second big test batch (2026-08-20): nested UDTs, nested array
+"""Second big test batch: nested UDTs, nested array
 UDTs, custom-length STRING validation, AOI generation (including nested
 AOIs and arrays inside AOIs), and large realistic multi-tag/UDT
 combination files at 100+ and 1000+ tag scale with no logic.
@@ -103,7 +103,7 @@ def group_aoi() -> None:
     l5x_1inst = build_l5x(target_name="BasicAOI", tags_xml=tag, extra_aoi_xml=definition)
     _write(l5x_1inst, "aoi", "basic_aoi_1_instance", "Basic AOI (2 In/1 Out/2 Local), 1 instance")
 
-    # Array of AOI-INSTANCE tags -- real shape confirmed 2026-08-20 against
+    # Array of AOI-INSTANCE tags -- real shape confirmed against
     # the Aoi_Nested_requiredParams_UsedInMainPrgArray.L5X (a controller
     # tag Dimensions="10" of the AOI type, same Array/Element/Structure
     # pattern already confirmed for array-of-UDT). This is the "arrays with
@@ -122,7 +122,7 @@ def group_aoi() -> None:
     l5x = build_l5x(target_name="ArrayLocalAOI", tags_xml=tag, extra_aoi_xml=definition2)
     _write(l5x, "aoi", "aoi_array_localtag_1_instance", "AOI with a 100-element array LocalTag, 1 instance")
 
-    # Real rule found 2026-09-03 (live controller testing): an
+    # Real rule found (live controller testing): an
     # array-dimensioned atomic Parameter can ONLY be Usage="InOut" -- Logix
     # does not allow an array Input or Output Parameter at all. This
     # generator previously built "aoi_array_param_def_only" with a

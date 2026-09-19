@@ -36,7 +36,7 @@ def predicted_bytes(l5x_text: str) -> int:
     # partial export). Those are the whole point of the files that carry
     # them. Only a genuine unsized-tag error means the generator is wrong.
     #
-    # Found 2026-09-04 the moment sizing/coverage.py started routing gaps
+    # Found the moment sizing/coverage.py started routing gaps
     # through the errors channel: every alarm-batch regeneration blew up
     # with "sample has unsized tags" on a file whose only problem was that
     # it contains the very thing it was built to measure.
@@ -49,8 +49,8 @@ def predicted_bytes(l5x_text: str) -> int:
 def write_sample(l5x_text: str, out_path: Path) -> int:
     """Writes the L5X file and returns its predicted byte total.
 
-    Runs the local heuristic pre-flight lint first (sample_gen/lint.py,
-    2026-08-22) -- catches the two known real error classes (missing array
+    Runs the local heuristic pre-flight lint first (sample_gen/lint.py)
+    -- catches the two known real error classes (missing array
     subscript, instruction/AOI reference with no matching definition)
     before the file ever ships, since l5x2acd conversion succeeding does
     NOT mean the ladder logic would actually verify in Studio 5000

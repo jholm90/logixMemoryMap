@@ -8,7 +8,7 @@ another cancel invisibly inside a real program.
 
 That is not a theory. Every candidate driver computable from the L5X has
 been tested against the error and none of them explains it. The figures
-below are from 2026-09-12 and the SIGN has since flipped -- see the
+below are and the SIGN has since flipped -- see the
 correction underneath, which does not change the conclusion:
 
     AOI definitions   r = -0.414      rungs             r = -0.071
@@ -19,7 +19,7 @@ correction underneath, which does not change the conclusion:
                          1756-L81E, worse than every 5069 file, on the
                          family with the best median
 
-CORRECTED 2026-09-13, after seven capture-batch segments of wiring. The
+CORRECTED after seven capture-batch segments of wiring. The
 two worst files are no longer over-predicting at -5.16% and -5.03%:
 FOURTEEN OF SIXTEEN now UNDER-predict, worst +4.22% (superior), and the
 residual is one-sided. Re-differenced against the current engine, the

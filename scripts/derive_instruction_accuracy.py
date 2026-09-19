@@ -22,7 +22,7 @@ that is exactly what a confidence display is for.
 XIC, XIO, OTE and NOP get no isolated sweep of their own because they ARE the
 scaffolding every other test rung is built from. They are not unmeasured --
 they are the most-measured weights in the model: the `emptyrungs` sweep fixes
-NOP and the per-rung base, and the 2026-09-18 `rshape_arr_*` files hold eight
+NOP and the per-rung base, and the `rshape_arr_*` files hold eight
 XICs and one OTE fixed while moving only the branch arrangement and came back
 byte-exact at every leg count. `confidence.py` pins them explicitly rather
 than reporting them as unknown.

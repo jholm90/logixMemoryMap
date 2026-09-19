@@ -1,7 +1,7 @@
 """AOI Parameter/LocalTag members whose type is a PREDEFINED STRUCTURE.
 
-2026-09-06. Written for `gen_aoi_structure.py` after a member-type census
-of the nine real programs against the whole generated corpus found this:
+Written for `gen_aoi_structure.py` after a member-type census of the real
+programs against the whole generated corpus found this:
 
     type                real AOI member uses   ever generated
     TIMER                              557          0

@@ -137,7 +137,7 @@ def test_does_not_flag_module_address_within_parent_bus_size():
     assert not any(f.kind == "chassis_size_exceeded" for f in findings)
 
 
-# 2026-08-31: real Studio 5000 verify errors on composite_realistic_
+# real Studio 5000 verify errors on composite_realistic_
 # 02/03.ACD, "Invalid number of arguments for instruction" on every AOI
 # call rung -- a hidden (Required=false/Visible=false) Input/Output
 # Parameter isn't a real call-argument slot, but the generator supplied
@@ -289,7 +289,7 @@ _BAD_NAME_WRAPPER = """
 
 
 def test_flags_trailing_underscore_name():
-    # Real Studio 5000 failure 2026-09-06: "Error creating 'Parameter'
+    # Real Studio 5000 failure: "Error creating 'Parameter'
     # (Invalid name.)" on `InParam00___`. One padding helper that filled
     # names to an exact length with underscores broke 52 of 56 files in a
     # single batch.

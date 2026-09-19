@@ -1,6 +1,7 @@
-"""Closes the one remaining real catalog gap found auditing full coverage
-(2026-08-27): every I/O module found in the corpus gets its own file.
-Cross-checked every distinct real
+"""Closes the one remaining real catalog gap found auditing full coverage.
+
+Every I/O module found in the corpus gets its own file. Cross-checked
+every distinct real
 CatalogNumber across the full 63-file corpus against gen_module_sweep.py +
 gen_module_sweep_variants.py -- 118 of 119 real, non-legacy, non-
 processor, non-placeholder catalogs already covered. The one gap: "150 SMC
@@ -14,7 +15,7 @@ is the exact same shape already handled for PowerFlex VFDs.
 
 With this file, individual per-catalog coverage is 119/119.
 
-**Fixed 2026-08-27, real Studio 5000 import bug found: "Data
+**Fixed real Studio 5000 import bug found: "Data
 type mismatch."** This module is a User-Defined-Catalog (UDC) device --
 its `UdcAopVersion` attribute means Studio 5000 has no BUILT-IN profile
 for it the way it does for a standard Rockwell catalog module; the

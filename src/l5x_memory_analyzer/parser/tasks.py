@@ -1,4 +1,4 @@
-"""Parses Controller/Tasks out of an L5X document (2026-08-27, Phase 5
+"""Parses Controller/Tasks out of an L5X document (Phase 5
 Task-level UI grouping).
 
 This module extracts which Programs are scheduled under which Task, a
@@ -10,7 +10,7 @@ already-correctly-computed Programs' bytes.
 
 parse_tasks is also reused by sizing/report.py for the separate Task/
 Program/Routine BYTE-COST question (docs/OPEN_QUESTIONS.md OQ-TASKOVERHEAD,
-wired 2026-08-27, see memory_model.yaml task_program_overhead) -- that one
+wired, see memory_model.yaml task_program_overhead) -- that one
 just needs this module's task COUNT, not the scheduling detail below.
 """
 
@@ -24,7 +24,7 @@ from dataclasses import dataclass, field
 class TaskInfo:
     name: str
     scheduled_program_names: tuple[str, ...] = field(default_factory=tuple)
-    # 2026-09-03, OQ-SAFETYSCOPE-SIZING ("they are safety tasks and
+    # OQ-SAFETYSCOPE-SIZING ("they are safety tasks and
     # safety programs therefore they need separate sizing calculations").
     # Real, unambiguous marker: a SafetyTask carries Class="Safety" (confirmed
     # on samples/generated/fw_catalog_matrix/fwmatrix_v31_1756_l81es.L5X),

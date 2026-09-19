@@ -1,5 +1,5 @@
 """REAL-SCALE composite surcharge: the batch that targets the -12.4% miss on
-the first real virgin file (2026-09-04, "youve made some more unique
+the first real virgin file ("youve made some more unique
 tests to fix this 12% error?").
 
 Why this batch exists
@@ -79,7 +79,7 @@ C. group_aoi_internal_ladder (6 files)
    AOI term is isolated from the JSR term for the first time. n=6000
    (12,000 AOI instructions) brackets the real file's 6,255.
 
-D. Structured Text -- MOVED OUT to gen_st_sizing.py, 2026-09-04.
+D. Structured Text -- MOVED OUT to gen_st_sizing.py .
    The first draft of this batch carried a naive ST ladder written from
    general knowledge with only its FOR shape copied from a real file.
    ST has to be written from measured corpus idiom rather than plausible-

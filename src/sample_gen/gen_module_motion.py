@@ -1,4 +1,4 @@
-"""Motion node/drive module batch (2026-08-27), built from real corpus
+"""Motion node/drive module batch, built from real corpus
 exports: a power supply, a single-axis drive and a dual-axis drive, with
 the single-axis case supplied both as one instance and as three copies of
 the same axis, and the dual drive doubled up for reference.
@@ -117,7 +117,7 @@ def _drive_module_xml(name: str, catalog: str, safety_enabled: str, address: str
     """One 2198 drive module, with its OWN catalog's real identity and
     ConfigData payload.
 
-    2026-09-13, CORRECTING A FALSE CLAIM THAT STOOD HERE. This docstring used
+    CORRECTING A FALSE CLAIM THAT STOOD HERE. This docstring used
     to say D012 and S086 "share this exact shape -- only Name/CatalogNumber/
     SafetyEnabled differ, confirmed by direct comparison of both real files".
     They do not, and three things were wrong together in every 2198 drive this
@@ -146,7 +146,7 @@ def _drive_module_xml(name: str, catalog: str, safety_enabled: str, address: str
     converts the file and then fails Build with no bus power in the group --
     enforced by lint.py's kinetix_drive_without_bus_supply.
 
-    ExtendedProperties/ConfigID=33554537 confirmed real 2026-09-03 across
+    ExtendedProperties/ConfigID=33554537 confirmed real across
     THREE independent real captures: this project's own original
     p208_D012_NodeAndAxisDual.L5X (2198-D012-ERS3), a real
     TitusvilleTrimmer (2198-D057-ERS3), and the fresh from-scratch
@@ -157,7 +157,7 @@ def _drive_module_xml(name: str, catalog: str, safety_enabled: str, address: str
     entirely -- found via a byte-for-byte diff against SampleAxis.L5X.
 
     `address` defaults to a DIFFERENT IP than _P208_MODULE_XML's hardcoded
-    192.168.1.1 (2026-08-27, real Studio 5000 import bug found:
+    192.168.1.1 (real Studio 5000 import bug found:
     every drive module built from this function used to hard-code the
     SAME 192.168.1.1 as the P208 power supply it's always paired with in
     this file, a real "Duplicate IP Address" error the moment both are
@@ -232,7 +232,7 @@ def _axis_tag(name: str, motion_module: str) -> str:
     (built separately, once per file) since only one Motion Group exists
     per real file here, matching every real corpus example found.
 
-    AxisID is also given a unique value here (2026-08-27, real Studio 5000
+    AxisID is also given a unique value here (real Studio 5000
     import bug found: every axis tag from this helper carried the
     SAME literal AxisID="510977205" from _AXIS_TAG_XML's single real
     reference value -- harmless with exactly one axis in a file, but a
@@ -253,7 +253,7 @@ def _axis_tag(name: str, motion_module: str) -> str:
 
 # Real shape, extracted verbatim from samples/local/motion_p208/
 # p208_D012_NodeAndAxisDual.L5X (P208's own on-board "DC BUS" axis) --
-# confirmed 2026-09-03, structurally a COMPLETELY different, much shorter
+# confirmed, structurally a COMPLETELY different, much shorter
 # AXIS_CIP_DRIVE shape than a real motor/servo axis: AxisConfiguration=
 # "Non-Regenerative AC/DC Converter", FeedbackConfiguration="No Feedback",
 # no MotorDataSource/tuning/servo-loop-bandwidth parameters at all. Real
@@ -319,7 +319,7 @@ def bus_supply_with_converter(
     actual_bytes gets filled in from a project whose drives never got bus power,
     and every such row then reads as the model over-predicting.
 
-    Identified 2026-09-14 across 33 rows, only one of which carried error text.
+    Identified across 33 rows, only one of which carried error text.
     The error counts gave it away: axmarg_1cat_n{02,04,08,12,20} record exactly
     2/4/8/12/20 errors, while axis_scale_n{02..20}_dual -- the same axis counts on
     half as many modules -- record n/2 + 1. Per drive module, not per axis.

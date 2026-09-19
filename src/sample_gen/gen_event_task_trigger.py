@@ -1,4 +1,4 @@
-"""EVENT task trigger-source cost (2026-08-25): does an event task
+"""EVENT task trigger-source cost: does an event task
 triggered by MAW cost more than one triggered by the EVENT instruction?
 
 Real corpus shape confirmed (SJ_Gormley_20251112_r02.L5X,
@@ -39,7 +39,7 @@ OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "logi
 # Real AXIS_CIP_DRIVE + companion MOTION_GROUP tag pair (see
 # gen_axis_composite.py's _AXIS_TAG_XML docstring for provenance), renamed
 # from "Axis_Cip_Drive" to "WatchedAxis" so the EventTag reference below
-# resolves. REAL BUG FOUND 2026-08-30 (live testing: "Line 33:
+# resolves. REAL BUG FOUND (live testing: "Line 33:
 # Invalid display style" + "Line 70: Tag being used for event task does
 # not exist" -- then, pointedly: "if you set it for axis watch then you
 # should have generated an axis - does this not sound very obvious?"):
@@ -56,11 +56,11 @@ OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "logi
 # other 5069-L306ER files use that identical Bus Size and import fine.
 _WATCHED_AXIS_TAG_XML = _AXIS_TAG_XML.replace('Name="Axis_Cip_Drive"', 'Name="WatchedAxis"')
 
-# REAL BUG FOUND 2026-08-31 (real Studio 5000 error on
+# REAL BUG FOUND (real Studio 5000 error on
 # eventtask_instronly.L5X): "Failed to set the 'Size' property (Chassis
 # size exceeds the allowable size for a chassis.)" on the Local module's
 # own backplane Bus, with NO axis tag involved at all -- proving the
-# earlier 2026-08-30 dismissal of this same error class as "very likely a
+# earlier dismissal of this same error class as "very likely a
 # downstream artifact of the malformed-tag import abort" (see
 # _WATCHED_AXIS_TAG_XML's comment above) was wrong; it's a real,
 # independent bug. Root cause: "5069-L306ER" (bare, no S2/M/MS2/MS3

@@ -8,7 +8,7 @@ from l5x_memory_analyzer.sizing.report import ESTIMATED, EXACT, build_report
 MODEL = load_memory_model()
 # Read from the model, never restated here as a literal. These assertions
 # used to hardcode 47; when the composite surcharge was refitted on 9 real
-# programs (20/47 -> 52/21, 2026-09-04) three tests failed for asserting a
+# programs (20/47 -> 52/21) three tests failed for asserting a
 # constant's VALUE rather than that it is APPLIED ONCE PER JSR-target
 # instruction, which is the behaviour they exist to pin. See CLAUDE.md:
 # never hardcode a byte size where a named constant from the model will do.
@@ -67,7 +67,7 @@ def test_compute_routine_logic_bytes_sums_weights_plus_fixed_base():
 
     # fixed_base(4816) + XIC(4)*3 + OTE(16)*2 = 4816 + 12 + 32 = 4860
     # (XIC's isolated weight is 4, not the raw 20 -- that raw number was
-    # XIC+its-own-test-file's-companion-OTE combined, decomposed 2026-08-22)
+    # XIC+its-own-test-file's-companion-OTE combined, decomposed)
     assert bytes_ == 4816 + 4 * 3 + 16 * 2
     assert confidence == "FITTED"
 
@@ -75,12 +75,12 @@ def test_compute_routine_logic_bytes_sums_weights_plus_fixed_base():
 def test_build_report_includes_estimated_logic_entries():
     root = ET.fromstring(_XML)
     entries, errors = build_report(root, MODEL)
-    # ST is SIZED as of 2026-09-04 (sizing/structured_text.py), so it is no
+    # ST is SIZED (sizing/structured_text.py), so it is no
     # longer reported as a whole-language coverage hole. The fixture's ST
     # routine now produces a real entry instead.
     assert [e.path for e in errors] == []
 
-    # 2026-08-27, Task/Program/Routine shell decomposition: a single plain
+    # Task/Program/Routine shell decomposition: a single plain
     # routine's fixed_base_per_routine is now a separate "SHELL" entry
     # (charged once per file, see report.py/memory_model.yaml
     # task_program_overhead) rather than baked into the routine's own
@@ -101,14 +101,14 @@ def test_build_report_includes_estimated_logic_entries():
     # Exact-tier tag entries are untouched by the logic addition, still
     # their own tier, and total_bytes/pct_of_total now includes logic too.
     exact_entries = [e for e in entries if e.tier == EXACT]
-    assert len(exact_entries) == 3  # tags A, B + project_baseline (2026-08-23)
+    assert len(exact_entries) == 3  # tags A, B + project_baseline
     total = sum(e.bytes for e in entries)
     for e in entries:
         assert e.pct_of_total == (e.bytes / total) * 100
 
 
 def test_paired_instruction_weights_dont_double_count_companion_instruction():
-    # Regression test for the 2026-08-22 fix: gen_logic_sweep.py's XIC test
+    # Regression test for the fix: gen_logic_sweep.py's XIC test
     # file's rung text is "XIC(tag)OTE(tag);", not "XIC(tag);" alone (a
     # bare XIC can't legally close a rung). Before the fix, this engine
     # summed the raw (uncorrected) XIC weight AND the raw OTE weight for
@@ -151,12 +151,12 @@ def test_paired_instruction_weights_dont_double_count_companion_instruction():
 
 
 def test_jsr_target_routine_not_double_counted():
-    # Regression test for the 2026-08-22 fix: a JSR target routine's own
+    # Regression test for the fix: a JSR target routine's own
     # FIXED SHELL cost is already folded into the caller's jsr_fixed_base_
     # per_routine constant -- before that fix the engine also charged
     # SubTest its own full fixed_base_per_routine, overcounting every
     # JSR-using program. That part still holds (charge_shell=False for a
-    # JSR target). What's NO LONGER true (2026-08-31, real data at real
+    # JSR target). What's NO LONGER true (real data at real
     # scale disproved it -- see OPEN_QUESTIONS.md OQ-JSRPARAMCOST) is that
     # the target's own CONTENT was also free: it's now weighed with the
     # normal per-instruction model, same as any other routine.
@@ -191,7 +191,7 @@ def test_jsr_target_routine_not_double_counted():
     by_name = {r.routine_name: r for r in routines}
     assert by_name["SubTest"].is_jsr_target is True
     assert by_name["MainRoutine"].is_jsr_target is False
-    # Phase 5 call-tree UI (2026-08-27): jsr_target_names captures WHICH
+    # Phase 5 call-tree UI: jsr_target_names captures WHICH
     # routine(s) THIS routine calls, distinct from is_jsr_target (which
     # only says whether some other routine calls this one).
     assert by_name["MainRoutine"].jsr_target_names == frozenset({"SubTest"})
@@ -203,7 +203,7 @@ def test_jsr_target_routine_not_double_counted():
     # MainRoutine gets its own entry (its content, never double-counted
     # with SubTest's own content). SubTest, being a JSR target, gets its
     # A(n) Parameters-block one-time cost (OQ-JSRPARAMCOST) PLUS its own
-    # instruction content weighed normally (2026-08-31) -- just not its
+    # instruction content weighed normally -- just not its
     # own fixed_base_per_routine shell, which stays folded into the
     # caller's jsr_fixed_base_per_routine as before this feature existed.
     assert len(logic_entries) == 2
@@ -213,7 +213,7 @@ def test_jsr_target_routine_not_double_counted():
     # jsr_fixed_base_per_routine(5096) + JSR's own weight(72)*1 + B(0)=4 = 5172
     assert main.bytes == 5096 + MODEL.logic_instructions.weights['JSR'] + 4
     # A(0) = a_base(104) + a_per_param(20)*0 = 104, plus SubTest's own
-    # content (one NOP rung, weight 16, plus the 2026-08-31 composite-scale
+    # content (one NOP rung, weight 16, plus the composite-scale
     # surcharge of 47/instr = 47) -- no fixed_base_per_routine (that stays
     # folded into MainRoutine's jsr_fixed_base_per_routine above).
     assert sub.bytes == 104 + 16 + _JSR_SURCHARGE + MODEL.jsr_target_declaration.cost_for('SubTest', MODEL.identifier_name_length)
@@ -265,14 +265,14 @@ def test_jsr_param_cost_a_charged_once_even_with_two_call_sites():
     main = by_path["program:MainProgram/MainRoutine"]
     # jsr_fixed_base(5096) + JSR weight * 2 calls + B(2) * 2 calls. B(2) carries
     # b_multiparam_extra: the measured 4-byte step every call site passing 2 or
-    # more operands pays (OQ-JSRPARAMCOST, 2026-09-18), so B(2) = 4 + 20*2 + 4.
+    # more operands pays (OQ-JSRPARAMCOST), so B(2) = 4 + 20*2 + 4.
     b_two = MODEL.logic_instructions.jsr_param_cost.b_cost(2)
     assert b_two == 48
     assert main.bytes == 5096 + MODEL.logic_instructions.weights['JSR'] * 2 + b_two * 2
 
 
 def test_jsr_output_param_cost_charged_per_call_site():
-    # OQ-JSRPARAMCOST, wired 2026-08-29: trailing return-value args
+    # OQ-JSRPARAMCOST, wired: trailing return-value args
     # (`JSR(name, N_in, in_1..in_N, out_1..out_M)`) were completely
     # unmodeled -- real jsr_mixedio_5in_2out/jsr_multiret_n04 capture data
     # showed ~20/output-arg, same rate as an input arg. N_in=1 (arg "A"),
@@ -323,7 +323,7 @@ def test_jsr_output_param_cost_charged_per_call_site():
 
 
 def test_jsr_target_content_scales_with_instruction_count():
-    # 2026-08-31: real data (jsr_target_content_scale_{010,050,100,150})
+    # real data (jsr_target_content_scale_{010,050,100,150})
     # disproved the old "target content is free" assumption -- see
     # OPEN_QUESTIONS.md OQ-JSRPARAMCOST. This is the direct regression test
     # for that fix: a target with more real content must predict MORE
@@ -375,7 +375,7 @@ def test_jsr_target_content_scales_with_instruction_count():
 
 
 # ---------------------------------------------------------------------------
-# CPT expression-aware cost -- 2026-08-26, OQ-CMPCPTLAYOUT. CPT is
+# CPT expression-aware cost -- OQ-CMPCPTLAYOUT. CPT is
 # deliberately absent from the flat `weights` table now (real data: its
 # cost is expression-complexity-dependent, not a flat per-call constant);
 # these confirm the dedicated parser+cost_for path replaces it exactly.
@@ -494,7 +494,7 @@ def test_cpt_uniform_chain_matches_confirmed_real_formula():
 
 
 def test_cpt_t1_t2_mix_is_priced_per_tier_not_per_operator():
-    """A T1+T2 mix costs 100 + 24*tier1 + 40*tier2, refit 2026-09-04.
+    """A T1+T2 mix costs 100 + 24*tier1 + 40*tier2, refit .
 
     The old form here was a flat 100 + 32*operators, which could only be
     right where the two tiers balanced. Splitting the rate by tier takes the
@@ -511,7 +511,7 @@ def test_cpt_t1_t2_mix_is_priced_per_tier_not_per_operator():
     # Unbalanced -- where it was not. Swapping one T1 for one T2 must move
     # the answer by exactly 16; under a flat per-operator rate it moved by 0.
     # Compared at a leading tier-1 run of 1 on both sides, so the arrangement
-    # term (OQ-CPTARRANGE, wired 2026-09-18) is held constant: `+ + *` has a
+    # term (OQ-CPTARRANGE, wired) is held constant: `+ + *` has a
     # run of 2 and legitimately carries 4 more than the tier counts alone say.
     assert cost_for(["+", "*", "*"]) - cost_for(["*", "+", "*"]) == 0
     assert cost_for(["+", "+", "*"]) - cost_for(["+", "*", "+"]) == 4
@@ -525,7 +525,7 @@ def test_cpt_t1_t2_mix_is_priced_per_tier_not_per_operator():
 def test_cpt_t1_t2_mix_arrangement_term_is_a_leading_run_of_exactly_two():
     """The four points no linear (t1, t2) model could hit are now explained.
 
-    OQ-CPTARRANGE, measured 2026-09-18 from the 28-file cptarrange_* sweep: a
+    OQ-CPTARRANGE, measured from the 28-file cptarrange_* sweep: a
     two-tier mix costs 4 more when EXACTLY TWO tier-1 operators precede the
     first tier-2 one. Runs of 0, 1, 3, 4 and 5 cost nothing extra, which is why
     the alternating and grouped pair agree at 11 operators and differ at 5.
@@ -551,7 +551,7 @@ def test_cpt_t1_t2_mix_arrangement_term_is_a_leading_run_of_exactly_two():
 
 def test_cpt_pow_tier_mix_solved_for_t1t3_and_t2t3():
     # POW (T3) alongside EXACTLY ONE other tier (T1 or T2) is now solved
-    # (OQ-CMPCPTLAYOUT, 2026-08-25): pow_tier_mix_base + pow_tier_mix_per_operator
+    # (OQ-CMPCPTLAYOUT): pow_tier_mix_base + pow_tier_mix_per_operator
     # * operator_count. Real data confirmed T1T3 and T2T3 cost IDENTICALLY at
     # every tested operator count -- one formula for both pairs.
     model = MODEL.logic_instructions
@@ -561,7 +561,7 @@ def test_cpt_pow_tier_mix_solved_for_t1t3_and_t2t3():
 
 
 def test_cpt_all_three_tiers_applies_remainder_correction():
-    # All 3 tiers present in one expression, CLOSED 2026-08-29
+    # All 3 tiers present in one expression, CLOSED
     # (OQ-CMPCPTLAYOUT): the plain additive sum plus a real correction
     # keyed on operator_count % 3 -- confirmed 0 residual across all 9
     # real all-3-tier data points on file (see memory_model.yaml
@@ -573,7 +573,7 @@ def test_cpt_all_three_tiers_applies_remainder_correction():
 
 def test_cpt_three_tier_remainder_correction_matches_real_capture_points():
     # Real cptmix_threetier_* / cptmix_threetier_rem2_* capture data
-    # (OQ-CMPCPTLAYOUT closeout, 2026-08-29): 3-tier alternating
+    # (OQ-CMPCPTLAYOUT closeout): 3-tier alternating
     # [+,*,**] expressions at operand counts 5/6/9/10 (operator counts
     # 4/5/8/9), covering all 3 remainder classes with a real, exact
     # match at each.
@@ -611,7 +611,7 @@ def test_cpt_costed_per_call_not_via_flat_weights_table():
 
 
 # ---------------------------------------------------------------------------
-# Operand-type surcharge -- 2026-08-26, OQ-OPERANDTYPE. Confirmed via the
+# Operand-type surcharge -- OQ-OPERANDTYPE. Confirmed via the
 # real typesweep_* corpus (69 captures, error_count=0): SINT/INT/REAL/
 # STRING operands cost more than DINT/LINT for a wide instruction set.
 # ---------------------------------------------------------------------------
@@ -679,7 +679,7 @@ def test_operand_type_surcharge_string_and_lim_negative_real():
 
 
 # ---------------------------------------------------------------------------
-# Indirect (tag-driven) array-index cost -- 2026-08-26, OQ-INDIRECT.
+# Indirect (tag-driven) array-index cost -- OQ-INDIRECT.
 # Confirmed KNOWN: exact across 4 real count points (10/50/100/1000) each
 # for a plain tag index and a tag+literal-offset index.
 # ---------------------------------------------------------------------------
@@ -713,7 +713,7 @@ def test_unresolvable_index_shape_costs_nothing_not_guessed():
 
 
 # ---------------------------------------------------------------------------
-# CMP compound-condition/float-literal surcharge -- 2026-08-26. CMP:76
+# CMP compound-condition/float-literal surcharge -- . CMP:76
 # confirmed exact for a single condition; compound (&&/||) and float-
 # literal conditions cost real, additional, previously-unwired amounts.
 # ---------------------------------------------------------------------------
@@ -758,7 +758,7 @@ def test_cmp_float_literal_adds_surcharge_int_literal_does_not():
 
 
 # ---------------------------------------------------------------------------
-# OQ-BRANCHDEPTH: real branch-bracket cost, wired 2026-08-30. A branch with
+# OQ-BRANCHDEPTH: real branch-bracket cost, wired. A branch with
 # L legs compiles to L+1 real BST/NXB/BND-family instructions (1 BST +
 # (L-1) NXB + 1 BND); nested/staggered branches recurse. Confirmed exact
 # against 16/16 real capture points (branchdepthc_legs*/branchdepthstag_d*).
@@ -815,12 +815,12 @@ def test_build_report_reports_non_rll_routine_as_a_coverage_gap():
     _XML carries a non-RLL routine that parse_rll_routines drops on the
     floor. Before sizing/coverage.py that produced a silently understated
     total with nothing in the output to hint at it -- the only thing that
-    ever caught it was someone reading the L5X by hand (2026-09-04). Every
+    ever caught it was someone reading the L5X by hand. Every
     calculation has to live in the engine itself rather than in an ad-hoc
     analysis run alongside it. It now comes back as an ordinary SizeError,
     which is what the CLI, the UI and the CSV/XLSX export all render.
     """
-    # Retargeted 2026-09-04: ST used to be the unsized language here, but
+    # Retargeted: ST used to be the unsized language here, but
     # sizing/structured_text.py now prices it, so asserting on ST would test
     # nothing. FBD is still genuinely unsized (no real capture data exists
     # for it), which is exactly the condition this test guards.
@@ -850,7 +850,7 @@ def test_coverage_audit_does_not_flag_instructions_priced_outside_the_weights_ta
 
 
 def test_cmp_arithmetic_operands_cost_the_cpt_expression_rate():
-    """CMP and CPT share one expression law (OQ-CMPCPTLAYOUT, 2026-09-12).
+    """CMP and CPT share one expression law (OQ-CMPCPTLAYOUT).
 
     A CMP whose operands are themselves arithmetic expressions was priced as
     though they were bare tags. The fix reuses CPT's operator-tier table with
@@ -878,7 +878,7 @@ def test_cmp_comparison_and_boolean_operators_are_not_arithmetic():
 
 
 def test_jsr_multiparam_step_keys_on_total_operands_not_input_count():
-    """OQ-JSRPARAMCOST, 2026-09-18. B(n) is not affine in n: every call site
+    """OQ-JSRPARAMCOST . B(n) is not affine in n: every call site
     that references 2 or more operands pays a measured 4-byte step, and a call
     passing 1 input plus 2 outputs pays it exactly like one passing 2 inputs.
 
@@ -900,7 +900,7 @@ def test_jsr_multiparam_step_keys_on_total_operands_not_input_count():
 
 
 def test_word_destination_reads_the_destination_operand_not_the_length():
-    """OQ-AOIINTERNALLOGIC, 2026-09-18. COP/CPS/FLL are (Source, Dest, Length)
+    """OQ-AOIINTERNALLOGIC . COP/CPS/FLL are (Source, Dest, Length)
     and BSL/BSR are (Array, Control, Source, Length), so the destination is not
     the last operand. A BOOL destination must read as a BOOL even when the
     length operand beside it is a word.
@@ -922,7 +922,7 @@ def test_word_destination_reads_the_destination_operand_not_the_length():
 
 
 def test_sbr_ret_cost_nothing_without_operands_and_112_per_target_with_them():
-    """OQ-VERIFINSTR, 2026-09-18. The 12 subrtn_* files use parameterless
+    """OQ-VERIFINSTR . The 12 subrtn_* files use parameterless
     `SBR();`/`RET();` and measure exactly 0 at 1/5/25/100 rungs, so the
     instructions themselves are free. unweighted_sbrret_t{001,010,050,200} give
     each of 1/10/50/200 targets an SBR/RET pair carrying one operand each and
@@ -950,7 +950,7 @@ def test_sbr_ret_cost_nothing_without_operands_and_112_per_target_with_them():
 
 
 def test_dtr_is_weighted_and_its_five_siblings_are_confirmed():
-    """unweighted_* sweep, 2026-09-18. DTR is 40 per rung, measured at 10, 100
+    """unweighted_* sweep . DTR is 40 per rung, measured at 10, 100
     and 1,000 rungs (+404 / +4,004 / +40,004 against a weight of 0) -- it was the
     only one of the six still unpriced when those captures landed. The other five
     read the family's universal +4 at all three counts, so the weights they

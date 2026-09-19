@@ -1,4 +1,4 @@
-"""Second AOI sweep, closing remaining open items (2026-08-21, "add
+"""Second AOI sweep, closing remaining open items ("add
 the open aoi items to the next run... be productive and analyze the most
 possible"). Builds on real data already captured from gen_aoi_sweep.py:
 

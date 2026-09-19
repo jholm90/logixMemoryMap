@@ -1,8 +1,8 @@
-"""CPT/CMP operand-layout and background-optimization sweep
-(2026-08-22). CMP and CPT tested with different quantities and
-layouts of tags. Does tag**tag differ in size from tag*tag or tag-tag? Does
-tag+tag+tag+tag+tag+tag line up with your estimated sizes? Is there
-background optimization for cpt/CMP instructions?"
+"""CPT/CMP operand-layout and background-optimization sweep.
+
+CMP and CPT at different operand quantities and layouts. Does tag**tag
+differ in size from tag*tag or tag-tag? Does a six-operand additive chain
+line up with the model? Is there background optimization for CPT or CMP?
 
 Fixed at RUNG_COUNT=1000 (same scale as gen_logic_typesweep.py, so results
 are directly comparable to the already-confirmed CPT weight from the
@@ -29,7 +29,7 @@ effects, not operand type (already covered by gen_logic_typesweep.py).
      Tests whether Logix folds away a provably-redundant operation or
      charges for the literal operand regardless.
   E. group_cmp_layout -- CMP(A>B) single numeric comparison, plus a real,
-     corpus-confirmed compound-AND variant. 2026-08-22: on why the
+     corpus-confirmed compound-AND variant.: on why the
      original `L0>L1&L2<L3` (bare `&`, no parens) failed Build 100% of
      rungs: "CMP branches of AND/OR would be using the ladder logic
      editor and not internal to the CMP. CMP would be mostly used for
@@ -43,7 +43,7 @@ effects, not operand type (already covered by gen_logic_typesweep.py).
      wrapped in its own parens. Fixed to match. `or_compound` uses `||`
      by symmetry, NOT corpus-confirmed (zero real `||` instances found).
   F. group_cpt_constant_operand / group_cmp_constant_operand --
-     2026-08-22: these need testing with float/decimal constants, not tags
+     these need testing with float/decimal constants, not tags
      alone. Group A only ever
      compared tag-vs-tag; this adds an integer-LITERAL operand (CPT(L2,
      L0<op>5)) and a float-LITERAL operand against REAL tags (CPT(R2,
@@ -122,7 +122,7 @@ def group_cpt_noop() -> None:
 
 
 def group_cmp_layout() -> None:
-    # Compound shape corrected 2026-08-22 to match the one real corpus
+    # Compound shape corrected to match the one real corpus
     # example (docs/CMP_CPT_REFERENCE.md) -- `&&`/`||`, first clause
     # bare, second clause parenthesized. The original `L0>L1&L2<L3`
     # (single `&`, no parens) failed Build on every rung.

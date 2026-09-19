@@ -1,4 +1,4 @@
-"""OQ-STSIZING: Structured Text, the total coverage hole (2026-09-04).
+"""OQ-STSIZING: Structured Text, the total coverage hole.
 The ST in this batch has to be written from measured corpus idiom rather
 than plausible-looking lines, extracting enough from the real sample code
 and AOIs to be representative. ST comments are also unmodelled.

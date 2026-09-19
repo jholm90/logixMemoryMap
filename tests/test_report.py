@@ -58,17 +58,17 @@ def test_alias_tags_size_not_error():
 
     aoi_instance = by_path["controller/DebSensor1"]
     # EnableIn(BOOL,4) + DebTmr(TIMER,12), InOut excluded, + tag_overhead("DebSensor1", 10 chars)
-    # -8 since 2026-09-13: an AOI INSTANCE is over-charged by the flat
+    # -8: an AOI INSTANCE is over-charged by the flat
     # tag_overhead (memory_model.yaml definition_scale_correction, exact over a
     # sweep of 1..60 instances).
     assert aoi_instance.bytes == 16 + 92 - 8
     # Every component is KNOWN: UDT alignment and standalone BOOL sizing were
-    # both closed by real capture, the BOOL tier corrected 2026-09-06.
+    # both closed by real capture, the BOOL tier corrected.
     assert aoi_instance.basis == "KNOWN"
 
     # AOI *definition* cost -- a separate line item from the instance above,
     # one per declared AOI regardless of instance count. Itemised form since
-    # 2026-09-13 (memory_model.yaml aoi_definition, 124 def-only files):
+    # (memory_model.yaml aoi_definition, 124 def-only files):
     # fbDebounce's only counted declared member is DebTmr (EnableIn excluded
     # by name, RawTag excluded already at parse time since it is InOut), so
     #
@@ -82,14 +82,14 @@ def test_alias_tags_size_not_error():
     #     = 0 -> 8*0 + (-8) = -8
     #   - 7, the per-definition scale correction
     #     (definition_scale_correction.aoi_definition_extra, corrected -3 -> -7
-    #     on 2026-09-18 once defscale_aoidefs_n001..n060 measured the definition
+    # once defscale_aoidefs_n001..n060 measured the definition
     #     term on its own rather than jointly with the per-instance one)
     aoi_def = by_path["udt_definitions/fbDebounce"]
     assert aoi_def.bytes == 1163 + 12 + 12 + 24 + 8 - 8 - 7
     assert aoi_def.basis == "FITTED"
 
-    # total now also includes the project_baseline entry (2026-08-23,
-    # empty_project_baseline) -- present on every real report, not just
+    # total now also includes the project_baseline entry
+    # (empty_project_baseline) -- present on every real report, not just
     # this fixture's 3 sized tags.
     baseline = by_path["project_baseline"]
     assert baseline.bytes == MODEL.empty_project_baseline_bytes
@@ -130,10 +130,10 @@ def test_udt_definition_cost_appears_once_per_type_used_by_multiple_instances():
     definition = definition_entries[0]
     assert definition.data_type == "Point3D"
     # base(160) + per_member(16)*3 + name_per_8_chars(8)*ceil(7/8)=1
-    # +8 since 2026-09-13: the declared members' NAME POOL -- X, Y, Z are
+    # +8: the declared members' NAME POOL -- X, Y, Z are
     # 3*(1+1) = 6 characters rounded up to the 8-byte boundary.
     # The `definition_scale_correction.udt_definition_extra` term that used to
-    # add another 16 here was ZEROED 2026-09-14: it was a compensation constant
+    # add another 16 here was ZEROED: it was a compensation constant
     # standing in for bytes the name pool above now models properly, and having
     # both was a double charge. dscale2_udt reads -16 x n_udt flat in tag count
     # over a 500x span with it in, and 14 of 18 rows byte-exact with it out.
@@ -142,8 +142,8 @@ def test_udt_definition_cost_appears_once_per_type_used_by_multiple_instances():
     by_path = {e.path: e for e in entries}
     point_a = by_path["controller/PointA"]
     # 3*DINT(4) = 12 tight-packed, then padded to the standalone UDT tag slot's
-    # 8-byte boundary -> 16 (memory_model.yaml standalone_udt_tag_slot,
-    # 2026-09-13), + tag_overhead("PointA", 6 chars) = 84, -4 for the
+    # 8-byte boundary -> 16 (memory_model.yaml standalone_udt_tag_slot),
+    # + tag_overhead("PointA", 6 chars) = 84, -4 for the
     # per-UDT-tag-instance extra. The padding and the extra were derived
     # together -- neither family that measured them can separate the two.
     assert point_a.bytes == 16 + 84 - 4
@@ -184,7 +184,7 @@ def test_udt_definition_counted_even_when_only_used_as_a_nested_member():
 
 
 def test_udt_definition_cost_counts_bool_members_correctly():
-    # Regression test for the 2026-08-22 fix: declared_member_count must
+    # Regression test for the fix: declared_member_count must
     # exclude only the HIDDEN backing SINT, not the visible BIT-alias
     # members it backs -- an all-BOOL UDT was computing 0 declared members
     # (its only non-bit-alias member IS the hidden one), undercounting.
@@ -214,7 +214,7 @@ def test_udt_definition_cost_counts_bool_members_correctly():
     data_types = parse_data_types(root)
     bytes_, confidence = compute_udt_definition_cost("SweepTypeBOOL", data_types, MODEL)
     # base(160) + per_member(16)*4 + name_per_8_chars(8)*ceil(13/8)=2
-    # + bool_run_bonus(32), and since 2026-09-13 the declared members' own NAME
+    # + bool_run_bonus(32), and the declared members' own NAME
     # POOL: the four declared members are M0..M3, so 4*(2+1) = 12 characters
     # rounded up to the 8-byte pool boundary = 16 (memory_model.yaml
     # udt_definition, measured on udtmn_bool_len* at eight name lengths). The
@@ -239,7 +239,7 @@ def _blank_root(software_revision: str, processor_type: str) -> ET.Element:
 
 
 def test_firmware_baseline_delta_applies_for_confirmed_major_version():
-    # OQ-BASELINE-PROCFW, wired 2026-08-29: v31 real capture shows a real
+    # OQ-BASELINE-PROCFW, wired: v31 real capture shows a real
     # +11,240 over the v34/v35 baseline (see memory_model.yaml
     # firmware_baseline_delta) -- confirmed against 1756-L81E.
     root = _blank_root("31.02", "1756-L81E")
@@ -299,7 +299,7 @@ def test_firmware_and_safety_baseline_deltas_stack_additively():
 
 
 def test_catalog_baseline_delta_applies_to_confirmed_1769_processor_type():
-    # OQ-BASELINE-PROCFW, 1769-series thread, wired 2026-08-29: real
+    # OQ-BASELINE-PROCFW, 1769-series thread, wired: real
     # capture shows 1769-L24ER-QBFC1B costs +80,832 over the flat baseline.
     root = _blank_root("35.05", "1769-L24ER-QBFC1B")
     entries, errors = build_report(root, MODEL)
@@ -355,16 +355,16 @@ def _root_with_module(catalog_number: str) -> ET.Element:
 
 
 def test_module_overhead_uses_real_per_catalog_value_when_known():
-    # OQ-MODULEIO, wired 2026-08-29: 1756-IB16 has a real n=1 capture point
+    # OQ-MODULEIO, wired: 1756-IB16 has a real n=1 capture point
     # (memory_model.yaml module_overhead_by_catalog) -- 1684, not the flat
     # cross-catalog FITTED default (1672). (1756-DNB was removed from this
-    # table 2026-08-30, OQ-LEGACYNETOVERHEAD -- see
+    # table OQ-LEGACYNETOVERHEAD -- see
     # test_legacy_network_module_excluded_from_sizing below.)
     root = _root_with_module("1756-IB16")
     entries, errors = build_report(root, MODEL)
     assert errors == []
     module_entry = next(e for e in entries if e.category == "module_io")
-    # KNOWN since 2026-09-12: the asmclose_1756_ib16_1conn_n01/02/04 sweep
+    # KNOWN: the asmclose_1756_ib16_1conn_n01/02/04 sweep
     # measured this catalog directly at three module counts, which promoted it
     # off the ASSUMED guess it used to carry.
     assert module_entry.basis == "KNOWN"
@@ -419,18 +419,18 @@ def _root_with_legacy_network_module(port_type: str, catalog: str = "9999-NO-REA
 
 
 def test_legacy_network_module_excluded_from_sizing():
-    # OQ-LEGACYNETOVERHEAD, CLOSED 2026-08-30 as a deliberate scope
+    # OQ-LEGACYNETOVERHEAD, CLOSED as a deliberate scope
     # exclusion (I thought we were excluding controlnet / "And
     # all legacy networks") -- a ControlNet/DeviceNet/DH+/DH-485/RIO
     # bridge module gets no module_overhead charged, same treatment as a
     # rack-aliased or processor-embedded module, flagged via SizeError
     # instead -- UNLESS its specific catalog has real per-catalog data
     # (see test_legacy_network_module_WITH_real_catalog_data_gets_charged
-    # below, 2026-08-31). Uses a catalog with no real entry to keep
+    # below). Uses a catalog with no real entry to keep
     # testing the general "no real data -> unmodeled" rule in isolation.
     #
     # "Excluded from sizing" means its OVERHEAD is not charged -- not that the
-    # module is free. Changed 2026-09-12: the module's own declared data
+    # module is free. Changed: the module's own declared data
     # (module_defined_bytes, which the L5X states as plainly for this shape as
     # for any other) IS charged, because the file is the final decision on
     # sizing and a stated size is not something to guess about. Only the
@@ -450,9 +450,9 @@ def test_legacy_network_module_excluded_from_sizing():
 
 
 def test_legacy_network_module_with_real_catalog_data_gets_charged():
-    # 2026-08-31, you need to model them -- real per-catalog data
+    # you need to model them -- real per-catalog data
     # now exists for several legacy-network/rack-aliased catalogs (see
-    # memory_model.yaml module_overhead_by_catalog's 2026-08-31 comment).
+    # memory_model.yaml module_overhead_by_catalog's comment).
     # 1756-CNB/D (a real ControlNet bridge) has a confirmed real entry
     # (448 bytes) and should get module_io charged normally despite being
     # a legacy-network bridge, not fall through to the unmodeled path.
@@ -490,8 +490,8 @@ def _root_with_zero_connection_module(catalog: str = "ETHERNET-BRIDGE") -> ET.El
 def test_zero_connection_module_is_charged_and_still_flagged():
     """A bridge/gateway module with no Connections is now CHARGED, not skipped.
 
-    2026-09-02 it was made visible (previously silently `continue`d past with
-    no SizeEntry and no SizeError). 2026-09-05 it is also priced, because the
+    it was made visible (previously silently `continue`d past with
+    no SizeEntry and no SizeError). it is also priced, because the
     captured corpus showed this was the single largest structural error in
     it: files where every module is priced have a median residual of 4 bytes
     (n=1,663), files with at least one of these a median of +2,750 (n=81).
@@ -516,7 +516,7 @@ def test_zero_connection_module_is_charged_and_still_flagged():
 
 
 def test_confidence_audit_finds_no_stale_assumed_tiers():
-    """Guard for the 2026-09-06 finding: 174 of 185 ASSUMED predefined
+    """Guard for the finding: 174 of 185 ASSUMED predefined
     structures already had error-free, exactly-0.0000% capture data on
     disk. The numbers were right; the tiers had never been updated when
     the questions closed. Because weakest() propagates a tier upward, that

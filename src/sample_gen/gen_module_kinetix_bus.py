@@ -1,12 +1,13 @@
 """Full Kinetix 5700 SHARED-BUS test -- multiple different real drive/power-
 supply catalogs on the same physical DC bus, with all their axes together
-in one real Motion Group, including the real "bus power" axis tag
-(2026-08-27). The sample code carries many Kinetix 5700 modules, so every
+in one real Motion Group, including the real "bus power" axis tag.
+
+The real corpus carries many Kinetix 5700 modules, so every
 one of those catalog numbers needs testing, in the full-bus shape they
 really compile in: all axes in a motion group with bus power groups.
 
 Every individual Kinetix catalog is already covered as a standalone module
-by gen_module_sweep.py/gen_module_sweep_variants.py (confirmed 2026-08-27:
+by gen_module_sweep.py/gen_module_sweep_variants.py (confirmed:
 all 13 real 2198- catalogs in the corpus have their own per-module file).
 What's NEW here is the real multi-module BUS shape: this project's real
 corpus shows Kinetix modules attached directly to the controller's own
@@ -89,7 +90,7 @@ def main() -> None:
         _axis_tag("Bus2_Drive020_Sf_Axis", "Bus2_Drive_D020:Ch3"),
     ])
 
-    # REBUILT 2026-09-11 on 1756-L83E, no safety.
+    # REBUILT on 1756-L83E, no safety.
     #
     # The previous build used 1756-L85ES + SIL2, and the reasoning behind
     # that choice was wrong on both halves.

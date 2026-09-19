@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 # An instruction call is an all-caps mnemonic immediately followed by "(" --
 # e.g. "XIC(A)OTE(B);" or "CPT(Dest,(A+B)*C);".
 #
-# 2026-09-13: this comment used to claim it "also matches AOI/UDT instance
+# this comment used to claim it "also matches AOI/UDT instance
 # calls". It does not, and that sentence hid a large real gap. An AOI is called
 # with exactly the same syntax as a built-in, but real AOI names are mixed-case
 # (`fbDebounce`, `AnalogSensor`, `HomeToTorque`) and [A-Z][A-Z0-9_]* cannot match
@@ -39,11 +39,11 @@ _JSR_TARGET = re.compile(r"\bJSR\(\s*([A-Za-z_][A-Za-z0-9_]*)")
 # IncisorTop_AxisOutput,EM203_IncisorTop:O)"): target routine name, then a
 # literal integer Studio 5000 itself writes as the number of params
 # following, then the params themselves. OQ-JSRPARAMCOST's per-call cost
-# depends on this count, wired 2026-08-25.
+# depends on this count, wired.
 _JSR_CALL_START = re.compile(r"\bJSR\(")
 
 # CPT's own expression argument needs real parsing, not a flat per-call
-# weight (OQ-CMPCPTLAYOUT, wired 2026-08-26) -- real capture data shows
+# weight (OQ-CMPCPTLAYOUT, wired) -- real capture data shows
 # CPT's cost is expression-complexity-dependent (operator count/type), not
 # a constant. "**" must be tried before the single "*"/"/" alternatives or
 # it would match as two separate "*" tokens. MOD is a word operator in real
@@ -96,11 +96,11 @@ class CptCall:
     `operators` is the ordered list of top-level operator tokens in the
     call's expression -- e.g. 'CPT(Dest,L0+L1*L2)' -> ['+', '*']. Nesting/
     parenthesization doesn't change which operators are present (confirmed
-    real 2026-08-25: 'CPT(Dest,L0+L1-L2*L3)' and 'CPT(Dest,(L0+L1)*(L2-L3))'
+    real: 'CPT(Dest,L0+L1-L2*L3)' and 'CPT(Dest,(L0+L1)*(L2-L3))'
     cost identically), so grouping is deliberately ignored.
 
     The rest describes the call's DESTINATION and OPERAND COMPOSITION, added
-    2026-09-04 for OQ-CMPCPTLAYOUT's REAL-destination thread: a CPT writing
+    for OQ-CMPCPTLAYOUT's REAL-destination thread: a CPT writing
     to a REAL destination is evaluated in float, which costs materially
     differently from the integer path this model was originally fitted on
     (real, exact, 29/29 captured rows -- see memory_model.yaml
@@ -167,7 +167,7 @@ def _cpt_calls(rung_texts: list[str]) -> list[CptCall]:
 
 
 # Instructions whose real cost varies by OPERAND data type (OQ-OPERANDTYPE,
-# wired 2026-08-26) -- confirmed real via the typesweep_* corpus (69 real
+# wired) -- confirmed real via the typesweep_* corpus (69 real
 # captures, error_count=0, DINT/LINT/SINT/INT/REAL/STRING operands at
 # matched shape). Every instruction here already has a DINT-rate weight in
 # `weights` for the base case; sizing/logic.py adds a per-type surcharge on
@@ -222,7 +222,7 @@ _TYPED_CALL_START = re.compile(
 # -1 inspected the LENGTH operand rather than the destination. It charged the
 # right total anyway, because a literal length does not resolve to BOOL and the
 # unresolved default is a word -- right answer, wrong operand, which would have
-# broken silently the first time a length was a tag. Corrected 2026-09-18.
+# broken silently the first time a length was a tag. Corrected .
 _DESTINATION_ARG = {
     "MOV": -1, "ADD": -1, "SUB": -1, "MUL": -1, "DIV": -1, "MOD": -1,
     "CLR": 0, "CPT": 0, "COP": 1, "CPS": 1, "FLL": 1, "BTD": 2,
@@ -233,7 +233,7 @@ _DESTINATION_ARG = {
     "NOT": -1, "STOD": -1, "STOR": -1, "DTOS": -1,
     "RTOS": -1, "INSERT": -1, "DELETE": -1, "MID": -1, "UPPER": -1,
     "LOWER": -1,
-    # Word-destination writers found missing 2026-09-18 by inventorying the
+    # Word-destination writers found missing by inventorying the
     # real corpus's AOI-internal logic against this table. Same basis as the
     # 39 other unmeasured entries -- documented operand order, not a capture --
     # and 453 real instructions between them. GSV is the whole of that: it
@@ -356,7 +356,7 @@ def _jsr_calls(rung_texts: list[str]) -> list[tuple[str, int, int]]:
     integer literal (malformed/unexpected, don't guess) -- no real corpus
     example has ever shown anything else there.
 
-    output_param_count (OQ-JSRPARAMCOST, wired 2026-08-29) is every
+    output_param_count (OQ-JSRPARAMCOST, wired) is every
     remaining tag argument after the declared input count -- real syntax
     confirmed against the corpus (see gen_jsr_sbr_ret.py's module
     docstring): `JSR(name, N_in, in_1..in_N, out_1..out_M)`, so
@@ -381,7 +381,7 @@ def _jsr_calls(rung_texts: list[str]) -> list[tuple[str, int, int]]:
     return calls
 
 
-# Indirect (tag-driven) array addressing (OQ-INDIRECT, wired 2026-08-26).
+# Indirect (tag-driven) array addressing (OQ-INDIRECT, wired).
 # Real data (indirect_tag_index_n*/indirect_tag_offset_index_n*, 4 count
 # points each 10/50/100/1000, ALL exact once the tiny universal +4 flat
 # baseline noise is set aside): a DIRECT/literal index ("Arr[5]") costs
@@ -421,7 +421,7 @@ def _indirect_index_kinds(rung_texts: list[str]) -> list[str]:
     return kinds
 
 
-# CMP's own surcharges (wired 2026-08-26, real data confirms the existing
+# CMP's own surcharges (wired, real data confirms the existing
 # flat CMP:76 weight is exact for a SINGLE simple condition -- the
 # "inconsistency" flagged in an earlier pass was a manual-arithmetic
 # error, not a real bug, corrected here). A COMPOUND condition (2+ clauses
@@ -476,7 +476,7 @@ def _cmp_calls(rung_texts: list[str]) -> list[CmpCall]:
     not arithmetic and are not collected here -- the connectives are already
     priced by `compound_cost`.
 
-    Collecting them at all is 2026-09-12, OQ-CMPCPTLAYOUT: a CMP whose
+    Collecting them at all is OQ-CMPCPTLAYOUT: a CMP whose
     operands are themselves expressions was priced as though they were bare
     tags, so `CMP(L0+L1>L2)` was under-charged by the whole cost of the `+`.
     CPT had an expression model from the start and CMP never did, which is
@@ -512,12 +512,12 @@ class RoutineLogic:
     # call-site cost is a base plus a per-parameter rate, so the count matters.
     aoi_call_param_count: int = 0
     # True if some OTHER routine in the same program JSRs to this one.
-    # 2026-08-22: confirmed the target's own fixed shell cost (fixed_base_
+    # confirmed the target's own fixed shell cost (fixed_base_
     # per_routine) is already absorbed into the caller's jsr_fixed_base_
     # per_routine, so sizing/report.py never charges it again for a JSR
     # target -- that part still holds. The target's own CONTENT cost is a
-    # separate matter: 2026-08-22's finding only ever tested a trivial
-    # 1-NOP-rung stub target, and real data at real scale (2026-08-31,
+    # separate matter: that finding only ever tested a trivial
+    # 1-NOP-rung stub target, and real data at real scale
     # jsr_target_content_scale_{010,050,100,150}, see OPEN_QUESTIONS.md
     # OQ-JSRPARAMCOST) disproved the "content is free too" part of the old
     # claim -- report.py now weighs a JSR target's own instructions with
@@ -532,7 +532,7 @@ class RoutineLogic:
     # JSR target that pays jsr_target_declaration.sbr_ret_operand_bytes.
     sbr_ret_operands: int = 0
     is_jsr_target: bool = False
-    # 2026-09-03, OQ-SAFETYSCOPE-SIZING ("they are safety tasks and
+    # OQ-SAFETYSCOPE-SIZING ("they are safety tasks and
     # safety programs therefore they need separate sizing calculations").
     # True when this routine's owning <Program> carries Class="Safety" --
     # real, unambiguous marker (confirmed on samples/generated/fw_catalog_
@@ -564,18 +564,18 @@ class RoutineLogic:
     # are not represented here at all.
     indirect_index_kinds: list[str] = field(default_factory=list)
     # One entry per real CMP(...) call, (is_compound, has_float_literal) --
-    # see _cmp_calls above (OQ-CMPCPTLAYOUT's CMP piece, wired 2026-08-26).
+    # see _cmp_calls above (OQ-CMPCPTLAYOUT's CMP piece, wired).
     cmp_calls: list[CmpCall] = field(default_factory=list)
-    # Every routine name THIS routine JSRs to (2026-08-27, Phase 5 call-
+    # Every routine name THIS routine JSRs to (Phase 5 call-
     # tree UI) -- distinct from is_jsr_target above, which only says
     # whether some OTHER routine calls this one, not who calls whom. Byte
     # totals already correctly avoid double-counting via is_jsr_target
-    # (confirmed 2026-08-22); this field exists purely so the UI can show
+    # (confirmed); this field exists purely so the UI can show
     # the real call structure, not to change any sizing.
     jsr_target_names: frozenset[str] = field(default_factory=frozenset)
     # One entry per real JSR(...) call THIS routine makes, (target_name,
     # input_param_count, output_param_count) -- see _jsr_calls above
-    # (OQ-JSRPARAMCOST, wired 2026-08-25, output params added 2026-08-29).
+    # (OQ-JSRPARAMCOST, wired, output params added).
     # sizing/logic.py charges the confirmed per-call B(n_in) cost plus the
     # per-output-param cost for each entry here; report.py separately
     # charges A(n_in) once per distinct target routine (a one-time cost of
@@ -584,7 +584,7 @@ class RoutineLogic:
     # OPEN_QUESTIONS.md OQ-JSRPARAMCOST.
     jsr_calls: list[tuple[str, int, int]] = field(default_factory=list)
     # Total real BST/NXB/BND-family branch-bracket instructions across this
-    # routine's rungs (OQ-BRANCHDEPTH, wired 2026-08-30) -- see
+    # routine's rungs (OQ-BRANCHDEPTH, wired) -- see
     # _branch_bracket_instruction_count above. A single-level branch with L
     # legs compiles to L+1 of these; nested/staggered branches recurse.
     # sizing/logic.py charges this count x the confirmed flat per-
@@ -673,7 +673,7 @@ def aoi_call_sites(
     The first argument of an AOI call is its instance tag, not a parameter, so
     the parameter count for one call is `len(args) - 1`. That distinction is
     worth the arg-splitting: the call site costs a base plus a per-parameter
-    rate, measured 2026-09-13 across two independently generated families --
+    rate, measured across two independently generated families --
     see memory_model.yaml aoi_call_site.
 
     Counted against the DECLARED names rather than by a casing pattern (see
@@ -803,13 +803,13 @@ def parse_rll_routines(
             routine_name = routine_el.get("Name")
             rll_content = routine_el.find("RLLContent")
             rung_texts = []
-            # 2026-08-27, OQ-EMPTYROUTINE: a self-closing <Routine Type="RLL"/>
+            # OQ-EMPTYROUTINE: a self-closing <Routine Type="RLL"/>
             # (no RLLContent child at all) is a real, common shape -- 15+ real
             # corpus files have one -- and was being silently dropped here
             # entirely, so it never got a RoutineLogic entry and never
             # contributed to n_plain_routines in report.py's Task/Program/
             # Routine shell decomposition. That's wrong: real data (emptyroutine_
-            # n01/n02/n03, captured 2026-08-27) shows a self-closing routine
+            # n01/n02/n03, captured) shows a self-closing routine
             # still pays the same real per-extra-routine shell cost as an
             # ordinary one (272-ish/routine, matching the already-wired
             # task_program_overhead.routine_extra exactly, within the usual
@@ -862,7 +862,7 @@ def parse_aoi_internal_logic(
     plus any additional ones, e.g. a real AOI like HomeToTorque has both
     Logic and EnableInFalse).
 
-    Real data (2026-08-31, aoi_multiroutine_control vs aoi_multiroutine_real,
+    Real data (aoi_multiroutine_control vs aoi_multiroutine_real,
     see OPEN_QUESTIONS.md OQ-AOIINTERNALLOGIC) confirms splitting the SAME
     content across 2 internal routines instead of 1 costs identically to
     keeping it in one -- so this deliberately aggregates all of an AOI's

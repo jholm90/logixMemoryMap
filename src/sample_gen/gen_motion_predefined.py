@@ -1,4 +1,4 @@
-"""OQ-PREDEFINED: MOTION_INSTRUCTION and CAM_PROFILE, 2026-08-22. These
+"""OQ-PREDEFINED: MOTION_INSTRUCTION and CAM_PROFILE . These
 need Logix documentation, and the sample projects already contain most of
 them to reference directly. Rockwell's own literature site is blocked by
 the build environment's network egress proxy, so this went straight to the

@@ -1,4 +1,4 @@
-"""Random-combination logic validation harness (2026-08-22): "You got
+"""Random-combination logic validation harness: "You got
 sample instruction sizing already, now you need to generate random
 combinations, estimate and test."
 
@@ -11,7 +11,7 @@ version of this file (and of the engine itself) summed each instruction's
 RAW per-file sweep weight by occurrence count, which double-counted rungs
 like XIC's own test file ("XIC(tag)OTE(tag);" -- a bare XIC can't legally
 close a rung) where the raw measured weight was really XIC+OTE combined,
-not XIC alone. Caught 2026-08-22 by cross-checking the engine's own
+not XIC alone. Caught by cross-checking the engine's own
 prediction against real captured data (see docs/MEMORY_MODEL.md and
 sizing/memory_model.yaml's logic_instructions section for the full
 correction). Running the real engine on real generated rung text is

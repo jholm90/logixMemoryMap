@@ -1,6 +1,6 @@
 """Whole-controller export, or a partial one? And which parts are real?
 
-2026-09-04: the estimation path has to handle controller, UDT, AOI,
+the estimation path has to handle controller, UDT, AOI,
 program, routine and rung-logic exports. Anything that is not a controller
 export cannot use the base load, but rungs, routines and programs can still
 reference controller tags.

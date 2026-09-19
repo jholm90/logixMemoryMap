@@ -1,9 +1,10 @@
-"""Which subsystem of the v3 composite template does Studio reject? (2026-09-12,
-OQ-V3GENBUGS.)
+"""Which subsystem of the v3 composite template does Studio reject?
+
+OQ-V3GENBUGS.
 
 OQ-V3GENBUGS records three real generator bugs found and fixed from the v3
 batch's conversion errors, and closes with: "None of these have real capture
-data back yet (ACD conversion still being validated as of 2026-09-02) -- no
+data back yet (ACD conversion still being validated) -- no
 sizing formula changes from this item, generator-correctness only."
 
 That status is stale. Every one of the 133 rows across the seven families that

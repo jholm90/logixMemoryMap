@@ -1,6 +1,6 @@
 """What this engine did NOT price on the file it was just given.
 
-2026-09-04: handing over a batch of unseen real programs: "beware
+handing over a batch of unseen real programs: "beware
 there is going to be stuff that you might have never seen before inside. I
 need to make sure that in the long run all of the calculations are done
 inside the python logic for the total project scripts and not just claude
@@ -50,12 +50,12 @@ _PRICED_ELSEWHERE = frozenset({"CPT", "BST", "NXB", "BND"})
 
 # Safety-task instructions: OUT OF SCOPE, not unpriced.
 #
-# Reported as coverage gaps until 2026-09-12, which was wrong in the same way
+# Reported as coverage gaps, which was wrong in the same way
 # reporting ST as unpriced was wrong after it got wired -- it overstates the
 # hole and it buries the gaps that are real. These five only appear inside a
 # GuardLogix SafetyProgram, which this project does not size at all
 # (SafetyLevel/safety-task content is explicitly out of scope; CROUT was
-# reclassified the same way 2026-08-24, see OQ-CROUT-MAPC-BUILDFAIL).
+# reclassified the same way see OQ-CROUT-MAPC-BUILDFAIL).
 #
 # Identified from their real call shapes in the corpus, which all take the
 # `_S`-suffixed safety reset tags that only exist in a safety task:
@@ -73,7 +73,7 @@ _SAFETY_FAMILY = frozenset({"ESTOP", "ROUT", "CROUT", "LC", "RIN"})
 # partial/filtered export, which is a different finding from a missing weight
 # and must not be reported as one.
 #
-# SCP, 2026-09-12: declared as an AddOnInstructionDefinition in four real
+# SCP: declared as an AddOnInstructionDefinition in four real
 # exports (Fisher_Synergy_Bead, BT1XX_FFC, Fisher_P800Sub, PWO_134190) and
 # CALLED BUT NOT DECLARED in MRFP_Edger_2026_06_01_r00. Its call shapes vary in
 # arity across the corpus (3 operands in one program, 7 in another), which is
@@ -84,7 +84,7 @@ _KNOWN_USER_AOI = frozenset({"SCP"})
 
 # Routine Type values this engine can size. Everything else is a real
 # coverage hole, not a parse error.
-# ST joined this set 2026-09-04 when sizing/structured_text.py was wired --
+# ST joined this set when sizing/structured_text.py was wired --
 # before that an ST routine contributed exactly ZERO and this coverage gap
 # was the only thing saying so. ST is now sized (22 of 23 captured ST files
 # land within 11 bytes), so reporting it as an unpriced hole would be
@@ -247,7 +247,7 @@ def audit_coverage(root: ET.Element, weighted_mnemonics) -> list[CoverageGap]:
         ))
 
     # Tag-based alarm conditions were reported here as an unpriced gap
-    # from 2026-09-04 until 2026-09-05, when the alarmcond_* batch solved
+    # until the alarmcond_* batch solved
     # them exactly (memory_model.yaml alarm_conditions, sizing/alarms.py).
     # They are now a real sized entry, so flagging them would be a false
     # alarm -- the gap list has to shrink when a hole is actually closed,
@@ -257,7 +257,7 @@ def audit_coverage(root: ET.Element, weighted_mnemonics) -> list[CoverageGap]:
     # <AlarmDefinitions><DatatypeAlarmDefinition><MemberAlarmDefinition>
     # is a v38 shape: an alarm TEMPLATE attached to a data type, distinct
     # from the tag-level <AlarmConditions> this engine already prices
-    # exactly. Found 2026-09-08 in real blank 1756-L9xTS v38 exports, where
+    # exactly. Found in real blank 1756-L9xTS v38 exports, where
     # a stock P_PID definition carrying six member alarms was priced at
     # zero and reported nothing at all -- the exact silent-zero this audit
     # exists to prevent. Reported as a gap until real capture data says

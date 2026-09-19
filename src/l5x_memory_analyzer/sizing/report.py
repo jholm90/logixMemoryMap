@@ -80,7 +80,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     data_types = {**udt_types, **aoi_types}
     tags = parse_tags(root)
     # AOI name -> its internal Logic-routine(s) content, aggregated across
-    # however many internal routines it declares (2026-08-31, OQ-
+    # however many internal routines it declares (OQ-
     # AOIINTERNALLOGIC -- real data confirms routine count doesn't matter,
     # only total content does). tag_types isn't available yet at this
     # point in the function and wouldn't resolve an AOI's own internal
@@ -88,7 +88,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # file-wide tag table), so the operand-type surcharge is skipped for
     # this content, same as any other caller that omits tag_types.
     # Export scope FIRST -- it decides whether this file even has a project
-    # to charge a base load to (2026-09-04): anything that is not a
+    # to charge a base load to: anything that is not a
     # controller export cannot use the base load, but rungs, routines and
     # programs can still reference controller tags. Until this,
     # every partial export was sized as a whole project: an exported RUNG
@@ -99,7 +99,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
 
     aoi_internal_logic = parse_aoi_internal_logic(root)
 
-    # Composite-scale surcharge cap (2026-09-03, OQ-JSRSCALE/OQ-COMPOSITESCALE,
+    # Composite-scale surcharge cap (OQ-JSRSCALE/OQ-COMPOSITESCALE,
     # see memory_model.yaml composite_surcharge_cap for the full derivation):
     # the per-instruction surcharge rates below (aoi_logic_composite_
     # surcharge_per_instr / jsr_target_composite_surcharge_per_instr), left
@@ -124,7 +124,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         _surcharge_aoi_instr * model.logic_instructions.aoi_logic_composite_surcharge_per_instr
         + _surcharge_jsr_instr * model.logic_instructions.jsr_target_composite_surcharge_per_instr
     )
-    # cap <= 0 means NO CAP (disabled 2026-09-04 -- see memory_model.yaml
+    # cap <= 0 means NO CAP (disabled -- see memory_model.yaml
     # composite_surcharge_cap for why: it was patching a jsr rate that was
     # 2.3x too high, and at real-program scale it suppressed 252k-1,261k
     # bytes per file, which was the entire +12.62% real-file
@@ -139,14 +139,14 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     sized: list[tuple[str, str, str, int, str]] = []
     errors: list[SizeError] = []
     # Every DECLARED UDT gets a definition-cost line, whether or not any
-    # tag currently uses it -- confirmed real 2026-08-20/22 (the "def_only,
+    # tag currently uses it -- confirmed real (the "def_only,
     # 0 instances" sweep specifically tests this: a UDT with zero tag
     # instances still shows a real nonzero Capacity delta from its
     # definition alone). Seeding with every udt_types key up front, not
-    # just ones reachable from a tag, was a real gap caught 2026-08-22 by
+    # just ones reachable from a tag, was a real gap caught by
     # cross-checking predictions against every real udt-category manifest
     # row -- every *_def_only row was silently predicting 0.
-    # AOI definitions seeded in too, 2026-08-26 (OQ-AOIDEF wiring) -- every
+    # AOI definitions seeded in too (OQ-AOIDEF wiring) -- every
     # declared AOI, like every declared UDT, gets a definition-cost line
     # even with 0 tag instances (same real "def_only, 0 instances still
     # shows a nonzero Capacity delta" finding this seeding already exists
@@ -157,7 +157,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         if tag.is_alias:
             # An Alias tag is a pointer/rename onto another tag or module I/O
             # point -- it has no DataType/data space of its own in the L5X,
-            # only a tag-table entry. Real cost confirmed 2026-08-25
+            # only a tag-table entry. Real cost confirmed
             # (OQ-ALIASSIZE, RESOLVED_QUESTIONS.md): same shape as ordinary
             # tag_overhead but with its own flat_base (56 vs 84).
             alias_bytes = model.alias_overhead.bytes_for(tag.name)
@@ -169,7 +169,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             errors.append(SizeError(path=tag.path, message=str(exc)))
             continue
         # A STANDALONE atomic tag's data occupies a fixed 4-byte slot whatever
-        # its declared type (OQ-SHELLCONST, wired 2026-09-12). Six bare
+        # its declared type (OQ-SHELLCONST, wired). Six bare
         # tag-count files with 50 tags each and nothing else in them give
         # -3.00/tag on SINT, -2.00 on INT, +4.00 on LINT and exactly 0 on
         # BOOL/DINT/REAL -- all six fitting "the slot is 4" with zero residual:
@@ -189,7 +189,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             basis = weakest(basis, model.standalone_atomic_tag_slot_confidence)
         # A standalone (non-array) UDT-typed tag's data slot is padded up to 8
         # bytes -- the same kind of per-TAG slot rule as the atomic 4 above, one
-        # level up. Derived 2026-09-13 (capture-batch segment 5) from the one
+        # level up. Derived (capture-batch segment 5) from the one
         # place two families disagreed: a 40-byte 10-DINT UDT tag measured
         # -7.000/tag over 360 tags on the additivity D axis (addit_dm_ln vs
         # addit_dh_ln) while a 9-byte 3-member UDT tag measured EXACTLY right
@@ -211,7 +211,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         overhead = model.tag_overhead.bytes_for(tag.name)
         size += overhead
         basis = weakest(basis, model.tag_overhead.confidence)
-        # OQ-DEFSCALE 2026-09-13: a UDT tag instance costs 3 more than the flat
+        # OQ-DEFSCALE: a UDT tag instance costs 3 more than the flat
         # tag_overhead, and an AOI instance 8 LESS. Both exact over sweeps that
         # vary definition count and instance count independently -- see
         # memory_model.yaml definition_scale_correction.
@@ -228,7 +228,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             basis = weakest(basis, model.string.builtin_tag_overhead_correction_confidence)
         # Custom StringFamily-typed tags: no separate per-tag correction
         # needed -- compute_udt_size's nearest-8 DATA-padding rule (real
-        # bug fix 2026-08-25) already produces the exact real byte count.
+        # bug fix) already produces the exact real byte count.
         # The mod4==1 bucket's own +8 one-time bonus is applied at the
         # definition-cost line item below, not here.
         elif tag.data_type in udt_types and udt_types[tag.data_type].is_string_family:
@@ -243,22 +243,22 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # already fully captured by compute_udt_size's is_string_family
         # branch) -- the generic udt_definition formula was fit against
         # ordinary UDTs and doesn't apply. Applying it here was a real bug
-        # caught 2026-08-22 (every customstring_* real data point was
+        # caught (every customstring_* real data point was
         # over-predicted by a spurious ~224-228 blocks).
         if name in aoi_types:
-            # AOI definition cost, wired 2026-08-26 (OQ-AOIDEF) -- FITTED,
+            # AOI definition cost, wired (OQ-AOIDEF) -- FITTED,
             # not KNOWN, see memory_model.yaml aoi_definition for the real
             # limitation (DINT-rate confirmed exact, BOOL/LINT-heavy AOIs
             # under-predicted). Checked before the udt_types string-family
             # branch below since an AOI name is never also a udt_types key.
             def_bytes, def_basis = compute_aoi_definition_cost(name, data_types, model)
-            # OQ-DEFSCALE 2026-09-13: an AOI DEFINITION is over-charged 3 --
+            # OQ-DEFSCALE: an AOI DEFINITION is over-charged 3 --
             # the remaining 3*n_def term of the fitted law once the per-instance
             # -8 is applied. See memory_model.yaml definition_scale_correction.
             def_bytes += model.aoi_definition_extra
             internal_routine = aoi_internal_logic.get(name)
             if internal_routine is not None:
-                # Real, confirmed 2026-08-31 (OQ-AOIINTERNALLOGIC): an AOI's
+                # Real, confirmed (OQ-AOIINTERNALLOGIC): an AOI's
                 # internal Logic-routine content is NOT free -- weighed with
                 # the same per-instruction model as ordinary routine logic.
                 # charge_shell=False: the internal routine doesn't pay its
@@ -267,7 +267,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                 content_bytes, content_basis = compute_routine_logic_bytes(
                     internal_routine, model.logic_instructions, charge_shell=False
                 )
-                # 2026-08-31, real composite-scale regression (memory_model.
+                # real composite-scale regression (memory_model.
                 # yaml aoi_logic_composite_surcharge_per_instr): the per-
                 # instruction weights above, fit against the small dedicated
                 # isolation test, still underpredict an AOI's real internal-
@@ -286,7 +286,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                     content_bytes += surcharge
                     content_basis = weakest(content_basis, model.logic_instructions.composite_surcharge_confidence)
                 # Per-rung cost of AOI-internal logic, over and above the
-                # per-instruction weights. Measured 2026-09-10 from
+                # per-instruction weights. Measured from
                 # aoistr_scale_rung_n{011,024,048,085} -- identical rungs, only
                 # the count varies -- where the residual is a dead-straight
                 # 4 bytes per rung (slope exactly 4.0 between every consecutive
@@ -297,7 +297,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                     content_basis = weakest(
                         content_basis, model.logic_instructions.aoi_internal_per_rung_confidence
                     )
-                # 2026-09-14, OQ-AOIINTERNALLOGIC: an AOI-internal instruction
+                # OQ-AOIINTERNALLOGIC: an AOI-internal instruction
                 # that WRITES a non-BOOL destination costs 4 more than the same
                 # instruction in a Program routine; one writing a BOOL, or
                 # writing nothing, costs the same. This is what per_rung above
@@ -320,15 +320,15 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             continue
         if udt_types[name].is_string_family:
             # Custom STRING types get their own one-time definition cost
-            # instead (OQ-CUSTOMSTRINGDEF, resolved 2026-08-23) -- the
+            # instead (OQ-CUSTOMSTRINGDEF, resolved) -- the
             # ordinary udt_definition formula was fit against ordinary
             # UDTs and doesn't apply (confirmed: applying it over-predicted
             # every real customstring_* data point by ~224-228 blocks).
             # maxlen mod 4 == 1 gets an extra +8 one-time definition-cost
-            # bonus, confirmed 2026-08-25 (3/3 real points exact: 49, 101,
+            # bonus, confirmed (3/3 real points exact: 49, 101,
             # 501) -- paired with the "no per-tag correction" branch above.
             # The base itself depends on the TYPE's own name length --
-            # SOLVED 2026-08-26, a clean step function, see
+            # SOLVED a clean step function, see
             # memory_model.yaml's custom_definition_base for the
             # derivation.
             def_cost = model.string.custom_definition_cost_for(len(name))
@@ -340,7 +340,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             ))
             continue
         def_bytes, def_basis = compute_udt_definition_cost(name, udt_types, model)
-        # OQ-DEFSCALE 2026-09-13: a UDT DEFINITION costs 16 more than the
+        # OQ-DEFSCALE: a UDT DEFINITION costs 16 more than the
         # member-count-and-name formula gives. Exact over 14 rows spanning 1..25
         # definitions -- see memory_model.yaml definition_scale_correction.
         def_bytes += model.udt_definition_extra
@@ -365,7 +365,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # than silently assumed correct.
     tag_types = {t.name: t.data_type for t in tags if t.data_type}
 
-    # Tag-based alarm conditions (OQ-ALARMCOND, solved exactly 2026-09-05).
+    # Tag-based alarm conditions (OQ-ALARMCOND, solved exactly).
     # Placed here because it needs tag_types, which is built just above, and
     # a UDT member map -- real AssocTagN references are member paths like
     # "Alarms_Edger1[0].Number", so bare-tag-name resolution would find
@@ -381,7 +381,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     all_routines = parse_rll_routines(root)
 
     # Target routine name -> declared param count, from every real JSR(...)
-    # call site across the whole file (OQ-JSRPARAMCOST, wired 2026-08-25).
+    # call site across the whole file (OQ-JSRPARAMCOST, wired).
     # A(n) below is a property of the TARGET routine's own Parameters-block
     # declaration, not of any one caller/call-site, so it's built once here
     # rather than inside the per-routine loop. Real Logix wouldn't compile
@@ -400,10 +400,10 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     plain_routine_names: list[tuple[str, str]] = []
     for routine in all_routines:
         if routine.is_jsr_target:
-            # 2026-08-22's "target content is already folded into the
+            # The "target content is already folded into the
             # caller's jsr_fixed_base_per_routine" finding only ever held
             # for a trivial 1-NOP-rung stub target -- see RoutineLogic.
-            # is_jsr_target's docstring. Real data, 2026-08-31
+            # is_jsr_target's docstring. Real data
             # (jsr_target_content_scale_{010,050,100,150}), disproves it at
             # real scale: predicted stayed flat regardless of target size
             # while real Capacity grew cleanly with it (see OPEN_QUESTIONS.md
@@ -424,7 +424,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             a_cost = model.logic_instructions.jsr_param_cost.a_cost(n) if n is not None else 0
             a_basis = model.logic_instructions.jsr_param_cost.confidence
             # Declaring a distinct target costs more than its parameter
-            # block alone (2026-09-05, refit over all 61 captured JSR
+            # block alone (refit over all 61 captured JSR
             # files). The residual there correlates +0.883 with distinct
             # target COUNT and -0.445 with call count -- the model was
             # under-charging each target by ~152 while over-charging each
@@ -438,7 +438,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             content_bytes, content_basis = compute_routine_logic_bytes(
                 routine, model.logic_instructions, tag_types, charge_shell=False
             )
-            # 2026-08-31, real composite-scale regression (memory_model.yaml
+            # real composite-scale regression (memory_model.yaml
             # jsr_target_composite_surcharge_per_instr): the per-instruction
             # weights above, fit against the small dedicated isolation test,
             # still underpredict a JSR target's real content cost at
@@ -465,7 +465,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                 target_basis = a_basis if content_bytes == 0 else (content_basis if a_cost == 0 else weakest(a_basis, content_basis))
                 logic_entries.append((routine.path, "routine_logic", "RLL", target_bytes, target_basis))
             continue
-        # 2026-08-27, Task/Program/Routine shell decomposition (OQ-
+        # Task/Program/Routine shell decomposition (OQ-
         # TASKOVERHEAD, see memory_model.yaml task_program_overhead): a
         # JSR-caller routine keeps paying its own jsr_fixed_base_per_routine
         # here, unchanged from before this fix -- that pathway is
@@ -474,7 +474,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # routine; the shell entry built below charges it once for the
         # whole file plus the real per-extra-Task/Program/routine marginal
         # costs instead.
-        # OQ-SAFETYSCOPE-SIZING, 2026-09-03: "they are safety tasks
+        # OQ-SAFETYSCOPE-SIZING: "they are safety tasks
         # and safety programs therefore they need separate sizing
         # calculations" -- a Safety routine's own content is still sized
         # normally below (charge_shell unaffected), it just doesn't count
@@ -491,7 +491,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         )
         logic_entries.append((routine.path, "routine_logic", "RLL", logic_bytes, logic_basis))
 
-    # Structured Text (OQ-STSIZING, wired 2026-09-04). Before this, ST
+    # Structured Text (OQ-STSIZING, wired). Before this, ST
     # contributed exactly ZERO -- parse_rll_routines filters to RLL and
     # nothing else looked at an ST routine, while the real corpus carries
     # 297 ST routines / 24,017 ST lines and one real program has 1,894 ST
@@ -550,7 +550,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         )
         # AOI-internal ST is attributed to the AOI DEFINITION, not to a
         # phantom program. parse_st_routines names those owners "aoi:<Name>"
-        # (2026-09-05, once it was established that most real ST lives inside
+        # (once it was established that most real ST lives inside
         # AOIs -- 37% of real ST lines by measurement). Routing them through
         # the program path would have rendered each AOI as a bogus
         # top-level "Program: aoi:X" in the tree, which is exactly what the
@@ -567,7 +567,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         ))
 
     if n_plain_routines > 0 and scope.is_whole_controller:
-        # PROJECT-ONLY (2026-09-04): this whole decomposition is
+        # PROJECT-ONLY: this whole decomposition is
         # "one base + per-extra-task + per-extra-program + per-extra-routine
         # ACROSS A PROJECT", fitted on whole-project captures. A partial
         # export has no task list and no project-wide routine count -- the
@@ -600,7 +600,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             + overhead.program_extra * (n_programs - 1)
             + overhead.routine_extra * (n_plain_routines - 1)
         )
-        # A Program's own NAME costs bytes (OQ-IDENTNAMELEN, wired 2026-09-12)
+        # A Program's own NAME costs bytes (OQ-IDENTNAMELEN, wired)
         # and had no term at all here, so program_multi_distinct_namelen40 was
         # under-predicting by 400 bytes on 10 programs -- a flat prediction
         # against a real +40/program. Same law as a JSR target's name, from
@@ -657,7 +657,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         n_safety_tasks = sum(1 for t in all_tasks if t.is_safety)
 
     if n_safety_tasks > 0:
-        # OQ-SAFETYSCOPE-SIZING, real fix 2026-09-03: previously a
+        # OQ-SAFETYSCOPE-SIZING, real fix: previously a
         # SafetyTask/SafetyProgram/SafetyRoutine triple was counted as one
         # more of EACH ordinary shell component above (task_extra +
         # program_extra + routine_extra = 1,456 bytes), overpredicting the
@@ -668,7 +668,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # delta (312) minus the SafetyProgram's own already-separately-
         # sized real MainRoutine content (this engine always predicts 16
         # bytes for it, firmware-independent), landing on 296. Live-
-        # verified 2026-09-03 against all 24 real L81ES-L84ES fwmatrix
+        # verified against all 24 real L81ES-L84ES fwmatrix
         # rows: exact (0 delta) at v31-v33, a small known +16-byte
         # (0.087%) residual at v34-v38 where the real MainRoutine content
         # apparently drops to 0 bytes on real hardware but this engine
@@ -683,7 +683,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         ))
 
     # Fixed per-project overhead (controller/module/task/program scaffolding)
-    # confirmed 2026-08-23 -- see memory_model.yaml empty_project_baseline
+    # confirmed -- see memory_model.yaml empty_project_baseline
     # for the derivation (a literal, zero-variance 13,296-block gap between
     # every clean real Capacity reading and this engine's own total, across
     # 200+ independent real data points spanning wildly different
@@ -728,7 +728,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         for path, category, data_type, size, basis in logic_entries
     ]
 
-    # Module I/O (2026-08-27, WIRED -- see parser/modules.py docstring for
+    # Module I/O (WIRED -- see parser/modules.py docstring for
     # the full derivation). module_defined_bytes is the real raw member-sum
     # of the module's own auto-generated "Module-Defined" data type
     # (InputTag/OutputTag/ConfigTag Structure content, computed the same
@@ -767,7 +767,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             continue
         label = _module_labels[_module_index]
         if module.module_defined_bytes == 0 and module.stated_total_bytes == 0:
-            # 2026-09-02, real, found reviewing the TitusvilleTrimmer
+            # real, found reviewing the TitusvilleTrimmer
             # production file: a bridge/gateway module with NO connections
             # of its own (e.g. a plain Ethernet-only "ETHERNET-BRIDGE" node
             # fanning out to a remote PC/HMI/server -- 10 real instances in
@@ -783,7 +783,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             # silently dropped. Still genuinely unmodeled -- zero real data
             # exists yet for what a zero-connection module's own overhead
             # actually is, so no byte value is guessed here.
-            # WIRED 2026-09-05 (was: charged nothing, reported as a pure gap).
+            # WIRED (was: charged nothing, reported as a pure gap).
             # Across the captured corpus, files where every module is priced
             # have a median residual of 4 bytes (n=1,663) while files with at
             # least one of these has a median of +2,750 (n=81) -- the single
@@ -809,7 +809,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             ))
             continue
         display = f"{module.name} ({module.catalog_number})" if module.name else module.catalog_number
-        # 2026-08-27, found live-checking this wiring against the 1769-
+        # found live-checking this wiring against the 1769-
         # series fw_baseline corpus: CompactLogix 5370 "ER" processors
         # carry a real CatalogNumber="Embedded" module for their built-in
         # discrete I/O points (no separate physical module). module_
@@ -818,7 +818,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # processor-integrated I/O block costs the same, so it stays fully
         # unmodeled (same treatment as a rack-aliased module below) rather
         # than guessing module_overhead applies unchanged.
-        # 2026-08-30, I thought we were excluding controlnet / "And
+        # I thought we were excluding controlnet / "And
         # all legacy networks" -- a ControlNet/DeviceNet/DH+/DH-485/RIO
         # bridge module gets the same unmodeled treatment as a rack-aliased
         # or processor-embedded module, not a fitted module_overhead_by_
@@ -826,10 +826,10 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # networks (see parser/modules.py's _LEGACY_NETWORK_PORT_TYPES
         # comment and OQ-LEGACYNETOVERHEAD).
         #
-        # 2026-08-31, you need to model them -- that exclusion was
+        # you need to model them -- that exclusion was
         # a blanket SHAPE-level rule, but real per-catalog data now exists
         # for several rack-aliased/legacy-network catalogs specifically
-        # (memory_model.yaml module_overhead_by_catalog, see its 2026-08-31
+        # (memory_model.yaml module_overhead_by_catalog, see its
         # comment for the derivation). A catalog with its OWN confirmed
         # real entry gets charged normally even if it's one of these
         # shapes; only a catalog with NO real data still falls through to
@@ -860,7 +860,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                     f"not summed into the total either, controller-memory cost unmodeled for now"
                 ),
             ))
-            # Charged its OWN DECLARED DATA, 2026-09-12, and still emitted.
+            # Charged its OWN DECLARED DATA and still emitted.
             #
             # This used to be charged exactly ZERO, on the reasoning that
             # module_overhead was fitted from two modules with their own
@@ -881,7 +881,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             # modules in it, so most of that family's -9% to -28% is its priced
             # cards' own ASSUMED overheads being too low, which needs the
             # per-catalog refit (OQ-MODULESTRUCTURAL), not this.
-            # 2026-09-18, OQ-POINTIOCONN: the overhead is no longer unmodelled
+            # OQ-POINTIOCONN: the overhead is no longer unmodelled
             # for the rack-aliased shape. The pioconn_* count sweep (five counts
             # per connection format, 1/2/4/8/16 cards, everything else held
             # identical) had been captured and never differenced; it puts a
@@ -898,17 +898,17 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                 model.rack_aliased_module_confidence if rack_overhead else "UNKNOWN",
             ))
             continue
-        # 2026-08-29, OQ-MODULEIO: real per-catalog overhead (memory_model.yaml
+        # OQ-MODULEIO: real per-catalog overhead (memory_model.yaml
         # module_overhead_by_catalog) replaces the flat cross-catalog FITTED
         # average for any catalog with an unambiguous real capture point;
         # falls back to the same flat default otherwise.
-        # 2026-09-12: the SECOND and later modules of the same catalog cost
+        # the SECOND and later modules of the same catalog cost
         # less than the first (memory_model.yaml module_overhead_by_catalog
         # repeat_bytes -- 16 catalogs measured, discount 432..3,768 bytes, no
         # constant or ratio behind it). Counted per catalog in document order;
         # which physical module is called "first" does not matter because only
         # the count of each catalog affects the total.
-        # 2026-09-13: what "same project" scopes to is itself unsettled --
+        # what "same project" scopes to is itself unsettled --
         # repeat_scope picks whether the count runs project-wide or restarts
         # under each parent module. occurrence_key carries that choice so
         # this loop does not have to know about it.
@@ -920,7 +920,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         module_bytes = module.module_defined_bytes + overhead_bytes
         # A generic ETHERNET-MODULE's connection data costs 4x its declared
         # bytes, not 1x (memory_model.yaml module_connection_data, wired
-        # 2026-09-13, exact on 14 captured points from W=2 to W=114). The
+        # exact on 14 captured points from W=2 to W=114). The
         # declared bytes are already inside module_defined_bytes, so they come
         # back out and the word law goes in. Scoped to the profiles the law was
         # measured on -- every other catalog keeps declared bytes at 1x.
@@ -965,7 +965,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         ]
 
     # Firmware-version + safety-capable-model + per-catalog baseline
-    # corrections (OQ-BASELINE-PROCFW, wired 2026-08-29 -- see
+    # corrections (OQ-BASELINE-PROCFW, wired -- see
     # memory_model.yaml firmware_baseline_delta / safety_capable_baseline_
     # delta / catalog_baseline_delta for the full derivation). All three
     # are real per-file structural deltas layered on top of the
@@ -999,7 +999,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             fw_bytes, fw_basis,
         ))
     # Per-family firmware correction on top of the global ladder above
-    # (OQ-BASELINE-PROCFW, 2026-09-12). One ladder cannot fit every family:
+    # (OQ-BASELINE-PROCFW). One ladder cannot fit every family:
     # each processor's fwmatrix residual is constant within a firmware band and
     # the bands differ by family, which left 72 bare-baseline captures sitting
     # at -48/-32/-8/+8/+16 -- and on a content-free file the residual IS the
@@ -1029,7 +1029,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             catalog_bytes, catalog_basis,
         ))
 
-    # Absolute per-catalog baseline (2026-09-04, the 1756-L7x family): this
+    # Absolute per-catalog baseline (the 1756-L7x family): this
     # catalog's real empty-project baseline is a fixed floor that does NOT
     # track the firmware ladder, so instead of adding to what the flat
     # baseline and the firmware/safety deltas produced, it REPLACES that
@@ -1067,9 +1067,9 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             for e in entries
         ]
 
-    # Coverage audit LAST, so it reports against the whole file (2026-09-04,
-    # every calculation has to live in the engine itself rather than in an
-    # ad-hoc analysis run alongside it). Content this engine
+    # Coverage audit LAST, so it reports against the whole file: every
+    # calculation has to live in the engine itself rather than in an
+    # ad-hoc analysis run alongside it. Content this engine
     # prices at zero WITHOUT modelling it -- a non-RLL routine, an
     # instruction with no weight -- previously left no trace at all in the
     # output; the only thing that ever caught it was reading the file by

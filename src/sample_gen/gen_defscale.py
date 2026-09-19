@@ -1,7 +1,7 @@
 """Definition-COUNT scaling: how does cost grow with the NUMBER of AOI
 definitions and UDT definitions in a project?
 
-Why this batch exists (2026-09-04). After the shellscale_* batch settled
+Why this batch exists. After the shellscale_* batch settled
 OQ-SHELLSCALE, the real-file residual was re-regressed against structure.
 Programs and routines collapsed as explanations (r=+0.43 and +0.58, down
 from +0.87/+0.83 before the shell refit -- they WERE the collinear

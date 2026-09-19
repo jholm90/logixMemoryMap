@@ -111,7 +111,7 @@ def test_udt_array_of_udt():
     data_types = {"Inner": inner}
     bytes_, confidence = size("Inner", (10,), data_types=data_types)
     assert bytes_ == 40
-    assert confidence == "KNOWN"  # OQ-ARRAYPACK resolved 2026-08-24, array.udt_confidence is KNOWN
+    assert confidence == "KNOWN"  # OQ-ARRAYPACK resolved, array.udt_confidence is KNOWN
 
 
 def test_custom_string_type_uses_len_plus_data_not_generic_udt_path():
@@ -132,7 +132,7 @@ def test_custom_string_type_uses_len_plus_data_not_generic_udt_path():
 
 
 def test_custom_string_type_data_member_rounds_to_nearest_8_tie_down():
-    # Real-bug fix 2026-08-25: DATA[N] does not just pad up to 4 -- it
+    # Real-bug fix: DATA[N] does not just pad up to 4 -- it
     # rounds to the NEAREST multiple of 8, rounding DOWN at the exact tie
     # (remainder 4). maxlen=51 is a real verified data point: pads to 4
     # (52), which lands exactly on the 8-byte tie, so it drops back to 48.
@@ -151,7 +151,7 @@ def test_custom_string_type_data_member_rounds_to_nearest_8_tie_down():
 
 
 def test_bool_packing_run_broken_by_non_bool_member():
-    # 2026-08-20: BOOL/DINT/BOOL takes 8+32+8 of space where DINT/BOOL/BOOL
+    # BOOL/DINT/BOOL takes 8+32+8 of space where DINT/BOOL/BOOL
     # takes 32+8 -- a run of consecutive BOOLs
     # shares one backing SINT, but a non-BOOL member breaks the run and the
     # next BOOL(s) get a fresh backing SINT. Mirrors Logix Designer's own
@@ -185,7 +185,7 @@ def test_self_referential_udt_raises():
 
 
 # ---------------------------------------------------------------------------
-# Array-of-STRING -- 2026-08-26, OQ-STRINGARRAYPAD. A different real
+# Array-of-STRING -- OQ-STRINGARRAYPAD. A different real
 # mechanism from a scalar STRING tag (no -2/tag benefit for array
 # elements, but a real additive array_base + per-element surcharge
 # instead). Values match the confirmed real formula in memory_model.yaml
@@ -204,7 +204,7 @@ def _align8(n: int) -> int:
 
 
 def test_cam_predefined_array_structure_matches_confirmed_real_formula():
-    # CORRECTED 2026-09-11: base(4) + align8(per_element(12) * n), not the
+    # CORRECTED: base(4) + align8(per_element(12) * n), not the
     # original base(8) + 12*n. The old form read exact at n=1/5 and "a flat
     # -4 of small universal noise" at n=10/20/50 -- the noise reading was
     # wrong, and the tell is that the -4 fell exactly on the EVEN element
@@ -237,7 +237,7 @@ def test_sbr_and_ret_are_measured_zero_not_absent():
 
 
 def test_custom_string_definition_cost_matches_confirmed_namelen_step_function():
-    # OQ-CUSTOMSTRINGTYPENAME, SOLVED 2026-08-26: base(208) + bucket(8) *
+    # OQ-CUSTOMSTRINGTYPENAME, SOLVED: base(208) + bucket(8) *
     # floor((name_len - offset(5)) / bucket(8)). Confirmed exact against
     # 22/22 real dense-namelen-sweep points (samples/manifest.csv
     # stringclose_densenamelen_*) plus a separate 3-point UDT-member

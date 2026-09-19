@@ -1,4 +1,4 @@
-"""LBL/JMP validation-rule sweep (2026-08-23). The real rules: multiple
+"""LBL/JMP validation-rule sweep. The real rules: multiple
 JMPs may target one LBL, but there must always be at least one LBL; an LBL
 with no JMP is legal, a JMP with no LBL is not; and JMP/LBL are limited to
 the same subroutine.

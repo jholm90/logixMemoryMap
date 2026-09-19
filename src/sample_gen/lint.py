@@ -1,4 +1,4 @@
-"""Local heuristic pre-flight check for generated L5X files (2026-08-22).
+"""Local heuristic pre-flight check for generated L5X files.
 The original question was whether the SDK's L5X->ACD conversion performs
 controller validation or program checking that would catch a bad program
 before real capture time is spent on it.
@@ -20,7 +20,7 @@ capture time has been spent on it.
 Checks:
   1. Array-typed tag referenced without a [index] subscript anywhere it's
      used as an instruction operand in rung text (the CPS/COP/FLL/BTD bug).
-     SIZE is a confirmed exception (a real COP_Samples.L5X, 2026-08-22:
+     SIZE is a confirmed exception (a real COP_Samples.L5X:
      SIZE(COP_Source,0,COP_Size); -- bare array tag, no bracket) since its
      first operand is the whole array, not one element -- see lint_l5x.
   2. An instruction/AOI-style call (ALLCAPS mnemonic followed by "(") whose
@@ -28,9 +28,9 @@ Checks:
      AddOnInstructionDefinition actually declared in the same file (the
      T_ADD bug).
   3. duplicate_module_slot / chassis_size_exceeded (see _module_slot_findings)
-     -- 2026-08-31: chassis size and duplicated slots both need
+     --: chassis size and duplicated slots both need
      validating.
-  4. aoi_call_arg_count_mismatch -- 2026-08-31: real Studio 5000
+  4. aoi_call_arg_count_mismatch --: real Studio 5000
      verify error on composite_realistic_02/03.ACD ("Invalid number of
      arguments for instruction" on every AOI call rung): a declared AOI's
      Input/Output Parameters with Required="false" Visible="false" are
@@ -43,7 +43,7 @@ Checks:
      a real, checkable mismatch. Does not model the exact-position nuance of
      which specific trailing optional params can be omitted (heuristic, not
      authoritative -- matches this file's existing scope).
-  5. bit_level_instruction_on_non_bool_operand -- 2026-08-31: real,
+  5. bit_level_instruction_on_non_bool_operand --: real,
      caught TWICE on re-conversion: "SINT/INT/DINT cannot be used
      for bit level instructions like XIO,XIC,OTE,OTU,OTL,ONS only bools
      and .Bits of SINT/INT/DINT." A bit-level instruction's operand must
@@ -52,17 +52,17 @@ Checks:
      project's own generators can actually resolve a type for (see
      _resolve_operand_type); an unresolvable operand is silently skipped,
      not flagged.
-  6. rung_missing_output_instruction -- 2026-08-31: real: "you also
+  6. rung_missing_output_instruction --: real: "you also
      have conditional instructions like EQU with no operand at the end of
      the rung or a NOP() instruction. this is basic ladder logic." A rung
      whose every instruction is a pure condition/test
      (_PURE_CONDITION_INSTRUCTIONS) with no real output instruction has no
      effect and real Studio 5000 rejects it.
-  7. non_sequential_module_slots -- 2026-09-02: "lots of racks did
+  7. non_sequential_module_slots --: "lots of racks did
      not have the slot numbers used in sequence and that was supposed to
      be a check you were adding for validation." See
      _slot_sequence_findings for the real generator bug this caught.
-  8. chassis_size_mismatch -- 2026-09-03: real issue found
+  8. chassis_size_mismatch --: real issue found
      reviewing the v4 Studio 5000 I/O tree: a PointIO/Flex adapter's
      declared Bus Size can be stale even when its child IS at a
      sequential, in-bounds slot number (chassis_size_exceeded above only
@@ -70,14 +70,14 @@ Checks:
      how many modules are actually present -- a lone child at slot 1
      under a Bus Size="12" never trips that check). "Bus Coupler + 1 IO
      module = Chassis Size 2" -- see _chassis_size_findings.
-  9. safety_module_on_non_safety_controller -- 2026-09-03: "You
+  9. safety_module_on_non_safety_controller --: "You
      need to do better checking on safety stuff... you need to 'read'
      these modules and use your logic to verify safety stuff cannot go on
      non-safety processors." Real Studio 5000 error rebuilding an already-
      once-diagnosed real bug by hand without checking for the existing
      fix first (5069-IB8S/A / 5069-OBV8S/A, SafetyEnabled="true", built
      into a default non-safety controller) -- see _safety_module_findings.
-  10. aoi_array_param_wrong_usage -- 2026-09-03: "the issue is
+  10. aoi_array_param_wrong_usage --: "the issue is
       BOOL/SINT/INT/DINT cannot be arrays for Inputs. Arrays require
       InOut." Root cause of the aoi_array_param_def_only.L5X import
       failure two prior "fixes" chased without success -- an array-
@@ -127,20 +127,20 @@ _KNOWN_NATIVE_INSTRUCTIONS = {
     "MSG", "MUL", "MVM", "NEQ", "NOP", "ONS", "OTE", "OTL", "OTU", "RES",
     "RTO", "SIZE", "SSV", "STOD", "SUB", "TOF", "TON", "XIC", "XIO", "XPY",
     "OSR", "OSF", "TRN", "SQR", "SBR", "RET",
-    # Motion instructions (gen_motion_instructions.py, 2026-08-22) --
+    # Motion instructions (gen_motion_instructions.py) --
     # MAH/MSO corpus-confirmed call syntax, the rest real per Rockwell
     # documentation though not independently corpus-confirmed for that
     # exact mnemonic (see that generator's own docstring caveat).
     "MAM", "MAJ", "MAH", "MAS", "MSO", "MRP", "MAPC", "MCCP", "MAFR", "MASR",
-    # First-pass instruction coverage sweep (gen_instruction_firstpass.py,
-    # 2026-08-24) -- every real corpus-confirmed or documented-family-
+    # First-pass instruction coverage sweep (gen_instruction_firstpass.py)
+    # -- every real corpus-confirmed or documented-family-
     # inferred mnemonic added that batch. See that generator's own
     # docstring for the CORPUS_CONFIRMED/INFERRED/NEAR_VERBATIM citation
     # per instruction.
     "NOT", "NEG", "UID", "UIE", "MCR", "TND", "ATN", "DEG", "RAD", "TAN",
     "SWPB", "XOR", "FIND", "INSERT", "BSL", "BSR", "FFL", "FFU", "SRT",
     "AVE", "FAL", "FSC", "MDW", "MASD", "MGSD", "MGSR", "CROUT",
-    # Added 2026-09-04 from the hand-built, BUILD-CLEAN export
+    # Added from the hand-built, BUILD-CLEAN export
     # (samples/local/instr_probes/instruction_shapes_20260904.L5X). These are
     # the strongest possible provenance in this repo: not corpus-inferred,
     # not documented-family-guessed -- the rungs were written by hand,
@@ -149,13 +149,13 @@ _KNOWN_NATIVE_INSTRUCTIONS = {
     # valid RLL mnemonic.
     "BRK", "COS", "LOG", "SIN", "PID", "FBC", "STOR",
     "MCD", "MCS", "MCSV", "MAG", "MCLM",
-    # Added 2026-09-05. Every one of these is confirmed real by an actual
+    # Added . Every one of these is confirmed real by an actual
     # call site in samples/local/ (the production files) -- they
     # were missing here only because no generator had ever emitted them,
     # not because they are not real Logix instructions. The corpus call
     # site is recorded in gen_unweighted_instructions.py per instruction.
     "MSF", "MAW", "MAR", "MDR", "MAG", "MCD", "MCS", "MCSV", "MCLM",
-    # SCP removed 2026-09-10: it is not a built-in that can appear in RLL.
+    # SCP removed: it is not a built-in that can appear in RLL.
     # The real corpus occurrences are calls to a user-defined AOI named SCP,
     # which the AOI-name path already resolves; the built-in of that name is
     # FBD/ST only. See _NON_LAD_INSTRUCTIONS.
@@ -163,7 +163,7 @@ _KNOWN_NATIVE_INSTRUCTIONS = {
     "BRK", "NXT", "EVENT", "SBR", "RET",
 }
 
-# REAL BUG FOUND 2026-08-31, self-audit while adding the aoi_call_arg_
+# REAL BUG FOUND self-audit while adding the aoi_call_arg_
 # count_mismatch check below: this pattern required EVERY character after
 # the first to be uppercase/digit/underscore -- fine for native
 # instructions (XIC, OTE, CPT, all genuinely all-caps in real Logix), but
@@ -301,7 +301,7 @@ def _all_rung_texts(root: ET.Element) -> list[str]:
     return texts
 
 
-# 2026-08-31: real, caught TWICE this same session on the
+# real, caught TWICE this same session on the
 # re-conversion after I'd already fixed the first occurrence: "SINT/INT/
 # DINT cannot be used for bit level instructions like XIO,XIC,OTE,OTU,OTL,
 # ONS only bools and .Bits of SINT/INT/DINT" and "conditional instructions
@@ -318,7 +318,7 @@ _BIT_LEVEL_INSTRUCTIONS = {"XIC", "XIO", "OTE", "OTU", "OTL", "ONS"}
 # has no real output/effect and real Studio 5000 rejects it outright.
 _PURE_CONDITION_INSTRUCTIONS = {
     "XIC", "XIO", "EQU", "NEQ", "GRT", "GEQ", "LES", "LEQ", "LIM", "MEQ", "CMP",
-    # SBR added 2026-09-04 (real Studio 5000 failure on
+    # SBR added (real Studio 5000 failure on
     # jsr_paramtype_udt_n*_r00100): an SBR rung with no output instruction
     # fails to build. SBR behaves like a comparison and needs an output
     # after it. SBR only RECEIVES the
@@ -331,7 +331,7 @@ _PURE_CONDITION_INSTRUCTIONS = {
     # got the NOP right by convention and the 9th silently did not. That is
     # why it belongs HERE rather than as another comment in one generator.
     "SBR",
-    # DTR added 2026-09-08, same story a second time: "DTR is a comparison
+    # DTR added, same story a second time: "DTR is a comparison
     # and is not an instruction, you will need a NOP after for
     # testing/generating". DTR (data transitional) compares a source against
     # a reference bit pattern and conditions the rung on the result -- it
@@ -353,7 +353,7 @@ _PURE_CONDITION_INSTRUCTIONS = {
 # reference table: each entry is here because a real rejection or an
 # explicit confirmation put it there.
 #
-# SCP (2026-09-10): confirmed FBD/ST only. The trap that motivated this
+# SCP: confirmed FBD/ST only. The trap that motivated this
 # check is that SCP calls DO appear in ladder across 5 real corpus files --
 # but every one is a call to a user-defined AOI named SCP, not the built-in.
 # Two projects define different AOIs under that name (a 3-argument and a
@@ -366,7 +366,7 @@ _PURE_CONDITION_INSTRUCTIONS = {
 # A structure-typed tag must carry <Structure>/<DataValueMember>, never a
 # scalar <DataValue>, and must not carry a Radix at all.
 #
-# Real Studio 5000 rejection, 2026-09-10: "Format of data element is invalid
+# Real Studio 5000 rejection: "Format of data element is invalid
 # for a structure . Use Structure." plus "Invalid display style." -- both from
 # the same cause. builders.tag_xml decided structure-vs-atomic from whether
 # the CALLER passed udt_members rather than from the type, so any UDT or
@@ -483,7 +483,7 @@ def _resolve_operand_type(operand: str, tag_types: dict[str, str]) -> str | None
 
 
 def _bit_level_findings(rung_texts: list[str], tag_types: dict[str, str]) -> list[LintFinding]:
-    """2026-08-31: "SINT/INT/DINT cannot be used for bit level
+    """: "SINT/INT/DINT cannot be used for bit level
     instructions like XIO,XIC,OTE,OTU,OTL,ONS only bools and .Bits of
     SINT/INT/DINT." Flags a bit-level instruction call whose single
     operand (a) does NOT already end in a ".N" bit subscript, AND (b)
@@ -515,7 +515,7 @@ def _bit_level_findings(rung_texts: list[str], tag_types: dict[str, str]) -> lis
 
 
 def _rung_missing_output_findings(rung_texts: list[str]) -> list[LintFinding]:
-    """2026-08-31: "conditional instructions like EQU with no
+    """: "conditional instructions like EQU with no
     operand at the end of the rung or a NOP() instruction. this is basic
     ladder logic." Flags a rung where every instruction call found is a
     pure condition/test instruction (_PURE_CONDITION_INSTRUCTIONS) with no
@@ -537,7 +537,7 @@ def _rung_missing_output_findings(rung_texts: list[str]) -> list[LintFinding]:
 
 
 def _lbl_missing_trailing_instruction_findings(rung_texts: list[str]) -> list[LintFinding]:
-    """2026-08-22: (gen_logic_sweep.py's group_lbl_jmp, found
+    """: (gen_logic_sweep.py's group_lbl_jmp, found
     confirming the OQ-LBLJMP-STALE batch failure was real, not a stale-ACD-
     cache artifact): "lbl needs something after it, LBL(thisLabel); will
     fail - LBL(thisLabel)NOP(); will pass." A bare LBL with nothing else on
@@ -545,7 +545,7 @@ def _lbl_missing_trailing_instruction_findings(rung_texts: list[str]) -> list[Li
     instruction" class as rung_missing_output_instruction above -- but LBL
     isn't a condition/test instruction (it's a label marker), so it was
     never caught by that check's _PURE_CONDITION_INSTRUCTIONS logic. Found
-    2026-08-31 doing a full sweep of every "real bug" comment in this
+    while sweeping every "real bug" comment in this
     project for rules that were documented but never actually enforced
     -- found by re-reading the existing comments for rules that were
     documented but never enforced. Already fixed by hand in gen_logic_sweep.py
@@ -564,7 +564,7 @@ def _lbl_missing_trailing_instruction_findings(rung_texts: list[str]) -> list[Li
 
 
 def _module_slot_findings(root: ET.Element) -> list[LintFinding]:
-    """2026-08-31: chassis size and duplicated slots both need validating,
+    """: chassis size and duplicated slots both need validating,
     and were supposed to have been checked while the 50 tests were being
     generated. A real gap, not a false alarm: this project's own lint pre-flight NEVER actually checked
     either one before this. A prior commit (e57fe42) claimed a "self-audit
@@ -611,7 +611,7 @@ def _module_slot_findings(root: ET.Element) -> list[LintFinding]:
 
     # 3. duplicate_module_name -- two Module elements sharing one Name.
     #
-    # Real gap, found 2026-09-11: asmclose_1756_ob32_rackaliased_n02 and
+    # Real gap, found: asmclose_1756_ob32_rackaliased_n02 and
     # _n04 each ship the SAME child module name twice, because the copier
     # that multiplies a module block renames only the FIRST <Module> in it,
     # and the 1756-OB32 block is a 2-deep chain (1756-EN2T adapter + the
@@ -642,7 +642,7 @@ def _module_slot_findings(root: ET.Element) -> list[LintFinding]:
     slot_claims: dict[tuple[str, str, str], list[str]] = {}
 
     for mod_el in root.iter("Module"):
-        # 2026-09-02, real, found generating the v3 composite batch: a
+        # real, found generating the v3 composite batch: a
         # Module element with NO Name attribute is real and imports fine
         # (confirmed: 1756-OF8/B's own genericized block has never carried
         # one, and its standalone modulesweep file converts "ok" every
@@ -713,7 +713,7 @@ def _module_slot_findings(root: ET.Element) -> list[LintFinding]:
 def _slot_sequence_findings(
     slot_claims: dict[tuple[str, str, str], list[str]],
 ) -> list[LintFinding]:
-    """2026-09-02: "lots of racks did not have the slot numbers
+    """: "lots of racks did not have the slot numbers
     used in sequence and that was supposed to be a check you were adding
     for validation." Real bug this caught in gen_composite_realistic.py's
     _modules_xml_unique_ips: it keyed the assigned backplane slot off a
@@ -762,7 +762,7 @@ def _slot_sequence_findings(
 
 
 # A backplane is either FIXED or DYNAMIC, and only the dynamic kind can be
-# wrong here (2026-09-10, stated directly):
+# wrong here (stated directly):
 #
 #   FIXED -- 1756 ICP. The slot count is a property of the physical chassis
 #     catalog (4, 10, 13, 17 slots). A 13-slot chassis holding two cards is
@@ -789,7 +789,7 @@ _DYNAMIC_BACKPLANE_PORT_TYPES = ("PointIO", "Flex", "5069")
 
 
 def _chassis_size_findings(root: ET.Element) -> list[LintFinding]:
-    """2026-09-03: real issue found reviewing the v4 Studio 5000
+    """: real issue found reviewing the v4 Studio 5000
     I/O tree: a PointIO/Flex adapter's declared Bus Size can be stale even
     when its child sits at a sequential, in-bounds slot number --
     chassis_size_exceeded (in _module_slot_findings) only flags an address
@@ -961,7 +961,7 @@ def _name_rule_violation(name: str) -> str | None:
     import failure on this project's own generated files:
 
       - no TRAILING underscore   -- "Error creating 'Parameter' (Invalid
-        name.)" on `InParam00___`, 2026-09-06, which broke 52 of the 56
+        name.)" on `InParam00___` which broke 52 of the 56
         files in one batch from a single padding helper
       - no SEQUENTIAL underscores -- the earlier `stringoverhead_namelen32`
         failure, where name-length filler abutted a numeric suffix
@@ -1025,7 +1025,7 @@ def _invalid_logix_name_findings(root: ET.Element) -> list[LintFinding]:
 
 
 def _safety_module_findings(root: ET.Element) -> list[LintFinding]:
-    """2026-09-03: real Studio 5000 error caught combining several
+    """: real Studio 5000 error caught combining several
     real 5069 Compact I/O catalogs into a scratch sample: "Failed to set
     the 'SafetyEnabled' property (The Controller is not a Safety
     Controller.)" on 2 of the 6 -- 5069-IB8S/A and 5069-OBV8S/A are real
@@ -1033,7 +1033,7 @@ def _safety_module_findings(root: ET.Element) -> list[LintFinding]:
     build_l5x defaults to a plain non-safety controller unless
     safety_level is explicitly passed. This exact combination (this
     project's own gen_module_sweep.py already fully diagnosed it,
-    2026-08-27: "5069-L306ERMS2" is the confirmed-real safety-capable 5069
+    "5069-L306ERMS2" is the confirmed-real safety-capable 5069
     processor) was rebuilt from scratch by hand without checking for the
     existing fix first. The requirement: read each module and verify that
     safety-rated hardware cannot be placed on a non-safety processor. A
@@ -1068,7 +1068,7 @@ def _safety_module_findings(root: ET.Element) -> list[LintFinding]:
 
 
 def _aoi_array_param_usage_findings(root: ET.Element) -> list[LintFinding]:
-    """2026-09-03: real controller testing: "the issue is BOOL/
+    """: real controller testing: "the issue is BOOL/
     SINT/INT/DINT cannot be arrays for Inputs. Arrays require InOut" --
     root cause of the `aoi_array_param_def_only.L5X` import failure that
     two prior "fixes" (Required/Visible, then DefaultData shape) chased
@@ -1101,7 +1101,7 @@ def _aoi_array_param_usage_findings(root: ET.Element) -> list[LintFinding]:
 
 
 # ---------------------------------------------------------------------------
-# 2198 Kinetix rules, 2026-09-13. Both exist because the same class of fault
+# 2198 Kinetix rules . Both exist because the same class of fault
 # shipped in 550+ files and was diagnosed wrong twice from inference.
 # ---------------------------------------------------------------------------
 _KINETIX_SUPPLY = re.compile(r"^2198-(P\d+|RP\d+)")
@@ -1242,7 +1242,7 @@ def _kinetix_converter_axis_findings(root: ET.Element) -> list[LintFinding]:
 def _drive_axis_channel_findings(root: ET.Element) -> list[LintFinding]:
     """Which channel an axis may sit on is a property of ITS CATALOG.
 
-    2026-09-14, REPLACING A CATALOG-BLIND RULE THAT DID NOT CATCH THE BUG IT
+    REPLACING A CATALOG-BLIND RULE THAT DID NOT CATCH THE BUG IT
     EXISTED FOR. This used to check the channel string against one global set
     {Ch1, Ch3} taken from three D-series exports, with the docstring asserting
     "never Ch2". Both halves were wrong:
@@ -1303,7 +1303,7 @@ def _drive_axis_channel_findings(root: ET.Element) -> list[LintFinding]:
 
 # Major revision -> ConfigSize, for 2198 DRIVES only (supplies are 376 at every
 # Major, and 2198-RP200 is 452). Read out of every 2198 drive in the real corpus
-# 2026-09-14: Major 7 -> 376, Major 9 and 11 -> 448, Major 13 and 14 -> 468.
+# Major 7 -> 376, Major 9 and 11 -> 448, Major 13 and 14 -> 468.
 _DRIVE_MAJOR_CONFIGSIZE = {"7": 376, "9": 448, "11": 448, "13": 468, "14": 468}
 _DRIVE_CATALOG_RE = re.compile(r"^2198-[DS]\d+-ERS3?$")
 
@@ -1336,7 +1336,7 @@ def _module_configdata_findings(root: ET.Element) -> list[LintFinding]:
                         f"gives the module another catalog's identity.",
                     ))
         # The Major revision decides ConfigSize on a 2198 drive, not the catalog.
-        # 2026-09-14: D020/D032/D057 shipped at Major 11 carrying their Major-14
+        # D020/D032/D057 shipped at Major 11 carrying their Major-14
         # payload and S130 at Major 11 carrying its Major-13 payload -- pairings
         # that exist in no real export, and Studio rejected every one of them
         # with "Data type mismatch". D012, correctly paired at Major 14, imported.
@@ -1431,7 +1431,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
         # are both passed that way. Same class of exception as SIZE/MCSV
         # below, but it cannot be a mnemonic lookbehind because the array
         # can sit at any argument position of any AOI call, so the whole
-        # call site is exempted instead (2026-09-06, found generating
+        # call site is exempted instead (found generating
         # aoistr_real_* -- the first files this project ever built with an
         # array InOut param actually wired to a caller).
         aoi_call_spans = [
@@ -1445,7 +1445,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
 
         for tag in array_tags:
             # SIZE is a confirmed exception to the bracket rule ('s
-            # own Studio-5000-verified COP_Samples.L5X, 2026-08-22:
+            # own Studio-5000-verified COP_Samples.L5X:
             # SIZE(COP_Source,0,COP_Size); compiles clean against a plain
             # DINT[10] array with NO [index] subscript) -- unlike CPS/COP/
             # FLL/BTD, SIZE's first operand is the whole array, not one
@@ -1453,7 +1453,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
             # not a missing-subscript bug.
             # MCSV is the second confirmed whole-array exception, same
             # class as SIZE and on the same evidence standard: the
-            # 2026-09-04 build-clean export writes
+            # build-clean export writes
             # `MCSV(MCSV,Cam_Profile,Src,Dst,Dst,Dst);` against a plain
             # CAM_PROFILE[10] with NO subscript. A cam profile is passed as
             # the whole profile array, never one element of it, so a bare

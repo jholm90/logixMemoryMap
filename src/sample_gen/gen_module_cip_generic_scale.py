@@ -1,5 +1,5 @@
 """CIP-MODULE (generic CIP device) declared-I/O-size scaling
-(2026-09-02) -- a direct follow-up to the
+ -- a direct follow-up to the
 real TitusvilleTrimmer file, whose 3 real "CIP-MODULE" instances (all
 496/496-byte connections) flagged this project's flat ~1,672-byte
 module_overhead default as a real risk: `ETHERNET-MODULE`/`ETHERNET-
@@ -122,7 +122,7 @@ def _write(out_name: str, modules_xml: str, description: str) -> None:
     print(f"Wrote {out_path} (floor {total} bytes)")
 
 
-# 1024 and 2048 REMOVED 2026-09-04 -- real Studio 5000 error, both files:
+# 1024 and 2048 REMOVED -- real Studio 5000 error, both files:
 # "Failed to set the 'PrimCxnInputSize' property (Value too large.)". A
 # generic Ethernet/CIP connection tops out at 500 bytes, confirmed two
 # independent ways: the largest PrimCxnInputSize anywhere in the real corpus

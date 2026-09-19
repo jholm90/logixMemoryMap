@@ -1,10 +1,10 @@
 """Per-axis and per-drive-module marginal cost, decoupled.
 
-Written 2026-09-11. `scripts/unreconciled.py` (new, same day) recomputed all
+Written . `scripts/unreconciled.py` (new, same day) recomputed all
 2,770 captured rows against the current engine and the largest single-sign
 unreconciled block in the whole corpus is the 31-row axis family: every
 `axis_scale_*` file with n>=2 over-predicts, monotonically, up to +62,528
-bytes (+10.5%) at 20 axes. It has been captured since 2026-09-03.
+bytes (+10.5%) at 20 axes. It has been captured.
 
 Both arms are PERFECTLY linear in the axis count, with zero residual at every
 step:
@@ -37,10 +37,9 @@ two reasons found by reading the files rather than the numbers:
     whether the module discount is per catalog or per file, so "M" is not the
     same quantity in the two arms and the subtraction is not valid.
   - Every one of these files carries error_count = n+1 with an EMPTY
-    error_log. All 144 errored rows in the manifest were captured between
-    2026-08-23 and 2026-09-08; the error-log reader in
-    `logix_build_capture.ahk` only started working 2026-09-10, so not one of
-    them has any error text on record. The n=1 file has 2 errors and is
+    error_log. All 144 errored rows in the manifest were captured before
+    the error-log reader in `logix_build_capture.ahk` worked, so not one
+    of them has any error text on record. The n=1 file has 2 errors and is
     nonetheless byte-exact, which suggests the errors are benign, but that is
     an inference and the rows stay suspect until the text is known.
 
@@ -99,7 +98,7 @@ AXIS_COUNTS = (1, 2, 4, 8, 12, 16, 20)
 CAT_SWEEP_COUNTS = (2, 4, 8, 12, 20)
 
 # The single-axis arm's own catalog, so axmarg_1cat differences against it.
-# 2026-09-14: was 2198-S086-ERS3, which _dual_drive_file rode two-per-module on
+# was 2198-S086-ERS3, which _dual_drive_file rode two-per-module on
 # Ch1/Ch3. S086 is not that shape -- the one real dual-axis S086 in the corpus
 # (EmporiumEdger DRV01_BedRolls) uses Ch1/Ch2, and every real D-series dual uses
 # Ch1/Ch3. Studio rejected every even-numbered axis in all six files with
@@ -114,7 +113,7 @@ FOUR_CATALOGS = ("2198-D012-ERS3", "2198-D020-ERS3", "2198-D032-ERS3", "2198-D05
 def _virtual_axis_tag(name: str) -> str:
     """One AXIS_VIRTUAL tag, real shape from gen_axis_composite, renamed and
     given its own AxisID -- a duplicate AxisID is a real Studio import error
-    the moment two axis tags coexist (found 2026-08-27), and this batch puts
+    the moment two axis tags coexist (found), and this batch puts
     twenty of them in one file."""
     body = _AXIS_VIRTUAL_TAG_XML.replace('Name="Axis_Virtual"', f'Name="{name}"')
     body = body.replace('MotionGroup="MotionGroup"', 'MotionGroup="Motion"')
@@ -154,7 +153,7 @@ def _dual_drive_file(n_axes: int, catalogs: tuple[str, ...], name: str,
                      description: str) -> None:
     """n_axes axes riding two-per-module on dual-axis drives, catalogs cycled."""
     n_modules = (n_axes + 1) // 2
-    # FIXED 2026-09-14: every axmarg capture carried one Studio build error per
+    # FIXED: every axmarg capture carried one Studio build error per
     # drive MODULE (n02/n04/n08/n12/n20 recorded exactly 2/4/8/12/20) because the
     # files had no 2198 bus supply and no converter axis. See
     # gen_module_motion.bus_supply_with_converter.
