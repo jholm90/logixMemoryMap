@@ -100,6 +100,58 @@ Secondary effect: JSR reports **Approximate ±5%** purely because
 `derive_instruction_accuracy.py` divides this fixed 280 by file size and gets
 1.40%. The weight itself is exact.
 
+### 1d. The UI under-sells its own confidence
+
+**Measured, not impressions.** `scripts/confidence_census.py` drives the real load
+path and mirrors the client's own `nodeConfidence` walk, so these are the numbers on
+screen. On the real export, every element expanded individually — 1,737,078 of them:
+
+| band | elements | % | leaf bytes | % of bytes |
+|---|---:|---:|---:|---:|
+| 100 Exact | 1,655,239 | 95.3% | 5,506,879 | 78.6% |
+| 98 Measured | 270 | 0.0% | 735,792 | 10.5% |
+| 90 Close | 79 | 0.0% | 176,516 | 2.5% |
+| 75 Approximate | 37 | 0.0% | 148,432 | 2.1% |
+| 50 Unverified | 1,742 | 0.1% | 442,978 | 6.3% |
+| no bytes | 79,711 | 4.6% | 0 | 0.0% |
+
+**89.0% of bytes are Exact or Measured. 37 elements out of 1.74 million sit at 75%.**
+
+**But the first screen shows 18 tiles and three read badly**, and they are large:
+
+| group | confidence | bytes |
+|---|---:|---:|
+| Add-On Instructions | **50%** | 253,266 |
+| Subroutine Overhead | **50%** | 122,304 |
+| Project Overhead | **67%** | 40,104 |
+| Task: MainTask | 94% | 982,486 |
+| everything else | 98–100% | — |
+
+**The amber is honest, not a bug.** It was worth checking: every AOI-definition leaf
+reads FITTED while every UDT-definition leaf reads KNOWN, which looks like a blanket
+mislabel. It is not — a definition drill apportions a flat per-member rate, not
+atomic member sizing, and AOI definition cost genuinely is a fitted formula while
+UDT definition cost is confirmed. The 50% is the model telling the truth about
+`aoi_definition`, and `Subroutine Overhead` is 50% because the per-caller-vs-per-file
+question is genuinely open.
+
+**So the defect is presentation, not calibration.** The eye counts tiles; the model
+weights bytes. A viewer sees three bad tiles out of eighteen and reads 17% wrong,
+when the byte-weighted answer is 89% Exact or Measured and the tool has no headline
+number anywhere to say so.
+
+Ranked fixes, in order of value per hour:
+
+1. **A file-level confidence figure on screen at all times.** One number, byte-weighted,
+   with the band mix behind it. This alone fixes the impression for every user and
+   needs no new measurement.
+2. **A confidence view that recolours the treemap by band instead of by category**
+   (`?ConfidenceMode=true`). Useful for auditing, but it is the second fix, not the
+   first: a switch most people never set cannot repair the default impression.
+3. **Close `aoi_definition`.** At 253,266 bytes it is the single largest block of
+   genuine uncertainty in the file, and it is a real open question rather than a
+   labelling one. See `AOI_KNOWLEDGE_MAP.md`.
+
 ### 2. More real captured programs
 
 **The only thing that can settle anything at real scale.** Two or three previously

@@ -120,6 +120,23 @@ and zero-capacity rows are detected and retried automatically on the next run.
 
 ## 4. Analysis scripts
 
+### `confidence_census.py` — what the UI actually claims to know
+
+```
+python scripts/confidence_census.py samples/local/<file>.L5X
+```
+
+Expands every element the tree can reach and buckets it by the confidence the UI
+shows, driving the real load path and mirroring the client's own `nodeConfidence`
+walk rather than forming a second opinion about it.
+
+Counts elements and bytes separately, because they disagree sharply: a file is
+mostly tiny exact leaves by count and a few large aggregates by byte. Only leaves
+are summed for the byte view, so a parent and its children are not both counted.
+
+Use it to answer "does this look like guessing?" with a number instead of an
+impression, and to find which groups carry the real uncertainty.
+
 ### `quick_eval.py` — the accuracy check
 
 **The default instrument.** Evaluates the family under test, all seventeen real
