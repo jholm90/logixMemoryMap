@@ -13,7 +13,7 @@ license = { file = "LICENSE" }
 # XLSX export as a first-class button, and shipping it optional meant the
 # feature failed at click time with a "pip install openpyxl" error rather
 # than at install time.
-dependencies = ["pyyaml>=6.0", "flask>=3.0", "openpyxl>=3.1"]
+dependencies = ["pyyaml>=6.0", "flask>=3.0", "openpyxl>=3.1", "waitress>=3.0"]
 
 [project.optional-dependencies]
 dev = ["pytest>=7.0"]

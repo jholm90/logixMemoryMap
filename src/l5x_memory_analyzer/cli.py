@@ -139,7 +139,10 @@ def _cmd_export(args: argparse.Namespace) -> int:
 def _cmd_ui(args: argparse.Namespace) -> int:
     from l5x_memory_analyzer.ui.server import run
 
-    print(f"Serving http://{args.host}:{args.port} (Ctrl+C to stop)", file=sys.stderr)
+    # No "Ctrl+C to stop": this runs as a container's main process, where
+    # that keystroke reaches the parent task and kills it rather than the
+    # server.
+    print(f"Serving http://{args.host}:{args.port}", file=sys.stderr)
     run(args.l5x_path, host=args.host, port=args.port, open_browser=not args.no_browser)
     return 0
 

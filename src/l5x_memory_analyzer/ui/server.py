@@ -574,12 +574,23 @@ def run(l5x_path: str | Path | None, host: str = "127.0.0.1", port: int = 8765, 
 
         threading.Timer(0.75, lambda: webbrowser.open(f"http://{host}:{port}")).start()
 
-    # threaded=True: the "2 levels deep" treemap toggle
-    # fires one /api/node fetch per visible drillable tile CONCURRENTLY
-    # from the browser -- against Flask's default single-threaded dev
-    # server those just queue up serially, which is fine for a handful of
-    # tiles but turns "Controller Tags" on a real program (hundreds of
-    # tags) into a multi-second stall for no reason, since each request is
-    # independent read-only work against the same already-parsed in-memory
-    # DocState.
-    app.run(host=host, port=port, debug=False, threaded=True)
+    # Waitress, not Flask's built-in server. The built-in one prints a
+    # warning on every start telling you not to deploy it, and it is right:
+    # it is a development server. This runs in a container as the container's
+    # only job, which is deployment, so the answer is to serve it properly
+    # rather than to silence a true statement. Waitress is pure Python and
+    # works on Windows, where the capture machines are.
+    #
+    # Concurrency either way: the "2 levels deep" treemap toggle fires one
+    # /api/node fetch per visible drillable tile CONCURRENTLY from the
+    # browser. Served serially, "Controller Tags" on a real program becomes a
+    # multi-second stall for no reason -- every one of those requests is
+    # independent read-only work against the same already-parsed DocState.
+    try:
+        from waitress import serve as _serve
+    except ImportError:
+        # Still runnable from a source checkout without the dependency. The
+        # warning it prints is accurate, so it is left alone.
+        app.run(host=host, port=port, debug=False, threaded=True)
+        return
+    _serve(app, host=host, port=port, threads=8, ident=None)
