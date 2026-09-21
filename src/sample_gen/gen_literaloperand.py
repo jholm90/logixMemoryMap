@@ -348,15 +348,26 @@ def _arm_f() -> int:
     """The BOOL question: does a boolean input slot treat 0/1 differently?
 
     Probed through an AOI because an AOI Input parameter is the only operand
-    slot where a literal can legally reach a BOOL. Required="false"
-    Visible="true" is the flag pair that permits either a literal or a tag at
-    the call site; Required="true" demands a wired tag and would reject the
-    literal outright.
+    slot where a literal can legally reach a BOOL.
+
+    THE FLAGS ARE Required="true", AND THE FIRST CUT OF THIS HAD THEM BACKWARDS.
+    It used Required="false" Visible="true" on the documented belief that this
+    was the pair permitting a literal. Studio rejected every rung of all four
+    files -- including the all-tag control, so it was never about literals --
+    with "Invalid number of arguments for instruction".
+
+    The rule, read off 917 real AOI call sites in a real export rather than
+    inferred: a call site passes EXACTLY the Required parameters, unanimously,
+    and a Visible-but-optional parameter is set on the instance tag instead of
+    at the call. 375 of those 917 carry an immediate literal, and 128 of them
+    put a literal 0 or 1 in a Required BOOL parameter -- which is this arm's
+    question, occurring 128 times in one real program. A Required parameter
+    does not demand a wired tag.
     """
     params = [
-        MemberSpec("RawInput", "BOOL", required=False, visible=True),
-        MemberSpec("NormallyOpen", "BOOL", required=False, visible=True),
-        MemberSpec("DbTimeHigh", "DINT", required=False, visible=True),
+        MemberSpec("RawInput", "BOOL", required=True, visible=True),
+        MemberSpec("NormallyOpen", "BOOL", required=True, visible=True),
+        MemberSpec("DbTimeHigh", "DINT", required=True, visible=True),
     ]
     aoi, storage = aoi_xml(
         "LitSensor",

@@ -36,7 +36,12 @@ A dash means no file isolates that instruction. That is not the same as untested
 XIC, XIO, OTE and NOP are the scaffolding every other test rung is built from, so
 they can never be the single variable — but they are the **most-measured weights in
 the model**, fixed by the empty-rung sweep and confirmed byte-exact by the
-arrangement sweeps.
+arrangement sweeps. SBR and RET are likewise scaffolding, measured through the
+`subrtn_*` control rather than in isolation.
+
+**63 of the 101 mnemonics in the table carry a measured accuracy; 38 show a dash.**
+Every one of the 38 is below the noise floor in the real corpus, so none of them
+earns a capture slot on its own.
 
 ## Two caveats that bound every "exact" claim here
 
@@ -112,7 +117,7 @@ Sorted by real usage. Measured accuracy is mean / worst, with sample count.
 | OTE | 16.29% | 20,413 | 16 | 0.0142% / 0.0205% (2) |
 | MOV | 9.75% | 12,219 | 36 | 0.0076% / 0.0202% (16) |
 | XIO | 9.00% | 11,280 | 4 | — |
-| EQU | 4.73% | 5,921 | 20 | 0.0022% / 0.0136% (8) |
+| EQU | 4.73% | 5,921 | 20 | 0.0019% / 0.0136% (9) |
 | OTL | 4.35% | 5,452 | 16 | 0.0142% / 0.0205% (2) |
 | ADD | 3.39% | 4,253 | 40 | 0.0023% / 0.0127% (7) |
 | OTU | 3.16% | 3,962 | 16 | 0.0142% / 0.0205% (2) |
@@ -129,8 +134,8 @@ Sorted by real usage. Measured accuracy is mean / worst, with sample count.
 | LEQ | 0.99% | 1,246 | 20 | 0.0025% / 0.0136% (7) |
 | GEQ | 0.93% | 1,160 | 20 | 0.0025% / 0.0136% (7) |
 | LIM | 0.62% | 781 | 52 | 0.0016% / 0.0088% (7) |
-| JMP | 0.60% | 747 | 40 | — |
-| LBL | 0.56% | 697 | 64 | — |
+| JMP | 0.60% | 747 | 40 | 0.0099% / 0.0229% (3) |
+| LBL | 0.56% | 697 | 64 | 0.0099% / 0.0229% (3) |
 | MUL | 0.54% | 675 | 56 | 0.0018% / 0.0101% (7) |
 | RES | 0.46% | 578 | 20 | 0.0126% / 0.0186% (2) |
 | DIV | 0.45% | 560 | 56 | 0.0018% / 0.0101% (7) |
@@ -158,12 +163,12 @@ Sorted by real usage. Measured accuracy is mean / worst, with sample count.
 | EVENT | 0.05% | 57 | 56 | 0.0000% / 0.0000% (1) |
 | AVE | 0.05% | 57 | 176 | — |
 | ABS | 0.04% | 55 | 120 | 0.0099% / 0.0229% (3) |
-| BSL | 0.03% | 43 | 60 | — |
+| BSL | 0.03% | 43 | 60 | 0.0067% / 0.0083% (2) |
 | MRP | 0.03% | 42 | 128 | — |
 | SIZE | 0.03% | 42 | 128 | 0.0096% / 0.0224% (3) |
 | MAG | 0.03% | 37 | 124 | 0.0000% / 0.0000% (1) |
 | MAW | 0.03% | 37 | 128 | — |
-| BSR | 0.03% | 34 | 60 | — |
+| BSR | 0.03% | 34 | 60 | 0.0052% / 0.0083% (3) |
 | MDW | 0.03% | 34 | 60 | — |
 | MVM | 0.03% | 32 | 56 | 0.0064% / 0.0101% (2) |
 | MAH | 0.02% | 30 | 60 | — |

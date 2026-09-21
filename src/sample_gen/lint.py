@@ -32,17 +32,14 @@ Checks:
      validating.
   4. aoi_call_arg_count_mismatch --: real Studio 5000
      verify error on composite_realistic_02/03.ACD ("Invalid number of
-     arguments for instruction" on every AOI call rung): a declared AOI's
-     Input/Output Parameters with Required="false" Visible="false" are
-     HIDDEN from its own instruction call signature entirely (real Logix
-     semantics, confirmed against a real export's
-     real PTimer calls -- see gen_aoi_required_visible.py's docstring) --
-     only Required and/or Visible params are real call-argument slots.
-     Checks the actual argument count at each call site against
-     [count(Required), count(Required or Visible)] -- outside that range is
-     a real, checkable mismatch. Does not model the exact-position nuance of
-     which specific trailing optional params can be omitted (heuristic, not
-     authoritative -- matches this file's existing scope).
+     arguments for instruction" on every AOI call rung), and again on a
+     1,000-rung literal-operand family. A declared AOI's call signature is
+     exactly its Required="true" Input/Output parameters plus its InOut
+     parameters; Visible="true" alone is a ladder-line display flag and
+     creates no call slot, and neither flag set hides the parameter from the
+     ladder line entirely. Checks the argument count at each call site for
+     exact equality with that number -- see _aoi_call_arg_count for the
+     917-call-site evidence.
   5. bit_level_instruction_on_non_bool_operand --: real,
      caught TWICE on re-conversion: "SINT/INT/DINT cannot be used
      for bit level instructions like XIO,XIC,OTE,OTU,OTL,ONS only bools
@@ -210,39 +207,58 @@ def _declared_aoi_names(root: ET.Element) -> set[str]:
     return names
 
 
-def _aoi_call_arg_bounds(root: ET.Element) -> dict[str, tuple[int, int]]:
-    """aoi_name -> (min_args, max_args): min = count of Required="true"
-    Input/Output Parameters, max = count of (Required="true" OR
-    Visible="true") Input/Output Parameters, both in declaration order,
-    excluding EnableIn/EnableOut/InOut (InOut params are always required
-    and always present -- real semantics, see builders.py's aoi_xml
-    docstring -- so they always count toward BOTH bounds)."""
-    bounds = {}
+def _aoi_call_arg_count(root: ET.Element) -> dict[str, int]:
+    """aoi_name -> the exact number of parameter arguments its call sites
+    must supply (after the leading instance tag).
+
+    A call slot is created by Required="true", and by nothing else. InOut
+    parameters are always required and always present, so they count too.
+    EnableIn/EnableOut never count.
+
+    Visible="true" without Required="true" does NOT create a call slot: it
+    controls whether the parameter is shown on the ladder line, not whether
+    it is passed. Neither flag set hides the parameter from the ladder line
+    altogether, leaving it reachable only through the tag browser.
+
+    The evidence, because this was believed backwards once and cost a
+    1,000-rung batch:
+
+    * Across the real exports there are 917 AOI call sites. At every one of
+      them the argument count after the instance tag equals the Required
+      count exactly -- 917 of 917, no exceptions.
+    * Those same exports declare 120 Required="false" Visible="true"
+      parameters (59 Input, 61 Output), so the unanimity is not an artifact
+      of the real AOIs having no optional parameters to pass. One AOI
+      declares three Required and four Visible-only parameters, and every
+      one of its call sites passes three arguments.
+    * A generated family whose AOI declared three Required="false"
+      Visible="true" Input parameters and passed three arguments drew
+      "Invalid number of arguments for instruction" on all 1,000 of its
+      rungs, in all four variants, including the variant that passed only
+      tags. The rungs contributed no memory at all.
+    * Required is not a prefix of the parameter list in real AOIs (13 of 48
+      definitions interleave optional parameters between required ones), so
+      the omitted parameters are not merely trailing ones. Position in the
+      declaration is irrelevant; the Required flag is the whole rule.
+    """
+    counts = {}
     for aoi_el in root.iter("AddOnInstructionDefinition"):
         name = aoi_el.get("Name")
         if not name:
             continue
-        min_args = 0
-        max_args = 0
+        n_args = 0
         params_el = aoi_el.find("Parameters")
-        if params_el is None:
-            bounds[name] = (0, 0)
-            continue
-        for p_el in params_el.findall("Parameter"):
-            usage = p_el.get("Usage")
-            if usage not in ("Input", "Output", "InOut"):
-                continue
-            if p_el.get("Name") in ("EnableIn", "EnableOut"):
-                continue
-            required = p_el.get("Required") == "true"
-            visible = p_el.get("Visible") == "true"
-            if usage == "InOut" or required:
-                min_args += 1
-                max_args += 1
-            elif visible:
-                max_args += 1
-        bounds[name] = (min_args, max_args)
-    return bounds
+        if params_el is not None:
+            for p_el in params_el.findall("Parameter"):
+                usage = p_el.get("Usage")
+                if usage not in ("Input", "Output", "InOut"):
+                    continue
+                if p_el.get("Name") in ("EnableIn", "EnableOut"):
+                    continue
+                if usage == "InOut" or p_el.get("Required") == "true":
+                    n_args += 1
+        counts[name] = n_args
+    return counts
 
 
 def _split_top_level_args(s: str) -> list[str]:
@@ -1405,7 +1421,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
 
     array_tags = _array_tag_names(root)
     aoi_names = _declared_aoi_names(root)
-    aoi_call_arg_bounds = _aoi_call_arg_bounds(root)
+    aoi_call_arg_counts = _aoi_call_arg_count(root)
     rung_texts = _all_rung_texts(root)
 
     # bit_level_instruction_on_non_bool_operand / rung_missing_output_
@@ -1475,18 +1491,18 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
         for mnemonic, args_str in _call_sites(text):
             if mnemonic in aoi_names:
                 # First arg is always the instance tag, not a Parameter --
-                # everything after it maps 1:1 to non-hidden Parameters in
-                # declaration order. See _aoi_call_arg_bounds's docstring.
+                # everything after it maps 1:1 to the REQUIRED parameters in
+                # declaration order. See _aoi_call_arg_count's docstring.
                 args = _split_top_level_args(args_str)
                 param_arg_count = max(len(args) - 1, 0)
-                min_args, max_args = aoi_call_arg_bounds.get(mnemonic, (0, 0))
-                if not (min_args <= param_arg_count <= max_args):
+                expected = aoi_call_arg_counts.get(mnemonic, 0)
+                if param_arg_count != expected:
                     findings.append(LintFinding(
                         "aoi_call_arg_count_mismatch",
                         f"'{mnemonic}(' called with {param_arg_count} parameter argument(s) (plus the "
-                        f"instance tag), but its declaration allows {min_args}..{max_args} "
-                        f"(Required-count..Required-or-Visible-count non-hidden Input/Output params): "
-                        f"{text.strip()!r}",
+                        f"instance tag), but its declaration has {expected} required Input/Output/InOut "
+                        f"parameter(s), and a call site must supply exactly those. Visible=\"true\" "
+                        f"without Required=\"true\" is not a call slot: {text.strip()!r}",
                     ))
                 continue
             if mnemonic in _KNOWN_NATIVE_INSTRUCTIONS:

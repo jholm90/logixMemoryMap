@@ -793,6 +793,20 @@ identically to DINT. **Every "exact, zero residual" claim in this file and in
 operand-type surcharge is wired; the narrow-integer widening defect it exposes in
 CPT is not fully solved.
 
+### Bit-shift instructions — BSR and BSL, measured exactly
+
+Both cost **60 bytes per rung**, confirmed over four independent count intervals
+(10→50, 50→100, 100→500, 500→1,000) at exactly 60.000 each. BSL and BSR differenced
+at equal rung count agree to **+0 at all five counts**, so the shared weight is a
+measurement rather than the assumption it used to be.
+
+- **The length operand is free.** Lengths 32 / 64 / 128 / 256 against a fixed DINT[8]
+  array capture byte-identically at 24,432.
+- **A per-rung CONTROL costs 96 bytes, which is exactly its own tag storage.** There
+  is no per-instruction surcharge for a private control structure.
+
+See `RESOLVED_QUESTIONS.md` OQ-BITSHIFT.
+
 ### The table
 
 | Instruction | raw | isolated (engine) | fixed_base |
@@ -824,7 +838,7 @@ CPT is not fully solved.
 | DEG | 64 | 64 | 4,816 |
 | MAH / MSO / MAFR / MASR / MDW / MASD | 60 | 60 | 4,816 |
 | ATN / TAN | 60 | 60 | 4,816 |
-| BSL / BSR | 60 | 60 | 4,816 |
+| BSL / BSR | 60 | 60 — **measured, exact** (OQ-BITSHIFT) | 4,816 |
 | MGSD / MGSR | 56 | 56 | 4,816 |
 | OSR / OSF | 56 | 56 | 4,816 |
 | ONS | 56 | **36** (XIC+ONS+OTE) | 4,816 |

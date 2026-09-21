@@ -204,7 +204,13 @@ def main(argv: list[str]) -> int:
         marker = "\ninstruction_accuracy:"
         if marker in text:
             head = text.index(marker)
-            tail = text.find("\n\n", head + 1)
+            # Rewind past the generated comment banner so repeated --write runs
+            # replace it instead of stacking another copy above the key. Any
+            # number of stacked copies collapses to one.
+            banner = "\n" + lines[1]
+            while text.rfind(banner, 0, head) >= 0:
+                head = text.rfind(banner, 0, head)
+            tail = text.find("\n\n", text.index(marker) + 1)
             text = text[:head] + ("\n" + "\n".join(lines[1:])) + (text[tail:] if tail > 0 else "\n")
         else:
             text = text.rstrip("\n") + "\n" + "\n".join(lines) + "\n"

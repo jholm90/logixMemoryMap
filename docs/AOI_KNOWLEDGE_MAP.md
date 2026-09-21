@@ -19,21 +19,43 @@ Not in question.
   list. Input, Output and LocalTags contribute to the instance's storage.
   **InOut parameters do not** — an InOut is a reference to the caller's own tag,
   not separate storage inside the instance.
-- **Required and Visible are per-parameter flags governing call-site syntax:**
-  - `Required="true"` → a tag is mandatory on the call.
-  - `Required="false" Visible="true"` → the parameter MAY be given a value at the
-    call site, and that value may be a **literal**. It may also be omitted: both
-    forms build, confirmed across 2,154 committed files with a conversion status.
-    So the legal arity is a RANGE, `Required <= args <= Required + Visible`.
+- **Required and Visible are per-parameter flags governing call-site syntax.**
+  The rule is `args == Required`, exactly — not a range:
+  - `Required="true"` → the parameter occupies a call-site argument slot and a
+    value must be supplied there. That value may be a tag or a **literal**.
+    InOut parameters behave this way unconditionally.
+  - `Required="false" Visible="true"` → the parameter is shown on the ladder line
+    but is **not** a call-site argument slot. It is never passed. Supplying one
+    does not build.
+  - Neither → hidden. Tag-browser access only, and likewise never passed.
 
-    **This pair is NOT sufficient on its own.** An AOI with ZERO Required
-    parameters and three Visible ones was rejected by Studio on every rung with
-    *"Invalid number of arguments for instruction"* -- including the control whose
-    arguments were all tags, so it is not about literals. The arity was inside the
-    range above. Something else constrains a definition with no Required parameter
-    and it is not yet known; see OQ-LITERALOPERAND's BOOL arm. Do not build another
-    AOI test file on this pair alone without a Required parameter present.
-  - Neither → hidden. Tag-browser access only, never appears on a call.
+  So a call site supplies exactly the Required (plus InOut) parameters, in
+  declaration order, after the leading instance tag.
+
+  The evidence:
+
+  - **917 real AOI call sites, `args == Required` at every one.** No exceptions.
+  - Those same exports declare **120 `Required="false" Visible="true"`
+    parameters** (59 Input, 61 Output), so the unanimity is not an artifact of
+    the real AOIs having nothing optional to pass. One AOI declares three
+    Required and four Visible-only parameters and is called with three arguments
+    everywhere.
+  - Violating it is a hard build failure. An AOI with zero Required and three
+    Visible-only parameters, called with three arguments, drew *"Invalid number
+    of arguments for instruction"* on **all 1,000 of its rungs, in all four
+    variants** — including the control whose arguments were all tags, so it is
+    not about literals. Those rungs contributed no memory at all.
+  - **Required is not a prefix of the parameter list.** 13 of 48 real
+    definitions interleave optional parameters between required ones, so the
+    unpassed parameters are not merely trailing ones. Declaration position is
+    irrelevant; the Required flag is the whole rule.
+  - Literals go into **Required** parameters, not optional ones: 375 of the 917
+    real call sites carry an immediate literal, and 128 pass a literal `0` or `1`
+    into a Required BOOL parameter.
+
+  Enforced by `lint.py`'s `aoi_call_arg_count_mismatch`, which checks exact
+  equality. It previously checked the range and so passed the 1,000-rung family
+  that failed to build.
 
   This governs whether a generated test file builds at all, so it is load-bearing
   for every AOI test file.

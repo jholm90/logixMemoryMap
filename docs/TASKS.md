@@ -72,6 +72,29 @@ narrow-integer literal operands has not been counted.
   the REAL-literal term and a different mechanism. Needs a second count point
   before any rate is believed.
 
+### 1c. The JSR shell over-charge — diagnosed, blocked on one file
+
+`jsr_fixed_base_per_routine` is 5,096 where the ordinary `fixed_base_per_routine`
+is 4,816. The difference, 280, is exactly the residual on **all 14 clean
+0-parameter JSR rows** — flat at 1 through 50 calls and at every target name length,
+while the no-JSR `subrtn_shell` control predicts at 0.000%.
+
+| | |
+|---|---|
+| **Expected movement** | unknown, and that is the point — between 280 bytes and hundreds of thousands, depending on which reading is right |
+| **Mechanism** | the constant is charged per JSR-CALLER routine, and every JSR file in the corpus has exactly one caller, so per-file and per-caller fit identically |
+| **Blocker** | one file: 20 caller routines each making 1 call, differenced against the existing `jsr_multi_distinct_targets_n20` capture |
+
+**Do not adjust the constant before that file reads.** The real programs
+under-predict today and the per-caller reading subtracts bytes, so guessing wrong
+makes them worse. The marginal cost is already exact — 368 bytes per distinct
+0-parameter target plus its call, over eight intervals in two generators — so
+nothing is gained by touching the slope.
+
+Secondary effect: JSR reports **Approximate ±5%** purely because
+`derive_instruction_accuracy.py` divides this fixed 280 by file size and gets
+1.40%. The weight itself is exact.
+
 ### 2. More real captured programs
 
 **The only thing that can settle anything at real scale.** Two or three previously
@@ -111,8 +134,8 @@ alarms on a UDT-scalar host, and whether alarm **sets** carry their own cost. Se
 
 ### 5. Clear the capture backlog
 
-25 manifest rows have no capture. The literal-operand batch has landed and is
-reconciled; what is left:
+Rows with no capture, after the bit-shift batch landed clean and the four
+`litop_bool_*` rows were cleared as unusable:
 
 | family | rows | state |
 |---|---:|---|
@@ -121,6 +144,7 @@ reconciled; what is left:
 | `alarmcond_*` | 5 | condition-type arm, never captured |
 | `predefprobe_*` | 3 | submitted and refused; needs the Studio error line |
 | `cipmodule_*` | 2 | awaiting first submission |
+| `litop_bool_*` | 4 | regenerated with valid call arity; awaiting recapture |
 
 **A row captured but never differenced is work already paid for and thrown away.**
 The one real win of a recent session came entirely from rows already captured,

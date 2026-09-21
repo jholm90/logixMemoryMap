@@ -1,34 +1,42 @@
-"""AOI Parameter Required/Visible flag sweep, on non-motion
-AOIs. Real semantics: the reference samples set the required flag on
-non-InOut parameters, which forces a tag to be entered for that parameter
-on the calling instance. If required is not set but visible is, the call
-site requires a value to be present. If neither required or
-visible is set then there is nowhere for that parameter to be used on the
-calling instance and it is hidden from the ladder line and only visible in
-the tag browser."
+"""AOI Parameter Required/Visible flag sweep, on non-motion AOIs.
 
-Real semantics confirmed against the corpus, not guessed: every prior
-generator batch hardcoded Required="false" Visible="false" on every
-Input/Output parameter (see builders.py's `_aoi_parameter_xml`, "a safe
-default matching most of the reference examples") -- never actually varied it. This
-generator does, using the same non-motion, plain-atomic-type AOI shapes
-gen_aoi_sweep.py already established.
+Real semantics, established against the real exports rather than guessed:
 
-Real call-site argument syntax confirmed from
-a real export (multiple AOI calls, e.g.
-`PTimer(NE_OverWidthPTMR,AxisPosition,100)`): `AoiName(InstanceTag,arg1,
-arg2,...)`, positional args in Parameter declaration order, tags and
-literal constants both appear directly as args. Cross-referencing that
-same file's PTimer AOI *definition* against its real call: PTimer has 4
-non-hidden Input params (2 Required="true", 2 Required="false"
-Visible="true"), but the real call only supplies 2 values -- confirming
-Required="false"/Visible="true" params CAN be omitted from the call
-entirely (not guessed: this is the real corpus behavior). This generator
-therefore never guesses an "omitted middle argument" shape (unclear
-whether that needs a blank placeholder) -- it only ever omits OPTIONAL
-params from the END of the argument list (matching the real PTimer
-example's own pattern) or supplies all of them, never testing a
-skip-in-the-middle shape.
+  Required="true"  -- the parameter occupies a call-site argument slot and a
+                      value must be supplied there. InOut parameters behave
+                      this way unconditionally.
+  Required="false"
+  Visible="true"   -- the parameter is shown on the ladder line but is NOT a
+                      call-site argument slot. It is never passed.
+  both false       -- the parameter is hidden from the ladder line entirely
+                      and is reachable only through the tag browser.
+
+So a call site supplies exactly the Required (plus InOut) parameters, in
+declaration order, after the leading instance tag:
+`AoiName(InstanceTag,arg1,arg2,...)`. Tags and literal constants both appear
+directly as arguments.
+
+Across the real exports there are 917 AOI call sites and the argument count
+after the instance tag equals the Required count at all 917. Those same
+exports declare 120 Required="false" Visible="true" parameters, so this is
+not an artifact of the real AOIs having no optional parameters -- one of them
+declares three Required and four Visible-only parameters and is called with
+three arguments everywhere. Required is not a prefix of the parameter list
+either (13 of 48 real definitions interleave optional parameters between
+required ones), so the unpassed parameters are not merely trailing ones.
+Declaration position is irrelevant; the Required flag is the whole rule.
+
+Every prior generator batch hardcoded Required="false" Visible="false" on
+every Input/Output parameter (see builders.py's `_aoi_parameter_xml`) and
+never varied it. This generator does, using the non-motion, plain-atomic-type
+AOI shapes gen_aoi_sweep.py established.
+
+A call that supplies a Visible-only parameter does not build: it draws
+"Invalid number of arguments for instruction". Two files here once did that
+and are gone -- there is no valid file that wires an optional parameter,
+because wiring one is not a thing a call site can do. `lint.py`'s
+`aoi_call_arg_count_mismatch` now enforces exact equality with the Required
+count, so the shape cannot be reintroduced.
 
 Two things tested per AOI-flag combination:
   1. Definition-only (0 instances) -- does the Required/Visible attribute
@@ -133,7 +141,9 @@ def group_call_site_full() -> None:
     combos = {
         "allhidden": ([], dict(required=False, visible=False)),
         "allrequired": (["CallArg0", "CallArg1", "CallArg2", "CallArg3"], dict(required=True, visible=True)),
-        "allvisibleoptional": (["CallArg0", "CallArg1", "CallArg2", "CallArg3"], dict(required=False, visible=True)),
+        # No "allvisibleoptional" entry: with nothing Required there is no
+        # call slot at all, so the only legal call is the 0-argument one
+        # "allhidden" already covers.
     }
     for combo_name, (arg_names, flags) in combos.items():
         params = [MemberSpec(f"P{i}", "DINT", **flags) for i in range(4)]
@@ -148,12 +158,11 @@ def group_call_site_full() -> None:
 
 
 def group_call_site_omitted_optional() -> None:
-    # Real corpus precedent (PTimer): a Required=false/Visible=true param
-    # CAN be omitted from the call entirely, from the END of the arg list.
-    # Params: 2 required (must always be wired) + 2 visible-optional. Two
-    # variants: all 4 wired (baseline, matches group_call_site_full's
-    # mixed-equivalent) vs only the 2 required ones wired, optional ones
-    # omitted entirely -- tests whether omission itself changes size.
+    # 2 Required + 2 Visible-only DINT Input params, called with the 2
+    # Required ones. This is the real-corpus shape: the optional parameters
+    # exist in the definition, are shown on the ladder line, and are never
+    # passed. There is deliberately no all-4-wired counterpart -- that call
+    # does not build.
     params = [
         MemberSpec("P0", "DINT", required=True, visible=True),
         MemberSpec("P1", "DINT", required=True, visible=True),
@@ -162,21 +171,13 @@ def group_call_site_omitted_optional() -> None:
     ]
     aoi_name = "ReqVisOmit"
 
-    all_args = ["CallArg0", "CallArg1", "CallArg2", "CallArg3"]
-    arg_tags_xml = "\n".join(tag_xml(a, "DINT") for a in all_args)
-    _instance_with_call(
-        aoi_name, params, all_args, arg_tags_xml,
-        "reqvis_2req2optional_call_allwired",
-        "AOI with 2 required + 2 visible-optional DINT Input params, 1 instance, call site wires all 4",
-    )
-
     required_only_args = ["CallArg0", "CallArg1"]
-    arg_tags_xml2 = "\n".join(tag_xml(a, "DINT") for a in required_only_args)
+    arg_tags_xml = "\n".join(tag_xml(a, "DINT") for a in required_only_args)
     _instance_with_call(
-        aoi_name, params, required_only_args, arg_tags_xml2,
+        aoi_name, params, required_only_args, arg_tags_xml,
         "reqvis_2req2optional_call_optomitted",
         "AOI with 2 required + 2 visible-optional DINT Input params, 1 instance, "
-        "call site wires only the 2 required (matches real PTimer precedent of omitting optional trailing params)",
+        "call site supplies the 2 required ones (the only legal arity)",
     )
 
 
@@ -184,7 +185,7 @@ def main() -> None:
     group_def_flag_combos()
     group_call_site_full()
     group_call_site_omitted_optional()
-    print("\nDone. 9 files.")
+    print("\nDone. 7 files.")
 
 
 if __name__ == "__main__":

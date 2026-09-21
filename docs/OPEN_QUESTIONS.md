@@ -29,7 +29,6 @@ That is why thirty-four closed at once.
 | **OQ-ALARMCONDREAL** | A 9.4%-of-mass category that is 8.8% short on one real file. Not a scale error — the two files disagree with each other. |
 | **OQ-EXPORTSCOPE** | A correctness requirement, not an accuracy question. |
 | **OQ-BUILDFAIL-OPEN** | A defect log. Kept visible on purpose. |
-| **OQ-BITSHIFT** | An instruction charged 60 bytes with nothing behind it, carrying 58% of a real routine's compiled size. |
 | **OQ-MODULENAMELEN** | A term the engine charges at zero, measured on a clean isolation pair. Not a scale error. |
 
 ---
@@ -93,10 +92,12 @@ COP 2,841, JSR 2,631.
   evidence that **a single flat rate is the wrong shape** and the cost is
   type-dependent.
 
-**CAPTURE ERRORS: 4 row(s)** — the whole BOOL arm, `litop_bool_*`. Every rung of
-all four failed with *"Invalid number of arguments for instruction"*, 1,000 errors
-on 1,000 rungs, so the ladder never compiled and all four read an identical 20,028.
-The arm measured nothing and **none of its rows may be used**. Diagnosis below.
+**CAPTURE ERRORS: 0 row(s).** The whole BOOL arm, `litop_bool_*`, previously
+carried 4. Every rung of all four had failed with *"Invalid number of arguments for
+instruction"*, 1,000 errors on 1,000 rungs, so the ladder never compiled and all
+four read an identical 20,028. The arm measured nothing, the cause is found and
+fixed, and **the four capture rows are cleared** — the files they measured no
+longer exist in that shape. Diagnosis below. The regenerated files await capture.
 
 ---
 
@@ -166,65 +167,136 @@ measurement has removed. What survives is smaller and sharper: a +4 REAL-literal
 term, a +76 float-form term needing a second point, and the INT/SINT widening
 defect, which is the only one of the three that moves a real number.
 
-### The BOOL arm is a generator bug, and the documented rule it followed is wrong
+### The BOOL arm was a generator bug. Resolved: a call site passes exactly the Required parameters
 
-All four `litop_bool_*` files emit `LitSensor(Sensor,RawIn,NormOpen,TimeHigh);`
-against an AOI whose three parameters are `Required="false" Visible="true"`.
-`AOI_KNOWLEDGE_MAP.md` states that pair means "a value is mandatory at the call
-site and may be a literal". Studio rejected every rung of all four, **including the
-all-tag control**, so this is about argument COUNT and not about literals at all.
+All four `litop_bool_*` files emitted `LitSensor(Sensor,RawIn,NormOpen,TimeHigh);`
+against an AOI whose three parameters were `Required="false" Visible="true"`.
+Studio rejected every rung of all four, **including the all-tag control**, so it
+was about argument COUNT, not literals.
 
-Across every committed generated file with a recorded conversion status, call-site
-arity against the definition:
+The rule is `args == Required` exactly, and `Visible="true"` alone creates no call
+slot. Across the real exports there are **917 AOI call sites and the argument count
+equals the Required count at every one**, while those same exports declare 120
+`Required="false" Visible="true"` parameters — so the unanimity is not for want of
+optional parameters to pass. One real AOI has three Required and four Visible-only
+parameters and is called with three arguments everywhere. Required is not even a
+prefix of the parameter list (13 of 48 real definitions interleave), so the
+unpassed ones are not merely trailing.
 
-| built ok | args = Required | args = Required + Visible | files |
-|---|---|---|---:|
-| yes | yes | yes | 2,147 |
-| yes | yes | no | 1 |
-| yes | no | yes | 6 |
+**The "legal arity is a range" reading came from counting conversions, not builds.**
+Two generated files wired optional parameters and were counted as evidence because
+they converted and returned a capacity number. Conversion performs no ladder
+verification, and `litop_bool_*` proves a capacity number is returned even when
+every rung errors. Their apparent cost over the definition-only baseline was tag
+storage for the argument tags, not compiled rungs. Both files are deleted, and
+`gen_aoi_required_visible.py` no longer emits that shape.
 
-Both endpoints build: an optional parameter may be **omitted** or **wired**. So the
-legal arity is a range, `Required ≤ args ≤ Required + Visible`, and 3 arguments
-against 0 required and 3 visible sits inside it. **The rule as documented does not
-explain the rejection**, and the one structural difference between these files and
-every file that builds is that `LitSensor` has **zero** Required parameters.
+Wired:
 
-Not asserting a fix on that. What is needed is the Studio error against a
-four-file probe — 0, 1, 2 and 3 Required parameters, the rest Visible, call site
-fully wired — which reads the constraint directly instead of inferring it. Until
-then `AOI_KNOWLEDGE_MAP.md` carries a correction marking the pair as
-**not sufficient on its own**, because that claim is load-bearing for every AOI
-test file this project generates.
+- `lint.py`'s `aoi_call_arg_count_mismatch` now requires exact equality with the
+  Required count. It previously allowed the range, which is why it passed the
+  1,000-rung family that failed to build.
+- `gen_literaloperand.py` arm F declares the three parameters `Required="true"`;
+  the four files are regenerated and lint clean.
+- `AOI_KNOWLEDGE_MAP.md` carries the rule and its evidence.
+- The four `litop_bool_*` capture rows are **cleared**, not reused. They measured a
+  file that no longer exists in that shape.
+
+No probe file is needed. The four-file Required-count probe proposed here is
+withdrawn — the real corpus already answers it at 917 call sites.
+
+**Still open in this arm:** the BOOL literal cost itself is unmeasured. The
+regenerated files are awaiting capture.
 
 ---
 
-### The JSR band is an artefact, not a JSR error
+### The JSR band is an artefact. The +280 is found; applying it is blocked by a collinearity
 
-Every one of the 17 clean 0-parameter JSR isolation rows over-predicts by **exactly
-+280 bytes** — at 1 JSR call and at 50, and at every target-name length. Flat.
+**The marginal cost of a no-parameter JSR is exact and the engine already has it
+right.** One distinct 0-parameter target plus its JSR call costs **368 bytes**,
+measured straight off the captures:
 
-    jsr_multi_distinct_targets_01    1 call    +280
-    jsr_multi_distinct_targets_n20  20 calls   +280
-    jsr_multi_distinct_targets_n50  50 calls   +280
+| pair | interval | per unit |
+|---|---:|---:|
+| `jsr_multi_distinct_targets_01` → `_03` → `_05` | 2 | **368** |
+| `..._n05` → `_n10` → `_n15` → `_n20` | 5 | **368** |
+| `..._n20` → `_n50` | 30 | **368** |
+| `jsr_crossed_n20_namelen16` → `_n40_namelen16` | 20 | **368** |
 
-A residual that does not move with the count of the thing under test is not that
-thing's cost. It is a fixed over-charge in that family's file shell, and
-`derive_instruction_accuracy.py` attributes it to JSR because JSR is the variable
-those files were built to vary. The consequence is that JSR reports **Approximate
-±5%** on a 1.40% worst case that is really a constant divided by file size, and a
-real dispatch rung of parameterless JSRs reads 75% when the weight itself is exact.
+Eight independent intervals across two generators, zero residual. `jsr_crossed_n20_namelen16`
+and `jsr_multi_distinct_targets_n20` were built by different generators and capture
+at the identical 25,472. Target name length is separately priced and also exact —
+all five `namelen` rows carry the same residual.
 
-**Not fixed, because the +280 has not been identified.** The `subrtn_*` family,
-a similar shape, predicts at exactly 0.000%, so it is specific to this generator's
-shell rather than a universal baseline term. Finding it is a small, bounded job:
-difference one `jsr_multi_distinct_targets` file against a `subrtn_shell` file at
-the same routine count and read what differs.
+**The residual is a single flat constant.** Recomputed live against the current
+engine, all 14 clean 0-parameter rows over-predict by **exactly 280 bytes** — at
+n = 1, 3, 5, 10, 15, 20, 40, 50 and at name lengths 4, 8, 16, 32, 40. The slope is
+perfect; only the intercept is wrong.
+
+**It is `jsr_fixed_base_per_routine`, and the arithmetic is not subtle.** The model
+carries two per-routine bases: `fixed_base_per_routine` = **4,816** for an ordinary
+routine, and `jsr_fixed_base_per_routine` = **5,096** for a routine containing a JSR.
+
+    5,096 - 4,816 = 280
+
+That is the residual exactly, and the `subrtn_shell` control — same file shape, no
+JSR — predicts at **0.000%** at 1, 5, 25 and 100 routines, so the 4,816 path is
+right and the 5,096 path carries the whole error. The 280 premium was presumably
+meant to cover the caller declaring a target subroutine, but the per-target cost is
+already charged separately through `jsr_target_declaration`, so it is charged twice.
+
+That also explains the band. `derive_instruction_accuracy.py` divides a whole-file
+error by file size, so a fixed 280 on a 19,952-byte file reads as 1.40% — and the
+recorded JSR worst case is **1.4034%**. The number is a constant divided by a file
+size, not a property of JSR.
+
+**Blocked, and this is the reason it is not being changed.** `jsr_fixed_base_per_routine`
+is charged **once per JSR-caller routine**, not once per file. Every one of the 30
+JSR files in the corpus has **exactly one** caller routine — checked directly, not
+assumed. So "280 once per file" and "280 per caller routine" fit all 30 rows
+identically and the corpus cannot separate them. A real program has tens to hundreds
+of caller routines, so the two readings differ by thousands of bytes there, in the
+direction that would make the real files worse: they currently under-predict, and
+the per-caller reading subtracts more.
+
+This is the collinearity failure mode exactly — two constants against points that
+only ever vary one of them. Applying either reading now would be fitting, not
+measuring.
+
+**The discriminating test, specified (not generated — no file is to be built from
+this without being asked for):**
+
+> Two files, identical in every other respect, differing only in how the same total
+> JSR work is distributed across caller routines:
+>
+> - **A** — 1 caller routine issuing 20 JSR calls to 20 distinct 0-parameter targets.
+>   This is the existing `jsr_multi_distinct_targets_n20` shape and its capture
+>   (25,472) can be reused; no new file needed for this arm.
+> - **B** — 20 caller routines, each issuing 1 JSR call to 1 distinct 0-parameter
+>   target. Same 20 targets, same 16-character target names, same rung content,
+>   same tag inventory. Only the caller count moves.
+>
+> One file. B − A is 19 extra caller routines. If the residual stays at −280, the
+> over-charge is per file. If it goes to −5,600, it is per caller routine. Nothing
+> else in the model distinguishes them, and no amount of re-fitting the existing
+> corpus will.
+
+Hold `jsr_fixed_base_per_routine` at 5,096 until that reads.
+
+**A second, smaller band sits underneath it.** The `jsr_paramcount_*` family
+residuals cluster at **−296 / −300** rather than −280, flat across rung counts from
+10 to 1,000 and across parameter counts 1 to 15. That is a further 16–20 bytes
+outside the ±8 floor, constant, and it appears only once SBR/RET carry operands. It
+is the same shape of defect and almost certainly resolves with the same file.
 
 **Why this is worth the time despite being 280 bytes.** It is not the bytes. It is
-that the confidence display is pointing at the wrong instruction, so the one number
-a user has to judge a routine by is wrong for every routine that dispatches.
+that the confidence display points at the wrong instruction, so the one number a
+user judges a dispatch routine by is wrong for every routine that dispatches — and
+the same constant is charged per caller routine across every real program, where
+it is not 280 bytes at all.
 
 ---
+
 
 **Why this measurement is trustworthy where the strip ladder was not:** it was made
 by editing a project in Logix Designer and letting Studio compile it, not by
@@ -476,55 +548,3 @@ other, no model involved. It reads the step directly instead of fitting it.
 a residual of tens of kilobytes, so by the noise-floor rule it does **not** earn a
 capture slot ahead of the literal-operand batch. It is recorded because it explains a
 specific wrong-looking confidence tier, not because it is worth a session.
-
-
----
-
-## 8. OQ-BITSHIFT — BSR and BSL are charged 60 bytes and nothing has tested either
-
-**Why it matters more than its instruction count suggests.** BSR appears twice in
-one real export. Those two rungs are **1,192 and 636 bytes** — 58% of the compiled
-size of the routine holding them, and the two largest rungs in it. The routine
-reports *Unverified, unbounded* over the majority of its bytes because of them.
-Instruction frequency is the wrong measure here; byte share is the right one.
-
-**What is assumed.** `logic_instructions.weights` carries `BSR: 60` and `BSL: 60`.
-Neither has an isolation file, and the shared value is an assumption that nothing
-has ever distinguished.
-
-**The shape is the real one**, transplanted from the only real call sites with tag
-names substituted:
-
-    BSR(LugsWithLostBoards[0], LostBoardBSR, Found_LostBoard, ?)
-        DINT[2] array element  CONTROL tag    BOOL source     length
-
-**15 files built, four arms, awaiting conversion and capture.**
-
-| arm | files | what it discriminates |
-|---|---|---|
-| A `bitshift_bsr_n{N}` | 10/50/100/500/1000 | the BSR weight, as the slope against count. One shared control and one array, so only the instruction moves. |
-| B `bitshift_bsl_n{N}` | same counts | whether BSL really shares BSR's 60. Differenced against A at equal N. |
-| C `bitshift_bsr_len{L}` | 32/64/128/256 | whether the LENGTH operand costs. Array held at DINT[8] across all four, so the array is not moving with it. |
-| D `bitshift_ctlper_n01000` | one file | whether a per-rung CONTROL costs beyond its own storage. Differenced against A at 1000, never against anything else. |
-
-**Read arm A first.** If its slope is 60 the weight is confirmed and the question
-closes on B, C and D alone. If it is not, every real program using a bit-shift has
-been mispriced and the size of that is arm A's answer times the real call count.
-
-**Two design errors the confound gate caught before capture**, both recorded
-because they are the failure mode this project keeps hitting:
-
-- Arm A originally declared one CONTROL tag **per rung**, so the tag inventory moved
-  with the instruction count. Every consecutive pair varied two things and the slope
-  would have been BSR plus a CONTROL, read as BSR.
-- Arm C originally moved the **array size with the length operand**, which would have
-  measured their sum. The array is storage the tag sizer already prices exactly.
-
-Both were refused by `confound_check.py` before any file was submitted, which is
-what that gate is for.
-
-**Expected movement on the seventeen real programs: none directly.** This is a
-confidence-reporting question, not an accuracy one — BSR's real-corpus frequency is
-far below the noise floor. It earns a capture slot because it is the difference
-between a routine reporting 69% and reporting 96%, on bytes the engine already
-predicts and simply cannot vouch for.

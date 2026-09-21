@@ -35,6 +35,53 @@ entry, because an error with nowhere to be recorded is an error that gets forgot
 
 # Tags, UDTs and strings
 
+## OQ-BITSHIFT — BSR and BSL both cost exactly 60 bytes; the length operand is free
+
+**SOLVED.** The assumed weight was right, and it is now measured rather than assumed.
+
+All 15 files converted and captured with **0 errors and 0 warnings**.
+
+**BSR = exactly 60.000 bytes per rung**, over four independent intervals:
+
+| interval | bytes | rungs | per rung |
+|---|---:|---:|---:|
+| 10 → 50 | +2,400 | 40 | **60.000** |
+| 50 → 100 | +3,000 | 50 | **60.000** |
+| 100 → 500 | +24,000 | 400 | **60.000** |
+| 500 → 1,000 | +30,000 | 500 | **60.000** |
+
+**BSL is identical to BSR**, not merely close: differenced at equal rung count the
+two families agree to **+0 at all five counts** — 19,008 / 21,408 / 24,408 / 48,408 /
+78,408, the same numbers on both sides. The shared weight of 60 was an assumption; it
+is now a measurement.
+
+**The length operand costs nothing.** Lengths 32, 64, 128 and 256 against a fixed
+DINT[8] array all capture at **24,432** — byte-identical, four for four. The array is
+priced by the tag sizer; the operand itself is free.
+
+**A per-rung CONTROL costs exactly its own tag storage and nothing more.**
+`bitshift_ctlper_n01000` (one CONTROL per rung) minus `bitshift_bsr_n01000` (one
+shared CONTROL) is 95,904 over 999 extra tags = **96.000 bytes each**, which is the
+CONTROL tag size the model already charges. There is no per-instruction surcharge for
+giving each rung its own control structure.
+
+**Engine agreement: all 15 rows predict at −4 bytes**, inside the ±8
+single-measurement noise floor. Mean |error| 0.0138%.
+
+**Effect on reporting.** `instruction_accuracy` now carries `BSR {samples: 3,
+worst_pct: 0.0083}` and `BSL {samples: 2, worst_pct: 0.0083}`, putting both in the
+**Measured ±0.1%** band. The real routine that motivated the question — two BSR rungs
+carrying 58% of its compiled size — moves from *Unverified, unbounded* to Measured
+over those bytes.
+
+**No sizing constant changed.** `BSL: 60` and `BSR: 60` stand as written; what changed
+is that they are no longer assumptions.
+
+**Two design errors caught before capture**, recorded because they are this project's
+recurring failure mode: arm A originally declared one CONTROL per rung, moving tag
+inventory with instruction count; arm C originally moved array size with the length
+operand. `confound_check.py` refused both before any file was submitted.
+
 ## OQ-ALIGN — UDT member padding
 
 **SOLVED.** No alignment padding between members at all. `BOOL, DINT, BOOL` = 6
