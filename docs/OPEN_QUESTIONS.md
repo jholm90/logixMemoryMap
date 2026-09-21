@@ -1,6 +1,6 @@
 # Open Questions
 
-**Seven.** Down from forty, and the thirty-four that went were not abandoned — they
+**Eight.** Down from forty, and the thirty-four that went were not abandoned — they
 were **bounded**. Closed questions and their reasoning trails are in
 `RESOLVED_QUESTIONS.md`.
 
@@ -29,6 +29,7 @@ That is why thirty-four closed at once.
 | **OQ-ALARMCONDREAL** | A 9.4%-of-mass category that is 8.8% short on one real file. Not a scale error — the two files disagree with each other. |
 | **OQ-EXPORTSCOPE** | A correctness requirement, not an accuracy question. |
 | **OQ-BUILDFAIL-OPEN** | A defect log. Kept visible on purpose. |
+| **OQ-BITSHIFT** | An instruction charged 60 bytes with nothing behind it, carrying 58% of a real routine's compiled size. |
 | **OQ-MODULENAMELEN** | A term the engine charges at zero, measured on a clean isolation pair. Not a scale error. |
 
 ---
@@ -194,6 +195,34 @@ fully wired — which reads the constraint directly instead of inferring it. Unt
 then `AOI_KNOWLEDGE_MAP.md` carries a correction marking the pair as
 **not sufficient on its own**, because that claim is load-bearing for every AOI
 test file this project generates.
+
+---
+
+### The JSR band is an artefact, not a JSR error
+
+Every one of the 17 clean 0-parameter JSR isolation rows over-predicts by **exactly
++280 bytes** — at 1 JSR call and at 50, and at every target-name length. Flat.
+
+    jsr_multi_distinct_targets_01    1 call    +280
+    jsr_multi_distinct_targets_n20  20 calls   +280
+    jsr_multi_distinct_targets_n50  50 calls   +280
+
+A residual that does not move with the count of the thing under test is not that
+thing's cost. It is a fixed over-charge in that family's file shell, and
+`derive_instruction_accuracy.py` attributes it to JSR because JSR is the variable
+those files were built to vary. The consequence is that JSR reports **Approximate
+±5%** on a 1.40% worst case that is really a constant divided by file size, and a
+real dispatch rung of parameterless JSRs reads 75% when the weight itself is exact.
+
+**Not fixed, because the +280 has not been identified.** The `subrtn_*` family,
+a similar shape, predicts at exactly 0.000%, so it is specific to this generator's
+shell rather than a universal baseline term. Finding it is a small, bounded job:
+difference one `jsr_multi_distinct_targets` file against a `subrtn_shell` file at
+the same routine count and read what differs.
+
+**Why this is worth the time despite being 280 bytes.** It is not the bytes. It is
+that the confidence display is pointing at the wrong instruction, so the one number
+a user has to judge a routine by is wrong for every routine that dispatches.
 
 ---
 
@@ -447,3 +476,55 @@ other, no model involved. It reads the step directly instead of fitting it.
 a residual of tens of kilobytes, so by the noise-floor rule it does **not** earn a
 capture slot ahead of the literal-operand batch. It is recorded because it explains a
 specific wrong-looking confidence tier, not because it is worth a session.
+
+
+---
+
+## 8. OQ-BITSHIFT — BSR and BSL are charged 60 bytes and nothing has tested either
+
+**Why it matters more than its instruction count suggests.** BSR appears twice in
+one real export. Those two rungs are **1,192 and 636 bytes** — 58% of the compiled
+size of the routine holding them, and the two largest rungs in it. The routine
+reports *Unverified, unbounded* over the majority of its bytes because of them.
+Instruction frequency is the wrong measure here; byte share is the right one.
+
+**What is assumed.** `logic_instructions.weights` carries `BSR: 60` and `BSL: 60`.
+Neither has an isolation file, and the shared value is an assumption that nothing
+has ever distinguished.
+
+**The shape is the real one**, transplanted from the only real call sites with tag
+names substituted:
+
+    BSR(LugsWithLostBoards[0], LostBoardBSR, Found_LostBoard, ?)
+        DINT[2] array element  CONTROL tag    BOOL source     length
+
+**15 files built, four arms, awaiting conversion and capture.**
+
+| arm | files | what it discriminates |
+|---|---|---|
+| A `bitshift_bsr_n{N}` | 10/50/100/500/1000 | the BSR weight, as the slope against count. One shared control and one array, so only the instruction moves. |
+| B `bitshift_bsl_n{N}` | same counts | whether BSL really shares BSR's 60. Differenced against A at equal N. |
+| C `bitshift_bsr_len{L}` | 32/64/128/256 | whether the LENGTH operand costs. Array held at DINT[8] across all four, so the array is not moving with it. |
+| D `bitshift_ctlper_n01000` | one file | whether a per-rung CONTROL costs beyond its own storage. Differenced against A at 1000, never against anything else. |
+
+**Read arm A first.** If its slope is 60 the weight is confirmed and the question
+closes on B, C and D alone. If it is not, every real program using a bit-shift has
+been mispriced and the size of that is arm A's answer times the real call count.
+
+**Two design errors the confound gate caught before capture**, both recorded
+because they are the failure mode this project keeps hitting:
+
+- Arm A originally declared one CONTROL tag **per rung**, so the tag inventory moved
+  with the instruction count. Every consecutive pair varied two things and the slope
+  would have been BSR plus a CONTROL, read as BSR.
+- Arm C originally moved the **array size with the length operand**, which would have
+  measured their sum. The array is storage the tag sizer already prices exactly.
+
+Both were refused by `confound_check.py` before any file was submitted, which is
+what that gate is for.
+
+**Expected movement on the seventeen real programs: none directly.** This is a
+confidence-reporting question, not an accuracy one — BSR's real-corpus frequency is
+far below the noise floor. It earns a capture slot because it is the difference
+between a routine reporting 69% and reporting 96%, on bytes the engine already
+predicts and simply cannot vouch for.

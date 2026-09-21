@@ -65,8 +65,18 @@ MIN_OCCURRENCES = 5
 MODEL_YAML = REPO_ROOT / "src" / "l5x_memory_analyzer" / "sizing" / "memory_model.yaml"
 
 
-def measure() -> dict[str, list[float]]:
+# How many non-scaffold opcodes a file may contain and still measure them.
+# Two covers the instructions that cannot legally appear alone; beyond that a
+# file is a mixture and its error belongs to no single instruction.
+MAX_CO_MEASURED = 2
+
+
+def measure() -> tuple[dict[str, list[float]], dict[str, set]]:
     per: dict[str, list[float]] = collections.defaultdict(list)
+    # opcode -> the other opcodes it was measured alongside, so a co-measured
+    # result never reads as an individually isolated one.
+    co: dict[str, set] = collections.defaultdict(set)
+    qualifying: list[tuple[tuple[str, ...], float]] = []
     for row in load_manifest():
         if not is_valid_capture(row):
             continue
@@ -93,8 +103,40 @@ def measure() -> dict[str, list[float]]:
             for m in CALL.finditer(rung.findtext("Text") or ""):
                 ops[m.group(1)] += 1
         subject = [o for o in ops if o not in SCAFFOLD] or list(ops)
-        if len(subject) != 1:
+        if not subject or len(subject) > MAX_CO_MEASURED:
             continue                      # not an isolation file for anything
+
+        # CO-MEASURED INSTRUCTIONS COUNT, BUT ONLY WHEN THEY CANNOT BE
+        # SEPARATED. Requiring exactly one opcode threw away every instruction
+        # that cannot legally appear alone. LBL and JMP are the clear case: a
+        # JMP needs a label to jump to, so no valid file holds one without the
+        # other, and the whole `lbljmp_*` family -- five clean count points
+        # from 10 to 5,000 instructions, dead flat at -8 bytes, inside the
+        # project's own noise floor -- was dropped. Both then reported
+        # "Unverified, unbounded" about instructions measured to the byte.
+        #
+        # Relaxing it to "any two opcodes" is much worse than the problem: MOV
+        # inherited CPT's 119% narrowing defect from a file containing both,
+        # and XIC and OTE picked up 125% from files where they are scaffolding.
+        # So a pair is only co-measured when NEITHER member has a single-opcode
+        # file anywhere in the corpus -- genuinely inseparable, not merely
+        # sharing a file. Everything that can be isolated still must be.
+        #
+        # The error recorded is the whole FILE's, which is the honest bound for
+        # both: the claim is "a rung containing these predicts this well", not
+        # "each of these weights is separately known". They stay confounded as
+        # weights, which is a different question and tracked as one.
+        # Per OPCODE, not per pair: an opcode that has its own isolation file
+        # is always measured from that file, and only the one that cannot be
+        # isolated is credited from the shared one. LBL has `lbljmp_lblonly_*`
+        # and keeps it; JMP has nothing of its own and takes the pair's error.
+        # A SCAFFOLD opcode is never credited from a shared file. In an
+        # all-scaffold file `subject` falls back to the scaffolding itself, so
+        # allowing pairs handed XIC and OTE a 125% worst case borrowed from
+        # whatever that file was really testing. They need no entry: they are
+        # pinned in confidence.py precisely because they are the scaffolding
+        # every other test is built from.
+
         try:
             entries, _ = rep.build_report(root, _MODEL)
         except Exception:
@@ -111,11 +153,25 @@ def measure() -> dict[str, list[float]]:
         logic = sum(e.bytes for e in entries if e.category == "routine_logic")
         if predicted <= 0 or logic / predicted < LOGIC_SHARE_FLOOR:
             continue
-        if ops[subject[0]] < MIN_OCCURRENCES:
+        if sum(ops[o] for o in subject) < MIN_OCCURRENCES:
             continue
 
-        per[subject[0]].append(abs(actual - predicted) / actual * 100)
-    return per
+        qualifying.append((tuple(subject), abs(actual - predicted) / actual * 100))
+
+    # Crediting is decided only once every qualifying file is known, because
+    # "can this opcode be isolated" means "does it have a QUALIFYING file of
+    # its own" -- not "does it appear alone somewhere". LBL appears alone in
+    # three files too small to qualify, so an appearance-based rule excluded it
+    # from the pair AND gave it nothing of its own: the worst of both.
+    soloable = {subj[0] for subj, _ in qualifying if len(subj) == 1}
+    for subj, err in qualifying:
+        for op in subj:
+            if len(subj) > 1 and (op in soloable or op in SCAFFOLD):
+                continue
+            per[op].append(err)
+            if len(subj) > 1:
+                co[op].update(o for o in subj if o != op)
+    return per, co
 
 
 def main(argv: list[str]) -> int:
@@ -124,7 +180,7 @@ def main(argv: list[str]) -> int:
                     help="write the table into memory_model.yaml")
     args = ap.parse_args(argv[1:])
 
-    per = measure()
+    per, co = measure()
     rows = sorted(((o, len(v), st.mean(v), max(v)) for o, v in per.items()),
                   key=lambda r: -r[2])
     allv = [x for v in per.values() for x in v]
