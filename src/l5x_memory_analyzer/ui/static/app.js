@@ -148,6 +148,7 @@ function renderCurrentLevel(recordHistory = true) {
   renderList();
   renderTypeSummary();
   syncXrefTab();
+  scrollListToTop();
 }
 
 // The initial /api/report hierarchy is always exactly 3 levels: root ->
@@ -229,81 +230,6 @@ function fmtBlocks(n) {
   return n == null ? "-": Math.round(n).toLocaleString();
 }
 
-// ---- confidence as a measured PERCENTAGE (#confidence bar) ----
-//
-// A single KNOWN/FITTED/ASSUMED badge is misleading on any aggregate,
-// because weakest()-style propagation lets one small unmeasured term label
-// a node that is overwhelmingly measured. A real case: a String_L010[100]
-// array is 1,600 bytes of KNOWN element cost plus a 12-byte FITTED
-// one-time array_base -- 99.3% measured, yet it reads simply "FITTED".
-//
-// So confidence is reported the way the bytes actually divide: what share
-// of this subtree's bytes rests on each basis. Leaves still show their own
-// single basis, which is exactly what a leaf's percentage degenerates to.
-// Byte-weighted confidence over a subtree.
-//
-// Two things this deliberately does NOT do, both of which it used to.
-//
-// It does not report 0% for a node that occupies no bytes. A BIT alias
-// member is zero bytes because its storage belongs to the hidden backing
-// SINT it points at -- there is nothing uncertain about it, and printing
-// "0% measured" against it read as a hole in the model when the real
-// answer is that the question does not apply. knownPct is null in that
-// case and callers render it as such.
-//
-// It does not let the answer depend on what happens to be loaded. Drill
-// children arrive lazily, so walking `n.children` gave a node one answer
-// before you expanded it and a different one after -- the reported
-// "0% fitted that becomes 100% fitted once you visit it and come back".
-// A node that still has unexpanded children now uses the subtree summary
-// the server sent with it, which is computed over the whole subtree and
-// is the same answer either way.
-function confidenceBreakdown(node) {
-  const acc = { KNOWN: 0, FITTED: 0, ASSUMED: 0, UNKNOWN: 0 };
-  const add = (key, bytes) => {
-    const k = (key || "UNKNOWN").toUpperCase();
-    acc[k in acc ? k: "UNKNOWN"] += bytes;
-  };
-  const visit = n => {
-    const kids = n.children;
-    if (kids && kids.length) {
-      for (const k of kids) visit(k);
-      return;
-    }
-    // Unexpanded but drillable: trust the server's subtree summary rather
-    // than the node's own single rolled-up basis, which is only the
-    // weakest tier present and says nothing about the mix.
-    if (n.confidence && n.confidence.total) {
-      for (const k of ["KNOWN", "FITTED", "ASSUMED", "UNKNOWN"]) {
-        add(k, n.confidence[k] || 0);
-      }
-      return;
-    }
-    // `basis` is weakest()-of-subtree. Charging a node's WHOLE byte count
-    // to it is wrong whenever the subtree is mixed: one small FITTED piece
-    // under a pile of KNOWN children made the parent read 0% measured,
-    // while drilling to the leaves showed 100% KNOWN. Reported as exactly
-    // that symptom. When the server could not summarise a drillable node,
-    // its mix is genuinely unknown-to-us, so say so instead of asserting
-    // the pessimistic tier as fact.
-    if (isDrillable(n) && !(kids && kids.length)) {
-      acc.UNRESOLVED = (acc.UNRESOLVED || 0) + nodeValue(n);
-      return;
-    }
-    add(n.basis, nodeValue(n));
-  };
-  visit(node);
-  const unresolved = acc.UNRESOLVED || 0;
-  const total = acc.KNOWN + acc.FITTED + acc.ASSUMED + acc.UNKNOWN;
-  // knownPct is over the bytes we can actually attribute. A node whose mix
-  // could not be resolved reports null rather than a number that would be
-  // read as measured fact.
-  return {
-    ...acc, total, unresolved,
-    knownPct: total ? (acc.KNOWN / total) * 100: null,
-  };
-}
-
 // A tag of a UDT/AOI type gets a link to the definition that declares it.
 // Knowing an instance costs 12KB is rarely the end of the question -- the
 // next one is always "what is in it", and that lives on the definition.
@@ -366,7 +292,16 @@ function bandForOpcode(op) {
 // A rung is only as predictable as its least-known instruction: one MAM in an
 // otherwise plain rung is near-certain, twenty mixed ones are not.
 function bandForNode(node) {
-  const ops = node && node.rung_instructions;
+  // A routine: the mnemonics it holds, from the report's inventory rather
+  // than from rungs the browser happens to have fetched. Without this a
+  // routine scored its provenance tier (FITTED -> Unverified) until it was
+  // opened, then scored its instructions afterwards -- two different answers
+  // for the same routine depending on where the user had been.
+  const routinePath = node && (node.path || node._tagPath);
+  const inv = routinePath &&
+    (REPORT && REPORT.routine_instructions || {})[routinePath];
+  const ops = (node && node.rung_instructions) ||
+    (Array.isArray(inv) && inv.length ? inv: null);
   if (Array.isArray(ops) && ops.length) {
     let worst = null;
     for (const raw of ops) {
@@ -380,34 +315,118 @@ function bandForNode(node) {
   return bandByKey(map[(node && node.basis) || ""] || "UNVERIFIED");
 }
 
+// ---- ONE confidence number, byte-weighted over the subtree ----
+//
+// There used to be two, side by side, and they disagreed in public: a stacked
+// bar showing the KNOWN share of the bytes, and a chip showing the accuracy
+// band. A node of entirely FITTED-but-measured content drew a 0% bar next to
+// an "Approximate 75%" chip, which is two different questions answered in one
+// line with no way to tell which is which.
+//
+// There is one question -- how well is this number known -- so there is one
+// answer. Every leaf earns a band, the band carries a confidence percent, and
+// a parent is the BYTE-WEIGHTED mean of everything under it. Big children move
+// it, a stray 4-byte unknown does not.
+//
+// The bar draws that percent. The chip names the band and its error bound and
+// does NOT repeat the percent, because the bar already is the percent.
+function bandPctFor(node) {
+  const b = bandForNode(node);
+  return b ? b.pct: 0;
+}
+
+// Tier mix -> weighted percent, using the same provenance mapping the server
+// publishes. This is what makes an unexpanded node answer the same as an
+// expanded one: the server sends the whole subtree's mix with the node.
+function pctFromTierMix(mix) {
+  const map = (REPORT && REPORT.provenance_band) || {};
+  let bytes = 0, weighted = 0;
+  for (const tier of ["KNOWN", "FITTED", "ASSUMED", "UNKNOWN"]) {
+    const v = mix[tier] || 0;
+    if (v <= 0) continue;
+    bytes += v;
+    weighted += v * bandByKey(map[tier] || "UNVERIFIED").pct;
+  }
+  return bytes ? { bytes, weighted }: null;
+}
+
+// { pct, bytes, band, state } where state is one of:
+//   "ok"        a real byte-weighted number
+//   "alias"     zero bytes because the storage belongs to something else
+//   "empty"     zero bytes, nothing to be confident about
+// state is never "unresolved" for a drillable node any more: the server's
+// subtree summary answers it without expanding anything, and when even that
+// is absent the node's own band is a real answer rather than a blank.
+function nodeConfidence(node) {
+  const walk = n => {
+    const kids = n.children;
+    if (kids && kids.length) {
+      let bytes = 0, weighted = 0;
+      for (const k of kids) {
+        const r = walk(k);
+        bytes += r.bytes;
+        weighted += r.weighted;
+      }
+      if (bytes) return { bytes, weighted };
+    }
+    // Unexpanded: the server's whole-subtree tier mix. Same answer before and
+    // after drilling in, which is the whole point of computing it server-side.
+    if (n.confidence && n.confidence.total) {
+      const fromMix = pctFromTierMix(n.confidence);
+      if (fromMix) return fromMix;
+    }
+    const v = nodeValue(n);
+    return { bytes: v, weighted: v * bandPctFor(n) };
+  };
+
+  const { bytes, weighted } = walk(node);
+  if (!bytes) {
+    return {
+      pct: null, bytes: 0, band: bandForNode(node),
+      state: node && node.alias_of ? "alias": "empty",
+    };
+  }
+  const pct = weighted / bytes;
+  // Name the band this percent lands in, so the words and the bar agree by
+  // construction rather than by two code paths happening to match.
+  const bands = (REPORT && REPORT.confidence_bands) || [];
+  let band = bands[bands.length - 1] || bandForNode(node);
+  for (const b of bands) {
+    if (pct >= b.pct) { band = b; break; }
+  }
+  return { pct, bytes, band, state: "ok" };
+}
+
+// The chip states the band and what it means in bytes. No percentage: the bar
+// beside it is the percentage, and printing both invited them to disagree.
 function bandChipHtml(node) {
   const b = bandForNode(node);
   return `<span class="band-chip band-${b.key}" title="${escapeHtml(b.blurb)}">` +
-    `${escapeHtml(b.label)} ${b.pct}% &middot; ${escapeHtml(b.bound)}</span>`;
+    `${escapeHtml(b.label)} &middot; ${escapeHtml(b.bound)}</span>`;
 }
 
-function confidenceBarHtml(node) {
-  const c = confidenceBreakdown(node);
-  // Zero bytes is not low confidence. Say why it is zero instead.
-  if (!c.total && c.unresolved) {
-    return `<div class="conf-label">mix not resolved &mdash; drill in to measure</div>`;
+function bandChipFromBand(b) {
+  return `<span class="band-chip band-${b.key}" title="${escapeHtml(b.blurb || "")}">` +
+    `${escapeHtml(b.label)} &middot; ${escapeHtml(b.bound)}</span>`;
+}
+
+// One bar, filled to the confidence percent and coloured by the band it lands
+// in. `withChip` is false where the caller already shows the chip itself --
+// the tooltip did show it twice.
+function confidenceBarHtml(node, withChip = true) {
+  const c = nodeConfidence(node);
+  if (c.state === "alias") {
+    return `<div class="conf-label">no storage of its own &mdash; alias of ` +
+      `${escapeHtml(node.alias_of)}` +
+      (node.alias_bit != null ? `, bit ${node.alias_bit}`: "") + `</div>`;
   }
-  if (!c.total) {
-    return node.alias_of
-      ? `<div class="conf-label">no storage of its own &mdash; alias of ` +
-        `${escapeHtml(node.alias_of)}` +
-        (node.alias_bit != null ? `, bit ${node.alias_bit}`: "") + `</div>`
-      : `<div class="conf-label">no storage &mdash; nothing to measure</div>`;
+  if (c.state === "empty") {
+    return `<div class="conf-label">no storage &mdash; nothing to measure</div>`;
   }
-  const seg = (v, cls) => v > 0
-    ? `<span class="conf-seg ${cls}" style="width:${(v / c.total) * 100}%"></span>`: "";
-  return `<div class="conf-bar">${seg(c.KNOWN, "conf-known")}${seg(c.FITTED, "conf-fitted")}` +
-    `${seg(c.ASSUMED, "conf-assumed")}${seg(c.UNKNOWN, "conf-unknown")}</div>` +
-    `<div class="conf-label">${bandChipHtml(node)}` +
-    (c.knownPct < 100
-      ? ` <span class="text-dim">${c.knownPct.toFixed(1)}% of these bytes are ` +
-        `exactly calculable</span>`: "") +
-    `</div>`;
+  return `<div class="conf-bar"><span class="conf-seg band-fill-${c.band.key}" ` +
+    `style="width:${c.pct.toFixed(1)}%"></span></div>` +
+    `<div class="conf-label"><span class="conf-pct">${c.pct.toFixed(0)}%</span>` +
+    (withChip ? ` ${bandChipFromBand(c.band)}`: "") + `</div>`;
 }
 
 // A group node has no data_type, but "(group)" tells the user nothing.
@@ -1222,7 +1241,9 @@ function subLabelFor(node) {
     if (instr.length) lines.push(instr.slice(0, 4).join(" "));
   } else if (node.data_type) {
     // Dimensioned, so a tile reads DINT[999] like the list and the tooltip.
-    lines.push(`[${displayType(node)}]`);
+    // No surrounding brackets: the line's position already says it is the
+    // type, and [DINT[999]] reads as a nested subscript.
+    lines.push(displayType(node));
   }
   lines.push(fmtBytes(nodeValue(node)));
   return lines;
@@ -1576,7 +1597,7 @@ function tooltipControllerBar(node) {
   const pct = (nodeValue(node) / REPORT.total_bytes) * 100;
   return `<div class="tooltip-bar-wrap"><div class="tooltip-bar tooltip-bar-controller" ` +
     `style="width:${Math.min(pct, 100).toFixed(1)}%"></div></div>` +
-    `<div class="tooltip-bar-label">${pct.toFixed(2)}% of controller total</div>`;
+    `<div class="tooltip-bar-label">${pct.toFixed(2)}% of Controller Total</div>`;
 }
 
 function showTooltip(ev, node) {
@@ -1588,14 +1609,14 @@ function showTooltip(ev, node) {
     const task = taskInfoFor(node);
     tooltip.innerHTML = `<strong>${displayName(node)}</strong><br>` +
       `<span class="text-dim-on-dark">${groupKind(node)}</span><br>` +
-      `${fmtBytes(nodeValue(node))} (${fmtBlocks(nodeValue(node))} blocks)` +
+      `${fmtBytes(nodeValue(node))} (${fmtBlocks(nodeValue(node))} blocks)<br>` +
+      bandChipHtml(node) +
       (task ? `<br>${task.type}${task.type === "PERIODIC" && task.rate ? ` @ ${task.rate} ms`: ""}` +
         `${task.priority ? `, priority ${task.priority}`: ""}`: "") +
       (routines != null ? `<br>${routines} routine${routines === 1 ? "": "s"}`: "") +
       tooltipParentBar(node) +
       tooltipControllerBar(node) +
-      confidenceBarHtml(node) +
-      (isDrillable(node) ? " (click to drill in)": "");
+      confidenceBarHtml(node, false);
   } else {
     const rc = node.data_type === "RLL" ? rungCountFor(node): null;
     tooltip.innerHTML =
@@ -1610,8 +1631,9 @@ function showTooltip(ev, node) {
       jsrCallsNote(node) +
       tooltipParentBar(node) +
       tooltipControllerBar(node) +
-      confidenceBarHtml(node) +
-      (isDrillable(node) ? " (click to drill in)": "");
+      // withChip = false: the chip is already on the line above. It was
+      // rendered twice, once at the top and once under the bar.
+      confidenceBarHtml(node, false);
   }
 
   positionTooltip(tooltip, ev);
@@ -1668,7 +1690,7 @@ function currentLevelRows() {
       bytes,
       pct_of_total: total ? (bytes / total) * 100: 0,
       pct_of_controller: (REPORT && REPORT.total_bytes) ? (bytes / REPORT.total_bytes) * 100: 0,
-      known_pct: confidenceBreakdown(c).knownPct,
+      conf: nodeConfidence(c),
       basis: c.basis || "",
       tier: c.tier || "",
       jsr_targets: (REPORT && REPORT.jsr_calls && REPORT.jsr_calls[c.path]) || null,
@@ -1906,9 +1928,14 @@ function filterRegex(pattern) {
   // Escape everything regex-special, then turn the escaped \* back into
   // a wildcard. Substring semantics, so no anchors unless the user wrote
   // them as wildcards.
-  const body = trimmed
+  // ^ and $ survive as anchors so an exact-type filter can be expressed;
+  // everything else regex-special is escaped, and \* becomes the wildcard.
+  const anchorStart = trimmed.startsWith("^");
+  const anchorEnd = trimmed.endsWith("$") && !trimmed.endsWith("\\$");
+  const core = trimmed.slice(anchorStart ? 1: 0, anchorEnd ? -1: undefined);
+  const body = (anchorStart ? "^": "") + core
     .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-    .replace(/\\\*/g, ".*");
+    .replace(/\\\*/g, ".*") + (anchorEnd ? "$": "");
   try {
     return new RegExp(body, "i");
   } catch {
@@ -1993,6 +2020,7 @@ function renderListInto(tableId) {
   const tbody = table.querySelector("tbody");
   const rows = applyListFilters(currentLevelRows()).sort((a, b) => {
     const { key, dir } = SORT_STATE;
+    if (key === "conf") return (((a.conf && a.conf.pct) || 0) - ((b.conf && b.conf.pct) || 0)) * dir;
     if (typeof a[key] === "string") return String(a[key]).localeCompare(String(b[key])) * dir;
     // A null (no-storage row) sorts as zero rather than producing NaN,
     // which compares false both ways and leaves the order arbitrary.
@@ -2013,18 +2041,21 @@ function renderListInto(tableId) {
       : e.routine_count != null
       ? `<br><span class="text-dim">${e.routine_count} routine${e.routine_count === 1 ? "": "s"}</span>`
       : "";
-    // Confidence as a measured share of bytes, not a single badge -- see
-    // confidenceBreakdown for why a badge misleads on any aggregate.
-    // known_pct is null for a row that occupies no bytes (a BIT alias, an
-    // unmodeled module): there is nothing to be confident ABOUT, and the
-    // bar used to throw outright on reaching one.
-    const conf = e.known_pct == null
-      ? `<div class="conf-cell"><span class="conf-pct text-dim">no storage</span></div>`
+    // The same byte-weighted number the treemap and the tooltip show, from
+    // the same function. This cell used to print "no storage" for any row the
+    // browser had not expanded yet -- a drillable node with no loaded children
+    // scored zero attributable bytes, so a real 40 KB UDT read as having
+    // nothing in it, and it "fixed itself" on the way back from drilling in.
+    // nodeConfidence uses the server's whole-subtree summary instead, so the
+    // answer does not depend on where the user has been.
+    const conf = e.conf.state !== "ok"
+      ? `<div class="conf-cell"><span class="conf-pct text-dim">` +
+        `${e.conf.state === "alias" ? "alias &mdash; no storage": "no storage"}</span></div>`
       : `<div class="conf-cell"><div class="conf-bar conf-bar-sm">` +
-        `<span class="conf-seg conf-known" style="width:${e.known_pct}%"></span>` +
-        `<span class="conf-seg conf-fitted" style="width:${100 - e.known_pct}%"></span>` +
-        `</div><span class="conf-pct">${e.known_pct.toFixed(0)}%</span>` +
-        bandChipHtml(e.node) +
+        `<span class="conf-seg band-fill-${e.conf.band.key}" ` +
+        `style="width:${e.conf.pct.toFixed(1)}%"></span>` +
+        `</div><span class="conf-pct">${e.conf.pct.toFixed(0)}%</span>` +
+        bandChipFromBand(e.conf.band) +
         `</div>`;
     tr.innerHTML =
       `<td>${escapeHtml(e.name)}${subNote}</td>` +
@@ -2108,14 +2139,71 @@ function renderTypeSummaryInto(elId) {
     // (the type summary has to stay readable with very long tag
     // and UDT names) -- the full name is always
     // available via the title attribute on hover.
+    // A type row is a question -- "which of these are they?" -- and the List
+    // already answers it. Clicking one switches to the List filtered to
+    // exactly this type, at the level you are already on.
+    row.classList.add("type-row-click");
+    row.title = `Show the ${t.data_type} rows in the List`;
     row.innerHTML =
       `<div class="type-swatch" style="background:${colorForType(t.data_type)}"></div>` +
       `<div class="type-name" title="${escapeHtml(t.data_type)}">${escapeHtml(t.data_type)}</div>` +
       `<div class="type-bar-wrap"><div class="type-bar" style="width:${(t.pct_of_total / maxPct) * 100}%"></div></div>` +
       `<div class="type-bytes">${fmtBytes(t.bytes)} (${t.pct_of_total.toFixed(2)}% here` +
       `<span class="type-pct-controller"> &middot; ${t.pct_of_controller.toFixed(2)}% of controller</span>)</div>`;
+    row.addEventListener("click", () => showTypeInList(t.data_type, elId));
     el.appendChild(row);
   }
 }
 
 main();
+
+
+// Filter the List to one exact type and show it. Deliberately does NOT
+// navigate: the type summary describes the level you are on, so the matching
+// rows are the ones already in front of you. renderCurrentLevel clears
+// filters on every move, which is why this sets the filter and re-renders
+// rather than going through it.
+function showTypeInList(dataType, sourceElId) {
+  LIST_FILTERS.data_type = `^${String(dataType).replace(/[*]/g, "")}$`;
+  LIST_FILTERS.name = "";
+  renderList();
+  // Clicked in the docked summary beside the treemap -> show the docked list.
+  // Clicked in the full-page tab -> switch the main tabs.
+  if (sourceElId === "type-summary-dock") {
+    const dockBtn = document.querySelector('.dock-tab-btn[data-dock="list"]');
+    if (dockBtn) dockBtn.click();
+  } else {
+    const listBtn = document.querySelector('.tab-btn[data-tab="list"]');
+    if (listBtn) listBtn.click();
+  }
+  scrollListToTop();
+  syncFilterButtons();
+}
+
+// The funnel buttons carry an "active" class so a filter is visible rather
+// than mysterious. Setting a filter from outside the popup has to refresh
+// them or the List looks arbitrarily short with nothing to say why.
+function syncFilterButtons() {
+  document.querySelectorAll(".funnel-btn").forEach(btn => {
+    btn.classList.toggle("active", Boolean(LIST_FILTERS[btn.dataset.filter]));
+  });
+}
+
+// A drill from halfway down a long list used to land halfway down the NEXT
+// list, because only the content changed and the scroll position did not.
+// The new level always starts at its top.
+function scrollListToTop() {
+  for (const id of ["panel-list", "panel-treemap", "list-dock-body"]) {
+    const el = document.getElementById(id);
+    if (el) el.scrollTop = 0;
+  }
+  for (const id of LIST_TABLE_IDS) {
+    const table = document.getElementById(id);
+    let el = table && table.parentElement;
+    while (el && el !== document.body) {
+      if (el.scrollHeight > el.clientHeight) el.scrollTop = 0;
+      el = el.parentElement;
+    }
+  }
+  if (window.scrollY) window.scrollTo(0, 0);
+}

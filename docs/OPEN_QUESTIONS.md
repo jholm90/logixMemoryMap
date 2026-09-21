@@ -1,6 +1,6 @@
 # Open Questions
 
-**Six.** Down from forty, and the thirty-four that went were not abandoned — they
+**Seven.** Down from forty, and the thirty-four that went were not abandoned — they
 were **bounded**. Closed questions and their reasoning trails are in
 `RESOLVED_QUESTIONS.md`.
 
@@ -29,6 +29,7 @@ That is why thirty-four closed at once.
 | **OQ-ALARMCONDREAL** | A 9.4%-of-mass category that is 8.8% short on one real file. Not a scale error — the two files disagree with each other. |
 | **OQ-EXPORTSCOPE** | A correctness requirement, not an accuracy question. |
 | **OQ-BUILDFAIL-OPEN** | A defect log. Kept visible on purpose. |
+| **OQ-MODULENAMELEN** | A term the engine charges at zero, measured on a clean isolation pair. Not a scale error. |
 
 ---
 
@@ -307,3 +308,50 @@ their numbers are used. Plus committed files attempted and never reached `ok`.
 
 Run `python scripts/capture_errors.py --list` for the current row identities rather
 than reading a list here, which goes stale.
+
+
+---
+
+## 7. OQ-MODULENAMELEN — a module's NAME length costs bytes the engine charges at zero
+
+**The measurement.** Two committed isolation files, both a 1756-L81E with a single
+2198-P208 under the local rack, no tags and no axes. They differ in exactly one
+thing: what the module is called.
+
+| file | module name | chars | actual | predicted | delta |
+|---|---|---:|---:|---:|---:|
+| `modulemotion_p208_baseline` | `P208` | 4 | 22,136 | 22,136 | **0** |
+| `modulesweep_2198_p208` | `TestMod1_2198P208` | 17 | 22,160 | 22,136 | **−24** |
+
+Both captured with `error_count = 0`. The controller name is 17 characters in both,
+so it is not that. **+13 characters of module name is worth +24 bytes**, and the
+engine charges nothing for a module name at any length.
+
+**Why this is not already answered.** Identifier name length is priced for tags, for
+UDT type names, for AOI type names and for custom string type names -- four separate
+laws in `memory_model.yaml`, all of them a step of 8 bytes per bucket. None of them
+applies to a `<Module Name=...>`, and no sweep has ever varied one.
+
+**Why it is not wired.** One pair is one equation. A step of 8 bytes per
+`floor(len / 4)` bucket reproduces +24 exactly, and so do several other shapes --
+that is two points against a two-parameter family, which this project has already
+been burned by. The existing name-length laws bucket by 8 characters, not 4, so
+matching them would predict +16, not +24. Something is different here and one pair
+cannot say what.
+
+**Consequence for confidence.** `2198-P208` reads ASSUMED rather than KNOWN, and so
+do the other flat-fitted 2198 supply catalogs. That is correct and should not be
+overridden: its two isolation captures do not agree with each other, and until the
+name term is priced, a P208 in a real file is predicted exactly only when its name
+happens to be short. The frequency of the catalog in real programs is not evidence
+about the constant -- only an isolation capture is.
+
+**What would settle it.** One sweep, module name length 4/8/12/16/20/24/32 on a
+single fixed catalog, everything else held. Seven files, differences against each
+other, no model involved. It reads the step directly instead of fitting it.
+
+**Exposure before building anything.** Real programs carry 20-60 modules each. At
+24 bytes for a 13-character name this is on the order of a kilobyte per file against
+a residual of tens of kilobytes, so by the noise-floor rule it does **not** earn a
+capture slot ahead of the literal-operand batch. It is recorded because it explains a
+specific wrong-looking confidence tier, not because it is worth a session.

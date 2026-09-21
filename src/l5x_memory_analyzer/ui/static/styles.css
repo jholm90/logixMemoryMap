@@ -523,10 +523,19 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
 }
 .conf-bar-sm { width: 68px; height: 5px; margin: 0; }
 .conf-seg { display: block; height: 100%; }
-.conf-known { background: #4a9d5f; }
-.conf-fitted { background: #c9a227; }
-.conf-assumed { background: #b3552f; }
-.conf-unknown { background: #666; }
+
+/* The bar is filled to the confidence percent and coloured by the band that
+   percent lands in, so the bar and the chip beside it cannot disagree -- they
+   are the same number rendered twice. The old four-segment provenance mix is
+   gone: it answered a different question (where did the number come from) in
+   the same place as this one (how well is it known), and the two read as a
+   contradiction whenever a fully measured node showed a 0% KNOWN share. */
+.band-fill-EXACT      { background: #4a9d5f; }
+.band-fill-MEASURED   { background: #5aa86b; }
+.band-fill-CLOSE      { background: #86b04a; }
+.band-fill-APPROX     { background: #c9a227; }
+.band-fill-UNVERIFIED { background: #b3552f; }
+.band-fill-UNPRICED   { background: #8d3a3a; }
 .conf-label { font-size: 11px; opacity: .8; margin-top: 2px; }
 .conf-cell { display: flex; align-items: center; gap: 6px; }
 .conf-pct { font-size: 11px; opacity: .85; min-width: 30px; }
@@ -665,3 +674,8 @@ rect.tile-empty-space {
 .band-APPROX     { background: #7a6420; color: #f7ecc8; }
 .band-UNVERIFIED { background: #7a4520; color: #f7ddc8; }
 .band-UNPRICED   { background: #7a2424; color: #f7d0d0; }
+
+/* A type row navigates, so it has to look like it does. */
+.type-row-click { cursor: pointer; border-radius: 3px; }
+.type-row-click:hover { background: rgba(255,255,255,.07); }
+.type-row-click:hover .type-name { color: var(--accent); }

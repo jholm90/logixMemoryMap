@@ -100,6 +100,19 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
     # change.
     rung_counts = {r.path: r.rung_count for r in parse_rll_routines(doc.root)}
 
+    # Which mnemonics each routine contains, same side-channel shape again.
+    # A routine's confidence is the band its worst instruction earns, and the
+    # client could only work that out from rungs it had already opened -- so a
+    # routine read "Unverified 50%" until you drilled into it and jumped to
+    # "Measured" on the way back. That is a property of the browsing history,
+    # not of the routine. Shipping the inventory up front makes the answer the
+    # same before and after, exactly as subtree_confidence does for tag data.
+    routine_instructions = {
+        r.path: sorted(r.instruction_counts)
+        for r in parse_rll_routines(doc.root)
+        if r.instruction_counts
+    }
+
     report_json = {
         "loaded": True,
         "file_name": doc.path.name,
@@ -125,6 +138,7 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         ),
         "type_summary": type_utilization(entries),
         "jsr_calls": jsr_calls,
+        "routine_instructions": routine_instructions,
         "rung_counts": rung_counts,
         # Schedule type per task, for the treeview's task description line.
         # Read straight off the L5X, never inferred.
