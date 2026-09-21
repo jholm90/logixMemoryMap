@@ -263,25 +263,52 @@ This is the collinearity failure mode exactly — two constants against points t
 only ever vary one of them. Applying either reading now would be fitting, not
 measuring.
 
-**The discriminating test, specified (not generated — no file is to be built from
-this without being asked for):**
+**The discriminating family is built: `jsr_callerdist_k{01,02,04,05,10,20}`.**
 
-> Two files, identical in every other respect, differing only in how the same total
-> JSR work is distributed across caller routines:
->
-> - **A** — 1 caller routine issuing 20 JSR calls to 20 distinct 0-parameter targets.
->   This is the existing `jsr_multi_distinct_targets_n20` shape and its capture
->   (25,472) can be reused; no new file needed for this arm.
-> - **B** — 20 caller routines, each issuing 1 JSR call to 1 distinct 0-parameter
->   target. Same 20 targets, same 16-character target names, same rung content,
->   same tag inventory. Only the caller count moves.
->
-> One file. B − A is 19 extra caller routines. If the residual stays at −280, the
-> over-charge is per file. If it goes to −5,600, it is per caller routine. Nothing
-> else in the model distinguishes them, and no amount of re-fitting the existing
-> corpus will.
+Total JSR calls held at **20** and distinct 0-parameter targets at **20** in every
+file. Only the distribution moves: with K callers, MainRoutine takes 20/K calls and
+K−1 extra caller routines take 20/K each. K runs over the divisors of 20 so no file
+carries a remainder routine the others lack.
 
-Hold `jsr_fixed_base_per_routine` at 5,096 until that reads.
+`confound_check.py` reports **every consecutive pair varies exactly one dimension —
+`routines`**, which is the variable itself. Rung text, instruction inventory, tag
+inventory and the target set are identical across all six. A plain extra routine is
+separately priced at exactly **280 bytes** by `subrtn_shell` (four counts, zero
+residual), so that component subtracts cleanly. All six lint clean on 1756-L81E
+firmware 35.
+
+K=1 reproduces `jsr_multi_distinct_targets_n20`'s shape and target names exactly and
+predicts at the identical 25,752, so it is anchored to a capture already in hand
+(25,472).
+
+**Predictions written down before the capture run, per the blind-test rule:**
+
+| file | callers | engine predicts | **A** per file | **B** per caller | **C** flat −280 |
+|---|---:|---:|---:|---:|---:|
+| `jsr_callerdist_k01` | 1 | 25,752 | 25,472 | 25,472 | 25,472 |
+| `jsr_callerdist_k02` | 2 | 30,848 | **25,736** | **30,288** | **30,568** |
+| `jsr_callerdist_k04` | 4 | 41,040 | **26,264** | **39,920** | **40,760** |
+| `jsr_callerdist_k05` | 5 | 46,136 | **26,528** | **44,736** | **45,856** |
+| `jsr_callerdist_k10` | 10 | 71,616 | **27,848** | **68,816** | **71,336** |
+| `jsr_callerdist_k20` | 20 | 122,576 | **30,488** | **116,976** | **122,296** |
+
+- **A — the base belongs to the file.** An extra caller routine costs what any
+  routine costs, 264 plus its rungs. `actual(K) = 25,472 + 264·(K−1)`.
+- **B — the base belongs to each caller.** The engine's structure is right and only
+  the 280 premium is wrong. `actual(K) = predicted(K) − 280·K`.
+- **C — the engine is right and the 280 is something else.**
+  `actual(K) = predicted(K) − 280`.
+
+All three agree at K=1 by construction and separate by **86,488 bytes** at K=20.
+There is no reading of the result that leaves this open.
+
+**If A holds, this is not a 280-byte item.** The engine charges 5,096 per caller
+routine; a real export has 60 of them, so it would be over-charging roughly 300,000
+bytes there and something else is under-charging by more, since the real files
+currently under-predict. That is the compensating-error failure mode, and it would
+make this the largest single identified defect in the model.
+
+Hold `jsr_fixed_base_per_routine` at 5,096 until the capture reads.
 
 **A second, smaller band sits underneath it.** The `jsr_paramcount_*` family
 residuals cluster at **−296 / −300** rather than −280, flat across rung counts from

@@ -83,9 +83,14 @@ while the no-JSR `subrtn_shell` control predicts at 0.000%.
 |---|---|
 | **Expected movement** | unknown, and that is the point — between 280 bytes and hundreds of thousands, depending on which reading is right |
 | **Mechanism** | the constant is charged per JSR-CALLER routine, and every JSR file in the corpus has exactly one caller, so per-file and per-caller fit identically |
-| **Blocker** | one file: 20 caller routines each making 1 call, differenced against the existing `jsr_multi_distinct_targets_n20` capture |
+| **Blocker** | awaiting capture of `jsr_callerdist_k{01,02,04,05,10,20}` — built, lint clean, confound gate clean |
 
-**Do not adjust the constant before that file reads.** The real programs
+**The discriminating family is built and is the top capture priority.** Six files
+holding 20 calls and 20 distinct targets fixed while the caller count runs 1 → 20.
+Predictions for all three competing readings are written down in `OPEN_QUESTIONS.md`
+before the capture; they agree at K=1 and separate by 86,488 bytes at K=20.
+
+**Do not adjust the constant before those files read.** The real programs
 under-predict today and the per-caller reading subtracts bytes, so guessing wrong
 makes them worse. The marginal cost is already exact — 368 bytes per distinct
 0-parameter target plus its call, over eight intervals in two generators — so
@@ -145,6 +150,7 @@ Rows with no capture, after the bit-shift batch landed clean and the four
 | `predefprobe_*` | 3 | submitted and refused; needs the Studio error line |
 | `cipmodule_*` | 2 | awaiting first submission |
 | `litop_bool_*` | 4 | regenerated with valid call arity; awaiting recapture |
+| `jsr_callerdist_*` | 6 | **top priority** — settles item 1c; gates clean, never submitted |
 
 **A row captured but never differenced is work already paid for and thrown away.**
 The one real win of a recent session came entirely from rows already captured,

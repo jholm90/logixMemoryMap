@@ -328,7 +328,38 @@ needs an actual regeneration and diff, every time.**
 
 ---
 
-## Current batch: literal operands
+## Current batch: JSR caller distribution
+
+6 files, `src/sample_gen/gen_jsr_caller_distribution.py`, written to
+`samples/generated/logic/` as `jsr_callerdist_k{01,02,04,05,10,20}`.
+
+**What it measures.** Whether `jsr_fixed_base_per_routine` (5,096) is charged once
+per file or once per JSR-caller routine. Every existing JSR file has exactly one
+caller, so the two readings fit the entire corpus identically. The 86 captured files
+that do have several callers are multi-megabyte composites with 10,000–94,000-byte
+residuals from unrelated defects, so none of them isolates it either.
+
+**What is held fixed.** Total JSR calls at 20, distinct 0-parameter targets at 20,
+rung text, instruction inventory, tag inventory (empty), target names, processor and
+firmware. With K callers, MainRoutine takes 20/K calls and K−1 extra caller routines
+take 20/K each; K runs over the divisors of 20 so no file carries a remainder
+routine the others lack.
+
+**What moves.** The routine count, and only the routine count —
+`confound_check.py` confirms every consecutive pair varies exactly one dimension.
+Extra caller routines cannot be added without adding routines; the plain-routine
+component is separately priced at exactly 280 bytes by `subrtn_shell` at four counts
+with zero residual, so it subtracts cleanly.
+
+**What it differences against.** K=1 reproduces `jsr_multi_distinct_targets_n20`'s
+shape and target names and predicts at the identical 25,752, anchoring the family to
+a capture already in hand (25,472).
+
+**Predictions are recorded in `OPEN_QUESTIONS.md` before the capture run.** The
+three competing readings agree at K=1 and separate by 86,488 bytes at K=20, so no
+outcome leaves the question open.
+
+## Previous batch: literal operands
 
 29 files, `src/sample_gen/gen_literaloperand.py`, written to
 `samples/generated/logic/` as `litop_*`.
