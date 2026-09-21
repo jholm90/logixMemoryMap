@@ -13,7 +13,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from l5x_memory_analyzer.sizing.confidence import (  # noqa: E402
-    PROVENANCE_BAND, band_for_error, instruction_band, rung_band, weakest,
+    KNOWN_EXACT_CALLS, PROVENANCE_BAND, ZERO_PARAM_JSR, band_for_error,
+    instruction_band, refine_opcodes, rung_band, weakest,
 )
 from l5x_memory_analyzer.sizing.constants import load_memory_model  # noqa: E402
 
@@ -79,3 +80,58 @@ def test_fitted_provenance_does_not_map_to_a_confident_band():
     assert PROVENANCE_BAND["KNOWN"] == "EXACT"
     assert PROVENANCE_BAND["FITTED"] == "UNVERIFIED"
     assert PROVENANCE_BAND["UNKNOWN"] == "UNPRICED"
+
+
+# ---------------------------------------------------------------------------
+# A 0-parameter JSR is EXACT. Pinned, because this is a named exception to the
+# rule that compiled logic always reads as estimated, and an unpinned
+# exception is one refactor away from silently reverting.
+#
+# The measurement: one distinct 0-parameter target plus its call costs exactly
+# 368 bytes, over eight independent intervals in two separately built
+# generators, zero residual at every one. The 280-byte whole-file residual on
+# that family belongs to jsr_fixed_base_per_routine, a per-routine shell
+# constant that does not move with call count, target count or name length.
+# ---------------------------------------------------------------------------
+
+ZERO_PARAM = [("Tgt", 0, 0)]
+
+
+def test_zero_parameter_jsr_is_exact():
+    assert KNOWN_EXACT_CALLS[ZERO_PARAM_JSR] == "EXACT"
+    assert instruction_band(ZERO_PARAM_JSR, TABLE).key == "EXACT"
+    assert instruction_band(ZERO_PARAM_JSR, TABLE).pct == 100
+
+
+def test_refine_promotes_only_an_all_zero_parameter_rung():
+    assert refine_opcodes(["JSR"], ZERO_PARAM) == [ZERO_PARAM_JSR]
+    assert refine_opcodes(["JSR"], [("Tgt", 2, 0)]) == ["JSR"]
+    assert refine_opcodes(["JSR"], [("Tgt", 0, 1)]) == ["JSR"]
+    # One parameterised call anywhere in scope holds the whole scope back:
+    # a single band is being claimed over all of them.
+    assert refine_opcodes(["JSR"], [("A", 0, 0), ("B", 3, 0)]) == ["JSR"]
+    # No call list parsed -> no promotion. Never guess.
+    assert refine_opcodes(["JSR"], []) == ["JSR"]
+    assert refine_opcodes(["JSR"], None) == ["JSR"]
+    # Nothing else is touched.
+    assert refine_opcodes(["MOV", "XIC"], ZERO_PARAM) == ["MOV", "XIC"]
+
+
+def test_a_parameterised_jsr_stays_on_the_fitted_weight():
+    """jsr_paramtype_* still misses by thousands of bytes on UDT and STRING
+    parameters, so a JSR that carries them must not claim the exact band."""
+    assert instruction_band("JSR", TABLE).key != "EXACT"
+
+
+def test_a_rung_of_pure_zero_parameter_dispatch_is_exact():
+    assert rung_band(refine_opcodes(["JSR"], ZERO_PARAM), TABLE).key == "EXACT"
+    # And a mixed rung is still only as good as its worst instruction.
+    mixed = refine_opcodes(["JSR", "XIC"], ZERO_PARAM)
+    assert rung_band(mixed, TABLE).key == "MEASURED"
+
+
+def test_a_refined_key_falls_back_to_its_base_mnemonic():
+    """A shape suffix must never demote an instruction to Unverified just
+    because the accuracy table is keyed on the bare mnemonic."""
+    table = {"MOV": {"samples": 3, "mean_pct": 0.01, "worst_pct": 0.02}}
+    assert instruction_band("MOV/0", table).key == "MEASURED"

@@ -310,6 +310,13 @@ make this the largest single identified defect in the model.
 
 Hold `jsr_fixed_base_per_routine` at 5,096 until the capture reads.
 
+**The confidence side is already fixed and does not wait on the capture.** The
+280 is a per-routine shell constant, not a JSR cost, so it was never JSR's band
+to lose. `JSR/0` now reads **Exact ±0**: see `MEMORY_MODEL.md`, "A 0-parameter
+JSR is EXACT". On the real export that moves 13 routines from 75% to 100% while
+the 20 carrying a parameterised JSR stay at 75%. What the capture settles is the
+byte total, not the band.
+
 **A second, smaller band sits underneath it.** The `jsr_paramcount_*` family
 residuals cluster at **−296 / −300** rather than −280, flat across rung counts from
 10 to 1,000 and across parameter counts 1 to 15. That is a further 16–20 bytes

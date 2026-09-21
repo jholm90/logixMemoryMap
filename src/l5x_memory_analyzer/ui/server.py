@@ -21,15 +21,20 @@ from flask import Flask, Response, jsonify, request
 from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
 from l5x_memory_analyzer.parser.datatypes import DataTypeDef, parse_data_types
 from l5x_memory_analyzer.parser.load import L5XDocument, L5XFormatError, load_l5x, load_l5x_bytes
-from l5x_memory_analyzer.parser.logic import count_instructions_in_text, parse_rll_routines
+from l5x_memory_analyzer.parser.logic import (
+    count_instructions_in_text,
+    jsr_calls_in_text,
+    parse_rll_routines,
+)
 from l5x_memory_analyzer.parser.modules import label_modules, parse_modules
 from l5x_memory_analyzer.parser.tags import parse_tags
 from l5x_memory_analyzer.parser.tasks import parse_tasks, program_to_task_map
 from l5x_memory_analyzer.sizing.constants import MemoryModel, load_memory_model
 from l5x_memory_analyzer.sizing.alarms import alarm_conditions_for_host, alarm_lookup_tables
 from l5x_memory_analyzer.sizing.confidence import (
+    refine_opcodes,
     rung_band,
-    BANDS, PROVENANCE_BAND, SCAFFOLD_BAND,
+    BANDS, KNOWN_EXACT_CALLS, PROVENANCE_BAND, SCAFFOLD_BAND,
 )
 from l5x_memory_analyzer.sizing.controller_budgets import load_controller_budgets
 from l5x_memory_analyzer.sizing.xref import find_usages
@@ -124,7 +129,7 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
     # not of the routine. Shipping the inventory up front makes the answer the
     # same before and after, exactly as subtree_confidence does for tag data.
     routine_instructions = {
-        r.path: sorted(r.instruction_counts)
+        r.path: refine_opcodes(sorted(r.instruction_counts), r.jsr_calls)
         for r in routines
         if r.instruction_counts
     }
@@ -201,6 +206,7 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         "instruction_accuracy": getattr(model, "instruction_accuracy", None) or {},
         "provenance_band": dict(PROVENANCE_BAND),
         "scaffold_band": dict(SCAFFOLD_BAND),
+        "known_exact_calls": dict(KNOWN_EXACT_CALLS),
     }
 
     # EVERYTHING BROWSABLE IS COMPUTED NOW, not on the first click.
@@ -246,7 +252,7 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         if not total:
             continue
         weighted = sum(
-            r["value"] * rung_band(r["instructions"], accuracy).pct for r in rows
+            r["value"] * rung_band(r["band_keys"], accuracy).pct for r in rows
         )
         routine_confidence[path] = round(weighted / total, 2)
 
@@ -367,6 +373,14 @@ def _build_all_rungs(root, model) -> dict:
                     # second, differently-derived number.
                     "value": sum(weights.get(m, 0) * n for m, n in counts.items()),
                     "instructions": sorted(counts),
+                    # Shape-refined keys for banding only -- a parameterless
+                    # JSR is a measured constant, a parameterised one is the
+                    # fitted A(n)/B(n) model, and one band cannot serve both.
+                    # Never used for pricing; the weight table sees the bare
+                    # mnemonic either way.
+                    "band_keys": refine_opcodes(
+                        sorted(counts), jsr_calls_in_text([text])
+                    ),
                 })
             out[f"program:{owner_name}/{routine_el.get('Name') or ''}"] = rows
     return out

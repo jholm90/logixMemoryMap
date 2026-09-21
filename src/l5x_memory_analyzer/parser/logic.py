@@ -771,6 +771,13 @@ def _jsr_targets(rung_texts: list[str]) -> set[str]:
     return targets
 
 
+def jsr_calls_in_text(rung_texts: list[str]) -> list[tuple[str, int, int]]:
+    """Public wrapper over the same JSR call scanner the sizer uses, so the
+    confidence path reads parameter counts off the authoritative parse rather
+    than re-implementing the regex and drifting from it."""
+    return _jsr_calls(rung_texts)
+
+
 def parse_rll_routines(
     root: ET.Element, aoi_names: frozenset[str] | None = None
 ) -> list[RoutineLogic]:

@@ -75,6 +75,42 @@ SCAFFOLD_BAND = {"XIC": "MEASURED", "XIO": "MEASURED",
                  "OTE": "MEASURED", "NOP": "MEASURED"}
 
 
+# Call shapes measured exactly, alone, at several counts, with zero residual.
+# These are the only compiled-logic entries that reach EXACT: the general rule
+# is that compiled ladder size is a fitted heuristic and must read as
+# estimated, and these are the named exceptions where the cost is a measured
+# constant rather than a fitted weight. Each one is pinned by a test.
+#
+#   JSR/0 -- a JSR to a 0-parameter target. One distinct 0-parameter target
+#            plus its call costs exactly 368 bytes, measured off the captures
+#            over eight independent intervals in two separately built
+#            generators, zero residual at every one:
+#            jsr_multi_distinct_targets_{01,03,05} (+368/target), _n{05,10,15,
+#            20,50} (+368/target across four intervals), and
+#            jsr_crossed_n{20,40}_namelen16 (+368/target). Two of those
+#            generators produce the identical 25,472 at 20 targets. Target
+#            name length is separately priced and exact at 4/8/16/32/40.
+#
+#            The 280-byte whole-file residual on that family is NOT this
+#            instruction: it is jsr_fixed_base_per_routine (5,096) exceeding
+#            fixed_base_per_routine (4,816), a per-routine shell constant that
+#            does not move with call count, target count or name length. It is
+#            charged against the routine, not the rung, and OQ-JSRPARAMCOST
+#            tracks it. Attributing it to JSR is what made a rung of pure
+#            0-parameter dispatch read Approximate +/-5%.
+#
+# A JSR that CARRIES parameters is not here and does not qualify: its cost is
+# the fitted A(n)/B(n) model, and jsr_paramtype_* still misses by thousands of
+# bytes on UDT and STRING parameters.
+KNOWN_EXACT_CALLS = {"JSR/0": "EXACT"}
+
+# How a refined opcode key is spelled. The refinement happens where rung text
+# is available (parser.logic.count_instructions_in_text) so every consumer --
+# routine confidence, rung confidence, the accuracy table lookup -- sees the
+# same key and cannot disagree about it.
+ZERO_PARAM_JSR = "JSR/0"
+
+
 def band_for_error(worst_pct: float | None, samples: int = 0) -> Band:
     """The band a measured worst-case error earns."""
     if worst_pct is None or samples <= 0:
@@ -94,10 +130,39 @@ def instruction_band(opcode: str, accuracy_table: dict, has_weight: bool = True)
         return _BY_KEY["UNPRICED"]
     if opcode in SCAFFOLD_BAND:
         return _BY_KEY[SCAFFOLD_BAND[opcode]]
+    if opcode in KNOWN_EXACT_CALLS:
+        return _BY_KEY[KNOWN_EXACT_CALLS[opcode]]
     entry = (accuracy_table or {}).get(opcode)
+    if not entry:
+        # A refined key falls back to its base mnemonic, so an unrefined
+        # accuracy table never demotes a rung to Unverified just because the
+        # key carries a shape suffix.
+        base = opcode.split("/", 1)[0]
+        entry = (accuracy_table or {}).get(base)
     if not entry:
         return _BY_KEY["UNVERIFIED"]
     return band_for_error(entry.get("worst_pct"), entry.get("samples", 0))
+
+
+def refine_opcodes(opcodes, jsr_calls=None) -> list[str]:
+    """Rewrite mnemonics into the shape-specific keys the band table knows.
+
+    `jsr_calls` is the (target, n_in, m_out) list for the rung or routine, as
+    `parser.logic.jsr_calls_in_text` returns it. JSR refines to JSR/0 only
+    when EVERY call in scope is parameterless -- one parameterised call in a
+    routine pulls the whole routine back to the fitted JSR weight, because a
+    single band is being claimed over all of them.
+
+    These keys are for banding only. They never reach the weight table, which
+    is keyed on the bare mnemonic and prices JSR identically either way.
+    """
+    ops = list(opcodes)
+    if "JSR" not in ops:
+        return ops
+    calls = list(jsr_calls or ())
+    if not calls or not all(n_in == 0 and m_out == 0 for _t, n_in, m_out in calls):
+        return ops
+    return [ZERO_PARAM_JSR if op == "JSR" else op for op in ops]
 
 
 def rung_band(opcodes, accuracy_table: dict, series_outputs: int = 1) -> Band:

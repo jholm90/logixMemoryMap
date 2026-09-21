@@ -793,6 +793,49 @@ identically to DINT. **Every "exact, zero residual" claim in this file and in
 operand-type surcharge is wired; the narrow-integer widening defect it exposes in
 CPT is not fully solved.
 
+### A 0-parameter JSR is EXACT — the one named exception for compiled logic
+
+Compiled ladder size is a fitted heuristic and reads as estimated everywhere
+else. `JSR/0` — a JSR whose target takes no parameters — is the single named
+exception, because its cost is a measured constant rather than a fitted weight.
+
+**One distinct 0-parameter target plus its call costs exactly 368 bytes**, over
+eight independent intervals in two separately built generators, zero residual at
+every one:
+
+| pair | interval | per unit |
+|---|---:|---:|
+| `jsr_multi_distinct_targets_01` → `_03` → `_05` | 2 | 368 |
+| `..._n05` → `_n10` → `_n15` → `_n20` | 5 | 368 |
+| `..._n20` → `_n50` | 30 | 368 |
+| `jsr_crossed_n20_namelen16` → `_n40_namelen16` | 20 | 368 |
+
+Two of those generators produce the identical 25,472 at 20 targets. Target name
+length is separately priced and exact at 4 / 8 / 16 / 32 / 40 characters.
+
+**The 280-byte whole-file residual on that family is not this instruction.** It is
+`jsr_fixed_base_per_routine` (5,096) exceeding `fixed_base_per_routine` (4,816), a
+per-routine shell constant that does not move with call count, target count or
+name length. It belongs to the routine, not the rung. Attributing it to JSR is
+what made a rung of pure 0-parameter dispatch read *Approximate ±5%*.
+
+**A JSR that carries parameters does not qualify** and stays on the fitted
+A(n)/B(n) model — `jsr_paramtype_*` still misses by thousands of bytes on UDT and
+STRING parameters. The promotion requires *every* call in scope to be
+parameterless: one parameterised call holds the whole rung or routine back,
+because a single band is being claimed over all of them.
+
+Wired as `KNOWN_EXACT_CALLS` in `sizing/confidence.py`, mirrored to the client
+through the report rather than restated there, and pinned by five tests in
+`tests/test_confidence_bands.py`. On the real export this moves **13 routines**
+whose only instruction is a 0-parameter JSR from 75% to 100%, and leaves the 20
+routines carrying a parameterised JSR at 75%.
+
+> This is a deliberate, named carve-out from the ground-truth constraint's
+> blanket "every logic-size number must be flagged as estimated." The constraint
+> holds for fitted weights; a measured constant with zero residual across eight
+> intervals is not one.
+
 ### Bit-shift instructions — BSR and BSL, measured exactly
 
 Both cost **60 bytes per rung**, confirmed over four independent count intervals

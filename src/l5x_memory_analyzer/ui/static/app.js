@@ -280,7 +280,17 @@ function bandByKey(key) {
 function bandForOpcode(op) {
   const scaffold = (REPORT && REPORT.scaffold_band) || {};
   if (scaffold[op]) return bandByKey(scaffold[op]);
-  const acc = ((REPORT && REPORT.instruction_accuracy) || {})[op];
+  // Shape-refined keys the server publishes: a call measured exactly, alone,
+  // at several counts, with zero residual. "JSR/0" -- a JSR to a 0-parameter
+  // target -- is the only one today. This mirrors sizing/confidence.py's
+  // KNOWN_EXACT_CALLS rather than restating the rule, so the two cannot drift.
+  const known = (REPORT && REPORT.known_exact_calls) || {};
+  if (known[op]) return bandByKey(known[op]);
+  const table = (REPORT && REPORT.instruction_accuracy) || {};
+  // A refined key falls back to its base mnemonic, so a key carrying a shape
+  // suffix never reads Unverified just because the accuracy table is keyed on
+  // the bare one.
+  const acc = table[op] || table[String(op).split("/")[0]];
   if (!acc || !acc.samples) return bandByKey("UNVERIFIED");
   const w = acc.worst_pct;
   if (w <= 0.1) return bandByKey("MEASURED");
@@ -305,6 +315,8 @@ function bandForNode(node) {
   if (Array.isArray(ops) && ops.length) {
     let worst = null;
     for (const raw of ops) {
+      // Strips a trailing "(...)" form but keeps a "/" shape suffix, which
+      // is part of the band key (e.g. "JSR/0").
       const op = String(raw).replace(/\(.*$/, "").trim();
       const b = bandForOpcode(op);
       if (!worst || b.pct < worst.pct) worst = b;
