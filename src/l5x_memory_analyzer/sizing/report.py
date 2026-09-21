@@ -404,6 +404,10 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
 
     logic_entries: list[tuple[str, str, str, int, str]] = []
     n_plain_routines = 0
+    # Fixed shell for routines that CALL a subroutine. Billed as its own line
+    # item rather than hidden inside the calling routine's instruction total.
+    jsr_caller_shell_bytes = 0
+    n_jsr_caller_routines = 0
     # (program, routine) for every ordinary (non-JSR, non-Safety) routine, in
     # document order, so the shell block below can charge each name past the
     # first one IN ITS OWN PROGRAM.
@@ -496,10 +500,20 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             n_plain_routines += 1
             plain_routine_names.append(
                 (routine.program_name or "", routine.routine_name or ""))
+        # A JSR-caller routine's fixed base is SHELL, not logic. It is the
+        # cost of the routine existing and being dispatched to, and it does
+        # not move with call count, target count or target name length -- so
+        # folding it into the routine's instruction total made a rung of pure
+        # dispatch look expensive and mispriced, and charged the difference
+        # against JSR. Content and shell are now separate line items; the sum
+        # is unchanged.
         logic_bytes, logic_basis = compute_routine_logic_bytes(
-            routine, model.logic_instructions, tag_types, charge_shell=not is_plain
+            routine, model.logic_instructions, tag_types, charge_shell=False
         )
         logic_entries.append((routine.path, "routine_logic", "RLL", logic_bytes, logic_basis))
+        if not is_plain:
+            jsr_caller_shell_bytes += model.logic_instructions.jsr_fixed_base_per_routine
+            n_jsr_caller_routines += 1
 
     # Structured Text (OQ-STSIZING, wired). Before this, ST
     # contributed exactly ZERO -- parse_rll_routines filters to RLL and
@@ -665,6 +679,39 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     else:
         all_tasks = parse_tasks(root)
         n_safety_tasks = sum(1 for t in all_tasks if t.is_safety)
+
+    if n_jsr_caller_routines:
+        # Own category and own path, same rule as task_program_shell: a
+        # "program:X/Y" path would collide with that routine's own
+        # routine_logic entry in every by-path grouping.
+        #
+        # This is the subroutine-dispatch overhead, charged once per routine
+        # that contains a JSR. It is a flat constant per caller routine -- it
+        # does not scale with how many calls that routine makes, how many
+        # distinct targets it reaches, or how long their names are, all of
+        # which are priced separately and exactly.
+        #
+        # It is also where a known defect lives, so it is billed visibly
+        # rather than buried: jsr_fixed_base_per_routine is 5,096 where the
+        # ordinary fixed_base_per_routine is 4,816, and that 280-byte premium
+        # is exactly the residual on every clean 0-parameter JSR capture.
+        # Whether the correction is 280 once per file or 280 per caller
+        # routine is what the jsr_callerdist_* family settles -- see
+        # OPEN_QUESTIONS.md OQ-JSRPARAMCOST. Until it reads, the constant
+        # stands and the uncertainty is attached to THIS line item, which is
+        # where it belongs, instead of to the JSR instruction, which is
+        # measured exactly.
+        # The tree labels a non-tag group's leaf from this field, so it
+        # carries the caller count: a bare "SHELL" tile is a number with no
+        # way to tell whether it is one expensive routine or forty ordinary
+        # ones, which is the whole question a user asks of this line.
+        logic_entries.append((
+            "subroutine_shell", "subroutine_shell",
+            f"SHELL x{n_jsr_caller_routines} caller routine"
+            f"{'s' if n_jsr_caller_routines != 1 else ''}",
+            jsr_caller_shell_bytes,
+            model.logic_instructions.confidence,
+        ))
 
     if n_safety_tasks > 0:
         # OQ-SAFETYSCOPE-SIZING, real fix: previously a

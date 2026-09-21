@@ -793,6 +793,35 @@ identically to DINT. **Every "exact, zero residual" claim in this file and in
 operand-type surcharge is wired; the narrow-integer widening defect it exposes in
 CPT is not fully solved.
 
+### Subroutine dispatch overhead is its own billed line
+
+A routine that contains a JSR pays `jsr_fixed_base_per_routine` = **5,096** once,
+for the routine existing and being dispatched to. It does not scale with how many
+calls that routine makes, how many distinct targets it reaches, or how long their
+names are — all of which are priced separately and exactly.
+
+That constant used to be folded into the calling routine's instruction total,
+which had two bad consequences:
+
+- **It was invisible.** The one structural cost a user can actually act on, by
+  restructuring routines, did not appear anywhere in the UI. On the real export it
+  is **122,304 bytes across 24 caller routines, 1.58% of the program.**
+- **It put the blame on the wrong thing.** `jsr_fixed_base_per_routine` (5,096)
+  exceeds the ordinary `fixed_base_per_routine` (4,816) by 280, and that premium
+  is exactly the residual on every clean 0-parameter JSR capture. Divided by file
+  size it reads as 1.40%, which is what demoted the JSR instruction to
+  *Approximate ±5%* despite its cost being measured exactly.
+
+It is now emitted as a `subroutine_shell` entry with its own path and its own
+top-level tree group, **Subroutine Overhead**, labelled with the caller count so
+the number is interpretable. Reclassification only: totals are byte-identical on
+all 3,551 corpus files, verified by differencing the whole corpus before and
+after.
+
+The open uncertainty is attached to this line, where it belongs. Whether the
+correction is 280 once per file or 280 per caller routine is what
+`jsr_callerdist_*` settles — see `OPEN_QUESTIONS.md` OQ-JSRPARAMCOST.
+
 ### A 0-parameter JSR is EXACT — the one named exception for compiled logic
 
 Compiled ladder size is a fitted heuristic and reads as estimated everywhere

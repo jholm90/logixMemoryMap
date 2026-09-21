@@ -225,6 +225,17 @@ def build_hierarchy(
         # once-per-file entry, path "task_program_shell" with no "/" --
         # same non-tag-path shape as project_baseline above, same fix.
         "task_program_shell": "Project Overhead",
+        # subroutine_shell: the fixed per-caller-routine cost of dispatching
+        # to a subroutine, one once-per-file entry with a "/"-free path, same
+        # shape and same fix as task_program_shell above. Its OWN group
+        # rather than folded into Project Overhead: it is the one structural
+        # constant a user can act on by restructuring routines, and it is
+        # where the known +280-per-caller uncertainty lives (see
+        # OPEN_QUESTIONS.md OQ-JSRPARAMCOST). Buried inside the calling
+        # routine's instruction total it was invisible, and the difference
+        # was charged against the JSR instruction instead -- which is
+        # measured exactly and was not the thing that was wrong.
+        "subroutine_shell": "Subroutine Overhead",
         # module_io (OQ-MODULEIO wiring): path is "modules/
         # <name>", which DOES contain "/" -- but "modules" isn't a real
         # Program/Controller-Tags scope, so the split below would still

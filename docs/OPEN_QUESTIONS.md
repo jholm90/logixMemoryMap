@@ -310,6 +310,14 @@ make this the largest single identified defect in the model.
 
 Hold `jsr_fixed_base_per_routine` at 5,096 until the capture reads.
 
+**The 280 is now billed where it belongs and is visible.** The per-caller shell
+is its own `subroutine_shell` entry under a **Subroutine Overhead** tree group,
+labelled with the caller count — 122,304 bytes across 24 caller routines, 1.58%,
+on the real export. It was previously folded into each calling routine's
+instruction total, invisible, and the difference was charged against the JSR
+instruction. Reclassification only: totals byte-identical on all 3,551 corpus
+files. The uncertainty this question tracks now sits on that line item.
+
 **The confidence side is already fixed and does not wait on the capture.** The
 280 is a per-routine shell constant, not a JSR cost, so it was never JSR's band
 to lose. `JSR/0` now reads **Exact ±0**: see `MEMORY_MODEL.md`, "A 0-parameter
