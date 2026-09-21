@@ -41,44 +41,44 @@ SetKeyDelay 50, 50
 ; tracked (scripts\logix_build_capture.ahk) -- matches
 ; batch_memory_capture.ps1's own $PSScriptRoot-relative defaults, so
 ; neither side needs a path typed in by hand.
-HANDOFF_PATH:= A_ScriptDir "\ahk_runtime\ahk_handoff.csv"        ; must match -HandoffPath
-OPEN_REQUEST_PATH:= A_ScriptDir "\ahk_runtime\open_request.txt"  ; must match -OpenRequestPath
+HANDOFF_PATH := A_ScriptDir "\ahk_runtime\ahk_handoff.csv"        ; must match -HandoffPath
+OPEN_REQUEST_PATH := A_ScriptDir "\ahk_runtime\open_request.txt"  ; must match -OpenRequestPath
 
 ; ahk_runtime\ won't exist until the PowerShell side creates it (or run
 ; this once by hand) -- FileExist below would just wait forever silently
 ; otherwise.
 DirCreate A_ScriptDir "\ahk_runtime"
-LOGIX_WIN:= "ahk_exe LogixDesigner.exe"             ; confirmed via Window Spy
+LOGIX_WIN := "ahk_exe LogixDesigner.exe"             ; confirmed via Window Spy
 
-global OCDValue:= ""
-global ErrorValue:= ""
-global WarningValue:= ""
-global MessageValue:= ""
-global WindowTitle:= ""
-global BUILD_SKIP_CATALOGS:= "*1769-*;*1756-L7*"
-global ErrorLog:= ""
+global OCDValue := ""
+global ErrorValue := ""
+global WarningValue := ""
+global MessageValue := ""
+global WindowTitle := ""
+global BUILD_SKIP_CATALOGS := "*1769-*;*1756-L7*"
+global ErrorLog := ""
 ; RICHEDIT50W2 is the build/verify error-log pane. Its full text can run to many
 ; KB; only the FIRST MAX_ERROR_LOG_CHARS characters are kept, because the
 ; first lines carry the first (and usually root-cause) error. Truncating
 ; from the end would keep the summary and throw away the diagnosis.
 ; Adjustable -- raise it if real errors are being cut mid-message.
-global MAX_ERROR_LOG_CHARS:= 300
+global MAX_ERROR_LOG_CHARS := 300
 ; A complete read of that pane always ends with Studio's own summary line,
 ; "Complete - N error(s), M warning(s)". Its presence is the proof that the
 ; whole pane was captured rather than a partial/stale read, so it is checked
 ; on the FULL text before any truncation.
-global ERROR_LOG_DONE_MARKER:= "Complete -"
+global ERROR_LOG_DONE_MARKER := "Complete -"
 ; ClassNN of that pane, confirmed via Window Spy.
-global ERROR_LOG_CTRL:= "RICHEDIT50W2"
+global ERROR_LOG_CTRL := "RICHEDIT50W2"
 
 ; A transient Studio failure on a complex project, not a defect in the
 ; file: one or two more build attempts normally clear it. Matched against
 ; the error-log text, so it catches the condition wherever in the log it
 ; appears rather than relying on the error COUNT, which is also non-zero
 ; for real errors that retrying will never fix.
-global COMPILER_ERROR_MARKER:= "Compiler Error"
+global COMPILER_ERROR_MARKER := "Compiler Error"
 ; Retries AFTER the first attempt, so a file gets at most 6 builds total.
-global MAX_COMPILER_ERROR_RETRIES:= 5
+global MAX_COMPILER_ERROR_RETRIES := 5
 
 ; Studio abbreviates a count over 999 in those buttons -- "1K Errors" for
 ; anything from 1,000 up -- and depending on locale can also render it with a
@@ -91,9 +91,9 @@ global MAX_COMPILER_ERROR_RETRIES:= 5
 ;   "1K"     -> 1000     "1.2K"  -> 1200      "2M" -> 2000000
 ; Returns "" for anything it cannot read, never a fabricated 0.
 ExpandCountToken(token) {
-    token:= Trim(StrReplace(token, ","))
+    token := Trim(StrReplace(token, ","))
     if RegExMatch(token, "i)^(\d+(?:\.\d+)?)\s*([KM])$", &m) {
-        mult:= (StrUpper(m[2]) = "M") ? 1000000: 1000
+        mult := (StrUpper(m[2]) = "M") ? 1000000 : 1000
         return String(Round(m[1] * mult))
     }
     if RegExMatch(token, "^(\d+)$", &m)
@@ -106,7 +106,7 @@ ExpandCountToken(token) {
 ; number; this only flags the button fallback so a rounded value is never
 ; mistaken for a measured one.
 IsAbbreviatedCount(token) {
-    return RegExMatch(Trim(StrReplace(token, ",")), "i)^\d+(?:\.\d+)?\s*[KM]$") ? true: false
+    return RegExMatch(Trim(StrReplace(token, ",")), "i)^\d+(?:\.\d+)?\s*[KM]$") ? true : false
 }
 
 ; Pulls the leading count out of button/label text like "0 Warnings",
@@ -126,17 +126,17 @@ ExtractCount(text) {
 ; keeps only the first MAX_ERROR_LOG_CHARS characters and this line is at the
 ; END. Returns a Map with "" for anything absent.
 ParseSummaryCounts(rawLog) {
-    out:= Map("Error", "", "Warning", "")
+    out := Map("Error", "", "Warning", "")
     if (rawLog = "")
         return out
     ; Both counts come out of the SAME summary match. A loose
     ; "([\d,]+)\s*warning" would happily match the first "0 warnings" inside an
     ; individual error message earlier in the log.
     if RegExMatch(rawLog, "i)Complete\s*-\s*([\d,]+)\s*error\(?s?\)?\s*,\s*([\d,]+)\s*warning", &m) {
-        out["Error"]:= ExpandCountToken(m[1])
-        out["Warning"]:= ExpandCountToken(m[2])
+        out["Error"] := ExpandCountToken(m[1])
+        out["Warning"] := ExpandCountToken(m[2])
     } else if RegExMatch(rawLog, "i)Complete\s*-\s*([\d,]+)\s*error", &m) {
-        out["Error"]:= ExpandCountToken(m[1])
+        out["Error"] := ExpandCountToken(m[1])
     }
     return out
 }
@@ -147,10 +147,10 @@ ParseSummaryCounts(rawLog) {
 
 BuildPopupExpected(title) {
     for pat in StrSplit(BUILD_SKIP_CATALOGS, ";") {
-        pat:= Trim(pat)
+        pat := Trim(pat)
         if (pat = "")
             continue
-        rx:= "i)^" StrReplace(RegExReplace(pat, "([\\.^$|()\[\]{}+?])", "\$1"), "*", ".*") "$"
+        rx := "i)^" StrReplace(RegExReplace(pat, "([\\.^$|()\[\]{}+?])", "\$1"), "*", ".*") "$"
         if RegExMatch(title, rx)
             return false
     }
@@ -159,13 +159,13 @@ BuildPopupExpected(title) {
 
 
 FindCountButtons() {
-    counts:= Map("Error", "", "Warning", "", "Message", "")
+    counts := Map("Error", "", "Warning", "", "Message", "")
     ; Records any count Studio rendered abbreviated, so the caller can prefer
     ; the exact summary-line value and can say when it had to round.
-    abbreviated:= ""
-    seen:= ""
-    ctrls:= ""
-    try ctrls:= WinGetControls("A")
+    abbreviated := ""
+    seen := ""
+    ctrls := ""
+    try ctrls := WinGetControls("A")
     catch
         return {counts: counts, seen: "(WinGetControls failed)", abbreviated: ""}
     if !IsObject(ctrls)
@@ -174,20 +174,20 @@ FindCountButtons() {
     for ctrl in ctrls {
         if !RegExMatch(ctrl, "^Button\d+$")
             continue
-        txt:= ""
-        try txt:= Trim(ControlGetText(ctrl, "A"))
+        txt := ""
+        try txt := Trim(ControlGetText(ctrl, "A"))
         catch
             continue
         if (txt = "")
             continue
-        seen .= (seen = "" ? "": " | ") ctrl "=" txt
+        seen .= (seen = "" ? "" : " | ") ctrl "=" txt
         for kind in ["Error", "Warning", "Message"] {
             ; Same abbreviation trap as ExtractCount: the leading token can be
             ; "1K" or "1,234", and a bare \d+ match reads either as 1.
             if (counts[kind] = "") && RegExMatch(txt, "i)^([\d.,]+\s*[KM]?)\b.*\b" kind, &m) {
-                counts[kind]:= ExpandCountToken(m[1])
+                counts[kind] := ExpandCountToken(m[1])
                 if IsAbbreviatedCount(m[1])
-                    abbreviated .= (abbreviated = "" ? "": "; ") kind "=" Trim(m[1])
+                    abbreviated .= (abbreviated = "" ? "" : "; ") kind "=" Trim(m[1])
             }
         }
     }
@@ -210,7 +210,7 @@ StripCommas(text) {
 ; Read the build error-log pane and validate it.
 ;
 ; The control is a rich-edit, ClassNN "RICHEDIT50W2" (confirmed via Window
-; Spy -- an earlier note calling it "Text99" was wrong). The
+; Spy, -- an earlier note calling it "Text99" was wrong). The
 ; trailing index on a ClassNN is positional, so it can shift if Studio
 ; changes that dialog's control order; if the exact name is not present the
 ; read falls back to scanning every RICHEDIT* control and taking the first
@@ -223,21 +223,21 @@ StripCommas(text) {
 ; well past that cut, and deciding not to retry because the evidence was
 ; truncated away would defeat the whole point of the check.
 ReadErrorLogRaw() {
-    txt:= ""
-    try txt:= ControlGetText(ERROR_LOG_CTRL, "A")
+    txt := ""
+    try txt := ControlGetText(ERROR_LOG_CTRL, "A")
     catch
-        txt:= ""
-    txt:= Trim(txt)
+        txt := ""
+    txt := Trim(txt)
     if (txt = "" || !InStr(txt, ERROR_LOG_DONE_MARKER)) {
-        found:= FindErrorLogControl()
+        found := FindErrorLogControl()
         if (found != "")
-            txt:= found
+            txt := found
     }
     return txt
 }
 
 ReadErrorLog() {
-    txt:= ReadErrorLogRaw()
+    txt := ReadErrorLogRaw()
     if (txt = "")
         return "(" ERROR_LOG_CTRL " unreadable/empty)"
     ; Validate against the FULL text: the summary line proves the pane was
@@ -246,17 +246,17 @@ ReadErrorLog() {
     if !InStr(txt, ERROR_LOG_DONE_MARKER)
         return "(incomplete read -- no '" ERROR_LOG_DONE_MARKER "' marker) " SubStr(txt, 1, MAX_ERROR_LOG_CHARS)
     ; Collapse newlines/tabs so the value stays one CSV field.
-    txt:= StrReplace(StrReplace(StrReplace(txt, "`r`n", " | "), "`n", " | "), "`t", " ")
+    txt := StrReplace(StrReplace(StrReplace(txt, "`r`n", " | "), "`n", " | "), "`t", " ")
     if (StrLen(txt) > MAX_ERROR_LOG_CHARS)
-        txt:= SubStr(txt, 1, MAX_ERROR_LOG_CHARS)
+        txt := SubStr(txt, 1, MAX_ERROR_LOG_CHARS)
     return txt
 }
 
 ; Fallback for when ERROR_LOG_CTRL's positional index has shifted: return the
 ; text of the first RICHEDIT* control that carries the completion marker.
 FindErrorLogControl() {
-    ctrls:= ""
-    try ctrls:= WinGetControls("A")
+    ctrls := ""
+    try ctrls := WinGetControls("A")
     catch
         return ""
     if !IsObject(ctrls)
@@ -264,8 +264,8 @@ FindErrorLogControl() {
     for ctrl in ctrls {
         if !RegExMatch(ctrl, "i)^RICHEDIT")
             continue
-        t:= ""
-        try t:= Trim(ControlGetText(ctrl, "A"))
+        t := ""
+        try t := Trim(ControlGetText(ctrl, "A"))
         catch
             continue
         if (t != "" && InStr(t, ERROR_LOG_DONE_MARKER))
@@ -278,26 +278,26 @@ CsvQuote(text) {
     return '"' StrReplace(text, '"', '""') '"'
 }
 
-StatusGui:= Gui("+AlwaysOnTop +ToolWindow", "Loop Status.  Press ESC to Abort")
+StatusGui := Gui("+AlwaysOnTop +ToolWindow", "Loop Status.  Press ESC to Abort")
 StatusGui.SetFont("s12 Bold")
-StatusText:= StatusGui.AddText("w320", "IDLE - press Ctrl+F1 in Logix window")
+StatusText := StatusGui.AddText("w320", "IDLE - press Ctrl+F1 in Logix window")
 StatusGui.Show()
 
 Status(msg) {
     global StatusText
-    StatusText.Text:= msg
+    StatusText.Text := msg
 }
 
 ^F1:: {
     Status("STARTED")
     Loop {
-        global OCDValue:= ""
-        global ErrorValue:= ""
-        global WarningValue:= ""
-        global MessageValue:= ""
-        global WindowTitle:= ""
-				global ButtonTest:= ""
-				global active_title:= ""
+        global OCDValue := ""
+        global ErrorValue := ""
+        global WarningValue := ""
+        global MessageValue := ""
+        global WindowTitle := ""
+				global ButtonTest := ""
+				global active_title := ""
 
         ; --- Wait for PowerShell's next-file handoff (file existence = "go") ---
         Status("Waiting for next file from PowerShell...")
@@ -328,7 +328,7 @@ Status(msg) {
         Status("Opening next file (from clipboard)")
         Send "^o"
 
-        if !WinWait("Open Project", 5) {
+        if !WinWait("Open Project", , 5) {
             MsgBox "Open Project dialog didn't appear within 5s -- check the Ctrl+O shortcut."
             continue
         }
@@ -336,7 +336,7 @@ Status(msg) {
         Send "^v"   ; paste the path PowerShell put on the clipboard
         Sleep 250
         Send "{Enter}"
-
+				
 				sleep 1000
 
         ; Switching away from a Build-modified project can prompt to save
@@ -351,20 +351,20 @@ Status(msg) {
         ; know what changes on screen when load finishes -- file size will
         ; vary this just like Build does, same reasoning as the Build popup.
         Sleep 2000
-
+				
 				if WinExist("A")
-						active_title:= WinGetTitle("A")
+						active_title := WinGetTitle("A")
 				else
-						active_title:= ""
-
+						active_title := ""
+				
 				Status("Active Title: " active_title)
-
+				
 				sleep 100
-
-
-
-				Timeout:= 120000  ; 2 min
-				Start:= A_TickCount
+				
+				
+				
+				Timeout := 120000  ; 2 min
+				Start := A_TickCount
 				Loop {
 						if WinExist("Logix Designer")
 								break
@@ -375,14 +375,14 @@ Status(msg) {
 						Sleep 250
 				}
 				; window found, continue here
-
-				;ErrorValue:= ExtractCount(ControlGetText("Button10", "A"))
+				
+				;ErrorValue := ExtractCount(ControlGetText("Button10", "A"))
 				;WinActivate
 				;sleep 20
-
-
-				Timeout:= 120000  ; 2 min
-				Start:= A_TickCount
+				
+				
+				Timeout := 120000  ; 2 min
+				Start := A_TickCount
 				Loop {
 						if WinExist("Logix Designer")
 								break
@@ -393,7 +393,7 @@ Status(msg) {
 						Sleep 250
 				}
 				; window found, continue here
-
+				
 				Sleep 100
 
         ; --- Build ---
@@ -414,8 +414,8 @@ Status(msg) {
         ; To add a family, edit BUILD_SKIP_CATALOGS only -- semicolon-
         ; separated wildcards, matched case-insensitively against the FULL
         ; window title. Nothing below needs to change.
-        preBuildTitle:= WinGetTitle("A")
-        buildRan:= BuildPopupExpected(preBuildTitle)
+        preBuildTitle := WinGetTitle("A")
+        buildRan := BuildPopupExpected(preBuildTitle)
 
         if !buildRan {
             Status("Build SKIPPED by BUILD_SKIP_CATALOGS (no popup possible for this controller): " preBuildTitle)
@@ -426,7 +426,7 @@ Status(msg) {
         ; file land as a failure is the difference between a real result
         ; and a spurious one, and the retry is bounded so a genuinely
         ; broken file cannot spin forever.
-        buildAttempt:= 0
+        buildAttempt := 0
         loop {
             buildAttempt += 1
             if (buildAttempt > 1)
@@ -442,14 +442,14 @@ Status(msg) {
             Send "b"
             Sleep 10
 
-            buildPopupTitle:= "Building"
-            maxAppearSeconds:= 120   ; a big file can take minutes just to START
-            maxWaitSeconds:= 600     ; ceiling so a hung build doesn't loop forever
+            buildPopupTitle := "Building"
+            maxAppearSeconds := 120   ; a big file can take minutes just to START
+            maxWaitSeconds := 600     ; ceiling so a hung build doesn't loop forever
 
             Status("Waiting for build to start")
-            if WinWait(buildPopupTitle, maxAppearSeconds) {
+            if WinWait(buildPopupTitle, , maxAppearSeconds) {
                 Status("Build started -- waiting for it to finish")
-                if !WinWaitClose(buildPopupTitle, maxWaitSeconds)
+                if !WinWaitClose(buildPopupTitle, , maxWaitSeconds)
                     MsgBox "Build popup didn't close within " maxWaitSeconds "s -- possible hang, check manually."
                 else
                     Status("Build finished")
@@ -478,29 +478,29 @@ Status(msg) {
 
         Sleep 50
         ; Captured at the same moment as Error/Warning/Message -- the
-        ; window title has the open .ACD filename baked in, so the
-        ; filename.acd is present inside it,
+        ; window title has the open .ACD filename baked in (
+        ; "window title is valid there with the filename.acd present inside"),
         ; giving PowerShell an independent cross-check against the filename
         ; it actually requested, instead of just trusting the handshake blind.
-        WindowTitle:= WinGetTitle("A")
-				found:= FindCountButtons()
+        WindowTitle := WinGetTitle("A")
+				found := FindCountButtons()
 				ErrorValue   := found.counts["Error"]
-				WarningValue:= found.counts["Warning"]
-				MessageValue:= found.counts["Message"]
+				WarningValue := found.counts["Warning"]
+				MessageValue := found.counts["Message"]
 
         ; Studio's own summary line is the AUTHORITY over those buttons: it
         ; carries the count unabbreviated however large it is, while the buttons
         ; render anything over 999 as "1K". Read off the raw log, since
         ; ReadErrorLog() keeps only the leading characters and the summary is at
-        ; the end. Nothing read it before, and a build with thousands
+        ; the end. Before nothing read it, and a build with thousands
         ; of errors was logged as 1 error and passed as very nearly clean.
-        CountNote:= ""
-        summary:= ParseSummaryCounts(ReadErrorLogRaw())
+        CountNote := ""
+        summary := ParseSummaryCounts(ReadErrorLogRaw())
         if (summary["Error"] != "") {
             if (ErrorValue != "" && ErrorValue != summary["Error"])
                 CountNote .= "[count buttons said " ErrorValue " error(s), Studio's summary line "
                            . "says " summary["Error"] "; summary used] "
-            ErrorValue:= summary["Error"]
+            ErrorValue := summary["Error"]
         } else if (found.abbreviated != "") {
             ; Abbreviated button and no summary to fall back on: the expansion
             ; is a rounded FLOOR, not a measurement. Recorded rather than passed
@@ -510,7 +510,7 @@ Status(msg) {
                        . "line available -- value is a rounded floor, not exact] "
         }
         if (summary["Warning"] != "")
-            WarningValue:= summary["Warning"]
+            WarningValue := summary["Warning"]
 
         ; No build ran, so those buttons still hold the PREVIOUS file's
         ; numbers. Blanked rather than logged: a blank error_count reads
@@ -518,10 +518,10 @@ Status(msg) {
         ; which is true here, where "0" would assert a clean build that
         ; never happened. Capacity capture below is unaffected.
         if !buildRan {
-            ErrorValue:= ""
-            WarningValue:= ""
-            MessageValue:= ""
-            CountNote:= ""
+            ErrorValue := ""
+            WarningValue := ""
+            MessageValue := ""
+            CountNote := ""
             Status("Counters blanked -- no build ran for this catalog.")
         }
 
@@ -543,7 +543,7 @@ Status(msg) {
         ; (dynamic per file, confirmed via Window Spy: ahk_class #32770,
         ; ahk_exe LogixDesigner.Exe), so match on the stable leading text.
         Sleep 10
-        if !WinWait("Controller Properties", 5) {
+        if !WinWait("Controller Properties", , 5) {
             MsgBox "Controller Properties dialog didn't appear within 5s."
             continue
         }
@@ -559,13 +559,13 @@ Status(msg) {
 
         Status("Reading Edit3 value")
         Sleep 20
-        OCDValue:= StripCommas(Trim(ControlGetText("Edit3", "A")))
-				ButtonTest:= ControlGetText("Button1", "A")
+        OCDValue := StripCommas(Trim(ControlGetText("Edit3", "A")))
+				ButtonTest := ControlGetText("Button1", "A")
         Status("Read OCD value: " OCDValue)
         Sleep 200
 				Status("Read Test value: " ButtonTest)
         Sleep 250
-
+				
 				if OCDValue = "0" AND ButtonTest != "Redundancy Enabled"{
 					Status("Reading 1769 Edit8 value")
 											Sleep 50
@@ -575,53 +575,53 @@ Status(msg) {
 							Sleep 50
 							Send "{Enter}"
 							Sleep 500
-							OCDValue:= StripCommas(Trim(ControlGetText("Edit8", "A")))
+							OCDValue := StripCommas(Trim(ControlGetText("Edit8", "A")))
 				}
-
-
+				
+				
 				if OCDValue = "" OR OCDValue = "0" OR !IsNumber(OCDValue){
 					Status("Reading Static23 value")
 					Sleep 20
-					OCDValue:= StripCommas(Trim(ControlGetText("Static23", "A")))
+					OCDValue := StripCommas(Trim(ControlGetText("Static23", "A")))
 					Status("Read Static23 value: {{" OCDValue "}}")
-
+					
 					Sleep 150
-
+					
 					; L7 or 1769
 					if OCDValue = "" OR !IsNumber(OCDValue) OR OCDValue = "0" {
 							Status("Read 1769 series Edit8 OCD value: " OCDValue)
 							Sleep 2000
 							Send "{Right}"
-							Sleep 50
+							Sleep 50   
 							Send "{Right}"
 							Sleep 50
 							Send "{Tab}"
 							Sleep 50
 							Send "{Tab}"
 							Sleep 50
+							
+							
+							
 
-
-
-
-								try isEnabled:= ControlGetEnabled("Button2", "A")
+								try isEnabled := ControlGetEnabled("Button2", "A")
 								catch
-										isEnabled:= 0
+										isEnabled := 0
 
 								if (isEnabled) {
 										Send("{Enter}")
-								}
+								} 
+						
 
 
-
-
-
-
+							
+							
+							
 							;Send "{Enter}"
 							Sleep 500
-							OCDValue:= StripCommas(Trim(ControlGetText("Edit8", "A")))
-					}
+							OCDValue := StripCommas(Trim(ControlGetText("Edit8", "A")))
+					}					
 				}
-
+				
         Status("~ Read OCD value: " OCDValue)
 
         Send "!{F4}"
@@ -641,8 +641,8 @@ Status(msg) {
         Sleep 5
 
         ; --- Hand results back to PowerShell ---
-        handoffFile:= FileOpen(HANDOFF_PATH, "w")
-        ErrorLog:= CountNote ReadErrorLog()
+        handoffFile := FileOpen(HANDOFF_PATH, "w")
+        ErrorLog := CountNote ReadErrorLog()
         handoffFile.Write("error_count,warning_count,message_value,ocd_value,window_title,error_log`n")
         handoffFile.Write(StripCommas(ErrorValue) "," StripCommas(WarningValue) "," StripCommas(MessageValue) "," OCDValue "," CsvQuote(WindowTitle) "," CsvQuote(ErrorLog) "`n")
         handoffFile.Close()
@@ -658,8 +658,8 @@ Status(msg) {
 Esc::ExitApp
 
 F9:: {
-    title:= WinGetTitle("A")
-    hwnd:= ControlGetHwnd("Edit3", "A")
-    txt:= ControlGetText("Edit3", "A")
+    title := WinGetTitle("A")
+    hwnd := ControlGetHwnd("Edit3", "A")
+    txt := ControlGetText("Edit3", "A")
     MsgBox "Active window: " title "`nEdit3 HWND: " hwnd "`nEdit3 text: [" txt "]"
 }

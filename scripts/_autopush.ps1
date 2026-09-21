@@ -19,7 +19,7 @@ function Push-RepoFile {
         [Parameter(Mandatory = $true)][string]$RepoRoot,
         [Parameter(Mandatory = $true)][string]$FilePath,
         [Parameter(Mandatory = $true)][string]$CommitMessage
-)
+    )
 
     $fileFull = (Resolve-Path $FilePath).Path
     Push-Location $RepoRoot
@@ -69,7 +69,7 @@ function Push-AllChanges {
     param(
         [Parameter(Mandatory = $true)][string]$RepoRoot,
         [Parameter(Mandatory = $true)][string]$CommitMessage
-)
+    )
 
     Push-Location $RepoRoot
     try {

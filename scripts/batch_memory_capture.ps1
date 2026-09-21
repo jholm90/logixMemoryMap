@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Fully unattended (rewrite #2). File|Open inside an already-
+  Fully unattended. File|Open inside an already-
   running Logix Designer takes under 5s; closing and reopening Designer for
   each file takes about 65s. Across 500+ files that difference is the whole
   ballgame. PowerShell no longer launches a
@@ -24,7 +24,7 @@
                        a mismatch is logged loudly and flagged in the
                        row's own notes rather than trusted quietly. A
                        literal "0" ocd_value is treated the same way
- -- a real Capacity reading is never
+                       -- a real Capacity reading is never
                        actually 0, so a 0 read is a bad-read symptom, not
                        real data; flagged ZERO CAPACITY and auto-retried
                        next run, never silently counted.
@@ -145,7 +145,7 @@ function Test-SpaceBarPressed {
 }
 
 function Wait-WithSpaceBarClipboardRefresh([int]$Seconds, [string]$AcdPath, [string]$Label, [string]$OpenRequestPath) {
-    $checkIntervalMs = 50   #:
+    $checkIntervalMs = 50   #
     $ticks = [math]::Ceiling(($Seconds * 1000) / $checkIntervalMs)
     for ($i = 0; $i -lt $ticks; $i++) {
         if (Test-SpaceBarPressed) {
@@ -272,7 +272,7 @@ foreach ($row in $remaining) {
     $fileSw = [System.Diagnostics.Stopwatch]::StartNew()
 
     Write-Host ""
-    Write-Host "=== [$idx/$total] $($meta.Id): $($meta.Desc) [$category] ==="
+    Write-Host "=== [$idx/$total] $($meta.Id) : $($meta.Desc) [$category] ==="
     Write-Host "Requesting AHK open: $($row.acd_path)"
     Set-Clipboard -Value $row.acd_path  # AHK pastes this into the Open dialog (^v) instead of typing it
     $row.acd_path | Out-File -FilePath $OpenRequestPath -Encoding utf8 -NoNewline  # existence = "go" signal; content is a fallback if you'd rather FileRead than paste
@@ -395,7 +395,7 @@ foreach ($row in $remaining) {
     }
 
     # controller_model / firmware_rev come from the L5X ITSELF, not from the
-    # -ControllerModel/-FirmwareRev switches. Fixed: those switches
+    # -ControllerModel/-FirmwareRev switches. Fixed : those switches
     # default to "5069-L306ER"/"35.11" and were being stamped onto every row
     # regardless of what the file actually declared, so 1,926 of 1,959
     # captured rows carried a processor that contradicted their own XML
@@ -435,7 +435,7 @@ foreach ($row in $remaining) {
     $logSuspect   = ($errorLog -like "(*")
     if ($buildUnclean -or $logSuspect) {
         $why = if ($buildUnclean) { "BUILD REPORTED $errorCount ERROR(S)" } else { "ERROR-LOG READ SUSPECT" }
-        Write-Host ("  !! {0}: {1}" -f $why, $meta.Id) -ForegroundColor Red
+        Write-Host ("  !! {0} : {1}" -f $why, $meta.Id) -ForegroundColor Red
         if ($errorLog) { Write-Host ("     {0}" -f $errorLog) -ForegroundColor Red }
     }
 

@@ -274,7 +274,7 @@ foreach ($f in $files) {
     $hash = $currentHash[$f.FullName]
 
     if ($exitCode -eq 0) {
-        "$($f.FullName),$acdPath,ok,$hash" | Out-File -FilePath $logPath -Append -Encoding utf8
+        "$($f.FullName),$acdPath,ok,,$hash" | Out-File -FilePath $logPath -Append -Encoding utf8
         Write-Host "  ok (${fileSeconds}s)"
     } else {
         $msg = ($result -join " ") -replace ",", ";"
