@@ -44,33 +44,33 @@ are too small to carry the residual.
 
 ## The queue
 
-### 1. Capture the literal-operand batch
+### 1. The INT/SINT literal widening defect
 
-**29 files built, awaiting conversion and capture.** The only candidate with
-measured support that the ceiling result does not bound, and the only one so far
-that moves the **max** rather than the mean.
+**The literal-operand batch came back and demoted its own question.** Integer
+literals are free — measured at DINT and LINT, to the byte — so the 51,265-slot
+exposure this item was ranked on does not exist. What the batch did find is an
+engine defect worth more than the term it was looking for.
 
 | | |
 |---|---|
-| **Expected movement** | max 3.63% → 2.90% at a flat rate; the point of the batch is to find the right per-type rates instead |
-| **Mechanism** | An immediate numeric literal in an operand costs bytes the engine charges at zero. Measured at +4.000 per slot on the bench. Not proportional to any category the engine counts. |
-| **Exposure** | 52,195 unpriced literal operand slots, 12.1% of all operand slots, about a quarter of the residual |
-| **What it must return** | the per-type rate for **integer** literals, which are 98% of the exposure and completely unmeasured |
+| **Expected movement** | unmeasured on the real set; it removes an 18–22% over-prediction on two isolation files |
+| **Mechanism** | a narrow-integer TAG operand pulls in the widening block; a LITERAL needs no widening because it is already the right width inline. The engine charges the widening for both. |
+| **Evidence** | `litop_type_int_lit` over by +21.82%, `litop_type_sint_lit` by +18.67%, while both tag files land at exactly 0.00% |
 
-**Read arm G first** — it reproduces the bench measurement at 1,000 rungs and should
-return +24,000. If it does not, the pipeline does not reproduce the bench and
-nothing else in the batch can be trusted.
+Only-adds-bytes candidates were the problem before. This one **removes** bytes,
+and seven of the seventeen real programs over-predict.
 
-**Then arm D.** If `0` and `1` are folded, the 205,060-byte integer exposure
-collapses and this item drops down the queue. They are the most common literals in
-real ladder.
+**Wire nothing until it is checked against the seventeen.** The corpus exposure of
+narrow-integer literal operands has not been counted.
 
-**Then arm C.** If distinct values cost more than repeated ones, the cost is
-per-distinct-value rather than per-slot, which changes the real arithmetic
-substantially — real ladder reuses `0` and `1` heavily. A competing law already died
-by exactly this confusion.
+### 1b. Two smaller terms from the same batch
 
-See `OQ-LITERALOPERAND` and `SAMPLE_GENERATION.md`.
+- **REAL literal operand: +4 per slot.** Measured three times now — the bench
+  rung, arm G at 1,000 rungs, and arm A's single-slot pair. 930 slots across the
+  real set, 3,720 bytes. Exact, and far below the noise floor.
+- **Float literal FORM: +76 per rung**, engine charges 0, one pair only. Ten times
+  the REAL-literal term and a different mechanism. Needs a second count point
+  before any rate is believed.
 
 ### 2. More real captured programs
 
@@ -111,8 +111,8 @@ alarms on a UDT-scalar host, and whether alarm **sets** carry their own cost. Se
 
 ### 5. Clear the capture backlog
 
-54 manifest rows have no capture. **29 are the literal-operand batch (item 1).** The
-rest:
+25 manifest rows have no capture. The literal-operand batch has landed and is
+reconciled; what is left:
 
 | family | rows | state |
 |---|---:|---|

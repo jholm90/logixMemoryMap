@@ -21,9 +21,18 @@ Not in question.
   not separate storage inside the instance.
 - **Required and Visible are per-parameter flags governing call-site syntax:**
   - `Required="true"` → a tag is mandatory on the call.
-  - `Required="false" Visible="true"` → some value is mandatory but wiring is
-    optional, and it may be a **literal**. This is the combination that lets a
-    literal reach a parameter.
+  - `Required="false" Visible="true"` → the parameter MAY be given a value at the
+    call site, and that value may be a **literal**. It may also be omitted: both
+    forms build, confirmed across 2,154 committed files with a conversion status.
+    So the legal arity is a RANGE, `Required <= args <= Required + Visible`.
+
+    **This pair is NOT sufficient on its own.** An AOI with ZERO Required
+    parameters and three Visible ones was rejected by Studio on every rung with
+    *"Invalid number of arguments for instruction"* -- including the control whose
+    arguments were all tags, so it is not about literals. The arity was inside the
+    range above. Something else constrains a definition with no Required parameter
+    and it is not yet known; see OQ-LITERALOPERAND's BOOL arm. Do not build another
+    AOI test file on this pair alone without a Required parameter present.
   - Neither → hidden. Tag-browser access only, never appears on a call.
 
   This governs whether a generated test file builds at all, so it is load-bearing

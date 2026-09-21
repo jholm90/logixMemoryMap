@@ -375,7 +375,12 @@ function nodeConfidence(node) {
       const fromMix = pctFromTierMix(n.confidence);
       if (fromMix) return fromMix;
     }
+    // A routine that has not been expanded: the server shipped the identical
+    // byte-weighted mean over its own rungs, so the closed answer and the
+    // opened one are the same number rather than two different rules.
+    const rc = (REPORT && REPORT.routine_confidence || {})[n.path || n._tagPath];
     const v = nodeValue(n);
+    if (typeof rc === "number") return { bytes: v, weighted: v * rc };
     return { bytes: v, weighted: v * bandPctFor(n) };
   };
 
@@ -1475,11 +1480,33 @@ function paintTreemap(svg, children) {
     // smaller label) so a grandchild is never mistaken for a same-level
     // sibling. Reserves the header strip the label above already used.
     if (NEST_DEPTH > 1) {
-      paintNested(svg, g, node, r, labelBlockH, 1, [node]);
+      // Always leave a strip of the PARENT showing above its nested children.
+      // Without it a tile too small to fit a label reserved nothing, the
+      // children were painted from its top edge, and the only part of the
+      // parent left was the 3px inset border -- so there was no way to click
+      // the parent at all. The strip is the parent's click target whether or
+      // not there was room to write its name on it.
+      paintNested(svg, g, node, r, nestHeaderH(labelBlockH, r.h), 1, [node]);
     }
 
     svg.appendChild(g);
   }
+}
+
+// The minimum height of parent left uncovered when its children are nested
+// inside it. Small enough not to waste a cramped tile, big enough to be a
+// mouse target.
+const NEST_HEADER_MIN = 13;
+
+// ...but never at the children's expense. Forcing the strip unconditionally
+// squeezed a short tile's children below the minimum paintable size and they
+// disappeared, which trades one invisible thing for another. The header takes
+// the smaller of what its label needs and a third of the tile, so the children
+// always keep the bulk of it.
+const NEST_HEADER_MAX_FRACTION = 0.34;
+
+function nestHeaderH(labelH, tileH) {
+  return Math.min(Math.max(labelH, NEST_HEADER_MIN), tileH * NEST_HEADER_MAX_FRACTION);
 }
 
 // Draws a tile's own children inset inside it, recursively, down to
@@ -1521,7 +1548,8 @@ function paintNested(svg, g, node, r, headerH, depth, ancestors) {
       g.appendChild(clabel);
       usedH = 11;
     }
-    paintNested(svg, g, cnode, ir, usedH, depth + 1, [...ancestors, cnode]);
+    paintNested(svg, g, cnode, ir, nestHeaderH(usedH, ir.h), depth + 1,
+                [...ancestors, cnode]);
   }
 }
 

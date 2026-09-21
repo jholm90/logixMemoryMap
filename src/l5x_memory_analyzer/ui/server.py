@@ -28,6 +28,7 @@ from l5x_memory_analyzer.parser.tasks import parse_tasks, program_to_task_map
 from l5x_memory_analyzer.sizing.constants import MemoryModel, load_memory_model
 from l5x_memory_analyzer.sizing.alarms import alarm_conditions_for_host, alarm_lookup_tables
 from l5x_memory_analyzer.sizing.confidence import (
+    rung_band,
     BANDS, PROVENANCE_BAND, SCAFFOLD_BAND,
 )
 from l5x_memory_analyzer.sizing.controller_budgets import load_controller_budgets
@@ -64,6 +65,16 @@ class DocState:
     # document, so it is discarded with the document rather than leaking
     # one file's types into the next.
     confidence_cache: dict = field(default_factory=dict)
+    # Memo for expand_children, same key and same reasoning. Warmed at load
+    # for every drillable type already on the hierarchy, so a drill is a
+    # dictionary lookup rather than a recompute -- and, more to the point,
+    # cannot return a different answer than the one already on screen.
+    children_cache: dict = field(default_factory=dict)
+    # The remaining per-document answers, all computed at load. Each was an
+    # endpoint that recomputed from the XML on every call.
+    rungs_cache: dict = field(default_factory=dict)
+    alarms_cache: dict = field(default_factory=dict)
+    xref_cache: dict = field(default_factory=dict)
 
 
 def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
@@ -87,9 +98,14 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
     # routine_logic SizeEntry's path, so the frontend can join them) purely
     # for display -- no sizing change, see parser/logic.py's
     # jsr_target_names field docstring.
+    # Parsed once and reused by all three side-channels below. It used to be
+    # called three times over the same document, which on a real export is a
+    # third of a second each for the identical answer.
+    routines = parse_rll_routines(doc.root)
+
     jsr_calls = {
         r.path: sorted(r.jsr_target_names)
-        for r in parse_rll_routines(doc.root)
+        for r in routines
         if r.jsr_target_names
     }
 
@@ -98,7 +114,7 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
     # above, keyed by the identical routine.path every routine_logic leaf
     # node's own path already carries, purely for display -- no sizing
     # change.
-    rung_counts = {r.path: r.rung_count for r in parse_rll_routines(doc.root)}
+    rung_counts = {r.path: r.rung_count for r in routines}
 
     # Which mnemonics each routine contains, same side-channel shape again.
     # A routine's confidence is the band its worst instruction earns, and the
@@ -109,7 +125,7 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
     # same before and after, exactly as subtree_confidence does for tag data.
     routine_instructions = {
         r.path: sorted(r.instruction_counts)
-        for r in parse_rll_routines(doc.root)
+        for r in routines
         if r.instruction_counts
     }
 
@@ -139,6 +155,7 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         "type_summary": type_utilization(entries),
         "jsr_calls": jsr_calls,
         "routine_instructions": routine_instructions,
+        "routine_confidence": {},  # filled in below, once the rungs are priced
         "rung_counts": rung_counts,
         # Schedule type per task, for the treeview's task description line.
         # Read straight off the L5X, never inferred.
@@ -186,8 +203,80 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         "scaffold_band": dict(SCAFFOLD_BAND),
     }
 
+    # EVERYTHING BROWSABLE IS COMPUTED NOW, not on the first click.
+    #
+    # Deferring it bought a faster first paint and paid for it twice: a drill
+    # could return a number the level above had not been able to work out, and
+    # the same node then read differently depending on whether it had been
+    # visited. Doing it here makes every answer a property of the document.
+    #
+    # It is affordable because both passes memoise on (data_type, dimensions),
+    # so the work is per distinct TYPE, not per tag. On a 33 MB real export
+    # with 5,590 entries that is 285 keys: about a tenth of a second against a
+    # three-second load.
+    conf_cache: dict = {}
+    _attach_subtree_confidence(report_json["hierarchy"], data_types, model, conf_cache)
+
+    children_cache: dict = {}
+    for key in list(conf_cache):
+        try:
+            children_cache[key] = expand_children(key[0], key[1], data_types, model)
+        except Exception:
+            # A true leaf, or a type the sizer cannot expand. /api/node has to
+            # answer for those anyway, so leave it to say so.
+            pass
+
+    # Rungs, alarm conditions and cross-references, all of which were endpoints
+    # that went back to the XML on every call. Measured on a 33 MB real export:
+    # rungs 0.06s for 6,550 of them, alarms 0.04s, xref 0.64s for 193 types.
+    rungs_cache = _build_all_rungs(doc.root, model)
+
+    # A routine's confidence, byte-weighted over its OWN rungs -- the identical
+    # calculation the client does once a routine has been expanded.
+    #
+    # It used to answer two different questions depending on whether it had
+    # been opened: the worst instruction anywhere in the routine (a floor)
+    # before, and a byte-weighted mean over rungs after. A routine of 900 clean
+    # rungs and one unmeasured instruction read 50% closed and 88% open. Both
+    # rules are defensible; having both is not.
+    accuracy = getattr(model, "instruction_accuracy", None) or {}
+    routine_confidence = {}
+    for path, rows in rungs_cache.items():
+        total = sum(r["value"] for r in rows)
+        if not total:
+            continue
+        weighted = sum(
+            r["value"] * rung_band(r["instructions"], accuracy).pct for r in rows
+        )
+        routine_confidence[path] = round(weighted / total, 2)
+
+    alarms_cache: dict = {}
+    try:
+        tag_types, udt_members = alarm_lookup_tables(doc.root)
+        for e in entries:
+            if not e.path.startswith("alarms/"):
+                continue
+            host = e.path[len("alarms/"):]
+            rows = alarm_conditions_for_host(doc.root, model, host, tag_types, udt_members)
+            if rows:
+                alarms_cache[host] = rows
+    except Exception:
+        alarms_cache = {}
+
+    report_json["routine_confidence"] = routine_confidence
+
+    xref_cache: dict = {}
+    for type_name in data_types:
+        try:
+            xref_cache[type_name] = find_usages(type_name, data_types, tag_index)
+        except Exception:
+            pass
+
     return DocState(doc=doc, model=model, data_types=data_types, tag_index=tag_index,
-                     report_json=report_json, entries=entries, errors=errors)
+                     report_json=report_json, entries=entries, errors=errors,
+                     confidence_cache=conf_cache, children_cache=children_cache,
+                     rungs_cache=rungs_cache, alarms_cache=alarms_cache,
+                     xref_cache=xref_cache)
 
 
 def _module_parent_labels(root) -> dict[str, str]:
@@ -221,6 +310,82 @@ def _program_tag_counts(entries) -> dict[str, int]:
         counts[program] = counts.get(program, 0) + 1
     return counts
 
+
+
+def _attach_subtree_confidence(node, data_types, model, cache) -> None:
+    """Give every drillable node in the initial hierarchy the same whole-subtree
+    confidence summary that a lazily-fetched drill child already gets.
+
+    Without it the report's own nodes were the one place the UI had to fall back
+    to a node's rolled-up `basis`, which is weakest()-of-subtree. A UDT-typed
+    controller tag whose members are every one of them exact read "Unverified
+    50%" at the tag level and "Exact 100%" one click in -- the same number
+    changing because of where the user had been, which is exactly what computing
+    this server-side was meant to stop. It was only ever wired into /api/node.
+
+    Memoised on (data_type, dimensions), so the cost is per distinct TYPE and
+    not per tag: a file with thousands of tags over a few hundred types pays for
+    the types.
+    """
+    for child in node.get("children") or ():
+        _attach_subtree_confidence(child, data_types, model, cache)
+    if not node.get("has_children") or not node.get("data_type"):
+        return
+    key = (node["data_type"], tuple(node.get("dimensions") or ()))
+    if key not in cache:
+        try:
+            cache[key] = subtree_confidence(key[0], key[1], data_types, model)
+        except Exception:
+            # A type the sizer cannot expand is not a UI failure.
+            cache[key] = None
+    acc = cache[key]
+    if acc:
+        node["confidence"] = {**acc, "total": sum(acc.values())}
+
+
+def _build_all_rungs(root, model) -> dict:
+    """Every routine's rungs, priced, keyed by the routine path the hierarchy
+    uses. Built once at load rather than re-walking the XML per routine."""
+    weights = model.logic_instructions.weights
+    out: dict[str, list[dict]] = {}
+    for owner in list(root.iter("Program")) + list(root.iter("AddOnInstructionDefinition")):
+        owner_name = owner.get("Name") or ""
+        for routine_el in owner.iter("Routine"):
+            rows = []
+            for rung_el in routine_el.iter("Rung"):
+                text_el = rung_el.find("Text")
+                text = (text_el.text or "").strip() if text_el is not None else ""
+                # Takes a LIST of rung texts, not one string -- passing a bare
+                # string iterates it character by character and silently
+                # returns nothing.
+                counts = count_instructions_in_text([text])
+                rows.append({
+                    "number": int(rung_el.get("Number") or len(rows)),
+                    "text": text,
+                    # Priced from the SAME weight table the routine total uses,
+                    # so the rungs sum to their routine rather than being a
+                    # second, differently-derived number.
+                    "value": sum(weights.get(m, 0) * n for m, n in counts.items()),
+                    "instructions": sorted(counts),
+                })
+            out[f"program:{owner_name}/{routine_el.get('Name') or ''}"] = rows
+    return out
+
+
+def _expand_cached(data_type, dimensions, state):
+    """expand_children through the per-document memo warmed at load.
+
+    A miss still computes -- a type reached by a path the hierarchy did not
+    contain is legitimate -- and is then remembered, so the second visit to
+    anything is free and identical to the first.
+    """
+    key = (data_type, tuple(dimensions or ()))
+    hit = state.children_cache.get(key)
+    if hit is not None:
+        return hit
+    children = expand_children(data_type, dimensions, state.data_types, state.model)
+    state.children_cache[key] = children
+    return children
 
 
 def _child_confidence(child, state):
@@ -323,60 +488,28 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
 
     @app.get("/api/rungs")
     def rungs():
-        """Every rung of one routine, so the treemap can drill below routine
-        level. Deliberately its own endpoint rather than part of the report
-        payload: a large program has tens of thousands of rungs and shipping
-        all of their text on every load would dwarf the rest of the JSON."""
+        """Every rung of one routine, from the table built at load.
+
+        This used to walk the whole document per call -- once per routine
+        opened, on a file with hundreds of them.
+        """
         state: DocState | None = app.config["state"]
         if state is None:
             return jsonify({"error": "no file loaded"}), 400
-        # Routine leaf paths are "program:<Program>/<Routine>" (real shape,
-        # read off a real export). Rung TEXT is not retained by
-        # parse_rll_routines -- it keeps counts only -- so this goes back to
-        # the XML for the one routine being opened rather than making every
-        # parse carry every rung's source.
         path = request.args.get("path", "")
         if not path.startswith("program:") or "/" not in path:
             return jsonify({"error": f"not a routine path: {path!r}"}), 400
-        program_name, routine_name = path[len("program:"):].split("/", 1)
-
-        weights = state.model.logic_instructions.weights
-        for owner in list(state.doc.root.iter("Program")) + list(
-            state.doc.root.iter("AddOnInstructionDefinition")
-        ):
-            if (owner.get("Name") or "") != program_name:
-                continue
-            for routine_el in owner.iter("Routine"):
-                if (routine_el.get("Name") or "") != routine_name:
-                    continue
-                out = []
-                for rung_el in routine_el.iter("Rung"):
-                    text_el = rung_el.find("Text")
-                    text = (text_el.text or "").strip() if text_el is not None else ""
-                    # Takes a LIST of rung texts, not one string -- passing a
-                    # bare string iterates it character by character and
-                    # silently returns nothing.
-                    counts = count_instructions_in_text([text])
-                    out.append({
-                        "number": int(rung_el.get("Number") or len(out)),
-                        "text": text,
-                        # Priced from the SAME weight table the routine total
-                        # uses, so the rungs sum to their routine rather than
-                        # being a second, differently-derived number.
-                        "value": sum(weights.get(m, 0) * n for m, n in counts.items()),
-                        "instructions": sorted(counts),
-                    })
-                return jsonify({"path": path, "rungs": out})
-        return jsonify({"error": f"unknown routine path {path!r}"}), 404
+        rows = state.rungs_cache.get(path)
+        if rows is None:
+            return jsonify({"error": f"unknown routine path {path!r}"}), 404
+        return jsonify({"path": path, "rungs": rows})
 
     @app.get("/api/alarms")
     def alarms():
-        """Individual alarm conditions on one host tag.
+        """The alarm conditions on one host tag, from the table built at load.
 
-        Its own endpoint for the same reason /api/rungs is: a real program
-        carries hundreds to thousands of these, and shipping every one on
-        every load would dwarf the rest of the payload for a view most
-        sessions never open.
+        It used to rebuild the whole document's alarm lookup tables on every
+        call before answering for one host.
         """
         state: DocState | None = app.config["state"]
         if state is None:
@@ -385,10 +518,7 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
         if not path.startswith("alarms/"):
             return jsonify({"error": f"not an alarm path: {path!r}"}), 400
         host = path[len("alarms/"):]
-        tag_types, udt_members = alarm_lookup_tables(state.doc.root)
-        rows = alarm_conditions_for_host(
-            state.doc.root, state.model, host, tag_types, udt_members
-        )
+        rows = state.alarms_cache.get(host)
         if not rows:
             return jsonify({"error": f"no alarm conditions on {host!r}"}), 404
         return jsonify({"path": path, "conditions": rows})
@@ -428,9 +558,7 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
                     def_name, (), _PATH_SEGMENT_RE.findall(subpath),
                     state.data_types, state.model,
                 )
-                children = expand_children(
-                    resolved_type, resolved_dims, state.data_types, state.model
-                )
+                children = _expand_cached(resolved_type, resolved_dims, state)
             except NotDrillableError as exc:
                 return jsonify({"error": str(exc)}), 400
             except RecursiveUdtError as exc:
@@ -492,7 +620,7 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
             resolved_type, resolved_dims = resolve_type_at_path(
                 data_type, dimensions, segments, state.data_types, state.model
             )
-            children = expand_children(resolved_type, resolved_dims, state.data_types, state.model)
+            children = _expand_cached(resolved_type, resolved_dims, state)
         except NotDrillableError as exc:
             return jsonify({"error": str(exc)}), 400
         except RecursiveUdtError as exc:
@@ -545,7 +673,10 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
         target = request.args.get("type", "")
         if target not in state.data_types:
             return jsonify({"error": f"unknown type {target!r}"}), 404
-        usages = find_usages(target, state.data_types, state.tag_index)
+        usages = state.xref_cache.get(target)
+        if usages is None:
+            usages = find_usages(target, state.data_types, state.tag_index)
+            state.xref_cache[target] = usages
         return jsonify({
             "type": target,
             "count": len(usages),

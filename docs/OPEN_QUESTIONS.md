@@ -23,7 +23,7 @@ That is why thirty-four closed at once.
 
 | question | why the ceiling does not bound it |
 |---|---|
-| **OQ-LITERALOPERAND** | A term not proportional to any category the engine counts. Measured, not hypothesised. |
+| **OQ-LITERALOPERAND** | Answered by capture. Integer literals are free; what survives is an engine over-charge on narrow-integer literals. |
 | **OQ-REALUNDER** | It *is* the residual. The ceiling bounds every proposed explanation without closing the gap. |
 | **OQ-RUNGSHAPE** | A per-rung term the model does not have, perfectly confounded with every per-instruction weight. |
 | **OQ-ALARMCONDREAL** | A 9.4%-of-mass category that is 8.8% short on one real file. Not a scale error — the two files disagree with each other. |
@@ -92,18 +92,110 @@ COP 2,841, JSR 2,631.
   evidence that **a single flat rate is the wrong shape** and the cost is
   type-dependent.
 
-**NOTHING IS WIRED, and the reason is specific.** The 4 is measured for a REAL
-literal in a REAL-typed motion parameter — 930 of the 52,195 slots, worth 3,720
-bytes. **98% of the mass is integer literals and the measurement says nothing about
-them.** Charging 51,265 slots at a rate extrapolated 55× beyond its evidence is the
-move that has produced every bad constant in this project.
+**CAPTURE ERRORS: 4 row(s)** — the whole BOOL arm, `litop_bool_*`. Every rung of
+all four failed with *"Invalid number of arguments for instruction"*, 1,000 errors
+on 1,000 rungs, so the ladder never compiled and all four read an identical 20,028.
+The arm measured nothing and **none of its rows may be used**. Diagnosis below.
 
-**The hypothesis:** an immediate costs the width of its type, inline — REAL 4
-(measured), DINT 4, INT 2, SINT 1, LINT 8. The competing hypothesis is that it
-follows the **slot's** declared type rather than the literal's.
+---
 
-**29 files built**, seven arms, awaiting capture. See `SAMPLE_GENERATION.md` for what
-each arm discriminates and the order to read them in.
+## The batch answered it. The law is per-type, and it is mostly zero.
+
+**Arm G first, as the plan required.** The bench rung rebuilt at 1,000 rungs:
+
+    litop_mam_lit_n01000   419,456      six REAL literal slots
+    litop_mam_tag_n01000   395,456      the same rung, all tags
+                          --------
+                           +24,000  =  +24.000 per rung  =  +4.000 per slot
+
+**Six for six, identical to the bench.** The pipeline reproduces a hand measurement
+at 1,000× scale, so the rest of the batch can be believed.
+
+**Arm A settles the shape, and it is not what either hypothesis predicted.** One
+literal operand slot, literal file minus tag file, 1,000 rungs each:
+
+| operand type | per slot | the engine today |
+|---|---:|---|
+| DINT | **0** | 0 — correct |
+| LINT | **0** | 0 — correct |
+| REAL | **+4** | 0 — under by 4 |
+| INT | **−52** | over by 52 |
+| SINT | **−40** | over by 40 |
+
+**An integer literal is free.** Not cheap — free, at both DINT and LINT, to the
+byte. That kills the exposure this question was ranked on: 51,265 of the 52,195
+unpriced slots are integer literals, and they cost nothing. The projected max
+3.63% → 2.90% was an artefact of charging 4 for slots that are worth 0.
+
+**A narrow-integer literal is CHEAPER than a tag, and that is an engine defect, not
+a literal cost.** A SINT or INT *tag* operand drags in the widening block the model
+already charges; a literal needs no widening because it is already the right width
+inline. The engine charges the widening either way, so it over-predicts
+`litop_type_int_lit_n01000` by **+21.82%** and `litop_type_sint_lit_n01000` by
+**+18.67%** while both *tag* files land at exactly 0.00%. Those two rows are the
+largest single-file errors in the batch and they are ours, not Rockwell's.
+
+**Value and distinctness are free.** Arm D: `0`, `1` and `2` all identical. Arm C:
+all-distinct, all-same and two-repeated all identical. So there is no
+per-distinct-value term and no folding of 0/1 — the competing law that a previous
+question died on is dead here too, for a better reason.
+
+**The written FORM of a float costs, and it is unpriced.** Arm E: `floatform`
+against `small`, same slot count, **+76,000 over 1,000 rungs = +76 per rung**,
+engine delta **−50.57%**. That is an order of magnitude above the +4 for a REAL
+literal and is a different mechanism — it is about how the constant is written, not
+that it exists. One pair, so the rate is not the finding; the existence is.
+
+**A separate finding fell out of arm G.** Both MAM files under-predict — the
+all-tag baseline by **−40,000 over 1,000 rungs, −40 per rung**, before any literal
+is involved. That is the MAM instruction weight being short, not a literal term,
+and `unreconciled.py` flags the pair. It is the larger of the two numbers in that
+arm and it belongs to motion sizing, not here.
+
+### What this changes
+
+| | before the batch | after |
+|---|---|---|
+| mechanism | "a literal costs bytes" | only REAL (+4) and float-form (+76) cost; integer literals are free |
+| exposure | 52,195 slots, 208,780 bytes | 930 float slots, 3,720 bytes |
+| expected movement | max 3.63% → 2.90% | **approximately none** |
+
+**So this question drops out of first place.** It was ranked on an exposure that the
+measurement has removed. What survives is smaller and sharper: a +4 REAL-literal
+term, a +76 float-form term needing a second point, and the INT/SINT widening
+defect, which is the only one of the three that moves a real number.
+
+### The BOOL arm is a generator bug, and the documented rule it followed is wrong
+
+All four `litop_bool_*` files emit `LitSensor(Sensor,RawIn,NormOpen,TimeHigh);`
+against an AOI whose three parameters are `Required="false" Visible="true"`.
+`AOI_KNOWLEDGE_MAP.md` states that pair means "a value is mandatory at the call
+site and may be a literal". Studio rejected every rung of all four, **including the
+all-tag control**, so this is about argument COUNT and not about literals at all.
+
+Across every committed generated file with a recorded conversion status, call-site
+arity against the definition:
+
+| built ok | args = Required | args = Required + Visible | files |
+|---|---|---|---:|
+| yes | yes | yes | 2,147 |
+| yes | yes | no | 1 |
+| yes | no | yes | 6 |
+
+Both endpoints build: an optional parameter may be **omitted** or **wired**. So the
+legal arity is a range, `Required ≤ args ≤ Required + Visible`, and 3 arguments
+against 0 required and 3 visible sits inside it. **The rule as documented does not
+explain the rejection**, and the one structural difference between these files and
+every file that builds is that `LitSensor` has **zero** Required parameters.
+
+Not asserting a fix on that. What is needed is the Studio error against a
+four-file probe — 0, 1, 2 and 3 Required parameters, the rest Visible, call site
+fully wired — which reads the constraint directly instead of inferring it. Until
+then `AOI_KNOWLEDGE_MAP.md` carries a correction marking the pair as
+**not sufficient on its own**, because that claim is load-bearing for every AOI
+test file this project generates.
+
+---
 
 **Why this measurement is trustworthy where the strip ladder was not:** it was made
 by editing a project in Logix Designer and letting Studio compile it, not by
