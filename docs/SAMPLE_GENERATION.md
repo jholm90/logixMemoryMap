@@ -344,6 +344,15 @@ Building it required a lint fix: the operand resolver returned the base tag's ty
 `U.Bit` and refused it as a non-BOOL XIC operand, which is why no earlier file carried
 a member-path operand. It now follows member paths through the file's UDTs.
 
+### Added to the current batch: JSR parameter edges, 8 files
+
+`gen_jsr_param_edges.py`, 100 calls per file, identical tag inventory within each arm.
+
+| family | varies | question |
+|---|---|---|
+| `jsredge_ret_{dint,udt}_n{1,3}_r00100` | DINT vs UDT RETURN values | does a structured return cost what a structured input costs? |
+| `jsredge_in_{bare,member}_n{1,3}_r00100` | bare UDT tag vs a member `W.S0` whose type is that UDT | does a UDT member argument get the structured rate? |
+
 ## Previous batch: every open capture, regenerated, plus the open questions
 
 **Captured.** 49 of 52 at zero errors; the three failures were rebuilt as `_r3` and

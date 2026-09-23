@@ -99,7 +99,9 @@ law. `module_io` is 2.9% of mass. See `FUTURE_TESTS.md`.
 
 ### Capture backlog
 
-Item 1 is the whole backlog: 26 files, no other file is waiting.
+34 files: the 26 `opshape_*` of item 1 and the 8 `jsredge_*` JSR parameter edges
+(structured returns, UDT-member arguments), below the noise floor but built to close
+the last two JSR cases on measurement rather than mechanism.
 
 **A row captured but never differenced is work already paid for and thrown away.**
 Run `scripts/unreconciled.py` after every batch.

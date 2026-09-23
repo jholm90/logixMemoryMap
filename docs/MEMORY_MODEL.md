@@ -930,7 +930,8 @@ processors only (3,582 JSR calls, 0.9% of real instructions):
 | JSR inside an AOI | 0 | untested, no real exposure |
 
 Everything unmeasured totals a few kilobytes across all seventeen programs, under
-0.01%. JSR is closed on exposure; it cannot carry the ~3% real residual.
+0.01%. JSR is closed on exposure; it cannot carry the ~3% real residual. The two
+unmeasured rows are being measured anyway by `jsredge_*` (8 files, awaiting capture).
 
 ### A 0-parameter JSR is EXACT — the first named exception for compiled logic
 
