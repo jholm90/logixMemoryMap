@@ -17,6 +17,7 @@ that mis-attribution. test_supersedes_* below keeps the evidence.
 
 from __future__ import annotations
 
+import dataclasses
 import xml.etree.ElementTree as ET
 
 import pytest
@@ -31,6 +32,12 @@ from l5x_memory_analyzer.sizing.udt import (
 )
 
 MODEL = load_memory_model()
+# The same model with the definition's 8-byte total alignment switched off.
+# Every itemisation test below isolates ONE term by differencing two
+# definitions, and alignment would quantise those differences to 8. The
+# alignment itself is tested on its own at the bottom of this file.
+UNALIGNED = dataclasses.replace(
+    MODEL, aoi_definition=dataclasses.replace(MODEL.aoi_definition, total_alignment_bytes=0))
 
 
 @pytest.fixture
@@ -58,6 +65,12 @@ def _aoi(members_xml: str, name: str = "TestAoi", locals_xml: str = "") -> dict:
 
 
 def _cost(members_xml: str, name: str = "TestAoi", locals_xml: str = "") -> int:
+    """The itemised sum, before the 8-byte total alignment."""
+    types = _aoi(members_xml, name, locals_xml)
+    return compute_aoi_definition_cost(name, types, UNALIGNED)[0]
+
+
+def _aligned_cost(members_xml: str, name: str = "TestAoi", locals_xml: str = "") -> int:
     types = _aoi(members_xml, name, locals_xml)
     return compute_aoi_definition_cost(name, types, MODEL)[0]
 
@@ -185,3 +198,43 @@ def test_expansion_sums_to_the_total():
     total, _ = compute_aoi_definition_cost("TestAoi", types, MODEL)
     children = expand_definition_children("TestAoi", types, MODEL)
     assert sum(c.bytes for c in children) == total
+
+
+# ---------------------------------------------------------------------------
+# The definition occupies whole 8-byte units -- OQ-AOIDEFSHAPE. Measured on 125
+# clean def-only captures: every file the unaligned sum put at 4 mod 8 read
+# exactly 4 bytes high, every file at 0 mod 8 read as predicted. Aligning
+# (sum + 1) up to 8 and removing the 1 again moved 74 of them onto the lattice
+# the other 51 were already on: 68 exact, 117 of 125 inside +/-8.
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("members", [
+    "",
+    _param("Px", "DINT"),
+    _param("Px", "DINT") + _param("Py", "DINT"),
+    _param("Px", "LINT") + _param("Py", "SINT") + _param("Pz", "BOOL"),
+    "".join(_param(f"B{i:02d}", "BOOL") for i in range(31)),
+])
+def test_the_definition_total_is_8_byte_aligned(members):
+    aligned = _aligned_cost(members)
+    raw = _cost(members)
+    off = MODEL.aoi_definition.total_alignment_offset
+    assert (aligned + off) % 8 == 0
+    assert raw <= aligned < raw + 8
+
+
+def test_alignment_adds_exactly_what_the_captures_showed():
+    """A sum sitting 4 bytes short of the lattice gains exactly 4."""
+    A = MODEL.aoi_definition
+    lattice = 8 * 150 - A.total_alignment_offset
+    assert A.aligned_total(lattice) == lattice
+    assert A.aligned_total(lattice - 4) == lattice
+    assert A.aligned_total(lattice - 7) == lattice
+    assert A.aligned_total(lattice + 1) == lattice + 8
+
+
+def test_the_definition_cost_is_known():
+    """Closed as KNOWN: measured alone on 125 def-only captures, every residual
+    inside the +/-8 single-measurement noise floor except named shapes."""
+    assert MODEL.aoi_definition.confidence == "KNOWN"
+    assert MODEL.aoi_definition.name_length_bucket_confidence == "KNOWN"

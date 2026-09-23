@@ -176,6 +176,9 @@ def main() -> int:
     ap.add_argument("--include-dead", action="store_true",
                     help="also report 1756-L7x / 1769 rows, which are dead "
                          "architecture and cannot move the real-set number")
+    ap.add_argument("--real-only", action="store_true",
+                    help="the real production exports and nothing else -- no "
+                         "generated sentinels. The accuracy claim, on its own")
     ap.add_argument("--lenient", action="store_true",
                     help="also include the 271 rows whose error_count was never "
                          "recorded (captured before the tooling logged it)")
@@ -189,6 +192,16 @@ def main() -> int:
         dead = len(rows) - len(keep)
         rows = keep
     picked = select(rows, args.family, args.full, args.lenient)
+    if args.real_only:
+        picked = [r for r in picked if r["category"] == REAL_CATEGORY]
+        real_rows = [r for r in rows if r["category"] == REAL_CATEGORY]
+        missing = [r["sample_id"] for r in real_rows if r not in picked]
+        results = evaluate(picked)
+        print(f"REAL ONLY: {len(picked)} of {len(real_rows)} recorded real programs present"
+              + (f" -- absent from samples/local/: {', '.join(sorted(missing))}" if missing else ""))
+        _report("real programs (the only accuracy number)", results, max(args.worst, len(results)),
+                is_real=True)
+        return 0
     results = evaluate(picked)
     by_real = [r for r in results if r[1] == REAL_CATEGORY]
     rest = [r for r in results if r[1] != REAL_CATEGORY]

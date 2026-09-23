@@ -30,6 +30,37 @@ def _raw() -> dict:
 # (dotted path to the value, expected value, dotted path to its tier, rows, spans)
 KNOWN_REGISTER = [
     (
+        "logic_instructions.fixed_base_per_routine", 4816,
+        "logic_instructions.fixed_base_per_routine_confidence", 12,
+        "empty-project baseline plus subrtn_shell/sbronly/sbrret at 1/5/25/100 "
+        "routines, all at 0.000%",
+    ),
+    (
+        "task_program_overhead.task_extra", 700,
+        "task_program_overhead.confidence", 7,
+        "taskoverhead_n02tasks/_n03tasks exact and identnamelen_task_c04..c40 "
+        "(six tasks, names 4..40 chars) exact; _n04tasks' +24 is task-name "
+        "rounding, OQ-TASKNAMEROUND",
+    ),
+    (
+        "aoi_definition.total_alignment_bytes", 8,
+        "aoi_definition.confidence", 125,
+        "125 def-only AOI captures: 68 exact, 117 inside +/-8 once aligned; "
+        "every file the unaligned sum put at 4 mod 8 read 4 high; OQ-AOIDEFSHAPE",
+    ),
+    (
+        "aoi_definition.base", 1163,
+        "aoi_definition.confidence", 125,
+        "the same 125 def-only captures; real-shape ladder confirms "
+        "1,231 per definition against 1,233 predicted over 5..40 definitions",
+    ),
+    (
+        "aoi_definition.name_length_bucket_bytes", 8,
+        "aoi_definition.name_length_bucket_confidence", 7,
+        "aoiname_len08/09/13/16/20/25/30_def_only, 7/7 exact, only the type "
+        "name length varying",
+    ),
+    (
         "jsr_param_cost.b_multiparam_extra", 4,
         "jsr_param_cost.b_multiparam_confidence", 13,
         "call counts 10/100/1000 x param counts 1..15; OQ-JSRPARAMCOST",

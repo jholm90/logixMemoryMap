@@ -1,6 +1,6 @@
 # Open Questions
 
-**Eight.** Down from forty, and the thirty-four that went were not abandoned — they
+**Seven.** Down from forty, and the thirty-five that went were not abandoned — they
 were **bounded**. Closed questions and their reasoning trails are in
 `RESOLVED_QUESTIONS.md`.
 
@@ -17,13 +17,13 @@ points**, with half the files getting worse.
 
 So **every question whose mechanism was "a cost constant is slightly wrong" has a
 measured maximum payoff of approximately zero**, however cleanly it would answer.
-That is why thirty-four closed at once.
+That is why thirty-four closed at once; a thirty-fifth, literal operands, closed on its real-program exposure.
 
 ## What is left, and why each survives the ceiling
 
 | question | why the ceiling does not bound it |
 |---|---|
-| **OQ-LITERALOPERAND** | Answered by capture. Integer literals are free; what survives is an engine over-charge on narrow-integer literals. |
+| **OQ-JSRCALLERBASE** | Per-file versus per-caller-routine is untestable on the existing corpus and differs by up to ~300 KB on a real program. Six files built, awaiting capture. |
 | **OQ-REALUNDER** | It *is* the residual. The ceiling bounds every proposed explanation without closing the gap. |
 | **OQ-RUNGSHAPE** | A per-rung term the model does not have, perfectly confounded with every per-instruction weight. |
 | **OQ-ALARMCONDREAL** | A 9.4%-of-mass category that is 8.8% short on one real file. Not a scale error — the two files disagree with each other. |
@@ -33,184 +33,7 @@ That is why thirty-four closed at once.
 
 ---
 
-## 1. OQ-LITERALOPERAND — an immediate literal in an operand costs bytes the engine charges at zero
-
-**The measurement.** One rung in one project, edited in Logix Designer, compiled by
-Studio, Capacity read twice. Six MAM operand slots changed from a tag reference to
-the immediate `99.99`:
-
-    74,224  →  74,248   = +24 over 6 slots = +4.000 per slot, six for six
-
-**The four source tags stay declared AND referenced in both versions**, by four EQU
-instructions on the same rung. So this is not a tag being deleted — it is the same
-tag population with six slots re-pointed at inline constants.
-
-**The engine charges nothing.** Run on both rung texts it returns 320 bytes either
-way — a zero delta against a real 24.
-
-**It is not a new constant.** The CPT model already carries 4 per float literal,
-fitted across 12 files. The same 4 now appears in MAM, an unrelated instruction on
-an unrelated code path. **One constant appearing independently in two unrelated
-places is what a general law looks like**, not a per-instruction quirk. Today
-literals are priced only inside CPT expressions, CMP operands and ST statements.
-
-**Exposure across the seventeen**, counting numeric literals in operand slots of
-instructions that are not CPT or CMP:
-
-| | count | at 4 bytes |
-|---|---:|---:|
-| integer literals | 51,265 | 205,060 |
-| float literals | 930 | 3,720 |
-| **total** | **52,195** | **208,780** |
-
-**12.1% of all 432,850 operand slots**, and about a quarter of the total residual.
-Every one of the seventeen carries between 8.8% and 16.2% literal slots, so this is
-not one file's quirk. Top carriers: MOV 9,835, EQU 9,089, ADD 5,259, NEQ 3,132,
-COP 2,841, JSR 2,631.
-
-**What charging it does**, float held at the measured 4 and integer swept:
-
-| int cost | mean | max | <1% | <2% |
-|---:|---:|---:|---:|---:|
-| baseline | 1.5951 | 3.6309 | 4/17 | 11/17 |
-| 0 | 1.5973 | 3.6198 | 4/17 | 11/17 |
-| 2 | **1.5818** | 3.3811 | 4/17 | 12/17 |
-| 4 | 1.5885 | 3.1424 | 5/17 | 12/17 |
-| 6.5 | 1.5951 | **2.9022** | 5/17 | 12/17 |
-
-**Read the max, not the mean.**
-
-- **The max moves, and nothing else has.** 3.6309% → 2.9022%. For scale, the
-  cheating ceiling fit only reached 2.5919%. A single mechanistic term gets most of
-  that way without fitting anything per-category.
-- **The mean barely moves** because the term can only ADD bytes and seven files
-  already over-predict. All six worst files improve; all seven over-predictors get
-  worse. That is a reason to be careful about the rate, **not a reason to dismiss the
-  mechanism** — the mechanism is measured, and the over-prediction in those seven
-  files is a separate defect.
-- **Mean-optimal is 2, max-optimal is 6.5.** They disagree, which is positive
-  evidence that **a single flat rate is the wrong shape** and the cost is
-  type-dependent.
-
-**CAPTURE ERRORS: 0 row(s).** The whole BOOL arm, `litop_bool_*`, previously
-carried 4. Every rung of all four had failed with *"Invalid number of arguments for
-instruction"*, 1,000 errors on 1,000 rungs, so the ladder never compiled and all
-four read an identical 20,028. The arm measured nothing, the cause is found and
-fixed, and **the four capture rows are cleared** — the files they measured no
-longer exist in that shape. Diagnosis below. The regenerated files await capture.
-
----
-
-## The batch answered it. The law is per-type, and it is mostly zero.
-
-**Arm G first, as the plan required.** The bench rung rebuilt at 1,000 rungs:
-
-    litop_mam_lit_n01000   419,456      six REAL literal slots
-    litop_mam_tag_n01000   395,456      the same rung, all tags
-                          --------
-                           +24,000  =  +24.000 per rung  =  +4.000 per slot
-
-**Six for six, identical to the bench.** The pipeline reproduces a hand measurement
-at 1,000× scale, so the rest of the batch can be believed.
-
-**Arm A settles the shape, and it is not what either hypothesis predicted.** One
-literal operand slot, literal file minus tag file, 1,000 rungs each:
-
-| operand type | per slot | the engine today |
-|---|---:|---|
-| DINT | **0** | 0 — correct |
-| LINT | **0** | 0 — correct |
-| REAL | **+4** | 0 — under by 4 |
-| INT | **−52** | over by 52 |
-| SINT | **−40** | over by 40 |
-
-**An integer literal is free.** Not cheap — free, at both DINT and LINT, to the
-byte. That kills the exposure this question was ranked on: 51,265 of the 52,195
-unpriced slots are integer literals, and they cost nothing. The projected max
-3.63% → 2.90% was an artefact of charging 4 for slots that are worth 0.
-
-**A narrow-integer literal is CHEAPER than a tag, and that is an engine defect, not
-a literal cost.** A SINT or INT *tag* operand drags in the widening block the model
-already charges; a literal needs no widening because it is already the right width
-inline. The engine charges the widening either way, so it over-predicts
-`litop_type_int_lit_n01000` by **+21.82%** and `litop_type_sint_lit_n01000` by
-**+18.67%** while both *tag* files land at exactly 0.00%. Those two rows are the
-largest single-file errors in the batch and they are ours, not Rockwell's.
-
-**Value and distinctness are free.** Arm D: `0`, `1` and `2` all identical. Arm C:
-all-distinct, all-same and two-repeated all identical. So there is no
-per-distinct-value term and no folding of 0/1 — the competing law that a previous
-question died on is dead here too, for a better reason.
-
-**The written FORM of a float costs, and it is unpriced.** Arm E: `floatform`
-against `small`, same slot count, **+76,000 over 1,000 rungs = +76 per rung**,
-engine delta **−50.57%**. That is an order of magnitude above the +4 for a REAL
-literal and is a different mechanism — it is about how the constant is written, not
-that it exists. One pair, so the rate is not the finding; the existence is.
-
-**A separate finding fell out of arm G.** Both MAM files under-predict — the
-all-tag baseline by **−40,000 over 1,000 rungs, −40 per rung**, before any literal
-is involved. That is the MAM instruction weight being short, not a literal term,
-and `unreconciled.py` flags the pair. It is the larger of the two numbers in that
-arm and it belongs to motion sizing, not here.
-
-### What this changes
-
-| | before the batch | after |
-|---|---|---|
-| mechanism | "a literal costs bytes" | only REAL (+4) and float-form (+76) cost; integer literals are free |
-| exposure | 52,195 slots, 208,780 bytes | 930 float slots, 3,720 bytes |
-| expected movement | max 3.63% → 2.90% | **approximately none** |
-
-**So this question drops out of first place.** It was ranked on an exposure that the
-measurement has removed. What survives is smaller and sharper: a +4 REAL-literal
-term, a +76 float-form term needing a second point, and the INT/SINT widening
-defect, which is the only one of the three that moves a real number.
-
-### The BOOL arm was a generator bug. Resolved: a call site passes exactly the Required parameters
-
-All four `litop_bool_*` files emitted `LitSensor(Sensor,RawIn,NormOpen,TimeHigh);`
-against an AOI whose three parameters were `Required="false" Visible="true"`.
-Studio rejected every rung of all four, **including the all-tag control**, so it
-was about argument COUNT, not literals.
-
-The rule is `args == Required` exactly, and `Visible="true"` alone creates no call
-slot. Across the real exports there are **917 AOI call sites and the argument count
-equals the Required count at every one**, while those same exports declare 120
-`Required="false" Visible="true"` parameters — so the unanimity is not for want of
-optional parameters to pass. One real AOI has three Required and four Visible-only
-parameters and is called with three arguments everywhere. Required is not even a
-prefix of the parameter list (13 of 48 real definitions interleave), so the
-unpassed ones are not merely trailing.
-
-**The "legal arity is a range" reading came from counting conversions, not builds.**
-Two generated files wired optional parameters and were counted as evidence because
-they converted and returned a capacity number. Conversion performs no ladder
-verification, and `litop_bool_*` proves a capacity number is returned even when
-every rung errors. Their apparent cost over the definition-only baseline was tag
-storage for the argument tags, not compiled rungs. Both files are deleted, and
-`gen_aoi_required_visible.py` no longer emits that shape.
-
-Wired:
-
-- `lint.py`'s `aoi_call_arg_count_mismatch` now requires exact equality with the
-  Required count. It previously allowed the range, which is why it passed the
-  1,000-rung family that failed to build.
-- `gen_literaloperand.py` arm F declares the three parameters `Required="true"`;
-  the four files are regenerated and lint clean.
-- `AOI_KNOWLEDGE_MAP.md` carries the rule and its evidence.
-- The four `litop_bool_*` capture rows are **cleared**, not reused. They measured a
-  file that no longer exists in that shape.
-
-No probe file is needed. The four-file Required-count probe proposed here is
-withdrawn — the real corpus already answers it at 917 call sites.
-
-**Still open in this arm:** the BOOL literal cost itself is unmeasured. The
-regenerated files are awaiting capture.
-
----
-
-### The JSR band is an artefact. The +280 is found; applying it is blocked by a collinearity
+## 1. OQ-JSRCALLERBASE — is the 280-byte JSR premium per file or per caller routine
 
 **The marginal cost of a no-parameter JSR is exact and the engine already has it
 right.** One distinct 0-parameter target plus its JSR call costs **368 bytes**,
@@ -336,13 +159,6 @@ that the confidence display points at the wrong instruction, so the one number a
 user judges a dispatch routine by is wrong for every routine that dispatches — and
 the same constant is charged per caller routine across every real program, where
 it is not 280 bytes at all.
-
----
-
-
-**Why this measurement is trustworthy where the strip ladder was not:** it was made
-by editing a project in Logix Designer and letting Studio compile it, not by
-rewriting exported XML. That is the path the read-only rule explicitly leaves open.
 
 ---
 

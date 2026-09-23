@@ -124,7 +124,11 @@ and zero-capacity rows are detected and retried automatically on the next run.
 
 ```
 python scripts/confidence_census.py samples/local/<file>.L5X
+python scripts/confidence_census.py --summary samples/local/*.L5X   # one line per file
 ```
+
+`--summary` prints the file-level figure the Errors tab shows, and its band split,
+without expanding every element — seconds per file rather than minutes.
 
 Expands every element the tree can reach and buckets it by the confidence the UI
 shows, driving the real load path and mirroring the client's own `nodeConfidence`
@@ -139,6 +143,11 @@ impression, and to find which groups carry the real uncertainty.
 
 ### `quick_eval.py` — the accuracy check
 
+`--real-only` evaluates the real production exports and nothing else — no generated
+sentinels — and names any recorded real program that is not present. Real exports
+are found by file name anywhere under `samples/local/`; a renamed export is mapped
+in the gitignored `samples/local/aliases.csv` (`recorded_name.L5X,actual_name.L5X`).
+
 **The default instrument.** Evaluates the family under test, all seventeen real
 programs, and one sentinel per category to catch a change that leaked further
 than intended. Prints `STOPPING RULE ... MET / NOT MET` every run.
@@ -146,6 +155,7 @@ than intended. Prints `STOPPING RULE ... MET / NOT MET` every run.
 ```bash
 python scripts/quick_eval.py --family '<regex>'
 python scripts/quick_eval.py --full          # every manifest row
+python scripts/quick_eval.py --real-only     # the real programs and nothing generated
 ```
 
 Use `--full` for exactly two things: reconciling a newly landed capture batch,
@@ -253,10 +263,10 @@ conventions drift; rung text does not.
 | `l5x_validator/` | schema validation helpers |
 | `LaunchUI.pyw` | double-click launcher for the UI, no console window |
 
-> **`strip_ladder.py` may not be used.** Deriving variants of a real export by
-> rewriting its XML is forbidden — see the read-only rule in `CLAUDE.md`. The
-> script remains only so its history is not lost. Do not revive it, reimplement it
-> with a different XML library, or work around it with text-level surgery.
+> **`strip_ladder.py` is deleted.** Deriving variants of a real export by
+> rewriting its XML is forbidden — see the read-only rule in `CLAUDE.md`. Its
+> history is in git. Do not revive it, reimplement it with a different XML library,
+> or work around it with text-level surgery.
 
 ---
 

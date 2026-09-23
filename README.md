@@ -71,6 +71,7 @@ After `pip install -e .` the same subcommands are available as
 
 | file | contents |
 |---|---|
+| [FINAL_REPORT.md](docs/FINAL_REPORT.md) | **start here** — results, wins, losses, what is open, how to get more accuracy |
 | [MEMORY_MODEL.md](docs/MEMORY_MODEL.md) | every sizing constant, formula and packing rule |
 | [OPEN_QUESTIONS.md](docs/OPEN_QUESTIONS.md) | unresolved sizing and behaviour questions |
 | [RESOLVED_QUESTIONS.md](docs/RESOLVED_QUESTIONS.md) | closed questions and why |

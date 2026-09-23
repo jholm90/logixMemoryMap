@@ -373,6 +373,15 @@ def _expand_aoi_definition(
         Child("Type name length", ".namelen", "OVERHEAD", (),
               aoi_def.name_length_bytes(aoi.name), name_conf, False)
     )
+    # The definition occupies whole 8-byte units (OQ-AOIDEFSHAPE). Shown as its
+    # own row so the rows still sum to the definition's total rather than
+    # leaving up to 7 bytes unaccounted for.
+    raw = sum(c.bytes for c in children)
+    padding = aoi_def.aligned_total(raw) - raw
+    if padding:
+        children.append(
+            Child("Alignment padding", ".alignpad", "OVERHEAD", (), padding, conf, False)
+        )
     return children
 
 

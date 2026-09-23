@@ -247,14 +247,24 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
     # rules are defensible; having both is not.
     accuracy = getattr(model, "instruction_accuracy", None) or {}
     routine_confidence = {}
+    # The same rungs split by band, as fractions of the routine's rung value.
+    # routine_confidence is the percent this mix averages to; the mix is what
+    # lets the file-level figure say how many bytes sit in each band rather
+    # than only what they average to. Derived from one pass so the two cannot
+    # disagree.
+    routine_band_mix = {}
     for path, rows in rungs_cache.items():
         total = sum(r["value"] for r in rows)
         if not total:
             continue
-        weighted = sum(
-            r["value"] * rung_band(r["band_keys"], accuracy).pct for r in rows
-        )
+        mix: dict[str, float] = {}
+        weighted = 0.0
+        for r in rows:
+            band = rung_band(r["band_keys"], accuracy)
+            mix[band.key] = mix.get(band.key, 0.0) + r["value"]
+            weighted += r["value"] * band.pct
         routine_confidence[path] = round(weighted / total, 2)
+        routine_band_mix[path] = {k: v / total for k, v in mix.items()}
 
     alarms_cache: dict = {}
     try:
@@ -270,6 +280,7 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         alarms_cache = {}
 
     report_json["routine_confidence"] = routine_confidence
+    report_json["routine_band_mix"] = routine_band_mix
 
     xref_cache: dict = {}
     for type_name in data_types:
@@ -337,6 +348,12 @@ def _attach_subtree_confidence(node, data_types, model, cache) -> None:
         _attach_subtree_confidence(child, data_types, model, cache)
     if not node.get("has_children") or not node.get("data_type"):
         return
+    # A type DEFINITION node carries its type's name as data_type too, but the
+    # tier mix below describes one INSTANCE of that type. Attached to the
+    # definition, it weighed a 4 KB definition as a 30 KB instance and skewed
+    # every figure above it, the file-level confidence included.
+    if (node.get("path") or "").startswith(("udt_definitions/", "aoi_definitions/")):
+        return
     key = (node["data_type"], tuple(node.get("dimensions") or ()))
     if key not in cache:
         try:
@@ -356,7 +373,19 @@ def _build_all_rungs(root, model) -> dict:
     out: dict[str, list[dict]] = {}
     for owner in list(root.iter("Program")) + list(root.iter("AddOnInstructionDefinition")):
         owner_name = owner.get("Name") or ""
+        is_aoi = owner.tag == "AddOnInstructionDefinition"
+        # An AOI's RLL routines are priced as ONE entry at
+        # aoi_definitions/<AOI>/<names joined by +> (report.py), so their rungs
+        # are collected under that same key -- otherwise the routine has no
+        # rung-based confidence and falls back to its provenance tier.
+        aoi_key = None
+        if is_aoi:
+            names = [r.get("Name") for r in owner.iter("Routine")
+                     if (r.get("Type") or "RLL") == "RLL" and r.get("Name")] or ["Logic"]
+            aoi_key = f"aoi_definitions/{owner_name}/{'+'.join(names)}"
         for routine_el in owner.iter("Routine"):
+            if is_aoi and (routine_el.get("Type") or "RLL") != "RLL":
+                continue
             rows = []
             for rung_el in routine_el.iter("Rung"):
                 text_el = rung_el.find("Text")
@@ -382,7 +411,10 @@ def _build_all_rungs(root, model) -> dict:
                         sorted(counts), jsr_calls_in_text([text])
                     ),
                 })
-            out[f"program:{owner_name}/{routine_el.get('Name') or ''}"] = rows
+            if aoi_key:
+                out.setdefault(aoi_key, []).extend(rows)
+            else:
+                out[f"program:{owner_name}/{routine_el.get('Name') or ''}"] = rows
     return out
 
 

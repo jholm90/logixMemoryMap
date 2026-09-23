@@ -159,6 +159,26 @@ class AoiDefinitionModel:
     enable_bits: int = 2
     name_pool_alignment_bytes: int = 8
     name_pool_per_name_bytes: int = 1
+    # The definition as a whole occupies a whole number of
+    # total_alignment_bytes, measured around the project-wide 1-byte offset
+    # (total_alignment_offset) the other terms carry. 0 disables alignment.
+    total_alignment_bytes: int = 0
+    total_alignment_offset: int = 0
+
+    def aligned_total(self, raw_total: int) -> int:
+        """Round a summed definition cost up to its storage alignment.
+
+        Measured on 125 clean def-only captures: every file the unaligned sum
+        put at 4 mod 8 read exactly 4 bytes high, and every file it put at 0
+        mod 8 read exactly as predicted. Aligning (raw + 1) to 8 and removing
+        the 1 again moves 74 of them onto the lattice the other 51 were
+        already on. See memory_model.yaml aoi_definition.
+        """
+        align = self.total_alignment_bytes
+        if align <= 1:
+            return raw_total
+        off = self.total_alignment_offset
+        return align * -(-(raw_total + off) // align) - off
 
     def member_name_pool_bytes(self, member_names) -> int:
         """The declared members' names, pooled and rounded up.
@@ -658,6 +678,10 @@ class LogicInstructionModel:
     composite_surcharge_cap: int
     safety_task_program_shell: int
     safety_task_program_shell_confidence: str
+    # The per-routine shell base on its own, separate from `confidence`, which
+    # describes the instruction weights. Measured exact: the empty-project
+    # baseline and the subrtn_shell / taskoverhead controls.
+    fixed_base_per_routine_confidence: str = "FITTED"
     aoi_internal_per_rung: int = 0
     aoi_internal_per_rung_confidence: str = "FITTED"
     # Extra cost of an AOI-internal instruction that writes a non-BOOL
@@ -1476,6 +1500,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             enable_bits=raw["aoi_definition"]["enable_bits"],
             name_pool_alignment_bytes=raw["aoi_definition"]["name_pool_alignment_bytes"],
             name_pool_per_name_bytes=raw["aoi_definition"]["name_pool_per_name_bytes"],
+            total_alignment_bytes=raw["aoi_definition"].get("total_alignment_bytes", 0),
+            total_alignment_offset=raw["aoi_definition"].get("total_alignment_offset", 0),
             confidence=raw["aoi_definition"]["confidence"],
             name_length_bucket_bytes=raw["aoi_definition"]["name_length_bucket_bytes"],
             name_length_floor_bytes=raw["aoi_definition"]["name_length_floor_bytes"],
@@ -1597,5 +1623,7 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             composite_surcharge_cap=raw["logic_instructions"]["composite_surcharge_cap"],
             safety_task_program_shell=raw["logic_instructions"]["safety_task_program_shell"],
             safety_task_program_shell_confidence=raw["logic_instructions"]["safety_task_program_shell_confidence"],
+            fixed_base_per_routine_confidence=raw["logic_instructions"].get(
+                "fixed_base_per_routine_confidence", "FITTED"),
         ),
     )

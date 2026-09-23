@@ -5,6 +5,7 @@ OQ-AOIARRAYLOCALTAG, wired off the 27-file aoi_arraylocal_* sweep.
 
 from __future__ import annotations
 
+import dataclasses
 import xml.etree.ElementTree as ET
 
 from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
@@ -36,8 +37,14 @@ def _aoi(local_tag_xml: str) -> str:
 
 
 def _cost(local_tag_xml: str) -> int:
+    """The itemised definition sum, before its 8-byte total alignment -- this
+    file isolates the array member's own data bytes by differencing, and
+    alignment would quantise that difference. The alignment is tested in
+    test_aoi_definition_itemization.py."""
     root = ET.fromstring(_aoi(local_tag_xml))
     model = load_memory_model()
+    model = dataclasses.replace(
+        model, aoi_definition=dataclasses.replace(model.aoi_definition, total_alignment_bytes=0))
     types = dict(parse_data_types(root))
     types.update(parse_aoi_definitions(root))
     bytes_, _conf = compute_aoi_definition_cost("ArrAoi", types, model)
@@ -53,8 +60,8 @@ def test_dint_array_localtag_charges_element_size_times_dimension() -> None:
     # definition formula a declared member costs the descriptor plus its OWN
     # data bytes, so the array's 200 REPLACES the scalar's 4 rather than
     # stacking on top of it. The aoi_arraylocal_dim_* sweep confirms the
-    # replacement reading -- all six def_only points land +4 under the current
-    # engine at dimensions 10 through 1000, flat in dimension.
+    # replacement reading: its residual is flat in dimension from 10 through
+    # 1000, so the per-element rate is right.
     assert arr - scalar == 196
 
 

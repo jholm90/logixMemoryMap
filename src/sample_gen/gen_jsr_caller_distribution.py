@@ -132,7 +132,7 @@ def group_caller_distribution() -> None:
         bytes_ = write_sample(l5x, out_path)
         append_manifest_row(
             out_name,
-            f"OQ-JSRPARAMCOST caller-count isolation: {TOTAL_CALLS} JSR calls to {TOTAL_CALLS} "
+            f"OQ-JSRCALLERBASE caller-count isolation: {TOTAL_CALLS} JSR calls to {TOTAL_CALLS} "
             f"distinct 0-param leaf targets, distributed across {k} CALLER routine(s) at "
             f"{per_caller} call(s) each (MainRoutine is caller 1). Total calls, total targets, "
             f"rung text, instruction inventory and tag inventory are identical across the whole "

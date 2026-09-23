@@ -72,14 +72,67 @@ def _dedupe(rows: list[dict]) -> dict[str, dict]:
     return out
 
 
+LOCAL_DIR = REPO_ROOT / "samples" / "local"
+# Gitignored, like everything under samples/local/. Maps a recorded export's
+# file name to the name it arrived under this time, one pair per line:
+#     recorded_name.L5X,actual_name.L5X
+# For a real export that was renamed between capture and delivery.
+LOCAL_ALIASES_PATH = LOCAL_DIR / "aliases.csv"
+
+
+def _local_index() -> dict[str, Path]:
+    """Every file under samples/local/, by lower-cased file name."""
+    if not LOCAL_DIR.exists():
+        return {}
+    return {f.name.lower(): f for f in LOCAL_DIR.rglob("*.L5X")} | {
+        f.name.lower(): f for f in LOCAL_DIR.rglob("*.l5x")}
+
+
+def _local_aliases() -> dict[str, str]:
+    if not LOCAL_ALIASES_PATH.exists():
+        return {}
+    out = {}
+    with open(LOCAL_ALIASES_PATH, newline="", encoding="utf-8-sig") as fh:
+        for rec in csv.reader(fh):
+            if len(rec) >= 2 and rec[0].strip() and not rec[0].startswith("#"):
+                out[rec[0].strip().lower()] = rec[1].strip()
+    return out
+
+
+def resolve_local_path(recorded: str, _index=None, _aliases=None) -> str:
+    """Where a real export actually is, whatever folder it was unpacked into.
+
+    Real exports never live in the repository -- they arrive over chat and are
+    unpacked into samples/local/ however the archive happened to be laid out.
+    The recorded paths use three different layouts, so an exact-path lookup
+    found one real program out of seventeen and every accuracy figure computed
+    that way silently described a single file. A path outside samples/local/
+    is returned unchanged: generated samples are committed at a fixed path and
+    must not be resolved by name.
+    """
+    if not recorded or Path(recorded).exists():
+        return recorded
+    norm = recorded.replace("\\", "/")
+    if "samples/local/" not in norm:
+        return recorded
+    index = _index if _index is not None else _local_index()
+    aliases = _aliases if _aliases is not None else _local_aliases()
+    name = Path(norm).name
+    hit = index.get(name.lower()) or index.get(aliases.get(name.lower(), "").lower())
+    return str(hit) if hit else recorded
+
+
 def load_manifest() -> list[dict]:
     """Every sample, spec joined to its capture, in manifest order.
 
     A sample with no capture yet carries the capture keys as empty strings
-    rather than missing them, so `row["actual_bytes"]` is always safe.
+    rather than missing them, so `row["actual_bytes"]` is always safe. A real
+    export's l5x_path is resolved to wherever it was actually unpacked under
+    samples/local/ -- see resolve_local_path.
     """
     specs = _read(MANIFEST_PATH)
     caps = _dedupe(_read(CAPTURES_PATH))
+    index, aliases = _local_index(), _local_aliases()
     joined = []
     seen = set()
     for spec in specs:
@@ -88,6 +141,7 @@ def load_manifest() -> list[dict]:
             continue                      # union-merge duplicate; first spec wins
         seen.add(sid)
         row = {k: (spec.get(k) or "") for k in SPEC_COLUMNS}
+        row["l5x_path"] = resolve_local_path(row["l5x_path"], index, aliases)
         cap = caps.get(sid, {})
         for k in CAPTURE_COLUMNS[1:]:
             row[k] = cap.get(k) or ""

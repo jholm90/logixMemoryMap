@@ -5,10 +5,28 @@
 // only populated when the user actually drills into it, via /api/node --
 // never masks a large array or deep UDT nesting just because materializing
 // the whole tree up front would be enormous. Color is reserved for data
-// type; confidence is shown as solid (KNOWN) vs. diagonal-hatch overlay
-// (anything else) instead.
+// type. Per-element confidence -- the column, the tooltip chip and bar, and
+// the hatch on non-KNOWN tiles -- is an analysis view behind
+// ?ConfidenceMode=true, which also recolours the treemap by confidence band.
+// The dashed "estimated" outline on compiled-logic tiles is the ground-truth
+// flag, not a confidence display, and is shown in every mode.
 
 let REPORT = null;
+
+// ?ConfidenceMode=true turns on every per-element confidence display. Off by
+// default. Key and value are case-insensitive, and 1/yes/on count as true,
+// because this gets typed by hand into an address bar.
+const CONFIDENCE_MODE = (() => {
+  try {
+    for (const [k, v] of new URLSearchParams(window.location.search)) {
+      if (k.toLowerCase() === "confidencemode") {
+        return ["true", "1", "yes", "on"].includes(String(v).toLowerCase());
+      }
+    }
+  } catch (_) { /* no URL to read: default off */ }
+  return false;
+})();
+document.body.classList.toggle("confidence-mode", CONFIDENCE_MODE);
 let SHOW_EMPTY = false;  // "Show Empty Space": free controller memory as a tile
 let CURRENT_NODE = null; // node currently shown as the treemap root
 let NODE_STACK = [];     // ancestors of CURRENT_NODE, for the breadcrumb
@@ -111,10 +129,11 @@ function renderAll() {
       `-- budget unknown for processor "${REPORT.processor_type || "?"}"`;
   }
 
-  renderErrors();
-
   CURRENT_NODE = REPORT.hierarchy;
   annotateTagPaths(CURRENT_NODE);
+  // After annotateTagPaths: the file-level confidence walks the same nodes
+  // nodeConfidence does, and must see the same paths it sees.
+  renderErrors();
   NODE_STACK = [];
   NAV_HISTORY = [];
   // A newly loaded file starts at the root, on the treemap, in the default
@@ -183,6 +202,94 @@ function annotateTagPaths(root) {
   for (const group of root.children || []) visit(group);
 }
 
+// Bytes per confidence band over a whole subtree. Mirrors nodeConfidence's
+// walk rule for rule -- loaded children first, then the server's subtree tier
+// mix, then the routine's per-rung band split, then the node's own band -- so
+// the percent it averages to is the percent the same node shows everywhere
+// else. It exists because an average alone cannot say how the bytes divide:
+// 90% can be everything at 90, or most things exact and a little unknown.
+function confidenceMix(node) {
+  const mix = {};
+  const add = (key, bytes) => {
+    if (bytes > 0) mix[key] = (mix[key] || 0) + bytes;
+  };
+  const provenance = (REPORT && REPORT.provenance_band) || {};
+  const walk = n => {
+    const kids = n.children;
+    if (kids && kids.length) {
+      let got = 0;
+      for (const k of kids) got += walk(k);
+      if (got) return got;
+    }
+    if (n.confidence && n.confidence.total) {
+      // Same rule as nodeConfidence: the mix's proportions, the node's weight.
+      let mixTotal = 0;
+      for (const tier of ["KNOWN", "FITTED", "ASSUMED", "UNKNOWN"]) {
+        mixTotal += Math.max(n.confidence[tier] || 0, 0);
+      }
+      if (mixTotal > 0) {
+        const own = nodeValue(n);
+        const scale = own > 0 ? own / mixTotal : 1;
+        for (const tier of ["KNOWN", "FITTED", "ASSUMED", "UNKNOWN"]) {
+          const v = n.confidence[tier] || 0;
+          if (v > 0) add(provenance[tier] || "UNVERIFIED", v * scale);
+        }
+        return own > 0 ? own : mixTotal;
+      }
+    }
+    const v = nodeValue(n);
+    const split = (REPORT && REPORT.routine_band_mix || {})[n.path || n._tagPath];
+    if (split) {
+      for (const [key, frac] of Object.entries(split)) add(key, v * frac);
+      return v;
+    }
+    add(bandForNode(n).key, v);
+    return v;
+  };
+  walk(node);
+  return mix;
+}
+
+const BAND_ORDER = ["EXACT", "MEASURED", "CLOSE", "APPROX", "UNVERIFIED", "UNPRICED"];
+
+// The one number that answers "how much of this total is actually known",
+// with the split behind it. Shown on the Errors tab in every mode: the
+// per-element displays are an analysis view, but the file-level figure is the
+// honest summary of them and is good news far more often than not.
+function fileConfidenceHtml() {
+  const root = REPORT && REPORT.hierarchy;
+  if (!root) return "";
+  const mix = confidenceMix(root);
+  const total = Object.values(mix).reduce((a, b) => a + b, 0);
+  if (!total) return "";
+  let weighted = 0;
+  for (const [key, bytes] of Object.entries(mix)) weighted += bytes * bandByKey(key).pct;
+  const pct = weighted / total;
+  const known = ((mix.EXACT || 0) + (mix.MEASURED || 0)) / total * 100;
+  const segs = BAND_ORDER.filter(k => mix[k]).map(k =>
+    `<span class="conf-seg band-fill-${k}" style="width:${(mix[k] / total * 100).toFixed(2)}%" ` +
+    `title="${escapeHtml(bandByKey(k).label)}: ${(mix[k] / total * 100).toFixed(1)}%"></span>`
+  ).join("");
+  const legend = BAND_ORDER.filter(k => mix[k]).map(k => {
+    const b = bandByKey(k);
+    return `<span><span class="fc-swatch band-fill-${k}"></span>` +
+      `${escapeHtml(b.label)} ${(mix[k] / total * 100).toFixed(1)}%` +
+      ` <span class="text-dim">(${escapeHtml(b.bound)})</span></span>`;
+  }).join("");
+  return `<section class="file-confidence">` +
+    `<h3>File confidence</h3>` +
+    `<div><span class="fc-headline">${pct.toFixed(1)}%</span>` +
+    `<span class="fc-sub">byte-weighted over ${fmtBytes(total)} &middot; ` +
+    `${known.toFixed(1)}% of bytes Exact or Measured</span></div>` +
+    `<div class="fc-mix">${segs}</div>` +
+    `<div class="fc-legend">${legend}</div>` +
+    `<div class="fc-note">Share of the predicted total in each confidence band. ` +
+    `Tag, UDT and AOI data space is calculated; compiled logic is an estimate ` +
+    `fitted against real controller readings. Add <code>?ConfidenceMode=true</code> ` +
+    `to the address to see the band of every element.</div>` +
+    `</section>`;
+}
+
 // Errors get their own tab, a count in the tab label, and a compact fixed
 // banner. The old footer was a single long line of concatenated messages
 // that scrolled away with the page and was unreadable past the second item.
@@ -195,9 +302,11 @@ function renderErrors() {
   tabBtn.textContent = `${errors.length} Error${errors.length === 1 ? "" : "s"}`;
   tabBtn.classList.toggle("has-errors", errors.length > 0);
 
+  const summary = fileConfidenceHtml();
+
   if (!errors.length) {
     banner.classList.add("hidden");
-    detail.innerHTML = `<p class="errors-empty">Nothing went unpriced in this file.</p>`;
+    detail.innerHTML = summary + `<p class="errors-empty">Nothing went unpriced in this file.</p>`;
     return;
   }
 
@@ -213,14 +322,17 @@ function renderErrors() {
     const key = (e.path || "").split("/")[0] || "other";
     (groups[key] = groups[key] || []).push(e);
   }
-  detail.innerHTML = Object.entries(groups)
+  // Paths and messages carry routine and tag names straight out of the L5X,
+  // so they are escaped like every other file-derived string in the UI.
+  detail.innerHTML = summary + Object.entries(groups)
     .sort((a, b) => b[1].length - a[1].length)
     .map(([key, items]) =>
       `<section class="error-group">` +
-      `<h3>${key} <span class="error-count">${items.length}</span></h3>` +
+      `<h3>${escapeHtml(key)} <span class="error-count">${items.length}</span></h3>` +
       `<table class="error-table"><tbody>` +
       items.map(e =>
-        `<tr><td class="error-path">${e.path}</td><td class="error-msg">${e.message}</td></tr>`
+        `<tr><td class="error-path">${escapeHtml(e.path || "")}</td>` +
+        `<td class="error-msg">${escapeHtml(e.message || "")}</td></tr>`
       ).join("") +
       `</tbody></table></section>`
     ).join("");
@@ -385,6 +497,11 @@ function nodeConfidence(node) {
     // after drilling in, which is the whole point of computing it server-side.
     if (n.confidence && n.confidence.total) {
       const fromMix = pctFromTierMix(n.confidence);
+      // The mix gives the PROPORTIONS; the node's own value gives the weight.
+      // The mix total is the instance's member data and leaves out the
+      // per-tag overhead, so weighing by it under-counted every tag.
+      const own = nodeValue(n);
+      if (fromMix && own > 0) return { bytes: own, weighted: own * fromMix.weighted / fromMix.bytes };
       if (fromMix) return fromMix;
     }
     // A routine that has not been expanded: the server shipped the identical
@@ -1427,7 +1544,7 @@ function paintTreemap(svg, children) {
     rect.addEventListener("mouseleave", hideTooltip);
     g.appendChild(rect);
 
-    if (!isGroup(node) && node.basis && node.basis !== "KNOWN") {
+    if (CONFIDENCE_MODE && !isGroup(node) && node.basis && node.basis !== "KNOWN") {
       const hatch = document.createElementNS(svgNS, "rect");
       hatch.setAttribute("x", r.x);
       hatch.setAttribute("y", r.y);
@@ -1583,6 +1700,14 @@ const TYPE_COLORS = {
 // the root. Give each group its own hue derived from its name -- stable
 // across reloads, and distinct from the type palette by being lighter.
 function fillForNode(node) {
+  // Confidence mode answers "how well is this known" with the tile colour, in
+  // the same band palette the bars use. Byte-weighted like every other
+  // confidence figure, so a group tile is the colour of what it mostly holds.
+  if (CONFIDENCE_MODE) {
+    const c = nodeConfidence(node);
+    if (c && c.state === "ok" && c.band) return `var(--band-${c.band.key})`;
+    return "var(--group-fill)";
+  }
   if (!isGroup(node)) return colorForType(node.data_type);
   const name = node.name || "";
   if (name === "root") return "var(--group-fill)";
@@ -1650,13 +1775,13 @@ function showTooltip(ev, node) {
     tooltip.innerHTML = `<strong>${displayName(node)}</strong><br>` +
       `<span class="text-dim-on-dark">${groupKind(node)}</span><br>` +
       `${fmtBytes(nodeValue(node))} (${fmtBlocks(nodeValue(node))} blocks)<br>` +
-      bandChipHtml(node) +
+      (CONFIDENCE_MODE ? bandChipHtml(node) : "") +
       (task ? `<br>${task.type}${task.type === "PERIODIC" && task.rate ? ` @ ${task.rate} ms` : ""}` +
         `${task.priority ? `, priority ${task.priority}` : ""}` : "") +
       (routines != null ? `<br>${routines} routine${routines === 1 ? "" : "s"}` : "") +
       tooltipParentBar(node) +
       tooltipControllerBar(node) +
-      confidenceBarHtml(node, false);
+      (CONFIDENCE_MODE ? confidenceBarHtml(node, false) : "");
   } else {
     const rc = node.data_type === "RLL" ? rungCountFor(node) : null;
     tooltip.innerHTML =
@@ -1667,13 +1792,13 @@ function showTooltip(ev, node) {
         : `${escapeHtml(displayType(node))}<br>`) +
       (rc != null ? `${rc} rung${rc === 1 ? "" : "s"}<br>` : "") +
       `${fmtBytes(node.value)} (${fmtBlocks(node.value)} blocks)<br>` +
-      bandChipHtml(node) +
+      (CONFIDENCE_MODE ? bandChipHtml(node) : "") +
       jsrCallsNote(node) +
       tooltipParentBar(node) +
       tooltipControllerBar(node) +
       // withChip = false: the chip is already on the line above. It was
       // rendered twice, once at the top and once under the bar.
-      confidenceBarHtml(node, false);
+      (CONFIDENCE_MODE ? confidenceBarHtml(node, false) : "");
   }
 
   positionTooltip(tooltip, ev);
@@ -2103,7 +2228,7 @@ function renderListInto(tableId) {
       `<td class="num">${Math.round(e.bytes).toLocaleString()}</td>` +
       `<td>${pctCellHtml(e.pct_of_total, "pct-parent")}</td>` +
       `<td>${pctCellHtml(e.pct_of_controller, "pct-controller")}</td>` +
-      `<td>${conf}</td>`;
+      `<td class="conf-only">${conf}</td>`;
     tbody.appendChild(tr);
   }
 

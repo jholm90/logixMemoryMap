@@ -240,6 +240,12 @@ def classify_path(path: str, ctx: ContextNames) -> str:
         # "udt_definitions/SingleSolValve".
         name = path[len("udt_definitions/"):]
         return "context" if name in ctx.udts or name in ctx.aois else "target"
+    if path.startswith("aoi_definitions/"):
+        # An AOI's internal routines belong to the AOI: context when the AOI
+        # is context. Falling through to "target" counted a dragged-along
+        # AOI's own logic as part of the exported thing.
+        name = path[len("aoi_definitions/"):].split("/", 1)[0]
+        return "context" if name in ctx.aois else "target"
     if path.startswith("modules/"):
         return "context" if path[len("modules/"):] in ctx.modules else "target"
     if path.startswith("program:"):

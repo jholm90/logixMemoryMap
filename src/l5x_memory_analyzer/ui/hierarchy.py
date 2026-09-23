@@ -84,18 +84,31 @@ def _aoi_definition_containers(
     if not containers:
         return [{**definition_node, "name": "Definition"}]
 
-    # The member breakdown and the priced definition entry are two
-    # different computations, and on every real AOI the breakdown comes in
-    # LOWER: 21 AOIs on one real file account for 66,908 fewer bytes in
-    # their members than the report charges their definitions, roughly 6%
-    # of that file's whole total. Drawing only the itemized part silently
-    # dropped those bytes out of the treemap, so it stopped summing to the
-    # controller total -- the one property the whole view depends on.
-    # Carried as its own row instead, which both restores the sum and
-    # makes the size of the unexplained part visible. See
-    # docs/OPEN_QUESTIONS.md OQ-AOIDEFITEMIZE for why the two disagree.
+    # The priced definition and this breakdown are the same computation, so
+    # they agree to within the per-definition correction handled below. They
+    # used to disagree by roughly 6% of a real file, and that gap was drawn as
+    # an "Unitemized definition cost" row -- it was the AOI's own compiled
+    # ladder, folded into the definition entry by report.py. That ladder is
+    # now its own routine_logic entry under Routines. The row below is kept
+    # as a guard: if it ever appears again the tree still sums to the
+    # controller total, and the row's existence is itself the bug report.
     itemized = sum(c["value"] for c in containers)
     priced = definition_node.get("value")
+    # The priced definition carries the per-definition scale correction
+    # (definition_scale_correction.aoi_definition_extra, a few bytes negative)
+    # that the itemised breakdown does not. Taken off the Base row so the rows
+    # sum to the definition exactly instead of overshooting it.
+    if isinstance(priced, (int, float)) and 0 < itemized - priced <= 16 and overhead:
+        short = itemized - priced
+        for cont in containers:
+            if cont["name"] == "Overhead":
+                for row in cont["children"]:
+                    if row["name"] == "Base":
+                        row["value"] -= short
+                        cont["value"] -= short
+                        break
+                break
+        itemized = sum(c["value"] for c in containers)
     if isinstance(priced, (int, float)) and priced - itemized > 0:
         containers.append({
             "name": "Unitemized definition cost",
@@ -231,7 +244,7 @@ def build_hierarchy(
         # rather than folded into Project Overhead: it is the one structural
         # constant a user can act on by restructuring routines, and it is
         # where the known +280-per-caller uncertainty lives (see
-        # OPEN_QUESTIONS.md OQ-JSRPARAMCOST). Buried inside the calling
+        # OPEN_QUESTIONS.md OQ-JSRCALLERBASE). Buried inside the calling
         # routine's instruction total it was invisible, and the difference
         # was charged against the JSR instruction instead -- which is
         # measured exactly and was not the thing that was wrong.

@@ -335,7 +335,7 @@ def compute_aoi_definition_cost(
         data_bytes += member_bytes
         member_confidences.append(member_conf)
 
-    total = (
+    total = aoi_def.aligned_total(
         aoi_def.base
         + aoi_def.per_member_descriptor_bytes * len(member_names)
         + data_bytes

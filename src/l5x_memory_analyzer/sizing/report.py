@@ -247,6 +247,20 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         referenced_udts |= referenced_data_type_names(tag.data_type, data_types)
 
     definition_entries: list[tuple[str, str, str, int, str]] = []
+    # An AOI's internal ladder, one entry per AOI. Compiled logic, so it is
+    # emitted as routine_logic (tier ESTIMATED) under the AOI's own path --
+    # never folded into the definition entry, which is tier EXACT. Folded in,
+    # it inherited the definition's exact tier (a breach of the ground-truth
+    # rule that every compiled-logic number is flagged as estimated), drew in
+    # the tree as an unexplained "Unitemized definition cost", and could not
+    # be given its rungs' measured confidence.
+    aoi_logic_entries: list[tuple[str, str, str, int, str]] = []
+    rll_names_by_aoi = {
+        aoi_el.get("Name"): [
+            r.get("Name") for r in aoi_el.iter("Routine") if (r.get("Type") or "RLL") == "RLL"
+        ]
+        for aoi_el in root.iter("AddOnInstructionDefinition")
+    }
     for name in sorted(referenced_udts):
         # Custom STRING types (Family="StringFamily") have their own
         # confirmed cost model (OQ-CUSTOMSTRING: total ~= maxlen + 302,
@@ -322,8 +336,11 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                         content_basis,
                         model.logic_instructions.aoi_internal_per_word_destination_confidence,
                     )
-                def_bytes += content_bytes
-                def_basis = weakest(def_basis, content_basis)
+                names = [n for n in rll_names_by_aoi.get(name, []) if n] or ["Logic"]
+                aoi_logic_entries.append((
+                    f"aoi_definitions/{name}/{'+'.join(names)}", "routine_logic", "RLL",
+                    content_bytes, content_basis,
+                ))
             definition_entries.append((
                 f"udt_definitions/{name}", "udt_definition", name, def_bytes, def_basis,
             ))
@@ -402,7 +419,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         for target, n_in, _m_out in routine.jsr_calls:
             jsr_target_param_counts.setdefault(target, n_in)
 
-    logic_entries: list[tuple[str, str, str, int, str]] = []
+    logic_entries: list[tuple[str, str, str, int, str]] = list(aoi_logic_entries)
     n_plain_routines = 0
     # Fixed shell for routines that CALL a subroutine. Billed as its own line
     # item rather than hidden inside the calling routine's instruction total.
@@ -665,7 +682,13 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                 seen_programs.add(program_name)
                 continue
             shell_bytes += model.identifier_name_length.bytes_for(routine_name)
-        shell_basis = weakest(model.logic_instructions.confidence, overhead.confidence)
+        # The shell's own constants, not the instruction-weight block's tier:
+        # nothing in this entry is an instruction weight.
+        shell_basis = weakest(
+            model.logic_instructions.fixed_base_per_routine_confidence,
+            overhead.confidence,
+            model.identifier_name_length.confidence,
+        )
         # Own category, NOT "routine_logic" -- this entry's path is
         # "task_program_shell", not a "program:X/Y" routine path, so it
         # can't go through hierarchy.py's per-program routine grouping (same
@@ -697,7 +720,7 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # is exactly the residual on every clean 0-parameter JSR capture.
         # Whether the correction is 280 once per file or 280 per caller
         # routine is what the jsr_callerdist_* family settles -- see
-        # OPEN_QUESTIONS.md OQ-JSRPARAMCOST. Until it reads, the constant
+        # OPEN_QUESTIONS.md OQ-JSRCALLERBASE. Until it reads, the constant
         # stands and the uncertainty is attached to THIS line item, which is
         # where it belongs, instead of to the JSR instruction, which is
         # measured exactly.

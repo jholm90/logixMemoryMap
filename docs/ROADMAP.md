@@ -35,6 +35,13 @@ under-predict, seven over-predict.
 | `export 26` | 1,763,760 | −0.19% |
 | `export 14` | 2,362,176 | +0.11% |
 
+**Re-verified at the final review on the twelve of the seventeen present in the
+working copy** (`quick_eval.py --real-only`): every one of the twelve reproduces the
+table above to within 0.01 percentage points — mean 1.66%, worst 3.52% over those
+twelve. The engine has not drifted on real programs. The other five
+(`export 08, 25, 26, 29, 30`) were not in the delivered archive and carry their
+recorded figures.
+
 **The residual is no longer one-sided.** It used to be: every file under-predicted
 and the work was to find missing bytes. Seven files now over-predict, which means
 **any candidate that can only add bytes is wrong before it is tested.**
@@ -60,6 +67,29 @@ mean.**
 before the controller reading is taken.** That is the only procedure that adds
 auditable evidence. A file reconciled after the fact adds a fitting input, not a
 test.
+
+### Six blind predictions on record
+
+Six real exports arrived with **no capacity reading anywhere**. Predicted by the
+final engine and written here before any reading exists. The name-to-ID mapping
+stays in the gitignored `samples/local/blind_predictions.csv`.
+
+"Expected" applies the seventeen's measured +1.49% under-prediction; the range is
+the seventeen's own spread (−3.63% to +1.79%). A reading outside the range is a
+finding, not noise.
+
+| ID | processor | firmware | **predicted** | expected | range | coverage gaps |
+|---|---|---|---:|---:|---:|---|
+| `blind_01` | 1756-L83E | 32.04 | **9,090,346** | 9,227,338 | 8,930,356 – 9,433,052 | 9 unsized items, 1 unpriced instruction use |
+| `blind_02` | 1756-L83E | 35.05 | **7,970,364** | 8,090,477 | 7,830,086 – 8,270,847 | none — a later revision of export 07 |
+| `blind_03` | 1756-L83E | 33.01 | **7,399,658** | 7,511,171 | 7,269,424 – 7,678,625 | 12 unsized items |
+| `blind_04` | 1756-L83E | 32.04 | **6,418,673** | 6,515,402 | 6,305,704 – 6,660,657 | 1 unsized item |
+| `blind_05` | 1756-L83E | 35.05 | **5,939,350** | 6,028,856 | 5,834,817 – 6,163,263 | 7 unsized items |
+| `blind_06` | 1756-L83E | 35.05 | **3,704,851** | 3,760,683 | 3,639,646 – 3,844,524 | 1 unsized item, 2 unpriced instruction uses |
+
+`blind_02` is a later revision of the program already recorded as export 07
+(predicted +2.15% low). It is the first within-program drift test the project has:
+if the residual is a property of the program, it should land near 8.14 M.
 
 ---
 
@@ -94,18 +124,26 @@ already met and a 2% **max** is not reachable by any per-category fit either.
 ## What is left that the ceiling result does not bound
 
 The one shape not eliminated is **a term not proportional to any category the
-engine currently counts** — real content that is not being counted at all.
+engine currently counts** — real content that is not being counted at all, or an
+interaction that only appears at real scale.
 
-**That term now has measured support.** An immediate numeric literal in an
-instruction operand costs **4 bytes** that the engine charges at zero, measured on
-the bench in Logix Designer. Exposure across the real programs is 52,195 unpriced
-literal operand slots — 12.1% of all operand slots, about a quarter of the total
-residual — and it is the first candidate to move the **max**, from 3.63% to 2.90%,
-against a cheating ceiling of 2.59%.
+**Unpriced literal content was the leading candidate and is refuted.** The
+literal-operand batch showed integer literals cost nothing, and a count over
+eighteen real exports put every remaining literal term — REAL +4, float form +76,
+the INT/SINT over-charge — under the noise floor. The projected max 3.63% → 2.90%
+came from charging 4 bytes to slots worth 0.
 
-It is not wired. The 4 is measured for a REAL literal only; 98% of the exposure is
-integer literals at an unmeasured rate. A 29-file batch is built and awaiting
-capture. See `OQ-LITERALOPERAND`.
+**The AOI population was the other candidate for the AOI-dense programs, and is
+refuted too.** Fifteen real-shape AOI files reproducing export 18's population were
+built when export 18 was under-predicted by about 7%. The copy over-predicts by
+2.3%, so the population was never the cause, and the files confirm the
+per-definition cost at real scale. Export 18 now over-predicts by 1.17%; the copy's
+1.8-byte-per-member over-charge accounts for about 1.3 KB of its 10.9 KB residual.
+See OQ-AOIREALSHAPE.
+
+**What that leaves** is in `FINAL_REPORT.md` under "How to get more accuracy": the
+residual has to be modelled from real programs directly, with features the engine
+does not count, and judged only by cross-validation.
 
 ---
 
@@ -126,6 +164,9 @@ them looks reasonable on first inspection.
 | Tag declaration order | Six files, byte-identical. Order is free. |
 | Branch arrangement | Byte-exact at 1, 2, 4 and 8 legs with inventory held fixed. |
 | 2-D array subscripts | Cost zero. |
+| Unpriced literal operands | Integer literals are free; every remaining literal term totals under the noise floor on eighteen real exports. |
+| The AOI population in AOI-dense programs | Real-shape copies over-predict where the real program under-predicts. Per-definition cost confirmed at real scale. |
+| The INT/SINT literal over-charge | 37 real occurrences, 1,756 bytes across eighteen programs. |
 | Attribution by subtraction from a real export | Dead by the read-only rule — the derived files do not import. Not merely difficult. |
 
 ---

@@ -260,15 +260,316 @@ was really measuring, which is the part worth keeping.
 **CAPTURE ERRORS: 40 row(s)** — owned by this question, captured with Studio build
 errors. The question is closed; the rows outlive it.
 
-## OQ-AOIDEFSHAPE — the unexplained 8 bytes
+## OQ-LITERALOPERAND — an immediate literal in an operand costs bytes the engine charges at zero
 
-**BOUNDED.** Exactly 0 on 70 instrument files and exactly +8 on 35, confounded three
-ways: the type-name bucket boundary, a fixed offset inside the name pool, and member
-order.
+**The measurement.** One rung in one project, edited in Logix Designer, compiled by
+Studio, Capacity read twice. Six MAM operand slots changed from a tag reference to
+the immediate `99.99`:
 
-**The base is deliberately set to centre the residual on zero rather than to maximise
-exact rows.** A base 8 higher scores better corpus-wide and is not taken, because
-taking it would bury the term rather than solve it. Files exist to break the confound.
+    74,224  →  74,248   = +24 over 6 slots = +4.000 per slot, six for six
+
+**The four source tags stay declared AND referenced in both versions**, by four EQU
+instructions on the same rung. So this is not a tag being deleted — it is the same
+tag population with six slots re-pointed at inline constants.
+
+**The engine charges nothing.** Run on both rung texts it returns 320 bytes either
+way — a zero delta against a real 24.
+
+**It is not a new constant.** The CPT model already carries 4 per float literal,
+fitted across 12 files. The same 4 now appears in MAM, an unrelated instruction on
+an unrelated code path. **One constant appearing independently in two unrelated
+places is what a general law looks like**, not a per-instruction quirk. Today
+literals are priced only inside CPT expressions, CMP operands and ST statements.
+
+**Exposure across the seventeen**, counting numeric literals in operand slots of
+instructions that are not CPT or CMP:
+
+| | count | at 4 bytes |
+|---|---:|---:|
+| integer literals | 51,265 | 205,060 |
+| float literals | 930 | 3,720 |
+| **total** | **52,195** | **208,780** |
+
+**12.1% of all 432,850 operand slots**, and about a quarter of the total residual.
+Every one of the seventeen carries between 8.8% and 16.2% literal slots, so this is
+not one file's quirk. Top carriers: MOV 9,835, EQU 9,089, ADD 5,259, NEQ 3,132,
+COP 2,841, JSR 2,631.
+
+**What charging it does**, float held at the measured 4 and integer swept:
+
+| int cost | mean | max | <1% | <2% |
+|---:|---:|---:|---:|---:|
+| baseline | 1.5951 | 3.6309 | 4/17 | 11/17 |
+| 0 | 1.5973 | 3.6198 | 4/17 | 11/17 |
+| 2 | **1.5818** | 3.3811 | 4/17 | 12/17 |
+| 4 | 1.5885 | 3.1424 | 5/17 | 12/17 |
+| 6.5 | 1.5951 | **2.9022** | 5/17 | 12/17 |
+
+**Read the max, not the mean.**
+
+- **The max moves, and nothing else has.** 3.6309% → 2.9022%. For scale, the
+  cheating ceiling fit only reached 2.5919%. A single mechanistic term gets most of
+  that way without fitting anything per-category.
+- **The mean barely moves** because the term can only ADD bytes and seven files
+  already over-predict. All six worst files improve; all seven over-predictors get
+  worse. That is a reason to be careful about the rate, **not a reason to dismiss the
+  mechanism** — the mechanism is measured, and the over-prediction in those seven
+  files is a separate defect.
+- **Mean-optimal is 2, max-optimal is 6.5.** They disagree, which is positive
+  evidence that **a single flat rate is the wrong shape** and the cost is
+  type-dependent.
+
+**CAPTURE ERRORS: 0 row(s).** The whole BOOL arm, `litop_bool_*`, previously
+carried 4. Every rung of all four had failed with *"Invalid number of arguments for
+instruction"*, 1,000 errors on 1,000 rungs, so the ladder never compiled and all
+four read an identical 20,028. The arm measured nothing, the cause is found and
+fixed, and **the four capture rows are cleared** — the files they measured no
+longer exist in that shape. Diagnosis below. The regenerated files await capture.
+
+---
+
+## The batch answered it. The law is per-type, and it is mostly zero.
+
+**Arm G first, as the plan required.** The bench rung rebuilt at 1,000 rungs:
+
+    litop_mam_lit_n01000   419,456      six REAL literal slots
+    litop_mam_tag_n01000   395,456      the same rung, all tags
+                          --------
+                           +24,000  =  +24.000 per rung  =  +4.000 per slot
+
+**Six for six, identical to the bench.** The pipeline reproduces a hand measurement
+at 1,000× scale, so the rest of the batch can be believed.
+
+**Arm A settles the shape, and it is not what either hypothesis predicted.** One
+literal operand slot, literal file minus tag file, 1,000 rungs each:
+
+| operand type | per slot | the engine today |
+|---|---:|---|
+| DINT | **0** | 0 — correct |
+| LINT | **0** | 0 — correct |
+| REAL | **+4** | 0 — under by 4 |
+| INT | **−52** | over by 52 |
+| SINT | **−40** | over by 40 |
+
+**An integer literal is free.** Not cheap — free, at both DINT and LINT, to the
+byte. That kills the exposure this question was ranked on: 51,265 of the 52,195
+unpriced slots are integer literals, and they cost nothing. The projected max
+3.63% → 2.90% was an artefact of charging 4 for slots that are worth 0.
+
+**A narrow-integer literal is CHEAPER than a tag, and that is an engine defect, not
+a literal cost.** A SINT or INT *tag* operand drags in the widening block the model
+already charges; a literal needs no widening because it is already the right width
+inline. The engine charges the widening either way, so it over-predicts
+`litop_type_int_lit_n01000` by **+21.82%** and `litop_type_sint_lit_n01000` by
+**+18.67%** while both *tag* files land at exactly 0.00%. Those two rows are the
+largest single-file errors in the batch and they are ours, not Rockwell's.
+
+**Value and distinctness are free.** Arm D: `0`, `1` and `2` all identical. Arm C:
+all-distinct, all-same and two-repeated all identical. So there is no
+per-distinct-value term and no folding of 0/1 — the competing law that a previous
+question died on is dead here too, for a better reason.
+
+**The written FORM of a float costs, and it is unpriced.** Arm E: `floatform`
+against `small`, same slot count, **+76,000 over 1,000 rungs = +76 per rung**,
+engine delta **−50.57%**. That is an order of magnitude above the +4 for a REAL
+literal and is a different mechanism — it is about how the constant is written, not
+that it exists. One pair, so the rate is not the finding; the existence is.
+
+**A separate finding fell out of arm G.** Both MAM files under-predict — the
+all-tag baseline by **−40,000 over 1,000 rungs, −40 per rung**, before any literal
+is involved. That is the MAM instruction weight being short, not a literal term,
+and `unreconciled.py` flags the pair. It is the larger of the two numbers in that
+arm and it belongs to motion sizing, not here.
+
+### What this changes
+
+| | before the batch | after |
+|---|---|---|
+| mechanism | "a literal costs bytes" | only REAL (+4) and float-form (+76) cost; integer literals are free |
+| exposure | 52,195 slots, 208,780 bytes | 930 float slots, 3,720 bytes |
+| expected movement | max 3.63% → 2.90% | **approximately none** |
+
+**So this question drops out of first place.** It was ranked on an exposure that the
+measurement has removed. What survives is smaller and sharper: a +4 REAL-literal
+term, a +76 float-form term needing a second point, and the INT/SINT widening
+defect, which is the only one of the three that moves a real number.
+
+### The BOOL arm was a generator bug. Resolved: a call site passes exactly the Required parameters
+
+All four `litop_bool_*` files emitted `LitSensor(Sensor,RawIn,NormOpen,TimeHigh);`
+against an AOI whose three parameters were `Required="false" Visible="true"`.
+Studio rejected every rung of all four, **including the all-tag control**, so it
+was about argument COUNT, not literals.
+
+The rule is `args == Required` exactly, and `Visible="true"` alone creates no call
+slot. Across the real exports there are **917 AOI call sites and the argument count
+equals the Required count at every one**, while those same exports declare 120
+`Required="false" Visible="true"` parameters — so the unanimity is not for want of
+optional parameters to pass. One real AOI has three Required and four Visible-only
+parameters and is called with three arguments everywhere. Required is not even a
+prefix of the parameter list (13 of 48 real definitions interleave), so the
+unpassed ones are not merely trailing.
+
+**The "legal arity is a range" reading came from counting conversions, not builds.**
+Two generated files wired optional parameters and were counted as evidence because
+they converted and returned a capacity number. Conversion performs no ladder
+verification, and `litop_bool_*` proves a capacity number is returned even when
+every rung errors. Their apparent cost over the definition-only baseline was tag
+storage for the argument tags, not compiled rungs. Both files are deleted, and
+`gen_aoi_required_visible.py` no longer emits that shape.
+
+Wired:
+
+- `lint.py`'s `aoi_call_arg_count_mismatch` now requires exact equality with the
+  Required count. It previously allowed the range, which is why it passed the
+  1,000-rung family that failed to build.
+- `gen_literaloperand.py` arm F declares the three parameters `Required="true"`;
+  the four files are regenerated and lint clean.
+- `AOI_KNOWLEDGE_MAP.md` carries the rule and its evidence.
+- The four `litop_bool_*` capture rows are **cleared**, not reused. They measured a
+  file that no longer exists in that shape.
+
+No probe file is needed. The four-file Required-count probe proposed here is
+withdrawn — the real corpus already answers it at 917 call sites.
+
+**Still open in this arm:** the BOOL literal cost itself is unmeasured. The
+regenerated files are awaiting capture.
+
+---
+
+
+---
+
+
+**Why this measurement is trustworthy where the strip ladder was not:** it was made
+by editing a project in Logix Designer and letting Studio compile it, not by
+rewriting exported XML. That is the path the read-only rule explicitly leaves open.
+
+### Closed: every surviving term is under the noise floor
+
+**BOUNDED.** The last live item was the INT/SINT literal over-charge, held open until
+it could be counted on the real programs. Counted on all eighteen real exports now
+available: the measured shape, `MOV(<integer literal>, <INT or SINT tag>)`, occurs
+**37 times in total — 23 INT, 14 SINT — for 1,756 bytes of over-charge across
+eighteen programs**, about 100 bytes a program and 0.002% of one. The worst single
+program carries 784 bytes. Wiring it would move nothing a user could see, so it is
+closed without wiring, which is the noise-floor rule doing its job.
+
+What remains is recorded, not pending:
+
+| term | per | real exposure | status |
+|---|---|---|---|
+| integer literal (DINT, LINT) | slot | 51,265 slots | **free, measured** |
+| REAL literal | slot | 930 slots, 3,720 bytes | +4, below the floor |
+| float literal FORM | rung | one pair only | +76, below the floor, needs a second point before any rate is believed |
+| INT / SINT literal into `MOV` | slot | 37 slots, 1,756 bytes | engine −52 / −40 high, below the floor |
+| BOOL literal into an AOI call | slot | 128 real call sites | regenerated `litop_bool_*` files lint clean; not worth a capture slot on this exposure |
+
+The projected max 3.63% → 2.90% that ranked this question first was an artefact of
+charging 4 bytes to integer literals that cost nothing. **The hypothesis that
+unpriced literal content carries the real residual is refuted.**
+
+
+## OQ-TASKNAMEROUND — a task name rounds up where the identifier term rounds down
+
+**BOUNDED.** `task_extra` is exact at 2, 3 and 6 tasks — `taskoverhead_n02tasks`,
+`_n03tasks` and all five `identnamelen_task_c*` files — and the task/program shell is
+KNOWN on that evidence. The one miss, `taskoverhead_n04tasks` at **+24**, is not
+`task_extra`: its three extra task names are 13 characters, the only
+non-multiple-of-8 task name ever captured. The identifier term rounds 13 down to 8;
+the file reads as if a task name rounds up to 16. Three names × 8 = 24, exactly.
+
+Rounding task names up fits all six task-name points (4 → 8, 8 → 8, 13 → 16, 16, 32,
+40), and it would retire the `task_min_bytes` special case, which exists only to make
+a round-down law read 8 at length 4. It is not wired: at most 8 bytes per task, and a
+real program has a handful of tasks, so it is under the noise floor. Program and
+routine names are **not** covered by this — every captured program or routine name
+length is a multiple of 8 or sits inside the per-routine constant, so which way they
+round at other lengths is untested.
+
+## OQ-AOIDEFSHAPE — the AOI definition's residual
+
+**SOLVED for the 4-byte half, BOUNDED for the 8-byte half.** `aoi_definition` is now
+**KNOWN.**
+
+**The 4-byte half: the definition is 8-byte aligned.** The entry that used to stand
+here reported 0 on 70 files and +8 on 35. Re-run against the live engine, the same
+125-file instrument had drifted to four values — 0 on 8, **+4 on 53**, +8 on 23, +12
+on 21 — which is the "re-run the census after any shared change" failure mode caught
+late. The split is exactly the unaligned sum's value mod 8: every file the formula put
+at 4 mod 8 read 4 bytes high, every file at 0 mod 8 read as predicted.
+
+Aligning `(sum + 1)` up to 8 and removing the 1 again — the same project-wide 1-byte
+offset the array-member terms carry — fixes it:
+
+| | before | after |
+|---|---:|---:|
+| instrument files exactly 0 | 8 | **68** |
+| inside the ±8 noise floor | 94 / 125 | **117 / 125** |
+| mean \|residual\| | 6.99 B | **4.48 B** |
+| every clean AOI-bearing capture, exactly 0 | 38 | **201** |
+| every clean AOI-bearing capture, inside ±8 | 295 | **506** |
+| non-AOI captures moved | — | **0** |
+
+16- and 32-byte alignment were tested and are strictly worse. It is the same mechanism
+and constant as OQ-AOIBOOLPACK-PAIRING below, found independently on the instance
+side — the cross-check that this is real rather than fitted.
+
+**The 8-byte half: bounded, not solved.** 47 instrument files still read +8. No single
+feature separates them from the 68 at zero: AOI name length leans toward it at 14–16
+characters — the bucket boundary the name-length sweep never sampled — and so does
+controller name length at 6–7 mod 8, but neither splits the groups cleanly. It is
+**exactly the ±8 single-measurement noise floor**, which the project treats as
+agreement, and it is not worth a capture slot.
+
+**The eight outliers** are named shapes: a MOTION_INSTRUCTION local (+48), BOOL-array
+locals (+16, deliberately unpriced — OQ-AOIARRAYLOCALTAG), and one three-deep nesting
+(−16). None is common enough in the real set to clear the noise-floor rule.
+
+**Why KNOWN.** Measured alone on 125 def-only captures, with every residual inside the
+noise floor except those named shapes — the project's written rule for a known
+constant. The name-length term meets the same rule on its own (seven lengths, 7/7
+exact; the unsampled boundary can be wrong by at most one 8-byte bucket). Pinned by a
+test.
+
+## OQ-AOIREALSHAPE — does the AOI model hold at real population shape
+
+**BOUNDED. The per-definition cost is confirmed at real shape; the per-member cost is
+1.8 bytes high.**
+
+`gen_realshape_aoi.py` built 15 files reproducing a real export's AOI population —
+19 definitions, 453 parameters, 280 locals, 349 internal rungs — and ladders that move
+one kind of content at a time. All 15 captured clean. **They were never differenced
+until the final review**, which is the backlog failure the capture checklist warns
+about.
+
+| ladder | what moves | actual per unit | predicted per unit |
+|---|---|---:|---:|
+| `mbshape_defs_n{05,19,40}` | same members over 5 → 40 definitions | **1,231 / definition** | 1,233 |
+| `mbshape_params_{05,10,20}` | 229 → 906 parameters | **20.3 / parameter** | 22.2 |
+| `mbshape_locals_{05,10,20}` | 137 → 560 locals | **20.4 / local** | 22.2 |
+| `mbshape_rungs_{05,10,20}` | internal rungs | flat — exact | flat |
+| `mbshape_axis_k{0,3}` | three AXIS_CIP_DRIVE parameters | +8 difference | — |
+
+- **The per-definition cost is right at real scale.** The generator's key
+  discriminator came back per-member, not per-definition.
+- **The per-member cost is 1.8 bytes high** on BOOL-heavy real mixes (about half the
+  members are BOOL). On the real export this population was copied from — 733
+  members in a 923 KB program — that is about 1.3 KB, **0.14%**, under the
+  noise-floor rule. That export now over-predicts by 1.17% (10.9 KB), so this
+  over-charge is roughly an eighth of its residual.
+  Instance and definition charges move together in these ladders, so the 1.8 cannot be
+  split between them without a def-only twin; not worth a slot.
+- **The axis-parameter charge is right.** The generator flagged 22,656 bytes per axis
+  parameter as "very likely wrong". Three of them move the file by 8 bytes against the
+  prediction.
+- **Internal rungs are exact** at real count.
+
+**The control file does not reproduce the real export's under-prediction.**
+`mbshape_asbuilt` over-predicts by 1,448 bytes (2.3%), where the real export it copies
+was under-predicted by about 7% when this family was built. So that under-prediction
+did not live in its AOI population — the hypothesis the family was built to test is
+refuted. (Other fixes have since moved that export to a 1.17% over-prediction.)
 
 ## OQ-AOIBOOLPACK-PAIRING — instance-array packing
 

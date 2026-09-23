@@ -209,7 +209,7 @@ def test_expand_aoi_definition_sums_to_compute_aoi_definition_cost_and_excludes_
     children = expand_definition_children("fbDebounce", DEF_DATA_TYPES, MODEL)
     expected_total, expected_basis = compute_aoi_definition_cost("fbDebounce", DEF_DATA_TYPES, MODEL)
     assert sum(c.bytes for c in children) == expected_total
-    assert all(c.basis == expected_basis == "FITTED" for c in children)
+    assert all(c.basis == expected_basis == "KNOWN" for c in children)
     names = {c.name for c in children}
     assert "RawInput" in names and "DebTmr" in names
     assert "EnableIn" not in names

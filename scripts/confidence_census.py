@@ -20,7 +20,11 @@ sys.path.insert(0, str(_P(__file__).resolve().parent.parent / "src"))
 from l5x_memory_analyzer.ui import server as S
 from l5x_memory_analyzer.sizing.confidence import BANDS, PROVENANCE_BAND
 
-F = sys.argv[1] if len(sys.argv) > 1 else sys.exit("usage: confidence_census.py <file.L5X>")
+_args = [a for a in sys.argv[1:] if not a.startswith("--")]
+SUMMARY = "--summary" in sys.argv
+if not _args:
+    sys.exit("usage: confidence_census.py [--summary] <file.L5X> [...]")
+F = _args[0]
 state = S._load_state(F, _P(F).name, from_bytes=False)
 R = state.report_json
 H = R["hierarchy"]
@@ -74,6 +78,8 @@ def walk(n):
     c = n.get("confidence")
     if c and c.get("total"):
         r = pct_from_mix(c)
+        own = node_value(n)
+        if r and own > 0: return (own, own * r[1] / r[0])
         if r: return r
     p = n.get("path") or n.get("_tagPath")
     v = node_value(n)
@@ -84,12 +90,66 @@ def node_pct(n):
     b, w = walk(n)
     return (round(w/b, 1) if b else None), b
 
+def mix_of(node):
+    """Bytes per band -- the client's confidenceMix, rule for rule: loaded
+    children, then the subtree tier mix, then the routine's per-rung band
+    split, then the node's own band."""
+    RBM = R.get("routine_band_mix") or {}
+    mix = collections.Counter()
+    def walk(n):
+        kids = n.get("children")
+        if kids:
+            got = sum(walk(k) for k in kids)
+            if got: return got
+        c = n.get("confidence")
+        if c and c.get("total"):
+            mt = sum(max(c.get(t, 0), 0) for t in ("KNOWN","FITTED","ASSUMED","UNKNOWN"))
+            if mt > 0:
+                own = node_value(n)
+                scale = own / mt if own > 0 else 1
+                for tier in ("KNOWN","FITTED","ASSUMED","UNKNOWN"):
+                    v = c.get(tier, 0)
+                    if v > 0: mix[PB.get(tier, "UNVERIFIED")] += v * scale
+                return own if own > 0 else mt
+        v = node_value(n)
+        split = RBM.get(n.get("path") or n.get("_tagPath"))
+        if split:
+            for k, frac in split.items(): mix[k] += v * frac
+            return v
+        mix[band_for_node(n).key] += v
+        return v
+    walk(node)
+    return mix
+
+if SUMMARY:
+    import os as _os
+    def _summ(state_, name):
+        global R, H, RC, RI, ACC, SCAF, KEC, PB
+        R = state_.report_json; H = R["hierarchy"]
+        RC = R.get("routine_confidence") or {}; RI = R.get("routine_instructions") or {}
+        ACC = R.get("instruction_accuracy") or {}; SCAF = R.get("scaffold_band") or {}
+        KEC = R.get("known_exact_calls") or {}; PB = R.get("provenance_band") or {}
+        mx = mix_of(H); tot = sum(mx.values()) or 1
+        pct = sum(v * BY[k].pct for k, v in mx.items()) / tot
+        em = (mx["EXACT"] + mx["MEASURED"]) / tot * 100
+        cols = "  ".join(f"{k[:5]} {100*mx[k]/tot:5.1f}%" for k in
+                         ("EXACT","MEASURED","CLOSE","APPROX","UNVERIFIED","UNPRICED"))
+        print(f"{name:28s} {pct:6.2f}%  exact+measured {em:5.1f}%  | {cols}")
+    _summ(state, _os.path.basename(F)[:28])
+    for extra in _args[1:]:
+        _summ(S._load_state(extra, _P(extra).name, from_bytes=False), _os.path.basename(extra)[:28])
+    sys.exit(0)
+
 # Expand every drillable node the way the UI does on click.
 def expand(n, depth=0):
     if n.get("children"): 
         for k in n["children"]: expand(k, depth+1)
         return
     if not n.get("has_children") or not n.get("data_type"): return
+    # A type DEFINITION node carries its type name as data_type, but it is
+    # not an instance: the UI drills it into its declaration breakdown, not
+    # into instance members. Expanding it as an instance inflated the count.
+    if (n.get("path") or "").startswith(("udt_definitions/", "aoi_definitions/")): return
     try:
         kids = S._expand_cached(n["data_type"], tuple(n.get("dimensions") or ()), state)
     except Exception:

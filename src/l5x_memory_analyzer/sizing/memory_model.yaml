@@ -1666,9 +1666,11 @@ aoi_array:
 # base 8 higher scores about 40 more exact rows corpus-wide but makes the
 # instrument strictly worse, which is the wrong trade.
 #
-# CONFIDENCE IS FITTED, NOT KNOWN. The form is exact on a large generated
-# instrument, but no real controller reading isolates a single AOI
-# definition, and the +8 above is unexplained.
+# CONFIDENCE IS KNOWN. Every capture in the instrument is a real controller
+# reading of a single isolated definition, and with the 8-byte total
+# alignment below every residual but a few named shapes sits inside the
+# +/-8 single-measurement noise floor. The +8 split is recorded, not hidden:
+# RESOLVED_QUESTIONS.md OQ-AOIDEFSHAPE closes it as BOUNDED.
 aoi_definition:
   base: 1163
   # Per declared member, over and above the member's own data bytes. Every
@@ -1689,7 +1691,24 @@ aoi_definition:
   # (70 exact against 58 and 65).
   name_pool_alignment_bytes: 8
   name_pool_per_name_bytes: 1
-  confidence: FITTED
+  # The definition occupies a whole number of 8-byte units. Found by
+  # re-running the 125-file instrument against the live engine: the residual
+  # had split into four values -- 0 (8 files), +4 (53), +8 (23), +12 (21) --
+  # and the split was exactly the unaligned sum's value mod 8. Every file the
+  # sum put at 4 mod 8 read 4 bytes high; every file at 0 mod 8 read as
+  # predicted. Aligning (sum + 1) up to 8 and removing the 1 -- the same
+  # project-wide 1-byte offset the array-member terms carry -- puts 68 files
+  # at exactly 0, 47 at +8, and 117 of 125 inside the +/-8 single-measurement
+  # noise floor (mean |residual| 6.99 -> 4.48 bytes). 16- and 32-byte
+  # alignment were tested and are strictly worse.
+  total_alignment_bytes: 8
+  total_alignment_offset: 1
+  # KNOWN under the project's own rule: measured alone, across 125 def-only
+  # captures, with every residual inside the +/-8 single-measurement noise
+  # floor except named shapes that are not priced or are below the noise
+  # floor in the real corpus (see RESOLVED_QUESTIONS.md OQ-AOIDEFSHAPE). The
+  # 0-versus-+8 split that remains is recorded there, not hidden here.
+  confidence: KNOWN
   # AOI type-NAME length cost. Real captures of
   # aoiname_len08/09/13/16/20/25/30_def_only (identical 4-DINT composition,
   # only the AOI's own type name varying) read 19384/19384/19392/19400/19408/
@@ -1720,7 +1739,11 @@ aoi_definition:
   # and neither may be fitted until a file separates them.
   name_length_bucket_bytes: 8
   name_length_floor_bytes: -8
-  name_length_bucket_confidence: FITTED
+  # KNOWN: measured alone at seven lengths with zero residual 7/7, which is the
+  # project's written rule for a known constant. The unsampled 13-16 boundary
+  # can be wrong by at most one bucket -- 8 bytes, the single-measurement
+  # noise floor.
+  name_length_bucket_confidence: KNOWN
 
 # Per-tag flat overhead: every top-level <Tag> entry (Controller/Tags or
 # Program/Tags) costs this ON TOP OF its own raw data size (from
@@ -2425,11 +2448,17 @@ task_program_overhead:
   routine_extra: 264
   program_extra: 476
   task_extra: 700
-  # Stays FITTED, not KNOWN: routine_extra/program_extra are now measured
-  # exactly over a real span, but task_extra in this same block is still
-  # the old 2-task fit, and this tier propagates to everything the block
-  # touches. The block is only as strong as its weakest constant.
-  confidence: FITTED
+  # KNOWN. routine_extra and program_extra are exact over real spans (above).
+  # task_extra was held back as "the old 2-task fit", but the captures already
+  # cover it at three counts with zero residual: taskoverhead_n02tasks and
+  # _n03tasks exact, and all five identnamelen_task_c* files (six tasks each,
+  # task names 4..40 characters) exact. The one miss, taskoverhead_n04tasks
+  # at +24, is not task_extra: its three extra task names are 13 characters,
+  # the only non-multiple-of-8 task name ever captured, and the identifier
+  # term rounds 13 DOWN to 8 where the file reads as if it rounds UP to 16 --
+  # 3 x 8 = 24 exactly. Recorded in OPEN_QUESTIONS.md OQ-TASKNAMEROUND; under
+  # 8 bytes per task on a real program, below the noise floor.
+  confidence: KNOWN
 
 # OQ-JSRPARAMCOST, wired. delta(n,R) = A(n) + B(n)*R, solved
 # from real (n, rung_count) pairs at n=5/8/10 (both r=100 and r=1000
@@ -2787,6 +2816,10 @@ series_output:
 
 logic_instructions:
   fixed_base_per_routine: 4816
+  # KNOWN: the empty-project baseline is byte-exact on every generated empty
+  # file and on a File|New real project, and the subrtn_shell control that
+  # carries it predicts at 0.000% at 1, 5, 25 and 100 routines.
+  fixed_base_per_routine_confidence: KNOWN
   jsr_fixed_base_per_routine: 5096  # JSR's routine also declares the target subroutine
   confidence: FITTED
   # OQ-BRANCHDEPTH, wired -- real data (branchdepth_legs01/03/05,

@@ -44,179 +44,91 @@ are too small to carry the residual.
 
 ## The queue
 
-### 1. The INT/SINT literal widening defect
+Re-ranked at the close of the final review, on the real programs rather than on the
+generated corpus. The previous first item — the INT/SINT literal over-charge — was
+counted on all eighteen real exports and is worth **1,756 bytes across all of them**.
+It is closed. The queue is now short, and every item on it either needs a capture or
+needs a real program.
 
-**The literal-operand batch came back and demoted its own question.** Integer
-literals are free — measured at DINT and LINT, to the byte — so the 51,265-slot
-exposure this item was ranked on does not exist. What the batch did find is an
-engine defect worth more than the term it was looking for.
+### 1. Capture the blind set
 
-| | |
-|---|---|
-| **Expected movement** | unmeasured on the real set; it removes an 18–22% over-prediction on two isolation files |
-| **Mechanism** | a narrow-integer TAG operand pulls in the widening block; a LITERAL needs no widening because it is already the right width inline. The engine charges the widening for both. |
-| **Evidence** | `litop_type_int_lit` over by +21.82%, `litop_type_sint_lit` by +18.67%, while both tag files land at exactly 0.00% |
-
-Only-adds-bytes candidates were the problem before. This one **removes** bytes,
-and seven of the seventeen real programs over-predict.
-
-**Wire nothing until it is checked against the seventeen.** The corpus exposure of
-narrow-integer literal operands has not been counted.
-
-### 1b. Two smaller terms from the same batch
-
-- **REAL literal operand: +4 per slot.** Measured three times now — the bench
-  rung, arm G at 1,000 rungs, and arm A's single-slot pair. 930 slots across the
-  real set, 3,720 bytes. Exact, and far below the noise floor.
-- **Float literal FORM: +76 per rung**, engine charges 0, one pair only. Ten times
-  the REAL-literal term and a different mechanism. Needs a second count point
-  before any rate is believed.
-
-### 1c. The JSR shell over-charge — diagnosed, blocked on one file
-
-`jsr_fixed_base_per_routine` is 5,096 where the ordinary `fixed_base_per_routine`
-is 4,816. The difference, 280, is exactly the residual on **all 14 clean
-0-parameter JSR rows** — flat at 1 through 50 calls and at every target name length,
-while the no-JSR `subrtn_shell` control predicts at 0.000%.
+**The single most valuable thing left.** Six real exports have been predicted by the
+final engine with **no capacity reading on record**. Their predictions are written
+down in `ROADMAP.md` before any reading exists, which is the only procedure this
+project accepts as evidence that the model generalises. It has been done once;
+this would do it six more times at once.
 
 | | |
 |---|---|
-| **Expected movement** | unknown, and that is the point — between 280 bytes and hundreds of thousands, depending on which reading is right |
-| **Mechanism** | the constant is charged per JSR-CALLER routine, and every JSR file in the corpus has exactly one caller, so per-file and per-caller fit identically |
-| **Blocker** | awaiting capture of `jsr_callerdist_k{01,02,04,05,10,20}` — built, lint clean, confound gate clean |
+| **Expected movement** | none on the model — this measures it |
+| **Mechanism** | read Capacity on each of the six, compare with the numbers already on record |
+| **Needs** | the six programs opened in Studio; no files to build |
 
-**The discriminating family is built and is the top capture priority.** Six files
-holding 20 calls and 20 distinct targets fixed while the caller count runs 1 → 20.
-Predictions for all three competing readings are written down in `OPEN_QUESTIONS.md`
-before the capture; they agree at K=1 and separate by 86,488 bytes at K=20.
+The five recorded real programs missing from this checkout (`realprog_08, 25, 26, 29,
+30`) should be dropped back into `samples/local/` as well, so the full seventeen can be
+re-checked by `quick_eval.py --real-only` rather than twelve of them.
 
-**Do not adjust the constant before those files read.** The real programs
-under-predict today and the per-caller reading subtracts bytes, so guessing wrong
-makes them worse. The marginal cost is already exact — 368 bytes per distinct
-0-parameter target plus its call, over eight intervals in two generators — so
-nothing is gained by touching the slope.
+### 2. Capture `jsr_callerdist_*` — OQ-JSRCALLERBASE
 
-Secondary effect: JSR reports **Approximate ±5%** purely because
-`derive_instruction_accuracy.py` divides this fixed 280 by file size and gets
-1.40%. The weight itself is exact.
+`jsr_fixed_base_per_routine` (5,096) exceeds the ordinary `fixed_base_per_routine`
+(4,816) by 280, which is exactly the residual on every clean 0-parameter JSR capture.
+The constant is charged per JSR-caller routine and every JSR file in the corpus has one
+caller, so per-file and per-caller fit identically.
 
-### 1d. The UI under-sells its own confidence
+| | |
+|---|---|
+| **Expected movement** | between 280 bytes and ~300 KB on a real program, which is the point |
+| **Mechanism** | six built files holding 20 calls and 20 targets fixed while callers run 1 → 20 |
+| **Needs** | one capture run; predictions for all three readings are already on record |
 
-**Measured, not impressions.** `scripts/confidence_census.py` drives the real load
-path and mirrors the client's own `nodeConfidence` walk, so these are the numbers on
-screen. On the real export, every element expanded individually — 1,737,078 of them:
+It is also the last 50% line on most real programs: **Subroutine Overhead** reads
+Unverified until this lands, and moves to Exact whichever way it reads.
 
-| band | elements | % | leaf bytes | % of bytes |
-|---|---:|---:|---:|---:|
-| 100 Exact | 1,655,239 | 95.3% | 5,506,879 | 78.6% |
-| 98 Measured | 270 | 0.0% | 735,792 | 10.5% |
-| 90 Close | 79 | 0.0% | 176,516 | 2.5% |
-| 75 Approximate | 37 | 0.0% | 148,432 | 2.1% |
-| 50 Unverified | 1,742 | 0.1% | 442,978 | 6.3% |
-| no bytes | 79,711 | 4.6% | 0 | 0.0% |
+### 3. The real residual — OQ-REALUNDER
 
-**89.0% of bytes are Exact or Measured. 37 elements out of 1.74 million sit at 75%.**
+**Mean 1.66%, worst 3.52% on the twelve real programs present; 1.60% / 3.63% on the
+seventeen on record.** The weighted residual is **+1.45% under-prediction**. The
+stopping rule is not met and a cheating per-category fit shows it cannot be met by
+correcting constants. See `FINAL_REPORT.md` for the proposed attack: a real-program
+residual model built from features the engine does not count, cross-validated, never
+fitted in-sample.
 
-**But the first screen shows 18 tiles and three read badly**, and they are large:
+### 4. Resolve the per-rung term — OQ-RUNGSHAPE
 
-| group | confidence | bytes |
-|---|---:|---:|
-| Add-On Instructions | **50%** | 253,266 |
-| Subroutine Overhead | **50%** | 122,304 |
-| Project Overhead | **67%** | 40,104 |
-| Task: MainTask | 94% | 982,486 |
-| everything else | 98–100% | — |
+`routine_logic` is 18% of the mass. Every calibration file is one instruction per
+rung, so a per-rung cost and a per-instruction cost are perfectly confounded in
+every weight. A packing sweep must use a **non-output** instruction — the last
+attempt used an output and measured series cascades instead.
 
-**The amber is honest, not a bug.** It was worth checking: every AOI-definition leaf
-reads FITTED while every UDT-definition leaf reads KNOWN, which looks like a blanket
-mislabel. It is not — a definition drill apportions a flat per-member rate, not
-atomic member sizing, and AOI definition cost genuinely is a fitted formula while
-UDT definition cost is confirmed. The 50% is the model telling the truth about
-`aoi_definition`, and `Subroutine Overhead` is 50% because the per-caller-vs-per-file
-question is genuinely open.
+### 5. Close the alarm-condition gap — OQ-ALARMCONDREAL
 
-**So the defect is presentation, not calibration.** The eye counts tiles; the model
-weights bytes. A viewer sees three bad tiles out of eighteen and reads 17% wrong,
-when the byte-weighted answer is 89% Exact or Measured and the tool has no headline
-number anywhere to say so.
+Alarm conditions are 9.4% of predicted mass and 19–21% of actual memory on the two
+real programs measured, landing within 0.16% on one and **8.8% short** on the other.
+Missing: alarms on a UDT-scalar host, and whether alarm **sets** carry their own cost.
 
-Ranked fixes, in order of value per hour:
+### 6. Structural module model
 
-1. **A file-level confidence figure on screen at all times.** One number, byte-weighted,
-   with the band mix behind it. This alone fixes the impression for every user and
-   needs no new measurement.
-2. **A confidence view that recolours the treemap by band instead of by category**
-   (`?ConfidenceMode=true`). Useful for auditing, but it is the second fix, not the
-   first: a switch most people never set cannot repair the default impression.
-3. **Close `aoi_definition`.** At 253,266 bytes it is the single largest block of
-   genuine uncertainty in the file, and it is a real open question rather than a
-   labelling one. See `AOI_KNOWLEDGE_MAP.md`.
+A generalisation item, not an accuracy one: module overhead is a per-catalog lookup
+with a flat fallback, which cannot predict an unseen catalog. `module_io` is 2.9% of
+mass. See `FUTURE_TESTS.md`.
 
-### 2. More real captured programs
-
-**The only thing that can settle anything at real scale.** Two or three previously
-unseen exports with capacity readings would do more than any generated batch.
-
-Real programs sit 16× to 54× outside the range the synthetic composites cover on
-JSR-target and AOI content, so a law fitted on the synthetic range behaves
-differently in the real one.
-
-**Predict each one and write the number down before the capacity reading is taken.**
-That is the only procedure that adds auditable evidence. It has been done once, and
-that blind test is the strongest evidence the project has.
-
-### 3. Resolve the per-rung term
-
-`routine_logic` is 18% of the mass and the second-largest category. **Every
-calibration file is one instruction per rung, so a per-rung cost and a
-per-instruction cost are perfectly confounded in every weight.**
-
-What is already settled, so it is not re-tried: branch arrangement is byte-exact at
-every leg count, branch fraction is not the carrier, and a constant error per
-instruction occurrence is ruled out by a coefficient of variation of 1.74.
-
-The one attempt to isolate the per-rung term instead landed on the series-output
-law, because the instrument used an output instruction and packing it built series
-cascades. **A packing sweep must use a non-output instruction.** See `OQ-RUNGSHAPE`.
-
-### 4. Close the alarm-condition gap inside real content
-
-Alarm conditions are **9.4% of predicted mass and 19–21% of actual memory on the two
-real programs measured** — the second-largest category in both. The per-condition
-formula lands within 0.16% on one and **8.8% short on the other.**
-
-At that scale, 8.8% is worth more than most items on this list. What is missing:
-alarms on a UDT-scalar host, and whether alarm **sets** carry their own cost. See
-`OQ-ALARMCONDREAL`.
-
-### 5. Clear the capture backlog
-
-Rows with no capture, after the bit-shift batch landed clean and the four
-`litop_bool_*` rows were cleared as unusable:
+### Capture backlog
 
 | family | rows | state |
 |---|---:|---|
+| `jsr_callerdist_*` | 6 | **top priority** — item 2 |
 | `composite_realistic_*_r2` | 9 | never submitted; eight have real lint findings to clear first |
 | `fwmatrix_*` | 6 | awaiting first submission |
 | `alarmcond_*` | 5 | condition-type arm, never captured |
 | `predefprobe_*` | 3 | submitted and refused; needs the Studio error line |
 | `cipmodule_*` | 2 | awaiting first submission |
-| `litop_bool_*` | 4 | regenerated with valid call arity; awaiting recapture |
-| `jsr_callerdist_*` | 6 | **top priority** — settles item 1c; gates clean, never submitted |
+| `litop_bool_*` | 4 | regenerated with valid call arity; **optional** — below the noise floor |
 
 **A row captured but never differenced is work already paid for and thrown away.**
-The one real win of a recent session came entirely from rows already captured,
-already clean, never reconciled. `scripts/unreconciled.py` exists to stop that
-recurring — **run it after every batch.**
-
-### 6. Structural module model
-
-The blocker for ever predicting an **unseen** catalog. Module overhead is a
-per-catalog lookup with a flat fallback today, which cannot generalise.
-
-`module_io` is 2.9% of mass, so this is not an accuracy item — **it is a
-generalisation item**, and it belongs with the phase-8 work on making the tool safe
-to hand to someone else. See `FUTURE_TESTS.md` for the ladder it needs.
+It happened again: the fifteen `mbshape_*` real-shape AOI files had been captured,
+clean, and never differenced. They answered the question they were built for
+(OQ-AOIREALSHAPE) the day someone looked. Run `scripts/unreconciled.py` after every
+batch.
 
 ---
 
@@ -251,11 +163,13 @@ pointed at a file only to say where a shape came from, it now reads "a real
 export" and keeps the tag or member name, which is the part that makes it
 checkable.
 
-**`samples/manifest.csv` is the exception, and it is deliberate.** Its
-`l5x_path` column is a real filesystem path into the gitignored
-`samples/local/`. Rewriting it breaks prediction on all seventeen real programs
-until the files on disk are renamed to match. `sample_id` and the row
-descriptions are renamed to `realprog_NN`; `l5x_path` is not.
+**`samples/manifest.csv` carries no real file names either.** Every real row's
+`l5x_path` is the neutral `samples/local/realprog_NN.L5X`. The real file name lives
+in `samples/local/aliases.csv`, which is gitignored like everything else in that
+folder, and `load_manifest()` resolves each row by name under `samples/local/`
+through it — whatever folder the archive happened to unpack into. The old reason
+for keeping real names in the manifest ("rewriting it breaks prediction") no longer
+applies.
 
 ### Removing a name from the working tree does not remove it from history
 
@@ -266,7 +180,8 @@ them, the history has to be rewritten or the repository re-initialised from the
 current tree, and even then anything already cloned stays out.
 
 The mapping from export number back to the real filename is recoverable from
-that same history and is not written anywhere in the tree on purpose.
+that same history. In the working copy it lives only in the gitignored
+`samples/local/aliases.csv`.
 
 ---
 
@@ -281,8 +196,7 @@ over the top four instructions and 1.73 per rung, so whatever it is does not sca
 with any count the engine has.
 
 Ten files under-predict and seven over-predict. **A candidate that can only add
-bytes is wrong before it is tested**, which eliminates most of what looks plausible
-and is why item 1's per-type rate table matters more than its flat rate.
+bytes is wrong before it is tested**, which eliminates most of what looks plausible.
 
 ---
 
@@ -297,3 +211,6 @@ and is why item 1's per-type rate table matters more than its flat rate.
 | Refresh the strip ladders | **Dead.** A derived variant of a real export does not build. See the read-only rule in `CLAUDE.md`. |
 | The controller-shell probe | **Cancelled.** There was nothing to probe — the engine predicts a File\|New project exactly. |
 | Produced and consumed tags | **Force-closed** below the noise floor. Do not reopen. |
+| Literal operands, including the INT/SINT over-charge | **Closed on real exposure**: 37 slots, 1,756 bytes across eighteen real exports. |
+| AOI definition cost | **KNOWN.** 8-byte total alignment wired; 117 of 125 def-only captures inside ±8. |
+| Hiding per-element confidence by default | Done: `?ConfidenceMode=true` shows it; the Errors tab always shows the file-level figure. |

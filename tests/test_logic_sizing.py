@@ -95,7 +95,7 @@ def test_build_report_includes_estimated_logic_entries():
     assert routine_entry.bytes == 4 * 3 + 16 * 2
     assert routine_entry.basis == "FITTED"
     assert shell_entry.bytes == 4816
-    assert shell_entry.basis == "FITTED"
+    assert shell_entry.basis == "KNOWN"  # its own constants, measured exact
     assert routine_entry.bytes + shell_entry.bytes == 4816 + 4 * 3 + 16 * 2
 
     # Exact-tier tag entries are untouched by the logic addition, still

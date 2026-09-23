@@ -81,9 +81,19 @@ form is in `MEMORY_MODEL.md`: a base, 12 per declared member, each member's own
 data bytes, 24 per 32-bit word the declared BOOLs occupy, an 8-aligned pool for
 the member names, and a bucketed term for the AOI's own type name.
 
-Measured on **124 definition-only files** — no instance tag anywhere and no
-internal rungs, so the definition is the only AOI cost in the file. **70 land
-exactly, 122 of 124 inside ±8.**
+The whole definition then occupies whole 8-byte units, around the project-wide
+1-byte offset.
+
+Measured on **125 definition-only files** — no instance tag anywhere and no
+internal rungs, so the definition is the only AOI cost in the file. **68 land
+exactly, 117 of 125 inside ±8, mean |residual| 4.48 bytes. KNOWN.** Across every
+clean capture that contains an AOI, 201 land exactly (38 before the alignment).
+
+At real population shape — 19 definitions, 453 parameters, 280 locals, copied from
+a real export — the per-definition cost holds to 2 bytes (1,231 measured, 1,233
+predicted per definition over 5 → 40 definitions), axis-typed parameters are
+priced right, internal rungs are exact, and the per-member cost is 1.8 bytes high:
+about 0.1% of the program it came from. See OQ-AOIREALSHAPE.
 
 ### Type-name length — closed
 
@@ -95,6 +105,11 @@ All of an AOI's internal routines are aggregated into one pseudo-routine and
 weighted with the ordinary instruction table. **Per-routine count does not matter,
 only total content.** Cut maximum residual on the isolation sweep from 12.02% to
 0.55%.
+
+It is emitted as its own `routine_logic` entry under the AOI's **Routines** — tier
+estimated, with its rungs' measured confidence. It used to be folded into the
+definition entry, where it was displayed as exact and drawn as an unexplained
+"Unitemized definition cost" of roughly 6% of a real file.
 
 ### Call site — wired
 
@@ -192,15 +207,13 @@ contaminate the readings. The model predicts a dead flat line across every group
 except the deliberate scale sweeps, so **any spread in the captured numbers is an
 unpriced item.** Blocked on capture.
 
-### 2. The 8-byte definition term
+### 2. The 8-byte definition term — bounded
 
-Exactly 0 on 70 instrument files and exactly +8 on 35. Confounded three ways:
-the type-name bucket boundary, a fixed offset inside the name pool, and member
-order. A 54-file batch is built to break the confound.
-
-The base is deliberately set to centre the residual on zero for the 124-file
-instrument. **A base 8 higher scores more exact rows corpus-wide and is
-deliberately not taken** — taking it would bury the term rather than solve it.
+The 4-byte half was the definition's 8-byte alignment, now wired. What remains is 47
+instrument files at exactly +8 with no clean discriminator — AOI names of 14–16
+characters lean toward it, the bucket boundary the name sweep never sampled. That is
+the ±8 single-measurement noise floor, closed as BOUNDED (OQ-AOIDEFSHAPE). Not worth a
+capture slot.
 
 ### 3. AOI BOOL packing
 

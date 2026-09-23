@@ -22,6 +22,16 @@
      (exact/estimated) and basis (KNOWN/ASSUMED/FITTED/UNKNOWN) are two
      separate confidence concepts and must never be blurred together. */
   --tier-estimated: #9b59b6;
+
+  /* Confidence bands. One definition, used by the bar fills below AND by the
+     treemap when ?ConfidenceMode=true recolours it by band, so a tile and the
+     bar describing it can never be two different greens. */
+  --band-EXACT: #4a9d5f;
+  --band-MEASURED: #5aa86b;
+  --band-CLOSE: #86b04a;
+  --band-APPROX: #c9a227;
+  --band-UNVERIFIED: #b3552f;
+  --band-UNPRICED: #8d3a3a;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -530,12 +540,38 @@ main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
    gone: it answered a different question (where did the number come from) in
    the same place as this one (how well is it known), and the two read as a
    contradiction whenever a fully measured node showed a 0% KNOWN share. */
-.band-fill-EXACT      { background: #4a9d5f; }
-.band-fill-MEASURED   { background: #5aa86b; }
-.band-fill-CLOSE      { background: #86b04a; }
-.band-fill-APPROX     { background: #c9a227; }
-.band-fill-UNVERIFIED { background: #b3552f; }
-.band-fill-UNPRICED   { background: #8d3a3a; }
+.band-fill-EXACT      { background: var(--band-EXACT); }
+.band-fill-MEASURED   { background: var(--band-MEASURED); }
+.band-fill-CLOSE      { background: var(--band-CLOSE); }
+.band-fill-APPROX     { background: var(--band-APPROX); }
+.band-fill-UNVERIFIED { background: var(--band-UNVERIFIED); }
+.band-fill-UNPRICED   { background: var(--band-UNPRICED); }
+
+/* Per-element confidence is an analysis view, off unless the URL carries
+   ?ConfidenceMode=true. The "estimated" outline on compiled-logic tiles is a
+   different thing -- the ground-truth flag -- and is never hidden. */
+body:not(.confidence-mode) .conf-only { display: none; }
+
+/* File-level confidence, at the top of the Errors tab. Always shown: it is the
+   one number that answers "how much of this total is known". */
+.file-confidence {
+  margin: 0 0 18px; padding: 12px 14px;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: var(--panel-bg);
+}
+.file-confidence h3 { margin: 0 0 6px; font-size: 14px; }
+.file-confidence .fc-headline { font-size: 22px; font-weight: 600; }
+.file-confidence .fc-sub { font-size: 12px; opacity: .8; margin-left: 6px; }
+.file-confidence .fc-mix {
+  display: flex; height: 10px; width: 100%; margin: 8px 0 6px;
+  border-radius: 3px; overflow: hidden; background: rgba(127,127,127,.15);
+}
+.file-confidence .fc-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; }
+.file-confidence .fc-swatch {
+  display: inline-block; width: 9px; height: 9px; border-radius: 2px;
+  margin-right: 5px; vertical-align: -1px;
+}
+.file-confidence .fc-note { font-size: 11px; opacity: .7; margin-top: 8px; }
 .conf-label { font-size: 11px; opacity: .8; margin-top: 2px; }
 .conf-cell { display: flex; align-items: center; gap: 6px; }
 .conf-pct { font-size: 11px; opacity: .85; min-width: 30px; }

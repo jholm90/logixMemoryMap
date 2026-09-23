@@ -323,18 +323,46 @@ element × dimension; a TIMER, STRING or UDT member's are that structure's own
 size. `InOut` parameters cost nothing. `EnableIn`/`EnableOut` are not declared
 members.
 
-Measured on **124 captured definition-only files** — an AOI definition with no
+Measured on **125 captured definition-only files** — an AOI definition with no
 instance tag anywhere and no internal rungs, so the definition is the only AOI
 cost in the file and its value reads straight off the capture. They span 1 to 128
 declared members, six atomic types, BOOL fractions from 0 to 100%, and Input,
-Output and LocalTag usages. **70 of 124 land exactly; 122 of 124 inside ±8; worst
-case 11.**
+Output and LocalTag usages.
 
-> `base` is set to centre the residual on zero for the 124-file instrument. A
-> base 8 higher scores more exact rows corpus-wide and is deliberately not taken:
-> one 8-byte term is still unexplained — exactly 0 on 70 instrument files and
-> exactly +8 on 35 — confounded between the type-name bucket boundary, a fixed
-> offset inside the name pool, and member order.
+**The whole definition occupies whole 8-byte units** — `total_alignment_bytes: 8`,
+around the project-wide 1-byte offset (`total_alignment_offset: 1`). Re-run against
+the live engine, the instrument had drifted: every file the unaligned sum put at 4
+mod 8 read exactly 4 bytes high, every file at 0 mod 8 read as predicted. Aligned:
+
+| | unaligned | aligned |
+|---|---:|---:|
+| instrument files exactly 0 | 8 | **68** |
+| inside ±8 | 94 / 125 | **117 / 125** |
+| mean \|residual\| | 6.99 B | **4.48 B** |
+| every clean AOI-bearing capture exactly 0 | 38 | **201** |
+
+The same padding rule, found independently on the instance side, is
+OQ-AOIBOOLPACK-PAIRING. **AOI definition cost is KNOWN**, as is the type-name term
+(seven lengths, 7/7 exact). What remains — 47 files at +8, no clean discriminator —
+is exactly the ±8 single-measurement noise floor and is closed as BOUNDED
+(OQ-AOIDEFSHAPE). The per-definition cost also holds at real population shape:
+1,231 bytes per definition measured against 1,233 predicted over 5 → 40 definitions
+(OQ-AOIREALSHAPE).
+
+> On the real programs the alignment is neutral — tens of bytes a program, mean
+> error 1.6634% → 1.6637% on the twelve present. It is wired because it is right on
+> every isolation file, not because it moves the headline.
+
+### An AOI's internal ladder is routine logic, not definition cost
+
+An AOI's internal RLL is priced with the ordinary per-instruction model plus the
+AOI-internal terms, and is emitted as its **own `routine_logic` entry** at
+`aoi_definitions/<AOI>/<routines>`, tier ESTIMATED. It used to be added into the
+definition entry, which is tier EXACT, with three consequences: compiled ladder was
+displayed **without the estimated flag**; the tree drew it as an unexplained
+"Unitemized definition cost" worth roughly 6% of a real file; and it could not carry
+its rungs' measured confidence. Totals are unchanged — verified byte-identical on
+every real program present.
 
 **This one form replaced four separate fitted terms that had each absorbed part
 of the same error.** Every one fitted its own sweep exactly and was still the
@@ -820,7 +848,7 @@ after.
 
 The open uncertainty is attached to this line, where it belongs. Whether the
 correction is 280 once per file or 280 per caller routine is what
-`jsr_callerdist_*` settles — see `OPEN_QUESTIONS.md` OQ-JSRPARAMCOST.
+`jsr_callerdist_*` settles — see `OPEN_QUESTIONS.md` OQ-JSRCALLERBASE.
 
 ### A 0-parameter JSR is EXACT — the one named exception for compiled logic
 
@@ -1017,11 +1045,15 @@ tag-driven** index roughly 108.
 A shared alias across programs costs about −16 per rung per additional program.
 No formula change needed.
 
-### Per-task overhead
+### Task, program and routine shell — KNOWN
 
-A clean, exactly **−1,472 per extra task** finding. Not wired: it needs a parser
-change to distinguish per-task and per-program overhead from
-per-routine-in-the-same-program.
+`task_program_overhead` is wired and KNOWN: `routine_extra` 264 and `program_extra`
+476 exact over real spans, `task_extra` 700 exact at 2, 3 and 6 tasks, and the
+per-routine base `fixed_base_per_routine` 4,816 exact on the empty-project baseline
+and the `subrtn_shell` control at 1, 5, 25 and 100 routines. The one miss,
+`taskoverhead_n04tasks` at +24, is task-name rounding, not the task constant
+(OQ-TASKNAMEROUND, below the noise floor). The old "−1,472 per extra task" note that
+stood here predated the decomposition and is superseded.
 
 ### Composite-scale surcharges — FITTED
 
@@ -1242,7 +1274,17 @@ Any statement that alarms are out of scope applies to the first only.
 
 ---
 
-## Immediate literal operands — MEASURED, NOT WIRED
+## Immediate literal operands — CLOSED ON REAL EXPOSURE
+
+> **Superseded summary, read this first.** The literal-operand batch and a count
+> over eighteen real exports closed this: integer literals (DINT, LINT) are free;
+> a REAL literal is +4 per slot (930 real slots, 3,720 bytes); the float literal's
+> written form is +76 per rung (one pair); and the engine's INT/SINT over-charge on
+> `MOV(<literal>, <narrow tag>)` totals 1,756 bytes across all eighteen programs.
+> None is wired; all are below the noise floor. The section below is the original
+> hypothesis and bench measurement, kept for the reasoning. See
+> `RESOLVED_QUESTIONS.md` OQ-LITERALOPERAND.
+
 
 **An immediate numeric literal in an instruction operand costs bytes the engine
 does not charge.** Literals are priced today **only** inside CPT expressions, CMP

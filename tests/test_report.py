@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 
 from l5x_memory_analyzer.sizing.constants import load_memory_model
-from l5x_memory_analyzer.sizing.report import build_report
+from l5x_memory_analyzer.sizing.report import ESTIMATED, build_report
 
 MODEL = load_memory_model()
 
@@ -80,13 +80,17 @@ def test_alias_tags_size_not_error():
     #   + member name pool: "DebTmr" is 6 chars + 1 = 7, rounded up to 8
     #   + name_length_bytes("fbDebounce"): 10 chars -> bucket max(0,(10-8)//4)
     #     = 0 -> 8*0 + (-8) = -8
+    #   = 1211, then aligned: the definition occupies whole 8-byte units
+    #     around the project-wide 1-byte offset, 8*ceil((1211+1)/8) - 1 = 1215
+    #     (aoi_definition.total_alignment_bytes, OQ-AOIDEFSHAPE)
     #   - 7, the per-definition scale correction
     #     (definition_scale_correction.aoi_definition_extra, corrected -3 -> -7
     # once defscale_aoidefs_n001..n060 measured the definition
     #     term on its own rather than jointly with the per-instance one)
     aoi_def = by_path["udt_definitions/fbDebounce"]
-    assert aoi_def.bytes == 1163 + 12 + 12 + 24 + 8 - 8 - 7
-    assert aoi_def.basis == "FITTED"
+    raw = 1163 + 12 + 12 + 24 + 8 - 8
+    assert aoi_def.bytes == 8 * -(-(raw + 1) // 8) - 1 - 7
+    assert aoi_def.basis == "KNOWN"
 
     # total now also includes the project_baseline entry
     # (empty_project_baseline) -- present on every real report, not just
@@ -531,3 +535,62 @@ def test_confidence_audit_finds_no_stale_assumed_tiers():
     script = Path(__file__).resolve().parent.parent / "scripts" / "audit_confidence.py"
     result = subprocess.run([sys.executable, str(script)], capture_output=True, text=True)
     assert result.returncode == 0, result.stdout
+
+
+def test_aoi_internal_ladder_is_its_own_estimated_routine_entry():
+    """An AOI's internal RLL is compiled logic: a routine_logic entry, tier
+    ESTIMATED, under the AOI's own path. It used to be folded into the
+    definition entry, which is tier EXACT -- so compiled ladder was displayed
+    without the estimated flag, drew as an unexplained "Unitemized definition
+    cost", and could not carry its rungs' measured confidence."""
+    xml = """
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test" ProcessorType="1756-L81E">
+        <DataTypes/>
+        <AddOnInstructionDefinitions>
+          <AddOnInstructionDefinition Name="Blinker">
+            <Parameters>
+              <Parameter Name="EnableIn" DataType="BOOL" Usage="Input"/>
+              <Parameter Name="EnableOut" DataType="BOOL" Usage="Output"/>
+              <Parameter Name="Out" DataType="BOOL" Usage="Output"/>
+            </Parameters>
+            <LocalTags><LocalTag Name="Count" DataType="DINT"/></LocalTags>
+            <Routines>
+              <Routine Name="Logic" Type="RLL"><RLLContent>
+                <Rung Number="0" Type="N"><Text><![CDATA[XIC(Out)ADD(Count,1,Count);]]></Text></Rung>
+                <Rung Number="1" Type="N"><Text><![CDATA[XIO(Out)OTE(Out);]]></Text></Rung>
+              </RLLContent></Routine>
+            </Routines>
+          </AddOnInstructionDefinition>
+        </AddOnInstructionDefinitions>
+        <Tags/>
+        <Programs/>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    entries, errors = build_report(ET.fromstring(xml), MODEL)
+    assert errors == []
+    by_path = {e.path: e for e in entries}
+    ladder = by_path["aoi_definitions/Blinker/Logic"]
+    assert ladder.category == "routine_logic"
+    assert ladder.tier == ESTIMATED
+    assert ladder.bytes > 0
+    definition = by_path["udt_definitions/Blinker"]
+    # The definition is the declaration alone: base, members, words, pool,
+    # name term, aligned, less the per-definition correction. No ladder in it.
+    from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
+    from l5x_memory_analyzer.sizing.udt import compute_aoi_definition_cost
+    types = parse_aoi_definitions(ET.fromstring(xml))
+    declared = compute_aoi_definition_cost("Blinker", types, MODEL)[0]
+    assert definition.bytes == declared + MODEL.aoi_definition_extra
+    assert definition.basis == "KNOWN"
+
+
+def test_a_context_aois_internal_routines_are_context_too():
+    """On a partial export an AOI dragged along as context brings its own
+    routines with it; counting them as the exported thing inflated the
+    target figure. Applies to the ladder entry and to AOI-internal ST."""
+    from l5x_memory_analyzer.parser.export_scope import ContextNames, classify_path
+    ctx = ContextNames(aois=frozenset({"Blinker"}))
+    assert classify_path("aoi_definitions/Blinker/Logic", ctx) == "context"
+    assert classify_path("aoi_definitions/Other/Logic", ctx) == "target"
